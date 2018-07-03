@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>i18n Test</title>
+    <style>
+        body div { font-size: xx-large; }
+        #language-picker { float: right; }
+    </style>
+</head>
+<body>
+    <select name="" id="language-picker">
+        <option value="en-en">English</option>
+        <option value="de-de">Deutsch</option>
+    </select>
+    <div>I ❤️ <span data-i18n="applePie"></span></div>
+
+    <script type="module">
+        import { I18n } from './i18n.js';
+        const i18n = new I18n();
+        const languagePicker = document.querySelector("#language-picker");
+
+        languagePicker.addEventListener('change', e => {
+            i18n.translate(document.body, e.target.value);
+        });
+        i18n.translate(document.body, languagePicker.value);
+    </script>
+</body>
+</html>
