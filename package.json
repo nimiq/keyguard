@@ -1,0 +1,23 @@
+{
+  "name": "keyguard-next",
+  "version": "0.0.1",
+  "description": "Secure storage for Nimiq private keys.",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "tsc --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nimiq/keyguard-next.git"
+  },
+  "keywords": [
+    "Nimiq",
+    "Keyguard"
+  ],
+  "author": "Nimiq",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nimiq/keyguard-next/issues"
+  },
+  "homepage": "https://github.com/nimiq/keyguard-next#readme"
+}
