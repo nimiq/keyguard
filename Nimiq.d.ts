@@ -32,7 +32,11 @@ declare namespace Nimiq {
 
     type PublicKey = any
     const PublicKey: any
+
+    type Observable = any
+    const Observable: any
+
+    namespace Account  {
+        type Type = 0 | 1 | 2
+    }
 }
-
-type TransactionFormat = 'basic' | 'extended'
-

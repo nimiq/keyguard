@@ -6,6 +6,7 @@
  * const keyStore = KeyStore.instance;
  * const accounts = await keyStore.list();
  */
+/// <reference path="EncryptionType.js" />
 class KeyStore {
 
     static get instance() {
@@ -24,7 +25,7 @@ class KeyStore {
      * @returns {Promise.<IDBDatabase>}
      * @private
      */
-    connect() {
+    async connect() {
         if (this._connected && this._db) return Promise.resolve(this._db);
 
         return new Promise((resolve, reject) => {
@@ -57,7 +58,7 @@ class KeyStore {
 
     /**
      * @param {string} userFriendlyAddress
-     * @param {Uint8Array|string} passphrase
+     * @param {Uint8Array | string} passphrase
      * @returns {Promise.<Key>}
      */
     async get(userFriendlyAddress, passphrase) {
@@ -70,7 +71,7 @@ class KeyStore {
 
     /**
      * @param {string} userFriendlyAddress
-     * @returns {Promise.<1|2>} // FIXME Replace type with enum
+     * @returns {Promise.<EncryptionType>}
      */
     async getType(userFriendlyAddress) {
         const key = await this._getPlain(userFriendlyAddress);
@@ -82,6 +83,8 @@ class KeyStore {
      * @returns {Promise.<object>}
      */
     async _getPlain(userFriendlyAddress) {
+        userFriendlyAddress = this._formatAddress(userFriendlyAddress);
+
         const db = await this.connect();
         return new Promise((resolve, reject) => {
             const getTx = db.transaction([KeyStore.DB_KEY_STORE_NAME])
@@ -96,8 +99,8 @@ class KeyStore {
 
     /**
      * @param {Key} key
-     * @param {Uint8Array|string} passphrase
-     * @param {Uint8Array|string} [unlockKey]
+     * @param {Uint8Array | string} passphrase
+     * @param {Uint8Array | string} [unlockKey]
      * @returns {Promise}
      */
     async put(key, passphrase, unlockKey) {
@@ -127,6 +130,8 @@ class KeyStore {
      * @returns {Promise<any>}
      */
     async _putPlain(keyEntry) {
+        keyEntry.userFriendlyAddress = this._formatAddress(keyEntry.userFriendlyAddress);
+
         const db = await this.connect();
         return new Promise((resolve, reject) => {
             const putTx = db.transaction([KeyStore.DB_KEY_STORE_NAME], 'readwrite')
@@ -142,6 +147,8 @@ class KeyStore {
      * @returns {Promise}
      */
     async remove(userFriendlyAddress) {
+        userFriendlyAddress = this._formatAddress(userFriendlyAddress);
+
         const db = await this.connect();
         return new Promise((resolve, reject) => {
             const deleteTx = db.transaction([KeyStore.DB_KEY_STORE_NAME], 'readwrite')
@@ -185,7 +192,16 @@ class KeyStore {
 
     close() {
         if (!this._connected || !this._db) return;
-        return this._db.close();
+        this._connected = false;
+        this._db.close();
+    }
+
+    /**
+     * @param {string} userFriendlyAddress
+     */
+    _formatAddress(userFriendlyAddress) {
+        if (!AddressUtils.isValidAddress(userFriendlyAddress)) throw new InvalidAddressError();
+        return AddressUtils.formatAddress(userFriendlyAddress);
     }
 }
 

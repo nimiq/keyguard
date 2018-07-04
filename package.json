@@ -3,8 +3,9 @@
   "version": "0.0.1",
   "description": "Secure storage for Nimiq private keys.",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "tsc --watch"
+    "test": "echo \"Please open ./tests/SpecRunner.html in your favourite browser.\"",
+    "watch": "tsc --watch",
+    "typecheck": "tsc"
   },
   "repository": {
     "type": "git",
