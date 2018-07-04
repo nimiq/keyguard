@@ -22,10 +22,12 @@ declare namespace Nimiq {
     type BasicTransaction = Transaction & { }
     const BasicTransaction: any
 
+    type ExtendedTransaction = Transaction & { }
     const ExtendedTransaction: any
 
     const Account: any
 
+    type SignatureProof = any
     const SignatureProof: any
 
     type PublicKey = any
