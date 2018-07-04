@@ -36,7 +36,7 @@
     will-change: transform;
 }
 
-.pin-input .pin-dot-indicator >* {
+.pin-input .pin-dot-indicator > * {
     display: block;
     width: 12px;
     height: 12px;
@@ -44,7 +44,7 @@
     border: 1px solid white;
 }
 
-.pin-input .pin-dot-indicator >*.on {
+.pin-input .pin-dot-indicator > *.on {
     background: white;
 }
 
@@ -102,22 +102,22 @@
     }
 }
 
-.pin-input .pin-dot-indicator >*:nth-child(2) {
+.pin-input .pin-dot-indicator > *:nth-child(2) {
     animation-delay: 200ms;
 }
 
-.pin-input .pin-dot-indicator >*:nth-child(3) {
+.pin-input .pin-dot-indicator > *:nth-child(3) {
     animation-delay: 400ms;
 }
 
-.pin-input .pin-dot-indicator >*:nth-child(4) {
+.pin-input .pin-dot-indicator > *:nth-child(4) {
     animation-delay: 600ms;
 }
 
-.pin-input .pin-dot-indicator >*:nth-child(5) {
+.pin-input .pin-dot-indicator > *:nth-child(5) {
     animation-delay: 800ms;
 }
 
-.pin-input .pin-dot-indicator >*:nth-child(6) {
+.pin-input .pin-dot-indicator > *:nth-child(6) {
     animation-delay: 1000ms;
 }

@@ -5,7 +5,6 @@ class PinInput extends /** @type {any} */ Nimiq.Observable {
     constructor(el = undefined) {
         super();
         this.$el = el || this._createElement();
-        window.$el = this.$el; // TODO remove
         this.$dotIndicator = /** @type {Element} */ (this.$el.querySelector('.pin-dot-indicator'));
         this.$dots = Array.from(this.$dotIndicator.children);
         this.$deleteButton = /** @type {Element} */ (this.$el.querySelector('.delete'));
@@ -26,8 +25,7 @@ class PinInput extends /** @type {any} */ Nimiq.Observable {
     _createElement() {
         /** @type {Element} */
         const el = document.createElement('div');
-        el.classList.add('pin-input');
-        el.classList.add('center');
+        el.classList.add('pin-input', 'center');
         el.innerHTML = `
             <div class="pin-dot-indicator">
                 <div></div>
@@ -57,8 +55,7 @@ class PinInput extends /** @type {any} */ Nimiq.Observable {
     reset() {
         this._pin = '';
         this._setMaskedPin();
-        this.$el.classList.remove('unlocking');
-        this.$el.classList.remove('shake-pinpad');
+        this.$el.classList.remove('unlocking', 'shake-pinpad');
         this._unlocking = false;
     }
 
@@ -80,7 +77,7 @@ class PinInput extends /** @type {any} */ Nimiq.Observable {
     _handleKeyboardInput (e) {
         const inputCharString = e.key;
         const inputNumber = parseInt(inputCharString);
-        if(isNaN(inputNumber)){
+        if (isNaN(inputNumber)){
             e.preventDefault(); //stop character from entering input
         } else {
             this._onKeyPressed(inputNumber);
@@ -100,7 +97,9 @@ class PinInput extends /** @type {any} */ Nimiq.Observable {
         if (this._unlocking) return;
         this._pin += key;
         this._setMaskedPin();
-        if (this._pin.length === 6) this._submit();
+        if (this._pin.length === 6) {
+            this._submit();
+        }
     }
 
     _submit() {
