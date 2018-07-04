@@ -3,54 +3,66 @@
  */
 class SignTransactionWithPin extends Nimiq.Observable {
 
-    // TODO define type of transactionRequest
+    /** @constructor */
+    /** @param {Nimiq.Transaction} transactionRequest */
+    // todo choose better type
     constructor(transactionRequest) {
         super();
+
+        this._transactionRequest = transactionRequest;
 
         // construct UI
         const rootElement = document.getElementById('app');
 
+        if (!rootElement) return;
+
         const $button = rootElement.querySelector('button');
-        const $pinInput = rootElement.querySelector('#enter-pin');
+        const $enterPin = rootElement.querySelector('#enter-pin');
+
+        if (!$button || !$enterPin) return;
 
         $button.addEventListener('click', () => location.hash = 'enter-pin');
 
-        $pinInput.on('pin-entered', async pin => {
+        this.$pinInput = new PinInput($enterPin);
 
-            document.body.classList.add('loading');
-
-            const keyStore = KeyStore.instance;
-
-            // TODO specify API for different tx types
-            const { value, fee, sender, recipient, signer, extraData, validityStartHeight } = transactionRequest;
-
-            try {
-                const key = await keyStore.get(signer, pin);
-                const tx = key.createTransaction(recipient, value, fee, validityStartHeight);
-
-                const signatureProof = Nimiq.SignatureProof.unserialize(new Nimiq.SerialBuffer(tx.proof));
-
-                this.fire('result', {
-                    sender: tx.sender.toUserFriendlyAddress(),
-                    senderPubKey: signatureProof.publicKey.serialize(),
-                    recipient: tx.recipient.toUserFriendlyAddress(),
-                    value: tx.value / Nimiq.Policy.SATOSHIS,
-                    fee: tx.fee / Nimiq.Policy.SATOSHIS,
-                    validityStartHeight: tx.validityStartHeight,
-                    signature: signatureProof.signature.serialize(),
-                    extraData: Utf8Tools.utf8ByteArrayToString(tx.data),
-                    hash: tx.hash().toBase64()
-                });
-            } catch (e) {
-                // assume the pin was wrong
-                console.error(e);
-
-                document.body.classList.remove('loading');
-
-                $pinInput.onPinIncorrect();
-            }
-        });
+        this.$pinInput.on('pin-entered', this.handlePinInput.bind(this));
 
         location.hash = 'enter-pin';
+    }
+
+    /** @param {string} pin */
+    async handlePinInput(pin) {
+        document.body.classList.add('loading');
+
+        const keyStore = KeyStore.instance;
+
+        // TODO specify API for different tx types
+        const {value, fee, sender, recipient, signer, extraData, validityStartHeight} = this._transactionRequest;
+
+        try {
+            const key = await keyStore.get(signer, pin);
+            const tx = key.createTransaction(recipient, value, fee, validityStartHeight);
+
+            const signatureProof = Nimiq.SignatureProof.unserialize(new Nimiq.SerialBuffer(tx.proof));
+
+            this.fire('result', {
+                sender: tx.sender.toUserFriendlyAddress(),
+                senderPubKey: signatureProof.publicKey.serialize(),
+                recipient: tx.recipient.toUserFriendlyAddress(),
+                value: tx.value / Nimiq.Policy.SATOSHIS,
+                fee: tx.fee / Nimiq.Policy.SATOSHIS,
+                validityStartHeight: tx.validityStartHeight,
+                signature: signatureProof.signature.serialize(),
+                extraData: Utf8Tools.utf8ByteArrayToString(tx.data),
+                hash: tx.hash().toBase64()
+            });
+        } catch (e) {
+            // assume the pin was wrong
+            console.error(e);
+
+            document.body.classList.remove('loading');
+
+            this.$pinInput.onPinIncorrect();
+        }
     }
 }

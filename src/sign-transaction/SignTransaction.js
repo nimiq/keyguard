@@ -1,12 +1,14 @@
 class Api {
+    /** @param {Nimiq.Transaction} transaction */
+    // todo choose better type
     async request(transaction) {
 
         if (transaction.value < 1 / Nimiq.Policy.SATOSHIS_PER_COIN) {
-            throw new Error('Amount is too small');
+            throw new AmountTooSmallError();
         }
 
         if (transaction.network !== Nimiq.GenesisConfig.NETWORK_NAME) {
-            throw Error(`Network missmatch: ${transaction.network} in transaction, but ${Nimiq.GenesisConfig.NETWORK_NAME} in Keyguard`);
+            throw new NetworkMissmatchError(transaction.network, Nimiq.GenesisConfig.NETWORK_NAME);
         }
 
         transaction.value = Nimiq.Policy.coinsToSatoshis(transaction.value);

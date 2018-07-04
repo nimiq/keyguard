@@ -17,3 +17,20 @@ class InvalidAddressError extends Error {
     }
 }
 
+class AmountTooSmallError extends Error {
+    constructor() {
+       super('Amount is too small');
+       this.code = 'K3';
+    }
+}
+
+class NetworkMissmatchError extends Error {
+
+    /** @param {string} transactionNetwork
+     *  @param {string} keyguardNetwork
+     */
+    constructor(transactionNetwork, keyguardNetwork) {
+       super(`Network missmatch: ${transactionNetwork} in transaction, but ${keyguardNetwork} in Keyguard`);
+       this.code = 'K3';
+    }
+}

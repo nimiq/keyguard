@@ -3,18 +3,23 @@
  */
 class SignTransactionWithPassphrase extends Nimiq.Observable {
 
-    // TODO define type of transactionRequest
+    /** @param {Nimiq.Transaction} transactionRequest */
+    // todo choose better type
     constructor(transactionRequest) {
         super();
 
         // construct UI
         const rootElement = document.getElementById('app');
 
+        if (!rootElement) return;
+
         // TODO add identicons and other tx data to UI
 
         const $button = rootElement.querySelector('button');
         const $input = rootElement.querySelector('input');
         const $error = rootElement.querySelector('#error');
+
+        if (!$button || !$input || !$error) return;
 
         $button.addEventListener('click', async () => {
 
@@ -52,7 +57,7 @@ class SignTransactionWithPassphrase extends Nimiq.Observable {
 
                 // TODO i18n
                 $input.value = '';
-                $error.innerText = 'Wrong Pass Phrase, please try again';
+                $error.textContent = 'Wrong Pass Phrase, please try again';
             }
 
             this.fire('result', );
