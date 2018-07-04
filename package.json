@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "Secure storage for Nimiq private keys.",
   "scripts": {
-    "test": "jasmine",
+    "test": "echo \"Please open ./tests/SpecRunner.html in your favourite browser.\"",
     "watch": "tsc --watch",
     "typecheck": "tsc"
   },
