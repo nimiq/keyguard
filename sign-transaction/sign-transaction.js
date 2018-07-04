@@ -1,8 +1,8 @@
 class Api {
     async request(transaction) {
         // get key from keystore
-        const key = await keyStore.getPlain(transaction.sender);
-        if (key.type === EncryptionType.HIGH) {
+        const keyType = await keyStore.getType(transaction.sender);
+        if (keyType === EncryptionType.HIGH) {
             // start UI
 
         } else {
@@ -11,7 +11,7 @@ class Api {
         }
     }
 
-    async signSafe(transaction) {
+    async signWithPassphrase(transaction) {
         /*if (transaction.value < 1 / Nimiq.Policy.SATOSHIS_PER_COIN) {
             throw new Error('Amount is too small');
         }

@@ -1,5 +1,5 @@
 function runKeyguard(RequestApiClass) {
     //if (window.opener.location.origin !== '')
 
-    this._rpcServer = new RPCServer(RequestApiClass);
+    this._rpcServer = RpcServer.create(RequestApiClass, '*'); // FIXME Set correct allowedOrigin
 }
