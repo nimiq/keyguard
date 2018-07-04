@@ -20,6 +20,5 @@
   "bugs": {
     "url": "https://github.com/nimiq/keyguard-next/issues"
   },
-  "homepage": "https://github.com/nimiq/keyguard-next#readme",
-  "devDependencies": {}
+  "homepage": "https://github.com/nimiq/keyguard-next#readme"
 }
