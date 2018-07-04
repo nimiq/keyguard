@@ -15,7 +15,7 @@ class AddressUtils {
         // Remove all whitespace -> group by 4 characters -> join with one space
         const ibanGroups = str.replace(/\s+/g, '').match(/.{4}/g);
         if (!ibanGroups) return ''; // Make TS happy (match() can potentially return NULL)
-        return ibanGroups.join(' ');
+        return ibanGroups.join(' ').toUpperCase();
     }
 
     /**
@@ -50,7 +50,7 @@ class AddressUtils {
             throw new Error('Addresses are 36 chars (ignoring spaces)');
         }
 
-        if (!this._alphabetCheck(str)) {
+        if (!this._alphabetCheck(str.toUpperCase())) {
             throw new Error('Address has invalid characters');
         }
 

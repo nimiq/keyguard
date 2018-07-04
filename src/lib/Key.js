@@ -16,7 +16,7 @@
 /// <reference path="EncryptionType.js" />
 class Key {
     /**
-     * @param {Uint8Array|string} buf - Keypair, as byte array or HEX string
+     * @param {Uint8Array | string} buf - Keypair, as byte array or HEX string
      * @returns {Key}
      */
     static loadPlain(buf) {
@@ -32,8 +32,8 @@ class Key {
     }
 
     /**
-     * @param {Uint8Array|string} buf - Encrypted keypair, as byte array or HEX string
-     * @param {Uint8Array|string} passphrase - Passphrase, as byte array or ASCII string
+     * @param {Uint8Array | string} buf - Encrypted keypair, as byte array or HEX string
+     * @param {Uint8Array | string} passphrase - Passphrase, as byte array or ASCII string
      * @returns {Promise.<Key>}
      */
     static async loadEncrypted(buf, passphrase) {
@@ -62,7 +62,7 @@ class Key {
      * Create a new Key object.
      *
      * @param {Nimiq.KeyPair} keyPair - Keypair for this key
-     * @param {EncryptionType} [type] - Low or high security (passphrase or pin encoded, respectively) // FIXME Replace type with enum
+     * @param {EncryptionType} [type] - Low or high security (passphrase or pin encoded, respectively)
      */
     constructor(keyPair, type) {
         /** @type {Nimiq.KeyPair} */
@@ -90,7 +90,7 @@ class Key {
     /**
      * Create a basic transaction with this key as the sender that is signed by this key.
      *
-     * @param {Nimiq.Address|string} recipient - Address of the transaction receiver
+     * @param {Nimiq.Address | string} recipient - Address of the transaction receiver
      * @param {number} value - Number of satoshis to send
      * @param {number} fee - Number of satoshis to set as fee
      * @param {number} validityStartHeight - The validityStartHeight for the transaction
@@ -110,7 +110,7 @@ class Key {
     /**
      * Create an extended transaction with this key as the sender that is signed by this key.
      *
-     * @param {Nimiq.Address|string} recipient - Address of the transaction receiver
+     * @param {Nimiq.Address | string} recipient - Address of the transaction receiver
      * @param {number} value - Number of satoshis to send
      * @param {number} fee - Number of satoshis to set as fee
      * @param {number} validityStartHeight - The validityStartHeight for the transaction
@@ -118,13 +118,13 @@ class Key {
      * @returns {Nimiq.ExtendedTransaction} A prepared and signed Transaction object (this still has to be sent to the network)
      */
     createTransactionWithMessage(recipient, value, fee, validityStartHeight, message) {
-        return this.createExtendedTransaction(this.publicKey.toAddress(), 0, recipient, 0, value, fee, validityStartHeight, message);
+        return this.createExtendedTransaction(this.publicKey.toAddress(), null, recipient, null, value, fee, validityStartHeight, message);
     }
 
     /**
      * Create an extended transaction that pays out vested NIM to this key and that is signed by this key.
      *
-     * @param {Nimiq.Address|string} sender - Address of the transaction sending vesting contract
+     * @param {Nimiq.Address | string} sender - Address of the transaction sending vesting contract
      * @param {number} value - Number of Satoshis to send.
      * @param {number} fee Number of Satoshis to donate to the Miner.
      * @param {number} validityStartHeight - The validityStartHeight for the transaction.
@@ -132,21 +132,21 @@ class Key {
      * @returns {Nimiq.ExtendedTransaction} A prepared and signed Transaction object. This still has to be sent to the network.
      */
     createVestingPayoutTransaction(sender, value, fee, validityStartHeight, message) {
-        return this.createExtendedTransaction(sender, Nimiq.Account.Type.VESTING, this.publicKey.toAddress(), 0, value, fee, validityStartHeight, message);
+        return this.createExtendedTransaction(sender, Nimiq.Account.Type.VESTING, this.publicKey.toAddress(), null, value, fee, validityStartHeight, message);
     }
 
     /**
      * Create an extended transaction that is signed by this key.
      *
-     * @param {Nimiq.Address|string} sender - Address of the transaction receiver
-     * @param {0|1|2} [senderType] // FIXME Replace type with enum
-     * @param {Nimiq.Address|string} recipient - Address of the transaction receiver
-     * @param {0|1|2} [recipientType] // FIXME Replace type with enum
+     * @param {Nimiq.Address | string} sender - Address of the transaction receiver
+     * @param {Nimiq.Account.Type | null} [senderType]
+     * @param {Nimiq.Address | string} recipient - Address of the transaction receiver
+     * @param {Nimiq.Account.Type | null} [recipientType]
      * @param {number} value - Number of Satoshis to send
      * @param {number} fee - Number of Satoshis to donate to the Miner
      * @param {number} validityStartHeight - The validityStartHeight for the transaction
-     * @param {Uint8Array|string} [extraData] - Data or utf-8 text to add to the transaction
-     * @param {0|0b1} [isContractCreation]
+     * @param {Uint8Array | string} [extraData] - Data or utf-8 text to add to the transaction
+     * @param {boolean} [isContractCreation]
      * @returns {Nimiq.ExtendedTransaction} A prepared and signed Transaction object. This still has to be sent to the network.
      */
     createExtendedTransaction(sender, senderType, recipient, recipientType, value, fee, validityStartHeight, extraData, isContractCreation) {
@@ -158,7 +158,7 @@ class Key {
             recipient = Key.getUnfriendlyAddress(recipient);
         }
 
-        if (typeof extraData !== 'undefined' && typeof extraData === 'string') {
+        if (typeof extraData === 'string') {
             extraData = Utf8Tools.stringToUtf8ByteArray(extraData);
         }
 
@@ -168,7 +168,7 @@ class Key {
             value,
             fee,
             validityStartHeight,
-            isContractCreation || Nimiq.Transaction.Flag.NONE,
+            isContractCreation ? Nimiq.Transaction.Flag.CONTRACT_CREATION : Nimiq.Transaction.Flag.NONE,
             extraData
         );
 
@@ -190,8 +190,8 @@ class Key {
     }
 
     /**
-     * @param {Uint8Array|string} passphrase
-     * @param {Uint8Array|string} [unlockKey]
+     * @param {Uint8Array | string} passphrase
+     * @param {Uint8Array | string} [unlockKey]
      * @return {Promise.<Uint8Array>}
      */
     exportEncrypted(passphrase, unlockKey) {
@@ -219,7 +219,7 @@ class Key {
     }
 
     /**
-     * @param {Uint8Array|string} key
+     * @param {Uint8Array | string} key
      * @returns {Promise.<void>}
      */
     lock(key) {
@@ -235,7 +235,7 @@ class Key {
     }
 
     /**
-     * @param {Uint8Array|string} key
+     * @param {Uint8Array | string} key
      * @returns {Promise.<void>}
      */
     unlock(key) {

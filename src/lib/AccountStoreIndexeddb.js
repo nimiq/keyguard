@@ -24,7 +24,7 @@ class AccountStore {
      */
     constructor(dbName = 'accounts') {
         this._dbName = dbName;
-        /** @type {IDBDatabase|undefined} */
+        /** @type {IDBDatabase | undefined} */
         this._db;
         this._connected = false;
         this._dropped = false;
@@ -34,7 +34,7 @@ class AccountStore {
      * @returns {Promise.<IDBDatabase>}
      * @private
      */
-    connect() {
+    async connect() {
         if (this._connected && this._db) return Promise.resolve(this._db);
 
         return new Promise((resolve, reject) => {
@@ -112,10 +112,11 @@ class AccountStore {
 
     close() {
         if (!this._connected || !this._db) return;
-        return this._db.close();
+        this._connected = false;
+        this._db.close();
     }
 
-    drop() {
+    async drop() {
         if (this._dropped) return true;
         if (this._connected) this.close();
 
