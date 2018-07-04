@@ -4,4 +4,4 @@ before_script:
   - npm install -g typescript
 
 script:
-  - npm run travis
+  - npm run typecheck
