@@ -9,7 +9,7 @@ const translations = {
     }
 };
 
-export class I18n {
+class I18n {
     /**
      * @param {string} defaultLanguage language to start with if non given.
      */
@@ -76,3 +76,6 @@ export class I18n {
         return element;
     }
 }
+
+// @ts-ignore
+window.i18n = new I18n();
