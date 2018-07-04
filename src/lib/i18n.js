@@ -1,71 +1,65 @@
-const translations = {
-    "en": {
-        _language: "English",
-        i: "I",
-        applePie: "apple pie",
-        ialsoloveplums: "I also ❤ plums.",
-    },
-    "de": {
-        _language: "Deutsch",
-        i: "Ich",
-        applePie: "Apfelkuchen",
-        ialsoloveplums: "Ich ❤ auch Pflaumen",
-    }
-};
-
 class I18n {
     /**
-     * @param {string} defaultLanguage - language to start with if non given.
+     * @param {object} dictionary
+     * @param {string} [language] - Language to translate to
      */
-    constructor(defaultLanguage = navigator.language) {
-        this._dict = translations;
-        this._current = defaultLanguage;
-        document.addEventListener("DOMContentLoaded", event =>  {
-            this.setLanguage(defaultLanguage);
-        });
+    constructor(dictionary, language) {
+        this._dict = dictionary;
+
+        /** @type {string} */
+        this._language;
+
+        this.setLanguage(language || navigator.language);
     }
 
     /**
      * @param {HTMLElement} [dom] - The DOM element to be translated, or body by default
-     * @param {String} [language] - ISO code of language to translate to, or the currently selected language by default
+     * @param {String} [lang] - ISO code of language to translate to, or the currently selected language by default
      **/
-    translateDom(dom = document.body, language = this._current) {
-        dom.querySelectorAll('[data-i18n]').forEach(e => {
-            const e2 = /** @type {HTMLElement} */ (e);
-            const id = e2.dataset.i18n || "";
-            e2.textContent = this.translateWord(id, language);
+    translateDom(dom, lang) {
+        const root = dom || document.body;
+        const language = lang || this._language;
+
+        /** @type {NodeListOf<HTMLElement>} */
+        const nodes = root.querySelectorAll('[data-i18n]');
+        nodes.forEach(el => {
+            const id = el.dataset.i18n;
+            if (!id) return;
+            el.textContent = this.translatePhrase(id, language);
         });
     }
 
     /**
-     *
      * @param {string} id - translation dict ID
      * @param {string} language - ISO code of language to translate to, or the currently selected language by default
      */
-    translateWord(id, language = this._current) {
+    translatePhrase(id, language) {
         if (!this._dict[language]) {
-            throw `Language "${ language }" is not supported!`
+            throw new Error(`Language "${ language }" is not supported!`);
         }
         const translation = this._dict[language][id];
         if (!translation) {
-            throw `No translation defined for "${ id }" in language  "${ language }"!`
+            throw new Error(`No translation defined for "${ id }" in language "${ language }"!`);
         }
         return translation;
     }
 
     /**
-     * ISO codes of all available languages.
+     * @returns {string[]} ISO codes of all available languages.
      */
     availableLanguages() {
-        const languages = [];
-        for (const language in this._dict) {
-            languages.push(language);
-        }
-        return languages;
+        return Object.keys(this._dict);
     }
 
     /**
-     *
+     * @param {string} language
+     */
+    switchLanguage(language) {
+        this.setLanguage(language);
+        this.translateDom();
+    }
+
+    /**
      * @param {string} language - ISO 639-1 language codes, e.g. en, en-us, de, de-at
      */
     setLanguage(language) {
@@ -74,15 +68,16 @@ class I18n {
             language = language.split('-')[0];
         }
         if (!this._dict[language]) {
-            throw `Language "${ language }" is not supported!`
+            throw new Error(`Language "${ language }" is not supported!`);
         }
-        this._current = language;
-        this.translateDom();
+        this._language = language;
     }
 
-    currentLanguage() {
-        return this._current;
+    get language() {
+        return this._language;
+    }
+
+    get dictionary() {
+        return this._dict;
     }
 }
-
-var i18n = new I18n();

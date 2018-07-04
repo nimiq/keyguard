@@ -1,28 +1,37 @@
 class LanguagePicker {
+
+    /**
+     * @param {I18n} i18n
+     */
+    constructor(i18n) {
+        this._i18n = i18n;
+
+        /** @type {HTMLElement} */
+        this._el;
+    }
+
     /**
      * Produces a select element that the user can chose an available language from.
      */
     getElement() {
-        if (!i18n) {
-            throw `The i18n lib has not been loaded, "i18n" not set.`;
-        }
+        if (this._el) return this._el;
 
         const element = document.createElement('select');
         const options = [];
 
-        for (const language of i18n.availableLanguages()) {
-            const label = i18n.translateWord('_language', language);
-            const selected = language == i18n.currentLanguage() ? ' selected' : '';
-            options.push(`<option value="${ language }"${ selected }>${ label }</option>`);
+        for (const language of this._i18n.availableLanguages()) {
+            const label = this._i18n.translatePhrase('_language', language);
+            const selectedAttr = language === this._i18n.language ? ' selected' : '';
+            options.push(`<option value="${ language }"${ selectedAttr }>${ label }</option>`);
         }
 
         element.innerHTML = options.join();
         element.classList.add('i18n-language-picker');
-        element.addEventListener('change', e => {
-            /** @typedef {I18n} window.i18n */
-            i18n.setLanguage(element.value);
+        element.addEventListener('change', () => {
+            this._i18n.switchLanguage(element.value);
         });
 
-        return element;
+        this._el = element;
+        return this._el;
     }
 }

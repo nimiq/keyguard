@@ -16,7 +16,23 @@
     <div><span data-i18n="i">I</span> ❤️ <span data-i18n="applePie">apple pie</span>.</div>
     <div data-i18n="ialsoloveplums">I also ❤ plums.</div>
     <script>
-        document.body.appendChild(new LanguagePicker().getElement());
+        const translations = {
+            "en": {
+                _language: "English",
+                i: "I",
+                applePie: "apple pie",
+                ialsoloveplums: "I also ❤ plums.",
+            },
+            "de": {
+                _language: "Deutsch",
+                i: "Ich",
+                applePie: "Apfelkuchen",
+                ialsoloveplums: "Ich ❤ auch Pflaumen",
+            }
+        };
+        const i18n = new I18n(translations, 'en');
+        const languagePicker = new LanguagePicker(i18n);
+        document.body.appendChild(languagePicker.getElement());
     </script>
 </body>
 </html>
