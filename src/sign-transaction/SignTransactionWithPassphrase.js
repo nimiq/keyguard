@@ -6,22 +6,19 @@ class SignTransactionWithPassphrase extends Nimiq.Observable {
     // TODO define type of transactionRequest
     constructor(transactionRequest) {
         super();
-        // run UI
+
+        // construct UI
         const rootElement = document.getElementById('app');
 
         // TODO add identicons and other tx data to UI
-        rootElement.innerHTML = `
-            <input type="text" name="passphrase">
-            <button>Confirm</button>
-            <span id="error"></span>
-        `;
 
         const $button = rootElement.querySelector('button');
         const $input = rootElement.querySelector('input');
         const $error = rootElement.querySelector('#error');
 
         $button.addEventListener('click', async () => {
-            // TODO show loading animation
+
+            document.body.classList.add('loading');
 
             const passphrase = $input.value;
 
@@ -51,7 +48,7 @@ class SignTransactionWithPassphrase extends Nimiq.Observable {
                 // assume the password was wrong
                 console.error(e);
 
-                // TODO stop loading animation
+                document.body.classList.remove('loading');
 
                 // TODO i18n
                 $input.value = '';
@@ -60,5 +57,7 @@ class SignTransactionWithPassphrase extends Nimiq.Observable {
 
             this.fire('result', );
         });
+
+        location.hash = 'enter-passphrase';
    }
 }

@@ -1,0 +1,18 @@
+.page {
+    display: none;
+}
+
+.page:target,
+#loading {
+    display: block;
+}
+
+.page:target ~ #loading {
+    display: none;
+}
+
+.loading #loading {
+    display: block;
+    position: absolute;
+    z-index: 1;
+}
