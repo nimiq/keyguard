@@ -19,14 +19,12 @@ class Api {
 
         return new Promise((resolve, reject) => {
 
-            if (keyType === EncryptionType.HIGH) {
-                const signTransactionSafe = new SignTransactionSafe(transaction);
+            const handler = keyType === EncryptionType.HIGH
+                ? new SignTransactionWithPassphrase(transaction)
+                : new SignTransactionWithPin(transaction);
 
-                signTransactionSafe.on('result', result => resolve(result));
-                signTransactionSafe.on('error', error => reject(error));
-            } else {
-                // start UI
-            }
+            handler.on('result', result => resolve(result));
+            handler.on('error', error => reject(error));
         });
     }
 }
