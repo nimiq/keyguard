@@ -1,5 +1,5 @@
 /**
- * @typedef {Error & { code: number }} CustomError
+ * @typedef {Error & { code?: string }} CustomError
  */
 
 
