@@ -11,7 +11,9 @@
  * const tx = key.createExtendedTransaction(sender, [senderType], recipient, [recipientType], value, fee, validityStartHeight, [extraData], [isContractCreation]);
  *
  * const msg = key.signMessage('message');
+ *
  */
+/// <reference path="EncryptionType.js" />
 class Key {
     /**
      * @param {Uint8Array|string} buf - Keypair, as byte array or HEX string
@@ -58,8 +60,9 @@ class Key {
 
     /**
      * Create a new Key object.
+     *
      * @param {Nimiq.KeyPair} keyPair - Keypair for this key
-     * @param {1|2} [type] - Low or high security (passphrase or pin encoded, respectively) // FIXME Replace type with enum
+     * @param {EncryptionType} [type] - Low or high security (passphrase or pin encoded, respectively) // FIXME Replace type with enum
      */
     constructor(keyPair, type) {
         /** @type {Nimiq.KeyPair} */
@@ -72,7 +75,8 @@ class Key {
     }
 
     /**
-     * Sign a generic message
+     * Sign a generic message.
+     *
      * @param {string} message - A utf-8 string
      * @returns {object}
      */

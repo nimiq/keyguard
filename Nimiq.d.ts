@@ -33,6 +33,3 @@ declare namespace Nimiq {
     type PublicKey = any
     const PublicKey: any
 }
-
-type TransactionFormat = 'basic' | 'extended'
-
