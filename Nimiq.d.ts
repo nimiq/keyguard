@@ -10,9 +10,7 @@ declare namespace Nimiq {
     type SerialBuffer = any
     const SerialBuffer: any;
 
-    interface Signature {
-
-    }
+    interface Signature { }
 
     class SignatureClass {
         create(key1: any, key2: any, msg: Uint8Array) : Signature
