@@ -7,25 +7,17 @@
     <title>i18n Test</title>
     <style>
         body div { font-size: xx-large; }
-        #language-picker { float: right; }
+        .i18n-language-picker { position: absolute; right: .5em; top: .5em; }
     </style>
 </head>
 <body>
-    <select name="" id="language-picker">
-        <option value="en-en">English</option>
-        <option value="de-de">Deutsch</option>
-    </select>
     <div>I ❤️ <span data-i18n="applePie"></span></div>
 
     <script type="module">
         import { I18n } from './i18n.js';
         const i18n = new I18n();
-        const languagePicker = document.querySelector("#language-picker");
-
-        languagePicker.addEventListener('change', e => {
-            i18n.translate(document.body, e.target.value);
-        });
-        i18n.translate(document.body, languagePicker.value);
+        window.i18n = i18n;
+        document.body.appendChild(i18n.languagePicker());
     </script>
 </body>
 </html>
