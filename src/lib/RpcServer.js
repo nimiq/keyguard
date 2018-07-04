@@ -13,8 +13,8 @@
 
 class RpcServer {
     /**
-     * @param {object} clazz The class whose methods will be made available via postMessage RPC
-     * @param {string} allowedOrigin The origin that is allowed to call this server
+     * @param {object} clazz - The class whose methods will be made available via postMessage RPC
+     * @param {string} allowedOrigin - The origin that is allowed to call this server
      * @return {object}
      */
     static create(clazz, allowedOrigin) {
@@ -22,8 +22,8 @@ class RpcServer {
     }
 
     /**
-     * @param {Newable<Object>} clazz The class whose methods will be made available via postMessage RPC
-     * @param {string} allowedOrigin The origin that is allowed to call this server
+     * @param {Newable<Object>} clazz - The class whose methods will be made available via postMessage RPC
+     * @param {string} allowedOrigin - The origin that is allowed to call this server
      *
      * @returns { Newable<Object>}
      */
@@ -57,7 +57,7 @@ class RpcServer {
                     // FIXME Remove '*' option for release
                     if (this._allowedOrigin !== '*' && message.origin !== this._allowedOrigin) throw new Error('Unauthorized');
 
-                    let args = message.data.args || [];
+                    let args = message.data.args && Array.isArray(message.data.args) ? message.data.args : [];
 
                     // Test if request calls an existing method with the right number of arguments
                     const calledMethod = this[message.data.command];
@@ -87,7 +87,7 @@ class RpcServer {
              * @param {any} result
              */
             _ok(message, result) {
-                this._replyTo(message, 'OK', result);
+                this._replyTo(message, 'ok', result);
             }
 
             /**
