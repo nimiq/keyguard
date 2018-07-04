@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>i18n Test</title>
+    <style>
+        body div { font-size: xx-large; }
+        .i18n-language-picker { position: absolute; right: .5em; top: .5em; }
+    </style>
+</head>
+<body>
+    <div>I ❤️ <span data-i18n="applePie"></span></div>
+    <script src="../src/lib/i18n.js"></script>
+    <script src="../src/components/LanguagePicker.js"></script>
+    <script>
+        document.body.appendChild(new LanguagePicker().getElement());
+    </script>
+</body>
+</html>
