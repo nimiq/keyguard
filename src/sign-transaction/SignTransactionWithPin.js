@@ -23,11 +23,14 @@ class SignTransactionWithPin extends Nimiq.Observable {
 
         $button.addEventListener('click', () => location.hash = 'enter-pin');
 
-        this.$pinInput = new PinInput($enterPin);
+        this.$pinInput = new PinInput();
+
+        $enterPin.appendChild(this.$pinInput.getElement());
 
         this.$pinInput.on('pin-entered', this.handlePinInput.bind(this));
 
-        location.hash = 'enter-pin';
+        // go to start page
+        location.hash = 'transaction-data'
     }
 
     /** @param {string} pin */
