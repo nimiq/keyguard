@@ -24,8 +24,8 @@ class Api {
                 ? new SignTransactionWithPassphrase(transaction)
                 : new SignTransactionWithPin(transaction);
 
-            handler.on('result', result => resolve(result));
-            handler.on('error', error => reject(error));
+            handler.on('result', /** @param {any} result */ (result) => resolve(result));
+            handler.on('error', /** @param {Error} error */ (error) => reject(error));
         });
     }
 }
