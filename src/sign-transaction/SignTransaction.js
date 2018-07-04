@@ -9,7 +9,6 @@ class Api {
             throw Error(`Network missmatch: ${transaction.network} in transaction, but ${Nimiq.GenesisConfig.NETWORK_NAME} in Keyguard`);
         }
 
-
         transaction.value = Nimiq.Policy.coinsToSatoshis(transaction.value);
         transaction.fee = Nimiq.Policy.coinsToSatoshis(transaction.fee);
 
