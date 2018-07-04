@@ -4,6 +4,7 @@
  *
  * Usage:
  * <script src="lib/account-store-indexeddb.js"></script>
+ *
  * const accountStore = AccountStore.instance;
  * const accounts = await accountStore.list();
  * accountStore.drop();

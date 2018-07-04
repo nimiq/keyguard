@@ -2,6 +2,7 @@
  * Usage:
  * <script src="lib/key.js"></script>
  * <script src="lib/key-store-indexeddb.js"></script>
+ *
  * const keyStore = KeyStore.instance;
  * const accounts = await keyStore.list();
  */

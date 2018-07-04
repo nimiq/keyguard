@@ -1,8 +1,16 @@
 /**
  * Usage:
  * <script src="lib/key.js"></script>
+ *
  * const key = new Key(keypair, type);
  * const key = await Key.loadEncrypted('encrypted keypair as hex', passphrase);
+ *
+ * const tx = key.createTransaction(recipient, value, fee, validityStartHeight);
+ * const tx = key.createTransactionWithMessage(recipient, value, fee, validityStartHeight, message);
+ * const tx = key.createVestingPayoutTransaction(sender, value, fee, validityStartHeight, [message]);
+ * const tx = key.createExtendedTransaction(sender, [senderType], recipient, [recipientType], value, fee, validityStartHeight, [extraData], [isContractCreation]);
+ *
+ * const msg = key.signMessage('message');
  */
 class Key {
     /**
@@ -116,9 +124,9 @@ class Key {
      * Create an extended transaction that is signed by this key.
      *
      * @param {Nimiq.Address|string} sender - Address of the transaction receiver
-     * @param {0|1|2|null} senderType
+     * @param {0|1|2} [senderType]
      * @param {Nimiq.Address|string} recipient - Address of the transaction receiver
-     * @param {0|1|2|null} recipientType
+     * @param {0|1|2} [recipientType]
      * @param {number} value - Number of Satoshis to send
      * @param {number} fee - Number of Satoshis to donate to the Miner
      * @param {number} validityStartHeight - The validityStartHeight for the transaction
