@@ -18,10 +18,14 @@ class Key {
      * @returns {Key}
      */
     static loadPlain(buf) {
-        if (typeof buf === 'string') buf = /** @type {Uint8Array} */ (Nimiq.BufferUtils.fromHex(buf));
+        if (typeof buf === 'string') {
+            buf = /** @type {Uint8Array} */ (Nimiq.BufferUtils.fromHex(buf));
+        }
+
         if (!buf || buf.byteLength === 0) {
             throw new Error('Invalid Key seed');
         }
+
         return new Key(Nimiq.KeyPair.unserialize(new Nimiq.SerialBuffer(buf)));
     }
 
@@ -31,9 +35,16 @@ class Key {
      * @returns {Promise.<Key>}
      */
     static async loadEncrypted(buf, passphrase) {
-        if (typeof buf === 'string') buf = /** @type {Uint8Array} */ (Nimiq.BufferUtils.fromHex(buf));
-        if (typeof passphrase === 'string') passphrase = /** @type {Uint8Array} */ (Nimiq.BufferUtils.fromAscii(passphrase));
-        return new Key(await Nimiq.KeyPair.fromEncrypted(new Nimiq.SerialBuffer(buf), passphrase));
+        if (typeof buf === 'string') {
+            buf = /** @type {Uint8Array} */ (Nimiq.BufferUtils.fromHex(buf));
+        }
+
+        if (typeof passphrase === 'string') {
+            passphrase = /** @type {Uint8Array} */ (Nimiq.BufferUtils.fromAscii(passphrase));
+        }
+
+        const keyPair = await Nimiq.KeyPair.fromEncrypted(new Nimiq.SerialBuffer(buf), passphrase);
+        return new Key(keyPair);
     }
 
 
@@ -48,7 +59,7 @@ class Key {
     /**
      * Create a new Key object.
      * @param {Nimiq.KeyPair} keyPair - Keypair for this key
-     * @param {1|2} [type] - Low or high security (passphrase or pin encoded, respectively)
+     * @param {1|2} [type] - Low or high security (passphrase or pin encoded, respectively) // FIXME Replace type with enum
      */
     constructor(keyPair, type) {
         /** @type {Nimiq.KeyPair} */
@@ -103,7 +114,7 @@ class Key {
      * @returns {Nimiq.ExtendedTransaction} A prepared and signed Transaction object (this still has to be sent to the network)
      */
     createTransactionWithMessage(recipient, value, fee, validityStartHeight, message) {
-        return this.createExtendedTransaction(this.publicKey.toAddress(), null, recipient, null, value, fee, validityStartHeight, message);
+        return this.createExtendedTransaction(this.publicKey.toAddress(), 0, recipient, 0, value, fee, validityStartHeight, message);
     }
 
     /**
@@ -117,16 +128,16 @@ class Key {
      * @returns {Nimiq.ExtendedTransaction} A prepared and signed Transaction object. This still has to be sent to the network.
      */
     createVestingPayoutTransaction(sender, value, fee, validityStartHeight, message) {
-        return this.createExtendedTransaction(sender, Nimiq.Account.Type.VESTING, this.publicKey.toAddress(), null, value, fee, validityStartHeight, message);
+        return this.createExtendedTransaction(sender, Nimiq.Account.Type.VESTING, this.publicKey.toAddress(), 0, value, fee, validityStartHeight, message);
     }
 
     /**
      * Create an extended transaction that is signed by this key.
      *
      * @param {Nimiq.Address|string} sender - Address of the transaction receiver
-     * @param {0|1|2} [senderType]
+     * @param {0|1|2} [senderType] // FIXME Replace type with enum
      * @param {Nimiq.Address|string} recipient - Address of the transaction receiver
-     * @param {0|1|2} [recipientType]
+     * @param {0|1|2} [recipientType] // FIXME Replace type with enum
      * @param {number} value - Number of Satoshis to send
      * @param {number} fee - Number of Satoshis to donate to the Miner
      * @param {number} validityStartHeight - The validityStartHeight for the transaction
@@ -156,8 +167,10 @@ class Key {
             isContractCreation || Nimiq.Transaction.Flag.NONE,
             extraData
         );
+
         const proof = this._makeSignatureProof(transaction.serializeContent());
         transaction.proof = proof.serialize();
+
         return transaction;
     }
 
@@ -178,8 +191,14 @@ class Key {
      * @return {Promise.<Uint8Array>}
      */
     exportEncrypted(passphrase, unlockKey) {
-        if (typeof passphrase === 'string') passphrase = Nimiq.BufferUtils.fromAscii(passphrase);
-        if (typeof unlockKey === 'string') unlockKey = Nimiq.BufferUtils.fromAscii(unlockKey);
+        if (typeof passphrase === 'string') {
+            passphrase = Nimiq.BufferUtils.fromAscii(passphrase);
+        }
+
+        if (typeof unlockKey === 'string') {
+            unlockKey = Nimiq.BufferUtils.fromAscii(unlockKey);
+        }
+
         return this._keyPair.exportEncrypted(passphrase, unlockKey);
     }
 
@@ -200,7 +219,10 @@ class Key {
      * @returns {Promise.<void>}
      */
     lock(key) {
-        if (typeof key === 'string') key = Nimiq.BufferUtils.fromAscii(key);
+        if (typeof key === 'string') {
+            key = Nimiq.BufferUtils.fromAscii(key);
+        }
+
         return this.keyPair.lock(key);
     }
 
@@ -213,7 +235,10 @@ class Key {
      * @returns {Promise.<void>}
      */
     unlock(key) {
-        if (typeof key === 'string') key = Nimiq.BufferUtils.fromAscii(key);
+        if (typeof key === 'string') {
+            key = Nimiq.BufferUtils.fromAscii(key);
+        }
+
         return this.keyPair.unlock(key);
     }
 

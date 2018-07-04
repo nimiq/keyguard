@@ -70,7 +70,7 @@ class KeyStore {
 
     /**
      * @param {string} userFriendlyAddress
-     * @returns {Promise.<1|2>}
+     * @returns {Promise.<1|2>} // FIXME Replace type with enum
      */
     async getType(userFriendlyAddress) {
         const key = await this._getPlain(userFriendlyAddress);
