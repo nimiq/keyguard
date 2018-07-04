@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "Secure storage for Nimiq private keys.",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "echo \"Please open ./tests/SpecRunner.html in your favourite browser.\"",
     "watch": "tsc --watch",
     "typecheck": "tsc"
   },
@@ -20,5 +20,6 @@
   "bugs": {
     "url": "https://github.com/nimiq/keyguard-next/issues"
   },
-  "homepage": "https://github.com/nimiq/keyguard-next#readme"
+  "homepage": "https://github.com/nimiq/keyguard-next#readme",
+  "devDependencies": {}
 }
