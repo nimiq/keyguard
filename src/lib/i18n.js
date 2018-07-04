@@ -1,10 +1,12 @@
 const translations = {
     "en": {
         _language: "English",
+        i: "I",
         applePie: "apple pie"
     },
     "de": {
         _language: "Deutsch",
+        i: "Ich",
         applePie: "Apfelkuchen"
     }
 };
@@ -15,8 +17,10 @@ class I18n {
      */
     constructor(defaultLanguage = navigator.language) {
         this._dict = translations;
-        this._current = '';
-        this.setLanguage(defaultLanguage);
+        this._current = defaultLanguage;
+        document.addEventListener("DOMContentLoaded", event =>  {
+            this.setLanguage(defaultLanguage);
+        });    
     }
 
     /** 
@@ -79,7 +83,4 @@ class I18n {
     }
 }
 
-var i18n = null;
-document.addEventListener("DOMContentLoaded", function(event) {
-    i18n = new I18n();
-});
+var i18n = new I18n();
