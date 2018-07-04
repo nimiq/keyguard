@@ -4,7 +4,7 @@ describe("i18n test suite", function () {
         const languages = i18n.availableLanguages();
         expect(languages).not.toBeNull();
         expect(languages.length).toBeGreaterThan(0);
-        expect(languages).not.toContain(null);
+        expect(languages).not.toContain('');
     });
 
     it("i18n dict languages have labels", function () {

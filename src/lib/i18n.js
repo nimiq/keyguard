@@ -2,12 +2,14 @@ const translations = {
     "en": {
         _language: "English",
         i: "I",
-        applePie: "apple pie"
+        applePie: "apple pie",
+        ialsoloveplums: "I also ❤ plums.",
     },
     "de": {
         _language: "Deutsch",
         i: "Ich",
-        applePie: "Apfelkuchen"
+        applePie: "Apfelkuchen",
+        ialsoloveplums: "Ich ❤ auch Pflaumen",
     }
 };
 
@@ -20,10 +22,10 @@ class I18n {
         this._current = defaultLanguage;
         document.addEventListener("DOMContentLoaded", event =>  {
             this.setLanguage(defaultLanguage);
-        });    
+        });
     }
 
-    /** 
+    /**
      * @param {HTMLElement} [dom] - The DOM element to be translated, or body by default
      * @param {String} [language] - ISO code of language to translate to, or the currently selected language by default
      **/
@@ -36,7 +38,7 @@ class I18n {
     }
 
     /**
-     * 
+     *
      * @param {string} id - translation dict ID
      * @param {string} language - ISO code of language to translate to, or the currently selected language by default
      */
@@ -63,7 +65,7 @@ class I18n {
     }
 
     /**
-     * 
+     *
      * @param {string} language - ISO 639-1 language codes, e.g. en, en-us, de, de-at
      */
     setLanguage(language) {
