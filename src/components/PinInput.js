@@ -116,7 +116,7 @@ class PinInput extends /** @type {any} */ Nimiq.Observable {
             this._waitingTime *= this._waitingTime;
             this._attempts = 0;
         }
-        setTimeout(() => this.reset(), this._waitingTime);
+        setTimeout(() => this.reset(), Math.max(500, this._waitingTime)); // wait some time for shake animation
     }
 
     _onDelete() {
