@@ -13,8 +13,11 @@
     </style>
 </head>
 <body>
-    <div><span data-i18n="i">I</span> ❤️ <span data-i18n="applePie">apple pie</span>.</div>
-    <div data-i18n="ialsoloveplums">I also ❤ plums.</div>
+    <div id="demo" style="display: none;">
+        <div><span data-i18n="i">Nobody</span> ❤ <span data-i18n="applePie">to see this</span>.</div>
+        <div data-i18n="ialsoloveplums">This is gibberish.</div>
+    </div>
+
     <script>
         const translations = {
             "en": {
@@ -27,12 +30,15 @@
                 _language: "Deutsch",
                 i: "Ich",
                 applePie: "Apfelkuchen",
-                ialsoloveplums: "Ich ❤ auch Pflaumen",
+                ialsoloveplums: "Ich ❤ auch Pflaumen.",
             }
         };
         const i18n = new I18n(translations, 'en');
         const languagePicker = new LanguagePicker(i18n);
         document.body.appendChild(languagePicker.getElement());
+
+        i18n.translateDom();
+        document.querySelector('#demo').style.display = 'initial';
     </script>
 </body>
 </html>
