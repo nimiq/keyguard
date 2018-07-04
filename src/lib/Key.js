@@ -6,7 +6,7 @@
  */
 class Key {
     /**
-     * @param {Uint8Array|string} buf Keypair, as byte array or HEX string
+     * @param {Uint8Array|string} buf - Keypair, as byte array or HEX string
      * @returns {Key}
      */
     static loadPlain(buf) {
@@ -18,8 +18,8 @@ class Key {
     }
 
     /**
-     * @param {Uint8Array|string} buf Encrypted keypair, as byte array or HEX string
-     * @param {Uint8Array|string} passphrase Passphrase, as byte array or ASCII string
+     * @param {Uint8Array|string} buf - Encrypted keypair, as byte array or HEX string
+     * @param {Uint8Array|string} passphrase - Passphrase, as byte array or ASCII string
      * @returns {Promise.<Key>}
      */
     static async loadEncrypted(buf, passphrase) {
@@ -39,13 +39,13 @@ class Key {
 
     /**
      * Create a new Key object.
-     * @param {typeof Nimiq.KeyPair} keyPair KeyPair owning this Key
+     * @param {Nimiq.KeyPair} keyPair - KeyPair owning this Key
      * @param {1|2} [type]
      */
     constructor(keyPair, type) {
-        /** @type {typeof Nimiq.KeyPair} */
+        /** @type {Nimiq.KeyPair} */
         this._keyPair = keyPair;
-        /** @type {typeof Nimiq.Address} */
+        /** @type {Nimiq.Address} */
         this.address = this._keyPair.publicKey.toAddress();
         /** @type {string} */
         this.userFriendlyAddress = this.address.toUserFriendlyAddress();
@@ -64,11 +64,11 @@ class Key {
 
     /**
      * Sign Transaction that is signed by the owner of this Key
-     * @param {Nimiq.Address | string} recipient Address of the transaction receiver
-     * @param {number} value Number of Satoshis to send.
-     * @param {number} fee Number of Satoshis to donate to the Miner.
-     * @param {number} validityStartHeight The validityStartHeight for the transaction.
-     * @param {string} extraData Text to add to the transaction, requires extended format
+     * @param {Nimiq.Address | string} recipient - Address of the transaction receiver
+     * @param {number} value - Number of Satoshis to send.
+     * @param {number} fee - Number of Satoshis to donate to the Miner.
+     * @param {number} validityStartHeight - The validityStartHeight for the transaction.
+     * @param {string} extraData - Text to add to the transaction, requires extended format
      *
      * @param {TransactionFormat} format basic or extended
      * @returns {Nimiq.Transaction} A prepared and signed Transaction object. This still has to be sent to the network.
@@ -105,11 +105,11 @@ class Key {
 
     /**
      * Sign Transaction that is signed by the owner of this Key
-     * @param {typeof Nimiq.Address} sender Address of the transaction sending vesting contract
-     * @param {number} value Number of Satoshis to send.
+     * @param {Nimiq.Address} sender - Address of the transaction sending vesting contract
+     * @param {number} value - Number of Satoshis to send.
      * @param {number} fee Number of Satoshis to donate to the Miner.
-     * @param {number} validityStartHeight The validityStartHeight for the transaction.
-     * @param {string} extraData Text to add to the transaction, requires extended format
+     * @param {number} validityStartHeight - The validityStartHeight for the transaction.
+     * @param {string} extraData - Text to add to the transaction, requires extended format
      * @returns {Nimiq.Transaction} A prepared and signed Transaction object. This still has to be sent to the network.
      */
     createVestingTransaction(sender, value, fee, validityStartHeight, extraData) {
@@ -134,7 +134,7 @@ class Key {
 
     /**
      * Sign a transaction by the owner of this Wallet.
-     * //@param {Nimiq.Transaction} transaction The transaction to sign.
+     * //@param {Nimiq.Transaction} transaction - The transaction to sign.
      * //@returns {Nimiq.SignatureProof} A signature proof for this transaction.
      */
     // todo Do we need this?
