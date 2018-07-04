@@ -4,7 +4,8 @@
   "description": "Secure storage for Nimiq private keys.",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "tsc --watch"
+    "watch": "tsc --watch",
+    "typecheck": "tsc"
   },
   "repository": {
     "type": "git",
