@@ -24,14 +24,32 @@ class I18n {
      **/
     static translateDom(dom = document.body, enforceLanguage) {
         const language = enforceLanguage ? this.getClosestSupportedLanguage(enforceLanguage) : this.language;
-        /** @type {NodeListOf<HTMLElement>} */
-        const elements = dom.querySelectorAll('[data-i18n]');
 
-        elements.forEach(element => {
-            const id = element.dataset.i18n;
-            if (!id) return;
-            element.textContent = this._translate(id, language);
-        });
+        /**
+         * @param {string} tag 
+         * @param {(element:HTMLElement, translation: string) => void} callback - callback(element, translation) for each matching element
+         */
+        const translateElements = (tag, callback) => {
+            const attribute = `data-${tag}`;
+            /** @type {NodeListOf<HTMLElement>} */
+            const elements = dom.querySelectorAll(`[${ attribute }]`);
+            elements.forEach(element => {
+                const id = element.getAttribute(attribute);
+                if (!id) return;
+                callback(element, this._translate(id, language));
+            });
+        }
+
+        /**
+         * @param {string} tag 
+         */
+        const translateAttribute = (tag) => {
+            translateElements(`i18n-${ tag }`, (element, translation) => element.setAttribute(tag, translation));
+        }
+
+        translateElements('i18n', (element, translation) => element.textContent = translation);
+        translateAttribute('value');
+        translateAttribute('placeholder');
     }
 
     /**

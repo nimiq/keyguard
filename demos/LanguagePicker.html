@@ -16,6 +16,8 @@
     <div id="demo" style="display: none;">
         <div><span data-i18n="i">Nobody</span> ❤ <span data-i18n="applePie">to see this</span>.</div>
         <div data-i18n="ialsoloveplums">This is gibberish.</div>
+        <input placeholder="test" data-i18n-placeholder="writeSomething" />
+        <input value="test" data-i18n-value="wroteSomething" />
     </div>
 
     <script>
@@ -25,16 +27,20 @@
                 i: "I",
                 applePie: "apple pie",
                 ialsoloveplums: "I also ❤ plums.",
+                writeSomething: "Write something...",
+                wroteSomething: "I wrote something.",
             },
             "de": {
                 _language: "Deutsch",
                 i: "Ich",
                 applePie: "Apfelkuchen",
                 ialsoloveplums: "Ich ❤ auch Pflaumen.",
+                writeSomething: "Schreib was...",
+                wroteSomething: "Ich schrieb etwas.",
             }
         };
         I18n.initialize(translations, 'en');
-        
+
         const languagePicker = new LanguagePicker();
         document.body.appendChild(languagePicker.getElement());
 
