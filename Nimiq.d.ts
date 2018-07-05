@@ -33,10 +33,13 @@ declare namespace Nimiq {
     type PublicKey = any
     const PublicKey: any
 
-    type Observable = any
-    const Observable: any
-
     namespace Account  {
         type Type = 0 | 1 | 2
+    }
+
+    class Observable {
+        on: (type: string, callback: Function) => number
+        off: (type: string, id: number) => void
+        fire: (type: string, ...args: any[]) => (Promise<any>|null)
     }
 }

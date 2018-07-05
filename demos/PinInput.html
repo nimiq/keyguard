@@ -7,14 +7,14 @@
 <body>
 <link href="../src/nimiq-style.css" rel="stylesheet">
 <link href="../src/components/PinInput.css" rel="stylesheet">
-<script type="text/javascript" src="http://cdn.nimiq.com/web.js"></script>
+<script type="text/javascript" src="http://cdn.nimiq.com/web-offline.js"></script>
 <script type="text/javascript" src="../src/components/PinInput.js"></script>
 <script type="text/javascript">
     const pinInput = new PinInput();
     window.pinInput = pinInput;
-    document.body.appendChild(pinInput.$el);
+    document.body.appendChild(pinInput.getElement());
     pinInput.open();
-    pinInput.on('pin-entered', async pin => {
+    pinInput.on(PinInput.Events.PIN_ENTERED, async pin => {
         // fake some verification delay
         await new Promise(resolve => setTimeout(resolve, 1000));
         if (pin === '111111') {
