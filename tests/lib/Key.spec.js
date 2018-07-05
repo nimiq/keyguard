@@ -42,6 +42,10 @@ describe("Key", function () {
         const tx = await key.createTransaction(recipient, 100 * 1e5, 1, 100000);
 
         expect(tx instanceof Nimiq.BasicTransaction).toBe(true);
+        expect(tx.verify()).toBe(true);
+
+        expect(Nimiq.SignatureProof.verifyTransaction(tx)).toBe(true);
+
         expect(tx.sender.toUserFriendlyAddress()).toBe(ADDRESS);
         expect(tx.senderType).toBe(Nimiq.Account.Type.BASIC);
         expect(tx.recipient.toUserFriendlyAddress()).toBe(recipient);
@@ -49,7 +53,6 @@ describe("Key", function () {
         expect(tx.value).toBe(100 * 1e5);
         expect(tx.fee).toBe(1);
         expect(tx.validityStartHeight).toBe(100000);
-        // expect(tx.verify()).toBe(true); // web-offline.js does not include Account subclasses
     });
 
     it("can create a valid transaction with message", async function () {
@@ -60,6 +63,10 @@ describe("Key", function () {
         const tx = await key.createTransactionWithMessage(recipient, 100 * 1e5, 1, 100000, message);
 
         expect(tx instanceof Nimiq.ExtendedTransaction).toBe(true);
+        expect(tx.verify()).toBe(true);
+
+        expect(Nimiq.SignatureProof.verifyTransaction(tx)).toBe(true);
+
         expect(tx.sender.toUserFriendlyAddress()).toBe(ADDRESS);
         expect(tx.senderType).toBe(Nimiq.Account.Type.BASIC);
         expect(tx.recipient.toUserFriendlyAddress()).toBe(recipient);
@@ -68,7 +75,6 @@ describe("Key", function () {
         expect(tx.fee).toBe(1);
         expect(tx.validityStartHeight).toBe(100000);
         expect(Utf8Tools.utf8ByteArrayToString(tx.data)).toBe(message);
-        // expect(tx.verify()).toBe(true); // web-offline.js does not include Account subclasses
     });
 
     it("can create a valid vesting payout transaction", async function () {
@@ -79,6 +85,11 @@ describe("Key", function () {
         const tx = await key.createVestingPayoutTransaction(vestingContract, 100 * 1e5, 1, 100000, message);
 
         expect(tx instanceof Nimiq.ExtendedTransaction).toBe(true);
+        expect(tx.verify()).toBe(true);
+
+        const signatureProof = Nimiq.SignatureProof.unserialize(tx.proof);
+        expect(signatureProof.verify(null, tx.serializeContent())).toBe(true);
+
         expect(tx.sender.toUserFriendlyAddress()).toBe(vestingContract);
         expect(tx.senderType).toBe(Nimiq.Account.Type.VESTING);
         expect(tx.recipient.toUserFriendlyAddress()).toBe(ADDRESS);
@@ -87,6 +98,5 @@ describe("Key", function () {
         expect(tx.fee).toBe(1);
         expect(tx.validityStartHeight).toBe(100000);
         expect(Utf8Tools.utf8ByteArrayToString(tx.data)).toBe(message);
-        // expect(tx.verify()).toBe(true); // web-offline.js does not include Account subclasses
     });
 });
