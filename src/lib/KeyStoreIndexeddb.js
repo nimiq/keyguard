@@ -63,10 +63,7 @@ class KeyStore {
      */
     async get(userFriendlyAddress, passphrase) {
         const key = await this._getPlain(userFriendlyAddress);
-        const result = await Key.loadEncrypted(key.encryptedKeyPair, passphrase);
-        result.type = key.type;
-
-        return result;
+        return Key.loadEncrypted(key.encryptedKeyPair, passphrase, key.type);
     }
 
     /**
@@ -80,7 +77,7 @@ class KeyStore {
 
     /**
      * @param {string} userFriendlyAddress
-     * @returns {Promise.<object>}
+     * @returns {Promise.<KeyEntry>}
      */
     async _getPlain(userFriendlyAddress) {
         userFriendlyAddress = this._formatAddress(userFriendlyAddress);
@@ -104,7 +101,6 @@ class KeyStore {
      * @returns {Promise}
      */
     async put(key, passphrase, unlockKey) {
-        /** @type {Uint8Array} */
         const encryptedKeyPair = await key.exportEncrypted(passphrase, unlockKey);
 
         const keyEntry = {
@@ -117,7 +113,7 @@ class KeyStore {
     }
 
     /**
-     * @param {object} keyEntry
+     * @param {KeyEntry} keyEntry
      * @returns {Promise<any>}
      * @deprecated Only for migrating keys to this database
      */
@@ -126,7 +122,7 @@ class KeyStore {
     }
 
     /**
-     * @param {object} keyEntry
+     * @param {KeyEntry} keyEntry
      * @returns {Promise<any>}
      */
     async _putPlain(keyEntry) {
@@ -160,7 +156,7 @@ class KeyStore {
     }
 
     /**
-     * @returns {Promise.<Array.<object>>}
+     * @returns {Promise.<Array.<KeyInfo>>}
      */
     async list() {
         const db = await this.connect();

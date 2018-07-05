@@ -17,9 +17,10 @@
 class Key {
     /**
      * @param {Uint8Array | string} buf - Keypair, as byte array or HEX string
+     * @param {EncryptionType} type
      * @returns {Key}
      */
-    static loadPlain(buf) {
+    static loadPlain(buf, type) {
         if (typeof buf === 'string') {
             buf = /** @type {Uint8Array} */ (Nimiq.BufferUtils.fromHex(buf));
         }
@@ -28,15 +29,16 @@ class Key {
             throw new Error('Invalid Key seed');
         }
 
-        return new Key(Nimiq.KeyPair.unserialize(new Nimiq.SerialBuffer(buf)));
+        return new Key(Nimiq.KeyPair.unserialize(new Nimiq.SerialBuffer(buf)), type);
     }
 
     /**
      * @param {Uint8Array | string} buf - Encrypted keypair, as byte array or HEX string
      * @param {Uint8Array | string} passphrase - Passphrase, as byte array or ASCII string
+     * @param {EncryptionType} type
      * @returns {Promise.<Key>}
      */
-    static async loadEncrypted(buf, passphrase) {
+    static async loadEncrypted(buf, passphrase, type) {
         if (typeof buf === 'string') {
             buf = /** @type {Uint8Array} */ (Nimiq.BufferUtils.fromHex(buf));
         }
@@ -46,7 +48,7 @@ class Key {
         }
 
         const keyPair = await Nimiq.KeyPair.fromEncrypted(new Nimiq.SerialBuffer(buf), passphrase);
-        return new Key(keyPair);
+        return new Key(keyPair, type);
     }
 
 
@@ -62,7 +64,7 @@ class Key {
      * Create a new Key object.
      *
      * @param {Nimiq.KeyPair} keyPair - Keypair for this key
-     * @param {EncryptionType} [type] - Low or high security (passphrase or pin encoded, respectively)
+     * @param {EncryptionType} type - Low or high security (passphrase or pin encoded, respectively)
      */
     constructor(keyPair, type) {
         /** @type {Nimiq.KeyPair} */
@@ -255,7 +257,7 @@ class Key {
     }
 
     /**
-     * @returns {object}
+     * @returns {KeyInfo}
      */
     getPublicInfo() {
         return {
