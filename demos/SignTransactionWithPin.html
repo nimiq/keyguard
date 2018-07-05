@@ -24,9 +24,9 @@
         function checkIfKeyguardReady(resolve) {
             if (keyguard.rpcServer !== undefined) {
                 resolve();
+            } else {
+                self.setTimeout(_ => checkIfKeyguardReady(resolve), 25);
             }
-
-            self.setTimeout(_ => checkIfKeyguardReady(resolve), 25);
         }
 
         await Promise.all([
