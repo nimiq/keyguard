@@ -18,12 +18,21 @@ describe("Key", function () {
         expect(key.type).toBe(EncryptionType.HIGH);
     });
 
-    it("can load an encrypted key pair", async function () {
+    it("can load an encrypted key pair", async function (done) {
         const key = await Key.loadEncrypted(ENCRYPTED_KEY_PAIR, PASSWORD, EncryptionType.HIGH);
 
         expect(key.address).toBeDefined();
         expect(key.userFriendlyAddress).toBe(ADDRESS);
         expect(key.type).toBe(EncryptionType.HIGH);
+
+        try {
+            await Key.loadEncrypted(ENCRYPTED_KEY_PAIR, 'wrong password', EncryptionType.HIGH)
+        } catch (e) {
+            done();
+            return;
+        }
+
+        done.fail("Wrong password not detected.");
     });
 
     it("can create a valid basic transaction", async function () {
@@ -32,6 +41,7 @@ describe("Key", function () {
 
         const tx = await key.createTransaction(recipient, 100 * 1e5, 1, 100000);
 
+        expect(tx instanceof Nimiq.BasicTransaction).toBe(true);
         expect(tx.sender.toUserFriendlyAddress()).toBe(ADDRESS);
         expect(tx.senderType).toBe(Nimiq.Account.Type.BASIC);
         expect(tx.recipient.toUserFriendlyAddress()).toBe(recipient);
@@ -49,6 +59,7 @@ describe("Key", function () {
 
         const tx = await key.createTransactionWithMessage(recipient, 100 * 1e5, 1, 100000, message);
 
+        expect(tx instanceof Nimiq.ExtendedTransaction).toBe(true);
         expect(tx.sender.toUserFriendlyAddress()).toBe(ADDRESS);
         expect(tx.senderType).toBe(Nimiq.Account.Type.BASIC);
         expect(tx.recipient.toUserFriendlyAddress()).toBe(recipient);
@@ -67,6 +78,7 @@ describe("Key", function () {
 
         const tx = await key.createVestingPayoutTransaction(vestingContract, 100 * 1e5, 1, 100000, message);
 
+        expect(tx instanceof Nimiq.ExtendedTransaction).toBe(true);
         expect(tx.sender.toUserFriendlyAddress()).toBe(vestingContract);
         expect(tx.senderType).toBe(Nimiq.Account.Type.VESTING);
         expect(tx.recipient.toUserFriendlyAddress()).toBe(ADDRESS);
