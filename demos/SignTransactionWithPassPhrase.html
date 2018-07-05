@@ -22,11 +22,11 @@
 
         // We need this check because we call the rpcServer object directly and not via RPC Client
         function checkIfKeyguardReady(resolve) {
-           if (keyguard.rpcServer !== undefined) {
-               resolve();
-           } else {
-               self.setTimeout(_ => checkIfKeyguardReady(resolve), 25);
-           }
+            if (keyguard.rpcServer !== undefined) {
+                resolve();
+            } else {
+                self.setTimeout(() => checkIfKeyguardReady(resolve), 25);
+            }
         }
 
         await Promise.all([

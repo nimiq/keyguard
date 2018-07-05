@@ -1,6 +1,6 @@
 declare namespace Nimiq {
     type Address = any
-    const Address: any;
+    const Address: any
 
     const BufferUtils: any
 
@@ -35,7 +35,7 @@ declare namespace Nimiq {
     type PublicKey = any
     const PublicKey: any
 
-    namespace Account  {
+    namespace Account {
         type Type = 0 | 1 | 2
     }
 
