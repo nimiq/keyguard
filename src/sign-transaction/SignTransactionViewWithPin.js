@@ -3,14 +3,9 @@
  */
 class SignTransactionWithPin extends SignTransactionView {
 
-    get Pages() {
-        return {
-            TRANSACTION_DATA: 'transaction-data',
-            ENTER_PIN: 'enter-pin'
-        };
-    }
-
-    /** @param {TransactionRequest} txRequest */
+    /**
+     * @param {TransactionRequest} txRequest
+     */
     constructor(txRequest) {
         super();
 
@@ -32,7 +27,7 @@ class SignTransactionWithPin extends SignTransactionView {
             return;
         }
 
-        $button.addEventListener('click', () => location.hash = this.Pages.ENTER_PIN);
+        $button.addEventListener('click', () => location.hash = SignTransactionWithPin.Pages.ENTER_PIN);
 
         this.$pinInput = new PinInput();
 
@@ -43,10 +38,12 @@ class SignTransactionWithPin extends SignTransactionView {
         this.$pinInput.on(PinInput.Events.PIN_ENTERED, this.handlePinInput.bind(this));
 
         // go to start page
-        location.hash = this.Pages.TRANSACTION_DATA
+        location.hash = SignTransactionWithPin.Pages.TRANSACTION_DATA;
     }
 
-    /** @param {string} pin */
+    /**
+     * @param {string} pin
+     */
     async handlePinInput(pin) {
         document.body.classList.add('loading');
 
@@ -63,3 +60,8 @@ class SignTransactionWithPin extends SignTransactionView {
         }
     }
 }
+
+SignTransactionWithPin.Pages = {
+    TRANSACTION_DATA: 'transaction-data',
+    ENTER_PIN: 'enter-pin'
+};

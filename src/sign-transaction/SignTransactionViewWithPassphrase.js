@@ -3,13 +3,9 @@
  */
 class SignTransactionWithPassphrase extends SignTransactionView {
 
-    get Pages() {
-        return  {
-            ENTER_PASSPHRASE: 'enter-passphrase'
-        };
-    }
-
-    /** @param {TransactionRequest} txRequest */
+    /**
+     * @param {TransactionRequest} txRequest
+     */
     constructor(txRequest) {
         super();
 
@@ -53,7 +49,11 @@ class SignTransactionWithPassphrase extends SignTransactionView {
             }
         });
 
-        location.hash = this.Pages.ENTER_PASSPHRASE;
+        location.hash = SignTransactionWithPassphrase.Pages.ENTER_PASSPHRASE;
    }
 }
+
+SignTransactionWithPassphrase.Pages = {
+    ENTER_PASSPHRASE: 'enter-passphrase'
+};
 
