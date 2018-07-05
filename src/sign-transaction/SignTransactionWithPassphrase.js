@@ -24,6 +24,7 @@ class SignTransactionWithPassphrase extends Nimiq.Observable {
         $button.addEventListener('click', async () => {
 
             document.body.classList.add('loading');
+            $error.textContent = '';
 
             const passphrase = $input.value;
 

@@ -1,5 +1,10 @@
 /** @param {Function} RequestApiClass - Class object of the API which is to be exposed via postMessage RPC */
-function runKeyguard(RequestApiClass) {
+async function runKeyguard(RequestApiClass) {
+
+    // expose KeyStore to mockup overwrites
+    self.KeyStore = KeyStore;
+
+    await Nimiq.WasmHelper.doImportBrowser();
 
     // close window if user navigates back to loading screen
     self.onhashchange = _ => {

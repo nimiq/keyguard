@@ -12,7 +12,13 @@
 }
 
 .loading #loading {
-    display: block;
+    display: block !important;
     position: absolute;
+    top: 0;
     z-index: 1;
+}
+
+.loading .page:target {
+    opacity: 0.3;
+    pointer-events: none;
 }

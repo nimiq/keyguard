@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pin Input</title>
+</head>
+<body>
+<link href="../src/nimiq-style.css" rel="stylesheet">
+<script type="text/javascript" src="http://cdn.nimiq.com/web-offline.js"></script>
+<script src="../src/lib/EncryptionType.js"></script>
+<script src="../src/lib/Key.js"></script>
+
+<div>
+    PIN is 000000
+</div>
+
+<iframe id="keyguard" src="../src/sign-transaction/" style="width:100%; height:100%"></iframe>
+
+<script type="text/javascript">
+    const $iframe = document.getElementById('keyguard');
+
+    $iframe.onload = async () => {
+
+        await Nimiq.WasmHelper.doImportBrowser();
+
+        const keyguard = $iframe.contentWindow;
+        keyguard.KeyStore.prototype.getType = async (address) => {
+            return EncryptionType.LOW;
+        };
+
+        keyguard.KeyStore.prototype.get = async (signer, pin) => {
+            // fake delay
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            const buf = "0108708e9b94c9598aa0138b47c139482b61466ff1d403a0e0c18c30f9041085839035528909aa4c76dde86390aec3c189120f77a000";
+
+            return Key.loadEncrypted(buf, pin);
+        };
+
+        const txRequest = {
+            sender: 'NQ82 HP54 C9D4 2FAG 69QD 6Q71 LURR 5187 0V3X',
+            recipient: 'NQ82 HP54 C9D4 2FAG 69QD 6Q71 LURR 5187 0V3X',
+            signer: 'NQ82 HP54 C9D4 2FAG 69QD 6Q71 LURR 5187 0V3X',
+            value: 10,
+            fee: 0,
+            network: 'test',
+            validityStartHeight: 0
+        };
+
+        keyguard.rpcServer.request(txRequest);
+    }
+</script>
+
+</body>
+</html>
