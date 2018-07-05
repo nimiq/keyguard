@@ -2,22 +2,24 @@ class Identicon {
 
     /**
      * @param {string} [address]
+     * @param {HTMLImageElement} [el]
      */
-    constructor(address) {
+    constructor(address, el) {
         this._address = address;
+
         /** @type {HTMLImageElement} */
-        this._el;
+        this.$el = el || this.getElement();
+
+        this._updateIqon();
     }
 
     getElement() {
-        if (this._el) return this._el;
+        if (this.$el) return this.$el;
 
-        this._el = document.createElement('img');
-        this._el.classList.add('identicon');
+        const element = document.createElement('img');
+        element.classList.add('identicon');
 
-        this._updateIqon();
-
-        return this._el;
+        return element;
     }
 
     /**
@@ -29,10 +31,12 @@ class Identicon {
     }
 
     _updateIqon() {
-        if (this._address && this._el) {
+        if (this._address) {
             Iqons.toDataUrl(this._address).then(url => {
-                this._el.src = url;
+                this.$el.src = url;
             });
+        } else {
+            this.$el.src = Iqons.placeholderToDataUrl();
         }
     }
 }
