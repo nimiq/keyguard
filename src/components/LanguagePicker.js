@@ -21,11 +21,18 @@ class LanguagePicker {
 
         for (const language of this._i18n.availableLanguages()) {
             const label = this._i18n.translatePhrase('_language', language);
-            const selectedAttr = language === this._i18n.language ? ' selected' : '';
-            options.push(`<option value="${ language }"${ selectedAttr }>${ label }</option>`);
+
+            const option = document.createElement('option');
+            option.value = language;
+            option.textContent = label;
+
+            if (language === this._i18n.language) {
+                option.setAttribute('selected', 'selected');
+            }
+
+            element.appendChild(option);
         }
 
-        element.innerHTML = options.join();
         element.classList.add('i18n-language-picker');
         element.addEventListener('change', () => {
             this._i18n.switchLanguage(element.value);
