@@ -14,7 +14,7 @@ class I18n {
 
     /**
      * @param {HTMLElement} [dom] - The DOM element to be translated, or body by default
-     * @param {String} [lang] - ISO code of language to translate to, or the currently selected language by default
+     * @param {string} [lang] - ISO code of language to translate to, or the currently selected language by default
      **/
     translateDom(dom, lang) {
         const root = dom || document.body;
