@@ -6,7 +6,7 @@
 </head>
 <body>
 <link href="../src/nimiq-style.css" rel="stylesheet">
-<script type="text/javascript" src="http://cdn.nimiq.com/web-offline.js"></script>
+<script src="http://cdn.nimiq.com/web-offline.js"></script>
 <script src="../src/lib/EncryptionType.js"></script>
 <script src="../src/lib/Key.js"></script>
 
@@ -14,16 +14,12 @@
     PIN is 000000
 </div>
 
-<iframe id="keyguard" src="../src/sign-transaction/" style="width:100%; height:100%"></iframe>
-
 <script type="text/javascript">
-    const $iframe = document.getElementById('keyguard');
+    const keyguard = window.open('../src/sign-transaction/');
 
-    $iframe.onload = async () => {
-
+    keyguard.onload = async () => {
         await Nimiq.WasmHelper.doImportBrowser();
 
-        const keyguard = $iframe.contentWindow;
         keyguard.KeyStore.prototype.getType = async (address) => {
             return EncryptionType.LOW;
         };
@@ -48,7 +44,7 @@
         };
 
         keyguard.rpcServer.request(txRequest);
-    }
+    };
 </script>
 
 </body>

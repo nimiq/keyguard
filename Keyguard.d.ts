@@ -23,3 +23,5 @@ type AccountEntry = {
     type: string,
     label: string
 }
+
+interface Window { rpcServer: any; KeyStore: any }

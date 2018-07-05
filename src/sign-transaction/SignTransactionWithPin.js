@@ -16,7 +16,7 @@ class SignTransactionWithPin extends Nimiq.Observable {
 
         if (!rootElement) return;
 
-        const $button = rootElement.querySelector('button');
+        const $button = rootElement.querySelector('#transaction-data button');
         const $enterPin = rootElement.querySelector('#enter-pin');
 
         if (!$button || !$enterPin) return;

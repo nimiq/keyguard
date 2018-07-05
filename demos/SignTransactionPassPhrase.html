@@ -14,16 +14,13 @@
     Pass Phrase is 'correct'
 </div>
 
-<iframe id="keyguard" src="../src/sign-transaction/" style="width:100%; height:100%"></iframe>
-
 <script type="text/javascript">
-    const $iframe = document.getElementById('keyguard');
+    const keyguard = window.open('../src/sign-transaction/');
 
-    $iframe.onload = async () => {
+    keyguard.onload = async () => {
 
         await Nimiq.WasmHelper.doImportBrowser();
 
-        const keyguard = $iframe.contentWindow;
         keyguard.KeyStore.prototype.getType = async (address) => {
             return EncryptionType.HIGH;
         };

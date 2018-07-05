@@ -15,9 +15,9 @@ class SignTransactionWithPassphrase extends Nimiq.Observable {
 
         // TODO add identicons and other tx data to UI
 
-        const $button = rootElement.querySelector('button');
-        const $input = rootElement.querySelector('input');
-        const $error = rootElement.querySelector('#error');
+        const $button = rootElement.querySelector('#enter-passphrase button');
+        const $input = /** @type {HTMLInputElement} */ (rootElement.querySelector('#enter-passphrase input'));
+        const $error = rootElement.querySelector('#enter-passphrase #error');
 
         if (!$button || !$input || !$error) return;
 
@@ -26,7 +26,7 @@ class SignTransactionWithPassphrase extends Nimiq.Observable {
             document.body.classList.add('loading');
             $error.textContent = '';
 
-            const passphrase = $input.value;
+            const passphrase =$input.value;
 
             const keyStore = KeyStore.instance;
 

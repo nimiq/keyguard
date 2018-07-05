@@ -59,6 +59,10 @@ declare namespace Nimiq {
         off: (type: string, id: number) => void
         fire: (type: string, ...args: any[]) => (Promise<any>|null)
     }
-}
 
-interface Window { rpcServer: any; }
+    class WasmHelperClass {
+        doImportBrowser: () => void
+    }
+
+    const WasmHelper : WasmHelperClass
+}
