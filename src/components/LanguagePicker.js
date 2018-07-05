@@ -2,22 +2,20 @@ class LanguagePicker {
 
     /**
      * @param {I18n} i18n
+     * @param {Element} [el]
      */
-    constructor(i18n) {
+    constructor(i18n, el) {
         this._i18n = i18n;
 
-        /** @type {HTMLElement} */
-        this._el;
+        this.$el = el || this._createElement();
     }
 
     /**
      * Produces a select element that the user can chose an available language from.
+     * @returns {Element}
      */
-    getElement() {
-        if (this._el) return this._el;
-
+    _createElement() {
         const element = document.createElement('select');
-        const options = [];
 
         for (const language of this._i18n.availableLanguages()) {
             const label = this._i18n.translatePhrase('_language', language);
@@ -38,7 +36,11 @@ class LanguagePicker {
             this._i18n.switchLanguage(element.value);
         });
 
-        this._el = element;
-        return this._el;
+        return element;
+    }
+
+    /** @returns {Element} */
+    getElement() {
+        return this.$el;
     }
 }

@@ -7,18 +7,17 @@ class I18n {
         this._dict = dictionary;
 
         /** @type {string} */
-        this._language;
+        this._language = '';
 
         this.setLanguage(language || navigator.language);
     }
 
     /**
      * @param {HTMLElement} [dom] - The DOM element to be translated, or body by default
-     * @param {string} [lang] - ISO code of language to translate to, or the currently selected language by default
+     * @param {string} [language] - ISO code of language to translate to, or the currently selected language by default
      **/
-    translateDom(dom, lang) {
+    translateDom(dom, language) {
         const root = dom || document.body;
-        const language = lang || this._language;
 
         /** @type {NodeListOf<HTMLElement>} */
         const nodes = root.querySelectorAll('[data-i18n]');
@@ -31,15 +30,15 @@ class I18n {
 
     /**
      * @param {string} id - translation dict ID
-     * @param {string} language - ISO code of language to translate to, or the currently selected language by default
+     * @param {string} [language] - ISO code of language to translate to, or the currently selected language by default
      */
     translatePhrase(id, language) {
-        if (!this._dict[language]) {
-            throw new Error(`Language "${ language }" is not supported!`);
-        }
-        const translation = this._dict[language][id];
+        language = this.getClosestSupportedLanguage(language || this._language);
+        let translation = this._dict[language][id];
         if (!translation) {
-            throw new Error(`No translation defined for "${ id }" in language "${ language }"!`);
+            console.warn(`No translation defined for "${id}" in language "${language}"!`);
+            translation = this._dict[this.getClosestSupportedLanguage('en')][id];
+            throw new Error(`No translation defined for "${id}"`);
         }
         return translation;
     }
@@ -60,17 +59,36 @@ class I18n {
     }
 
     /**
+     * Selects a supported language closed to the desired language. Examples it might return:
+     * en-us => en-us, en-us => en, en => en-us, fr => en.
+     * @param {string} language - ISO 639-1 language codes, e.g. en, en-us, de, de-at
+     * @returns {string}
+     */
+    getClosestSupportedLanguage(language) {
+        if (language in this._dict) return language;
+        language = language.split('-')[0];
+        if (language in this._dict) return language;
+        const languagePrefix = `${language}-`;
+        for (const supportedLanguage of this.availableLanguages()) {
+            if (supportedLanguage.startsWith(languagePrefix)) return supportedLanguage;
+        }
+        // language is not supported. Return a variant of 'en' if available, otherwise an arbitrary supported language
+        if (language !== 'en') {
+            return this.getClosestSupportedLanguage('en');
+        } else {
+            return this.availableLanguages()[0];
+        }
+    }
+
+    /**
      * @param {string} language - ISO 639-1 language codes, e.g. en, en-us, de, de-at
      */
     setLanguage(language) {
-        language = language.toLocaleLowerCase();
-        if (!this._dict[language] && language.indexOf('-') > 0) {
-            language = language.split('-')[0];
+        const languageToUse = this.getClosestSupportedLanguage(language);
+        if (languageToUse !== language) {
+            console.warn(`Language ${language} not supported, using ${languageToUse} instead.`);
         }
-        if (!this._dict[language]) {
-            throw new Error(`Language "${ language }" is not supported!`);
-        }
-        this._language = language;
+        this._language = languageToUse;
     }
 
     get language() {
