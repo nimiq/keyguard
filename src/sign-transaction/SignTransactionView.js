@@ -4,7 +4,7 @@ class SignTransactionView extends Nimiq.Observable {
      *
      * @param {TransactionRequest} txRequest
      * @param {string} passphraseOrPin
-     * @return {Promise<{sender: string, senderPubKey: *, recipient: string, value: number, fee: number, validityStartHeight: *|number, signature: any, extraData: string, hash: *} | undefined>}
+     * @return {Promise<{sender: string, senderPubKey: Nimiq.SerialBuffer, recipient: string, value: number, fee: number, validityStartHeight: number, signature: Nimiq.SerialBuffer, extraData: string, hash: string} | undefined>}
      * @private
      */
     async _signTx(txRequest, passphraseOrPin) {
