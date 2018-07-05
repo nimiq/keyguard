@@ -1,4 +1,4 @@
-class SignTransaction {
+class SignTransactionApi {
     /** @param {TransactionRequest} txRequest */
     async request(txRequest) {
 
@@ -29,4 +29,4 @@ class SignTransaction {
     }
 }
 
-runKeyguard(SignTransaction);
+runKeyguard(SignTransactionApi);

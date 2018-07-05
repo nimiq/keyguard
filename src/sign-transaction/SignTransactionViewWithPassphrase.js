@@ -1,7 +1,7 @@
 /** Handles a sign-transaction request for keys with encryption type HIGH.
  *  Calls this.fire('result', [result]) when done or this.fire('error', [error]) to return with an error.
  */
-class SignTransactionWithPassphrase extends Nimiq.Observable {
+class SignTransactionWithPassphrase extends SignTransactionView {
 
     get Pages() {
         return  {
@@ -33,46 +33,22 @@ class SignTransactionWithPassphrase extends Nimiq.Observable {
         }
 
         $button.addEventListener('click', async () => {
-
             document.body.classList.add('loading');
             $error.textContent = '';
 
             const passphrase = $input.value;
 
-            const keyStore = KeyStore.instance;
-
-            if (txRequest.type !== TransactionType.BASIC) {
-                this.fire('error', new Error('not yet implemented'));
-                return;
-            }
-
-            const { value, fee, recipient, signer, validityStartHeight } = txRequest;
-
             try {
-                const key = await keyStore.get(signer, passphrase);
-                const tx = key.createTransaction(recipient, value, fee, validityStartHeight);
-
-                const signatureProof = Nimiq.SignatureProof.unserialize(new Nimiq.SerialBuffer(tx.proof));
-
-                this.fire('result', {
-                    sender: tx.sender.toUserFriendlyAddress(),
-                    senderPubKey: signatureProof.publicKey.serialize(),
-                    recipient: tx.recipient.toUserFriendlyAddress(),
-                    value: Nimiq.Policy.satoshisToCoins(tx.value),
-                    fee: Nimiq.Policy.satoshisToCoins(tx.fee),
-                    validityStartHeight: tx.validityStartHeight,
-                    signature: signatureProof.signature.serialize(),
-                    extraData: Utf8Tools.utf8ByteArrayToString(tx.data),
-                    hash: tx.hash().toBase64()
-                });
+                const signedTx = await this._signTx(txRequest, passphrase);
+                this.fire('result', signedTx);
             } catch (e) {
-                // assume the password was wrong
+                // assume the passphrase was wrong
                 console.error(e);
 
                 document.body.classList.remove('loading');
 
-                // TODO i18n
                 $input.value = '';
+                // TODO i18n
                 $error.textContent = 'Wrong Pass Phrase, please try again';
             }
         });
@@ -80,3 +56,4 @@ class SignTransactionWithPassphrase extends Nimiq.Observable {
         location.hash = this.Pages.ENTER_PASSPHRASE;
    }
 }
+

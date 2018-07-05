@@ -1,7 +1,7 @@
 /** Handles a sign-transaction request for keys with encryption type LOW.
  *  Calls this.fire('result', [result]) when done or this.fire('error', [error]) to return with an error.
  */
-class SignTransactionWithPin extends Nimiq.Observable {
+class SignTransactionWithPin extends SignTransactionView {
 
     get Pages() {
         return {
@@ -9,6 +9,7 @@ class SignTransactionWithPin extends Nimiq.Observable {
             ENTER_PIN: 'enter-pin'
         };
     }
+
     /** @param {TransactionRequest} txRequest */
     constructor(txRequest) {
         super();
@@ -49,32 +50,9 @@ class SignTransactionWithPin extends Nimiq.Observable {
     async handlePinInput(pin) {
         document.body.classList.add('loading');
 
-        const keyStore = KeyStore.instance;
-
-        if (this._txRequest.type !== TransactionType.BASIC) {
-            this.fire('error', new Error('not yet implemented'));
-            return;
-        }
-
-        const {value, fee, recipient, signer, validityStartHeight} = this._txRequest;
-
         try {
-            const key = await keyStore.get(signer, pin);
-            const tx = key.createTransaction(recipient, value, fee, validityStartHeight);
-
-            const signatureProof = Nimiq.SignatureProof.unserialize(new Nimiq.SerialBuffer(tx.proof));
-
-            this.fire('result', {
-                sender: tx.sender.toUserFriendlyAddress(),
-                senderPubKey: signatureProof.publicKey.serialize(),
-                recipient: tx.recipient.toUserFriendlyAddress(),
-                value: Nimiq.Policy.satoshisToCoins(tx.value),
-                fee: Nimiq.Policy.satoshisToCoins(tx.fee),
-                validityStartHeight: tx.validityStartHeight,
-                signature: signatureProof.signature.serialize(),
-                extraData: Utf8Tools.utf8ByteArrayToString(tx.data),
-                hash: tx.hash().toBase64()
-            });
+            const signedTx = await this._signTx(this._txRequest, pin);
+            this.fire('result', signedTx);
         } catch (e) {
             // assume the pin was wrong
             console.error(e);
