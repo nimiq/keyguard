@@ -13,8 +13,6 @@ async function runKeyguard(RequestApiClass) {
         }
     };
 
-    //if (window.opener.location.origin !== '')
-
     Nimiq.GenesisConfig.test();
 
     window.rpcServer = RpcServer.create(RequestApiClass, '*'); // FIXME Set correct allowedOrigin

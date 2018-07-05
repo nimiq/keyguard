@@ -10,7 +10,9 @@ class SignTransactionWithPassphrase extends Nimiq.Observable {
         // construct UI
         const rootElement = document.getElementById('app');
 
-        if (!rootElement) return;
+        if (!rootElement) {
+            throw new InvalidDOMError();
+        }
 
         // TODO add identicons and other tx data to UI
 
@@ -18,14 +20,16 @@ class SignTransactionWithPassphrase extends Nimiq.Observable {
         const $input = /** @type {HTMLInputElement} */ (rootElement.querySelector('#enter-passphrase input'));
         const $error = rootElement.querySelector('#enter-passphrase #error');
 
-        if (!$button || !$input || !$error) return;
+        if (!$button || !$input || !$error) {
+            throw new InvalidDOMError();
+        }
 
         $button.addEventListener('click', async () => {
 
             document.body.classList.add('loading');
             $error.textContent = '';
 
-            const passphrase =$input.value;
+            const passphrase = $input.value;
 
             const keyStore = KeyStore.instance;
 

@@ -12,12 +12,16 @@ class SignTransactionWithPin extends Nimiq.Observable {
         // construct UI
         const rootElement = document.getElementById('app');
 
-        if (!rootElement) return;
+        if (!rootElement) {
+            throw new InvalidDOMError();
+        }
 
         const $button = rootElement.querySelector('#transaction-data button');
         const $enterPin = rootElement.querySelector('#enter-pin');
 
-        if (!$button || !$enterPin) return;
+        if (!$button || !$enterPin) {
+            throw new InvalidDOMError();
+        }
 
         $button.addEventListener('click', () => location.hash = 'enter-pin');
 

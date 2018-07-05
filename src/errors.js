@@ -49,3 +49,10 @@ class NetworkMissmatchError extends Error {
        this.code = 'K6';
     }
 }
+
+class InvalidDOMError extends Error {
+    constructor() {
+        super('Invalid DOM');
+        this.code = 'K7';
+    }
+}
