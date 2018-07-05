@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Identicon</title>
+</head>
+<body>
+    <div id="identicons" style="flex-direction: row;"></div>
+
+<link href="../src/nimiq-style.css" rel="stylesheet">
+<style>
+    .identicon {
+        margin: 0 1em;
+    }
+</style>
+<script src="../src/lib/Iqons.js"></script>
+<script src="../src/components/Identicon.js"></script>
+<script>
+    console.warn("This demo needs to be executed as localhost from the nimiq.github.io directory.");
+
+    let count = 0;
+
+    const identicon1 = new Identicon();
+    const identicon2 = new Identicon();
+    const identicon3 = new Identicon();
+    document.querySelector('#identicons').appendChild(identicon1.getElement());
+    document.querySelector('#identicons').appendChild(identicon2.getElement());
+    document.querySelector('#identicons').appendChild(identicon3.getElement());
+
+    function newIdenticon() {
+        count++;
+        identicon1.address = count.toString();
+        count++;
+        identicon2.address = count.toString();
+        count++;
+        identicon3.address = count.toString();
+    }
+    setInterval(newIdenticon, 1000);
+</script>
+</body>
+</html>
