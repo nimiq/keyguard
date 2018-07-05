@@ -3,13 +3,11 @@
  */
 class SignTransactionWithPin extends Nimiq.Observable {
 
-    /** @constructor */
-    /** @param {Nimiq.Transaction} transactionRequest */
-    // todo choose better type
-    constructor(transactionRequest) {
+    /** @param {TransactionRequest} txRequest */
+    constructor(txRequest) {
         super();
 
-        this._transactionRequest = transactionRequest;
+        this._txRequest = txRequest;
 
         // construct UI
         const rootElement = document.getElementById('app');
@@ -41,8 +39,11 @@ class SignTransactionWithPin extends Nimiq.Observable {
 
         const keyStore = KeyStore.instance;
 
-        // TODO specify API for different tx types
-        const {value, fee, sender, recipient, signer, extraData, validityStartHeight} = this._transactionRequest;
+        if (this._txRequest.type !== TransactionType.BASIC) {
+            throw new Error('not yet implemented');
+        }
+
+        const {value, fee, recipient, signer, validityStartHeight} = this._txRequest;
 
         try {
             const key = await keyStore.get(signer, pin);

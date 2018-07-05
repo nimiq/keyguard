@@ -3,9 +3,8 @@
  */
 class SignTransactionWithPassphrase extends Nimiq.Observable {
 
-    /** @param {Nimiq.Transaction} transactionRequest */
-    // todo choose better type
-    constructor(transactionRequest) {
+    /** @param {TransactionRequest} txRequest */
+    constructor(txRequest) {
         super();
 
         // construct UI
@@ -30,8 +29,11 @@ class SignTransactionWithPassphrase extends Nimiq.Observable {
 
             const keyStore = KeyStore.instance;
 
-            // TODO specify API for different tx types
-            const { value, fee, sender, recipient, signer, extraData, validityStartHeight } = transactionRequest;
+            if (txRequest.type !== TransactionType.BASIC) {
+                throw new Error('not yet implemented');
+            }
+
+            const { value, fee, recipient, signer, validityStartHeight } = txRequest;
 
             try {
                 const key = await keyStore.get(signer, passphrase);
@@ -60,8 +62,6 @@ class SignTransactionWithPassphrase extends Nimiq.Observable {
                 $input.value = '';
                 $error.textContent = 'Wrong Pass Phrase, please try again';
             }
-
-            this.fire('result', );
         });
 
         location.hash = 'enter-passphrase';

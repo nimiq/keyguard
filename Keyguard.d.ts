@@ -24,4 +24,27 @@ type AccountEntry = {
     label: string
 }
 
-interface Window { rpcServer: any; KeyStore: any }
+type TxType = {
+    BASIC: 'basic',
+    EXTENDED: 'extended'
+}
+
+type BasicTransactionRequest = {
+    type: TxType["BASIC"]
+    sender: string
+    recipient: string
+    signer: string
+    value: number
+    fee: number
+    network: string
+    validityStartHeight: number
+}
+
+type ExtendedTransactionRequest = BasicTransactionRequest & {
+   type: TxType["EXTENDED"]
+   extraData: string
+}
+
+type TransactionRequest = BasicTransactionRequest | ExtendedTransactionRequest
+
+interface Window { rpcServer: RpcServer; KeyStore: any }

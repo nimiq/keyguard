@@ -6,8 +6,9 @@
 </head>
 <body>
 <link href="../src/nimiq-style.css" rel="stylesheet">
-<script type="text/javascript" src="http://cdn.nimiq.com/web-offline.js"></script>
+<script src="http://cdn.nimiq.com/web-offline.js"></script>
 <script src="../src/lib/EncryptionType.js"></script>
+<script src="../src/lib/TransactionType.js"></script>
 <script src="../src/lib/Key.js"></script>
 <script src="../src/lib/Utf8Tools.js"></script>
 
@@ -44,7 +45,8 @@
             value: 10,
             fee: 0,
             network: 'test',
-            validityStartHeight: 0
+            validityStartHeight: 0,
+            type: TransactionType.BASIC
         };
 
         const result = await keyguard.rpcServer.request(txRequest);
