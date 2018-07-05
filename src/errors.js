@@ -12,7 +12,7 @@ class KeyNotFoundError extends Error {
 class InvalidAddressError extends Error {
     constructor() {
         super(`Invalid address`);
-        this.code = 'K2t ';
+        this.code = 'K2 ';
     }
 }
 
