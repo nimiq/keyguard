@@ -24,13 +24,8 @@ type AccountEntry = {
     label: string
 }
 
-type TxType = {
-    BASIC: 'basic',
-    EXTENDED: 'extended'
-}
-
 type BasicTransactionRequest = {
-    type: TxType["BASIC"]
+    type: TransactionType.BASIC
     sender: string
     recipient: string
     signer: string
@@ -41,7 +36,7 @@ type BasicTransactionRequest = {
 }
 
 type ExtendedTransactionRequest = BasicTransactionRequest & {
-   type: TxType["EXTENDED"]
+   type: TransactionType.EXTENDED
    extraData: string
 }
 
