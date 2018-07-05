@@ -48,13 +48,14 @@ class AccountStore {
 
             request.onerror = () => reject(request.error);
             request.onupgradeneeded = () => {
+                this._dropped = true;
                 reject(new Error('Account database does not exist'));
             };
         });
     }
 
     /**
-     * @returns {Promise.<Array.<object>>}
+     * @returns {Promise.<Array.<AccountInfo>>}
      */
     async list() {
         const db = await this.connect();
@@ -86,10 +87,12 @@ class AccountStore {
     }
 
     /**
-     * @returns {Promise.<Array.<object>>}
+     * @returns {Promise.<Array.<AccountEntry>>}
      * @deprecated Only for migrating keys to another database
+     *
+     * @description Returns the encrypted keypairs!
      */
-    async listPlain() {
+    async dangerouslistPlain() {
         const db = await this.connect();
         return new Promise((resolve, reject) => {
             const results = /** @type {any[]} */ ([]);

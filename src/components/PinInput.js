@@ -1,8 +1,8 @@
-class PinInput extends /** @type {any} */ Nimiq.Observable {
+class PinInput extends Nimiq.Observable {
     /**
-     * @param {Element|undefined} el
+     * @param {Element} [el]
      */
-    constructor(el = undefined) {
+    constructor(el) {
         super();
         this.$el = el || this._createElement();
         this.$dotIndicator = /** @type {Element} */ (this.$el.querySelector('.pin-dot-indicator'));
@@ -50,6 +50,11 @@ class PinInput extends /** @type {any} */ Nimiq.Observable {
             </div>
         `;
         return el;
+    }
+
+    /** @returns {Element} */
+    getElement() {
+        return this.$el;
     }
 
     reset() {
@@ -105,7 +110,7 @@ class PinInput extends /** @type {any} */ Nimiq.Observable {
     _submit() {
         this._unlocking = true;
         this.$el.classList.add('unlocking');
-        this.fire('pin-entered', this._pin);
+        this.fire(PinInput.Events.PIN_ENTERED, this._pin);
     }
 
     onPinIncorrect() {
@@ -141,3 +146,6 @@ class PinInput extends /** @type {any} */ Nimiq.Observable {
         this.$dots.forEach(fillDot);
     }
 }
+PinInput.Events = {
+    PIN_ENTERED: 'pin-entered'
+};
