@@ -10,7 +10,7 @@ type KeyEntry = KeyInfo & {
 // Deprecated, only used for migrating databases
 type AccountInfo = {
     userFriendlyAddress: string,
-    type: EncryptionType,
+    type: string,
     label: string
 }
 
