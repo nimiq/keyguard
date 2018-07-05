@@ -1,5 +1,5 @@
 /** @typedef {1 | 2} EncryptionType */
-const EncryptionType =  {
-    LOW: 1,
-    HIGH: 2
+const EncryptionType = {
+    LOW: /** @type {1} */ (1),
+    HIGH: /** @type {2} */ (2)
 };

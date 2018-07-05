@@ -42,4 +42,10 @@ declare namespace Nimiq {
         off: (type: string, id: number) => void
         fire: (type: string, ...args: any[]) => (Promise<any>|null)
     }
+
+    type WasmHelper = any
+    const WasmHelper: any
+
+    type GenesisConfig = any
+    const GenesisConfig: any
 }

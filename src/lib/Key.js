@@ -33,14 +33,14 @@ class Key {
     }
 
     /**
-     * @param {Uint8Array | string} buf - Encrypted keypair, as byte array or HEX string
+     * @param {Uint8Array | string} buf - Encrypted keypair
      * @param {Uint8Array | string} passphrase - Passphrase, as byte array or ASCII string
      * @param {EncryptionType} type
      * @returns {Promise.<Key>}
      */
     static async loadEncrypted(buf, passphrase, type) {
         if (typeof buf === 'string') {
-            buf = /** @type {Uint8Array} */ (Nimiq.BufferUtils.fromHex(buf));
+            buf = /** @type {Nimiq.SerialBuffer} */ (Nimiq.BufferUtils.fromHex(buf));
         }
 
         if (typeof passphrase === 'string') {
@@ -63,12 +63,12 @@ class Key {
     /**
      * Create a new Key object.
      *
-     * @param {Nimiq.KeyPair} keyPair - Keypair for this key
+     * @param {Nimiq.KeyPair} keyPair - Key pair for this key
      * @param {EncryptionType} type - Low or high security (passphrase or pin encoded, respectively)
      */
     constructor(keyPair, type) {
         /** @type {Nimiq.KeyPair} */
-        this._keyPair = keyPair;
+        this._keyPair = keyPair; // Plain key pair, not encrypted
         /** @type {Nimiq.Address} */
         this.address = this._keyPair.publicKey.toAddress();
         /** @type {string} */
