@@ -27,6 +27,8 @@ class SignTransactionWithPin extends Nimiq.Observable {
 
         $enterPin.appendChild(this.$pinInput.getElement());
 
+        this.$pinInput.open();
+
         this.$pinInput.on('pin-entered', this.handlePinInput.bind(this));
 
         // go to start page
