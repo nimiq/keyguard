@@ -6,3 +6,5 @@ const TRANSLATIONS = {
         _language: "Deutsch",
     },
 };
+
+I18n.initialize(TRANSLATIONS, 'en');

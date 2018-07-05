@@ -33,11 +33,12 @@
                 ialsoloveplums: "Ich ❤ auch Pflaumen.",
             }
         };
-        const i18n = new I18n(translations, 'en');
-        const languagePicker = new LanguagePicker(i18n);
+        I18n.initialize(translations, 'en');
+        
+        const languagePicker = new LanguagePicker();
         document.body.appendChild(languagePicker.getElement());
 
-        i18n.translateDom();
+        I18n.translateDom();
         document.querySelector('#demo').style.display = 'initial';
     </script>
 </body>
