@@ -41,8 +41,7 @@ declare namespace Nimiq {
 
     class PolicyClass {
         coinsToSatoshis: (coins: number) => number
-        SATOSHIS: number;
-        SATOSHIS_PER_COIN: number
+        satoshisToCoins: (satoshis: number) => number
     }
 
     const Policy: PolicyClass

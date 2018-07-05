@@ -17,10 +17,22 @@
 </div>
 
 <script>
-    const keyguard = window.open('../src/sign-transaction/');
+    (async() => {
+        const keyguard = window.open('../src/sign-transaction/');
 
-    keyguard.onload = async () => {
-        await Nimiq.WasmHelper.doImportBrowser();
+        // We need this check because we call the rpcServer object directly and not via RPC Client
+        function checkIfKeyguardReady(resolve) {
+            if (keyguard.rpcServer !== undefined) {
+                resolve();
+            }
+
+            self.setTimeout(_ => checkIfKeyguardReady(resolve), 25);
+        }
+
+        await Promise.all([
+            Nimiq.WasmHelper.doImportBrowser(),
+            new Promise(resolve => checkIfKeyguardReady(resolve))
+        ]);
 
         Nimiq.GenesisConfig.test();
 
@@ -55,7 +67,7 @@
             keyguard.close();
         }
 
-    };
+    })();
 </script>
 
 </body>

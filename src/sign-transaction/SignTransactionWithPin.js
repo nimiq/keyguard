@@ -3,6 +3,12 @@
  */
 class SignTransactionWithPin extends Nimiq.Observable {
 
+    get Pages() {
+        return {
+            TRANSACTION_DATA: 'transaction-data',
+            ENTER_PIN: 'enter-pin'
+        };
+    }
     /** @param {TransactionRequest} txRequest */
     constructor(txRequest) {
         super();
@@ -25,7 +31,7 @@ class SignTransactionWithPin extends Nimiq.Observable {
             return;
         }
 
-        $button.addEventListener('click', () => location.hash = 'enter-pin');
+        $button.addEventListener('click', () => location.hash = this.Pages.ENTER_PIN);
 
         this.$pinInput = new PinInput();
 
@@ -33,10 +39,10 @@ class SignTransactionWithPin extends Nimiq.Observable {
 
         this.$pinInput.open();
 
-        this.$pinInput.on('pin-entered', this.handlePinInput.bind(this));
+        this.$pinInput.on(PinInput.Events.PIN_ENTERED, this.handlePinInput.bind(this));
 
         // go to start page
-        location.hash = 'transaction-data'
+        location.hash = this.Pages.TRANSACTION_DATA
     }
 
     /** @param {string} pin */
@@ -62,8 +68,8 @@ class SignTransactionWithPin extends Nimiq.Observable {
                 sender: tx.sender.toUserFriendlyAddress(),
                 senderPubKey: signatureProof.publicKey.serialize(),
                 recipient: tx.recipient.toUserFriendlyAddress(),
-                value: tx.value / Nimiq.Policy.SATOSHIS,
-                fee: tx.fee / Nimiq.Policy.SATOSHIS,
+                value: Nimiq.Policy.satoshisToCoins(tx.value),
+                fee: Nimiq.Policy.satoshisToCoins(tx.fee),
                 validityStartHeight: tx.validityStartHeight,
                 signature: signatureProof.signature.serialize(),
                 extraData: Utf8Tools.utf8ByteArrayToString(tx.data),

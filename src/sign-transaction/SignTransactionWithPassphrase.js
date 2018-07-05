@@ -3,6 +3,12 @@
  */
 class SignTransactionWithPassphrase extends Nimiq.Observable {
 
+    get Pages() {
+        return  {
+            ENTER_PASSPHRASE: 'enter-passphrase'
+        };
+    }
+
     /** @param {TransactionRequest} txRequest */
     constructor(txRequest) {
         super();
@@ -52,8 +58,8 @@ class SignTransactionWithPassphrase extends Nimiq.Observable {
                     sender: tx.sender.toUserFriendlyAddress(),
                     senderPubKey: signatureProof.publicKey.serialize(),
                     recipient: tx.recipient.toUserFriendlyAddress(),
-                    value: tx.value / Nimiq.Policy.SATOSHIS,
-                    fee: tx.fee / Nimiq.Policy.SATOSHIS,
+                    value: Nimiq.Policy.satoshisToCoins(tx.value),
+                    fee: Nimiq.Policy.satoshisToCoins(tx.fee),
                     validityStartHeight: tx.validityStartHeight,
                     signature: signatureProof.signature.serialize(),
                     extraData: Utf8Tools.utf8ByteArrayToString(tx.data),
@@ -71,6 +77,6 @@ class SignTransactionWithPassphrase extends Nimiq.Observable {
             }
         });
 
-        location.hash = 'enter-passphrase';
+        location.hash = this.Pages.ENTER_PASSPHRASE;
    }
 }

@@ -2,7 +2,7 @@ class SignTransaction {
     /** @param {TransactionRequest} txRequest */
     async request(txRequest) {
 
-        if (txRequest.value < 1 / Nimiq.Policy.SATOSHIS_PER_COIN) {
+        if (Nimiq.Policy.coinsToSatoshis(txRequest.value) < 1) {
             throw new AmountTooSmallError();
         }
 
