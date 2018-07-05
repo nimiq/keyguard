@@ -1,0 +1,63 @@
+.passphrase-input {
+    width: 100%;
+    max-width: var(--max-width);
+    margin: 2rem 0;
+}
+
+.passphrase-input .input-container {
+    width: 100%;
+    position: relative;
+}
+
+.passphrase-input input {
+    padding-right: 5rem;
+    margin: 0;
+}
+
+.passphrase-input .input-container.shake input {
+    border-bottom: .125rem solid var(--error-color) !important;
+}
+
+.passphrase-input .eye-button {
+    position: absolute;
+    top: 0;
+    right: -.375rem;
+    cursor: pointer;
+}
+
+.passphrase-input button {
+    margin-top: 2rem;
+}
+
+.passphrase-input .strength-indicator-container {
+    width: 100%;
+    padding: 2rem 0;
+}
+
+.passphrase-input .strength-indicator-container .label {
+    text-align: center;
+}
+
+.passphrase-input .strength-indicator {
+    width: 100%;
+    height: .75rem;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.passphrase-input .strength-indicator::-webkit-meter-bar {
+    background: none;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Webkit based browsers */
+.passphrase-input .strength-indicator[value="10"]::-webkit-meter-optimum-value { background: var(--error-color); }
+.passphrase-input .strength-indicator[value="70"]::-webkit-meter-optimum-value { background: var(--warning-color); }
+.passphrase-input .strength-indicator[value="100"]::-webkit-meter-optimum-value,
+.passphrase-input .strength-indicator[value="130"]::-webkit-meter-optimum-value { background: var(--success-color); }
+
+/* Gecko based browsers */
+.passphrase-input .strength-indicator[value="10"]::-moz-meter-bar { background: var(--error-color); }
+.passphrase-input .strength-indicator[value="70"]::-moz-meter-bar { background: var(--warning-color); }
+.passphrase-input .strength-indicator[value="100"]::-moz-meter-bar,
+.passphrase-input .strength-indicator[value="130"]::-moz-meter-bar { background: var(--success-color); }
+
