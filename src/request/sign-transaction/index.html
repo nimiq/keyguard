@@ -12,8 +12,10 @@
     <script src="../../lib/RpcServer.js"></script>
     <script src="../../lib/AddressUtils.js"></script>
     <script src="../../lib/Utf8Tools.js"></script>
+    <script src="../../lib/i18n.js"></script>
     <script src="../../common.js"></script>
     <script src="../../components/PinInput.js"></script>
+    <script src="../../components/PassphraseInput.js"></script>
     <script src="../RequestApi.js"></script>
     <script src="SignTransactionApi.js"></script>
     <script src="SignTransactionView.js"></script>
@@ -29,11 +31,6 @@
 
         <!-- For SignTransactionWithPassPhrase -->
         <div id="enter-passphrase" class="page">
-            <input type="text" name="passphrase">
-            <br>
-            <br>
-            <button>Confirm</button>
-            <br>
             <span id="error"></span>
         </div>
 

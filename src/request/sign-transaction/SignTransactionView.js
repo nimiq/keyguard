@@ -5,12 +5,11 @@ class SignTransactionView extends Nimiq.Observable {
      * @param {TransactionRequest} txRequest
      * @param {string} passphraseOrPin
      * @return {Promise<SignedTransactionResult | undefined>}
-     * @private
+     * @protected
      */
     async _signTx(txRequest, passphraseOrPin) {
         if (txRequest.type !== TransactionType.BASIC) {
-            this.fire('error', new Error('not yet implemented'));
-            return;
+            throw new Error('Not yet implemented');
         }
 
         const { value, fee, recipient, signer, validityStartHeight } = txRequest;
