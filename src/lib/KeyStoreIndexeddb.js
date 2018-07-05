@@ -9,6 +9,7 @@
 /// <reference path="EncryptionType.js" />
 class KeyStore {
 
+    /** @returns {KeyStore} */
     static get instance() {
         /** @type {KeyStore} */
         this._instance = this._instance || new KeyStore();

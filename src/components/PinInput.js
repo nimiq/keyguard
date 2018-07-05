@@ -146,6 +146,7 @@ class PinInput extends Nimiq.Observable {
         this.$dots.forEach(fillDot);
     }
 }
+
 PinInput.Events = {
     PIN_ENTERED: 'pin-entered'
 };

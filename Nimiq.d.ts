@@ -10,11 +10,13 @@ declare namespace Nimiq {
     type SerialBuffer = any
     const SerialBuffer: any
 
-    /*type Signature = {
-        create() : Signature
-    }*/
-    type Signature = any
-    const Signature : any
+    interface Signature { }
+
+    class SignatureClass {
+        create(key1: any, key2: any, msg: Uint8Array) : Signature
+    }
+
+    const Signature : SignatureClass
 
     type Transaction = any
     const Transaction: any
@@ -33,9 +35,23 @@ declare namespace Nimiq {
     type PublicKey = any
     const PublicKey: any
 
-    namespace Account  {
+    namespace Account {
         type Type = 0 | 1 | 2
     }
+
+    class PolicyClass {
+        coinsToSatoshis: (coins: number) => number
+        satoshisToCoins: (satoshis: number) => number
+    }
+
+    const Policy: PolicyClass
+
+    class GenesisConfigClass {
+        test: () => void
+        NETWORK_NAME: string
+    }
+
+    const GenesisConfig: GenesisConfigClass
 
     class Observable {
         on: (type: string, callback: Function) => number
@@ -43,9 +59,9 @@ declare namespace Nimiq {
         fire: (type: string, ...args: any[]) => (Promise<any>|null)
     }
 
-    type WasmHelper = any
-    const WasmHelper: any
+    class WasmHelperClass {
+        doImportBrowser: () => void
+    }
 
-    type GenesisConfig = any
-    const GenesisConfig: any
+    const WasmHelper: WasmHelperClass
 }
