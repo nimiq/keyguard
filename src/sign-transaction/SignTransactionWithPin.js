@@ -13,14 +13,14 @@ class SignTransactionWithPin extends Nimiq.Observable {
         const rootElement = document.getElementById('app');
 
         if (!rootElement) {
-            throw new InvalidDOMError();
+            this.fire('error', new InvalidDOMError());
         }
 
         const $button = rootElement.querySelector('#transaction-data button');
         const $enterPin = rootElement.querySelector('#enter-pin');
 
         if (!$button || !$enterPin) {
-            throw new InvalidDOMError();
+            this.fire('error', new InvalidDOMError());
         }
 
         $button.addEventListener('click', () => location.hash = 'enter-pin');
@@ -44,7 +44,7 @@ class SignTransactionWithPin extends Nimiq.Observable {
         const keyStore = KeyStore.instance;
 
         if (this._txRequest.type !== TransactionType.BASIC) {
-            throw new Error('not yet implemented');
+            this.fire('error', new Error('not yet implemented'));
         }
 
         const {value, fee, recipient, signer, validityStartHeight} = this._txRequest;
