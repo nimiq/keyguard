@@ -78,6 +78,17 @@ class PinInput extends Nimiq.Observable {
         return this._unlocking;
     }
 
+    onPinIncorrect() {
+        this.$el.classList.remove('unlocking');
+        this.$el.classList.add('shake-pinpad');
+        this._attempts++;
+        if (this._attempts === 3) {
+            this._waitingTime *= this._waitingTime;
+            this._attempts = 0;
+        }
+        setTimeout(() => this.reset(), Math.max(500, this._waitingTime)); // wait some time for shake animation
+    }
+
     /** @param {KeyboardEvent} e */
     _handleKeyboardInput (e) {
         const inputCharString = e.key;
@@ -111,17 +122,6 @@ class PinInput extends Nimiq.Observable {
         this._unlocking = true;
         this.$el.classList.add('unlocking');
         this.fire(PinInput.Events.PIN_ENTERED, this._pin);
-    }
-
-    onPinIncorrect() {
-        this.$el.classList.remove('unlocking');
-        this.$el.classList.add('shake-pinpad');
-        this._attempts++;
-        if (this._attempts === 3) {
-            this._waitingTime *= this._waitingTime;
-            this._attempts = 0;
-        }
-        setTimeout(() => this.reset(), Math.max(500, this._waitingTime)); // wait some time for shake animation
     }
 
     _onDelete() {

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Passphrase Input</title>
+</head>
+<body style="text-align: center">
+
+<div id="passphrase-setter-container">
+    <h2>Passphrase Setter</h2>
+</div>
+
+<div id="passphrase-getter-container">
+    <h2>Passphrase Getter</h2>
+</div>
+
+<link href="../src/nimiq-style.css" rel="stylesheet">
+<link href="../src/components/PassphraseInput.css" rel="stylesheet">
+
+<script type="text/javascript" src="http://cdn.nimiq.com/web-offline.js"></script>
+<script type="text/javascript" src="../src/lib/i18n.js"></script>
+<script type="text/javascript" src="../src/components/PassphraseInput.js"></script>
+<script type="text/javascript">
+    i18n.setLanguage('en');
+    translations.en.Confirm = 'Confirm';
+    translations.en['Strength:'] = 'Strength:';
+    translations.en['Enter-Pass-Phrase'] = 'Enter Pass Phrase';
+
+    const passphraseSetter = new PassphraseInput(true);
+    const passphraseGetter = new PassphraseInput();
+    const passphraseSetterContainer = document.getElementById('passphrase-setter-container');
+    const passphraseGetterContainer = document.getElementById('passphrase-getter-container');
+    passphraseGetterContainer.style.display = 'none';
+
+    passphraseSetterContainer.appendChild(passphraseSetter.getElement());
+    passphraseGetterContainer.appendChild(passphraseGetter.getElement());
+
+    let chosenPassphrase;
+    passphraseSetter.on(PassphraseInput.Events.PASSPHRASE_ENTERED, passphrase => {
+        chosenPassphrase = passphrase;
+        passphraseGetterContainer.style.display = 'block';
+    });
+    passphraseGetter.on(PassphraseInput.Events.PASSPHRASE_ENTERED, passphrase => {
+        if (passphrase === chosenPassphrase) {
+            passphraseGetter.reset();
+            alert('Yippie, Pass Phrase was correct.');
+        } else {
+            passphraseGetter.onPassphraseIncorrect();
+            alert('Pass Phrase was wrong.');
+        }
+    });
+
+    passphraseSetter.focus();
+</script>
+</body>
+</html>
