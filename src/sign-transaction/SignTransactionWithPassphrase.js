@@ -12,6 +12,7 @@ class SignTransactionWithPassphrase extends Nimiq.Observable {
 
         if (!rootElement) {
             this.fire('error', new InvalidDOMError());
+            return;
         }
 
         // TODO add identicons and other tx data to UI
@@ -22,6 +23,7 @@ class SignTransactionWithPassphrase extends Nimiq.Observable {
 
         if (!$button || !$input || !$error) {
             this.fire('error', new InvalidDOMError());
+            return;
         }
 
         $button.addEventListener('click', async () => {
@@ -35,6 +37,7 @@ class SignTransactionWithPassphrase extends Nimiq.Observable {
 
             if (txRequest.type !== TransactionType.BASIC) {
                 this.fire('error', new Error('not yet implemented'));
+                return;
             }
 
             const { value, fee, recipient, signer, validityStartHeight } = txRequest;

@@ -14,6 +14,7 @@ class SignTransactionWithPin extends Nimiq.Observable {
 
         if (!rootElement) {
             this.fire('error', new InvalidDOMError());
+            return;
         }
 
         const $button = rootElement.querySelector('#transaction-data button');
@@ -21,6 +22,7 @@ class SignTransactionWithPin extends Nimiq.Observable {
 
         if (!$button || !$enterPin) {
             this.fire('error', new InvalidDOMError());
+            return;
         }
 
         $button.addEventListener('click', () => location.hash = 'enter-pin');
@@ -45,6 +47,7 @@ class SignTransactionWithPin extends Nimiq.Observable {
 
         if (this._txRequest.type !== TransactionType.BASIC) {
             this.fire('error', new Error('not yet implemented'));
+            return;
         }
 
         const {value, fee, recipient, signer, validityStartHeight} = this._txRequest;
