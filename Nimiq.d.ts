@@ -63,5 +63,5 @@ declare namespace Nimiq {
         doImportBrowser: () => void
     }
 
-    const WasmHelper : WasmHelperClass
+    const WasmHelper: WasmHelperClass
 }
