@@ -8,11 +8,11 @@ async function runKeyguard(RequestApiClass) {
     Nimiq.GenesisConfig.test();
 
     // Close window if user navigates back to loading screen
-    self.onhashchange = () => {
+    self.addEventListener('hashchange', () => {
         if (location.hash === '') {
             self.close();
         }
-    };
+    });
 
-    window.rpcServer = RpcServer.create(RequestApiClass, '*'); // FIXME Set correct allowedOrigin
+    self.rpcServer = RpcServer.create(RequestApiClass, '*'); // FIXME Set correct allowedOrigin
 }
