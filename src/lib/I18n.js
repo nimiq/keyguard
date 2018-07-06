@@ -21,10 +21,10 @@ class I18n {
 
     /**
      * @param {HTMLElement} [dom] - The DOM element to be translated, or body by default
-     * @param {string} [enforceLanguage] - ISO code of language to translate to, or the currently selected language by default
+     * @param {string} [enforcedLanguage] - ISO code of language to translate to, or the currently selected language by default
      **/
-    static translateDom(dom = document.body, enforceLanguage) {
-        const language = enforceLanguage ? this.getClosestSupportedLanguage(enforceLanguage) : this.language;
+    static translateDom(dom = document.body, enforcedLanguage) {
+        const language = enforcedLanguage ? this.getClosestSupportedLanguage(enforcedLanguage) : this.language;
 
         /**
          * @param {string} tag
@@ -55,10 +55,10 @@ class I18n {
 
     /**
      * @param {string} id - translation dict ID
-     * @param {string} [enforceLanguage] - ISO code of language to translate to, or the currently selected language by default
+     * @param {string} [enforcedLanguage] - ISO code of language to translate to, or the currently selected language by default
      */
-    static translatePhrase(id, enforceLanguage) {
-        const language = enforceLanguage ? this.getClosestSupportedLanguage(enforceLanguage) : this.language;
+    static translatePhrase(id, enforcedLanguage) {
+        const language = enforcedLanguage ? this.getClosestSupportedLanguage(enforcedLanguage) : this.language;
         return this._translate(id, language);
     }
 
