@@ -1,6 +1,8 @@
-class SignTransactionApi {
-    /** @param {TransactionRequest} txRequest */
-    async request(txRequest) {
+class SignTransactionApi extends RequestApi {
+    /**
+     * @param {TransactionRequest} txRequest
+     */
+    async onRequest(txRequest) {
 
         if (Nimiq.Policy.coinsToSatoshis(txRequest.value) < 1) {
             throw new AmountTooSmallError();
@@ -17,15 +19,12 @@ class SignTransactionApi {
         const keyStore = KeyStore.instance;
         const keyType = await keyStore.getType(txRequest.sender);
 
-        return new Promise((resolve, reject) => {
+        const handler = keyType === EncryptionType.HIGH
+            ? new SignTransactionWithPassphrase(txRequest)
+            : new SignTransactionWithPin(txRequest);
 
-            const handler = keyType === EncryptionType.HIGH
-                ? new SignTransactionWithPassphrase(txRequest)
-                : new SignTransactionWithPin(txRequest);
-
-            handler.on('result', /** @param {any} result */ (result) => resolve(result));
-            handler.on('error', /** @param {Error} error */ (error) => reject(error));
-        });
+        handler.on('result', /** @param {any} result */ (result) => this.resolve(result));
+        handler.on('error', /** @param {Error} error */ (error) => this.reject(error));
     }
 }
 
