@@ -1,11 +1,11 @@
 /**
- * # RequestApi
+ * # PopupApi
  * A common parent class for pop-up requests.
  *
  * ## Usage:
- * Inherit this class in your requests API class:
+ * Inherit this class in your popup request API class:
  * ```
- *  class SignTransactionApi extends RequestApi {
+ *  class SignTransactionApi extends PopupApi {
  *
  *      // Define the onRequest method to receive the client's request object:
  *      onRequest(request) {
@@ -23,7 +23,7 @@
  *  runKeyguard(SignTransactionApi);
  * ```
  */
-class RequestApi {
+class PopupApi {
 
     constructor() {
         /** @type {Function} */
