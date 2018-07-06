@@ -22,7 +22,7 @@
 <script>
     document.querySelector('button').addEventListener('click', async () => {
 
-        const keyguard = window.open('../src/sign-transaction/');
+        const keyguard = window.open('../src/pages/sign-transaction/');
 
         // We need this check because we call the rpcServer object directly and not via RPC Client
         function checkIfKeyguardReady(resolve) {
