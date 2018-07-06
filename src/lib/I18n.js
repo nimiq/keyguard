@@ -99,14 +99,17 @@ class I18n {
     static getClosestSupportedLanguage(language) {
         if (language in this._dict) return language;
         language = language.split('-')[0];
+
         if (language in this._dict) return language;
         const languagePrefix = `${language}-`;
+
         for (const supportedLanguage of this.availableLanguages()) {
             if (supportedLanguage.startsWith(languagePrefix)) return supportedLanguage;
         }
+        
         // language is not supported. Return a variant of this._fallbackLanguage if available, otherwise an arbitrary supported language
-        if (language !== this._fallbackLanguage) {
-            return this.getClosestSupportedLanguage(this.fallbackLanguage);
+        if (language !== this.fallbackLanguage) {
+            return this.fallbackLanguage;
         } else {
             return this.availableLanguages()[0];
         }
