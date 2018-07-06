@@ -16,7 +16,7 @@ class CookieJar {
         // Legacy cookie
         if (listFromAccountStore) {
             const match = document.cookie.match(new RegExp('accounts=([^;]+)'));
-            if (match) {
+            if (match && match[1]) {
                 const decoded = decodeURIComponent(match[1]);
                 return JSON.parse(decoded);
             }
@@ -25,7 +25,7 @@ class CookieJar {
 
         const match = document.cookie.match(new RegExp('k=([^;]+)'));
 
-        if (match) {
+        if (match && match[1]) {
             return this._decodeCookie(match[1]);
         }
 

@@ -223,7 +223,11 @@ class KeyStore {
         // await accountStore.drop();
 
         if (BrowserDetection.isIos() || BrowserDetection.isSafari()) {
-            document.cookie = 'migrate=0;expires=0'; // Delete the migrate cookie
+            // Delete migrate cookie
+            document.cookie = 'migrate=0;expires=0';
+
+            // Delete accounts cookie
+            document.cookie = 'accounts=;expires=0';
         }
 
         return true;
