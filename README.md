@@ -23,7 +23,7 @@ Then run the file watcher with `npm run watch` or `yarn watch`.
 - src
     - lib
     - components
-    - pages
+    - request
 - tests
 - demos
 ```
