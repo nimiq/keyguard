@@ -4,8 +4,22 @@ declare namespace Nimiq {
 
     const BufferUtils: any
 
-    type KeyPair = any
-    const KeyPair: any
+    class KeyPairClass {
+        publicKey: PublicKey
+        privateKey: PrivateKey
+        isLocked: boolean
+        generate() : KeyPairClass
+        unserialize(buffer: SerialBuffer): KeyPairClass
+        fromEncrypted(buffer: SerialBuffer, passphraseOrPin: Uint8Array): KeyPairClass
+        exportEncrypted(passphrase: string | Uint8Array, unlockKey: string): SerialBuffer
+        serialize(): SerialBuffer
+        lock(key: string | Uint8Array): void
+        relock(): KeyPairClass
+        unlock(key: string | Uint8Array): void
+        equals(object: any): boolean
+    }
+
+    const KeyPair: KeyPairClass
 
     type SerialBuffer = any
     const SerialBuffer: any
@@ -34,6 +48,9 @@ declare namespace Nimiq {
 
     type PublicKey = any
     const PublicKey: any
+
+    type PrivateKey = any
+    const PrivateKey: any
 
     namespace Account {
         type Type = 0 | 1 | 2

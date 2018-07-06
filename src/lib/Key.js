@@ -238,14 +238,13 @@ class Key { // eslint-disable-line no-unused-vars
 
     /**
      * @param {Uint8Array | string} key
-     * @returns {Promise.<void>}
      */
-    lock(key) {
+    async lock(key) {
         if (typeof key === 'string') {
             key = Nimiq.BufferUtils.fromAscii(key);
         }
 
-        return this.keyPair.lock(key);
+        await this.keyPair.lock(key);
     }
 
     relock() {
@@ -254,14 +253,13 @@ class Key { // eslint-disable-line no-unused-vars
 
     /**
      * @param {Uint8Array | string} key
-     * @returns {Promise.<void>}
      */
-    unlock(key) {
+    async unlock(key) {
         if (typeof key === 'string') {
             key = Nimiq.BufferUtils.fromAscii(key);
         }
 
-        return this.keyPair.unlock(key);
+        await this.keyPair.unlock(key);
     }
 
     /**
