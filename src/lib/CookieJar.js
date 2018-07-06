@@ -40,8 +40,8 @@ class CookieJar {
 
         for (const keyInfo of keys) {
             const address = Nimiq.Address.fromUserFriendlyAddress(keyInfo.userFriendlyAddress);
-            const encodedKey = /** @type {string} */ (address.toBase64());
-            str += keyInfo.type.toString() + encodedKey.slice(0, 27);
+            const encodedAddress = /** @type {string} */ (address.toBase64());
+            str += keyInfo.type.toString() + encodedAddress.slice(0, 27);
         }
 
         return str;
