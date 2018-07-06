@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/nimiq/keyguard-next#readme",
   "devDependencies": {
+    "@types/jasmine": "^2.8.8",
     "jasmine-core": "^3.1.0",
     "karma": "^2.0.4",
     "karma-chrome-launcher": "^2.2.0",
