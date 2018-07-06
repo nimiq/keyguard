@@ -1,15 +1,20 @@
 # keyguard-next
 
 ## Development
-Install the TypeScript compiler globally:
+Install the dev dependencies:
 ```
 // With NPM
-sudo npm install --global typescript
+npm install
 
 // With Yarn
-yarn global add typescript
+yarn
 ```
-Then run the file watcher with `npm run watch` or `yarn watch`.
+
+Then you can:
+
+- run the tests with `npm run test` or `yarn test`.
+- run the typechecker with `npm run typecheck` or `yarn typecheck`.
+- run the typecheck file watcher with `npm run watch` or `yarn watch`.
 
 ## Coding Style
 - Folder names in Kebab Case: `sign-transaction`
