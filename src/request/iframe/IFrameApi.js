@@ -10,12 +10,10 @@ class IFrameApi {
         }
 
         if (listFromAccountStore) {
-            const accountStore = AccountStore.instance;
-            return accountStore.list();
+            return AccountStore.instance.list();
         }
 
-        const keyStore = KeyStore.instance;
-        return keyStore.list();
+        return KeyStore.instance.list();
     }
 
     /**
