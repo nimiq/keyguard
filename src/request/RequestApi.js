@@ -39,6 +39,7 @@ class RequestApi {
      * @param {object} request
      */
     async request(request) {
+        // Deprecated, only for database migration
         // TODO Maybe only check on iOS/Safari?
         // Would require to load the BrowserDetection class for every request.
         await this._checkForMigrationFlag();
@@ -114,6 +115,7 @@ class RequestApi {
             await keyStore.putPlain(keyEntry);
         }
 
+        // FIXME Uncomment after/for testing
         // await accountStore.drop();
         return true;
     }
