@@ -1,3 +1,28 @@
+/**
+ * # RequestApi
+ * A common parent class for pop-up requests.
+ *
+ * ## Usage:
+ * Inherit this class in your requests API class:
+ * ```
+ *  class SignTransactionApi extends RequestApi {
+ *
+ *      // Define the onRequest method to receive the client's request object:
+ *      onRequest(request) {
+ *          // do something...
+ *
+ *          // When done, call this.resolve() with the result object
+ *          this.resolve(result);
+ *
+ *          // Or this.reject() with an error
+ *          this.reject(error);
+ *      }
+ *  }
+ *
+ *  // Finally, start your API:
+ *  runKeyguard(SignTransactionApi);
+ * ```
+ */
 class RequestApi {
 
     constructor() {
