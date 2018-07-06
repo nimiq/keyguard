@@ -19,7 +19,7 @@ class RpcServer {
      * @return {object}
      */
     static create(clazz, allowedOrigin, whitelist) {
-        return new (RpcServer._Server(clazz, allowedOrigin, whitelist))();
+        return new (RpcServer._generateServerClass(clazz, allowedOrigin, whitelist))();
     }
 
     /**
@@ -29,7 +29,7 @@ class RpcServer {
      *
      * @returns { Newable<Object>}
      */
-    static _Server(clazz, allowedOrigin, whitelist) {
+    static _generateServerClass(clazz, allowedOrigin, whitelist) {
         const Server = class extends clazz {
             constructor() {
                 super();
@@ -63,11 +63,11 @@ class RpcServer {
                     let args = message.data.args && Array.isArray(message.data.args) ? message.data.args : [];
 
                     // Test if request calls an existing/whitelisted method with the right number of arguments
-                    const calledMethod = this[message.data.command];
-                    if (this._whitelist.indexOf(message.data.command) < 0 || !calledMethod) {
+                    const requestedMethod = this[message.data.command];
+                    if (this._whitelist.indexOf(message.data.command) < 0 || !requestedMethod) {
                         throw new Error('Unknown command');
                     }
-                    if (calledMethod.length < args.length) {
+                    if (requestedMethod.length < args.length) {
                         throw new Error(`Too many arguments passed: ${message}`);
                     }
 
