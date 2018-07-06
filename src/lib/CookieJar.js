@@ -4,7 +4,7 @@ class CookieJar {
      * @param {KeyInfo[]} keys
      */
     static fill(keys) {
-        const maxAge = 60 * 60 * 24 * 365 * 10; // A looooooooong time (~10 years)
+        const maxAge = 60 * 60 * 24 * 365;
         const encodedKeys = this._encodeCookie(keys);
         document.cookie = `k=${encodedKeys};max-age=${maxAge.toString()}`;
     }
@@ -13,15 +13,17 @@ class CookieJar {
      * @param {boolean} [listFromAccountStore] - Deprecated, used for reading keys from old database
      */
     static eat(listFromAccountStore) {
-        const store = listFromAccountStore ? 'accounts' : 'k'; // Legacy support
-        const match = document.cookie.match(new RegExp(`${store}=([^;]+)`));
-
-        // Legacy support
-        if (match && listFromAccountStore) {
-            // Legacy format
-            const decoded = decodeURIComponent(match[1]);
-            return JSON.parse(decoded);
+        // Legacy cookie
+        if (listFromAccountStore) {
+            const match = document.cookie.match(new RegExp('accounts=([^;]+)'));
+            if (match) {
+                const decoded = decodeURIComponent(match[1]);
+                return JSON.parse(decoded);
+            }
+            return [];
         }
+
+        const match = document.cookie.match(new RegExp('k=([^;]+)'));
 
         if (match) {
             return this._decodeCookie(match[1]);

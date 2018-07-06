@@ -22,23 +22,13 @@ class IFrameApi {
      * @deprecated Only for migrating databases during the transition period
      */
     async migrateAccountsToKeys() {
-        const accountStore = AccountStore.instance;
-        const keyStore = KeyStore.instance;
-
-        const keys = await accountStore.dangerouslistPlain();
-
-        for (const key of keys) {
-            const keyEntry = {
-                encryptedKeyPair: key.encryptedKeyPair,
-                userFriendlyAddress: key.userFriendlyAddress,
-                // Translate between old text type and new number type
-                type: /** @type {EncryptionType} */ (key.type === 'high' ? EncryptionType.HIGH : EncryptionType.LOW)
-            };
-            await keyStore.putPlain(keyEntry);
+        if (BrowserDetection.isIos() || BrowserDetection.isSafari()) {
+            // Set migrate flag cookie
+            document.cookie = 'migrate=1;max-age=31536000';
+            return true;
         }
 
-        // await accountStore.drop();
-        return true;
+        return RequestApi.doMigrateAccountsToKeys();
     }
 }
 

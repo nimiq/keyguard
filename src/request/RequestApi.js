@@ -39,6 +39,10 @@ class RequestApi {
      * @param {object} request
      */
     async request(request) {
+        // TODO Maybe only check on iOS/Safari?
+        // Would require to load the BrowserDetection class for every request.
+        await this._checkForMigrationFlag();
+
         return new Promise((resolve, reject) => {
             this._resolve = resolve;
             this._reject = reject;
@@ -78,5 +82,39 @@ class RequestApi {
      */
     reject(error) {
         this._reject(error);
+    }
+
+    /**
+     * @deprecated Only for database migration
+     */
+    async _checkForMigrationFlag() {
+        const match = document.cookie.match(new RegExp('migrate=([^;]+)'));
+        if (match && match[1] === "1") {
+            await RequestApi.doMigrateAccountsToKeys();
+            document.cookie = 'migrate=0;expires=0'; // Delete the migrate cookie
+        }
+    }
+
+    /**
+     * @deprecated Only for database migration
+     */
+    static async doMigrateAccountsToKeys() {
+        const accountStore = AccountStore.instance;
+        const keyStore = KeyStore.instance;
+
+        const keys = await accountStore.dangerouslistPlain();
+
+        for (const key of keys) {
+            const keyEntry = {
+                encryptedKeyPair: key.encryptedKeyPair,
+                userFriendlyAddress: key.userFriendlyAddress,
+                // Translate between old text type and new number type
+                type: /** @type {EncryptionType} */ (key.type === 'high' ? EncryptionType.HIGH : EncryptionType.LOW)
+            };
+            await keyStore.putPlain(keyEntry);
+        }
+
+        // await accountStore.drop();
+        return true;
     }
 }
