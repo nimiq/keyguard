@@ -3,8 +3,7 @@
   "version": "0.0.1",
   "description": "Secure storage for Nimiq private keys.",
   "scripts": {
-    "test": "tsc & eslint & karma start",
-    "karma": "karma start",
+    "test": "karma start",
     "typecheck": "tsc",
     "watch": "tsc --watch",
     "lint": "eslint src/**/*.js",
