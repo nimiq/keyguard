@@ -21,16 +21,27 @@ class TwentyFourWords {
         const phrase = MnemonicPhrase.keyToMnemonic(privateKey);
         const words = phrase.split(/\s+/g);
 
-        const html = words.map((word, index) =>
-            `${ [0, 8, 16].indexOf(index) >= 0 ? `<div class="word-section section-${ Math.ceil((index + 1) / 8) }" onclick="">` : '' }
-                <div class="word">
-                    <span class="word-placeholder">${ index + 1 }</span>
-                    <span class="word-content" title="word #${ index + 1 }">${ word }</span>
-                </div>
-            ${ [7, 15, 23].indexOf(index) >= 0 ? `</div>` : '' }
-            `).join('');
+        for (let sectionIndex = 0; sectionIndex < 3; sectionIndex++) {
+            const section = document.createElement('div');
+            section.classList.add('word-section', `section-${ sectionIndex + 1 }`);
+            for (let wordIndex = sectionIndex * 8; wordIndex < (sectionIndex + 1) * 8; wordIndex++) {
+                const placeholder = document.createElement('span');
+                placeholder.classList.add('word-placeholder');
+                placeholder.textContent = wordIndex + 1 + '';
 
-        this.$el.innerHTML = html;
+                const content = document.createElement('span');
+                content.classList.add('word-content');
+                content.textContent = words[wordIndex];
+                content.title = `"word #${ wordIndex + 1 }`;
+
+                const word = document.createElement('div');
+                word.classList.add('word');
+                word.appendChild(placeholder);
+                word.appendChild(content);
+                section.appendChild(word);
+            }
+            this.$el.appendChild(section);
+        }
     }
 
 
