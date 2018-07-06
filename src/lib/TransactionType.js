@@ -3,5 +3,5 @@
 
 const TransactionType = {
     BASIC: 'basic',
-    EXTENDED: 'extended'
+    EXTENDED: 'extended',
 };

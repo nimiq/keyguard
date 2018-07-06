@@ -11,7 +11,6 @@
  */
 
 class AccountStore {
-
     static get instance() {
         /** @type {AccountStore} */
         this._instance = this._instance || new AccountStore();
@@ -73,7 +72,7 @@ class AccountStore {
                     const keyInfo = {
                         address: key.userFriendlyAddress,
                         type: key.type,
-                        label: key.label
+                        label: key.label,
                     };
 
                     results.push(keyInfo);

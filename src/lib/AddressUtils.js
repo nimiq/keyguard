@@ -5,7 +5,6 @@
  * const formattedAddress = Address.Utils.formatAddress(' NQ 1234567890A BCDEFGHIJKLMN  OPQRSTUVWX '); // 'NQ12 3456 7890 ABCD EFGH IJKL MNOP QRST UVWX'
  */
 class AddressUtils {
-
     /**
      * IBAN-format Nimiq address
      * @param {string} str
@@ -63,9 +62,7 @@ class AddressUtils {
      * @param {string} str
      */
     static _alphabetCheck(str) {
-        const filteredStr = str.split('').filter((c) => {
-            return AddressUtils.NIMIQ_ALPHABET.includes(c);
-        }).join('');
+        const filteredStr = str.split('').filter(c => AddressUtils.NIMIQ_ALPHABET.includes(c)).join('');
 
         return filteredStr === str;
     }
@@ -74,7 +71,7 @@ class AddressUtils {
      * @param {string} str
      */
     static _ibanCheck(str) {
-        const num = str.split('').map((c) => {
+        const num = str.split('').map(c => {
             const code = c.toUpperCase().charCodeAt(0);
             return code >= 48 && code <= 57 ? c : (code - 55).toString();
         }).join('');

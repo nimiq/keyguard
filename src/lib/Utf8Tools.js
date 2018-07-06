@@ -1,8 +1,8 @@
+/* eslint-disable */
 /**
  * Functions taken from https://github.com/google/closure-library/blob/master/closure/goog/crypt/crypt.js
  */
 class Utf8Tools {
-
     /**
      * @param {string} str
      * @returns {Uint8Array}

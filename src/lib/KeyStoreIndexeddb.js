@@ -6,9 +6,7 @@
  * const keyStore = KeyStore.instance;
  * const accounts = await keyStore.list();
  */
-/// <reference path="EncryptionType.js" />
 class KeyStore {
-
     /** @returns {KeyStore} */
     static get instance() {
         /** @type {KeyStore} */
@@ -105,9 +103,9 @@ class KeyStore {
         const encryptedKeyPair = await key.exportEncrypted(passphrase, unlockKey);
 
         const keyEntry = {
-            encryptedKeyPair: encryptedKeyPair,
+            encryptedKeyPair,
             userFriendlyAddress: key.userFriendlyAddress,
-            type: key.type
+            type: key.type,
         };
 
         return await this._putPlain(keyEntry);
@@ -174,7 +172,7 @@ class KeyStore {
                     // Because: To use Key.getPublicInfo(), we would need to create Key instances out of the key object that we receive from the DB.
                     const keyInfo = {
                         userFriendlyAddress: key.userFriendlyAddress,
-                        type: key.type
+                        type: key.type,
                     };
 
                     results.push(keyInfo);
@@ -220,7 +218,7 @@ class KeyStore {
                 encryptedKeyPair: key.encryptedKeyPair,
                 userFriendlyAddress: key.userFriendlyAddress,
                 // Translate between old text type and new number type
-                type: /** @type {EncryptionType} */ (key.type === 'high' ? EncryptionType.HIGH : EncryptionType.LOW)
+                type: /** @type {EncryptionType} */ (key.type === 'high' ? EncryptionType.HIGH : EncryptionType.LOW),
             };
             await this.putPlain(keyEntry);
         }

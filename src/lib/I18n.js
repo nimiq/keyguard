@@ -1,5 +1,4 @@
 class I18n {
-
     /**
      * @param {object} dictionary - dictionary of all languages and phrases
      * @param {string} fallbackLanguage - Language to be used if no translation for the current language can be found.
@@ -8,7 +7,7 @@ class I18n {
         this._dict = dictionary;
 
         if (!(fallbackLanguage in this._dict)) {
-            throw new Error(`Fallback language "${ fallbackLanguage }" not defined`);
+            throw new Error(`Fallback language "${fallbackLanguage}" not defined`);
         }
         /** @type {string} */
         this._fallbackLanguage = fallbackLanguage;
@@ -22,7 +21,7 @@ class I18n {
     /**
      * @param {HTMLElement} [dom] - The DOM element to be translated, or body by default
      * @param {string} [enforcedLanguage] - ISO code of language to translate to, or the currently selected language by default
-     **/
+     */
     static translateDom(dom = document.body, enforcedLanguage) {
         const language = enforcedLanguage ? this.getClosestSupportedLanguage(enforcedLanguage) : this.language;
 
@@ -33,20 +32,20 @@ class I18n {
         const translateElements = (tag, callback) => {
             const attribute = `data-${tag}`;
             /** @type {NodeListOf<HTMLElement>} */
-            const elements = dom.querySelectorAll(`[${ attribute }]`);
+            const elements = dom.querySelectorAll(`[${attribute}]`);
             elements.forEach(element => {
                 const id = element.getAttribute(attribute);
                 if (!id) return;
                 callback(element, this._translate(id, language));
             });
-        }
+        };
 
         /**
          * @param {string} tag
          */
-        const translateAttribute = (tag) => {
-            translateElements(`i18n-${ tag }`, (element, translation) => element.setAttribute(tag, translation));
-        }
+        const translateAttribute = tag => {
+            translateElements(`i18n-${tag}`, (element, translation) => element.setAttribute(tag, translation));
+        };
 
         translateElements('i18n', (element, translation) => element.textContent = translation);
         translateAttribute('value');

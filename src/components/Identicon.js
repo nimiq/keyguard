@@ -1,5 +1,4 @@
 class Identicon {
-
     /**
      * @param {string} [address]
      * @param {HTMLImageElement} [el]

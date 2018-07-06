@@ -13,7 +13,6 @@
  * const msg = key.signMessage('message');
  *
  */
-/// <reference path="EncryptionType.js" />
 class Key {
     /**
      * @param {Uint8Array | string} buf - Keypair, as byte array or HEX string
@@ -83,7 +82,7 @@ class Key {
      * @returns {object}
      */
     signMessage(message) {
-        message = 'nimiq_msg_' + message;
+        message = `nimiq_msg_${message}`;
         const msgBytes = Utf8Tools.stringToUtf8ByteArray(message);
         const signature = Nimiq.Signature.create(this.keyPair.privateKey, this.keyPair.publicKey, msgBytes);
         return { message, signature };
@@ -171,7 +170,7 @@ class Key {
             fee,
             validityStartHeight,
             isContractCreation ? Nimiq.Transaction.Flag.CONTRACT_CREATION : Nimiq.Transaction.Flag.NONE,
-            extraData
+            extraData,
         );
 
         const proof = this._makeSignatureProof(transaction.serializeContent());
@@ -262,8 +261,8 @@ class Key {
     getPublicInfo() {
         return {
             userFriendlyAddress: this.userFriendlyAddress,
-            type: this.type
-        }
+            type: this.type,
+        };
     }
 
     /**

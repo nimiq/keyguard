@@ -24,7 +24,6 @@
  * ```
  */
 class PopupApi {
-
     constructor() {
         /** @type {Function} */
         this._resolve;
@@ -94,6 +93,6 @@ class PopupApi {
      */
     _hasMigrateFlag() {
         const match = document.cookie.match(new RegExp('migrate=([^;]+)'));
-        return match && match[1] === "1";
+        return match && match[1] === '1';
     }
 }

@@ -1,5 +1,4 @@
 class LanguagePicker {
-
     /**
      * @param {Element} [el]
      */

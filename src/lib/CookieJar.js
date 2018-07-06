@@ -1,5 +1,4 @@
 class CookieJar {
-
     /**
      * @param {KeyInfo[]} keys
      */
@@ -65,7 +64,7 @@ class CookieJar {
 
             return /** @type {KeyInfo} */ ({
                 userFriendlyAddress,
-                type
+                type,
             });
         });
     }

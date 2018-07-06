@@ -90,11 +90,11 @@ class PinInput extends Nimiq.Observable {
     }
 
     /** @param {KeyboardEvent} e */
-    _handleKeyboardInput (e) {
+    _handleKeyboardInput(e) {
         const inputCharString = e.key;
         const inputNumber = parseInt(inputCharString);
-        if (isNaN(inputNumber)){
-            e.preventDefault(); //stop character from entering input
+        if (isNaN(inputNumber)) {
+            e.preventDefault(); // stop character from entering input
         } else {
             this._onKeyPressed(inputNumber);
         }
@@ -148,5 +148,5 @@ class PinInput extends Nimiq.Observable {
 }
 
 PinInput.Events = {
-    PIN_ENTERED: 'pin-entered'
+    PIN_ENTERED: 'pin-entered',
 };
