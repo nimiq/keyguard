@@ -1,3 +1,7 @@
+.identicon img {
+    height: 100%;
+}
+
 #choose-identicon {
     -webkit-user-select: none;
     user-select: none;
