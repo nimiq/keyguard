@@ -9,52 +9,45 @@ class SignTransactionWithPassphrase extends SignTransactionView {
     constructor(txRequest) {
         super();
 
-        // construct UI
-        const rootElement = document.getElementById('app');
+        this._txRequest = txRequest;
 
-        if (!rootElement) {
-            this.fire('error', new InvalidDOMError());
-            return;
-        }
+        this.$rootElement = /** @type {HTMLElement} */ (document.getElementById('app'));
+        this.$enterPassphrase = /** @type {HTMLElement} */ (this.$rootElement.querySelector('#enter-passphrase'));
+        this.$error = /** @type {HTMLElement} */ (this.$rootElement.querySelector('#enter-passphrase #error'));
 
         // TODO add identicons and other tx data to UI
 
-        const $button = rootElement.querySelector('#enter-passphrase button');
-        const $input = /** @type {HTMLInputElement} */ (rootElement.querySelector('#enter-passphrase input'));
-        const $error = rootElement.querySelector('#enter-passphrase #error');
+        this._passphraseInput = new PassphraseInput();
 
-        if (!$button || !$input || !$error) {
-            this.fire('error', new InvalidDOMError());
-            return;
-        }
+        this.$enterPassphrase.appendChild(this._passphraseInput.getElement());
 
-        $button.addEventListener('click', async () => {
-            document.body.classList.add('loading');
-            $error.textContent = '';
-
-            const passphrase = $input.value;
-
-            try {
-                const signedTx = await this._signTx(txRequest, passphrase);
-                this.fire('result', signedTx);
-            } catch (e) {
-                // assume the passphrase was wrong
-                console.error(e);
-
-                document.body.classList.remove('loading');
-
-                $input.value = '';
-                // TODO i18n
-                $error.textContent = 'Wrong Pass Phrase, please try again';
-            }
-        });
+        this._passphraseInput.on(PassphraseInput.Events.PASSPHRASE_ENTERED, this._handlePassphraseInput.bind(this));
 
         location.hash = SignTransactionWithPassphrase.Pages.ENTER_PASSPHRASE;
-        $input.focus();
+    }
+
+    /** @param {string} passphrase */
+    async _handlePassphraseInput(passphrase) {
+        document.body.classList.add('loading');
+
+        this.$error.classList.add('hidden');
+
+        try {
+            const signedTx = await this._signTx(this._txRequest, passphrase);
+            this.fire('result', signedTx);
+        } catch (e) {
+            console.error(e);
+
+            document.body.classList.remove('loading');
+
+            // Assume the passphrase was wrong
+            this._passphraseInput.onPassphraseIncorrect();
+
+            this.$error.classList.remove('hidden');
+        }
     }
 }
 
 SignTransactionWithPassphrase.Pages = {
     ENTER_PASSPHRASE: 'enter-passphrase'
 };
-

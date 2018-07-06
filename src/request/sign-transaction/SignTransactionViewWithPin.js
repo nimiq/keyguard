@@ -11,52 +11,39 @@ class SignTransactionWithPin extends SignTransactionView {
 
         this._txRequest = txRequest;
 
-        // construct UI
-        const rootElement = document.getElementById('app');
+        this.$rootElement = /** @type {HTMLElement} */ (document.getElementById('app'));
+        this.$button = /** @type {HTMLElement} */ (this.$rootElement.querySelector('#transaction-data button'));
+        this.$enterPin = /** @type {HTMLElement} */ (this.$rootElement.querySelector('#enter-pin'));
 
-        if (!rootElement) {
-            this.fire('error', new InvalidDOMError());
-            return;
-        }
+        this.$button.addEventListener('click', () => location.hash = SignTransactionWithPin.Pages.ENTER_PIN);
 
-        const $button = rootElement.querySelector('#transaction-data button');
-        const $enterPin = rootElement.querySelector('#enter-pin');
+        this._pinInput = new PinInput();
 
-        if (!$button || !$enterPin) {
-            this.fire('error', new InvalidDOMError());
-            return;
-        }
+        this.$enterPin.appendChild(this._pinInput.getElement());
 
-        $button.addEventListener('click', () => location.hash = SignTransactionWithPin.Pages.ENTER_PIN);
+        this._pinInput.open();
 
-        this.$pinInput = new PinInput();
-
-        $enterPin.appendChild(this.$pinInput.getElement());
-
-        this.$pinInput.open();
-
-        this.$pinInput.on(PinInput.Events.PIN_ENTERED, this.handlePinInput.bind(this));
+        this._pinInput.on(PinInput.Events.PIN_ENTERED, this.handlePinInput.bind(this));
 
         // go to start page
         location.hash = SignTransactionWithPin.Pages.TRANSACTION_DATA;
     }
 
-    /**
-     * @param {string} pin
-     */
+    /** @param {string} pin */
     async handlePinInput(pin) {
         document.body.classList.add('loading');
 
         try {
             const signedTx = await this._signTx(this._txRequest, pin);
+            this._pinInput.close();
             this.fire('result', signedTx);
         } catch (e) {
-            // assume the pin was wrong
             console.error(e);
 
             document.body.classList.remove('loading');
 
-            this.$pinInput.onPinIncorrect();
+            // Assume the pin was wrong
+            this._pinInput.onPinIncorrect();
         }
     }
 }

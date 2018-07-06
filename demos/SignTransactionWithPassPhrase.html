@@ -16,13 +16,21 @@
     <button>Sign Transaction</button>
     <br>
     <br>
-    <center>The Pass Phrase is 'password'</center>
+    <div class="center">The Pass Phrase is 'password'</div>
 </div>
 
 <script>
+    (async () => {
+        // Because the mocked KeyStore.prototype.get function below is defined in this
+        // window's scope, Nimiq also needs to be defined and initialized here
+        await Nimiq.WasmHelper.doImportBrowser();
+        Nimiq.GenesisConfig.test();
+    })();
+
     document.querySelector('button').addEventListener('click', async () => {
 
-        const keyguard = window.open('../src/request/sign-transaction/');
+        // todo fix behavior on second click
+        const keyguard = window.open('../src/request/sign-transaction/', 'keyguard');
 
         // We need this check because we call the rpcServer object directly and not via RPC Client
         function checkIfKeyguardReady(resolve) {
@@ -32,11 +40,6 @@
                 self.setTimeout(() => checkIfKeyguardReady(resolve), 25);
             }
         }
-
-        // Because the mocked KeyStore.prototype.get function below is defined in this
-        // window's scope, Nimiq also needs to be defined and initialized here
-        await Nimiq.WasmHelper.doImportBrowser();
-        Nimiq.GenesisConfig.test();
 
         await new Promise(res => checkIfKeyguardReady(res));
 
