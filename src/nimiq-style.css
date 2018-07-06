@@ -529,6 +529,11 @@ li {
     text-align: left;
 }
 
+.address {
+    font-weight: 600;
+    white-space: nowrap;
+}
+
 @media (max-width: 320px) {
     h1 {
         font-size: 3rem;
@@ -541,4 +546,3 @@ li {
         padding-bottom: 1rem;
     }
 }
-

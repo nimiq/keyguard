@@ -16,6 +16,14 @@ class Identicon { // eslint-disable-line no-unused-vars
         return this.$el;
     }
 
+    /**
+     * @param {string} address
+     */
+    set address(address) {
+        this._address = address;
+        this._updateIqon();
+    }
+
     _createElement() {
         const imageElement = document.createElement('img');
         const element = document.createElement('div');
@@ -25,14 +33,6 @@ class Identicon { // eslint-disable-line no-unused-vars
         this.$imgEl = imageElement;
 
         return element;
-    }
-
-    /**
-     * @param {string} address
-     */
-    set address(address) {
-        this._address = address;
-        this._updateIqon();
     }
 
     _updateIqon() {

@@ -25,6 +25,7 @@ class ChooseIdenticon extends Nimiq.Observable {
     }
 
     generateIdenticons() {
+        this.$el.classList.remove('active');
         const keys = {};
 
         for (let i = 0; i < 7; i++) {
@@ -36,7 +37,6 @@ class ChooseIdenticon extends Nimiq.Observable {
         this._volatileKeys = keys;
 
         this.$identicons.textContent = '';
-        this.$el.classList.remove('active');
 
         for (const address in keys) {
             const identicon = new Identicon(address);
