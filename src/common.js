@@ -1,11 +1,25 @@
-/** @param {Function} RequestApiClass - Class object of the API which is to be exposed via postMessage RPC */
-async function runKeyguard(RequestApiClass) {
+/**
+ * @param {Function} RequestApiClass - Class object of the API which is to be exposed via postMessage RPC
+ * @param {object} [options]
+ */
+async function runKeyguard(RequestApiClass, options) {
+
+    const defaultOptions = {
+        loadNimiq: true,
+        rpcWhitelist: ['request'],
+    };
+
+    options = Object.assign(defaultOptions, options);
 
     // Expose KeyStore to mockup overwrites
     self.KeyStore = KeyStore;
 
-    await Nimiq.WasmHelper.doImportBrowser();
-    Nimiq.GenesisConfig.test();
+    if (options.loadNimiq) {
+        // Load web assembly encryption library into browser (if supported)
+        await Nimiq.WasmHelper.doImportBrowser();
+        // Configure to use test net for now
+        Nimiq.GenesisConfig.test();
+    }
 
     // Close window if user navigates back to loading screen
     self.addEventListener('hashchange', () => {
@@ -14,5 +28,6 @@ async function runKeyguard(RequestApiClass) {
         }
     });
 
-    self.rpcServer = RpcServer.create(RequestApiClass, '*'); // FIXME Set correct allowedOrigin
+    // FIXME Set correct allowedOrigin
+    self.rpcServer = RpcServer.create(RequestApiClass, '*', options.rpcWhitelist); 
 }

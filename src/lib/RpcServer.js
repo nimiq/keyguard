@@ -15,23 +15,26 @@ class RpcServer {
     /**
      * @param {object} clazz - The class whose methods will be made available via postMessage RPC
      * @param {string} allowedOrigin - The origin that is allowed to call this server
+     * @param {string[]} whitelist
      * @return {object}
      */
-    static create(clazz, allowedOrigin) {
-        return new (RpcServer._Server(clazz, allowedOrigin))();
+    static create(clazz, allowedOrigin, whitelist) {
+        return new (RpcServer._Server(clazz, allowedOrigin, whitelist))();
     }
 
     /**
      * @param {Newable<Object>} clazz - The class whose methods will be made available via postMessage RPC
      * @param {string} allowedOrigin - The origin that is allowed to call this server
+     * @param {string[]} whitelist
      *
      * @returns { Newable<Object>}
      */
-    static _Server(clazz, allowedOrigin) {
+    static _Server(clazz, allowedOrigin, whitelist) {
         const Server = class extends clazz {
             constructor() {
                 super();
                 this._allowedOrigin = allowedOrigin;
+                this._whitelist = whitelist;
                 this._receive = this._receive.bind(this);
                 window.addEventListener('message', this._receive);
             }
@@ -59,9 +62,9 @@ class RpcServer {
 
                     let args = message.data.args && Array.isArray(message.data.args) ? message.data.args : [];
 
-                    // Test if request calls an existing method with the right number of arguments
+                    // Test if request calls an existing/whitelisted method with the right number of arguments
                     const calledMethod = this[message.data.command];
-                    if (message.data.command.startsWith('_') || !calledMethod) {
+                    if (this._whitelist.indexOf(message.data.command) < 0 || !calledMethod) {
                         throw new Error('Unknown command');
                     }
                     if (calledMethod.length < args.length) {
