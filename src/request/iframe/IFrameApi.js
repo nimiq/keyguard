@@ -5,6 +5,10 @@ class IFrameApi {
      */
     async list(listFromAccountStore) {
 
+        if (BrowserDetection.isIos() || BrowserDetection.isSafari()) {
+            return CookieJar.eat(listFromAccountStore);
+        }
+
         if (listFromAccountStore) {
             const accountStore = AccountStore.instance;
             return accountStore.list();
