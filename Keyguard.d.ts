@@ -49,4 +49,9 @@ type ExtendedTransactionRequest = BasicTransactionRequest & {
 
 type TransactionRequest = BasicTransactionRequest | ExtendedTransactionRequest
 
+type CreateRequest = {
+    type: EncryptionType,
+    label?: string
+}
+
 interface Window { rpcServer: RpcServer; KeyStore: any }

@@ -458,7 +458,7 @@ h1,
     padding: 0;
 }
 
-h1+h2, h2[secondary] {
+h1+h2, h2.secondary {
     font-size: 1.875rem;
     font-weight: 400;
     text-align: center;
@@ -497,8 +497,8 @@ p a {
     text-decoration: underline;
 }
 
-a[secondary],
-button[secondary] {
+a.secondary,
+button.secondary {
     font-size: 1.625rem;
     font-weight: 600;
     cursor:  pointer;
@@ -507,24 +507,22 @@ button[secondary] {
     display: block;
 }
 
-.nimiq-dark a[secondary],
-.nimiq-dark button[secondary] {
+.nimiq-dark a.secondary,
+.nimiq-dark button.secondary {
     color: #5c5c5c;
 }
 
-[secondary]+button,
-[secondary]+[button] {
+.secondary+button,
+.secondary+[button] {
     margin-top: 5rem;
 }
 
-[secondary]+[secondary],
-button+[secondary],
-[button]+[secondary] {
+.secondary+.secondary,
+button+.secondary,
+.button+.secondary {
     margin-top: 3rem;
     margin-bottom: 1rem;
 }
-
-
 
 li {
     line-height: 3rem;
