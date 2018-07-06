@@ -12,14 +12,14 @@ class SignTransactionWithPassphrase extends SignTransactionView {
         this._txRequest = txRequest;
 
         this.$rootElement = /** @type {HTMLElement} */ (document.getElementById('app'));
-        this.$transactionData = /** @type {HTMLElement} */ (this.$rootElement.querySelector('#transaction-data'));
+        this.$enterPassphrase = /** @type {HTMLElement} */ (this.$rootElement.querySelector('#enter-passphrase'));
         this.$error = /** @type {HTMLElement} */ (this.$rootElement.querySelector('#enter-passphrase #error'));
 
         // TODO add identicons and other tx data to UI
 
         this._passphraseInput = new PassphraseInput();
 
-        this.$transactionData.appendChild(this._passphraseInput.getElement());
+        this.$enterPassphrase.appendChild(this._passphraseInput.getElement());
 
         this._passphraseInput.on(PassphraseInput.Events.PASSPHRASE_ENTERED, this._handlePassphraseInput.bind(this));
 
@@ -30,7 +30,7 @@ class SignTransactionWithPassphrase extends SignTransactionView {
     async _handlePassphraseInput(passphrase) {
         document.body.classList.add('loading');
 
-        this.$error.textContent = '';
+        this.$error.classList.add('hidden');
 
         try {
             const signedTx = await this._signTx(this._txRequest, passphrase);
@@ -43,8 +43,7 @@ class SignTransactionWithPassphrase extends SignTransactionView {
 
             this._passphraseInput.reset();
 
-            // TODO i18n
-            this.$error.textContent = 'Wrong Pass Phrase, please try again';
+            this.$error.classList.remove('hidden');
         }
     }
 }

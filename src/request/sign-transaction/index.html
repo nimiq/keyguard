@@ -25,13 +25,14 @@
     <link href="../../nimiq-style.css" rel="stylesheet">
     <link rel="stylesheet" href="../../common.css">
     <link rel="stylesheet" href="../../components/PinInput.css">
+    <link rel="stylesheet" href="../../components/PassphraseInput.css">
 </head>
 <body>
     <div id="app">
 
         <!-- For SignTransactionWithPassPhrase -->
         <div id="enter-passphrase" class="page">
-            <span id="error"></span>
+            <span id="error" data-i18n="wrongPassphraseError" class="hidden">Wrong passphrase, please try again</span>
         </div>
 
         <!-- For SignTransactionWithPin -->
