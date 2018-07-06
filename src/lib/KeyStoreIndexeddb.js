@@ -200,6 +200,34 @@ class KeyStore {
         if (!AddressUtils.isValidAddress(userFriendlyAddress)) throw new InvalidAddressError();
         return AddressUtils.formatAddress(userFriendlyAddress);
     }
+
+    /**
+     * @deprecated Only for database migration
+     */
+    async doMigrateAccountsToKeys() {
+        const accountStore = AccountStore.instance;
+
+        const keys = await accountStore.dangerousListPlain();
+
+        for (const key of keys) {
+            const keyEntry = {
+                encryptedKeyPair: key.encryptedKeyPair,
+                userFriendlyAddress: key.userFriendlyAddress,
+                // Translate between old text type and new number type
+                type: /** @type {EncryptionType} */ (key.type === 'high' ? EncryptionType.HIGH : EncryptionType.LOW)
+            };
+            await this.putPlain(keyEntry);
+        }
+
+        // FIXME Uncomment after/for testing
+        // await accountStore.drop();
+
+        if (BrowserDetection.isIos() || BrowserDetection.isSafari()) {
+            document.cookie = 'migrate=0;expires=0'; // Delete the migrate cookie
+        }
+
+        return true;
+    }
 }
 
 KeyStore.DB_VERSION = 1;

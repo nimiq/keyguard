@@ -28,7 +28,7 @@ class IFrameApi {
             return true;
         }
 
-        return RequestApi.doMigrateAccountsToKeys();
+        return KeyStore.instance.doMigrateAccountsToKeys();
     }
 }
 

@@ -92,7 +92,7 @@ class AccountStore {
      *
      * @description Returns the encrypted keypairs!
      */
-    async dangerouslistPlain() {
+    async dangerousListPlain() {
         const db = await this.connect();
         return new Promise((resolve, reject) => {
             const results = /** @type {any[]} */ ([]);
