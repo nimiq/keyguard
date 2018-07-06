@@ -36,12 +36,12 @@ class SignTransactionWithPassphrase extends SignTransactionView {
             const signedTx = await this._signTx(this._txRequest, passphrase);
             this.fire('result', signedTx);
         } catch (e) {
-            // assume the passphrase was wrong
             console.error(e);
 
             document.body.classList.remove('loading');
 
-            this._passphraseInput.reset();
+            // Assume the passphrase was wrong
+            this._passphraseInput.onPassphraseIncorrect();
 
             this.$error.classList.remove('hidden');
         }

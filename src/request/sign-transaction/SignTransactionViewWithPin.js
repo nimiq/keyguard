@@ -35,13 +35,14 @@ class SignTransactionWithPin extends SignTransactionView {
 
         try {
             const signedTx = await this._signTx(this._txRequest, pin);
+            this._pinInput.close();
             this.fire('result', signedTx);
         } catch (e) {
-            // assume the pin was wrong
             console.error(e);
 
             document.body.classList.remove('loading');
 
+            // Assume the pin was wrong
             this._pinInput.onPinIncorrect();
         }
     }
