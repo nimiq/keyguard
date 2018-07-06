@@ -2,7 +2,12 @@ declare namespace Nimiq {
     type Address = any
     const Address: any
 
-    const BufferUtils: any
+    class BufferUtilsClass {
+        fromAscii(buf: string): Uint8Array
+        fromHex(buf: string): Uint8Array
+    }
+
+    const BufferUtils: BufferUtilsClass
 
     class KeyPairClass {
         publicKey: PublicKey
@@ -11,7 +16,7 @@ declare namespace Nimiq {
         generate() : KeyPairClass
         unserialize(buffer: SerialBuffer): KeyPairClass
         fromEncrypted(buffer: SerialBuffer, passphraseOrPin: Uint8Array): KeyPairClass
-        exportEncrypted(passphrase: string | Uint8Array, unlockKey: string): SerialBuffer
+        exportEncrypted(passphrase: string | Uint8Array, unlockKey?: Uint8Array): SerialBuffer
         serialize(): SerialBuffer
         lock(key: string | Uint8Array): void
         relock(): KeyPairClass

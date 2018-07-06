@@ -24,7 +24,7 @@ class Key { // eslint-disable-line no-unused-vars
      */
     static loadPlain(buf, type) {
         if (typeof buf === 'string') {
-            buf = /** @type {Uint8Array} */ (Nimiq.BufferUtils.fromHex(buf));
+            buf = Nimiq.BufferUtils.fromHex(buf);
         }
 
         if (!buf || buf.byteLength === 0) {
@@ -42,11 +42,11 @@ class Key { // eslint-disable-line no-unused-vars
      */
     static async loadEncrypted(buf, passphrase, type) {
         if (typeof buf === 'string') {
-            buf = /** @type {Nimiq.SerialBuffer} */ (Nimiq.BufferUtils.fromHex(buf));
+            buf = (Nimiq.BufferUtils.fromHex(buf));
         }
 
         if (typeof passphrase === 'string') {
-            passphrase = /** @type {Uint8Array} */ (Nimiq.BufferUtils.fromAscii(passphrase));
+            passphrase = (Nimiq.BufferUtils.fromAscii(passphrase));
         }
 
         const keyPair = await Nimiq.KeyPair.fromEncrypted(new Nimiq.SerialBuffer(buf), passphrase);
@@ -210,7 +210,7 @@ class Key { // eslint-disable-line no-unused-vars
     /**
      * @param {Uint8Array | string} passphrase
      * @param {Uint8Array | string} [unlockKey]
-     * @return {Promise.<Uint8Array>}
+     * @return {Promise<Uint8Array>}
      */
     exportEncrypted(passphrase, unlockKey) {
         if (typeof passphrase === 'string') {
