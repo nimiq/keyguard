@@ -1,31 +1,28 @@
 class Create extends RequestApi {
+
+    constructor() {
+        super();
+
+        this.$chooseIdenticon = /** @type {HTMLElement} */ (document.getElementById('choose-identicon'));
+    }
+
     /**
      * @param {CreateRequest} request
      */
     onRequest(request) {
-        // contains UI elements of #choose-identicon
-        this._chooseIdenticon = {
-            $container: /** @type {HTMLElement} */ (document.querySelector('#choose-identicon .identicon-container')),
-            $loading: /** @type {HTMLElement} */ (document.querySelector('#choose-identicon .loading')),
-            $confirmButton: /** @type {HTMLElement} */ (document.querySelector('#choose-identicon .backdrop button')),
-            $generateMoreButton: /** @type {HTMLElement} */ (document.querySelector('#choose-identicon .generate-more')),
-            $backdrop: /** @type {HTMLElement} */ (document.querySelector('#choose-identicon .backdrop'))
-        };
+        this._chooseIdenticon = new ChooseIdenticon(request.type, this.$chooseIdenticon);
 
-        this._chooseIdenticon.$generateMoreButton.addEventListener('click', this._generateIdenticons);
-        this._chooseIdenticon.$backdrop.addEventListener('click', this._clearSelection);
-
-
+        this._chooseIdenticon.on(
+            ChooseIdenticon.EVENTS.CHOOSE_IDENTICON,
+            /** @param {Nimiq.KeyPair} keyPair */
+            keyPair => {
+                location.hash = Create.Pages.BACKUP;
+            }
+        );
 
         location.hash = Create.Pages.CHOOSE_IDENTICON;
-    }
 
-    _generateIdenticons() {
-
-    }
-
-    _clearSelection() {
-
+        this._chooseIdenticon.generateIdenticons();
     }
 }
 

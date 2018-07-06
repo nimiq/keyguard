@@ -8,10 +8,6 @@
     /* max-height: 600px; */
 }
 
-#choose-identicon x-header {
-    z-index: 2;
-}
-
 #choose-identicon .identicon {
     width: unset;
     height: 128px;
@@ -26,12 +22,7 @@
     cursor: pointer;
 }
 
-#choose-identicon .identicon svg {
-    width: 100%;
-    height: 100%;
-}
-
-#choose-identicon .identicon-container {
+#choose-identicon .identicons {
     display: flex;
     flex-grow: 1;
     justify-content: center;
@@ -69,7 +60,6 @@
     transform: translate(0, 128px);
 }
 
-
 #choose-identicon button {
     opacity: 0;
     /* transform: translate(0, 480px); */
@@ -81,7 +71,6 @@
     pointer-events: none;
     width: calc(100% - 64px);
 }
-
 
 #choose-identicon .backdrop {
     position: fixed;
@@ -111,7 +100,7 @@
     margin-bottom: 20px;
 }
 
-#choose-identicon.selected .button {
+#choose-identicon.selected .backdrop button {
     opacity: 1;
     z-index: 2;
     transform: translate(0, 0);
@@ -189,7 +178,7 @@
     }
 }
 
-#choose-identicon:not([active]) .identicon {
+#choose-identicon:not(.active) .identicon {
     transform: translate(0, 0);
 }
 

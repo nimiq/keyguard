@@ -6,17 +6,23 @@ class Identicon { // eslint-disable-line no-unused-vars
     constructor(address, el) {
         this._address = address;
 
-        /** @type {HTMLImageElement} */
-        this.$el = el || this.getElement();
+        /** @type {HTMLElement} */
+        this.$el = el || this._createElement();
 
         this._updateIqon();
     }
 
     getElement() {
-        if (this.$el) return this.$el;
+        return this.$el;
+    }
 
-        const element = document.createElement('img');
+    _createElement() {
+        const imageElement = document.createElement('img');
+        const element = document.createElement('div');
         element.classList.add('identicon');
+        element.appendChild(imageElement);
+
+        this.$imgEl = imageElement;
 
         return element;
     }
@@ -32,10 +38,10 @@ class Identicon { // eslint-disable-line no-unused-vars
     _updateIqon() {
         if (this._address) {
             Iqons.toDataUrl(this._address).then(url => {
-                this.$el.src = url;
+                /** @type {HTMLImageElement} */ (this.$imgEl).src = url;
             });
         } else {
-            this.$el.src = Iqons.placeholderToDataUrl();
+            /** @type {HTMLImageElement} */ (this.$imgEl).src = Iqons.placeholderToDataUrl();
         }
     }
 }

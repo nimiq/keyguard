@@ -54,4 +54,6 @@ type CreateRequest = {
     label?: string
 }
 
+type KeyguardRequest = TransactionRequest | CreateRequest
+
 interface Window { rpcServer: RpcServer; KeyStore: any }
