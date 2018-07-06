@@ -39,7 +39,11 @@ class PopupApi {
      * @param {object} request
      */
     async request(request) {
-        // Deprecated, only for database migration
+        /**
+         * Detect migrate signalling set by the iframe
+         *
+         * @deprecated Only for database migration
+         */
         if ((BrowserDetection.isIos() || BrowserDetection.isSafari()) && this._hasMigrateFlag()) {
             await KeyStore.instance.doMigrateAccountsToKeys();
         }

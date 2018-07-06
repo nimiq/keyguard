@@ -10,7 +10,7 @@ class CookieJar {
     }
 
     /**
-     * @param {boolean} [listFromAccountStore] - Deprecated, used for reading keys from old database
+     * @param {boolean} [listFromAccountStore] - @deprecated Only for database migration
      */
     static eat(listFromAccountStore) {
         // Legacy cookie

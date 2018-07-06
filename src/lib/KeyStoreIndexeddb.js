@@ -116,7 +116,7 @@ class KeyStore {
     /**
      * @param {KeyEntry} keyEntry
      * @returns {Promise<any>}
-     * @deprecated Only for migrating keys to this database
+     * @deprecated Only for database migration
      */
     putPlain(keyEntry) {
         return this._putPlain(keyEntry);
@@ -202,6 +202,12 @@ class KeyStore {
     }
 
     /**
+     * To migrate from the 'account' database and store (AccountStore) to this new
+     * 'nimiq-keyguard' database with the 'keys' store, this function is called by
+     * the account manager (via IFrameApi.migrateAccountstoKeys()) after it successfully
+     * stored the existing account labels. Both the 'accounts' database and cookie are
+     * deleted afterwards.
+     *
      * @deprecated Only for database migration
      */
     async doMigrateAccountsToKeys() {
