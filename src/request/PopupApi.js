@@ -40,7 +40,7 @@ class PopupApi {
      */
     async request(request) {
         // Deprecated, only for database migration
-        if (BrowserDetection.isIos() || BrowserDetection.isSafari() && this._hasMigrateFlag()) {
+        if ((BrowserDetection.isIos() || BrowserDetection.isSafari()) && this._hasMigrateFlag()) {
             await KeyStore.instance.doMigrateAccountsToKeys();
         }
 
