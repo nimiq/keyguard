@@ -61,7 +61,13 @@ class RequestApi {
      *
      * @param {any} result
      */
-    resolve(result) {
+    async resolve(result) {
+        // Keys might have changed, so update cookie for iOS and Safari users
+        if (BrowserDetection.isIos() || BrowserDetection.isSafari()) {
+            const keys = await KeyStore.instance.list();
+            CookieJar.fill(keys);
+        }
+
         this._resolve(result);
     }
 
