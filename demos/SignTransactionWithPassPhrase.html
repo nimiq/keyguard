@@ -13,11 +13,15 @@
 <script src="../src/lib/Utf8Tools.js"></script>
 
 <div>
-    Pass Phrase is 'password'
+    <button>Sign Transaction</button>
+    <br>
+    <br>
+    <center>The Pass Phrase is 'password'</center>
 </div>
 
 <script>
-    (async() => {
+    document.querySelector('button').addEventListener('click', async () => {
+
         const keyguard = window.open('../src/sign-transaction/');
 
         // We need this check because we call the rpcServer object directly and not via RPC Client
@@ -29,20 +33,20 @@
             }
         }
 
-        await Promise.all([
-            Nimiq.WasmHelper.doImportBrowser(),
-            new Promise(resolve => checkIfKeyguardReady(resolve))
-        ]);
-
+        // Because the mocked KeyStore.prototype.get function below is defined in this
+        // window's scope, Nimiq also needs to be defined and initialized here
+        await Nimiq.WasmHelper.doImportBrowser();
         Nimiq.GenesisConfig.test();
+
+        await new Promise(res => checkIfKeyguardReady(res));
 
         keyguard.KeyStore.prototype.getType = async (address) => {
             return EncryptionType.HIGH;
         };
 
         keyguard.KeyStore.prototype.get = async (signer, passphrase) => {
-            // fake delay
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            // Fake store delay
+            await new Promise(resolve => setTimeout(resolve, 500));
 
             const buf = '01080bf074db2535eabf77bb8133743fa5a64259fd19096b11babd0cb2900f7df25d55ad71ca3b5bfee1d6f4b5343fd57ac61075f40c';
 
@@ -50,9 +54,9 @@
         };
 
         const txRequest = {
-            sender: 'NQ82 HP54 C9D4 2FAG 69QD 6Q71 LURR 5187 0V3X',
+            sender: 'NQ70 21SY 835N V68Y Q2AH K64A UA7G BJBC DB70',
             recipient: 'NQ82 HP54 C9D4 2FAG 69QD 6Q71 LURR 5187 0V3X',
-            signer: 'NQ82 HP54 C9D4 2FAG 69QD 6Q71 LURR 5187 0V3X',
+            signer: 'NQ70 21SY 835N V68Y Q2AH K64A UA7G BJBC DB70',
             value: 10,
             fee: 0,
             network: 'test',
@@ -66,7 +70,7 @@
             console.log(result);
             keyguard.close();
         }
-    })();
+    });
 </script>
 
 </body>

@@ -50,7 +50,8 @@ class SignTransactionWithPassphrase extends SignTransactionView {
         });
 
         location.hash = SignTransactionWithPassphrase.Pages.ENTER_PASSPHRASE;
-   }
+        $input.focus();
+    }
 }
 
 SignTransactionWithPassphrase.Pages = {
