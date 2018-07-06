@@ -1,11 +1,11 @@
 /**
- * # RequestApi
+ * # PopupApi
  * A common parent class for pop-up requests.
  *
  * ## Usage:
- * Inherit this class in your requests API class:
+ * Inherit this class in your popup request API class:
  * ```
- *  class SignTransactionApi extends RequestApi {
+ *  class SignTransactionApi extends PopupApi {
  *
  *      // Define the onRequest method to receive the client's request object:
  *      onRequest(request) {
@@ -23,7 +23,7 @@
  *  runKeyguard(SignTransactionApi);
  * ```
  */
-class RequestApi {
+class PopupApi {
 
     constructor() {
         /** @type {Function} */
@@ -39,6 +39,15 @@ class RequestApi {
      * @param {object} request
      */
     async request(request) {
+        /**
+         * Detect migrate signalling set by the iframe
+         *
+         * @deprecated Only for database migration
+         */
+        if ((BrowserDetection.isIos() || BrowserDetection.isSafari()) && this._hasMigrateFlag()) {
+            await KeyStore.instance.doMigrateAccountsToKeys();
+        }
+
         return new Promise((resolve, reject) => {
             this._resolve = resolve;
             this._reject = reject;
@@ -61,7 +70,13 @@ class RequestApi {
      *
      * @param {any} result
      */
-    resolve(result) {
+    async resolve(result) {
+        // Keys might have changed, so update cookie for iOS and Safari users
+        if (BrowserDetection.isIos() || BrowserDetection.isSafari()) {
+            const keys = await KeyStore.instance.list();
+            CookieJar.fill(keys);
+        }
+
         this._resolve(result);
     }
 
@@ -72,5 +87,13 @@ class RequestApi {
      */
     reject(error) {
         this._reject(error);
+    }
+
+    /**
+     * @deprecated Only for database migration
+     */
+    _hasMigrateFlag() {
+        const match = document.cookie.match(new RegExp('migrate=([^;]+)'));
+        return match && match[1] === "1";
     }
 }

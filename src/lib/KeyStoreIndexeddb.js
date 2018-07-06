@@ -116,7 +116,7 @@ class KeyStore {
     /**
      * @param {KeyEntry} keyEntry
      * @returns {Promise<any>}
-     * @deprecated Only for migrating keys to this database
+     * @deprecated Only for database migration
      */
     putPlain(keyEntry) {
         return this._putPlain(keyEntry);
@@ -199,6 +199,44 @@ class KeyStore {
     _formatAddress(userFriendlyAddress) {
         if (!AddressUtils.isValidAddress(userFriendlyAddress)) throw new InvalidAddressError();
         return AddressUtils.formatAddress(userFriendlyAddress);
+    }
+
+    /**
+     * To migrate from the 'account' database and store (AccountStore) to this new
+     * 'nimiq-keyguard' database with the 'keys' store, this function is called by
+     * the account manager (via IFrameApi.migrateAccountstoKeys()) after it successfully
+     * stored the existing account labels. Both the 'accounts' database and cookie are
+     * deleted afterwards.
+     *
+     * @deprecated Only for database migration
+     */
+    async doMigrateAccountsToKeys() {
+        const accountStore = AccountStore.instance;
+
+        const keys = await accountStore.dangerousListPlain();
+
+        for (const key of keys) {
+            const keyEntry = {
+                encryptedKeyPair: key.encryptedKeyPair,
+                userFriendlyAddress: key.userFriendlyAddress,
+                // Translate between old text type and new number type
+                type: /** @type {EncryptionType} */ (key.type === 'high' ? EncryptionType.HIGH : EncryptionType.LOW)
+            };
+            await this.putPlain(keyEntry);
+        }
+
+        // FIXME Uncomment after/for testing
+        // await accountStore.drop();
+
+        if (BrowserDetection.isIos() || BrowserDetection.isSafari()) {
+            // Delete migrate cookie
+            document.cookie = 'migrate=0;expires=0';
+
+            // Delete accounts cookie
+            document.cookie = 'accounts=;expires=0';
+        }
+
+        return true;
     }
 }
 

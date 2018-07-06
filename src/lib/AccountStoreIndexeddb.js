@@ -88,11 +88,11 @@ class AccountStore {
 
     /**
      * @returns {Promise.<Array.<AccountEntry>>}
-     * @deprecated Only for migrating keys to another database
+     * @deprecated Only for database migration
      *
      * @description Returns the encrypted keypairs!
      */
-    async dangerouslistPlain() {
+    async dangerousListPlain() {
         const db = await this.connect();
         return new Promise((resolve, reject) => {
             const results = /** @type {any[]} */ ([]);

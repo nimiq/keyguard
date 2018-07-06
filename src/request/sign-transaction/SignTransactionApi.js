@@ -1,4 +1,4 @@
-class SignTransactionApi extends RequestApi {
+class SignTransactionApi extends PopupApi {
     /**
      * @param {TransactionRequest} txRequest
      */
