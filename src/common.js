@@ -15,7 +15,9 @@ async function runKeyguard(RequestApiClass, options) {
     self.KeyStore = KeyStore;
 
     if (options.loadNimiq) {
+        // Load web assembly encryption library into browser (if supported)
         await Nimiq.WasmHelper.doImportBrowser();
+        // Configure to use test net for now
         Nimiq.GenesisConfig.test();
     }
 
@@ -26,5 +28,6 @@ async function runKeyguard(RequestApiClass, options) {
         }
     });
 
-    self.rpcServer = RpcServer.create(RequestApiClass, '*', options.rpcWhitelist); // FIXME Set correct allowedOrigin
+    // FIXME Set correct allowedOrigin
+    self.rpcServer = RpcServer.create(RequestApiClass, '*', options.rpcWhitelist); 
 }
