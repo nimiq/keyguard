@@ -33,16 +33,16 @@ class PassphraseInput extends Nimiq.Observable {
         el.classList.add('passphrase-input');
         el.innerHTML = `
             <div class="input-container">
-                <input class="password" type="password" placeholder="Enter Pass Phrase" data-i18n-placeholder="Enter-Pass-Phrase">
+                <input class="password" type="password" placeholder="Enter Passphrase" data-i18n-placeholder="passphrase-placeholder">
                 <span class="eye-button icon-eye"/>
             </div>
             <div class="strength-indicator-container">
-                <div class="label" data-i18n="Strength:">Strength:</div>
+                <div class="label"><span data-i18n="passphrase-strength">Strength</span>:</div>
                 <meter max="130" low="10" optimum="100" class="strength-indicator"></meter>
             </div>
-            <button data-i18n="Confirm"></button>
+            <button data-i18n="passphrase-confirm"></button>
         `;
-        i18n.translateDom(el);
+        I18n.translateDom(el);
         return el;
     }
 
