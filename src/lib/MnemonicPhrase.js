@@ -94,7 +94,7 @@ class MnemonicPhrase {
      * @param {Uint8Array} entropy
      */
     static _deriveChecksumBits(entropy) {
-        var crcBytes = new Uint8Array([MnemonicPhrase._crc8(entropy)]); ;
+        var crcBytes = new Uint8Array([MnemonicPhrase._crc8(entropy)]);;
         return MnemonicPhrase._bytesToBinary(crcBytes);
     }
 
@@ -109,9 +109,15 @@ class MnemonicPhrase {
          */
         let entropy;
 
-        if (typeof entropyParam === 'string') entropy = MnemonicPhrase._hexToArray(entropyParam);
-        else if (entropyParam instanceof ArrayBuffer) entropy = new Uint8Array(entropyParam);
-        else entropy = entropyParam;
+        if (typeof entropyParam === 'string') {
+            entropy = MnemonicPhrase._hexToArray(entropyParam);
+        }
+        else if (entropyParam instanceof ArrayBuffer) {
+            entropy = new Uint8Array(entropyParam);
+        }
+        else {
+            entropy = entropyParam;
+        }
 
         // 128 <= ENT <= 256
         if (entropy.length < 16) throw new TypeError('Invalid key, length < 16');
@@ -143,7 +149,7 @@ class MnemonicPhrase {
         if (words.length % 3 !== 0) throw new Error('Invalid mnemonic, words % 3 != 0');
 
         // Convert word indices to 11 bit binary strings
-        var bits = words.map(function(word) {
+        var bits = words.map(function (word) {
             var index = wordlist.indexOf(word.toLowerCase());
             if (index === -1) throw new Error('Invalid mnemonic, word >' + word + '< is not in wordlist');
 
