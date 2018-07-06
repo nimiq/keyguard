@@ -3,24 +3,6 @@
  */
 class SignTransactionWithPin extends SignTransactionView {
 
-    get $rootElement() {
-        const element = document.getElementById('app');
-        if (!element) throw new InvalidDOMError();
-        return element;
-    }
-
-    get $button() {
-        const element = this.$rootElement.querySelector('#transaction-data button');
-        if (!element) throw new InvalidDOMError();
-        return element;
-    }
-
-    get $enterPin() {
-        const element = this.$rootElement.querySelector('#transaction-data button');
-        if (!element) throw new InvalidDOMError();
-        return element;
-    }
-
     /**
      * @param {TransactionRequest} txRequest
      */
@@ -29,7 +11,9 @@ class SignTransactionWithPin extends SignTransactionView {
 
         this._txRequest = txRequest;
 
-        // construct UI
+        this.$rootElement = /** @type {HTMLElement} */ (document.getElementById('app'));
+        this.$button = /** @type {HTMLElement} */ (this.$rootElement.querySelector('#transaction-data button'));
+        this.$enterPin = /** @type {HTMLElement} */ (this.$rootElement.querySelector('#enter-pin'));
 
         this.$button.addEventListener('click', () => location.hash = SignTransactionWithPin.Pages.ENTER_PIN);
 

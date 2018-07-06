@@ -3,24 +3,6 @@
  */
 class SignTransactionWithPassphrase extends SignTransactionView {
 
-    get $rootElement() {
-        const element = document.getElementById('app');
-        if (!element) throw new InvalidDOMError();
-        return element;
-    }
-
-    get $transactionData() {
-        const element = this.$rootElement.querySelector('#transaction-data');
-        if (!element) throw new InvalidDOMError();
-        return element;
-    }
-
-    get $error() {
-        const element = this.$rootElement.querySelector('#enter-passphrase #error');
-        if (!element) throw new InvalidDOMError();
-        return element;
-    }
-
     /**
      * @param {TransactionRequest} txRequest
      */
@@ -29,7 +11,9 @@ class SignTransactionWithPassphrase extends SignTransactionView {
 
         this._txRequest = txRequest;
 
-        // construct UI
+        this.$rootElement = /** @type {HTMLElement} */ (document.getElementById('app'));
+        this.$transactionData = /** @type {HTMLElement} */ (this.$rootElement.querySelector('#transaction-data'));
+        this.$error = /** @type {HTMLElement} */ (this.$rootElement.querySelector('#enter-passphrase #error'));
 
         // TODO add identicons and other tx data to UI
 
