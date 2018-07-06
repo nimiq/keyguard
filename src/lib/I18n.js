@@ -6,13 +6,14 @@ class I18n {
      */
     static initialize(dictionary, fallbackLanguage) {
         this._dict = dictionary;
+
         if (!(fallbackLanguage in this._dict)) {
             throw new Error(`Fallback language "${ fallbackLanguage }" not defined`);
         }
         /** @type {string} */
         this._fallbackLanguage = fallbackLanguage;
-        
-        /** @type {string} */ 
+
+        /** @type {string} */
         this._language;
 
         this.language = navigator.language;
@@ -26,8 +27,8 @@ class I18n {
         const language = enforceLanguage ? this.getClosestSupportedLanguage(enforceLanguage) : this.language;
 
         /**
-         * @param {string} tag 
-         * @param {(element:HTMLElement, translation: string) => void} callback - callback(element, translation) for each matching element
+         * @param {string} tag
+         * @param {(element: HTMLElement, translation: string) => void} callback - callback(element, translation) for each matching element
          */
         const translateElements = (tag, callback) => {
             const attribute = `data-${tag}`;
@@ -41,7 +42,7 @@ class I18n {
         }
 
         /**
-         * @param {string} tag 
+         * @param {string} tag
          */
         const translateAttribute = (tag) => {
             translateElements(`i18n-${ tag }`, (element, translation) => element.setAttribute(tag, translation));
@@ -62,17 +63,11 @@ class I18n {
     }
 
     /**
-     * @param {string} id 
-     * @param {string} language 
+     * @param {string} id
+     * @param {string} language
      */
     static _translate(id, language) {
-        let translation = this._dict[language][id];
-        if (!translation) {
-            console.warn(`No translation defined for "${ id }" in language "${ language }"!`);
-            translation = this._dict[this.fallbackLanguage][id];
-            throw new Error(`No translation defined for "${ id }" in fallback language "${ this.fallbackLanguage }"`);
-        }
-        return translation;
+        return this._dict[language][id];
     }
 
     /**
@@ -98,21 +93,19 @@ class I18n {
      */
     static getClosestSupportedLanguage(language) {
         if (language in this._dict) return language;
-        language = language.split('-')[0];
 
-        if (language in this._dict) return language;
-        const languagePrefix = `${language}-`;
+        const baseLanguage = language.split('-')[0];
 
+        // Return the the base language, if it exists in the dictionary
+        if (baseLanguage !== language && baseLanguage in this._dict) return baseLanguage;
+
+        // Check if other versions of the base language exist
+        const languagePrefix = `${baseLanguage}-`;
         for (const supportedLanguage of this.availableLanguages()) {
             if (supportedLanguage.startsWith(languagePrefix)) return supportedLanguage;
         }
-        
-        // language is not supported. Return a variant of this._fallbackLanguage if available, otherwise an arbitrary supported language
-        if (language !== this.fallbackLanguage) {
-            return this.fallbackLanguage;
-        } else {
-            return this.availableLanguages()[0];
-        }
+
+        return this.fallbackLanguage;
     }
 
     /**
@@ -120,9 +113,11 @@ class I18n {
      */
     static set language(language) {
         const languageToUse = this.getClosestSupportedLanguage(language);
+
         if (languageToUse !== language) {
             console.warn(`Language ${language} not supported, using ${languageToUse} instead.`);
         }
+
         this._language = languageToUse;
     }
 
@@ -135,6 +130,7 @@ class I18n {
     }
 
     static get fallbackLanguage() {
-        return this._fallbackLanguage || 'en';
+        if (!this._fallbackLanguage) throw new Error('I18n not initialized');
+        return this._fallbackLanguage;
     }
 }
