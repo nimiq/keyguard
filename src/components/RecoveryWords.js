@@ -1,4 +1,4 @@
-class TwentyFourWords {
+class RecoveryWords {
         /**
      * @param {Element} [el]
      */

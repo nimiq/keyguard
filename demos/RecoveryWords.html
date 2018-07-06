@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <link href="../src/nimiq-style.css" rel="stylesheet">
     <link href="../src/common.css" rel="stylesheet">
-    <link href="../src/components/TwentryFourWords.css" rel="stylesheet">
+    <link href="../src/components/RecoveryWords.css" rel="stylesheet">
     <script src="../src/lib/MnemonicPhrase.js"></script>
-    <script src="../src/components/TwentyFourWords.js"></script>
+    <script src="../src/components/RecoveryWords.js"></script>
     <style>
         .twenty-four-words .word {
             width: 5rem;
@@ -19,7 +19,7 @@
 <body>
     <script>
     const randomKey = window.crypto.getRandomValues(new Uint8Array(32));
-    const words = new TwentyFourWords();
+    const words = new RecoveryWords();
     words.privateKey = MnemonicPhrase._arrayToHex(randomKey);
     document.body.appendChild(words.getElement());
     </script>
