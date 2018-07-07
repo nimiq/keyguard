@@ -142,9 +142,9 @@ declare namespace Nimiq {
     class PartialSignature {}
 
     class Address extends Serializable {
-        fromString(str: string): Address
-        fromBase64(base64: string): Address
-        fromHex(hex: string): Address
+        static fromString(str: string): Address
+        static fromBase64(base64: string): Address
+        static fromHex(hex: string): Address
         toUserFriendlyAddress(): string
         static fromUserFriendlyAddress(str: string): Address
         equals(o: Address): boolean
