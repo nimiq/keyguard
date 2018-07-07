@@ -56,9 +56,10 @@ class PopupApi { // eslint-disable-line no-unused-vars
     }
 
     /**
-     * Overloaded by each pages' API class
+     * Overwritten by each request's API class
      *
      * @param {any} request
+     * @abstract
      */
     onRequest(request) { // eslint-disable-line no-unused-vars
         throw new Error('Not implemented');
