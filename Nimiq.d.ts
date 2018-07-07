@@ -1,72 +1,99 @@
 declare namespace Nimiq {
-    class AddressClass {
-        fromString(str: string): AddressClass
-        fromBase64(base64: string): AddressClass
-        fromHex(hex: string): AddressClass
+    class Address {
+        fromString(str: string): Address
+        fromBase64(base64: string): Address
+        fromHex(hex: string): Address
         toUserFriendlyAddress(): string
-        fromUserFriendlyAddress(str: string): AddressClass
-        equals(o: AddressClass): boolean
+        static fromUserFriendlyAddress(str: string): Address
+        equals(o: Address): boolean
     }
-    const Address: AddressClass
 
-    class BufferUtilsClass {
-        fromAscii(buf: string): Uint8Array
-        fromHex(buf: string): Uint8Array
+    class BufferUtils {
+        static fromAscii(buf: string): Uint8Array
+        static fromHex(buf: string): Uint8Array
     }
-    const BufferUtils: BufferUtilsClass
 
-    class KeyPairClass {
-        publicKey: PublicKeyClass
+    class KeyPair {
+        publicKey: PublicKey
         privateKey: PrivateKey
         isLocked: boolean
-        generate() : KeyPairClass
-        unserialize(buffer: SerialBuffer): KeyPairClass
-        fromEncrypted(buffer: SerialBuffer, passphraseOrPin: Uint8Array): KeyPairClass
+        generate(): KeyPair
+        static unserialize(buffer: SerialBuffer): KeyPair
+        static fromEncrypted(buffer: SerialBuffer, passphraseOrPin: Uint8Array): KeyPair
         exportEncrypted(passphrase: string | Uint8Array, unlockKey?: Uint8Array): SerialBuffer
         serialize(): SerialBuffer
         lock(key: string | Uint8Array): void
-        relock(): KeyPairClass
+        relock(): KeyPair
         unlock(key: string | Uint8Array): void
         equals(o: any): boolean
     }
-    const KeyPair: KeyPairClass
 
     type SerialBuffer = any
     const SerialBuffer: any
 
-    class SignatureClass {
-        create(key1: any, key2: any, msg: Uint8Array) : SignatureClass
+    interface Signature {
+        create(key1: any, key2: any, msg: Uint8Array): Signature
         serialize(): SerialBuffer
     }
-    const Signature : SignatureClass
+    const Signature: Signature
 
-    type Transaction = any
-    const Transaction: any
-
-    type BasicTransaction = Transaction & { }
-    const BasicTransaction: any
-
-    type ExtendedTransaction = Transaction & { }
-    const ExtendedTransaction: any
-
-    const Account: any
-
-    class SignatureProofClass {
-        singleSig(publicKey: PublicKeyClass, signature: SignatureClass): SignatureProofClass
-        unserialize(buf: SerialBuffer): SignatureProofClass
-        serialize(): SerialBuffer
-        verify(address: AddressClass | null, data: Uint8Array): boolean
-        verifyTransaction(transaction: Transaction): boolean
-        publicKey: PublicKeyClass
-        signature: SignatureClass
+    class Transaction {
+        proof: SerialBuffer
+        sender: Address
+        senderType: number
+        recipient: Address
+        recipientType: number
+        value: number
+        fee: number
+        data: Uint8Array
+        validityStartHeight: number
+        hash(): Hash
+        serializeContent(): SerialBuffer
+        verify(): boolean
+        static Flag: any
     }
-    const SignatureProof: SignatureProofClass
 
-    class PublicKeyClass {
-        serialize(): SerialBuffer
-        toAddress(): AddressClass
+    class BasicTransaction extends Transaction {
+        constructor(
+            publicKey: PublicKey,
+            recipient: Address,
+            value: number,
+            fee: number,
+            validityStartHeight: number
+        )
     }
-    const PublicKey: PublicKeyClass
+
+    class ExtendedTransaction extends Transaction {
+        constructor(
+            sender: Address,
+            senderType: number,
+            recipient: Address,
+            recipientType: number,
+            value: number,
+            fee: number,
+            validityStartHeight: number,
+            flags: number,
+            data: Uint8Array
+        )
+    }
+
+    type Hash = any
+    const Hash: any
+
+    class SignatureProof {
+        static singleSig(publicKey: PublicKey, signature: Signature): SignatureProof
+        static unserialize(buf: SerialBuffer): SignatureProof
+        serialize(): SerialBuffer
+        verify(address: Address | null, data: Uint8Array): boolean
+        static verifyTransaction(transaction: Transaction): boolean
+        publicKey: PublicKey
+        signature: Signature
+    }
+
+    class PublicKey {
+        serialize(): SerialBuffer
+        toAddress(): Address
+    }
 
     type PrivateKey = any
     const PrivateKey: any
@@ -74,27 +101,25 @@ declare namespace Nimiq {
     namespace Account {
         type Type = 0 | 1 | 2
     }
+    const Account: any
 
-    class PolicyClass {
-        coinsToSatoshis: (coins: number) => number
-        satoshisToCoins: (satoshis: number) => number
+    class Policy {
+        static coinsToSatoshis(coins: number): number
+        static satoshisToCoins(satoshis: number): number
     }
-    const Policy: PolicyClass
 
-    class GenesisConfigClass {
-        test: () => void
-        NETWORK_NAME: string
+    class GenesisConfig {
+        static test(): void
+        static NETWORK_NAME: string
     }
-    const GenesisConfig: GenesisConfigClass
 
     class Observable {
-        on: (type: string, callback: Function) => number
-        off: (type: string, id: number) => void
-        fire: (type: string, ...args: any[]) => (Promise<any>|null)
+        on(type: string, callback: Function): number
+        off(type: string, id: number): void
+        fire(type: string, ...args: any[]): (Promise<any>|null)
     }
 
-    class WasmHelperClass {
-        doImportBrowser: () => void
+    class WasmHelper {
+        static doImportBrowser: () => void
     }
-    const WasmHelper: WasmHelperClass
 }
