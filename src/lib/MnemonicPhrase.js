@@ -9,8 +9,8 @@ class MnemonicPhrase {
         const table = this._getCrcLookupTable();
 
         // Calculate the 8-bit checksum given an array of byte-sized numbers
-        var c = 0;
-        for (var i = 0; i < byte_array.length; i++) {
+        let c = 0;
+        for (let i = 0; i < byte_array.length; i++) {
             c = table[(c ^ byte_array[i]) % 256];
         }
         return c;
@@ -21,7 +21,7 @@ class MnemonicPhrase {
         if (!this._crcLookupTable) {
             const table = []; // 256 max len byte array
             for (let i = 0; i < 256; ++i) {
-                var curr = i;
+                let curr = i;
                 for (let j = 0; j < 8; ++j) {
                     if ((curr & 0x80) !== 0) {
                         curr = ((curr << 1) ^ 0x97) % 256; // Polynomial C2 by Baicheva98
@@ -78,7 +78,7 @@ class MnemonicPhrase {
      * @param {Uint8Array} entropy
      */
     static _deriveChecksumBits(entropy) {
-        var crcByte = new Uint8Array([MnemonicPhrase._crc8(entropy)]);
+        const crcByte = new Uint8Array([MnemonicPhrase._crc8(entropy)]);
         return MnemonicPhrase._bytesToBinary(crcByte);
     }
 
@@ -93,13 +93,13 @@ class MnemonicPhrase {
         if (entropy.length > 32) throw new TypeError('Invalid key, length > 32');
         if (entropy.length % 4 !== 0) throw new TypeError('Invalid key, length % 4 != 0');
 
-        var entropyBits = MnemonicPhrase._bytesToBinary(entropy);
-        var checksumBits = MnemonicPhrase._deriveChecksumBits(entropy);
+        const entropyBits = MnemonicPhrase._bytesToBinary(entropy);
+        const checksumBits = MnemonicPhrase._deriveChecksumBits(entropy);
 
-        var bits = entropyBits + checksumBits;
-        var chunks = bits.match(/(.{11})/g) || [];
-        var words = chunks.reduce((words, chunk) => {
-            var index = MnemonicPhrase._binaryToBytes(chunk);
+        const bits = entropyBits + checksumBits;
+        const chunks = bits.match(/(.{11})/g) || [];
+        const words = chunks.reduce((words, chunk) => {
+            const index = MnemonicPhrase._binaryToBytes(chunk);
             return words + (words ? ' ' : '') + wordlist[index];
         }, '');
 
@@ -112,33 +112,33 @@ class MnemonicPhrase {
      * @param {string[]} wordlist
      */
     static mnemonicToKey(mnemonic, wordlist = MnemonicPhrase.DEFAULT_WORDLIST) {
-        var words = (mnemonic.normalize('NFKD')).trim().split(/\s+/g);
+        const words = (mnemonic.normalize('NFKD')).trim().split(/\s+/g);
         if (words.length < 12) throw new Error('Invalid mnemonic, less than 12 words');
         if (words.length > 24) throw new Error('Invalid mnemonic, more than 24 words');
         if (words.length % 3 !== 0) throw new Error('Invalid mnemonic, words % 3 != 0');
 
         // Convert word indices to 11 bit binary strings
-        var bits = words.map(word => {
-            var index = wordlist.indexOf(word.toLowerCase());
-            if (index === -1) throw new Error('Invalid mnemonic, word >' + word + '< is not in wordlist');
+        const bits = words.map(word => {
+            const index = wordlist.indexOf(word.toLowerCase());
+            if (index === -1) throw new Error(`Invalid mnemonic, word >${word}< is not in wordlist`);
 
             return MnemonicPhrase._lpad(index.toString(2), '0', 11);
         }).join('');
 
         // Split the binary string into ENT/CS
-        var dividerIndex = bits.length - (bits.length % 8 || 8);
-        var entropyBits = bits.slice(0, dividerIndex);
-        var checksumBits = bits.slice(dividerIndex);
+        const dividerIndex = bits.length - (bits.length % 8 || 8);
+        const entropyBits = bits.slice(0, dividerIndex);
+        const checksumBits = bits.slice(dividerIndex);
 
         // Calculate the checksum and compare
-        var entropyBytes = (entropyBits.match(/(.{8})/g) || []).map(MnemonicPhrase._binaryToBytes);
+        const entropyBytes = (entropyBits.match(/(.{8})/g) || []).map(MnemonicPhrase._binaryToBytes);
 
         if (entropyBytes.length < 16) throw new Error('Invalid generated key, length < 16');
         if (entropyBytes.length > 32) throw new Error('Invalid generated key, length > 32');
         if (entropyBytes.length % 4 !== 0) throw new Error('Invalid generated key, length % 4 != 0');
 
-        var entropy = new Uint8Array(entropyBytes);
-        var newChecksum = MnemonicPhrase._deriveChecksumBits(entropy).slice(0, checksumBits.length);
+        const entropy = new Uint8Array(entropyBytes);
+        const newChecksum = MnemonicPhrase._deriveChecksumBits(entropy).slice(0, checksumBits.length);
         if (newChecksum !== checksumBits) throw new Error('Invalid checksum');
 
         return entropy;
