@@ -3,6 +3,9 @@
       "browser": true
   },
   "extends": "airbnb-base",
+  "plugins": [
+    "require-jsdoc-except"
+  ],
   "globals": {
     "Nimiq": false,
     "runKeyguard": false,
@@ -51,6 +54,37 @@
     "no-underscore-dangle": ["off"],
     "prefer-destructuring": ["off"],
     "no-console": ["warn"],
-    "no-warning-comments": ["warn"]
+    "no-warning-comments": ["warn"],
+    "require-jsdoc-except/require-jsdoc": ["error", {
+      "require": {
+        "FunctionDeclaration": true,
+        // Typescript requires @param annotations for all arguments, thus
+        // a JSDoc block is required for methods with parameters anyway.
+        "MethodDefinition": false,
+        "ClassDeclaration": false,
+        "ArrowFunctionExpression": true,
+        "FunctionExpression": true
+      },
+      "ignore": ["constructor"]
+    }],
+    "valid-jsdoc": ["error", {
+      "prefer": {
+        "arg": "param",
+        "argument": "param",
+        "class": "constructor",
+        "return": "returns",
+        "virtual": "abstract"
+      },
+      "preferType": {
+        "object": "object",
+        "string": "string",
+        "number": "number"
+      },
+      "requireParamType": true,
+      "requireReturn": false, // Do not require @return for <void>
+      "requireReturnType": true,
+      "requireParamDescription": false,
+      "requireReturnDescription": false
+    }]
   }
 }
