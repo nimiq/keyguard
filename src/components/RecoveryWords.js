@@ -1,4 +1,4 @@
-class RecoveryWords {
+class RecoveryWords { // eslint-disable-line no-unused-vars
     /**
      * @param {Element} [el]
      */
