@@ -15,9 +15,6 @@ class KeyStore {
     }
 
     constructor() {
-        /** @type {IDBDatabase} */
-        this._db; // eslint-disable-line no-unused-expressions
-
         this._connected = false;
     }
 
@@ -32,6 +29,7 @@ class KeyStore {
             const request = window.indexedDB.open(KeyStore.DB_NAME, KeyStore.DB_VERSION);
 
             request.onsuccess = () => {
+                /** @type {IDBDatabase} */
                 this._db = request.result;
                 this._connected = true;
                 resolve(this._db);

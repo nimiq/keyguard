@@ -23,8 +23,6 @@ class AccountStore {
      */
     constructor(dbName = 'accounts') {
         this._dbName = dbName;
-        /** @type {IDBDatabase | undefined} */
-        this._db; // eslint-disable-line no-unused-expressions
         this._connected = false;
         this._dropped = false;
     }
@@ -41,6 +39,7 @@ class AccountStore {
 
             request.onsuccess = () => {
                 this._connected = true;
+                /** @type {IDBDatabase} */
                 this._db = request.result;
                 resolve(this._db);
             };

@@ -12,9 +12,6 @@ class I18n { // eslint-disable-line no-unused-vars
         /** @type {string} */
         this._fallbackLanguage = fallbackLanguage;
 
-        /** @type {string} */
-        this._language = '';
-
         this.language = navigator.language;
     }
 
