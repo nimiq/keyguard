@@ -20,7 +20,6 @@ class Key { // eslint-disable-line no-unused-vars
     /**
      * @param {Uint8Array | string} buf - Keypair, as byte array or HEX string
      * @param {EncryptionType} type
-     * @returns {Key}
      */
     static loadPlain(buf, type) {
         if (typeof buf === 'string') {
@@ -38,7 +37,6 @@ class Key { // eslint-disable-line no-unused-vars
      * @param {Uint8Array | string} buf - Encrypted keypair
      * @param {Uint8Array | string} passphrase - Passphrase, as byte array or ASCII string
      * @param {EncryptionType} type
-     * @returns {Promise.<Key>}
      */
     static async loadEncrypted(buf, passphrase, type) {
         if (typeof buf === 'string') {
@@ -56,7 +54,6 @@ class Key { // eslint-disable-line no-unused-vars
 
     /**
      * @param {string} friendlyAddress
-     * @returns {Nimiq.Address}
      */
     static getUnfriendlyAddress(friendlyAddress) {
         return Nimiq.Address.fromUserFriendlyAddress(friendlyAddress);
@@ -79,7 +76,6 @@ class Key { // eslint-disable-line no-unused-vars
      * Sign a generic message.
      *
      * @param {string} message - A utf-8 string
-     * @returns {object}
      */
     signMessage(message) {
         message = `nimiq_msg_${message}`;
@@ -184,7 +180,7 @@ class Key { // eslint-disable-line no-unused-vars
             fee,
             validityStartHeight,
             isContractCreation ? Nimiq.Transaction.Flag.CONTRACT_CREATION : Nimiq.Transaction.Flag.NONE,
-            extraData,
+            extraData || new Uint8Array(0),
         );
 
         const proof = this._makeSignatureProof(transaction.serializeContent());
