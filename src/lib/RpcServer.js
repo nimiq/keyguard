@@ -11,7 +11,7 @@
  * @template T
  * @typedef { {new(...args: any[]): T }} Newable */
 
-class RpcServer {
+class RpcServer { // eslint-disable-line no-unused-vars
     /**
      * @param {object} clazz - The class whose methods will be made available via postMessage RPC
      * @param {string} allowedOrigin - The origin that is allowed to call this server
@@ -49,7 +49,11 @@ class RpcServer {
              * @param {any} result
              */
             _replyTo(message, status, result) {
-                message.source && message.source.postMessage({ status, result, id: message.data.id }, message.origin);
+                return message.source && message.source.postMessage({
+                    status,
+                    result,
+                    id: message.data.id,
+                }, message.origin);
             }
 
             /**
@@ -58,9 +62,11 @@ class RpcServer {
             _receive(message) {
                 try {
                     // FIXME Remove '*' option for release
-                    if (this._allowedOrigin !== '*' && message.origin !== this._allowedOrigin) throw new Error('Unauthorized');
+                    if (this._allowedOrigin !== '*' && message.origin !== this._allowedOrigin) {
+                        throw new Error('Unauthorized');
+                    }
 
-                    let args = message.data.args && Array.isArray(message.data.args) ? message.data.args : [];
+                    const args = message.data.args && Array.isArray(message.data.args) ? message.data.args : [];
 
                     // Test if request calls an existing/whitelisted method with the right number of arguments
                     const requestedMethod = this[message.data.command];
@@ -75,7 +81,7 @@ class RpcServer {
 
                     if (result instanceof Promise) {
                         result
-                            .then((finalResult) => this._ok(message, finalResult))
+                            .then(finalResult => this._ok(message, finalResult))
                             .catch(error => this._error(message, error));
                     } else {
                         this._ok(message, result);
@@ -99,7 +105,9 @@ class RpcServer {
              */
             _error(message, error) {
                 this._replyTo(message, 'error',
-                    error.message ? { message: error.message, stack: error.stack, code: error.code } : { message: error } )
+                    error.message
+                        ? { message: error.message, stack: error.stack, code: error.code }
+                        : { message: error });
             }
 
             /**
@@ -107,11 +115,11 @@ class RpcServer {
              * @param {any[]} args
              */
             _invoke(command, args) {
-                return this[command].apply(this, args);
+                return this[command](...args);
             }
         };
 
-        Server.prototype['ping'] = function() { return 'pong'; };
+        Server.prototype.ping = function ping() { return 'pong'; };
 
         return Server;
     }

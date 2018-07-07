@@ -6,9 +6,7 @@
  * const keyStore = KeyStore.instance;
  * const accounts = await keyStore.list();
  */
-/// <reference path="EncryptionType.js" />
 class KeyStore {
-
     /** @returns {KeyStore} */
     static get instance() {
         /** @type {KeyStore} */
@@ -17,8 +15,6 @@ class KeyStore {
     }
 
     constructor() {
-        /** @type {IDBDatabase} */
-        this._db;
         this._connected = false;
     }
 
@@ -30,9 +26,10 @@ class KeyStore {
         if (this._connected && this._db) return Promise.resolve(this._db);
 
         return new Promise((resolve, reject) => {
-            const request = self.indexedDB.open(KeyStore.DB_NAME, KeyStore.DB_VERSION);
+            const request = window.indexedDB.open(KeyStore.DB_NAME, KeyStore.DB_VERSION);
 
             request.onsuccess = () => {
+                /** @type {IDBDatabase} */
                 this._db = request.result;
                 this._connected = true;
                 resolve(this._db);
@@ -105,12 +102,12 @@ class KeyStore {
         const encryptedKeyPair = await key.exportEncrypted(passphrase, unlockKey);
 
         const keyEntry = {
-            encryptedKeyPair: encryptedKeyPair,
+            encryptedKeyPair,
             userFriendlyAddress: key.userFriendlyAddress,
-            type: key.type
+            type: key.type,
         };
 
-        return await this._putPlain(keyEntry);
+        return this._putPlain(keyEntry);
     }
 
     /**
@@ -171,10 +168,11 @@ class KeyStore {
                 if (cursor) {
                     const key = cursor.value;
 
-                    // Because: To use Key.getPublicInfo(), we would need to create Key instances out of the key object that we receive from the DB.
+                    // Because: To use Key.getPublicInfo(), we would need to create Key
+                    // instances out of the key object that we receive from the DB.
                     const keyInfo = {
                         userFriendlyAddress: key.userFriendlyAddress,
-                        type: key.type
+                        type: key.type,
                     };
 
                     results.push(keyInfo);
@@ -215,15 +213,15 @@ class KeyStore {
 
         const keys = await accountStore.dangerousListPlain();
 
-        for (const key of keys) {
+        keys.forEach(async key => {
             const keyEntry = {
                 encryptedKeyPair: key.encryptedKeyPair,
                 userFriendlyAddress: key.userFriendlyAddress,
                 // Translate between old text type and new number type
-                type: /** @type {EncryptionType} */ (key.type === 'high' ? EncryptionType.HIGH : EncryptionType.LOW)
+                type: /** @type {EncryptionType} */ (key.type === 'high' ? EncryptionType.HIGH : EncryptionType.LOW),
             };
             await this.putPlain(keyEntry);
-        }
+        });
 
         // FIXME Uncomment after/for testing
         // await accountStore.drop();

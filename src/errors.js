@@ -1,17 +1,19 @@
+/* eslint-disable  no-unused-vars */
+
 /**
  * @typedef {Error & { code?: string }} CustomError
  */
 
 class KeyNotFoundError extends Error {
     constructor() {
-        super(`Key not found`);
+        super('Key not found');
         this.code = 'K1';
     }
 }
 
 class InvalidAddressError extends Error {
     constructor() {
-        super(`Invalid address`);
+        super('Invalid address');
         this.code = 'K2 ';
     }
 }
@@ -34,19 +36,18 @@ class TooManyAccountsIOSError extends Error {
 
 class AmountTooSmallError extends Error {
     constructor() {
-       super('Amount is too small');
-       this.code = 'K5';
+        super('Amount is too small');
+        this.code = 'K5';
     }
 }
 
 class NetworkMissmatchError extends Error {
-
     /** @param {string} transactionNetwork
      *  @param {string} keyguardNetwork
      */
     constructor(transactionNetwork, keyguardNetwork) {
-       super(`Network missmatch: ${transactionNetwork} in transaction, but ${keyguardNetwork} in Keyguard`);
-       this.code = 'K6';
+        super(`Network missmatch: ${transactionNetwork} in transaction, but ${keyguardNetwork} in Keyguard`);
+        this.code = 'K6';
     }
 }
 

@@ -23,14 +23,13 @@
  *  runKeyguard(SignTransactionApi);
  * ```
  */
-class PopupApi {
-
+class PopupApi { // eslint-disable-line no-unused-vars
     constructor() {
         /** @type {Function} */
-        this._resolve;
+        this._resolve = () => { throw new Error('Method not defined'); };
 
         /** @type {Function} */
-        this._reject;
+        this._reject = () => { throw new Error('Method not defined'); };
     }
 
     /**
@@ -57,11 +56,12 @@ class PopupApi {
     }
 
     /**
-     * Overloaded by each pages' API class
+     * Overwritten by each request's API class
      *
      * @param {any} request
+     * @abstract
      */
-    onRequest(request) {
+    onRequest(request) { // eslint-disable-line no-unused-vars
         throw new Error('Not implemented');
     }
 
@@ -94,6 +94,6 @@ class PopupApi {
      */
     _hasMigrateFlag() {
         const match = document.cookie.match(new RegExp('migrate=([^;]+)'));
-        return match && match[1] === "1";
+        return match && match[1] === '1';
     }
 }

@@ -15,5 +15,6 @@ before_install:
   - CHROME_BIN=/usr/bin/google-chrome-stable
 
 script:
-  - npm run typecheck
-  - npm run test
+  - yarn typecheck
+  - yarn lint
+  - yarn test

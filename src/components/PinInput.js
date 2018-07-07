@@ -75,13 +75,13 @@ class PinInput extends Nimiq.Observable {
     }
 
     get unlocking() {
-        return this._unlocking;
+        return !!this._unlocking;
     }
 
     onPinIncorrect() {
         this.$el.classList.remove('unlocking');
         this.$el.classList.add('shake-pinpad');
-        this._attempts++;
+        this._attempts += 1;
         if (this._attempts === 3) {
             this._waitingTime *= this._waitingTime;
             this._attempts = 0;
@@ -90,11 +90,11 @@ class PinInput extends Nimiq.Observable {
     }
 
     /** @param {KeyboardEvent} e */
-    _handleKeyboardInput (e) {
+    _handleKeyboardInput(e) {
         const inputCharString = e.key;
-        const inputNumber = parseInt(inputCharString);
-        if (isNaN(inputNumber)){
-            e.preventDefault(); //stop character from entering input
+        const inputNumber = parseInt(inputCharString, 10);
+        if (Number.isNaN(inputNumber)) {
+            e.preventDefault(); // stop character from entering input
         } else {
             this._onKeyPressed(inputNumber);
         }
@@ -104,7 +104,7 @@ class PinInput extends Nimiq.Observable {
     _onClick(e) {
         const target = /** @type {Element} */ (e.target);
         if (target.nodeName.toLowerCase() !== 'button' || target === this.$deleteButton) return;
-        const key = parseInt(target.textContent || '');
+        const key = parseInt(target.textContent || '', 10);
         this._onKeyPressed(key);
     }
 
@@ -131,13 +131,12 @@ class PinInput extends Nimiq.Observable {
     }
 
     _setMaskedPin() {
-        const length = this._pin.length;
         /**
          * @param {Element} el
          * @param {number} i
          */
         const fillDot = (el, i) => {
-            if (i < length) {
+            if (i < this._pin.length) {
                 el.classList.add('on');
             } else {
                 el.classList.remove('on');
@@ -148,5 +147,5 @@ class PinInput extends Nimiq.Observable {
 }
 
 PinInput.Events = {
-    PIN_ENTERED: 'pin-entered'
+    PIN_ENTERED: 'pin-entered',
 };

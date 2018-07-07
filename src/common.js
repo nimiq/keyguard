@@ -2,8 +2,7 @@
  * @param {Function} RequestApiClass - Class object of the API which is to be exposed via postMessage RPC
  * @param {object} [options]
  */
-async function runKeyguard(RequestApiClass, options) {
-
+async function runKeyguard(RequestApiClass, options) { // eslint-disable-line no-unused-vars
     const defaultOptions = {
         loadNimiq: true,
         rpcWhitelist: ['request'],
@@ -12,7 +11,7 @@ async function runKeyguard(RequestApiClass, options) {
     options = Object.assign(defaultOptions, options);
 
     // Expose KeyStore to mockup overwrites
-    self.KeyStore = KeyStore;
+    window.KeyStore = KeyStore;
 
     if (options.loadNimiq) {
         // Load web assembly encryption library into browser (if supported)
@@ -22,12 +21,12 @@ async function runKeyguard(RequestApiClass, options) {
     }
 
     // Close window if user navigates back to loading screen
-    self.addEventListener('hashchange', () => {
-        if (location.hash === '') {
-            self.close();
+    window.addEventListener('hashchange', () => {
+        if (window.location.hash === '') {
+            window.close();
         }
     });
 
     // FIXME Set correct allowedOrigin
-    self.rpcServer = RpcServer.create(RequestApiClass, '*', options.rpcWhitelist); 
+    window.rpcServer = RpcServer.create(RequestApiClass, '*', options.rpcWhitelist);
 }

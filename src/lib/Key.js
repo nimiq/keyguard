@@ -8,13 +8,15 @@
  * const tx = key.createTransaction(recipient, value, fee, validityStartHeight);
  * const tx = key.createTransactionWithMessage(recipient, value, fee, validityStartHeight, message);
  * const tx = key.createVestingPayoutTransaction(sender, value, fee, validityStartHeight, [message]);
- * const tx = key.createExtendedTransaction(sender, [senderType], recipient, [recipientType], value, fee, validityStartHeight, [extraData], [isContractCreation]);
+ * const tx = key.createExtendedTransaction(
+ *    sender, [senderType], recipient, [recipientType],
+ *    value, fee, validityStartHeight, [extraData], [isContractCreation]
+ * );
  *
  * const msg = key.signMessage('message');
  *
  */
-/// <reference path="EncryptionType.js" />
-class Key {
+class Key { // eslint-disable-line no-unused-vars
     /**
      * @param {Uint8Array | string} buf - Keypair, as byte array or HEX string
      * @param {EncryptionType} type
@@ -83,7 +85,7 @@ class Key {
      * @returns {object}
      */
     signMessage(message) {
-        message = 'nimiq_msg_' + message;
+        message = `nimiq_msg_${message}`;
         const msgBytes = Utf8Tools.stringToUtf8ByteArray(message);
         const signature = Nimiq.Signature.create(this.keyPair.privateKey, this.keyPair.publicKey, msgBytes);
         return { message, signature };
@@ -96,14 +98,16 @@ class Key {
      * @param {number} value - Number of satoshis to send
      * @param {number} fee - Number of satoshis to set as fee
      * @param {number} validityStartHeight - The validityStartHeight for the transaction
-     * @returns {Nimiq.BasicTransaction} A prepared and signed Transaction object (this still has to be sent to the network)
+     * @returns {Nimiq.BasicTransaction} A prepared and signed Transaction object (to be sent to the network)
      */
     createTransaction(recipient, value, fee, validityStartHeight) {
         if (typeof recipient === 'string') {
             recipient = Key.getUnfriendlyAddress(recipient);
         }
 
-        const transaction = new Nimiq.BasicTransaction(this.keyPair.publicKey, recipient, value, fee, validityStartHeight);
+        const transaction = new Nimiq.BasicTransaction(
+            this.keyPair.publicKey, recipient, value, fee, validityStartHeight,
+        );
         const proof = this._makeSignatureProof(transaction.serializeContent());
         transaction.proof = proof.serialize();
         return transaction;
@@ -117,24 +121,32 @@ class Key {
      * @param {number} fee - Number of satoshis to set as fee
      * @param {number} validityStartHeight - The validityStartHeight for the transaction
      * @param {string} message - Message to add to the transaction
-     * @returns {Nimiq.ExtendedTransaction} A prepared and signed Transaction object (this still has to be sent to the network)
+     * @returns {Nimiq.ExtendedTransaction} A prepared and signed Transaction object (to be sent to the network)
      */
     createTransactionWithMessage(recipient, value, fee, validityStartHeight, message) {
-        return this.createExtendedTransaction(this.publicKey.toAddress(), null, recipient, null, value, fee, validityStartHeight, message);
+        return this.createExtendedTransaction(
+            this.publicKey.toAddress(), null,
+            recipient, null,
+            value, fee, validityStartHeight, message,
+        );
     }
 
     /**
      * Create an extended transaction that pays out vested NIM to this key and that is signed by this key.
      *
      * @param {Nimiq.Address | string} sender - Address of the transaction sending vesting contract
-     * @param {number} value - Number of Satoshis to send.
-     * @param {number} fee Number of Satoshis to donate to the Miner.
-     * @param {number} validityStartHeight - The validityStartHeight for the transaction.
+     * @param {number} value - Number of Satoshis to send
+     * @param {number} fee Number of Satoshis to donate to the Miner
+     * @param {number} validityStartHeight - The validityStartHeight for the transaction
      * @param {string} [message] - Text to add to the transaction
-     * @returns {Nimiq.ExtendedTransaction} A prepared and signed Transaction object. This still has to be sent to the network.
+     * @returns {Nimiq.ExtendedTransaction} A prepared and signed Transaction object (to be sent to the network)
      */
     createVestingPayoutTransaction(sender, value, fee, validityStartHeight, message) {
-        return this.createExtendedTransaction(sender, Nimiq.Account.Type.VESTING, this.publicKey.toAddress(), null, value, fee, validityStartHeight, message);
+        return this.createExtendedTransaction(
+            sender, Nimiq.Account.Type.VESTING,
+            this.publicKey.toAddress(), null,
+            value, fee, validityStartHeight, message,
+        );
     }
 
     /**
@@ -149,9 +161,13 @@ class Key {
      * @param {number} validityStartHeight - The validityStartHeight for the transaction
      * @param {Uint8Array | string} [extraData] - Data or utf-8 text to add to the transaction
      * @param {boolean} [isContractCreation]
-     * @returns {Nimiq.ExtendedTransaction} A prepared and signed Transaction object. This still has to be sent to the network.
+     * @returns {Nimiq.ExtendedTransaction} A prepared and signed Transaction object (to be sent to the network)
      */
-    createExtendedTransaction(sender, senderType, recipient, recipientType, value, fee, validityStartHeight, extraData, isContractCreation) {
+    createExtendedTransaction(
+        sender, senderType,
+        recipient, recipientType,
+        value, fee, validityStartHeight, extraData, isContractCreation,
+    ) {
         if (typeof sender === 'string') {
             sender = Key.getUnfriendlyAddress(sender);
         }
@@ -171,7 +187,7 @@ class Key {
             fee,
             validityStartHeight,
             isContractCreation ? Nimiq.Transaction.Flag.CONTRACT_CREATION : Nimiq.Transaction.Flag.NONE,
-            extraData
+            extraData,
         );
 
         const proof = this._makeSignatureProof(transaction.serializeContent());
@@ -262,8 +278,8 @@ class Key {
     getPublicInfo() {
         return {
             userFriendlyAddress: this.userFriendlyAddress,
-            type: this.type
-        }
+            type: this.type,
+        };
     }
 
     /**

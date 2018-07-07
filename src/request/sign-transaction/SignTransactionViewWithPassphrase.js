@@ -2,7 +2,6 @@
  *  Calls this.fire('result', [result]) when done or this.fire('error', [error]) to return with an error.
  */
 class SignTransactionWithPassphrase extends SignTransactionView {
-
     /**
      * @param {TransactionRequest} txRequest
      */
@@ -23,7 +22,7 @@ class SignTransactionWithPassphrase extends SignTransactionView {
 
         this._passphraseInput.on(PassphraseInput.Events.PASSPHRASE_ENTERED, this._handlePassphraseInput.bind(this));
 
-        location.hash = SignTransactionWithPassphrase.Pages.ENTER_PASSPHRASE;
+        window.location.hash = SignTransactionWithPassphrase.Pages.ENTER_PASSPHRASE;
     }
 
     /** @param {string} passphrase */
@@ -49,5 +48,5 @@ class SignTransactionWithPassphrase extends SignTransactionView {
 }
 
 SignTransactionWithPassphrase.Pages = {
-    ENTER_PASSPHRASE: 'enter-passphrase'
+    ENTER_PASSPHRASE: 'enter-passphrase',
 };

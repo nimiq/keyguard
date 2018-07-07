@@ -3,7 +3,6 @@ class SignTransactionApi extends PopupApi {
      * @param {TransactionRequest} txRequest
      */
     async onRequest(txRequest) {
-
         if (Nimiq.Policy.coinsToSatoshis(txRequest.value) < 1) {
             throw new AmountTooSmallError();
         }

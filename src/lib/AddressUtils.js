@@ -1,11 +1,14 @@
 /**
  * Usage:
  * <script src="lib/address-utils.js"></script>
- * const isValidAddress = AddressUtils.isValidAddress('NQ12 3456 7890 ABCD EFGH IJKL MNOP QRST UVWX'); // false
- * const formattedAddress = Address.Utils.formatAddress(' NQ 1234567890A BCDEFGHIJKLMN  OPQRSTUVWX '); // 'NQ12 3456 7890 ABCD EFGH IJKL MNOP QRST UVWX'
+ *
+ * const isValidAddress = AddressUtils.isValidAddress('NQ12 3456 7890 ABCD EFGH IJKL MNOP QRST UVWX');
+ * // returns FALSE
+ *
+ * const formattedAddress = Address.Utils.formatAddress(' NQ 1234567890A BCDEFGHIJKLMN  OPQRSTUVWX ');
+ * // returns 'NQ12 3456 7890 ABCD EFGH IJKL MNOP QRST UVWX'
  */
-class AddressUtils {
-
+class AddressUtils { // eslint-disable-line no-unused-vars
     /**
      * IBAN-format Nimiq address
      * @param {string} str
@@ -50,7 +53,7 @@ class AddressUtils {
             throw new Error('Addresses are 36 chars (ignoring spaces)');
         }
 
-        if (!this._alphabetCheck(str.toUpperCase())) {
+        if (!this._alphabetCheck(str)) {
             throw new Error('Address has invalid characters');
         }
 
@@ -63,18 +66,18 @@ class AddressUtils {
      * @param {string} str
      */
     static _alphabetCheck(str) {
-        const filteredStr = str.split('').filter((c) => {
-            return AddressUtils.NIMIQ_ALPHABET.includes(c);
-        }).join('');
-
-        return filteredStr === str;
+        str = str.toUpperCase();
+        for (let i = 0; i < str.length; i++) {
+            if (!AddressUtils.NIMIQ_ALPHABET.includes(str[i])) return false;
+        }
+        return true;
     }
 
     /**
      * @param {string} str
      */
     static _ibanCheck(str) {
-        const num = str.split('').map((c) => {
+        const num = str.split('').map(c => {
             const code = c.toUpperCase().charCodeAt(0);
             return code >= 48 && code <= 57 ? c : (code - 55).toString();
         }).join('');
@@ -82,10 +85,10 @@ class AddressUtils {
         let tmp = '';
 
         for (let i = 0; i < Math.ceil(num.length / 6); i++) {
-            tmp = (parseInt(tmp + num.substr(i * 6, 6)) % 97).toString();
+            tmp = (parseInt(tmp + num.substr(i * 6, 6), 10) % 97).toString();
         }
 
-        return parseInt(tmp);
+        return parseInt(tmp, 10);
     }
 
     static get NIMIQ_ALPHABET() {
