@@ -5,7 +5,7 @@
   "scripts": {
     "test": "karma start",
     "typecheck": "tsc",
-    "watch": "tsc --watch",
+    "watch": "tsc-watch --onSuccess \"eslint --fix src\"",
     "lint": "eslint src",
     "lintfix": "eslint --fix src",
     "pr": "tsc && eslint src && karma start"
@@ -33,6 +33,7 @@
     "karma": "^2.0.4",
     "karma-chrome-launcher": "^2.2.0",
     "karma-jasmine": "^1.1.2",
+    "tsc-watch": "^1.0.22",
     "typescript": "^2.9.2"
   }
 }
