@@ -1,5 +1,4 @@
 class ChooseIdenticon extends Nimiq.Observable {
-
     /**
      * @param {EncryptionType} encryptionType
      * @param {HTMLElement} $el
@@ -13,12 +12,13 @@ class ChooseIdenticon extends Nimiq.Observable {
         this.$el = $el;
         this._encryptionType = encryptionType;
 
+        /** @type {{ [address: string]: Key}} */
         this._volatileKeys = {};
 
-        this.$identicons = /** @type {HTMLElement} */ (this.$el.querySelector('.identicons')),
-        this.$confirmButton = /** @type {HTMLElement} */ (this.$el.querySelector('.backdrop button')),
-        this.$generateMoreButton = /** @type {HTMLElement} */ (this.$el.querySelector('.generate-more')),
-        this.$backdrop = /** @type {HTMLElement} */ (this.$el.querySelector('.backdrop'))
+        this.$identicons = /** @type {HTMLElement} */ (this.$el.querySelector('.identicons'));
+        this.$confirmButton = /** @type {HTMLElement} */ (this.$el.querySelector('.backdrop button'));
+        this.$generateMoreButton = /** @type {HTMLElement} */ (this.$el.querySelector('.generate-more'));
+        this.$backdrop = /** @type {HTMLElement} */ (this.$el.querySelector('.backdrop'));
 
         this.$generateMoreButton.addEventListener('click', this.generateIdenticons);
         this.$backdrop.addEventListener('click', this._clearSelection);
@@ -26,6 +26,8 @@ class ChooseIdenticon extends Nimiq.Observable {
 
     generateIdenticons() {
         this.$el.classList.remove('active');
+
+        /** @type {{ [address: string]: Key}} */
         const keys = {};
 
         for (let i = 0; i < 7; i++) {
@@ -38,7 +40,7 @@ class ChooseIdenticon extends Nimiq.Observable {
 
         this.$identicons.textContent = '';
 
-        for (const address in keys) {
+        Object.keys(keys).forEach(address => {
             const identicon = new Identicon(address);
             const $identicon = identicon.getElement();
             this.$identicons.appendChild($identicon);
@@ -47,7 +49,7 @@ class ChooseIdenticon extends Nimiq.Observable {
             $address.textContent = address;
             $identicon.appendChild($address);
             $identicon.addEventListener('click', () => this._onIdenticonSelected($identicon, address));
-        }
+        });
 
         setTimeout(() => this.$el.classList.add('active'), 100);
     }
@@ -65,7 +67,7 @@ class ChooseIdenticon extends Nimiq.Observable {
 
         this.$confirmButton.addEventListener('click', () => this.fire(
             ChooseIdenticon.EVENTS.CHOOSE_IDENTICON,
-            this._volatileKeys[address]
+            this._volatileKeys[address],
         ));
 
         this.$selectedIdenticon = $identicon;
@@ -75,7 +77,7 @@ class ChooseIdenticon extends Nimiq.Observable {
 
     _clearSelection() {
         if (this.$selectedIdenticon) {
-            this.$selectedIdenticon.classList.add('returning')
+            this.$selectedIdenticon.classList.add('returning');
             this.$selectedIdenticon.classList.remove('selected');
         }
 
@@ -84,5 +86,5 @@ class ChooseIdenticon extends Nimiq.Observable {
 }
 
 ChooseIdenticon.EVENTS = {
-    CHOOSE_IDENTICON: 'choose-identicon'
+    CHOOSE_IDENTICON: 'choose-identicon',
 };

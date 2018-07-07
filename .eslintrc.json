@@ -21,6 +21,7 @@
     "Utf8Tools": false,
 
     // Components
+    "ChooseIdenticon": false,
     "Identicon": false,
     "Iqons": false,
     "LanguagePicker": false,
