@@ -1,28 +1,4 @@
 class MnemonicPhrase {
-    /**
-     * @param {string} hex
-     * @return {Uint8Array}
-     */
-    static _hexToArray(hex) {
-        hex = hex.trim();
-        const bytes = hex.match(/.{2}/g) || [];
-        return Uint8Array.from(bytes.map(byte => parseInt(byte, 16)));
-    }
-
-    /**
-     * @param {*} buffer
-     * @return {string}
-     */
-    static _arrayToHex(buffer) {
-        let hex = '';
-        for (let i = 0; i < buffer.length; i++) {
-            const code = buffer[i];
-            hex += MnemonicPhrase.HEX_ALPHABET[code >>> 4];
-            hex += MnemonicPhrase.HEX_ALPHABET[code & 0x0F];
-        }
-        return hex;
-    }
-
     // Adapted from https://github.com/mode80/crc8js
     /**
      *
@@ -30,7 +6,7 @@ class MnemonicPhrase {
      */
     static _crc8(byte_array) {
         // TODO In the original, this table is generated each time. Intentionally?
-        let table = this._getCrcLookupTable();
+        const table = this._getCrcLookupTable();
 
         // Calculate the 8-bit checksum given an array of byte-sized numbers
         var c = 0;
@@ -43,10 +19,10 @@ class MnemonicPhrase {
     static _getCrcLookupTable() {
         // Create a lookup table byte array
         if (!this._crcLookupTable) {
-            var table = []; // 256 max len byte array
-            for (var i = 0; i < 256; ++i) {
+            const table = []; // 256 max len byte array
+            for (let i = 0; i < 256; ++i) {
                 var curr = i;
-                for (var j = 0; j < 8; ++j) {
+                for (let j = 0; j < 8; ++j) {
                     if ((curr & 0x80) !== 0) {
                         curr = ((curr << 1) ^ 0x97) % 256; // Polynomial C2 by Baicheva98
                     } else {
@@ -77,7 +53,15 @@ class MnemonicPhrase {
      * @param {string} bin
      */
     static _binaryToBytes(bin) {
-        // TODO this method does not return number[] but just a single number... ?
+        // used only internally, thus we can skip checks
+        // if (Math.pow(2, bin.length) > Number.MAX_SAFE_INTEGER) {
+        //     throw new Error(`Binary string "${bin}" too long.`);
+        // }
+        // for (let x = 0; x < bin.length; x++) {
+        //     if (bin[x] != '0' && bin[x] != '1') {
+        //         throw new Error(`"${bin}" is not a binary string.`);
+        //     }
+        // }
         return parseInt(bin, 2);
     }
 
@@ -94,31 +78,16 @@ class MnemonicPhrase {
      * @param {Uint8Array} entropy
      */
     static _deriveChecksumBits(entropy) {
-        var crcBytes = new Uint8Array([MnemonicPhrase._crc8(entropy)]);;
-        return MnemonicPhrase._bytesToBinary(crcBytes);
+        var crcByte = new Uint8Array([MnemonicPhrase._crc8(entropy)]);
+        return MnemonicPhrase._bytesToBinary(crcByte);
     }
 
     /**
      *
-     * @param {Uint8Array | string | ArrayBuffer} entropyParam
+     * @param {Uint8Array} entropy
      * @param {string[]} wordlist
      */
-    static keyToMnemonic(entropyParam, wordlist = MnemonicPhrase.DEFAULT_WORDLIST) {
-        /**
-         * @type{Uint8Array}
-         */
-        let entropy;
-
-        if (typeof entropyParam === 'string') {
-            entropy = MnemonicPhrase._hexToArray(entropyParam);
-        }
-        else if (entropyParam instanceof ArrayBuffer) {
-            entropy = new Uint8Array(entropyParam);
-        }
-        else {
-            entropy = entropyParam;
-        }
-
+    static keyToMnemonic(entropy, wordlist = MnemonicPhrase.DEFAULT_WORDLIST) {
         // 128 <= ENT <= 256
         if (entropy.length < 16) throw new TypeError('Invalid key, length < 16');
         if (entropy.length > 32) throw new TypeError('Invalid key, length > 32');
@@ -149,7 +118,7 @@ class MnemonicPhrase {
         if (words.length % 3 !== 0) throw new Error('Invalid mnemonic, words % 3 != 0');
 
         // Convert word indices to 11 bit binary strings
-        var bits = words.map(function (word) {
+        var bits = words.map(word => {
             var index = wordlist.indexOf(word.toLowerCase());
             if (index === -1) throw new Error('Invalid mnemonic, word >' + word + '< is not in wordlist');
 
@@ -172,7 +141,7 @@ class MnemonicPhrase {
         var newChecksum = MnemonicPhrase._deriveChecksumBits(entropy).slice(0, checksumBits.length);
         if (newChecksum !== checksumBits) throw new Error('Invalid checksum');
 
-        return MnemonicPhrase._arrayToHex(entropy);
+        return entropy;
     }
 }
 

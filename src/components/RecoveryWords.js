@@ -32,7 +32,7 @@ class RecoveryWords {
                 const content = document.createElement('span');
                 content.classList.add('word-content');
                 content.textContent = words[wordIndex];
-                content.title = `"word #${ wordIndex + 1 }`;
+                content.title = `word #${ wordIndex + 1 }`;
 
                 const word = document.createElement('div');
                 word.classList.add('word');
