@@ -4,37 +4,42 @@
   },
   "extends": "airbnb-base",
   "globals": {
+    "Nimiq": false,
     "runKeyguard": false,
-    // Classes
+
+    // Libraries
     "AccountStore": false,
     "AddressUtils": false,
     "BrowserDetection": false,
     "CookieJar": false,
     "EncryptionType": false,
     "I18n": false,
-    "Identicon": false,
-    "Iqons": false,
     "Key": false,
     "KeyStore": false,
+    "RpcServer": false,
+    "TransactionType": false,
+    "Utf8Tools": false,
+
+    // Components
+    "Identicon": false,
+    "Iqons": false,
     "LanguagePicker": false,
-    "Nimiq": false,
     "PassphraseInput": false,
     "PinInput": false,
+
+    // Requests
     "PopupApi": false,
-    "RpcServer": false,
     "SignTransaction": false,
     "SignTransactionView": false,
     "SignTransactionWithPassphrase": false,
     "SignTransactionWithPin": false,
-    "TransactionType": false,
-    "Utf8Tools": false,
+
     // Errors
     "AmountTooSmallError": false,
     "InvalidAddressError": false,
     "NetworkMissmatchError": false,
     "TooManyAccountsSafariError": false,
     "TooManyAccountsIOSError": false
-
   },
   "rules": {
     "arrow-parens": ["error", "as-needed"],
