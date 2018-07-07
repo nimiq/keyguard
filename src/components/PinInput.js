@@ -81,7 +81,7 @@ class PinInput extends Nimiq.Observable {
     onPinIncorrect() {
         this.$el.classList.remove('unlocking');
         this.$el.classList.add('shake-pinpad');
-        this._attempts++;
+        this._attempts += 1;
         if (this._attempts === 3) {
             this._waitingTime *= this._waitingTime;
             this._attempts = 0;
@@ -92,8 +92,8 @@ class PinInput extends Nimiq.Observable {
     /** @param {KeyboardEvent} e */
     _handleKeyboardInput(e) {
         const inputCharString = e.key;
-        const inputNumber = parseInt(inputCharString);
-        if (isNaN(inputNumber)) {
+        const inputNumber = parseInt(inputCharString, 10);
+        if (Number.isNaN(inputNumber)) {
             e.preventDefault(); // stop character from entering input
         } else {
             this._onKeyPressed(inputNumber);
@@ -102,9 +102,9 @@ class PinInput extends Nimiq.Observable {
 
     /** @param {MouseEvent} e */
     _onClick(e) {
-        const target = /** @type {Element} */ (e.target);
+        const target = /** @type {Element} */ (e.target); // eslint-disable-line prefer-destructuring
         if (target.nodeName.toLowerCase() !== 'button' || target === this.$deleteButton) return;
-        const key = parseInt(target.textContent || '');
+        const key = parseInt(target.textContent || '', 10);
         this._onKeyPressed(key);
     }
 
@@ -131,7 +131,7 @@ class PinInput extends Nimiq.Observable {
     }
 
     _setMaskedPin() {
-        const length = this._pin.length;
+        const { length } = this._pin;
         /**
          * @param {Element} el
          * @param {number} i

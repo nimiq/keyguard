@@ -16,7 +16,8 @@ class KeyStore {
 
     constructor() {
         /** @type {IDBDatabase} */
-        this._db;
+        this._db; // eslint-disable-line no-unused-expressions
+
         this._connected = false;
     }
 
@@ -28,7 +29,7 @@ class KeyStore {
         if (this._connected && this._db) return Promise.resolve(this._db);
 
         return new Promise((resolve, reject) => {
-            const request = self.indexedDB.open(KeyStore.DB_NAME, KeyStore.DB_VERSION);
+            const request = window.indexedDB.open(KeyStore.DB_NAME, KeyStore.DB_VERSION);
 
             request.onsuccess = () => {
                 this._db = request.result;
@@ -108,7 +109,7 @@ class KeyStore {
             type: key.type,
         };
 
-        return await this._putPlain(keyEntry);
+        return this._putPlain(keyEntry);
     }
 
     /**
@@ -169,7 +170,8 @@ class KeyStore {
                 if (cursor) {
                     const key = cursor.value;
 
-                    // Because: To use Key.getPublicInfo(), we would need to create Key instances out of the key object that we receive from the DB.
+                    // Because: To use Key.getPublicInfo(), we would need to create Key
+                    // instances out of the key object that we receive from the DB.
                     const keyInfo = {
                         userFriendlyAddress: key.userFriendlyAddress,
                         type: key.type,
@@ -213,7 +215,7 @@ class KeyStore {
 
         const keys = await accountStore.dangerousListPlain();
 
-        for (const key of keys) {
+        keys.forEach(async key => {
             const keyEntry = {
                 encryptedKeyPair: key.encryptedKeyPair,
                 userFriendlyAddress: key.userFriendlyAddress,
@@ -221,7 +223,7 @@ class KeyStore {
                 type: /** @type {EncryptionType} */ (key.type === 'high' ? EncryptionType.HIGH : EncryptionType.LOW),
             };
             await this.putPlain(keyEntry);
-        }
+        });
 
         // FIXME Uncomment after/for testing
         // await accountStore.drop();

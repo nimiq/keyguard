@@ -1,4 +1,4 @@
-class CookieJar {
+class CookieJar { // eslint-disable-line no-unused-vars
     /**
      * @param {KeyInfo[]} keys
      */
@@ -35,13 +35,11 @@ class CookieJar {
      * @param {KeyInfo[]} keys
      */
     static _encodeCookie(keys) {
-        let str = '';
-
-        for (const keyInfo of keys) {
+        const str = keys.map(keyInfo => {
             const address = Nimiq.Address.fromUserFriendlyAddress(keyInfo.userFriendlyAddress);
             const encodedAddress = /** @type {string} */ (address.toBase64());
-            str += keyInfo.type.toString() + encodedAddress.slice(0, 27);
-        }
+            return keyInfo.type.toString() + encodedAddress.slice(0, 27);
+        }).join('');
 
         return str;
     }
@@ -59,7 +57,7 @@ class CookieJar {
         if (!keys) return []; // Make TS happy (match() can potentially return NULL)
 
         return keys.map(key => {
-            const type = parseInt(key[0]);
+            const type = parseInt(key[0], 10);
             const userFriendlyAddress = Nimiq.Address.fromBase64(key.substr(1)).toUserFriendlyAddress();
 
             return /** @type {KeyInfo} */ ({

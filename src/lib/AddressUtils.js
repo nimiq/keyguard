@@ -1,10 +1,14 @@
 /**
  * Usage:
  * <script src="lib/address-utils.js"></script>
- * const isValidAddress = AddressUtils.isValidAddress('NQ12 3456 7890 ABCD EFGH IJKL MNOP QRST UVWX'); // false
- * const formattedAddress = Address.Utils.formatAddress(' NQ 1234567890A BCDEFGHIJKLMN  OPQRSTUVWX '); // 'NQ12 3456 7890 ABCD EFGH IJKL MNOP QRST UVWX'
+ *
+ * const isValidAddress = AddressUtils.isValidAddress('NQ12 3456 7890 ABCD EFGH IJKL MNOP QRST UVWX');
+ * // returns FALSE
+ *
+ * const formattedAddress = Address.Utils.formatAddress(' NQ 1234567890A BCDEFGHIJKLMN  OPQRSTUVWX ');
+ * // returns 'NQ12 3456 7890 ABCD EFGH IJKL MNOP QRST UVWX'
  */
-class AddressUtils {
+class AddressUtils { // eslint-disable-line no-unused-vars
     /**
      * IBAN-format Nimiq address
      * @param {string} str
@@ -79,10 +83,10 @@ class AddressUtils {
         let tmp = '';
 
         for (let i = 0; i < Math.ceil(num.length / 6); i++) {
-            tmp = (parseInt(tmp + num.substr(i * 6, 6)) % 97).toString();
+            tmp = (parseInt(tmp + num.substr(i * 6, 6), 10) % 97).toString();
         }
 
-        return parseInt(tmp);
+        return parseInt(tmp, 10);
     }
 
     static get NIMIQ_ALPHABET() {

@@ -1,4 +1,4 @@
-class LanguagePicker {
+class LanguagePicker { // eslint-disable-line no-unused-vars
     /**
      * @param {Element} [el]
      */
@@ -13,7 +13,7 @@ class LanguagePicker {
     _createElement() {
         const element = document.createElement('select');
 
-        for (const language of I18n.availableLanguages()) {
+        I18n.availableLanguages().forEach(language => {
             const label = I18n.translatePhrase('_language', language);
 
             const option = document.createElement('option');
@@ -25,7 +25,7 @@ class LanguagePicker {
             }
 
             element.appendChild(option);
-        }
+        });
 
         element.classList.add('i18n-language-picker');
         element.addEventListener('change', () => {

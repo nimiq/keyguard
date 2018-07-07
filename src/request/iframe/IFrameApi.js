@@ -1,10 +1,8 @@
 class IFrameApi {
-
     /**
      * @param {boolean} [listFromAccountStore] - @deprecated Only for database migration
      */
     async list(listFromAccountStore) {
-
         if (BrowserDetection.isIos() || BrowserDetection.isSafari()) {
             return CookieJar.eat(listFromAccountStore);
         }
@@ -41,6 +39,6 @@ runKeyguard(IFrameApi, {
     loadNimiq: false,
     whitelist: [
         'list',
-        'migrateAccountsToKeys'
-    ]
+        'migrateAccountsToKeys',
+    ],
 });

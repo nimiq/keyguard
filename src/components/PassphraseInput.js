@@ -12,8 +12,8 @@ class PassphraseInput extends Nimiq.Observable {
         this.$eyeButton = /** @type {HTMLElement} */ (this.$el.querySelector('.eye-button'));
         this.$confirmButton = /** @type {HTMLButtonElement} */ (this.$el.querySelector('button'));
         this.$strengthIndicator = /** @type {HTMLElement} */ (this.$el.querySelector('.strength-indicator'));
-        this.$strengthIndicatorContainer =
-            /** @type {HTMLElement} */ (this.$el.querySelector('.strength-indicator-container'));
+        this.$strengthIndicatorContainer = /** @type {HTMLElement} */ (
+            this.$el.querySelector('.strength-indicator-container'));
 
         this.$el.addEventListener('submit', event => this._submit(event));
         this.$eyeButton.addEventListener('click', () => this._changeVisibility());
@@ -31,6 +31,7 @@ class PassphraseInput extends Nimiq.Observable {
         /** @type HTMLElement */
         const el = document.createElement('form');
         el.classList.add('passphrase-input');
+        /* eslint-disable */
         el.innerHTML = `
             <div class="input-container">
                 <input class="password" type="password" placeholder="Enter Passphrase" data-i18n-placeholder="passphrase-placeholder">
@@ -42,6 +43,7 @@ class PassphraseInput extends Nimiq.Observable {
             </div>
             <button data-i18n="passphrase-confirm"></button>
         `;
+        /* eslint-enable */
         I18n.translateDom(el);
         return el;
     }

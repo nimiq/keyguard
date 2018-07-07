@@ -2,7 +2,6 @@
  *  Calls this.fire('result', [result]) when done or this.fire('error', [error]) to return with an error.
  */
 class SignTransactionWithPin extends SignTransactionView {
-
     /**
      * @param {TransactionRequest} txRequest
      */
@@ -15,7 +14,9 @@ class SignTransactionWithPin extends SignTransactionView {
         this.$button = /** @type {HTMLElement} */ (this.$rootElement.querySelector('#transaction-data button'));
         this.$enterPin = /** @type {HTMLElement} */ (this.$rootElement.querySelector('#enter-pin'));
 
-        this.$button.addEventListener('click', () => location.hash = SignTransactionWithPin.Pages.ENTER_PIN);
+        this.$button.addEventListener('click', () => {
+            window.location.hash = SignTransactionWithPin.Pages.ENTER_PIN;
+        });
 
         this._pinInput = new PinInput();
 
@@ -26,7 +27,7 @@ class SignTransactionWithPin extends SignTransactionView {
         this._pinInput.on(PinInput.Events.PIN_ENTERED, this.handlePinInput.bind(this));
 
         // go to start page
-        location.hash = SignTransactionWithPin.Pages.TRANSACTION_DATA;
+        window.location.hash = SignTransactionWithPin.Pages.TRANSACTION_DATA;
     }
 
     /** @param {string} pin */
@@ -38,7 +39,7 @@ class SignTransactionWithPin extends SignTransactionView {
             this._pinInput.close();
             this.fire('result', signedTx);
         } catch (e) {
-            console.error(e);
+            console.error(e); // eslint-disable-line no-console
 
             document.body.classList.remove('loading');
 
@@ -50,5 +51,5 @@ class SignTransactionWithPin extends SignTransactionView {
 
 SignTransactionWithPin.Pages = {
     TRANSACTION_DATA: 'transaction-data',
-    ENTER_PIN: 'enter-pin'
+    ENTER_PIN: 'enter-pin',
 };

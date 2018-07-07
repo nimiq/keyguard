@@ -23,13 +23,13 @@
  *  runKeyguard(SignTransactionApi);
  * ```
  */
-class PopupApi {
+class PopupApi { // eslint-disable-line no-unused-vars
     constructor() {
         /** @type {Function} */
-        this._resolve;
+        this._resolve = () => {};
 
         /** @type {Function} */
-        this._reject;
+        this._reject = () => {};
     }
 
     /**
@@ -60,7 +60,7 @@ class PopupApi {
      *
      * @param {any} request
      */
-    onRequest(request) {
+    onRequest(request) { // eslint-disable-line no-unused-vars
         throw new Error('Not implemented');
     }
 

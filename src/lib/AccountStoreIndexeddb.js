@@ -24,7 +24,7 @@ class AccountStore {
     constructor(dbName = 'accounts') {
         this._dbName = dbName;
         /** @type {IDBDatabase | undefined} */
-        this._db;
+        this._db; // eslint-disable-line no-unused-expressions
         this._connected = false;
         this._dropped = false;
     }
@@ -37,7 +37,7 @@ class AccountStore {
         if (this._connected && this._db) return Promise.resolve(this._db);
 
         return new Promise((resolve, reject) => {
-            const request = self.indexedDB.open(this._dbName, AccountStore.VERSION);
+            const request = window.indexedDB.open(this._dbName, AccountStore.VERSION);
 
             request.onsuccess = () => {
                 this._connected = true;
@@ -68,14 +68,15 @@ class AccountStore {
                 if (cursor) {
                     const key = cursor.value;
 
-                    // Because: To use Key.getPublicInfo(), we would need to create Key instances out of the key object that we receive from the DB.
-                    const keyInfo = {
+                    // Because: To use Key.getPublicInfo(), we would need to create Key
+                    // instances out of the key object that we receive from the DB.
+                    const accountInfo = {
                         address: key.userFriendlyAddress,
                         type: key.type,
                         label: key.label,
                     };
 
-                    results.push(keyInfo);
+                    results.push(accountInfo);
                     cursor.continue();
                 } else {
                     resolve(results);
@@ -123,7 +124,7 @@ class AccountStore {
         if (this._connected) this.close();
 
         return new Promise((resolve, reject) => {
-            const request = self.indexedDB.deleteDatabase(this._dbName);
+            const request = window.indexedDB.deleteDatabase(this._dbName);
 
             request.onsuccess = () => {
                 this._dropped = true;

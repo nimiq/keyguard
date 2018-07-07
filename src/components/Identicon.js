@@ -1,4 +1,4 @@
-class Identicon {
+class Identicon { // eslint-disable-line no-unused-vars
     /**
      * @param {string} [address]
      * @param {HTMLImageElement} [el]

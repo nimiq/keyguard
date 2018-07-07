@@ -1,4 +1,4 @@
-class SignTransactionView extends Nimiq.Observable {
+class SignTransactionView extends Nimiq.Observable { // eslint-disable-line no-unused-vars
     /**
      * Decrypt key and use it to sign a transaction constructed with the data from txRequest.
      *
@@ -12,7 +12,9 @@ class SignTransactionView extends Nimiq.Observable {
             throw new Error('Not yet implemented');
         }
 
-        const { value, fee, recipient, signer, validityStartHeight } = txRequest;
+        const {
+            value, fee, recipient, signer, validityStartHeight,
+        } = txRequest;
 
         const key = await KeyStore.instance.get(signer, passphraseOrPin);
         const tx = key.createTransaction(recipient, value, fee, validityStartHeight);
@@ -28,7 +30,7 @@ class SignTransactionView extends Nimiq.Observable {
             validityStartHeight: tx.validityStartHeight,
             signature: signatureProof.signature.serialize(),
             extraData: Utf8Tools.utf8ByteArrayToString(tx.data),
-            hash: tx.hash().toBase64()
+            hash: tx.hash().toBase64(),
         };
     }
 }
