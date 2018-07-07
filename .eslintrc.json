@@ -3,9 +3,31 @@
       "browser": true
   },
   "extends": "airbnb-base",
+  "globals": {
+    "AccountStore": false,
+    "AddressUtils": false,
+    "BrowserDetection": false,
+    "CookieJar": false,
+    "EncryptionType": false,
+    "I18n": false,
+    "Identicon": false,
+    "InvalidAddressError": false,
+    "Iqons": false,
+    "Key": false,
+    "KeyStore": false,
+    "LanguagePicker": false,
+    "Nimiq": false,
+    "RpcServer": false,
+    "TransactionType": false,
+    "Utf8Tools": false
+  },
   "rules": {
     "arrow-parens": ["error", "as-needed"],
+    "class-methods-use-this": ["off"],
     "indent": ["error", 4],
+    "max-len": ["error", 120],
+    "no-param-reassign": ["off"],
+    "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
     "no-underscore-dangle": ["off"]
   }
 }
