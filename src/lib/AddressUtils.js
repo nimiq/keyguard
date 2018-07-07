@@ -53,7 +53,7 @@ class AddressUtils { // eslint-disable-line no-unused-vars
             throw new Error('Addresses are 36 chars (ignoring spaces)');
         }
 
-        if (!this._alphabetCheck(str.toUpperCase())) {
+        if (!this._alphabetCheck(str)) {
             throw new Error('Address has invalid characters');
         }
 
@@ -66,9 +66,11 @@ class AddressUtils { // eslint-disable-line no-unused-vars
      * @param {string} str
      */
     static _alphabetCheck(str) {
-        const filteredStr = str.split('').filter(c => AddressUtils.NIMIQ_ALPHABET.includes(c)).join('');
-
-        return filteredStr === str;
+        str = str.toUpperCase();
+        for (let i = 0; i < str.length; i++) {
+            if (!AddressUtils.NIMIQ_ALPHABET.includes(str[i])) return false;
+        }
+        return true;
     }
 
     /**
