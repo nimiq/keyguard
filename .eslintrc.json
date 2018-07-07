@@ -49,6 +49,7 @@
     "no-param-reassign": ["off"],
     "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
     "no-underscore-dangle": ["off"],
-    "prefer-destructuring": ["off"]
+    "prefer-destructuring": ["off"],
+    "no-console": ["warn"]
   }
 }

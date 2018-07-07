@@ -111,7 +111,6 @@ class I18n { // eslint-disable-line no-unused-vars
         const languageToUse = this.getClosestSupportedLanguage(language);
 
         if (languageToUse !== language) {
-            // eslint-disable-next-line no-console
             console.warn(`Language ${language} not supported, using ${languageToUse} instead.`);
         }
 

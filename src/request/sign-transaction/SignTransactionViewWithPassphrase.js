@@ -35,7 +35,7 @@ class SignTransactionWithPassphrase extends SignTransactionView {
             const signedTx = await this._signTx(this._txRequest, passphrase);
             this.fire('result', signedTx);
         } catch (e) {
-            console.error(e); // eslint-disable-line no-console
+            console.error(e);
 
             document.body.classList.remove('loading');
 
