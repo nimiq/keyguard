@@ -175,7 +175,6 @@ class Iqons {
     /**
      * @param {number} index
      * @param {string} part
-     * @returns {string}
      */
     static _assetIndex(index, part) {
         index = (index % this.assetCounts[part]) + 1;
@@ -186,7 +185,6 @@ class Iqons {
 
     /**
      * @param {string} text
-     * @returns {string}
      */
     static _hash(text) {
         return (`${text
@@ -200,7 +198,6 @@ class Iqons {
 
     /**
      * @param {number} number
-     * @returns {number}
      */
     static _chaosHash(number) {
         const k = 3.569956786876;
@@ -211,9 +208,6 @@ class Iqons {
         return an;
     }
 
-    /**
-     * @returns {number}
-     */
     static _getRandomId() {
         const array = new Uint32Array(1);
         crypto.getRandomValues(array);

@@ -68,7 +68,7 @@ class I18n { // eslint-disable-line no-unused-vars
     }
 
     /**
-     * @returns {string[]} ISO codes of all available languages.
+     * @returns ISO codes of all available languages.
      */
     static availableLanguages() {
         return Object.keys(this._dict);
@@ -86,7 +86,6 @@ class I18n { // eslint-disable-line no-unused-vars
      * Selects a supported language closed to the desired language. Examples it might return:
      * en-us => en-us, en-us => en, en => en-us, fr => en.
      * @param {string} language - ISO 639-1 language codes, e.g. en, en-us, de, de-at
-     * @returns {string}
      */
     static getClosestSupportedLanguage(language) {
         // If this language is supported, return it directly

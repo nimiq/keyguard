@@ -91,7 +91,7 @@ class Key { // eslint-disable-line no-unused-vars
      * @param {number} value - Number of satoshis to send
      * @param {number} fee - Number of satoshis to set as fee
      * @param {number} validityStartHeight - The validityStartHeight for the transaction
-     * @returns {Nimiq.BasicTransaction} A prepared and signed Transaction object (to be sent to the network)
+     * @returns A prepared and signed Transaction object (this still has to be sent to the network)
      */
     createTransaction(recipient, value, fee, validityStartHeight) {
         if (typeof recipient === 'string') {
@@ -114,7 +114,7 @@ class Key { // eslint-disable-line no-unused-vars
      * @param {number} fee - Number of satoshis to set as fee
      * @param {number} validityStartHeight - The validityStartHeight for the transaction
      * @param {string} message - Message to add to the transaction
-     * @returns {Nimiq.ExtendedTransaction} A prepared and signed Transaction object (to be sent to the network)
+     * @returns A prepared and signed Transaction object (this still has to be sent to the network)
      */
     createTransactionWithMessage(recipient, value, fee, validityStartHeight, message) {
         return this.createExtendedTransaction(
@@ -132,7 +132,7 @@ class Key { // eslint-disable-line no-unused-vars
      * @param {number} fee Number of Satoshis to donate to the Miner
      * @param {number} validityStartHeight - The validityStartHeight for the transaction
      * @param {string} [message] - Text to add to the transaction
-     * @returns {Nimiq.ExtendedTransaction} A prepared and signed Transaction object (to be sent to the network)
+     * @returns A prepared and signed Transaction object (his still has to be sent to the network)
      */
     createVestingPayoutTransaction(sender, value, fee, validityStartHeight, message) {
         return this.createExtendedTransaction(
@@ -154,7 +154,7 @@ class Key { // eslint-disable-line no-unused-vars
      * @param {number} validityStartHeight - The validityStartHeight for the transaction
      * @param {Uint8Array | string} [extraData] - Data or utf-8 text to add to the transaction
      * @param {boolean} [isContractCreation]
-     * @returns {Nimiq.ExtendedTransaction} A prepared and signed Transaction object (to be sent to the network)
+     * @returns A prepared and signed Transaction object (this still has to be sent to the network)
      */
     createExtendedTransaction(
         sender, senderType,
@@ -203,7 +203,6 @@ class Key { // eslint-disable-line no-unused-vars
     /**
      * @param {Uint8Array | string} passphrase
      * @param {Uint8Array | string} [unlockKey]
-     * @return {Promise<Uint8Array>}
      */
     exportEncrypted(passphrase, unlockKey) {
         if (typeof passphrase === 'string') {
@@ -217,9 +216,6 @@ class Key { // eslint-disable-line no-unused-vars
         return this._keyPair.exportEncrypted(passphrase, unlockKey);
     }
 
-    /**
-     * @returns {Uint8Array}
-     */
     exportPlain() {
         return this._keyPair.serialize();
     }
@@ -256,20 +252,19 @@ class Key { // eslint-disable-line no-unused-vars
 
     /**
      * @param {Key} o
-     * @return {boolean}
      */
     equals(o) {
         return o instanceof Key && this.keyPair.equals(o.keyPair) && this.address.equals(o.address);
     }
 
-    /**
-     * @returns {KeyInfo}
-     */
     getPublicInfo() {
-        return {
+        /** @type {KeyInfo} */
+        const keyInfo = {
             userFriendlyAddress: this.userFriendlyAddress,
             type: this.type,
         };
+
+        return keyInfo;
     }
 
     /**

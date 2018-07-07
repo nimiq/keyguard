@@ -5,7 +5,6 @@
 class Utf8Tools { // eslint-disable-line no-unused-vars
     /**
      * @param {string} str
-     * @returns {Uint8Array}
      */
     static stringToUtf8ByteArray(str) {
         // TODO: Use native implementations if/when available
@@ -38,7 +37,6 @@ class Utf8Tools { // eslint-disable-line no-unused-vars
 
     /**
      * @param {Uint8Array} bytes
-     * @returns {string}
      */
     static utf8ByteArrayToString(bytes) {
         // TODO: Use native implementations if/when available
