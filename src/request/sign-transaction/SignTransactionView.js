@@ -12,9 +12,8 @@ class SignTransactionView extends Nimiq.Observable { // eslint-disable-line no-u
             throw new Error('Not yet implemented');
         }
 
-        const {
-            value, fee, recipient, signer, validityStartHeight,
-        } = txRequest;
+        // eslint-disable-next-line object-curly-newline
+        const { value, fee, recipient, signer, validityStartHeight } = txRequest;
 
         const key = await KeyStore.instance.get(signer, passphraseOrPin);
         const tx = key.createTransaction(recipient, value, fee, validityStartHeight);

@@ -75,7 +75,7 @@ class PinInput extends Nimiq.Observable {
     }
 
     get unlocking() {
-        return this._unlocking;
+        return !!this._unlocking;
     }
 
     onPinIncorrect() {
@@ -102,7 +102,7 @@ class PinInput extends Nimiq.Observable {
 
     /** @param {MouseEvent} e */
     _onClick(e) {
-        const target = /** @type {Element} */ (e.target); // eslint-disable-line prefer-destructuring
+        const target = /** @type {Element} */ (e.target);
         if (target.nodeName.toLowerCase() !== 'button' || target === this.$deleteButton) return;
         const key = parseInt(target.textContent || '', 10);
         this._onKeyPressed(key);
@@ -131,13 +131,12 @@ class PinInput extends Nimiq.Observable {
     }
 
     _setMaskedPin() {
-        const { length } = this._pin;
         /**
          * @param {Element} el
          * @param {number} i
          */
         const fillDot = (el, i) => {
-            if (i < length) {
+            if (i < this._pin.length) {
                 el.classList.add('on');
             } else {
                 el.classList.remove('on');

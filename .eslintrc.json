@@ -48,6 +48,7 @@
     "max-len": ["error", 120],
     "no-param-reassign": ["off"],
     "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
-    "no-underscore-dangle": ["off"]
+    "no-underscore-dangle": ["off"],
+    "prefer-destructuring": ["off"]
   }
 }
