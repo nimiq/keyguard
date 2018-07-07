@@ -148,12 +148,12 @@ class KeyStore {
     }
 
     /**
-     * @returns {Promise.<Array.<KeyInfo>>}
+     * @returns {Promise<KeyInfo[]>}
      */
     async list() {
         const db = await this.connect();
         return new Promise((resolve, reject) => {
-            const results = /** @type {any[]} */ ([]);
+            const results = /** @type {KeyInfo[]} */ ([]);
             const openCursorRequest = db.transaction([KeyStore.DB_KEY_STORE_NAME], 'readonly')
                 .objectStore(KeyStore.DB_KEY_STORE_NAME)
                 .openCursor();
@@ -164,6 +164,7 @@ class KeyStore {
 
                     // Because: To use Key.getPublicInfo(), we would need to create Key
                     // instances out of the key object that we receive from the DB.
+                    /** @type {KeyInfo} */
                     const keyInfo = {
                         userFriendlyAddress: key.userFriendlyAddress,
                         type: key.type,

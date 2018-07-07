@@ -1,16 +1,22 @@
 declare namespace Nimiq {
-    type Address = any
-    const Address: any
+    class AddressClass {
+        fromString(str: string): AddressClass
+        fromBase64(base64: string): AddressClass
+        fromHex(hex: string): AddressClass
+        toUserFriendlyAddress(): string
+        fromUserFriendlyAddress(str: string): AddressClass
+        equals(o: AddressClass): boolean
+    }
+    const Address: AddressClass
 
     class BufferUtilsClass {
         fromAscii(buf: string): Uint8Array
         fromHex(buf: string): Uint8Array
     }
-
     const BufferUtils: BufferUtilsClass
 
     class KeyPairClass {
-        publicKey: PublicKey
+        publicKey: PublicKeyClass
         privateKey: PrivateKey
         isLocked: boolean
         generate() : KeyPairClass
@@ -21,20 +27,17 @@ declare namespace Nimiq {
         lock(key: string | Uint8Array): void
         relock(): KeyPairClass
         unlock(key: string | Uint8Array): void
-        equals(object: any): boolean
+        equals(o: any): boolean
     }
-
     const KeyPair: KeyPairClass
 
     type SerialBuffer = any
     const SerialBuffer: any
 
-    interface Signature { }
-
     class SignatureClass {
-        create(key1: any, key2: any, msg: Uint8Array) : Signature
+        create(key1: any, key2: any, msg: Uint8Array) : SignatureClass
+        serialize(): SerialBuffer
     }
-
     const Signature : SignatureClass
 
     type Transaction = any
@@ -48,11 +51,22 @@ declare namespace Nimiq {
 
     const Account: any
 
-    type SignatureProof = any
-    const SignatureProof: any
+    class SignatureProofClass {
+        singleSig(publicKey: PublicKeyClass, signature: SignatureClass): SignatureProofClass
+        unserialize(buf: SerialBuffer): SignatureProofClass
+        serialize(): SerialBuffer
+        verify(address: AddressClass | null, data: Uint8Array): boolean
+        verifyTransaction(transaction: Transaction): boolean
+        publicKey: PublicKeyClass
+        signature: SignatureClass
+    }
+    const SignatureProof: SignatureProofClass
 
-    type PublicKey = any
-    const PublicKey: any
+    class PublicKeyClass {
+        serialize(): SerialBuffer
+        toAddress(): AddressClass
+    }
+    const PublicKey: PublicKeyClass
 
     type PrivateKey = any
     const PrivateKey: any
@@ -65,14 +79,12 @@ declare namespace Nimiq {
         coinsToSatoshis: (coins: number) => number
         satoshisToCoins: (satoshis: number) => number
     }
-
     const Policy: PolicyClass
 
     class GenesisConfigClass {
         test: () => void
         NETWORK_NAME: string
     }
-
     const GenesisConfig: GenesisConfigClass
 
     class Observable {
@@ -84,6 +96,5 @@ declare namespace Nimiq {
     class WasmHelperClass {
         doImportBrowser: () => void
     }
-
     const WasmHelper: WasmHelperClass
 }

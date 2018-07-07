@@ -42,11 +42,11 @@ class Key { // eslint-disable-line no-unused-vars
      */
     static async loadEncrypted(buf, passphrase, type) {
         if (typeof buf === 'string') {
-            buf = (Nimiq.BufferUtils.fromHex(buf));
+            buf = Nimiq.BufferUtils.fromHex(buf);
         }
 
         if (typeof passphrase === 'string') {
-            passphrase = (Nimiq.BufferUtils.fromAscii(passphrase));
+            passphrase = Nimiq.BufferUtils.fromAscii(passphrase);
         }
 
         const keyPair = await Nimiq.KeyPair.fromEncrypted(new Nimiq.SerialBuffer(buf), passphrase);
@@ -69,11 +69,8 @@ class Key { // eslint-disable-line no-unused-vars
      * @param {EncryptionType} type - Low or high security (passphrase or pin encoded, respectively)
      */
     constructor(keyPair, type) {
-        /** @type {Nimiq.KeyPair} */
         this._keyPair = keyPair; // Plain key pair, not encrypted
-        /** @type {Nimiq.Address} */
         this.address = this._keyPair.publicKey.toAddress();
-        /** @type {string} */
         this.userFriendlyAddress = this.address.toUserFriendlyAddress();
         this.type = type;
     }
@@ -200,7 +197,7 @@ class Key { // eslint-disable-line no-unused-vars
      * Generate a signature proof for data with this key.
      *
      * @param {Uint8Array} data - The data to sign
-     * @returns {Nimiq.SignatureProof} A signature proof for this transaction
+     * @returns A signature proof for this transaction
      */
     _makeSignatureProof(data) {
         const signature = Nimiq.Signature.create(this.keyPair.privateKey, this.keyPair.publicKey, data);
@@ -231,7 +228,6 @@ class Key { // eslint-disable-line no-unused-vars
         return this._keyPair.serialize();
     }
 
-    /** @type {boolean} */
     get isLocked() {
         return this.keyPair.isLocked;
     }
@@ -282,13 +278,11 @@ class Key { // eslint-disable-line no-unused-vars
 
     /**
      * The public key of the Key owner
-     * @type {Nimiq.PublicKey}
      */
     get publicKey() {
         return this._keyPair.publicKey;
     }
 
-    /** @type {Nimiq.KeyPair} */
     get keyPair() {
         return this._keyPair;
     }
