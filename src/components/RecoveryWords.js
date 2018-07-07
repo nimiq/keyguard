@@ -10,7 +10,7 @@ class RecoveryWords {
     _createElement() {
         /** @type {Element} */
         const el = document.createElement('div');
-        el.classList.add('twenty-four-words');
+        el.classList.add('recovery-words');
         return el;
     }
 

@@ -10,7 +10,7 @@
     <script src="../src/lib/MnemonicPhrase.js"></script>
     <script src="../src/components/RecoveryWords.js"></script>
     <style>
-        .twenty-four-words .word {
+        .recovery-words .word {
             width: 5rem;
         }
     </style>
@@ -20,7 +20,7 @@
     <script>
     const randomKey = window.crypto.getRandomValues(new Uint8Array(32));
     const words = new RecoveryWords();
-    words.privateKey = MnemonicPhrase._arrayToHex(randomKey);
+    words.privateKey = randomKey;
     document.body.appendChild(words.getElement());
     </script>
 </body>
