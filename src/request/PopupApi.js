@@ -26,10 +26,10 @@
 class PopupApi { // eslint-disable-line no-unused-vars
     constructor() {
         /** @type {Function} */
-        this._resolve = () => {};
+        this._resolve = () => { throw new Error('Method not defined'); };
 
         /** @type {Function} */
-        this._reject = () => {};
+        this._reject = () => { throw new Error('Method not defined'); };
     }
 
     /**
