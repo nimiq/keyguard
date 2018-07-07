@@ -31,7 +31,7 @@ class PassphraseInput extends Nimiq.Observable {
         /** @type HTMLElement */
         const el = document.createElement('form');
         el.classList.add('passphrase-input');
-        /* eslint-disable */
+        /* eslint-disable max-len */
         el.innerHTML = `
             <div class="input-container">
                 <input class="password" type="password" placeholder="Enter Passphrase" data-i18n-placeholder="passphrase-placeholder">
@@ -43,7 +43,7 @@ class PassphraseInput extends Nimiq.Observable {
             </div>
             <button data-i18n="passphrase-confirm"></button>
         `;
-        /* eslint-enable */
+        /* eslint-enable max-len */
         I18n.translateDom(el);
         return el;
     }
