@@ -8,7 +8,7 @@
     "lint": "eslint src",
     "lintfix": "eslint --fix src",
     "pr": "tsc && eslint src && karma start",
-    "watch": "tsc-watch --pretty --originalStdout --onSuccess \"eslint --fix src client\""
+    "watch": "tsc-watch --pretty --onSuccess \"eslint --fix src\""
   },
   "repository": {
     "type": "git",
@@ -33,7 +33,7 @@
     "karma": "^2.0.4",
     "karma-chrome-launcher": "^2.2.0",
     "karma-jasmine": "^1.1.2",
-    "tsc-watch": "sisou/tsc-watch#originalstdout-option",
+    "tsc-watch": "^1.0.22",
     "typescript": "^2.9.2"
   }
 }
