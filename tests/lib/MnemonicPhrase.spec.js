@@ -23,4 +23,28 @@ describe('MnemonicPhrase', function() {
             expect(MnemonicPhrase.mnemonicToKey(vector.mnemonic)).toEqual(vector.key);
         });
     });
+
+    it('fail on wrong word', function() {
+        // changed last word to 'options'
+        const wrong = 'hammer identify faculty bonus leisure sleep evolve salt leisure quality between options';
+        expect(() => MnemonicPhrase.mnemonicToKey(wrong)).toThrowError();
+    });
+
+    it('fail when recovery words are not exactly 24 words', function() {
+        // popped last byte
+        const tooShort = 'prefer foil call dove gym shop style blur used chuckle rain destroy person leader affair pretty weekend resemble ostrich ugly token glass nature';
+        // duplicated last byte
+        const tooLong = 'prefer foil call dove gym shop style blur used chuckle rain destroy person leader affair pretty weekend resemble ostrich ugly token glass nature visa visa';
+        expect(() => console.log(MnemonicPhrase.mnemonicToKey(tooShort))).toThrowError();
+        expect(() => console.log(MnemonicPhrase.mnemonicToKey(tooLong))).toThrowError();
+    });
+
+    it('fail when key is not exactly 32 bytes long', function() {
+        // popped last byte
+        const tooShort = new Uint8Array([ 169, 203, 76, 129, 160, 230, 129, 141, 117, 240, 195, 239, 197, 18, 196, 30, 26, 52, 253, 1, 21, 81, 249, 22, 234, 115, 246, 14, 62, 197, 228 ]);
+        // duplicated last byte
+        const tooLong = new Uint8Array([ 169, 203, 76, 129, 160, 230, 129, 141, 117, 240, 195, 239, 197, 18, 196, 30, 26, 52, 253, 1, 21, 81, 249, 22, 234, 115, 246, 14, 62, 197, 228, 233, 233 ]);
+        expect(() => console.log(MnemonicPhrase.keyToMnemonic(tooShort))).toThrowError();
+        expect(() => console.log(MnemonicPhrase.keyToMnemonic(tooLong))).toThrowError();
+    });
 });
