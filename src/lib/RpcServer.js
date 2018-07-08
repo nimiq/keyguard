@@ -67,8 +67,8 @@ class RpcServer { // eslint-disable-line no-unused-vars
                     // Ignore messages without a command
                     if (!message.data.command) return;
 
-                    // Ignore messages without an ID (except 'ping' commands)
-                    if (!message.data.id && message.data.command !== 'ping') return;
+                    // Ignore messages without an ID
+                    if (!message.data.id) return;
 
                     // FIXME Remove '*' option for release
                     if (this._allowedOrigin !== '*' && message.origin !== this._allowedOrigin) {
