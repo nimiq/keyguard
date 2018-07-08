@@ -1,0 +1,38 @@
+.recovery-words {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    line-height: 3;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+}
+
+.recovery-words .word-section {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.recovery-words .word {
+    margin: .25rem;
+    display: flex;
+    flex-direction: column;
+    flex: 1 0 20%;
+    position: relative;
+    box-shadow: 0 .250rem .250rem 0       rgba(0, 0, 0, 0.14),
+                0 .125rem .625rem 0       rgba(0, 0, 0, 0.12),
+                0 .375rem .125rem -.25rem rgba(0, 0, 0, 0.20);
+}
+
+.recovery-words .word .word-content {
+    display: none;
+}
+
+.recovery-words .word-section:hover .word-content{
+    display: initial;
+}
+
+.recovery-words .word-section:hover .word-placeholder{
+    display: none;
+}

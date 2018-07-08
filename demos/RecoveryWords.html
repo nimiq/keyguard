@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Show 24 Words</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link href="../src/nimiq-style.css" rel="stylesheet">
+    <link href="../src/common.css" rel="stylesheet">
+    <link href="../src/components/RecoveryWords.css" rel="stylesheet">
+    <script src="../src/lib/MnemonicPhrase.js"></script>
+    <script src="../src/components/RecoveryWords.js"></script>
+    <style>
+        .recovery-words .word {
+            width: 5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <script>
+    const randomKey = window.crypto.getRandomValues(new Uint8Array(32));
+    const words = new RecoveryWords();
+    words.privateKey = randomKey;
+    document.body.appendChild(words.getElement());
+    </script>
+</body>
+
+</html>
