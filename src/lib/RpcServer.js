@@ -1,16 +1,11 @@
 /**
- * RPC (Remote Procedure Call) Server
- * Also called COP Server (Cross-Origin-Procedure)
+ * RPC (Remote Procedure Call) Server, also called COP Server (Cross-Origin-Procedure)
  *
- * # Usage:
+ * Usage:
  * <script src="lib/rpc-server.js"></script>
+ *
  * const rpcServer = RpcServer.create(ProviderClass, 'https://allowed.origin.com');
  */
-
-/**
- * @template T
- * @typedef { {new(...args: any[]): T }} Newable */
-
 class RpcServer { // eslint-disable-line no-unused-vars
     /**
      * @param {object} clazz - The class whose methods will be made available via postMessage RPC
@@ -23,11 +18,11 @@ class RpcServer { // eslint-disable-line no-unused-vars
     }
 
     /**
-     * @param {Newable<Object>} clazz - The class whose methods will be made available via postMessage RPC
+     * @param {Newable} clazz - The class whose methods will be made available via postMessage RPC
      * @param {string} allowedOrigin - The origin that is allowed to call this server
      * @param {string[]} whitelist
      *
-     * @returns { Newable<Object>}
+     * @returns {Newable}
      */
     static _generateServerClass(clazz, allowedOrigin, whitelist) {
         const Server = class extends clazz {
