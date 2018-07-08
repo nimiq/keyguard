@@ -19,6 +19,7 @@
     "I18n": false,
     "Key": false,
     "KeyStore": false,
+    "RpcClient": false,
     "RpcServer": false,
     "TransactionType": false,
     "Utf8Tools": false,
