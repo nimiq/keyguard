@@ -61,6 +61,15 @@ class RpcServer { // eslint-disable-line no-unused-vars
              */
             _receive(message) {
                 try {
+                    // Cannot reply to a message that has no source window
+                    if (!message.source) return;
+
+                    // Ignore messages without a command
+                    if (!message.data.command) return;
+
+                    // Ignore messages without an ID
+                    if (!message.data.id) return;
+
                     // FIXME Remove '*' option for release
                     if (this._allowedOrigin !== '*' && message.origin !== this._allowedOrigin) {
                         throw new Error('Unauthorized');
