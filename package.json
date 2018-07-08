@@ -5,10 +5,10 @@
   "scripts": {
     "test": "karma start",
     "typecheck": "tsc",
-    "watch": "tsc-watch --onSuccess \"eslint --fix src\"",
     "lint": "eslint src",
     "lintfix": "eslint --fix src",
-    "pr": "tsc && eslint src && karma start"
+    "pr": "tsc && eslint src && karma start",
+    "watch": "tsc-watch --pretty --originalStdout --onSuccess \"eslint --fix src client\""
   },
   "repository": {
     "type": "git",
@@ -33,7 +33,7 @@
     "karma": "^2.0.4",
     "karma-chrome-launcher": "^2.2.0",
     "karma-jasmine": "^1.1.2",
-    "tsc-watch": "^1.0.22",
+    "tsc-watch": "sisou/tsc-watch#originalstdout-option",
     "typescript": "^2.9.2"
   }
 }
