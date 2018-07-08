@@ -7,15 +7,10 @@
  * const accounts = await keyStore.list();
  */
 class KeyStore {
-    /** @returns {KeyStore} */
     static get instance() {
         /** @type {KeyStore} */
         this._instance = this._instance || new KeyStore();
         return this._instance;
-    }
-
-    constructor() {
-        this._connected = false;
     }
 
     /**
@@ -23,15 +18,14 @@ class KeyStore {
      * @private
      */
     async connect() {
-        if (this._connected && this._db) return Promise.resolve(this._db);
+        if (this._db) return Promise.resolve(this._db);
 
         return new Promise((resolve, reject) => {
             const request = window.indexedDB.open(KeyStore.DB_NAME, KeyStore.DB_VERSION);
 
             request.onsuccess = () => {
-                /** @type {IDBDatabase} */
+                /** @type {IDBDatabase | null} */
                 this._db = request.result;
-                this._connected = true;
                 resolve(this._db);
             };
 
@@ -186,9 +180,9 @@ class KeyStore {
     }
 
     close() {
-        if (!this._connected || !this._db) return;
-        this._connected = false;
+        if (!this._db) return;
         this._db.close();
+        this._db = null;
     }
 
     /**

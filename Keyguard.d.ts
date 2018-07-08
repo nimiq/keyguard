@@ -57,3 +57,7 @@ type CreateRequest = {
 type KeyguardRequest = TransactionRequest | CreateRequest
 
 interface Window { rpcServer: RpcServer; KeyStore: any }
+
+interface Newable {
+    new(...args: any[]): any;
+}
