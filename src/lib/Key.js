@@ -20,6 +20,7 @@ class Key { // eslint-disable-line no-unused-vars
     /**
      * @param {Uint8Array | string} buf - Keypair, as byte array or HEX string
      * @param {EncryptionType} type
+     * @returns {Key}
      */
     static loadPlain(buf, type) {
         if (typeof buf === 'string') {
@@ -37,6 +38,7 @@ class Key { // eslint-disable-line no-unused-vars
      * @param {Uint8Array | string} buf - Encrypted keypair
      * @param {Uint8Array | string} passphrase - Passphrase, as byte array or ASCII string
      * @param {EncryptionType} type
+     * @returns {Promise.<Key>}
      */
     static async loadEncrypted(buf, passphrase, type) {
         if (typeof buf === 'string') {
@@ -54,6 +56,7 @@ class Key { // eslint-disable-line no-unused-vars
 
     /**
      * @param {string} friendlyAddress
+     * @returns {Nimiq.Address}
      */
     static getUnfriendlyAddress(friendlyAddress) {
         return Nimiq.Address.fromUserFriendlyAddress(friendlyAddress);
@@ -76,6 +79,7 @@ class Key { // eslint-disable-line no-unused-vars
      * Sign a generic message.
      *
      * @param {string} message - A utf-8 string
+     * @returns {{message: string, signature: Nimiq.Signature}}
      */
     signMessage(message) {
         message = `nimiq_msg_${message}`;
@@ -91,7 +95,7 @@ class Key { // eslint-disable-line no-unused-vars
      * @param {number} value - Number of satoshis to send
      * @param {number} fee - Number of satoshis to set as fee
      * @param {number} validityStartHeight - The validityStartHeight for the transaction
-     * @returns A prepared and signed Transaction object (this still has to be sent to the network)
+     * @returns {Nimiq.BasicTransaction} A prepared and signed Transaction object (to be sent to the network)
      */
     createTransaction(recipient, value, fee, validityStartHeight) {
         if (typeof recipient === 'string') {
@@ -114,7 +118,7 @@ class Key { // eslint-disable-line no-unused-vars
      * @param {number} fee - Number of satoshis to set as fee
      * @param {number} validityStartHeight - The validityStartHeight for the transaction
      * @param {string} message - Message to add to the transaction
-     * @returns A prepared and signed Transaction object (this still has to be sent to the network)
+     * @returns {Nimiq.ExtendedTransaction} A prepared and signed Transaction object (to be sent to the network)
      */
     createTransactionWithMessage(recipient, value, fee, validityStartHeight, message) {
         return this.createExtendedTransaction(
@@ -132,7 +136,7 @@ class Key { // eslint-disable-line no-unused-vars
      * @param {number} fee Number of Satoshis to donate to the Miner
      * @param {number} validityStartHeight - The validityStartHeight for the transaction
      * @param {string} [message] - Text to add to the transaction
-     * @returns A prepared and signed Transaction object (his still has to be sent to the network)
+     * @returns {Nimiq.ExtendedTransaction} A prepared and signed Transaction object (to be sent to the network)
      */
     createVestingPayoutTransaction(sender, value, fee, validityStartHeight, message) {
         return this.createExtendedTransaction(
@@ -154,7 +158,7 @@ class Key { // eslint-disable-line no-unused-vars
      * @param {number} validityStartHeight - The validityStartHeight for the transaction
      * @param {Uint8Array | string} [extraData] - Data or utf-8 text to add to the transaction
      * @param {boolean} [isContractCreation]
-     * @returns A prepared and signed Transaction object (this still has to be sent to the network)
+     * @returns {Nimiq.ExtendedTransaction} A prepared and signed Transaction object (to be sent to the network)
      */
     createExtendedTransaction(
         sender, senderType,
@@ -193,7 +197,7 @@ class Key { // eslint-disable-line no-unused-vars
      * Generate a signature proof for data with this key.
      *
      * @param {Uint8Array} data - The data to sign
-     * @returns A signature proof for this transaction
+     * @returns {Nimiq.SignatureProof} A signature proof for this transaction
      */
     _makeSignatureProof(data) {
         const signature = Nimiq.Signature.create(this.keyPair.privateKey, this.keyPair.publicKey, data);
@@ -203,8 +207,9 @@ class Key { // eslint-disable-line no-unused-vars
     /**
      * @param {Uint8Array | string} passphrase
      * @param {Uint8Array | string} [unlockKey]
+     * @returns {Promise.<Nimiq.SerialBuffer>}
      */
-    exportEncrypted(passphrase, unlockKey) {
+    async exportEncrypted(passphrase, unlockKey) {
         if (typeof passphrase === 'string') {
             passphrase = Nimiq.BufferUtils.fromAscii(passphrase);
         }
@@ -216,6 +221,9 @@ class Key { // eslint-disable-line no-unused-vars
         return this._keyPair.exportEncrypted(passphrase, unlockKey);
     }
 
+    /**
+     * @returns {Uint8Array}
+     */
     exportPlain() {
         return this._keyPair.serialize();
     }
@@ -232,7 +240,7 @@ class Key { // eslint-disable-line no-unused-vars
             key = Nimiq.BufferUtils.fromAscii(key);
         }
 
-        await this.keyPair.lock(key);
+        this.keyPair.lock(key);
     }
 
     relock() {
@@ -247,16 +255,20 @@ class Key { // eslint-disable-line no-unused-vars
             key = Nimiq.BufferUtils.fromAscii(key);
         }
 
-        await this.keyPair.unlock(key);
+        this.keyPair.unlock(key);
     }
 
     /**
      * @param {Key} o
+     * @returns {boolean}
      */
     equals(o) {
         return o instanceof Key && this.keyPair.equals(o.keyPair) && this.address.equals(o.address);
     }
 
+    /**
+     * @returns {KeyInfo}
+     */
     getPublicInfo() {
         /** @type {KeyInfo} */
         const keyInfo = {

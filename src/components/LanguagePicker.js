@@ -8,6 +8,8 @@ class LanguagePicker { // eslint-disable-line no-unused-vars
 
     /**
      * Produces a select element that the user can chose an available language from.
+     *
+     * @returns {HTMLSelectElement}
      */
     _createElement() {
         const element = document.createElement('select');
@@ -34,6 +36,9 @@ class LanguagePicker { // eslint-disable-line no-unused-vars
         return element;
     }
 
+    /**
+     * @returns {HTMLSelectElement}
+     */
     getElement() {
         return this.$el;
     }

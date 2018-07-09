@@ -12,6 +12,7 @@ class AddressUtils { // eslint-disable-line no-unused-vars
     /**
      * IBAN-format Nimiq address
      * @param {string} str
+     * @returns {string}
      */
     static formatAddress(str) {
         // Remove all whitespace -> group by 4 characters -> join with one space
@@ -23,6 +24,7 @@ class AddressUtils { // eslint-disable-line no-unused-vars
     /**
      * Validate a Nimiq address
      * @param {string} address
+     * @returns {boolean}
      */
     static isValidAddress(address) {
         if (!address) return false;

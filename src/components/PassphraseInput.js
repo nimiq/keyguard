@@ -26,6 +26,9 @@ class PassphraseInput extends Nimiq.Observable {
         }
     }
 
+    /**
+     * @returns {HTMLFormElement}
+     */
     _createElement() {
         const el = document.createElement('form');
         el.classList.add('passphrase-input');
@@ -46,6 +49,9 @@ class PassphraseInput extends Nimiq.Observable {
         return el;
     }
 
+    /**
+     * @returns {HTMLFormElement}
+     */
     getElement() {
         return this.$el;
     }

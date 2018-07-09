@@ -1,6 +1,6 @@
 class PinInput extends Nimiq.Observable {
     /**
-     * @param {Element} [el]
+     * @param {HTMLDivElement} [el]
      */
     constructor(el) {
         super();
@@ -21,8 +21,10 @@ class PinInput extends Nimiq.Observable {
         this.$deleteButton.addEventListener('click', () => this._onDelete());
     }
 
+    /**
+     * @returns {HTMLDivElement}
+     */
     _createElement() {
-        /** @type {Element} */
         const el = document.createElement('div');
         el.classList.add('pin-input', 'center');
         el.innerHTML = `
@@ -51,6 +53,9 @@ class PinInput extends Nimiq.Observable {
         return el;
     }
 
+    /**
+     * @returns {HTMLDivElement}
+     */
     getElement() {
         return this.$el;
     }
