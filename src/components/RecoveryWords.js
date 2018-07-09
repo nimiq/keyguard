@@ -1,11 +1,14 @@
-class RecoveryWords { // eslint-disable-line no-unused-vars
+class RecoveryWords extends Nimiq.Observable { // eslint-disable-line no-unused-vars
     /**
      * @param {HTMLElement} [$el]
      */
     constructor($el) {
+        super();
         this.$el = this._createElement($el);
+        this.$wordsContainer = /** @type {HTMLElement} */ (this.$el.querySelector('.words-container'));
 
-        this.$wordsContainer = this.$el.getElementsByClassName('words-container')[0];
+        const $button = /** @type {HTMLElement} */ (this.$el.querySelector('button'));
+        $button.addEventListener('click', () => this.fire('continue'));
     }
 
     /**
@@ -63,7 +66,6 @@ class RecoveryWords { // eslint-disable-line no-unused-vars
             this.$wordsContainer.appendChild(section);
         }
     }
-
 
     /** @returns {Element} */
     getElement() {

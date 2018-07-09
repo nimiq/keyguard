@@ -25,6 +25,7 @@ class Create extends PopupApi {
             },
         );
 
+        this._recoveryWords.on('continue', () => location.hash = Create.Pages.VALIDATE_WORDS);
 
         window.location.hash = Create.Pages.CHOOSE_IDENTICON;
 
