@@ -1,8 +1,9 @@
 class Create extends PopupApi {
     constructor() {
         super();
-        this.$chooseIdenticon = /** @type {HTMLElement} */ (document.getElementById('choose-identicon'));
-        this.$showWords = /** @type {HTMLElement} */ (document.getElementById('show-words'));
+        this.$chooseIdenticon = /** @type {HTMLElement} */ (document.getElementById(Create.Pages.CHOOSE_IDENTICON));
+        this.$recoveryWords = /** @type {HTMLElement} */ (document.getElementById(Create.Pages.RECOVERY_WORDS));
+        this.$validateWords = /** @type {HTMLElement} */ (document.getElementById(Create.Pages.VALIDATE_WORDS));
     }
 
     /**
@@ -11,21 +12,26 @@ class Create extends PopupApi {
     onRequest(request) {
         this._chooseIdenticon = new ChooseIdenticon(request.type, this.$chooseIdenticon);
 
-        this._recoveryWords = new RecoveryWords();
+        this._recoveryWords = new RecoveryWords(this.$recoveryWords);
 
-        this.$showWords.appendChild(this._recoveryWords.getElement());
+        this._validateWords= new ValidateWords(this.$validateWords);
 
         this._chooseIdenticon.on(
             ChooseIdenticon.EVENTS.CHOOSE_IDENTICON,
             /** @param {Key} key */
             key => {
                 this._selectedKey = key;
-                /** @type {RecoveryWords} */ (this._recoveryWords).privateKey = Nimiq.BufferUtils.fromHex(key.keyPair.privateKey.toHex());
+                const keyAsUint8 = Nimiq.BufferUtils.fromHex(key.keyPair.privateKey.toHex());
+                /** @type {RecoveryWords} */ (this._recoveryWords).privateKey = keyAsUint8;
+                /** @type {ValidateWords} */ (this._validateWords).privateKey = keyAsUint8;
+                /** @type {ValidateWords} */ (this._validateWords).reset();
                 window.location.hash = Create.Pages.PRIVACY_AGENT;
             },
         );
 
         this._recoveryWords.on('continue', () => location.hash = Create.Pages.VALIDATE_WORDS);
+
+        this._validateWords.on('back', () => location.hash = Create.Pages.RECOVERY_WORDS);
 
         window.location.hash = Create.Pages.CHOOSE_IDENTICON;
 
@@ -36,7 +42,7 @@ class Create extends PopupApi {
 Create.Pages = {
     CHOOSE_IDENTICON: 'choose-identicon',
     PRIVACY_AGENT: 'privacy-agent',
-    SHOW_WORDS: 'show-words',
+    RECOVERY_WORDS: 'recovery-words',
     VALIDATE_WORDS: 'validate-words',
     SET_PASSPHRASE: 'set-passphrase',
     SET_PIN: 'set-pin',
