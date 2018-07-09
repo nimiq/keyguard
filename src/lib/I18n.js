@@ -1,7 +1,8 @@
 class I18n { // eslint-disable-line no-unused-vars
+    /* eslint-disable-next-line valid-jsdoc */
     /**
-     * @param {object} dictionary - dictionary of all languages and phrases
-     * @param {string} fallbackLanguage - Language to be used if no translation for the current language can be found.
+     * @param {{[language: string]: {[id: string]: string}}} dictionary - Dictionary of all languages and phrases
+     * @param {string} fallbackLanguage - Language to be used if no translation for the current language can be found
      */
     static initialize(dictionary, fallbackLanguage) {
         this._dict = dictionary;
@@ -22,10 +23,11 @@ class I18n { // eslint-disable-line no-unused-vars
     static translateDom(dom = document.body, enforcedLanguage) {
         const language = enforcedLanguage ? this.getClosestSupportedLanguage(enforcedLanguage) : this.language;
 
+        /* eslint-disable-next-line valid-jsdoc */ // Multi-line descriptions are not valid JSDoc, apparently
         /**
          * @param {string} tag
-         * @param {(element: HTMLElement, translation: string) => void} callback
-         *    - callback(element, translation) for each matching element
+         * @param {(element: HTMLElement, translation: string) => void} callback - callback(element, translation) for
+         * each matching element
          */
         const translateElements = (tag, callback) => {
             const attribute = `data-${tag}`;
@@ -53,6 +55,7 @@ class I18n { // eslint-disable-line no-unused-vars
     /**
      * @param {string} id - translation dict ID
      * @param {string} [enforcedLanguage] - ISO code of language to translate to
+     * @returns {string}
      */
     static translatePhrase(id, enforcedLanguage) {
         const language = enforcedLanguage ? this.getClosestSupportedLanguage(enforcedLanguage) : this.language;
@@ -62,16 +65,18 @@ class I18n { // eslint-disable-line no-unused-vars
     /**
      * @param {string} id
      * @param {string} language
+     * @returns {string}
      */
     static _translate(id, language) {
-        return this._dict[language][id];
+        if (!this.dictionary[language] || !this.dictionary[language][id]) throw new Error('Undefined!');
+        return this.dictionary[language][id];
     }
 
     /**
      * @returns {string[]} ISO codes of all available languages.
      */
     static availableLanguages() {
-        return Object.keys(this._dict);
+        return Object.keys(this.dictionary);
     }
 
     /**
@@ -90,11 +95,11 @@ class I18n { // eslint-disable-line no-unused-vars
      */
     static getClosestSupportedLanguage(language) {
         // If this language is supported, return it directly
-        if (language in this._dict) return language;
+        if (language in this.dictionary) return language;
 
         // Return the base language, if it exists in the dictionary
         const baseLanguage = language.split('-')[0];
-        if (baseLanguage !== language && baseLanguage in this._dict) return baseLanguage;
+        if (baseLanguage !== language && baseLanguage in this.dictionary) return baseLanguage;
 
         // Check if other versions (siblings) of the base language exist
         const languagePrefix = `${baseLanguage}-`;
@@ -122,6 +127,7 @@ class I18n { // eslint-disable-line no-unused-vars
     }
 
     static get dictionary() {
+        if (!this._dict) throw new Error('I18n not initialized');
         return this._dict;
     }
 

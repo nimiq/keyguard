@@ -43,11 +43,13 @@ class RpcServer { // eslint-disable-line no-unused-vars
              * @param {any} result
              */
             _replyTo(message, status, result) {
-                return message.source && message.source.postMessage({
-                    status,
-                    result,
-                    id: message.data.id,
-                }, message.origin);
+                if (message.source) {
+                    message.source.postMessage({
+                        status,
+                        result,
+                        id: message.data.id,
+                    }, message.origin);
+                }
             }
 
             /**
@@ -116,6 +118,7 @@ class RpcServer { // eslint-disable-line no-unused-vars
             /**
              * @param {string} command
              * @param {any[]} args
+             * @returns {any}
              */
             _invoke(command, args) {
                 return this[command](...args);

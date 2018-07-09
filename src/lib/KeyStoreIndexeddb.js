@@ -188,6 +188,7 @@ class KeyStore {
 
     /**
      * @param {string} userFriendlyAddress
+     * @returns {string}
      */
     _formatAddress(userFriendlyAddress) {
         if (!AddressUtils.isValidAddress(userFriendlyAddress)) throw new InvalidAddressError();
@@ -201,6 +202,7 @@ class KeyStore {
      * stored the existing account labels. Both the 'accounts' database and cookie are
      * deleted afterwards.
      *
+     * @returns {Promise<boolean>}
      * @deprecated Only for database migration
      */
     async doMigrateAccountsToKeys() {

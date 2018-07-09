@@ -63,6 +63,7 @@ class AddressUtils { // eslint-disable-line no-unused-vars
 
     /**
      * @param {string} str
+     * @returns {boolean}
      */
     static _alphabetCheck(str) {
         str = str.toUpperCase();
@@ -74,6 +75,7 @@ class AddressUtils { // eslint-disable-line no-unused-vars
 
     /**
      * @param {string} str
+     * @returns {number}
      */
     static _ibanCheck(str) {
         const num = str.split('').map(c => {

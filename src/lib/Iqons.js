@@ -3,6 +3,7 @@ class Iqons {
 
     /**
      * @param {string} text
+     * @returns {Promise<string>}
      */
     static async svg(text) {
         const hash = this._hash(text);
@@ -19,6 +20,7 @@ class Iqons {
 
     /**
      * @param {string} text
+     * @returns {Promise<string>}
      */
     static async toDataUrl(text) {
         const base64string = btoa(await this.svg(text));
@@ -28,6 +30,7 @@ class Iqons {
     /**
      * @param {string} [color]
      * @param {number} [strokeWidth]
+     * @returns {string}
      */
     static placeholder(color, strokeWidth) {
         color = color || '#bbb';
@@ -46,6 +49,7 @@ class Iqons {
     /**
      * @param {string} [color]
      * @param {number} [strokeWidth]
+     * @returns {string}
      */
     static placeholderToDataUrl(color, strokeWidth) {
         return `data:image/svg+xml;base64,${btoa(this.placeholder(color, strokeWidth))}`;
@@ -61,6 +65,7 @@ class Iqons {
      * @param {number} sidesNr
      * @param {number} bottomNr
      * @param {number} accentColor
+     * @returns {Promise<string>}
      */
     static async _svgTemplate(color, backgroundColor, faceNr, topNr, sidesNr, bottomNr, accentColor) {
         return this._$svg(await this._$iqons(color, backgroundColor, faceNr, topNr, sidesNr, bottomNr, accentColor));
@@ -74,6 +79,7 @@ class Iqons {
      * @param {number} sidesNr
      * @param {number} bottomNr
      * @param {number} accentColor
+     * @returns {Promise<string>}
      */
     static async _$iqons(color, backgroundColor, faceNr, topNr, sidesNr, bottomNr, accentColor) {
         if (color === backgroundColor) {
@@ -105,6 +111,7 @@ class Iqons {
 
     /**
      * @param {string} content
+     * @returns {string}
      */
     static _$svg(content) {
         const randomId = this._getRandomId();
@@ -128,14 +135,18 @@ class Iqons {
     /**
      * @param {string} part
      * @param {number} index
+     * @returns {Promise<string>}
      */
     static async _generatePart(part, index) {
         const assets = await this._getAssets();
         const selector = `#${part}_${this._assetIndex(index, part)}`;
         const $part = assets.querySelector(selector);
-        return $part && $part.innerHTML;
+        return ($part && $part.innerHTML) || '';
     }
 
+    /**
+     * @returns {Promise<Document>}
+     */
     static async _getAssets() {
         if (this._assets) return this._assets;
         return fetch(this.svgPath)

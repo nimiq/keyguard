@@ -1,8 +1,7 @@
 /**
- * # PopupApi
  * A common parent class for pop-up requests.
  *
- * ## Usage:
+ * Usage:
  * Inherit this class in your popup request API class:
  * ```
  *  class SignTransactionApi extends PopupApi {
@@ -69,6 +68,7 @@ class PopupApi { // eslint-disable-line no-unused-vars
      * Called by a page's API class on success
      *
      * @param {any} result
+     * @returns {Promise<void>}
      */
     async resolve(result) {
         // Keys might have changed, so update cookie for iOS and Safari users
@@ -91,9 +91,10 @@ class PopupApi { // eslint-disable-line no-unused-vars
 
     /**
      * @deprecated Only for database migration
+     * @returns {boolean}
      */
     _hasMigrateFlag() {
         const match = document.cookie.match(new RegExp('migrate=([^;]+)'));
-        return match && match[1] === '1';
+        return !!match && match[1] === '1';
     }
 }

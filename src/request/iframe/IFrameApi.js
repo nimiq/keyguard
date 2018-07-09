@@ -1,6 +1,7 @@
 class IFrameApi {
     /**
-     * @param {boolean} [listFromAccountStore] - @deprecated Only for database migration
+     * @param {boolean} [listFromAccountStore] - Deprecated, only for database migration
+     * @returns {Promise<KeyInfo[] | AccountInfo[]>}
      */
     async list(listFromAccountStore) {
         if (BrowserDetection.isIos() || BrowserDetection.isSafari()) {
@@ -15,6 +16,7 @@ class IFrameApi {
     }
 
     /**
+     * @returns {Promise<boolean>}
      * @deprecated Only for database migration
      */
     async migrateAccountsToKeys() {
