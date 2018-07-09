@@ -125,8 +125,6 @@ const requests = listDirectories('src/request');
 let hasMissingScripts = false;
 let hasUnneededScripts = false;
 
-console.log(); // Print empty line
-
 requests.forEach(request => {
     // Find API class
     const apiFile = find(`src/request/${request}`, 'Api.js')[0];
@@ -164,7 +162,6 @@ requests.forEach(request => {
         hasMissingScripts = true;
         console.error('\x1b[31m%s\x1b[0m', `ERROR: Missing scripts in ${request}:`);
         console.log(missingScripts);
-        console.log(); // Print empty line
     }
 
     // console.log(unneededScripts);
@@ -172,12 +169,10 @@ requests.forEach(request => {
         hasUnneededScripts = true;
         console.warn('\x1b[33m%s\x1b[0m', `WARN: Unneeded scripts in ${request}:`);
         console.log(unneededScripts);
-        console.log(); // Print empty line
     }
 
     if (!missingScripts.length && !unneededScripts.length) {
         console.log('\x1b[32m%s\x1b[0m', `OK: Scripts complete in ${request}`);
-        console.log(); // Print empty line
     }
 });
 
