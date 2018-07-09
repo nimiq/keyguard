@@ -13,20 +13,18 @@ class RpcClient { // eslint-disable-line no-unused-vars
              * @param {MessageEvent} message
              */
             const connectedListener = ({ source, origin, data }) => {
-                // Debugging printouts
-                if (data.result.stack) {
-                    const error = new Error(data.result.message);
-                    error.stack = data.result.stack;
-                    console.error(error);
-                } else {
-                    console.log('Received:', origin, data);
-                }
-
                 if (source !== targetWindow
                     || data.status !== 'ok'
                     || data.result !== 'pong'
                     || data.id !== 1
                     || (targetOrigin !== '*' && origin !== targetOrigin)) return;
+
+                // Debugging printouts
+                if (data.result.stack) {
+                    const error = new Error(data.result.message);
+                    error.stack = data.result.stack;
+                    console.error(error);
+                }
 
                 window.removeEventListener('message', connectedListener);
 
@@ -40,9 +38,10 @@ class RpcClient { // eslint-disable-line no-unused-vars
 
             let connectTimer = 0;
             const timeoutTimer = setTimeout(() => {
-                reject(new Error('Connection timeout'));
+                window.removeEventListener('message', connectedListener);
                 clearTimeout(connectTimer);
-            }, 30 * 1000);
+                reject(new Error('Connection timeout'));
+            }, 10 * 1000);
 
             const tryToConnect = () => {
                 if (connected) {
@@ -98,6 +97,8 @@ class RpcClient { // eslint-disable-line no-unused-vars
                     // Store
                     this._waiting.set(obj.id, { resolve, reject });
 
+                    console.debug('RpcClient REQUEST', command, args);
+
                     this._targetWindow.postMessage(obj, this._targetOrigin);
 
                     // No timeout for now, as most requests require user interactions.
@@ -128,6 +129,8 @@ class RpcClient { // eslint-disable-line no-unused-vars
                 if (callback) {
                     this._waiting.delete(data.id);
 
+                    console.debug('RpcClient RECEIVE', data);
+
                     if (data.status === 'ok') {
                         callback.resolve(data.result);
                     } else if (data.status === 'error') {
@@ -137,6 +140,8 @@ class RpcClient { // eslint-disable-line no-unused-vars
                         error.stack = stack;
                         callback.reject(error);
                     }
+                } else {
+                    console.warn('Unknown RPC response:', data);
                 }
             }
 

@@ -43,6 +43,8 @@ class RpcServer { // eslint-disable-line no-unused-vars
              * @param {any} result
              */
             _replyTo(message, status, result) {
+                console.debug('RpcServer REPLY', result);
+
                 if (message.source) {
                     message.source.postMessage({
                         status,
@@ -81,6 +83,8 @@ class RpcServer { // eslint-disable-line no-unused-vars
                     if (requestedMethod.length < args.length) {
                         throw new Error(`Too many arguments passed: ${message}`);
                     }
+
+                    console.debug('RpcServer ACCEPT', message.data);
 
                     const result = this._invoke(message.data.command, args);
 
