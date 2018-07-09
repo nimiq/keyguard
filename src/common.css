@@ -11,8 +11,20 @@
     display: none;
 }
 
+.loading {
+    position: absolute;
+    left: 0;
+    top: 0;
+    flex-flow: column;
+    height: 100vh;
+    width: 100vw;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.6);
+}
+
 .loading #loading {
-    display: block !important;
+    display: flex !important;
     position: absolute;
     top: 0;
     z-index: 1;
@@ -42,4 +54,88 @@
 .identicon img {
     height: 100%;
     width: 100%;
+}
+
+.pad-bottom {
+    padding-bottom: 28px;
+}
+
+x-identicon {
+    display: block;
+    height: 140px;
+    width: 140px;
+}
+
+.x-route-container {
+    min-height: calc(100vh - 120px);
+}
+
+.warning {
+    background-color: var(--warning-color);
+    color: #3b3b3b;
+    border-radius: 8px;
+    padding: 15px;
+}
+
+.info-box {
+    display: flex;
+    border: 1px solid white;
+    border-radius: 8px;
+    padding: 4px;
+}
+.info-box .info-icon {
+    background-image: url('data:image/svg+xml,<svg fill="%23FFFFFF" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h24v24H0z" fill="none"/><path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/></svg>');
+    background-size: 90%;
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    width: 32px;
+    display: inline-block;
+    flex-grow: 0;
+    flex-shrink: 0;
+}
+
+.info-box .info-text {
+    text-align: left;
+}
+
+.spacing-top-16 {
+    margin-top: 16px;
+}
+
+/* make code blocks look like keys on the keyboard */
+code {
+    font-family: monospace;
+    font-size: 15px;
+    border: 1px solid white;
+    padding: 2px 6px;
+    border-radius: 5px;
+}
+
+
+.header-top {
+    width: 100%;
+    padding: 1em 1.8em;
+    overflow: auto;
+}
+
+#app {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    width: 98vw;
+    max-width: var(--max-width);
+    min-height: calc(100vh - 60px);
+    padding-bottom: 18px;
+}
+
+@media (max-width: 480px) {
+    .header-top {
+        width: auto;
+        padding: 1em 0.5em;
+    }
+
+    .header-top nimiq-logo {
+        width: auto;
+    }
 }

@@ -1,7 +1,7 @@
 class ChooseIdenticon extends Nimiq.Observable {
     /**
      * @param {EncryptionType} encryptionType
-     * @param {HTMLElement} $el
+     * @param {HTMLElement} [$el]
      */
     constructor(encryptionType, $el) {
         super();
@@ -9,7 +9,7 @@ class ChooseIdenticon extends Nimiq.Observable {
         this.generateIdenticons = this.generateIdenticons.bind(this);
         this._clearSelection = this._clearSelection.bind(this);
 
-        this.$el = $el;
+        this.$el = ChooseIdenticon._createElement($el);
         this._encryptionType = encryptionType;
 
         /** @type {{ [address: string]: Key}} */
@@ -22,6 +22,41 @@ class ChooseIdenticon extends Nimiq.Observable {
 
         this.$generateMoreButton.addEventListener('click', this.generateIdenticons);
         this.$backdrop.addEventListener('click', this._clearSelection);
+    }
+
+    /**
+     * @param {HTMLElement} [$el]
+     *
+     * @returns {HTMLElement}
+     */
+    static _createElement($el) {
+        $el = $el || document.createElement('div');
+
+        $el.innerHTML = `<h1>Choose Your Account Avatar</h1>
+            <h2>The Avatar will be 'unique' to this Account. You can not change it later.</h2>
+            <div class="grow"></div>
+            <div class="identicons">
+                <div class="loading center">
+                    <div class="loading-animation"></div>
+                    <h2>Mixing colors</h2>
+                </div>
+            </div>
+            <div class="grow"></div>
+            <a class="secondary generate-more center">Generate New</a>
+            <div class="grow"></div>
+            <div class="backdrop center">
+                <button>Confirm</button>
+                <a class="secondary">Back</a>
+            </div>`;
+
+        return $el;
+    }
+
+    /**
+     * @returns {HTMLElement}
+     */
+    getElement() {
+        return this.$el;
     }
 
     generateIdenticons() {

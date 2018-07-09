@@ -16,9 +16,13 @@
     <script src="../../lib/AddressUtils.js"></script>
     <script src="../../lib/Utf8Tools.js"></script>
     <script src="../../lib/Iqons.js"></script>
+    <script src="../../lib/BrowserDetection.js"></script>
+    <script src="../../lib/I18n.js"></script>
+    <script src="../../lib/MnemonicPhrase.js"></script>
     <script src="../../common.js"></script>
     <script src="../../components/PinInput.js"></script>
     <script src="../../components/Identicon.js"></script>
+    <script src="../../components/RecoveryWords.js"></script>
     <script src="../PopupApi.js"></script>
     <script src="./ChooseIdenticon.js"></script>
     <script src="Create.js"></script>
@@ -27,6 +31,7 @@
     <link rel="stylesheet" href="../../common.css">
     <link rel="stylesheet" href="../../components/PinInput.css">
     <link rel="stylesheet" href="../../components/PassphraseInput.css">
+    <link rel="stylesheet" href="../../components/RecoveryWords.css">
     <link rel="stylesheet" href="./privacy-agent.css">
     <link rel="stylesheet" href="./ChooseIdenticon.css">
 </head>
@@ -34,25 +39,10 @@
 <div id="app">
 
     <div id="choose-identicon" class="page">
-        <h1>Choose Your Account Avatar</h1>
-        <h2>The Avatar will be 'unique' to this Account. You can not change it later.</h2>
-        <div class="grow"></div>
-        <div class="identicons">
-            <div class="loading center">
-                <div class="loading-animation"></div>
-                <h2>Mixing colors</h2>
-            </div>
-        </div>
-        <div class="grow"></div>
-        <a class="secondary generate-more center">Generate New</a>
-        <div class="grow"></div>
-        <div class="backdrop center">
-            <button>Confirm</button>
-            <a class="secondary">Back</a>
-        </div>
+
     </div>
 
-    <div id="backup" class="page">
+    <div id="privacy-agent" class="page">
         <h1>Backup your Account</h1>
         <div class="grow"></div>
         <div class="privacy-agent">
@@ -78,31 +68,32 @@
                 <p><strong>Anyone with the following information can steal all your funds!</strong></p>
             </div>
             <div class="grow"></div>
-            <a href="#show-words"><button>OK, all good</button></a>
+            <a href="#show-words">
+                <button>OK, all good</button>
+            </a>
         </div>
     </div>
-</div>
 
-<div id="show-words" class="page">
+    <div id="show-words" class="page">
 
-</div>
+    </div>
 
-<div id="validate-words" class="page">
+    <div id="validate-words" class="page">
 
-</div>
+    </div>
 
-<div id="set-passphrase" class="page">
+    <div id="set-passphrase" class="page">
 
-</div>
+    </div>
 
-<div id="set-pin" class="page">
+    <div id="set-pin" class="page">
 
-</div>
+    </div>
 
-<div id="loading" class="page">
-    <div class="loading-animation"></div>
-    <span data-i18n="loading">Loading...</span>
-</div>
+    <div id="loading" class="page">
+        <div class="loading-animation"></div>
+        <span data-i18n="loading">Loading...</span>
+    </div>
 
 </div>
 </body>

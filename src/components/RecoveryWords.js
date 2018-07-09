@@ -1,17 +1,37 @@
 class RecoveryWords { // eslint-disable-line no-unused-vars
     /**
-     * @param {Element} [el]
+     * @param {HTMLElement} [$el]
      */
-    constructor(el) {
-        this.$el = el || this._createElement();
+    constructor($el) {
+        this.$el = this._createElement($el);
+
+        this.$wordsContainer = this.$el.getElementsByClassName('words-container')[0];
     }
 
-    /** @returns {Element} */
-    _createElement() {
-        /** @type {Element} */
-        const el = document.createElement('div');
-        el.classList.add('recovery-words');
-        return el;
+    /**
+     * @param {HTMLElement} [$el]
+     * @returns {Element}
+     * */
+    _createElement($el) {
+        $el = $el || document.createElement('div');
+        $el.classList.add('recovery-words');
+
+        $el.innerHTML = `
+            <h1>Backup your 24 Recovery Words</h1>
+            <h2 secondary>Write down and physically store the complete following list of 24 Account Recovery Words at a <strong>SAFE and SECRET</strong> place to recover this account in the future.</h2>
+            <div class="grow"></div>
+            <div class="words-container"></div>
+            <div class="info-box">
+                <i class="info-icon"></i>
+                <p class="info-text">Move your mouse over the numbers or tap them to reveal each word.</p>
+            </div>
+            <div class="spacing-bottom center warning">
+                <strong>Anyone with access to these words can steal all your funds!</strong>
+            </div>
+            <x-grow></x-grow>
+            <button>Continue</button>`;
+
+        return $el;
     }
 
     /**
@@ -40,7 +60,7 @@ class RecoveryWords { // eslint-disable-line no-unused-vars
                 word.appendChild(content);
                 section.appendChild(word);
             }
-            this.$el.appendChild(section);
+            this.$wordsContainer.appendChild(section);
         }
     }
 
