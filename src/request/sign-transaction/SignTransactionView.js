@@ -4,7 +4,7 @@ class SignTransactionView extends Nimiq.Observable { // eslint-disable-line no-u
      *
      * @param {TransactionRequest} txRequest
      * @param {string} passphraseOrPin
-     * @return {Promise<SignedTransactionResult | undefined>}
+     * @returns {Promise<SignedTransactionResult>}
      * @protected
      */
     async _signTx(txRequest, passphraseOrPin) {

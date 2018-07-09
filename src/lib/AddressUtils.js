@@ -40,7 +40,6 @@ class AddressUtils { // eslint-disable-line no-unused-vars
      * Check if a string is a valid Nimiq address
      * @param {string} str
      * @throws Throws an error if not a valid Nimiq address
-     * @returns {void}
      */
     static isUserFriendlyAddress(str) {
         str = str.replace(/\s+/g, '');

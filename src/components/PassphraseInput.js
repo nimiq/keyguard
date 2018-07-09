@@ -1,7 +1,7 @@
 class PassphraseInput extends Nimiq.Observable {
     /**
      * @param {boolean} [isPassphraseSetter]
-     * @param {HTMLElement} [el]
+     * @param {HTMLFormElement} [el]
      */
     constructor(isPassphraseSetter = false, el) {
         super();
@@ -26,9 +26,10 @@ class PassphraseInput extends Nimiq.Observable {
         }
     }
 
-    /** @returns {HTMLElement} */
+    /**
+     * @returns {HTMLFormElement}
+     */
     _createElement() {
-        /** @type HTMLElement */
         const el = document.createElement('form');
         el.classList.add('passphrase-input');
         /* eslint-disable max-len */
@@ -48,7 +49,9 @@ class PassphraseInput extends Nimiq.Observable {
         return el;
     }
 
-    /** @returns {HTMLElement} */
+    /**
+     * @returns {HTMLFormElement}
+     */
     getElement() {
         return this.$el;
     }

@@ -23,8 +23,9 @@ class AccountStore {
      */
     constructor(dbName = 'accounts') {
         this._dbName = dbName;
-        this._connected = false;
         this._dropped = false;
+        /** @type {IDBDatabase | null} */
+        this._db = null;
     }
 
     /**
@@ -32,14 +33,12 @@ class AccountStore {
      * @private
      */
     async connect() {
-        if (this._connected && this._db) return Promise.resolve(this._db);
+        if (this._db) return Promise.resolve(this._db);
 
         return new Promise((resolve, reject) => {
             const request = window.indexedDB.open(this._dbName, AccountStore.VERSION);
 
             request.onsuccess = () => {
-                this._connected = true;
-                /** @type {IDBDatabase} */
                 this._db = request.result;
                 resolve(this._db);
             };
@@ -53,12 +52,12 @@ class AccountStore {
     }
 
     /**
-     * @returns {Promise.<Array.<AccountInfo>>}
+     * @returns {Promise<AccountInfo[]>}
      */
     async list() {
         const db = await this.connect();
         return new Promise((resolve, reject) => {
-            const results = /** @type {any[]} */ ([]);
+            const results = /** @type {AccountInfo[]} */ ([]);
             const openCursorRequest = db.transaction([AccountStore.ACCOUNT_DATABASE], 'readonly')
                 .objectStore(AccountStore.ACCOUNT_DATABASE)
                 .openCursor();
@@ -69,8 +68,9 @@ class AccountStore {
 
                     // Because: To use Key.getPublicInfo(), we would need to create Key
                     // instances out of the key object that we receive from the DB.
+                    /** @type {AccountInfo} */
                     const accountInfo = {
-                        address: key.userFriendlyAddress,
+                        userFriendlyAddress: key.userFriendlyAddress,
                         type: key.type,
                         label: key.label,
                     };
@@ -86,7 +86,7 @@ class AccountStore {
     }
 
     /**
-     * @returns {Promise.<Array.<AccountEntry>>}
+     * @returns {Promise<AccountEntry[]>}
      * @deprecated Only for database migration
      *
      * @description Returns the encrypted keypairs!
@@ -94,14 +94,14 @@ class AccountStore {
     async dangerousListPlain() {
         const db = await this.connect();
         return new Promise((resolve, reject) => {
-            const results = /** @type {any[]} */ ([]);
+            const results = /** @type {AccountEntry[]} */ ([]);
             const openCursorRequest = db.transaction([AccountStore.ACCOUNT_DATABASE], 'readonly')
                 .objectStore(AccountStore.ACCOUNT_DATABASE)
                 .openCursor();
             openCursorRequest.onsuccess = () => {
                 const cursor = openCursorRequest.result;
                 if (cursor) {
-                    const key = cursor.value;
+                    const key = /** @type {AccountEntry} */ (cursor.value);
                     results.push(key);
                     cursor.continue();
                 } else {
@@ -113,21 +113,21 @@ class AccountStore {
     }
 
     close() {
-        if (!this._connected || !this._db) return;
-        this._connected = false;
+        if (!this._db) return;
         this._db.close();
+        this._db = null;
     }
 
     async drop() {
         if (this._dropped) return true;
-        if (this._connected) this.close();
+        if (this._db) this.close();
 
         return new Promise((resolve, reject) => {
             const request = window.indexedDB.deleteDatabase(this._dbName);
 
             request.onsuccess = () => {
                 this._dropped = true;
-                this._db = /** @type {undefined} */ (request.result);
+                this._db = null;
                 resolve(true);
             };
 

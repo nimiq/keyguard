@@ -3250,9 +3250,9 @@ tough-cookie@~2.3.0, tough-cookie@~2.3.3:
   dependencies:
     punycode "^1.4.1"
 
-tsc-watch@sisou/tsc-watch#originalstdout-option:
+tsc-watch@^1.0.22:
   version "1.0.22"
-  resolved "https://codeload.github.com/sisou/tsc-watch/tar.gz/db285bb585c5deaafc6b56d330187553c024b161"
+  resolved "https://registry.yarnpkg.com/tsc-watch/-/tsc-watch-1.0.22.tgz#e11eea984bd0c90c4b7bfac557c9e66b2e7899da"
   dependencies:
     chalk "^2.3.0"
     cross-spawn "^5.1.0"
