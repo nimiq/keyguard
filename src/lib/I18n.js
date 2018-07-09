@@ -1,7 +1,11 @@
+/**
+ * @typedef {{[language: string]: {[id: string]: string}}} dict
+ */
+
 class I18n { // eslint-disable-line no-unused-vars
     /* eslint-disable-next-line valid-jsdoc */
     /**
-     * @param {{[language: string]: {[id: string]: string}}} dictionary - Dictionary of all languages and phrases
+     * @param {dict} dictionary - Dictionary of all languages and phrases
      * @param {string} fallbackLanguage - Language to be used if no translation for the current language can be found
      */
     static initialize(dictionary, fallbackLanguage) {
@@ -122,15 +126,18 @@ class I18n { // eslint-disable-line no-unused-vars
         this._language = languageToUse;
     }
 
+    /** @type {string} */
     static get language() {
         return this._language || this.fallbackLanguage;
     }
 
+    /** @type {dict} */
     static get dictionary() {
         if (!this._dict) throw new Error('I18n not initialized');
         return this._dict;
     }
 
+    /** @type {string} */
     static get fallbackLanguage() {
         if (!this._fallbackLanguage) throw new Error('I18n not initialized');
         return this._fallbackLanguage;

@@ -58,9 +58,7 @@
     "require-jsdoc-except/require-jsdoc": ["error", {
       "require": {
         "FunctionDeclaration": true,
-        // Typescript requires @param annotations for all arguments, thus
-        // a JSDoc block is required for methods with parameters anyway.
-        "MethodDefinition": false,
+        "MethodDefinition": true,
         "ClassDeclaration": false,
         "ArrowFunctionExpression": true,
         "FunctionExpression": true

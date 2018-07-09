@@ -92,6 +92,7 @@ class AddressUtils { // eslint-disable-line no-unused-vars
         return parseInt(tmp, 10);
     }
 
+    /** @type {string} */
     static get NIMIQ_ALPHABET() {
         // From Nimiq.BufferUtils.BASE32_ALPHABET.NIMIQ
         return '0123456789ABCDEFGHJKLMNPQRSTUVXY';

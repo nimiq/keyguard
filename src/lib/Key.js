@@ -228,6 +228,7 @@ class Key { // eslint-disable-line no-unused-vars
         return this._keyPair.serialize();
     }
 
+    /** @type {boolean} */
     get isLocked() {
         return this.keyPair.isLocked;
     }
@@ -244,6 +245,7 @@ class Key { // eslint-disable-line no-unused-vars
         await this.keyPair.lock(key);
     }
 
+    /** */
     relock() {
         this.keyPair.relock();
     }
@@ -283,11 +285,13 @@ class Key { // eslint-disable-line no-unused-vars
 
     /**
      * The public key of the Key owner
+     * @type {Nimiq.PublicKey}
      */
     get publicKey() {
         return this._keyPair.publicKey;
     }
 
+    /** @type {Nimiq.KeyPair} */
     get keyPair() {
         return this._keyPair;
     }

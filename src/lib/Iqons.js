@@ -159,6 +159,7 @@ class Iqons {
             });
     }
 
+    /** @type {string[]} */
     static get colors() {
         return [
             '#fb8c00', // orange-600
@@ -174,6 +175,7 @@ class Iqons {
         ];
     }
 
+    /** @type {object} */
     static get assetCounts() {
         return {
             face: Iqons.CATALOG.face.length,

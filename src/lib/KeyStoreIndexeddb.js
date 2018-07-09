@@ -7,6 +7,7 @@
  * const accounts = await keyStore.list();
  */
 class KeyStore {
+    /** @type {KeyStore} */
     static get instance() {
         /** @type {KeyStore} */
         this._instance = this._instance || new KeyStore();
@@ -180,6 +181,7 @@ class KeyStore {
         });
     }
 
+    /** */
     close() {
         if (!this._db) return;
         this._db.close();
