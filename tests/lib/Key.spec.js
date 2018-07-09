@@ -5,11 +5,6 @@ describe("Key", function () {
     const ENCRYPTED_KEY_PAIR = '01080bf074db2535eabf77bb8133743fa5a64259fd19096b11babd0cb2900f7df25d55ad71ca3b5bfee1d6f4b5343fd57ac61075f40c';
     const PASSWORD = 'password';
 
-    beforeAll(async function () {
-        await Nimiq.WasmHelper.doImportBrowser();
-        Nimiq.GenesisConfig.test();
-    });
-
     it("can load a plain key pair", function () {
         const key = Key.loadPlain(PLAIN_KEY_PAIR, EncryptionType.HIGH);
 
