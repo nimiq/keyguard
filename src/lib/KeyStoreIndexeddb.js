@@ -69,7 +69,7 @@ class KeyStore {
 
     /**
      * @param {string} userFriendlyAddress
-     * @returns {Promise.<KeyEntry>}
+     * @returns {Promise<KeyEntry>}
      */
     async _getPlain(userFriendlyAddress) {
         userFriendlyAddress = this._formatAddress(userFriendlyAddress);
@@ -90,7 +90,7 @@ class KeyStore {
      * @param {Key} key
      * @param {Uint8Array | string} passphrase
      * @param {Uint8Array | string} [unlockKey]
-     * @returns {Promise}
+     * @returns {Promise<void>}
      */
     async put(key, passphrase, unlockKey) {
         const encryptedKeyPair = await key.exportEncrypted(passphrase, unlockKey);
@@ -106,16 +106,16 @@ class KeyStore {
 
     /**
      * @param {KeyEntry} keyEntry
-     * @returns {Promise<any>}
+     * @returns {Promise<void>}
      * @deprecated Only for database migration
      */
-    putPlain(keyEntry) {
+    async putPlain(keyEntry) {
         return this._putPlain(keyEntry);
     }
 
     /**
      * @param {KeyEntry} keyEntry
-     * @returns {Promise<any>}
+     * @returns {Promise<void>}
      */
     async _putPlain(keyEntry) {
         keyEntry.userFriendlyAddress = this._formatAddress(keyEntry.userFriendlyAddress);
@@ -132,7 +132,7 @@ class KeyStore {
 
     /**
      * @param {string} userFriendlyAddress
-     * @returns {Promise}
+     * @returns {Promise<void>}
      */
     async remove(userFriendlyAddress) {
         userFriendlyAddress = this._formatAddress(userFriendlyAddress);
@@ -148,12 +148,12 @@ class KeyStore {
     }
 
     /**
-     * @returns {Promise.<Array.<KeyInfo>>}
+     * @returns {Promise<KeyInfo[]>}
      */
     async list() {
         const db = await this.connect();
         return new Promise((resolve, reject) => {
-            const results = /** @type {any[]} */ ([]);
+            const results = /** @type {KeyInfo[]} */ ([]);
             const openCursorRequest = db.transaction([KeyStore.DB_KEY_STORE_NAME], 'readonly')
                 .objectStore(KeyStore.DB_KEY_STORE_NAME)
                 .openCursor();
@@ -164,6 +164,7 @@ class KeyStore {
 
                     // Because: To use Key.getPublicInfo(), we would need to create Key
                     // instances out of the key object that we receive from the DB.
+                    /** @type {KeyInfo} */
                     const keyInfo = {
                         userFriendlyAddress: key.userFriendlyAddress,
                         type: key.type,

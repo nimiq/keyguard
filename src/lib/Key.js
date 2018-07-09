@@ -24,7 +24,7 @@ class Key { // eslint-disable-line no-unused-vars
      */
     static loadPlain(buf, type) {
         if (typeof buf === 'string') {
-            buf = /** @type {Uint8Array} */ (Nimiq.BufferUtils.fromHex(buf));
+            buf = Nimiq.BufferUtils.fromHex(buf);
         }
 
         if (!buf || buf.byteLength === 0) {
@@ -42,11 +42,11 @@ class Key { // eslint-disable-line no-unused-vars
      */
     static async loadEncrypted(buf, passphrase, type) {
         if (typeof buf === 'string') {
-            buf = /** @type {Nimiq.SerialBuffer} */ (Nimiq.BufferUtils.fromHex(buf));
+            buf = Nimiq.BufferUtils.fromHex(buf);
         }
 
         if (typeof passphrase === 'string') {
-            passphrase = /** @type {Uint8Array} */ (Nimiq.BufferUtils.fromAscii(passphrase));
+            passphrase = Nimiq.BufferUtils.fromAscii(passphrase);
         }
 
         const keyPair = await Nimiq.KeyPair.fromEncrypted(new Nimiq.SerialBuffer(buf), passphrase);
@@ -69,11 +69,8 @@ class Key { // eslint-disable-line no-unused-vars
      * @param {EncryptionType} type - Low or high security (passphrase or pin encoded, respectively)
      */
     constructor(keyPair, type) {
-        /** @type {Nimiq.KeyPair} */
         this._keyPair = keyPair; // Plain key pair, not encrypted
-        /** @type {Nimiq.Address} */
         this.address = this._keyPair.publicKey.toAddress();
-        /** @type {string} */
         this.userFriendlyAddress = this.address.toUserFriendlyAddress();
         this.type = type;
     }
@@ -82,7 +79,7 @@ class Key { // eslint-disable-line no-unused-vars
      * Sign a generic message.
      *
      * @param {string} message - A utf-8 string
-     * @returns {object}
+     * @returns {{message: string, signature: Nimiq.Signature}}
      */
     signMessage(message) {
         message = `nimiq_msg_${message}`;
@@ -187,7 +184,7 @@ class Key { // eslint-disable-line no-unused-vars
             fee,
             validityStartHeight,
             isContractCreation ? Nimiq.Transaction.Flag.CONTRACT_CREATION : Nimiq.Transaction.Flag.NONE,
-            extraData,
+            extraData || new Uint8Array(0),
         );
 
         const proof = this._makeSignatureProof(transaction.serializeContent());
@@ -210,9 +207,9 @@ class Key { // eslint-disable-line no-unused-vars
     /**
      * @param {Uint8Array | string} passphrase
      * @param {Uint8Array | string} [unlockKey]
-     * @return {Promise.<Uint8Array>}
+     * @returns {Promise.<Nimiq.SerialBuffer>}
      */
-    exportEncrypted(passphrase, unlockKey) {
+    async exportEncrypted(passphrase, unlockKey) {
         if (typeof passphrase === 'string') {
             passphrase = Nimiq.BufferUtils.fromAscii(passphrase);
         }
@@ -231,21 +228,19 @@ class Key { // eslint-disable-line no-unused-vars
         return this._keyPair.serialize();
     }
 
-    /** @type {boolean} */
     get isLocked() {
         return this.keyPair.isLocked;
     }
 
     /**
      * @param {Uint8Array | string} key
-     * @returns {Promise.<void>}
      */
-    lock(key) {
+    async lock(key) {
         if (typeof key === 'string') {
             key = Nimiq.BufferUtils.fromAscii(key);
         }
 
-        return this.keyPair.lock(key);
+        await this.keyPair.lock(key);
     }
 
     relock() {
@@ -254,19 +249,18 @@ class Key { // eslint-disable-line no-unused-vars
 
     /**
      * @param {Uint8Array | string} key
-     * @returns {Promise.<void>}
      */
-    unlock(key) {
+    async unlock(key) {
         if (typeof key === 'string') {
             key = Nimiq.BufferUtils.fromAscii(key);
         }
 
-        return this.keyPair.unlock(key);
+        await this.keyPair.unlock(key);
     }
 
     /**
      * @param {Key} o
-     * @return {boolean}
+     * @returns {boolean}
      */
     equals(o) {
         return o instanceof Key && this.keyPair.equals(o.keyPair) && this.address.equals(o.address);
@@ -276,21 +270,22 @@ class Key { // eslint-disable-line no-unused-vars
      * @returns {KeyInfo}
      */
     getPublicInfo() {
-        return {
+        /** @type {KeyInfo} */
+        const keyInfo = {
             userFriendlyAddress: this.userFriendlyAddress,
             type: this.type,
         };
+
+        return keyInfo;
     }
 
     /**
      * The public key of the Key owner
-     * @type {Nimiq.PublicKey}
      */
     get publicKey() {
         return this._keyPair.publicKey;
     }
 
-    /** @type {Nimiq.KeyPair} */
     get keyPair() {
         return this._keyPair;
     }
