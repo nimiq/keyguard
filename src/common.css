@@ -24,7 +24,6 @@
     justify-content: center;
     background: rgba(0, 0, 0, 0.6);
 }
-}
 
 .loading .page:target {
     opacity: 0.3;
