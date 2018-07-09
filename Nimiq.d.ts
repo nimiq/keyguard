@@ -38,6 +38,7 @@ declare namespace Nimiq {
     class BufferUtils {
         static fromAscii(buf: string): Uint8Array
         static fromHex(buf: string): Uint8Array
+        static toHex(buf: Uint8Array): string
     }
 
     class SerialBuffer extends Uint8Array {}
