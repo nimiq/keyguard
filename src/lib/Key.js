@@ -240,7 +240,7 @@ class Key { // eslint-disable-line no-unused-vars
             key = Nimiq.BufferUtils.fromAscii(key);
         }
 
-        this.keyPair.lock(key);
+        await this.keyPair.lock(key);
     }
 
     relock() {
@@ -255,7 +255,7 @@ class Key { // eslint-disable-line no-unused-vars
             key = Nimiq.BufferUtils.fromAscii(key);
         }
 
-        this.keyPair.unlock(key);
+        await this.keyPair.unlock(key);
     }
 
     /**
