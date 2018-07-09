@@ -90,7 +90,7 @@ class KeyStore {
      * @param {Key} key
      * @param {Uint8Array | string} passphrase
      * @param {Uint8Array | string} [unlockKey]
-     * @returns {Promise}
+     * @returns {Promise<void>}
      */
     async put(key, passphrase, unlockKey) {
         const encryptedKeyPair = await key.exportEncrypted(passphrase, unlockKey);
@@ -106,7 +106,7 @@ class KeyStore {
 
     /**
      * @param {KeyEntry} keyEntry
-     * @returns {Promise}
+     * @returns {Promise<void>}
      * @deprecated Only for database migration
      */
     async putPlain(keyEntry) {
@@ -115,7 +115,7 @@ class KeyStore {
 
     /**
      * @param {KeyEntry} keyEntry
-     * @returns {Promise}
+     * @returns {Promise<void>}
      */
     async _putPlain(keyEntry) {
         keyEntry.userFriendlyAddress = this._formatAddress(keyEntry.userFriendlyAddress);
@@ -132,7 +132,7 @@ class KeyStore {
 
     /**
      * @param {string} userFriendlyAddress
-     * @returns {Promise}
+     * @returns {Promise<void>}
      */
     async remove(userFriendlyAddress) {
         userFriendlyAddress = this._formatAddress(userFriendlyAddress);
