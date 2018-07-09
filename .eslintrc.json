@@ -18,6 +18,7 @@
     "EncryptionType": false,
     "I18n": false,
     "Key": false,
+    "KeyguardClient": false,
     "KeyStore": false,
     "RpcClient": false,
     "RpcServer": false,

@@ -56,6 +56,23 @@ type SignedMessageResult = {
 
 interface Window { rpcServer: RpcServer; KeyStore: any }
 
+type SignedMessageResult = {
+    message: string,
+    proof: Nimiq.SignatureProof
+}
+
+interface Window {
+    rpcServer: RpcServerInstance
+    KeyStore: any
+}
+
 interface Newable {
     new(...args: any[]): any;
+}
+
+interface RpcServerInstance {}
+
+interface RpcClientInstance {
+    call(command: string, args?: any[]): Promise<any>
+    close(): void
 }

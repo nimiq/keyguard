@@ -11,7 +11,7 @@ class RpcServer { // eslint-disable-line no-unused-vars
      * @param {object} clazz - The class whose methods will be made available via postMessage RPC
      * @param {string} allowedOrigin - The origin that is allowed to call this server
      * @param {string[]} whitelist
-     * @returns {object}
+     * @returns {RpcServerInstance}
      */
     static create(clazz, allowedOrigin, whitelist) {
         return new (RpcServer._generateServerClass(clazz, allowedOrigin, whitelist))();
