@@ -108,10 +108,10 @@ class KeyguardClient {
     async _createIframe() {
         return new Promise(resolve => {
             const $iframe = document.createElement('iframe');
-            $iframe.onload = resolve;
             $iframe.name = 'Nimiq Keyguard IFrame';
             document.body.appendChild($iframe);
             $iframe.src = `${this._keyguardSrc}request/iframe/`;
+            $iframe.onload = () => resolve($iframe);
         });
     }
 

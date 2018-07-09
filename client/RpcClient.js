@@ -13,16 +13,26 @@ class RpcClient { // eslint-disable-line no-unused-vars
              * @param {MessageEvent} message
              */
             const connectedListener = ({ source, origin, data }) => {
+                // Debugging printouts
+                if (data.result.stack) {
+                    const error = new Error(data.result.message);
+                    error.stack = data.result.stack;
+                    console.error(error);
+                } else {
+                    console.log('Received:', origin, data);
+                }
+
                 if (source !== targetWindow
                     || data.status !== 'ok'
                     || data.result !== 'pong'
-                    || data.id !== 0
+                    || data.id !== 1
                     || (targetOrigin !== '*' && origin !== targetOrigin)) return;
 
                 window.removeEventListener('message', connectedListener);
 
                 connected = true;
 
+                console.log('RpcClient: Connection established');
                 resolve(new (RpcClient._generateClientClass(targetWindow, targetOrigin))());
             };
 

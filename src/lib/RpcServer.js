@@ -28,7 +28,7 @@ class RpcServer { // eslint-disable-line no-unused-vars
             constructor() {
                 super();
                 this._allowedOrigin = allowedOrigin;
-                this._whitelist = whitelist;
+                this._whitelist = whitelist.concat(['ping']);
                 this._receive = this._receive.bind(this);
                 window.addEventListener('message', this._receive);
             }
@@ -76,7 +76,7 @@ class RpcServer { // eslint-disable-line no-unused-vars
                     // Test if request calls an existing/whitelisted method with the right number of arguments
                     const requestedMethod = this[message.data.command];
                     if (this._whitelist.indexOf(message.data.command) < 0 || !requestedMethod) {
-                        throw new Error('Unknown command');
+                        throw new Error(`Unknown command: ${message.data.command}`);
                     }
                     if (requestedMethod.length < args.length) {
                         throw new Error(`Too many arguments passed: ${message}`);
