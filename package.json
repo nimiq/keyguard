@@ -7,8 +7,10 @@
     "typecheck": "tsc",
     "lint": "eslint src client",
     "lintfix": "eslint --fix src client",
-    "pr": "tsc && eslint src client && karma start",
-    "watch": "tsc-watch --pretty --onSuccess \"eslint --fix src client\""
+    "checkdeps": "node tools/dependencyValidator.js",
+    "pr": "npm run typecheck && npm run lint && npm run test && npm run checkdeps",
+    "watch": "tsc-watch --pretty --onSuccess \"npm run watchonsuccess\"",
+    "watchonsuccess": "npm run lintfix && npm run checkdeps"
   },
   "repository": {
     "type": "git",
