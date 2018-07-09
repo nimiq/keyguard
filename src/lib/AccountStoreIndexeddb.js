@@ -23,8 +23,9 @@ class AccountStore {
      */
     constructor(dbName = 'accounts') {
         this._dbName = dbName;
-        this._connected = false;
         this._dropped = false;
+        /** @type {IDBDatabase | null} */
+        this._db = null;
     }
 
     /**
@@ -32,14 +33,12 @@ class AccountStore {
      * @private
      */
     async connect() {
-        if (this._connected && this._db) return Promise.resolve(this._db);
+        if (this._db) return Promise.resolve(this._db);
 
         return new Promise((resolve, reject) => {
             const request = window.indexedDB.open(this._dbName, AccountStore.VERSION);
 
             request.onsuccess = () => {
-                this._connected = true;
-                /** @type {IDBDatabase} */
                 this._db = request.result;
                 resolve(this._db);
             };
@@ -114,21 +113,21 @@ class AccountStore {
     }
 
     close() {
-        if (!this._connected || !this._db) return;
-        this._connected = false;
+        if (!this._db) return;
         this._db.close();
+        this._db = null;
     }
 
     async drop() {
         if (this._dropped) return true;
-        if (this._connected) this.close();
+        if (this._db) this.close();
 
         return new Promise((resolve, reject) => {
             const request = window.indexedDB.deleteDatabase(this._dbName);
 
             request.onsuccess = () => {
                 this._dropped = true;
-                this._db = /** @type {undefined} */ (request.result);
+                this._db = null;
                 resolve(true);
             };
 
