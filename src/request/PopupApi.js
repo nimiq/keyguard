@@ -58,7 +58,7 @@ class PopupApi { // eslint-disable-line no-unused-vars
     /**
      * Overwritten by each request's API class
      *
-     * @param {any} request
+     * @param {KeyguardRequest} request
      * @abstract
      */
     onRequest(request) { // eslint-disable-line no-unused-vars

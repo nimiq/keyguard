@@ -86,9 +86,10 @@ class MnemonicPhrase {
     }
 
     /**
-     *
      * @param {Uint8Array} entropy
      * @param {string[]} wordlist
+     *
+     * @returns {string}
      */
     static keyToMnemonic(entropy, wordlist = MnemonicPhrase.DEFAULT_WORDLIST) {
         // 128 <= ENT <= 256

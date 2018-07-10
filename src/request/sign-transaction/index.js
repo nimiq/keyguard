@@ -1,0 +1,1 @@
+runKeyguard(SignTransactionApi);

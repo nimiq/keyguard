@@ -18,13 +18,8 @@ class SignTransactionApi extends PopupApi {
         const keyStore = KeyStore.instance;
         const keyType = await keyStore.getType(txRequest.sender);
 
-        const handler = keyType === EncryptionType.HIGH
-            ? new SignTransactionWithPassphrase(txRequest)
-            : new SignTransactionWithPin(txRequest);
-
-        handler.on('result', /** @param {any} result */ result => this.resolve(result));
-        handler.on('error', /** @param {Error} error */ error => this.reject(error));
+        keyType === EncryptionType.HIGH
+            ? new SignTransactionWithPassphrase(txRequest, this.resolve.bind(this), this.reject.bind(this))
+            : new SignTransactionWithPin(txRequest, this.resolve.bind(this), this.reject.bind(this));
     }
 }
-
-runKeyguard(SignTransactionApi);

@@ -1,17 +1,19 @@
-/** Handles a sign-transaction request for keys with encryption type HIGH.
- *  Calls this.fire('result', [result]) when done or this.fire('error', [error]) to return with an error.
- */
+/** Handles a sign-transaction request for keys with encryption type HIGH. */
 class SignTransactionWithPassphrase extends SignTransactionView {
     /**
      * @param {TransactionRequest} txRequest
+     * @param {Function} resolve
+     * @param {Function} reject
      */
-    constructor(txRequest) {
+    constructor(txRequest, resolve, reject) {
         super();
+        this._resolve = resolve;
+        this._reject = reject;
 
         this._txRequest = txRequest;
 
         this.$rootElement = /** @type {HTMLElement} */ (document.getElementById('app'));
-        this.$enterPassphrase = /** @type {HTMLElement} */ (this.$rootElement.querySelector('#enter-passphrase'));
+        this.$enterPassphrase = /** @type {HTMLElement} */ (document.getElementById('enter-passphrase'));
         this.$error = /** @type {HTMLElement} */ (this.$rootElement.querySelector('#enter-passphrase #error'));
 
         // TODO add identicons and other tx data to UI
@@ -33,7 +35,7 @@ class SignTransactionWithPassphrase extends SignTransactionView {
 
         try {
             const signedTx = await this._signTx(this._txRequest, passphrase);
-            this.fire('result', signedTx);
+            this._resolve(signedTx);
         } catch (e) {
             console.error(e);
 

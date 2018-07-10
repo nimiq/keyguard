@@ -60,3 +60,7 @@ interface Window { rpcServer: RpcServer; KeyStore: any }
 interface Newable {
     new(...args: any[]): any;
 }
+
+type ElementEvent = Event & {
+    target: Element
+}

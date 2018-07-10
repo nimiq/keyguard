@@ -1,12 +1,14 @@
-/** Handles a sign-transaction request for keys with encryption type LOW.
- *  Calls this.fire('result', [result]) when done or this.fire('error', [error]) to return with an error.
- */
+/** Handles a sign-transaction request for keys with encryption type LOW. */
 class SignTransactionWithPin extends SignTransactionView {
     /**
      * @param {TransactionRequest} txRequest
+     * @param {Function} resolve
+     * @param {Function} reject
      */
-    constructor(txRequest) {
+    constructor(txRequest, resolve, reject) {
         super();
+        this._resolve = resolve;
+        this._reject = reject;
 
         this._txRequest = txRequest;
 
@@ -37,7 +39,7 @@ class SignTransactionWithPin extends SignTransactionView {
         try {
             const signedTx = await this._signTx(this._txRequest, pin);
             this._pinInput.close();
-            this.fire('result', signedTx);
+            this._resolve(signedTx);
         } catch (e) {
             console.error(e);
 
