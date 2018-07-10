@@ -22,8 +22,8 @@ class SignTransactionApi extends PopupApi {
             ? new SignTransactionWithPassphrase(txRequest)
             : new SignTransactionWithPin(txRequest);
 
-        handler.on('result', /** @param {any} result */ result => this.resolve(result));
-        handler.on('error', /** @param {Error} error */ error => this.reject(error));
+        handler.on('result', /** @param {any} result */ result => { this.resolve(result); });
+        handler.on('error', /** @param {Error} error */ error => { this.reject(error); });
     }
 }
 

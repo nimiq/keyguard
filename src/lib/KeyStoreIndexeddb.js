@@ -7,6 +7,7 @@
  * const accounts = await keyStore.list();
  */
 class KeyStore {
+    /** @type {KeyStore} */
     static get instance() {
         /** @type {KeyStore} */
         this._instance = this._instance || new KeyStore();
@@ -188,6 +189,7 @@ class KeyStore {
 
     /**
      * @param {string} userFriendlyAddress
+     * @returns {string}
      */
     _formatAddress(userFriendlyAddress) {
         if (!AddressUtils.isValidAddress(userFriendlyAddress)) throw new InvalidAddressError();
@@ -201,6 +203,7 @@ class KeyStore {
      * stored the existing account labels. Both the 'accounts' database and cookie are
      * deleted afterwards.
      *
+     * @returns {Promise<boolean>}
      * @deprecated Only for database migration
      */
     async doMigrateAccountsToKeys() {

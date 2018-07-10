@@ -11,6 +11,7 @@
  */
 
 class AccountStore {
+    /** @type {AccountStore} */
     static get instance() {
         /** @type {AccountStore} */
         this._instance = this._instance || new AccountStore();
@@ -118,6 +119,9 @@ class AccountStore {
         this._db = null;
     }
 
+    /**
+     * @returns {Promise<boolean | Error>}
+     */
     async drop() {
         if (this._dropped) return true;
         if (this._db) this.close();

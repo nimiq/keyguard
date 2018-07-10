@@ -12,6 +12,9 @@ class Identicon { // eslint-disable-line no-unused-vars
         this._updateIqon();
     }
 
+    /**
+     * @returns {HTMLImageElement}
+     */
     getElement() {
         if (this.$el) return this.$el;
 

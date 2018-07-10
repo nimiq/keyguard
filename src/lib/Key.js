@@ -38,7 +38,7 @@ class Key { // eslint-disable-line no-unused-vars
      * @param {Uint8Array | string} buf - Encrypted keypair
      * @param {Uint8Array | string} passphrase - Passphrase, as byte array or ASCII string
      * @param {EncryptionType} type
-     * @returns {Promise.<Key>}
+     * @returns {Promise<Key>}
      */
     static async loadEncrypted(buf, passphrase, type) {
         if (typeof buf === 'string') {
@@ -207,7 +207,7 @@ class Key { // eslint-disable-line no-unused-vars
     /**
      * @param {Uint8Array | string} passphrase
      * @param {Uint8Array | string} [unlockKey]
-     * @returns {Promise.<Nimiq.SerialBuffer>}
+     * @returns {Promise<Nimiq.SerialBuffer>}
      */
     async exportEncrypted(passphrase, unlockKey) {
         if (typeof passphrase === 'string') {
@@ -228,12 +228,14 @@ class Key { // eslint-disable-line no-unused-vars
         return this._keyPair.serialize();
     }
 
+    /** @type {boolean} */
     get isLocked() {
         return this.keyPair.isLocked;
     }
 
     /**
      * @param {Uint8Array | string} key
+     * @returns {Promise<void>}
      */
     async lock(key) {
         if (typeof key === 'string') {
@@ -249,6 +251,7 @@ class Key { // eslint-disable-line no-unused-vars
 
     /**
      * @param {Uint8Array | string} key
+     * @returns {Promise<void>}
      */
     async unlock(key) {
         if (typeof key === 'string') {
@@ -281,11 +284,13 @@ class Key { // eslint-disable-line no-unused-vars
 
     /**
      * The public key of the Key owner
+     * @type {Nimiq.PublicKey}
      */
     get publicKey() {
         return this._keyPair.publicKey;
     }
 
+    /** @type {Nimiq.KeyPair} */
     get keyPair() {
         return this._keyPair;
     }
