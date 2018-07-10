@@ -1,5 +1,5 @@
 /** Handles a sign-transaction request for keys with encryption type HIGH. */
-class SignTransactionWithPassphrase extends SignTransactionView {
+class SignTransactionWithPassphrase extends SignTransaction {
     /**
      * @param {TransactionRequest} txRequest
      * @param {Function} resolve
@@ -7,10 +7,9 @@ class SignTransactionWithPassphrase extends SignTransactionView {
      */
     constructor(txRequest, resolve, reject) {
         super();
+        this._txRequest = txRequest;
         this._resolve = resolve;
         this._reject = reject;
-
-        this._txRequest = txRequest;
 
         // set html elements
         /** @type {HTMLDivElement} */
@@ -26,10 +25,14 @@ class SignTransactionWithPassphrase extends SignTransactionView {
 
         // create components
         this._passphraseInput = new PassphraseInput();
-        this.$enterPassphrase.appendChild(this._passphraseInput.getElement())
+        this.$enterPassphrase.appendChild(this._passphraseInput.getElement());
 
+        // wire up logic
         this._passphraseInput.on(PassphraseInput.Events.PASSPHRASE_ENTERED, this._handlePassphraseInput.bind(this));
+    }
 
+    run() {
+        // go to start page
         window.location.hash = SignTransactionWithPassphrase.Pages.ENTER_PASSPHRASE;
     }
 

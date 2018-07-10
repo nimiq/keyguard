@@ -28,6 +28,7 @@ class CreateLow {
         this._chooseIdenticon = new ChooseIdenticon(request.type, this.$chooseIdenticon);
         this._pinInput = new PinInput($pinInput);
 
+        // wire up logic
         this._chooseIdenticon.on(
             ChooseIdenticon.EVENTS.CHOOSE_IDENTICON,
             /** @param {Key} key */
@@ -55,7 +56,10 @@ class CreateLow {
                 this._resolve(await KeyStore.instance.put(this._selectedKey, pin.toString()));
             }
         });
+    }
 
+    run() {
+        // go to start page
         window.location.hash = CreateLow.Pages.CHOOSE_IDENTICON;
 
         this._chooseIdenticon.generateIdenticons();

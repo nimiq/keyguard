@@ -1,10 +1,14 @@
-class CreateApi extends PopupApi {
+/* global CreateHigh, CreateLow */
+
+class CreateApi extends PopupApi { // eslint-disable-line no-unused-vars
     /**
      * @param {CreateRequest} request
      */
     async onRequest(request) {
-        request.type === EncryptionType.HIGH
+        const handler = request.type === EncryptionType.HIGH
             ? new CreateHigh(request, this.resolve.bind(this), this.reject.bind(this))
-            : new CreateLow(request, this.resolve.bind(this), this.reject.bind(this))
+            : new CreateLow(request, this.resolve.bind(this), this.reject.bind(this));
+
+        handler.run();
     }
 }

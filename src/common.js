@@ -1,3 +1,5 @@
+/* global TRANSLATIONS */
+
 /**
  * @param {Function} RequestApiClass - Class object of the API which is to be exposed via postMessage RPC
  * @param {object} [options]

@@ -115,7 +115,7 @@ class ValidateWords extends Nimiq.Observable {
         this._set(
             this._generateWords(this._requiredWords[round]), // wordlist
             this._requiredWords[round] + 1, // targetIndex
-            this._mnemonic[this._requiredWords[round]] // targetWord
+            this._mnemonic[this._requiredWords[round]], // targetWord
         );
     }
 
@@ -158,7 +158,9 @@ class ValidateWords extends Nimiq.Observable {
      */
     setWordList(wordList) {
         this._wordList = wordList;
-        wordList.forEach((word, index) => this.$buttons[index].textContent = word);
+        wordList.forEach((word, index) => {
+            this.$buttons[index].textContent = word;
+        });
         this.$buttons.forEach(button => button.removeAttribute('disabled'));
     }
 
@@ -218,5 +220,5 @@ class ValidateWords extends Nimiq.Observable {
 
 ValidateWords.Events = {
     VALIDATED: 'validated',
-    BACK: 'back'
+    BACK: 'back',
 };

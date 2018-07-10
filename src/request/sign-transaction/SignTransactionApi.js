@@ -1,4 +1,7 @@
-class SignTransactionApi extends PopupApi {
+/* global EncryptionType */
+/* global KeyStore */
+
+class SignTransactionApi extends PopupApi { // eslint-disable-line no-unused-vars
     /**
      * @param {TransactionRequest} txRequest
      */
@@ -18,8 +21,10 @@ class SignTransactionApi extends PopupApi {
         const keyStore = KeyStore.instance;
         const keyType = await keyStore.getType(txRequest.sender);
 
-        keyType === EncryptionType.HIGH
+        const handler = keyType === EncryptionType.HIGH
             ? new SignTransactionWithPassphrase(txRequest, this.resolve.bind(this), this.reject.bind(this))
             : new SignTransactionWithPin(txRequest, this.resolve.bind(this), this.reject.bind(this));
+
+        handler.run();
     }
 }

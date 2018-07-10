@@ -1,3 +1,6 @@
+/* global RecoveryWords */
+/* global ValidateWords */
+
 class CreateHigh {
     /**
      * @param {CreateRequest} request
@@ -22,7 +25,7 @@ class CreateHigh {
         this.$setPassphrase = (document.getElementById(CreateHigh.Pages.SET_PASSPHRASE));
 
         /** @type {HTMLFormElement} */
-        const $passphraseSetter =  (this.$setPassphrase.querySelector('.passphrase-setter'));
+        const $passphraseSetter = (this.$setPassphrase.querySelector('.passphrase-setter'));
 
         /** @type {HTMLFormElement} */
         const $passphraseGetter = (this.$setPassphrase.querySelector('.passphrase-getter'));
@@ -37,6 +40,7 @@ class CreateHigh {
         this._passphraseSetter = new PassphraseInput(true, $passphraseSetter);
         this._passphraseGetter = new PassphraseInput(false, $passphraseGetter);
 
+        // wire up logic
         this._chooseIdenticon.on(
             ChooseIdenticon.EVENTS.CHOOSE_IDENTICON,
             /** @param {Key} key */
@@ -50,37 +54,50 @@ class CreateHigh {
             },
         );
 
-        this._recoveryWords.on(RecoveryWords.Events.CONTINUE, () => location.hash = CreateHigh.Pages.VALIDATE_WORDS);
+        this._recoveryWords.on(RecoveryWords.Events.CONTINUE, () => {
+            window.location.hash = CreateHigh.Pages.VALIDATE_WORDS;
+        });
 
-        this._validateWords.on(ValidateWords.Events.BACK, () => location.hash = CreateHigh.Pages.RECOVERY_WORDS);
+        this._validateWords.on(ValidateWords.Events.BACK, () => {
+            window.location.hash = CreateHigh.Pages.RECOVERY_WORDS;
+        });
 
-        this._validateWords.on(ValidateWords.Events.BACK, () => location.hash = CreateHigh.Pages.RECOVERY_WORDS);
+        this._validateWords.on(ValidateWords.Events.BACK, () => {
+            window.location.hash = CreateHigh.Pages.RECOVERY_WORDS;
+        });
 
-        this._validateWords.on(ValidateWords.Events.VALIDATED, () => location.hash = CreateHigh.Pages.SET_PASSPHRASE);
+        this._validateWords.on(ValidateWords.Events.VALIDATED, () => {
+            window.location.hash = CreateHigh.Pages.SET_PASSPHRASE;
+        });
 
         this._passphraseSetter.on(
             PassphraseInput.Events.PASSPHRASE_ENTERED,
-            /** @param {string} passphrase */ passphrase => {
-            this._passphrase = passphrase;
-            this._passphraseSetter.reset();
-            $passphraseConfirm.classList.remove('display-none');
-            $passphraseSetter.classList.add('display-none');
-        });
+            /** @param {string} passphrase */passphrase => {
+                this._passphrase = passphrase;
+                this._passphraseSetter.reset();
+                $passphraseConfirm.classList.remove('display-none');
+                $passphraseSetter.classList.add('display-none');
+            },
+        );
 
         this._passphraseGetter.on(
             PassphraseInput.Events.PASSPHRASE_ENTERED,
             /** @param {string} passphrase */ async passphrase => {
-            if (this._passphrase !== passphrase) {
-                this._passphraseGetter.onPassphraseIncorrect();
-                this._passphraseGetter.reset();
-                $passphraseConfirm.classList.add('display-none');
-                $passphraseSetter.classList.remove('display-none');
-            } else {
-                document.body.classList.add('loading');
-                this._resolve(await KeyStore.instance.put(this._selectedKey, passphrase));
-            }
-        });
+                if (this._passphrase !== passphrase) {
+                    this._passphraseGetter.onPassphraseIncorrect();
+                    this._passphraseGetter.reset();
+                    $passphraseConfirm.classList.add('display-none');
+                    $passphraseSetter.classList.remove('display-none');
+                } else {
+                    document.body.classList.add('loading');
+                    this._resolve(await KeyStore.instance.put(this._selectedKey, passphrase));
+                }
+            },
+        );
+    }
 
+    run() {
+        // go to start page
         window.location.hash = CreateHigh.Pages.CHOOSE_IDENTICON;
 
         this._chooseIdenticon.generateIdenticons();
@@ -92,5 +109,5 @@ CreateHigh.Pages = {
     PRIVACY_AGENT: 'privacy-agent',
     RECOVERY_WORDS: 'recovery-words',
     VALIDATE_WORDS: 'validate-words',
-    SET_PASSPHRASE: 'set-passphrase'
+    SET_PASSPHRASE: 'set-passphrase',
 };

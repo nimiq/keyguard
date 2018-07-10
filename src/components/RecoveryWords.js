@@ -21,7 +21,10 @@ class RecoveryWords extends Nimiq.Observable { // eslint-disable-line no-unused-
 
         $el.innerHTML = `
             <h1>Backup your 24 Recovery Words</h1>
-            <h2 secondary>Write down and physically store the complete following list of 24 Account Recovery Words at a <strong>SAFE and SECRET</strong> place to recover this account in the future.</h2>
+            <h2 secondary>
+                Write down and physically store the complete following list of 24 Account Recovery Words
+                at a <strong>SAFE and SECRET</strong> place to recover this account in the future.
+            </h2>
             <div class="grow"></div>
             <div class="words-container"></div>
             <div class="info-box">
@@ -74,5 +77,5 @@ class RecoveryWords extends Nimiq.Observable { // eslint-disable-line no-unused-
 }
 
 RecoveryWords.Events = {
-    CONTINUE: 'continue'
+    CONTINUE: 'continue',
 };

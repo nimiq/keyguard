@@ -1,5 +1,5 @@
 /** Handles a sign-transaction request for keys with encryption type LOW. */
-class SignTransactionWithPin extends SignTransactionView {
+class SignTransactionWithPin extends SignTransaction {
     /**
      * @param {TransactionRequest} txRequest
      * @param {Function} resolve
@@ -7,27 +7,33 @@ class SignTransactionWithPin extends SignTransactionView {
      */
     constructor(txRequest, resolve, reject) {
         super();
+        this._txRequest = txRequest;
         this._resolve = resolve;
         this._reject = reject;
 
-        this._txRequest = txRequest;
+        // set html elements
+        /** @type {HTMLDivElement} */
+        this.$rootElement = (document.getElementById('app'));
+        /** @type {HTMLDivElement} */
+        this.$button = (this.$rootElement.querySelector('#transaction-data button'));
+        /** @type {HTMLDivElement} */
+        this.$enterPin = (this.$rootElement.querySelector('#enter-pin'));
 
-        this.$rootElement = /** @type {HTMLElement} */ (document.getElementById('app'));
-        this.$button = /** @type {HTMLElement} */ (this.$rootElement.querySelector('#transaction-data button'));
-        this.$enterPin = /** @type {HTMLElement} */ (this.$rootElement.querySelector('#enter-pin'));
 
+        // create components
+        this._pinInput = new PinInput();
+        this.$enterPin.appendChild(this._pinInput.getElement());
+
+        // wire up logic
         this.$button.addEventListener('click', () => {
+            this._pinInput.open();
             window.location.hash = SignTransactionWithPin.Pages.ENTER_PIN;
         });
 
-        this._pinInput = new PinInput();
-
-        this.$enterPin.appendChild(this._pinInput.getElement());
-
-        this._pinInput.open();
-
         this._pinInput.on(PinInput.Events.PIN_ENTERED, this.handlePinInput.bind(this));
+    }
 
+    run() {
         // go to start page
         window.location.hash = SignTransactionWithPin.Pages.TRANSACTION_DATA;
     }

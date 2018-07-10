@@ -1,4 +1,4 @@
-const TRANSLATIONS = {
+const TRANSLATIONS = { // eslint-disable-line no-unused-vars
     en: {
         _language: 'English',
         loading: 'Loading...',
@@ -8,7 +8,7 @@ const TRANSLATIONS = {
         'sign-tx-wrong-passphrase': 'Wrong passphrase, please try again',
         'sign-tx-button-enter-pin': 'Enter PIN',
         'create-choose-identicon-header1': 'Choose Your Account Avatar',
-        'create-set-passphrase-header1': 'Set a Pass Phrase'
+        'create-set-passphrase-header1': 'Set a Pass Phrase',
     },
     de: {
         _language: 'Deutsch',
@@ -19,6 +19,6 @@ const TRANSLATIONS = {
         'sign-tx-wrong-passphrase': 'Falsche Passphrase, bitte versuche es nochmal',
         'sign-tx-button-enter-pin': 'PIN eingeben',
         'create-choose-identicon-header1': 'Wähle einen Avatar für dein Konto',
-        'create-set-passphrase-header1': 'Lege eine Passphrase fest'
+        'create-set-passphrase-header1': 'Lege eine Passphrase fest',
     },
 };

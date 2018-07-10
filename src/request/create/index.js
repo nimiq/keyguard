@@ -1,1 +1,3 @@
+/* global CreateApi */
+
 runKeyguard(CreateApi);
