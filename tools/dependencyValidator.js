@@ -1,152 +1,38 @@
 #!/usr/bin/env node
 
-const fs = require('fs');
-const path = require('path');
-
-/**
- * @param {string} p - Directory to search
- * @returns {string[]}
- */
-function listDirectories(p) {
-    return fs.readdirSync(p).filter(
-        /**
-         * @param {string} file
-         * @returns {boolean}
-         * */
-        file => fs.statSync(path.join(p, file)).isDirectory(),
-    );
-}
-
-/**
- * Find all files recursively in specific folder with specific extension, e.g:
- * findFilesInDir('./project/src', '.html') ==> ['./project/src/a.html','./project/src/build/index.html']
- * @param  {string} startPath    Path relative to this file or other file which requires this files
- * @param  {string} filter       Extension name, e.g: '.html'
- * @returns {string[]}               Result files with path string in an array
- */
-function find(startPath, filter) {
-    /** @type {string[]} */
-    let results = [];
-
-    if (!fs.existsSync(startPath)) {
-        throw new Error(`${startPath} does not exist`);
-    }
-
-    const files = fs.readdirSync(startPath);
-    for (let i = 0; i < files.length; i++) {
-        const filename = path.join(startPath, files[i]);
-        const stat = fs.lstatSync(filename);
-        if (stat.isDirectory()) {
-            results = results.concat(find(filename, filter)); // recurse
-        } else if (filename.indexOf(filter) >= 0) {
-            results.push(filename);
-        }
-    }
-
-    return results;
-}
-
-/**
- * @param {string} fullPath
- * @returns {string}
- */
-function classNameFromPath(fullPath) {
-    return fullPath.split('/').slice(-1)[0].split('.')[0];
-}
+const funcs = require('./functions');
 
 // Build class-path map
-const classPath = new Map();
-find('src', '.js').forEach(file => {
-    const className = classNameFromPath(file);
-    classPath.set(className, file);
+const class2Path = new Map();
+funcs.find('src', '.js').forEach(file => {
+    const className = funcs.stripExtension(file);
+    class2Path.set(className, file);
 });
-classPath.set('TRANSLATIONS', 'src/translations/index.js');
-classPath.set('Nimiq', 'https://cdn.nimiq.com/web-offline.js');
-classPath.delete('index');
+class2Path.set('TRANSLATIONS', 'src/translations/index.js');
+class2Path.set('Nimiq', 'https://cdn.nimiq.com/web-offline.js');
+class2Path.delete('index');
 
-/**
- * Recursively collect class dependencies from files' global definitions.
- *
- * @param {string} startFile
- * @param {string[]} deps
- * @returns {string[]}
- */
-function findDependencies(startFile, deps) {
-    // Create a new regex object to reset the readIndex
-    const depRegEx = /global ([a-zA-Z0-9,\s]+) \*/g;
-
-    // Get global variable
-    const contents = fs.readFileSync(startFile).toString();
-    /** @type {string[]} */
-    let fileDeps = [];
-    let fileDepMatch;
-    while ((fileDepMatch = depRegEx.exec(contents)) !== null) { // eslint-disable-line no-cond-assign
-        const fileDep = fileDepMatch[1];
-        fileDeps = fileDeps.concat(fileDep.split(/,\s*/g));
-    }
-
-    fileDeps.forEach(dep => {
-        // CustomError classes
-        if (dep.slice(-5) === 'Error') dep = 'errors';
-        if (dep === 'runKeyguard') dep = 'common';
-
-        if (deps.indexOf(dep) > -1) return;
-
-        deps.push(dep);
-
-        if (dep === 'Nimiq') return;
-
-        const depPath = classPath.get(dep);
-        if (!depPath) throw new Error(`Unknown dependency: ${dep}`);
-
-        // deps are passed by reference
-        findDependencies(depPath, deps); // recurse
-    });
-
-    return deps;
-}
-
-/**
- * @param {string} indexPath
- * @returns {string[]}
- */
-function findScripts(indexPath) {
-    const scriptRegEx = /<script.+src="(.+)".*?>/g;
-
-    const contents = fs.readFileSync(indexPath).toString();
-
-    /** @type {string[]} */
-    const scripts = [];
-    let scriptMatch;
-    while ((scriptMatch = scriptRegEx.exec(contents)) !== null) { // eslint-disable-line no-cond-assign
-        const scriptPath = scriptMatch[1];
-        scripts.push(scriptPath);
-    }
-
-    return scripts;
-}
-
-const requests = listDirectories('src/request');
+const requests = funcs.listDirectories('src/request');
 
 // console.log("requests:", requests);
-// console.log("classPath:", classPath);
+// console.log("class2Path:", class2Path);
 
 let hasMissingScripts = false;
 let hasUnneededScripts = false;
 
 requests.forEach(/** @param {string} request */ request => {
     // Find API class
-    const apiFile = find(`src/request/${request}`, 'Api.js')[0];
+    const apiFile = funcs.find(`src/request/${request}`, 'Api.js')[0];
     // console.log("apiFile:", apiFile);
 
     if (!apiFile) throw new Error(`Request >${request}< has no API class file`);
 
     // Collect API dependencies
-    const deps = findDependencies(apiFile, [classNameFromPath(apiFile)]);
+    const deps = funcs.findDependencies(apiFile, class2Path, [funcs.stripExtension(apiFile)]);
     // console.log("deps:", deps);
 
     const relativeDepsPaths = deps.map(dep => {
-        const file = classPath.get(dep);
+        const file = class2Path.get(dep);
         return file
             .replace(`src/request/${request}/`, '')
             .replace('src/request', '..')
@@ -155,7 +41,7 @@ requests.forEach(/** @param {string} request */ request => {
     // console.log("relativeDepsPaths:", relativeDepsPaths);
 
     // Get findScripts from index.html
-    const scripts = findScripts(`src/request/${request}/index.html`);
+    const scripts = funcs.findScripts(`src/request/${request}/index.html`);
     // console.log("scripts:", scripts);
 
     // Find missing and unneeded scripts
