@@ -5,9 +5,16 @@ const path = require('path');
 
 /**
  * @param {string} p - Directory to search
+ * @returns {string[]}
  */
 function listDirectories(p) {
-    return fs.readdirSync(p).filter(f => fs.statSync(path.join(p, f)).isDirectory());
+    return fs.readdirSync(p).filter(
+        /**
+         * @param {string} file
+         * @returns {boolean}
+         * */
+        file => fs.statSync(path.join(p, file)).isDirectory(),
+    );
 }
 
 /**
@@ -15,7 +22,7 @@ function listDirectories(p) {
  * findFilesInDir('./project/src', '.html') ==> ['./project/src/a.html','./project/src/build/index.html']
  * @param  {string} startPath    Path relative to this file or other file which requires this files
  * @param  {string} filter       Extension name, e.g: '.html'
- * @return {string[]}               Result files with path string in an array
+ * @returns {string[]}               Result files with path string in an array
  */
 function find(startPath, filter) {
     /** @type {string[]} */
@@ -40,10 +47,11 @@ function find(startPath, filter) {
 }
 
 /**
- * @param {string} path
+ * @param {string} fullPath
+ * @returns {string}
  */
-function classNameFromPath(path) {
-    return path.split('/').slice(-1)[0].split('.')[0]
+function classNameFromPath(fullPath) {
+    return fullPath.split('/').slice(-1)[0].split('.')[0];
 }
 
 // Build class-path map
@@ -61,9 +69,9 @@ classPath.delete('index');
  *
  * @param {string} startFile
  * @param {string[]} deps
+ * @returns {string[]}
  */
 function findDependencies(startFile, deps) {
-
     // Create a new regex object to reset the readIndex
     const depRegEx = /global ([a-zA-Z0-9,\s]+) \*/g;
 
@@ -72,7 +80,7 @@ function findDependencies(startFile, deps) {
     /** @type {string[]} */
     let fileDeps = [];
     let fileDepMatch;
-    while ((fileDepMatch = depRegEx.exec(contents)) !== null) {
+    while ((fileDepMatch = depRegEx.exec(contents)) !== null) { // eslint-disable-line no-cond-assign
         const fileDep = fileDepMatch[1];
         fileDeps = fileDeps.concat(fileDep.split(/,\s*/g));
     }
@@ -100,6 +108,7 @@ function findDependencies(startFile, deps) {
 
 /**
  * @param {string} indexPath
+ * @returns {string[]}
  */
 function findScripts(indexPath) {
     const scriptRegEx = /<script.+src="(.+)".*?>/g;
@@ -109,7 +118,7 @@ function findScripts(indexPath) {
     /** @type {string[]} */
     const scripts = [];
     let scriptMatch;
-    while ((scriptMatch = scriptRegEx.exec(contents)) !== null) {
+    while ((scriptMatch = scriptRegEx.exec(contents)) !== null) { // eslint-disable-line no-cond-assign
         const scriptPath = scriptMatch[1];
         scripts.push(scriptPath);
     }
@@ -125,7 +134,7 @@ const requests = listDirectories('src/request');
 let hasMissingScripts = false;
 let hasUnneededScripts = false;
 
-requests.forEach(request => {
+requests.forEach(/** @param {string} request */ request => {
     // Find API class
     const apiFile = find(`src/request/${request}`, 'Api.js')[0];
     // console.log("apiFile:", apiFile);
@@ -153,7 +162,7 @@ requests.forEach(request => {
     const unneededScripts = scripts.slice();
     const missingScripts = relativeDepsPaths.filter(depPath => {
         const index = unneededScripts.indexOf(depPath);
-        index > -1 && unneededScripts.splice(index, 1);
+        if (index > -1) unneededScripts.splice(index, 1);
 
         return scripts.indexOf(depPath) === -1;
     }).reverse();
