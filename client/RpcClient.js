@@ -58,9 +58,11 @@ class RpcClient { // eslint-disable-line no-unused-vars
                     console.error(`postMessage failed: ${e}`);
                 }
 
+                // @ts-ignore
                 connectTimer = setTimeout(tryToConnect, 1000);
             };
 
+            // @ts-ignore
             connectTimer = setTimeout(tryToConnect, 100);
         });
     }
@@ -73,14 +75,13 @@ class RpcClient { // eslint-disable-line no-unused-vars
      * @private
      */
     static _generateClientClass(targetWindow, targetOrigin) {
+        /** @type {Map.<number,{resolve: Function, reject: Function}>} */
+        const waitingRequests = new Map();
+
         /** @type {Newable} */
         const Client = class {
             constructor() {
-                // Svub: Code smell that _targetWindow and _waiting are visible outside. TODO later!
-                this._targetWindow = targetWindow;
-                this._targetOrigin = targetOrigin;
-                /** @type {Map.<number,{resolve: Function, reject: Function}>} */
-                this._waiting = new Map();
+                /** @type {Function} */
                 this._receive = this._receive.bind(this);
                 window.addEventListener('message', this._receive);
             }
@@ -99,11 +100,11 @@ class RpcClient { // eslint-disable-line no-unused-vars
                     };
 
                     // Store the request resolvers
-                    this._waiting.set(obj.id, { resolve, reject });
+                    waitingRequests.set(obj.id, { resolve, reject });
 
                     console.debug('RpcClient REQUEST', command, args);
 
-                    this._targetWindow.postMessage(obj, this._targetOrigin);
+                    targetWindow.postMessage(obj, targetOrigin);
                 });
             }
 
@@ -119,15 +120,15 @@ class RpcClient { // eslint-disable-line no-unused-vars
                 // Discard all messages from unwanted sources
                 // or which are not replies
                 // or which are not from the correct origin
-                if (source !== this._targetWindow
+                if (source !== targetWindow
                     || !data.status
                     || !data.id
-                    || (this._targetOrigin !== '*' && origin !== this._targetOrigin)) return;
+                    || (targetOrigin !== '*' && origin !== targetOrigin)) return;
 
-                const callback = this._waiting.get(data.id);
+                const callback = waitingRequests.get(data.id);
 
                 if (callback) {
-                    this._waiting.delete(data.id);
+                    waitingRequests.delete(data.id);
 
                     console.debug('RpcClient RECEIVE', data);
 

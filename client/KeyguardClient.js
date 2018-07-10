@@ -2,11 +2,7 @@ class KeyguardClient {
     constructor() {
         this._keyguardSrc = '../src/';
 
-        this._connected = new Promise(res => {
-            this._connectedResolver = res;
-        });
-
-        this._startIFrame();
+        this._connected = this._startIFrame();
     }
 
     /**
@@ -15,7 +11,7 @@ class KeyguardClient {
      */
     async list(listFromAccountStore) {
         await this._connected;
-        return this.iframe.call('list', [listFromAccountStore]);
+        return this.iframeClient.call('list', [listFromAccountStore]);
     }
 
     /**
@@ -24,7 +20,7 @@ class KeyguardClient {
      */
     async migrateDB() {
         await this._connected;
-        return this.iframe.call('migrateAccountsToKeys');
+        return this.iframeClient.call('migrateAccountsToKeys');
     }
 
     /**
@@ -33,7 +29,7 @@ class KeyguardClient {
      * @returns {Promise<void>}
      */
     async create(type, label) {
-        return this._popup('create', [{
+        return this._startPopup('create', [{
             type: type || EncryptionType.HIGH,
             label,
         }]);
@@ -43,14 +39,14 @@ class KeyguardClient {
      * @returns {Promise<void>}
      */
     async importWords() {
-        return this._popup('import-words');
+        return this._startPopup('import-words');
     }
 
     /**
      * @returns {Promise<void>}
      */
     async importFile() {
-        return this._popup('import-file');
+        return this._startPopup('import-file');
     }
 
     /**
@@ -58,7 +54,7 @@ class KeyguardClient {
      * @returns {Promise<void>}
      */
     async export(address) {
-        return this._popup('export-words', [address]);
+        return this._startPopup('export-words', [address]);
     }
 
     /**
@@ -66,15 +62,21 @@ class KeyguardClient {
      * @returns {Promise<SignedTransactionResult>}
      */
     async signTransaction(txRequest) {
-        return this._popup('sign-transaction', [txRequest]);
+        return this._startPopup('sign-transaction', [txRequest]);
     }
 
     /**
-     * @param {MessageRequest} msgRequest
+     * @param {string | Uint8Array} message - A utf-8 string or byte array of max 255 bytes
+     * @param {string} signer - The address of the signer
      * @returns {Promise<SignedMessageResult>}
      */
-    async signMessage(msgRequest) {
-        return this._popup('signMessage', [msgRequest]);
+    async signMessage(message, signer) {
+        /** @type {MessageRequest} */
+        const msgRequest = {
+            message,
+            signer,
+        };
+        return this._startPopup('sign-message', [msgRequest]);
     }
 
     /**
@@ -82,7 +84,7 @@ class KeyguardClient {
      * @returns {Promise<void>}
      */
     async changeEncryption(address) {
-        return this._popup('change-encryption', [address]);
+        return this._startPopup('change-encryption', [address]);
     }
 
     /**
@@ -90,28 +92,32 @@ class KeyguardClient {
      * @returns {Promise<void>}
      */
     async delete(address) {
-        return this._popup('delete', [address]);
+        return this._startPopup('delete', [address]);
     }
 
     /* PRIVATE METHODS */
 
+    /**
+     * @returns {Promise<void>}
+     */
     async _startIFrame() {
         const $iframe = await this._createIframe();
         if (!$iframe.contentWindow) throw new Error(`IFrame contentWindow is ${typeof $iframe.contentWindow}`);
-        this._iframe = await RpcClient.create($iframe.contentWindow, KeyguardClient.KEYGUARD_ORIGIN);
-        this._connectedResolver();
+        this._iframeClient = await RpcClient.create($iframe.contentWindow, KeyguardClient.KEYGUARD_ORIGIN);
     }
 
     /**
      * @returns {Promise<HTMLIFrameElement>}
      */
     async _createIframe() {
-        return new Promise(resolve => {
+        return new Promise((resolve, reject) => {
             const $iframe = document.createElement('iframe');
             $iframe.name = 'Nimiq Keyguard IFrame';
+            $iframe.style.display = 'none';
             document.body.appendChild($iframe);
             $iframe.src = `${this._keyguardSrc}request/iframe/`;
             $iframe.onload = () => resolve($iframe);
+            $iframe.onerror = reject;
         });
     }
 
@@ -119,7 +125,7 @@ class KeyguardClient {
      * @param {string} requestName - The request name in kebab-case (folder name)
      * @param {any[]} [args]
      */
-    async _popup(requestName, args) {
+    async _startPopup(requestName, args) {
         const $popup = window.open(
             `${this._keyguardSrc}request/${requestName}/`,
             'Nimiq Keyguard Popup',
@@ -145,15 +151,17 @@ class KeyguardClient {
             return result;
         } catch (e) {
             rpcClient.close();
+            $popup.close();
             throw e;
         }
     }
 
     /** @type {RpcClientInstance} */
-    get iframe() {
-        if (!this._iframe) throw new Error('IFrame not available');
-        return this._iframe;
+    get iframeClient() {
+        if (!this._iframeClient) throw new Error('IFrame not available');
+        return this._iframeClient;
     }
 }
 
+// FIXME Replace by real origin (or from config)
 KeyguardClient.KEYGUARD_ORIGIN = '*';
