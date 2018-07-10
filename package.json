@@ -10,9 +10,10 @@
     "checkdeps": "node tools/dependencyValidator.js",
     "test-coverage": "karma start karma.conf.coverage.js",
     "coverage": "nyc instrument ./src ./instrumented && npm run test-coverage",
-    "pr": "npm run typecheck && npm run lint && npm run test && npm run checkdeps",
+    "checklangs": "node tools/translationValidator.js",
+    "pr": "npm run typecheck && npm run lint && npm run test && npm run checkdeps && npm run checklangs",
     "watch": "tsc-watch --pretty --onSuccess \"npm run watchonsuccess\"",
-    "watchonsuccess": "npm run lintfix && npm run checkdeps"
+    "watchonsuccess": "npm run lintfix && npm run checkdeps && npm run checklangs"
   },
   "repository": {
     "type": "git",

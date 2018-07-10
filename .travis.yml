@@ -19,3 +19,4 @@ script:
   - yarn lint
   - yarn test
   - yarn checkdeps
+  - yarn checklangs
