@@ -30,5 +30,3 @@ const TRANSLATIONS = {
         'recovery-words-input-field-placeholder': 'Wort ',
     },
 };
-
-I18n.initialize(TRANSLATIONS, 'en');
