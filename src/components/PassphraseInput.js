@@ -56,12 +56,10 @@ class PassphraseInput extends Nimiq.Observable {
         return this.$el;
     }
 
-    /** */
     focus() {
         this.$input.focus();
     }
 
-    /** */
     reset() {
         this.$input.value = '';
         this._changeVisibility(false);
@@ -70,7 +68,6 @@ class PassphraseInput extends Nimiq.Observable {
         }
     }
 
-    /** */
     onPassphraseIncorrect() {
         this.$inputContainer.classList.add('shake');
         setTimeout(() => {
@@ -97,14 +94,12 @@ class PassphraseInput extends Nimiq.Observable {
         this.$input.focus();
     }
 
-    /** */
     _updateStrength() {
         const passphraseLength = this.$input.value.length;
         this.$confirmButton.disabled = passphraseLength < PassphraseInput.MIN_LENGTH;
         this._updateStrengthIndicator();
     }
 
-    /** */
     _updateStrengthIndicator() {
         const passphraseLength = this.$input.value.length;
         let strengthIndicatorValue;

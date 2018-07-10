@@ -32,7 +32,6 @@ class Identicon { // eslint-disable-line no-unused-vars
         this._updateIqon();
     }
 
-    /** */
     _updateIqon() {
         if (this._address) {
             Iqons.toDataUrl(this._address).then(url => {

@@ -245,7 +245,6 @@ class Key { // eslint-disable-line no-unused-vars
         await this.keyPair.lock(key);
     }
 
-    /** */
     relock() {
         this.keyPair.relock();
     }

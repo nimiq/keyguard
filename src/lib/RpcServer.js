@@ -33,7 +33,6 @@ class RpcServer { // eslint-disable-line no-unused-vars
                 window.addEventListener('message', this._receive);
             }
 
-            /** */
             close() {
                 window.removeEventListener('message', this._receive);
             }

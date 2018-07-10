@@ -58,7 +58,8 @@
     "require-jsdoc-except/require-jsdoc": ["error", {
       "require": {
         "FunctionDeclaration": true,
-        "MethodDefinition": true,
+        // Class methods witout an existing JSDoc block are ignored
+        "MethodDefinition": false,
         "ClassDeclaration": false,
         "ArrowFunctionExpression": true,
         "FunctionExpression": true

@@ -181,7 +181,6 @@ class KeyStore {
         });
     }
 
-    /** */
     close() {
         if (!this._db) return;
         this._db.close();

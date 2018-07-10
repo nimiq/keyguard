@@ -60,7 +60,6 @@ class PinInput extends Nimiq.Observable {
         return this.$el;
     }
 
-    /** */
     reset() {
         this._pin = '';
         this._setMaskedPin();
@@ -68,13 +67,11 @@ class PinInput extends Nimiq.Observable {
         this._unlocking = false;
     }
 
-    /** */
     open() {
         this.reset();
         window.addEventListener('keypress', this._handleKeyboardInput);
     }
 
-    /** */
     close() {
         this.reset();
         window.removeEventListener('keypress', this._handleKeyboardInput);
@@ -85,7 +82,6 @@ class PinInput extends Nimiq.Observable {
         return !!this._unlocking;
     }
 
-    /** */
     onPinIncorrect() {
         this.$el.classList.remove('unlocking');
         this.$el.classList.add('shake-pinpad');
@@ -126,21 +122,18 @@ class PinInput extends Nimiq.Observable {
         }
     }
 
-    /** */
     _submit() {
         this._unlocking = true;
         this.$el.classList.add('unlocking');
         this.fire(PinInput.Events.PIN_ENTERED, this._pin);
     }
 
-    /** */
     _onDelete() {
         if (this._unlocking) return;
         this._pin = this._pin.substr(0, this._pin.length - 1);
         this._setMaskedPin();
     }
 
-    /** */
     _setMaskedPin() {
         /**
          * @param {Element} el
