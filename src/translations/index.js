@@ -18,5 +18,3 @@ const TRANSLATIONS = {
         'sign-tx-button-enter-pin': 'PIN eingeben',
     },
 };
-
-I18n.initialize(TRANSLATIONS, 'en');

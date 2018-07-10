@@ -50,8 +50,7 @@ type ExtendedTransactionRequest = BasicTransactionRequest & {
 type TransactionRequest = BasicTransactionRequest | ExtendedTransactionRequest
 
 type CreateRequest = {
-    type: EncryptionType,
-    label?: string
+    type: EncryptionType
 }
 
 type KeyguardRequest = TransactionRequest | CreateRequest

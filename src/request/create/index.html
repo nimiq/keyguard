@@ -18,9 +18,11 @@
     <script src="../../lib/Iqons.js"></script>
     <script src="../../lib/BrowserDetection.js"></script>
     <script src="../../lib/I18n.js"></script>
+    <script src="../../translations/index.js"></script>
     <script src="../../lib/MnemonicPhrase.js"></script>
     <script src="../../common.js"></script>
     <script src="../../components/PinInput.js"></script>
+    <script src="../../components/PassphraseInput.js"></script>
     <script src="../../components/Identicon.js"></script>
     <script src="../../components/RecoveryWords.js"></script>
     <script src="../../components/ValidateWords.js"></script>
@@ -85,11 +87,32 @@
     </div>
 
     <div id="set-passphrase" class="page">
-
+        <h1>Set a Pass Phrase</h1>
+        <h2>Please enter a Pass Phrase to secure your account.</h2>
+        <p>The Pass Phrase is <strong>not</strong> an alternative for your 24 Recovery Words!</p>
+        <div class="grow" data-grow="0.5"></div>
+        <div class="my-account"></div>
+        <div class="grow" data-grow="0.5"></div>
+        <div class="passphrase-setter"></div>
+        <section class="center confirm display-none">
+            <h2>Please repeat your Pass Phrase:</h2>
+            <div class="passphrase-getter"></div>
+        </section>
     </div>
 
     <div id="set-pin" class="page">
-
+        <h1>Choose your pin</h1>
+        <h2>Please enter an account control PIN</h2>
+        <div class="spacing-bottom center">
+            <span>
+                Careful, this PIN is <strong>not recoverable!</strong> If you lose it, you lose access to your funds.
+            </span>
+        </div>
+        <div class="confirm-message hidden">Please repeat PIN to confirm</div>
+        <div class="not-matching-message hidden">PIN not matching. Please try again.</div>
+        <div class="grow"></div>
+        <div class="pinpad"></div>
+        <div class="grow"></div>
     </div>
 
     <div id="loading" class="page">

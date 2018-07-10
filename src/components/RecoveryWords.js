@@ -8,7 +8,7 @@ class RecoveryWords extends Nimiq.Observable { // eslint-disable-line no-unused-
         this.$wordsContainer = /** @type {HTMLElement} */ (this.$el.querySelector('.words-container'));
 
         const $button = /** @type {HTMLElement} */ (this.$el.querySelector('button'));
-        $button.addEventListener('click', () => this.fire('continue'));
+        $button.addEventListener('click', () => this.fire(RecoveryWords.Events.CONTINUE));
     }
 
     /**
@@ -72,3 +72,7 @@ class RecoveryWords extends Nimiq.Observable { // eslint-disable-line no-unused-
         return this.$el;
     }
 }
+
+RecoveryWords.Events = {
+    CONTINUE: 'continue'
+};

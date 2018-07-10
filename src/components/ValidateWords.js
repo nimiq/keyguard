@@ -9,6 +9,11 @@ class ValidateWords extends Nimiq.Observable {
         this.$buttons = this.$el.querySelectorAll('button');
         this.$targetIndex = this.$el.querySelector('.target-index');
         this.$el.addEventListener('click', e => this._onClick(e));
+
+        this.$skip = this.$el.querySelector('.skip');
+        if (this.$skip) {
+            this.$skip.addEventListener('click', () => this.fire(ValidateWords.Events.VALIDATED));
+        }
     }
 
     /**
@@ -33,6 +38,7 @@ class ValidateWords extends Nimiq.Observable {
                 <button class="small"></button>
             </div>
             <div class="grow"></div>
+            <span class="skip">[Skip]</span>
             <a class="secondary" href="#recovery-words">Back to words</a>`;
 
         return $el;
@@ -70,7 +76,7 @@ class ValidateWords extends Nimiq.Observable {
         if (this._round < 3) {
             this._setContent(this._round);
         } else {
-            this.fire('validate-words');
+            this.fire(ValidateWords.Events.VALIDATED);
         }
     }
 
@@ -159,3 +165,8 @@ class ValidateWords extends Nimiq.Observable {
         $button.classList.add('correct');
     }
 }
+
+ValidateWords.Events = {
+    VALIDATED: 'validated',
+    BACK: 'back'
+};

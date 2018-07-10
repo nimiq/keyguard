@@ -27,6 +27,10 @@ async function runKeyguard(RequestApiClass, options) { // eslint-disable-line no
         }
     });
 
+    I18n.initialize(TRANSLATIONS, 'en');
+
     // FIXME Set correct allowedOrigin
     window.rpcServer = RpcServer.create(RequestApiClass, '*', options.rpcWhitelist);
+
+    I18n.translateDom();
 }

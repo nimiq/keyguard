@@ -48,6 +48,33 @@
             keyguard.close();
         }
     });
+
+    document.querySelector('button#low').addEventListener('click', async () => {
+
+        const keyguard = window.open('../src/request/create/');
+
+        // We need this check because we call the rpcServer object directly and not via RPC Client
+        function checkIfKeyguardReady(resolve) {
+            if (keyguard.rpcServer !== undefined) {
+                resolve();
+            } else {
+                self.setTimeout(() => checkIfKeyguardReady(resolve), 25);
+            }
+        }
+
+        await new Promise(res => checkIfKeyguardReady(res));
+
+        const createRequest = {
+            type: EncryptionType.LOW
+        };
+
+        const result = await keyguard.rpcServer.request(createRequest);
+
+        if (result) {
+            console.log(result);
+            keyguard.close();
+        }
+    });
 </script>
 
 </body>
