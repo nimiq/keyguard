@@ -1,8 +1,9 @@
 class MnemonicPhrase {
     // Adapted from https://github.com/mode80/crc8js
     /**
-     *
      * @param {Uint8Array} byteArray
+     *
+     * @returns {number}
      */
     static _crc8(byteArray) {
         // TODO In the original, this table is generated each time. Intentionally?
@@ -41,10 +42,11 @@ class MnemonicPhrase {
 
     // Adapted from https://github.com/bitcoinjs/bip39
     /**
-     *
      * @param {string} str
      * @param {string} padString
      * @param {number} length
+     *
+     * @returns {string}
      */
     static _lpad(str, padString, length) {
         while (str.length < length) str = padString + str;
@@ -52,8 +54,8 @@ class MnemonicPhrase {
     }
 
     /**
-     *
      * @param {string} bin
+     * @returns {number}
      */
     static _binaryToBytes(bin) {
         // used only internally, thus we can skip checks
@@ -69,16 +71,16 @@ class MnemonicPhrase {
     }
 
     /**
-     *
      * @param {Uint8Array} bytes
+     * @returns {string}
      */
     static _bytesToBinary(bytes) {
         return bytes.reduce((binary, byte) => binary + MnemonicPhrase._lpad(byte.toString(2), '0', 8), '');
     }
 
     /**
-     *
      * @param {Uint8Array} entropy
+     * @returns {string}
      */
     static _deriveChecksumBits(entropy) {
         const crcByte = new Uint8Array([MnemonicPhrase._crc8(entropy)]);
@@ -111,9 +113,10 @@ class MnemonicPhrase {
     }
 
     /**
-     *
      * @param {string} mnemonic
      * @param {string[]} wordlist
+     *
+     * @returns {Uint8Array}
      */
     static mnemonicToKey(mnemonic, wordlist = MnemonicPhrase.DEFAULT_WORDLIST) {
         const words = (mnemonic.normalize('NFKD')).trim().split(/\s+/g);

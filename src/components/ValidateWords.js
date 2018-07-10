@@ -121,7 +121,7 @@ class ValidateWords extends Nimiq.Observable {
 
     /**
      * @param {number} wordIndex
-     * @return {string[]}
+     * @returns {string[]}
      * @private
      */
     _generateWords(wordIndex) {

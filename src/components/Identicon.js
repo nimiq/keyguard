@@ -1,19 +1,18 @@
 class Identicon { // eslint-disable-line no-unused-vars
     /**
      * @param {string} [address]
-     * @param {HTMLImageElement} [el]
+     * @param {HTMLDivElement} [$el]
      */
-    constructor(address, el) {
+    constructor(address, $el) {
         this._address = address;
 
-        /** @type {HTMLElement} */
-        this.$el = el || this._createElement();
+        this.$el = this._createElement($el);
 
         this._updateIqon();
     }
 
     /**
-     * @returns {HTMLImageElement}
+     * @returns {HTMLDivElement}
      */
     getElement() {
         return this.$el;
@@ -27,15 +26,19 @@ class Identicon { // eslint-disable-line no-unused-vars
         this._updateIqon();
     }
 
-    _createElement() {
+    /**
+     * @param {HTMLDivElement} [$el]
+     * @returns {HTMLDivElement}
+     */
+    _createElement($el) {
+        const $element = $el || document.createElement('div');
         const imageElement = document.createElement('img');
-        const element = document.createElement('div');
-        element.classList.add('identicon');
-        element.appendChild(imageElement);
+        $element.classList.add('identicon');
+        $element.appendChild(imageElement);
 
         this.$imgEl = imageElement;
 
-        return element;
+        return $element;
     }
 
     _updateIqon() {
