@@ -7,13 +7,25 @@ class CreateLow {
     constructor(request, resolve, reject) {
         this._resolve = resolve;
         this._reject = reject;
-        this.$chooseIdenticon = /** @type {HTMLElement} */ (document.getElementById(CreateLow.Pages.CHOOSE_IDENTICON));
-        this.$setPin = /** @type {HTMLElement} */ (document.getElementById(CreateLow.Pages.SET_PIN));
 
+        // set html elements
+        /** @type {HTMLDivElement} */
+        this.$chooseIdenticon = (document.getElementById(CreateLow.Pages.CHOOSE_IDENTICON));
+
+        /** @type {HTMLDivElement} */
+        this.$setPin = (document.getElementById(CreateLow.Pages.SET_PIN));
+
+        /** @type {HTMLDivElement} */
+        const $pinInput = (this.$setPin.querySelector('.pinpad'));
+
+        /** @type {HTMLDivElement} */
+        const $confirmMessage = /** @type {HTMLDivElement} */ (this.$setPin.querySelector('.confirm-message'));
+
+        /** @type {HTMLDivElement} */
+        const $notMatchingMessage = /** @type {HTMLDivElement} */ (this.$setPin.querySelector('.not-matching-message'));
+
+        // create components
         this._chooseIdenticon = new ChooseIdenticon(request.type, this.$chooseIdenticon);
-
-        const $pinInput = /** @type {HTMLDivElement} */ (this.$setPin.querySelector('.pinpad'));
-
         this._pinInput = new PinInput($pinInput);
 
         this._chooseIdenticon.on(
@@ -25,9 +37,6 @@ class CreateLow {
                 this._pinInput.open();
             },
         );
-
-        const $confirmMessage = /** @type {HTMLDivElement} */ (this.$setPin.querySelector('.confirm-message'));
-        const $notMatchingMessage = /** @type {HTMLDivElement} */ (this.$setPin.querySelector('.not-matching-message'));
 
         this._pinInput.on(PinInput.Events.PIN_ENTERED, /** @param {number} pin */ async pin => {
             $confirmMessage.classList.add('hidden');

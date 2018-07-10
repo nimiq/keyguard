@@ -12,15 +12,21 @@ class SignTransactionWithPassphrase extends SignTransactionView {
 
         this._txRequest = txRequest;
 
-        this.$rootElement = /** @type {HTMLElement} */ (document.getElementById('app'));
-        this.$enterPassphrase = /** @type {HTMLElement} */ (document.getElementById('enter-passphrase'));
-        this.$error = /** @type {HTMLElement} */ (this.$rootElement.querySelector('#enter-passphrase #error'));
+        // set html elements
+        /** @type {HTMLDivElement} */
+        this.$rootElement = (document.getElementById('app'));
+
+        /** @type {HTMLDivElement} */
+        this.$enterPassphrase = (document.getElementById('enter-passphrase'));
+
+        /** @type {HTMLDivElement} */
+        this.$error = (this.$rootElement.querySelector('#enter-passphrase #error'));
 
         // TODO add identicons and other tx data to UI
 
+        // create components
         this._passphraseInput = new PassphraseInput();
-
-        this.$enterPassphrase.appendChild(this._passphraseInput.getElement());
+        this.$enterPassphrase.appendChild(this._passphraseInput.getElement())
 
         this._passphraseInput.on(PassphraseInput.Events.PASSPHRASE_ENTERED, this._handlePassphraseInput.bind(this));
 
