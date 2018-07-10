@@ -79,7 +79,7 @@ class Key { // eslint-disable-line no-unused-vars
      * Sign a generic message.
      *
      * @param {string | Uint8Array} message - A utf-8 string or byte array (max 255 bytes)
-     * @returns {{message: string | Uint8Array, proof: Nimiq.SignatureProof}}
+     * @returns {SignedMessageResult}
      */
     signMessage(message) {
         /**
