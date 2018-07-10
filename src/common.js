@@ -27,6 +27,7 @@ async function runKeyguard(RequestApiClass, options) { // eslint-disable-line no
         }
     });
 
+    // FIXME where to initialize? If here, does TRANSLATIONS stay global?
     I18n.initialize(TRANSLATIONS, 'en');
 
     // FIXME Set correct allowedOrigin
