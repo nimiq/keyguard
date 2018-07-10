@@ -1,10 +1,12 @@
-const TRANSLATIONS = { // eslint-disable-line no-unused-vars
+/* global I18n */
+
+const TRANSLATIONS = {
     en: {
         _language: 'English',
         loading: 'Loading...',
         'passphrase-strength': 'Strength',
         'passphrase-confirm': 'Confirm',
-        'passphrase-placeholder': 'Enter passphrase',
+        'passphrase-placeholder': 'Enter Passphrase',
         'sign-tx-wrong-passphrase': 'Wrong Passphrase, please try again',
         'sign-tx-button-enter-pin': 'Enter PIN',
         'create-choose-identicon-header1': 'Choose Your Account Avatar',
