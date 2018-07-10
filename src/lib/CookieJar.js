@@ -9,11 +9,12 @@ class CookieJar { // eslint-disable-line no-unused-vars
     }
 
     /**
-     * @param {boolean} [listFromAccountStore] - @deprecated Only for database migration
+     * @param {boolean} [listDeprecatedAccounts] - @deprecated Only for database migration
+     * @returns {KeyInfo[] | AccountInfo[]}
      */
-    static eat(listFromAccountStore) {
+    static eat(listDeprecatedAccounts) {
         // Legacy cookie
-        if (listFromAccountStore) {
+        if (listDeprecatedAccounts) {
             const match = document.cookie.match(new RegExp('accounts=([^;]+)'));
             if (match && match[1]) {
                 const decoded = decodeURIComponent(match[1]);
@@ -33,6 +34,7 @@ class CookieJar { // eslint-disable-line no-unused-vars
 
     /**
      * @param {KeyInfo[]} keys
+     * @returns {string}
      */
     static _encodeCookie(keys) {
         const str = keys.map(keyInfo => {

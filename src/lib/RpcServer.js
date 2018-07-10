@@ -1,33 +1,27 @@
 /**
- * RPC (Remote Procedure Call) Server
- * Also called COP Server (Cross-Origin-Procedure)
+ * RPC (Remote Procedure Call) Server, also called COP Server (Cross-Origin-Procedure)
  *
- * # Usage:
+ * Usage:
  * <script src="lib/rpc-server.js"></script>
+ *
  * const rpcServer = RpcServer.create(ProviderClass, 'https://allowed.origin.com');
  */
-
-/**
- * @template T
- * @typedef { {new(...args: any[]): T }} Newable */
-
 class RpcServer { // eslint-disable-line no-unused-vars
     /**
      * @param {object} clazz - The class whose methods will be made available via postMessage RPC
      * @param {string} allowedOrigin - The origin that is allowed to call this server
      * @param {string[]} whitelist
-     * @return {object}
+     * @returns {object}
      */
     static create(clazz, allowedOrigin, whitelist) {
         return new (RpcServer._generateServerClass(clazz, allowedOrigin, whitelist))();
     }
 
     /**
-     * @param {Newable<Object>} clazz - The class whose methods will be made available via postMessage RPC
+     * @param {Newable} clazz - The class whose methods will be made available via postMessage RPC
      * @param {string} allowedOrigin - The origin that is allowed to call this server
      * @param {string[]} whitelist
-     *
-     * @returns { Newable<Object>}
+     * @returns {Newable}
      */
     static _generateServerClass(clazz, allowedOrigin, whitelist) {
         const Server = class extends clazz {
@@ -49,11 +43,13 @@ class RpcServer { // eslint-disable-line no-unused-vars
              * @param {any} result
              */
             _replyTo(message, status, result) {
-                return message.source && message.source.postMessage({
-                    status,
-                    result,
-                    id: message.data.id,
-                }, message.origin);
+                if (message.source) {
+                    message.source.postMessage({
+                        status,
+                        result,
+                        id: message.data.id,
+                    }, message.origin);
+                }
             }
 
             /**
@@ -61,6 +57,15 @@ class RpcServer { // eslint-disable-line no-unused-vars
              */
             _receive(message) {
                 try {
+                    // Cannot reply to a message that has no source window
+                    if (!message.source) return;
+
+                    // Ignore messages without a command
+                    if (!message.data.command) return;
+
+                    // Ignore messages without an ID
+                    if (!message.data.id) return;
+
                     // FIXME Remove '*' option for release
                     if (this._allowedOrigin !== '*' && message.origin !== this._allowedOrigin) {
                         throw new Error('Unauthorized');
@@ -113,6 +118,7 @@ class RpcServer { // eslint-disable-line no-unused-vars
             /**
              * @param {string} command
              * @param {any[]} args
+             * @returns {any}
              */
             _invoke(command, args) {
                 return this[command](...args);

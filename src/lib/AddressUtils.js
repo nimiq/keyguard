@@ -40,7 +40,6 @@ class AddressUtils { // eslint-disable-line no-unused-vars
      * Check if a string is a valid Nimiq address
      * @param {string} str
      * @throws Throws an error if not a valid Nimiq address
-     * @returns {void}
      */
     static isUserFriendlyAddress(str) {
         str = str.replace(/\s+/g, '');
@@ -64,6 +63,7 @@ class AddressUtils { // eslint-disable-line no-unused-vars
 
     /**
      * @param {string} str
+     * @returns {boolean}
      */
     static _alphabetCheck(str) {
         str = str.toUpperCase();
@@ -75,6 +75,7 @@ class AddressUtils { // eslint-disable-line no-unused-vars
 
     /**
      * @param {string} str
+     * @returns {number}
      */
     static _ibanCheck(str) {
         const num = str.split('').map(c => {
@@ -91,6 +92,7 @@ class AddressUtils { // eslint-disable-line no-unused-vars
         return parseInt(tmp, 10);
     }
 
+    /** @type {string} */
     static get NIMIQ_ALPHABET() {
         // From Nimiq.BufferUtils.BASE32_ALPHABET.NIMIQ
         return '0123456789ABCDEFGHJKLMNPQRSTUVXY';

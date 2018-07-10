@@ -1,29 +1,25 @@
-describe('CookieJar', function () {
-    /** @type {KeyInfo[]} */
-    const KEYS = [
-        {
-            userFriendlyAddress: 'NQ60 DUNG SUCK PAPA K1UM XB4A MTLL A189 2N4C',
-            type: 1
-        },
-        {
-            userFriendlyAddress: 'NQ32 473Y R5T3 979R 325K S8UT 7E3A NRNS VBX2',
-            type: 2
-        },
-        {
-            userFriendlyAddress: 'NQ26 12H4 HMS0 RDNX 60XQ 171C SVVM X8AH B34F',
-            type: 1
-        },
-    ];
-
-    const COOKIE = '1by0NcZO6rqmHlfLIqu6UUFCRWIw2Icf8l2NJ05GIs9I5s7hqtm2ur8I1CKJI10DLbeMD2AnCzXe18hUVjI8';
-
-
-    it('can encode keys', function() {
-        expect(CookieJar._encodeCookie(KEYS)).toBe(COOKIE);
+describe('CookieJar', () => {
+    it('can encode keys', () => {
+        expect(CookieJar._encodeCookie(Dummy.keyInfo)).toBe(Dummy.keyInfoCookieEncoded);
     });
 
-    it('can decode a cookie', function() {
-        const decoded = CookieJar._decodeCookie(COOKIE);
-        expect(decoded).toEqual(KEYS);
+    it('can decode a cookie', () => {
+        const decoded = CookieJar._decodeCookie(Dummy.keyInfoCookieEncoded);
+        expect(decoded).toEqual(Dummy.keyInfo);
+    });
+
+    it('can be filled with key info', () => {
+        spyOnProperty(document, 'cookie', 'set').and.callFake((/** @type {string} */ cookie) => {
+            expect(cookie.includes(`k=${Dummy.keyInfoCookieEncoded}`)).toBe(true);
+        });
+        CookieJar.fill(Dummy.keyInfo);
+    });
+
+    it('can be eaten from', () => {
+        spyOnProperty(document, 'cookie', 'get').and.returnValue(Dummy.cookie);
+        const deprecatedAccountInfo = CookieJar.eat(/*listDeprecatedAccounts*/ true);
+        expect(deprecatedAccountInfo).toEqual(Dummy.deprecatedAccountInfo);
+        const keyInfo = CookieJar.eat();
+        expect(keyInfo).toEqual(Dummy.keyInfo);
     });
 });

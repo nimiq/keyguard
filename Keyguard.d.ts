@@ -50,3 +50,7 @@ type ExtendedTransactionRequest = BasicTransactionRequest & {
 type TransactionRequest = BasicTransactionRequest | ExtendedTransactionRequest
 
 interface Window { rpcServer: RpcServer; KeyStore: any }
+
+interface Newable {
+    new(...args: any[]): any;
+}
