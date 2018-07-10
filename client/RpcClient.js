@@ -43,6 +43,9 @@ class RpcClient { // eslint-disable-line no-unused-vars
                 reject(new Error('Connection timeout'));
             }, 10 * 1000);
 
+            /**
+             * Send 'ping' command every second, until cancelled
+             */
             const tryToConnect = () => {
                 if (connected) {
                     clearTimeout(timeoutTimer);
@@ -66,13 +69,14 @@ class RpcClient { // eslint-disable-line no-unused-vars
     /**
      * @param {Window} targetWindow
      * @param {string} targetOrigin
+     * @returns {Newable}
      * @private
      */
     static _generateClientClass(targetWindow, targetOrigin) {
         /** @type {Newable} */
         const Client = class {
             constructor() {
-                // Svub: Code smell that _targetWindow and _waiting are visible outside. Todo later!
+                // Svub: Code smell that _targetWindow and _waiting are visible outside. TODO later!
                 this._targetWindow = targetWindow;
                 this._targetOrigin = targetOrigin;
                 /** @type {Map.<number,{resolve: Function, reject: Function}>} */
@@ -94,16 +98,12 @@ class RpcClient { // eslint-disable-line no-unused-vars
                         id: this._generateRandomId(),
                     };
 
-                    // Store
+                    // Store the request resolvers
                     this._waiting.set(obj.id, { resolve, reject });
 
                     console.debug('RpcClient REQUEST', command, args);
 
                     this._targetWindow.postMessage(obj, this._targetOrigin);
-
-                    // No timeout for now, as most requests require user interactions.
-                    // TODO Maybe set timeout via parameter?
-                    // setTimeout(() => reject(new Error ('Request timeout')), 10 * 1000);
                 });
             }
 
