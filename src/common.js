@@ -5,7 +5,7 @@
 async function runKeyguard(RequestApiClass, options) { // eslint-disable-line no-unused-vars
     const defaultOptions = {
         loadNimiq: true,
-        rpcWhitelist: ['request'],
+        whitelist: ['request'],
     };
 
     options = Object.assign(defaultOptions, options);
@@ -28,5 +28,5 @@ async function runKeyguard(RequestApiClass, options) { // eslint-disable-line no
     });
 
     // FIXME Set correct allowedOrigin
-    window.rpcServer = RpcServer.create(RequestApiClass, '*', options.rpcWhitelist);
+    window.rpcServer = RpcServer.create(RequestApiClass, '*', options.whitelist);
 }

@@ -49,6 +49,11 @@ type ExtendedTransactionRequest = BasicTransactionRequest & {
 
 type TransactionRequest = BasicTransactionRequest | ExtendedTransactionRequest
 
+type MessageRequest = {
+    message: string | Uint8Array
+    signer: string
+}
+
 type SignedMessageResult = {
     message: string | Uint8Array
     proof: Nimiq.SignatureProof
@@ -56,6 +61,18 @@ type SignedMessageResult = {
 
 interface Window { rpcServer: RpcServer; KeyStore: any }
 
+interface Window {
+    rpcServer: RpcServerInstance
+    KeyStore: any
+}
+
 interface Newable {
     new(...args: any[]): any;
+}
+
+interface RpcServerInstance {}
+
+interface RpcClientInstance {
+    call(command: string, args?: any[]): Promise<any>
+    close(): void
 }

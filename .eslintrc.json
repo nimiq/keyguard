@@ -18,7 +18,9 @@
     "EncryptionType": false,
     "I18n": false,
     "Key": false,
+    "KeyguardClient": false,
     "KeyStore": false,
+    "RpcClient": false,
     "RpcServer": false,
     "TransactionType": false,
     "Utf8Tools": false,
@@ -53,7 +55,7 @@
     "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
     "no-underscore-dangle": ["off"],
     "prefer-destructuring": ["off"],
-    "no-console": ["warn"],
+    "no-console": ["off"],
     "no-warning-comments": ["warn"],
     "require-jsdoc-except/require-jsdoc": ["error", {
       "require": {

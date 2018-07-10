@@ -5,10 +5,10 @@
   "scripts": {
     "test": "karma start",
     "typecheck": "tsc",
-    "lint": "eslint src",
-    "lintfix": "eslint --fix src",
-    "pr": "tsc && eslint src && karma start",
-    "watch": "tsc-watch --pretty --onSuccess \"eslint --fix src\""
+    "lint": "eslint src client",
+    "lintfix": "eslint --fix src client",
+    "pr": "tsc && eslint src client && karma start",
+    "watch": "tsc-watch --pretty --onSuccess \"eslint --fix src client\""
   },
   "repository": {
     "type": "git",
