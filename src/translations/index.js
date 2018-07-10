@@ -9,6 +9,9 @@ const TRANSLATIONS = { // eslint-disable-line no-unused-vars
         'sign-tx-button-enter-pin': 'Enter PIN',
         'create-choose-identicon-header1': 'Choose Your Account Avatar',
         'create-set-passphrase-header1': 'Set a Pass Phrase',
+        'create-set-passphrase-header2': 'Please enter a Pass Phrase to secure your account.',
+        'create-set-passphrase-warning': `The Pass Phrase is [strong]not[/strong] an alternative for your 24 Recovery
+            Words!`,
     },
     de: {
         _language: 'Deutsch',
@@ -20,5 +23,8 @@ const TRANSLATIONS = { // eslint-disable-line no-unused-vars
         'sign-tx-button-enter-pin': 'PIN eingeben',
         'create-choose-identicon-header1': 'Wähle einen Avatar für dein Konto',
         'create-set-passphrase-header1': 'Lege eine Passphrase fest',
+        'create-set-passphrase-header2': 'Bitte gib eine Passphrase ein, um dein Konto zu sichern.',
+        'create-set-passphrase-warning': `Die Passphrase ist [strong]keine[/strong] Alternative für deine 24
+            Wiederherstellungswörter!`,
     },
 };
