@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy"
+          content="default-src 'self' 'unsafe-eval' https://cdn.nimiq.com;
+          img-src http: https: blob: data:; child-src 'self' blob:; style-src 'self';">
+
+    <script src="https://cdn.nimiq.com/web-offline.js"></script>
+    <script src="../../../errors.js"></script>
+    <script src="../../../lib/EncryptionType.js"></script>
+    <script src="../../../lib/Key.js"></script>
+    <script src="../../../lib/KeyStoreIndexeddb.js"></script>
+    <script src="../../../lib/RpcServer.js"></script>
+    <script src="../../../lib/MnemonicPhrase.js"></script>
+    <script src="../../../lib/Iqons.js"></script>
+    <script src="../../../lib/AddressUtils.js"></script>
+    <script src="../../../lib/AutoComplete.js"></script>
+    <script src="../../../lib/AnimationUtils.js"></script>
+    <script src="../../../lib/BrowserDetection.js"></script>
+    <script src="../../../lib/I18n.js"></script>
+    <script src="../../../translations/index.js"></script>
+    <script src="../../../common.js"></script>
+    <script src="../../../components/Identicon.js"></script>
+    <script src="../../../components/PrivacyAgent.js"></script>
+    <script src="../../../components/RecoveryWordsInput.js"></script>
+    <script src="../../../components/RecoveryWordsInputField.js"></script>
+    <script src="../../../components/PassphraseInput.js"></script>
+    <script src="../../PopupApi.js"></script>
+    <script src="ImportWordsApi.js"></script>
+    <script src="index.js"></script>
+
+    <link href="../../../nimiq-style.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../common.css">
+    <link rel="stylesheet" href="../../../components/PrivacyAgent.css">
+    <link rel="stylesheet" href="../../../components/RecoveryWordsInput.css">
+    <link rel="stylesheet" href="../../../components/RecoveryWordsInputField.css">
+    <link rel="stylesheet" href="../../../components/PassphraseInput.css">
+</head>
+<body>
+    <div id="app">
+        <!-- privacy agent -->
+        <div id="privacy" class="page">
+            <h1>Import Recovery Words</h1>
+            <div class="grow"></div>
+        </div>
+
+        <!-- enter Recovery Words  -->
+        <div id="words" class="page">
+            <h1>Import Recovery Words</h1>
+            <div class="grow"></div>
+        </div>
+
+        <!-- enter Passphrase to encrypt key  -->
+        <div id="passphrase" class="page">
+            <h1>Import Recovery Words</h1>
+            <div class="grow"></div>
+        </div>
+
+        <!-- Default and loading screen -->
+        <div id="loading" class="page">
+            <div class="loading-animation"></div>
+            <span data-i18n="loading">Loading...</span>
+        </div>
+
+    </div>
+</body>
+</html>
