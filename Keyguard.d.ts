@@ -61,11 +61,6 @@ type SignedMessageResult = {
 
 interface Window { rpcServer: RpcServer; KeyStore: any }
 
-type SignedMessageResult = {
-    message: string | Uint8Array
-    proof: Nimiq.SignatureProof
-}
-
 interface Window {
     rpcServer: RpcServerInstance
     KeyStore: any
