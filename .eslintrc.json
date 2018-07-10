@@ -3,6 +3,9 @@
       "browser": true
   },
   "extends": "airbnb-base",
+  "plugins": [
+    "require-jsdoc-except"
+  ],
   "globals": {
     "Nimiq": false,
     "runKeyguard": false,
@@ -15,8 +18,10 @@
     "EncryptionType": false,
     "I18n": false,
     "Key": false,
+    "KeyguardClient": false,
     "KeyStore": false,
     "MnemonicPhrase": false,
+    "RpcClient": false,
     "RpcServer": false,
     "TransactionType": false,
     "Utf8Tools": false,
@@ -52,7 +57,37 @@
     "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
     "no-underscore-dangle": ["off"],
     "prefer-destructuring": ["off"],
-    "no-console": ["warn"],
-    "no-warning-comments": ["warn"]
+    "no-console": ["off"],
+    "no-warning-comments": ["warn"],
+    "require-jsdoc-except/require-jsdoc": ["error", {
+      "require": {
+        "FunctionDeclaration": true,
+        // Class methods witout an existing JSDoc block are ignored
+        "MethodDefinition": false,
+        "ClassDeclaration": false,
+        "ArrowFunctionExpression": true,
+        "FunctionExpression": true
+      },
+      "ignore": ["constructor"]
+    }],
+    "valid-jsdoc": ["error", {
+      "prefer": {
+        "arg": "param",
+        "argument": "param",
+        "class": "constructor",
+        "return": "returns",
+        "virtual": "abstract"
+      },
+      "preferType": {
+        "object": "object",
+        "string": "string",
+        "number": "number"
+      },
+      "requireParamType": true,
+      "requireReturn": false, // Do not require @return for <void>
+      "requireReturnType": true,
+      "requireParamDescription": false,
+      "requireReturnDescription": false
+    }]
   }
 }

@@ -38,7 +38,7 @@ class Key { // eslint-disable-line no-unused-vars
      * @param {Uint8Array | string} buf - Encrypted keypair
      * @param {Uint8Array | string} passphrase - Passphrase, as byte array or ASCII string
      * @param {EncryptionType} type
-     * @returns {Promise.<Key>}
+     * @returns {Promise<Key>}
      */
     static async loadEncrypted(buf, passphrase, type) {
         if (typeof buf === 'string') {
@@ -78,14 +78,48 @@ class Key { // eslint-disable-line no-unused-vars
     /**
      * Sign a generic message.
      *
-     * @param {string} message - A utf-8 string
-     * @returns {{message: string, signature: Nimiq.Signature}}
+     * @param {string | Uint8Array} message - A utf-8 string or byte array (max 255 bytes)
+     * @returns {SignedMessageResult}
      */
     signMessage(message) {
-        message = `nimiq_msg_${message}`;
-        const msgBytes = Utf8Tools.stringToUtf8ByteArray(message);
-        const signature = Nimiq.Signature.create(this.keyPair.privateKey, this.keyPair.publicKey, msgBytes);
-        return { message, signature };
+        /**
+         * Adding a prefix to the message makes the calculated signature recognisable as
+         * a Nimiq specific signature. This prevents misuse where a malicious request can
+         * sign arbitrary data (e.g. a transaction) and use the signature to impersonate
+         * the victim. (https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sign)
+         */
+        const prefix = 'Nimiq Signed Message:\n';
+        const prefixBytes = new Nimiq.SerialBuffer(Utf8Tools.stringToUtf8ByteArray(prefix));
+        const prefixLength = prefixBytes.length;
+
+        /** @type {Nimiq.SerialBuffer} */
+        let msgBytes;
+        if (typeof message === 'string') {
+            msgBytes = new Nimiq.SerialBuffer(Utf8Tools.stringToUtf8ByteArray(message));
+        } else {
+            msgBytes = new Nimiq.SerialBuffer(message);
+        }
+
+        const msgLength = msgBytes.length;
+
+        if (msgLength > 255) {
+            throw new Error('Message must not exceed 255 bytes');
+        }
+
+        const bufLength = 1 /* prefixBytes length value */
+            + prefixLength
+            + 1 /* msgBytes length value */
+            + msgLength;
+
+        // Construct buffer
+        const buf = new Nimiq.SerialBuffer(bufLength);
+        buf.writeUint8(prefixLength);
+        buf.write(prefixBytes);
+        buf.writeUint8(msgLength);
+        buf.write(msgBytes);
+
+        const proof = this._makeSignatureProof(buf);
+        return { message, proof };
     }
 
     /**
@@ -207,7 +241,7 @@ class Key { // eslint-disable-line no-unused-vars
     /**
      * @param {Uint8Array | string} passphrase
      * @param {Uint8Array | string} [unlockKey]
-     * @returns {Promise.<Nimiq.SerialBuffer>}
+     * @returns {Promise<Nimiq.SerialBuffer>}
      */
     async exportEncrypted(passphrase, unlockKey) {
         if (typeof passphrase === 'string') {
@@ -228,12 +262,14 @@ class Key { // eslint-disable-line no-unused-vars
         return this._keyPair.serialize();
     }
 
+    /** @type {boolean} */
     get isLocked() {
         return this.keyPair.isLocked;
     }
 
     /**
      * @param {Uint8Array | string} key
+     * @returns {Promise<void>}
      */
     async lock(key) {
         if (typeof key === 'string') {
@@ -249,6 +285,7 @@ class Key { // eslint-disable-line no-unused-vars
 
     /**
      * @param {Uint8Array | string} key
+     * @returns {Promise<void>}
      */
     async unlock(key) {
         if (typeof key === 'string') {
@@ -281,11 +318,13 @@ class Key { // eslint-disable-line no-unused-vars
 
     /**
      * The public key of the Key owner
+     * @type {Nimiq.PublicKey}
      */
     get publicKey() {
         return this._keyPair.publicKey;
     }
 
+    /** @type {Nimiq.KeyPair} */
     get keyPair() {
         return this._keyPair;
     }

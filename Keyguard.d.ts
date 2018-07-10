@@ -53,9 +53,24 @@ type CreateRequest = {
     type: EncryptionType
 }
 
-type KeyguardRequest = TransactionRequest | CreateRequest
+type MessageRequest = {
+    message: string | Uint8Array
+    signer: string
+}
+
+type KeyguardRequest = TransactionRequest | CreateRequest | MessageRequest
+
+type SignedMessageResult = {
+    message: string | Uint8Array
+    proof: Nimiq.SignatureProof
+}
 
 interface Window { rpcServer: RpcServer; KeyStore: any }
+
+interface Window {
+    rpcServer: RpcServerInstance
+    KeyStore: any
+}
 
 interface Newable {
     new(...args: any[]): any;
@@ -63,4 +78,11 @@ interface Newable {
 
 type ElementEvent = Event & {
     target: Element
+}
+
+interface RpcServerInstance {}
+
+interface RpcClientInstance {
+    call(command: string, args?: any[]): Promise<any>
+    close(): void
 }

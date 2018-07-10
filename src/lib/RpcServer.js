@@ -11,7 +11,7 @@ class RpcServer { // eslint-disable-line no-unused-vars
      * @param {object} clazz - The class whose methods will be made available via postMessage RPC
      * @param {string} allowedOrigin - The origin that is allowed to call this server
      * @param {string[]} whitelist
-     * @returns {object}
+     * @returns {RpcServerInstance}
      */
     static create(clazz, allowedOrigin, whitelist) {
         return new (RpcServer._generateServerClass(clazz, allowedOrigin, whitelist))();
@@ -28,7 +28,7 @@ class RpcServer { // eslint-disable-line no-unused-vars
             constructor() {
                 super();
                 this._allowedOrigin = allowedOrigin;
-                this._whitelist = whitelist;
+                this._whitelist = whitelist.concat(['ping']);
                 this._receive = this._receive.bind(this);
                 window.addEventListener('message', this._receive);
             }
@@ -43,11 +43,15 @@ class RpcServer { // eslint-disable-line no-unused-vars
              * @param {any} result
              */
             _replyTo(message, status, result) {
-                return message.source && message.source.postMessage({
-                    status,
-                    result,
-                    id: message.data.id,
-                }, message.origin);
+                console.debug('RpcServer REPLY', result);
+
+                if (message.source) {
+                    message.source.postMessage({
+                        status,
+                        result,
+                        id: message.data.id,
+                    }, message.origin);
+                }
             }
 
             /**
@@ -74,11 +78,13 @@ class RpcServer { // eslint-disable-line no-unused-vars
                     // Test if request calls an existing/whitelisted method with the right number of arguments
                     const requestedMethod = this[message.data.command];
                     if (this._whitelist.indexOf(message.data.command) < 0 || !requestedMethod) {
-                        throw new Error('Unknown command');
+                        throw new Error(`Unknown command: ${message.data.command}`);
                     }
                     if (requestedMethod.length < args.length) {
                         throw new Error(`Too many arguments passed: ${message}`);
                     }
+
+                    console.debug('RpcServer ACCEPT', message.data);
 
                     const result = this._invoke(message.data.command, args);
 
@@ -116,6 +122,7 @@ class RpcServer { // eslint-disable-line no-unused-vars
             /**
              * @param {string} command
              * @param {any[]} args
+             * @returns {any}
              */
             _invoke(command, args) {
                 return this[command](...args);

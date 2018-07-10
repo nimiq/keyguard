@@ -38,9 +38,38 @@ declare namespace Nimiq {
     class BufferUtils {
         static fromAscii(buf: string): Uint8Array
         static fromHex(buf: string): Uint8Array
+        static toHex(buf: Uint8Array): string
     }
 
-    class SerialBuffer extends Uint8Array {}
+    class SerialBuffer extends Uint8Array {
+        constructor(bufferOrArrayOrLength: any)
+        subarray(start: number, end: number): Uint8Array
+        readPos: number
+        writePos: number
+        reset(): void
+        read(length: number): Uint8Array
+        write(array: any): void
+        readUint8(): number
+        writeUint8(value: number): void
+        readUint16(): number
+        writeUint16(value: number): void
+        readUint32(): number
+        writeUint32(value: number): void
+        readUint64(): number
+        writeUint64(value: number): void
+        readVarInt(): number
+        writeVarInt(value: number): void
+        static varUintSize(value: number): number
+        readFloat64(): number
+        writeFloat64(value: number): void
+        readString(length: number): string
+        writeString(value: string, length: number): void
+        readPaddedString(length: number): string
+        writePaddedString(value: string, length: number): void
+        readVarLengthString(): string
+        writeVarLengthString(value: string): void
+        static varLengthStringSize(value: string): number
+    }
 
     class Synchronizer {}
     class MultiSynchronizer {}
@@ -223,7 +252,7 @@ declare namespace Nimiq {
         static verifyTransaction(transaction: Transaction): boolean
         static singleSig(publicKey: PublicKey, signature: Signature): SignatureProof
         static multiSig(signerKey: PublicKey, publicKeys: PublicKey[], signature: Signature): SignatureProof
-        static unserialize(buf: SerialBuffer): SignatureProof
+        static unserialize(buf: Uint8Array): SignatureProof
         serialize(): SerialBuffer
         verify(address: Address | null, data: Uint8Array): boolean
         publicKey: PublicKey

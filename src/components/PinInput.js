@@ -78,6 +78,7 @@ class PinInput extends Nimiq.Observable {
         window.removeEventListener('keypress', this._handleKeyboardInput);
     }
 
+    /** @type {boolean} */
     get unlocking() {
         return !!this._unlocking;
     }

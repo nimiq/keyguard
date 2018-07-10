@@ -10,6 +10,7 @@ class CookieJar { // eslint-disable-line no-unused-vars
 
     /**
      * @param {boolean} [listDeprecatedAccounts] - @deprecated Only for database migration
+     * @returns {KeyInfo[] | AccountInfo[]}
      */
     static eat(listDeprecatedAccounts) {
         // Legacy cookie
@@ -33,6 +34,7 @@ class CookieJar { // eslint-disable-line no-unused-vars
 
     /**
      * @param {KeyInfo[]} keys
+     * @returns {string}
      */
     static _encodeCookie(keys) {
         const str = keys.map(keyInfo => {
