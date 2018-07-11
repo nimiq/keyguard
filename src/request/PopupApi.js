@@ -25,8 +25,8 @@
 class PopupApi { // eslint-disable-line no-unused-vars
     constructor() {
         if (window.self !== window.top) {
-            // popup api may not run in a frame
-            throw new Error('illegal use');
+            // PopupAPI may not run in a frame
+            throw new Error('Illegal use');
         }
 
         /** @type {Function} */
