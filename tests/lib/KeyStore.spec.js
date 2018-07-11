@@ -1,4 +1,14 @@
 describe('KeyStore', () => {
+
+    beforeEach(async () => {
+        await Dummy.createDummyKeyStore();
+    });
+
+    afterEach(async () => {
+        await KeyStore.instance.close();
+        await Dummy.deleteDatabase(Dummy.DUMMY_KEY_DATABASE_NAME);
+    });
+
     it('is a singleton', () => {
         const instance1 = KeyStore.instance;
         const instance2 = KeyStore.instance;
@@ -117,6 +127,9 @@ describe('KeyStore', () => {
     });
 
     it('can migrate accounts from deprecated AccountStore', async () => {
+        // Handle extern AccountStore
+        await Dummy.createDummyAccountStore();
+
         spyOnProperty(document, 'cookie', 'set').and.callFake((/** @type {string} */ cookie) => {
             expect(cookie.startsWith('migrate') || cookie.startsWith('accounts')).toBe(true);
             expect(cookie.endsWith('expires=Thu, 01 Jan 1970 00:00:01 GMT')).toBe(true);
@@ -136,5 +149,9 @@ describe('KeyStore', () => {
         ]);
         expect(key1).toEqual(Dummy.keyDatabaseEntries[0]);
         expect(key2).toEqual(Dummy.keyDatabaseEntries[1]);
+
+        // Handle extern AccountStore
+        await AccountStore.instance.close();
+        await Dummy.deleteDatabase(Dummy.DUMMY_ACCOUNT_DATABASE_NAME);
     });
 });
