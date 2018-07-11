@@ -2,6 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <title>Nimiq Keyguard</title>
 
     <script defer src="https://cdn.nimiq.com/web-offline.js"></script>
     <script defer src="../../errors.js"></script>
@@ -57,18 +58,18 @@
             <div class="transaction">
                 <div class="center">
                     <div id="sender-identicon"></div>
-                    <i class="arrow material-icons">arrow_forward</i>
+                    <i class="arrow icon"><img src='data:image/svg+xml,<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="24px" height="24px" viewBox="0 0 24 24" enable-background="new 0 0 24 24" xml:space="preserve" fill="white"><path d="M8.59,16.59L13.17,12L8.59,7.41L10,6l6,6l-6,6L8.59,16.59z"/><path fill="none" d="M0,0h24v24H0V0z"/></svg>'></i>
                     <div id="recipient-identicon"></div>
                 </div>
 
-                <div class="center">
-                    <span class="value" id="value"></span> NIM
+                <div class="center value">
+                    <span id="value"></span>&nbsp;NIM
                 </div>
 
                 <div class="row">
                     <label data-i18n="tx-from">From</label>
                     <div class="row-data">
-                        <div class="label" id="sender-label"></div>
+                        <div class="label display-none" id="sender-label"></div>
                         <div class="address" id="sender-address"></div>
                     </div>
                 </div>
@@ -76,7 +77,7 @@
                 <div class="row">
                     <label data-i18n="tx-to">To</label>
                     <div class="row-data">
-                        <div class="label" id="recipient-label"></div>
+                        <div class="label display-none" id="recipient-label"></div>
                         <div class="address" id="recipient-address"></div>
                     </div>
                 </div>
@@ -91,10 +92,11 @@
                 <div class="fee-section display-none row">
                     <label data-i18n="tx-fee">Fee</label>
                     <div class="row-data">
-                        <div class="fee" id="fee"></div>
+                        <span id="fee"></span>&nbsp;NIM
                     </div>
                 </div>
             </div>
+            <div class="grow"></div>
             <button data-i18n="sign-tx-button-enter-pin">Enter PIN</button>
         </div>
 
