@@ -55,6 +55,8 @@
     // "emitDecoratorMetadata": true,         /* Enables experimental support for emitting type metadata for decorators. */
   },
   "exclude": [
-    "karma.conf.js"
+    "karma.conf.js",
+    "./instrumented",
+    "coverage"
   ]
 }

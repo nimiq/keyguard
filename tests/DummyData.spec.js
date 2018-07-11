@@ -97,12 +97,11 @@ Dummy.accountStore = new AccountStore(Dummy.DUMMY_ACCOUNT_DATABASE_NAME);
     }
 
     beforeAll(async () => {
-        Nimiq.GenesisConfig.test();
-        await Promise.all([
-            Nimiq.WasmHelper.doImportBrowser(),
-            createDummyAccountStore()
-        ]);
-
+            Nimiq.GenesisConfig.test();
+            await Promise.all([
+                Nimiq.WasmHelper.doImportBrowser(),
+                createDummyAccountStore()
+            ]);
         AccountStore._instance = Dummy.accountStore;
     });
 
