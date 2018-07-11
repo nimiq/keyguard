@@ -21,6 +21,11 @@ class KeyStore {
         return this._instance;
     }
 
+    constructor() {
+        /** @type {Promise<IDBDatabase>|null} */
+        this._dbPromise = null;
+    }
+
     /**
      * @returns {Promise.<IDBDatabase>}
      * @private

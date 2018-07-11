@@ -25,6 +25,7 @@ class AccountStore {
     constructor(dbName = AccountStore.ACCOUNT_DATABASE) {
         this._dbName = dbName;
         this._dropped = false;
+        /** @type {Promise<IDBDatabase>|null} */
         this._dbPromise = null;
     }
 
