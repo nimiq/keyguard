@@ -9,7 +9,7 @@
     "lintfix": "eslint --fix src client tools",
     "checkdeps": "node tools/dependencyValidator.js",
     "test-coverage": "karma start karma.conf.coverage.js",
-    "coverage": "nyc instrument ./src ./instrumented && nyc npm run test-coverage",
+    "coverage": "nyc instrument ./src ./instrumented && npm run test-coverage",
     "pr": "npm run typecheck && npm run lint && npm run test && npm run checkdeps",
     "watch": "tsc-watch --pretty --onSuccess \"npm run watchonsuccess\"",
     "watchonsuccess": "npm run lintfix && npm run checkdeps"
@@ -39,6 +39,7 @@
     "karma": "^2.0.4",
     "karma-chrome-launcher": "^2.2.0",
     "karma-coverage": "^1.1.2",
+    "karma-istanbuljs-reporter": "^0.2.0",
     "karma-jasmine": "^1.1.2",
     "nyc": "^12.0.2",
     "tsc-watch": "^1.0.22",
