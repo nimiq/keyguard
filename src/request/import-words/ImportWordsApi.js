@@ -1,6 +1,12 @@
+/* global PopupApi */
 /* global RecoveryWordsInput */
+/* global PassphraseInput */
 /* global MnemonicPhrase */
 /* global PrivacyAgent */
+/* global Nimiq */
+/* global Key */
+/* global EncryptionType */
+/* global KeyStore */
 class ImportWordsApi extends PopupApi {
     constructor() {
         super();

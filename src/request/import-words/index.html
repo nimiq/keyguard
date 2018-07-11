@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy"
+          content="default-src 'self' 'unsafe-eval' https://cdn.nimiq.com;
+          img-src http: https: blob: data:; child-src 'self' blob:; style-src 'self';">
+
+    <script src="https://cdn.nimiq.com/web-offline.js" defer></script>
+    <script src="../../errors.js" defer></script>
+    <script src="../../lib/EncryptionType.js" defer></script>
+    <script src="../../lib/Key.js" defer></script>
+    <script src="../../lib/RpcServer.js" defer></script>
+    <script src="../../lib/MnemonicPhrase.js" defer></script>
+    <script src="../../lib/AddressUtils.js" defer></script>
+    <script src="../../lib/AutoComplete.js" defer></script>
+    <script src="../../lib/AnimationUtils.js" defer></script>
+    <script src="../../lib/BrowserDetection.js" defer></script>
+    <script src="../../lib/CookieJar.js" defer></script>
+    <script src="../../lib/AccountStore.js" defer></script>
+    <script src="../../lib/Utf8Tools.js" defer></script>
+    <script src="../../lib/KeyStore.js" defer></script>
+    <script src="../../lib/I18n.js" defer></script>
+    <script src="../../translations/index.js" defer></script>
+    <script src="../../common.js" defer></script>
+    <script src="../../components/PrivacyAgent.js" defer></script>
+    <script src="../../components/RecoveryWordsInput.js" defer></script>
+    <script src="../../components/RecoveryWordsInputField.js" defer></script>
+    <script src="../../components/PassphraseInput.js" defer></script>
+    <script src="../PopupApi.js" defer></script>
+    <script src="ImportWordsApi.js" defer></script>
+    <script src="index.js" defer></script>
+
+    <link rel="stylesheet" href="../../nimiq-style.css">
+    <link rel="stylesheet" href="../../common.css">
+    <link rel="stylesheet" href="../../components/PrivacyAgent.css">
+    <link rel="stylesheet" href="../../components/RecoveryWordsInput.css">
+    <link rel="stylesheet" href="../../components/RecoveryWordsInputField.css">
+    <link rel="stylesheet" href="../../components/PassphraseInput.css">
+</head>
+<body>
+    <div id="app">
+        <!-- privacy agent -->
+        <div id="privacy" class="page">
+            <h1>Import Recovery Words</h1>
+            <div class="grow"></div>
+        </div>
+
+        <!-- enter Recovery Words  -->
+        <div id="words" class="page">
+            <h1>Import Recovery Words</h1>
+            <div class="grow"></div>
+        </div>
+
+        <!-- enter Passphrase to encrypt key  -->
+        <div id="passphrase" class="page">
+            <h1>Import Recovery Words</h1>
+            <div class="grow"></div>
+        </div>
+
+        <!-- Default and loading screen -->
+        <div id="loading" class="page">
+            <div class="loading-animation"></div>
+            <span data-i18n="loading">Loading...</span>
+        </div>
+
+    </div>
+</body>
+</html>

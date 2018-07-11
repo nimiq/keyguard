@@ -23,7 +23,7 @@
 
     document.querySelector('#import-words').addEventListener('click', async () => {
 
-        const keyguard = window.open('../src/request/import/words');
+        const keyguard = window.open('../src/request/import-words');
 
         // We need this check because we call the rpcServer object directly and not via RPC Client
         function checkIfKeyguardReady(resolve) {
