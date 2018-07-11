@@ -140,10 +140,16 @@ class Key { // eslint-disable-line no-unused-vars
         }
 
         const transaction = new Nimiq.BasicTransaction(
-            this.keyPair.publicKey, recipient, value, fee, validityStartHeight,
+            this.keyPair.publicKey,
+            recipient,
+            value,
+            fee,
+            validityStartHeight,
         );
+
         const proof = this._makeSignatureProof(transaction.serializeContent());
         transaction.proof = proof.serialize();
+
         return transaction;
     }
 
@@ -159,9 +165,12 @@ class Key { // eslint-disable-line no-unused-vars
      */
     createTransactionWithMessage(recipient, value, fee, validityStartHeight, message) {
         return this.createExtendedTransaction(
-            this.publicKey.toAddress(), null,
-            recipient, null,
-            value, fee, validityStartHeight, message,
+            this.publicKey.toAddress(), Nimiq.Account.Type.BASIC,
+            recipient, Nimiq.Account.Type.BASIC,
+            value,
+            fee,
+            validityStartHeight,
+            message,
         );
     }
 
@@ -170,7 +179,7 @@ class Key { // eslint-disable-line no-unused-vars
      *
      * @param {Nimiq.Address | string} sender - Address of the transaction sending vesting contract
      * @param {number} value - Number of Satoshis to send
-     * @param {number} fee Number of Satoshis to donate to the Miner
+     * @param {number} fee - Number of satoshis to set as fee
      * @param {number} validityStartHeight - The validityStartHeight for the transaction
      * @param {string} [message] - Text to add to the transaction
      * @returns {Nimiq.ExtendedTransaction} A prepared and signed Transaction object (to be sent to the network)
@@ -178,8 +187,11 @@ class Key { // eslint-disable-line no-unused-vars
     createVestingPayoutTransaction(sender, value, fee, validityStartHeight, message) {
         return this.createExtendedTransaction(
             sender, Nimiq.Account.Type.VESTING,
-            this.publicKey.toAddress(), null,
-            value, fee, validityStartHeight, message,
+            this.publicKey.toAddress(), Nimiq.Account.Type.BASIC,
+            value,
+            fee,
+            validityStartHeight,
+            message,
         );
     }
 
@@ -191,7 +203,7 @@ class Key { // eslint-disable-line no-unused-vars
      * @param {Nimiq.Address | string} recipient - Address of the transaction receiver
      * @param {Nimiq.Account.Type | null} [recipientType]
      * @param {number} value - Number of Satoshis to send
-     * @param {number} fee - Number of Satoshis to donate to the Miner
+     * @param {number} fee - Number of satoshis to set as fee
      * @param {number} validityStartHeight - The validityStartHeight for the transaction
      * @param {Uint8Array | string} [extraData] - Data or utf-8 text to add to the transaction
      * @param {boolean} [isContractCreation]
@@ -200,7 +212,11 @@ class Key { // eslint-disable-line no-unused-vars
     createExtendedTransaction(
         sender, senderType,
         recipient, recipientType,
-        value, fee, validityStartHeight, extraData, isContractCreation,
+        value,
+        fee,
+        validityStartHeight,
+        extraData,
+        isContractCreation,
     ) {
         if (typeof sender === 'string') {
             sender = Key.getUnfriendlyAddress(sender);

@@ -4,6 +4,7 @@
 /* global AccountStore */
 /* global EncryptionType */
 /* global BrowserDetection */
+/* global KeyNotFoundError */
 
 /**
  * Usage:
@@ -88,6 +89,7 @@ class KeyStore {
                 .objectStore(KeyStore.DB_KEY_STORE_NAME)
                 .get(userFriendlyAddress);
             getTx.onsuccess = () => {
+                if (!getTx.result) reject(new KeyNotFoundError());
                 resolve(getTx.result);
             };
             getTx.onerror = reject;

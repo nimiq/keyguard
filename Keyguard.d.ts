@@ -22,29 +22,32 @@ type AccountEntry = AccountInfo & {
 type BasicTransactionRequest = {
     type: TransactionType.BASIC
     sender: string
+    senderLabel?: string
     recipient: string
+    recipientLabel?: string
     signer: string
     value: number
     fee: number
     network: string
     validityStartHeight: number
+    mockKeyType?: EncryptionType
 }
 
 type SignedTransactionResult = {
+    type: TransactionType.BASIC | TransactionType.EXTENDED
     sender: string,
-    senderPubKey: Nimiq.SerialBuffer,
+    signerPubKey: Nimiq.SerialBuffer,
     recipient: string,
     value: number,
     fee: number,
     validityStartHeight: number,
     signature: Nimiq.SerialBuffer,
-    extraData: string,
+    extraData?: string,
     hash: string
 }
 
 type ExtendedTransactionRequest = BasicTransactionRequest & {
    type: TransactionType.EXTENDED
-   extraData: string
 }
 
 type TransactionRequest = BasicTransactionRequest | ExtendedTransactionRequest

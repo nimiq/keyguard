@@ -11,13 +11,28 @@
 <body>
         <button onclick="keyguard.list()">list</button>
         <button onclick="keyguard.create()">create</button>
-        <button onclick="keyguard.signTransaction()">sign-transaction</button>
+        <button onclick="signTransaction()">sign-transaction</button>
 
         <script src="../src/lib/EncryptionType.js"></script>
         <script src="RpcClient.js"></script>
         <script src="KeyguardClient.js"></script>
         <script>
             window.keyguard = new KeyguardClient();
+
+            function signTransaction(type = 'basic') {
+                keyguard.signTransaction({
+                    type,
+                    sender: 'NQ47 FS55 KNXG 25XL 37N8 LD78 1DDH 8CS0 QBNF',
+                    signer: 'NQ47 FS55 KNXG 25XL 37N8 LD78 1DDH 8CS0 QBNF',
+                    senderLabel: 'Thomas the Tank Engine',
+                    recipient: 'NQ94 VESA PKTA 9YQ0 XKGC HVH0 Q9DF VSFU STSP',
+                    value: 100,
+                    fee: 0.00138,
+                    network: 'test',
+                    validityStartHeight: 100000,
+                    mockKeyType: EncryptionType.LOW,
+                });
+            }
         </script>
 </body>
 </html>

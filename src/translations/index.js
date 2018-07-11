@@ -5,7 +5,9 @@ const TRANSLATIONS = {
         'passphrase-strength': 'Strength',
         'passphrase-confirm': 'Confirm',
         'passphrase-placeholder': 'Enter Passphrase',
-        'sign-tx-wrong-passphrase': 'Wrong Passphrase, please try again',
+        'sign-tx-header': 'Authorize Transaction',
+        'sign-tx-byline': 'Please confirm the following transaction:',
+        'sign-tx-error-wrong-passphrase': 'Wrong Passphrase, please try again',
         'sign-tx-button-enter-pin': 'Enter PIN',
         'create-choose-identicon-header1': 'Choose Your Account Avatar',
         'create-set-passphrase-header1': 'Set a Passphrase',
@@ -13,6 +15,10 @@ const TRANSLATIONS = {
         'create-set-passphrase-warning': `The Passphrase is [strong]not[/strong] an alternative for your 24 Recovery
             Words!`,
         'recovery-words-title': 'Recovery Words',
+        'tx-from': 'From',
+        'tx-to': 'To',
+        'tx-message': 'Message',
+        'tx-fee': 'Fee',
     },
     de: {
         _language: 'Deutsch',
@@ -20,7 +26,9 @@ const TRANSLATIONS = {
         'passphrase-strength': 'Stärke',
         'passphrase-confirm': 'Bestätigen',
         'passphrase-placeholder': 'Passphrase eingeben',
-        'sign-tx-wrong-passphrase': 'Falsche Passphrase, bitte versuche es nochmal',
+        'sign-tx-header': 'Überweisung Authorisieren',
+        'sign-tx-byline': 'Bitte bestätige die folgende Überweisung:',
+        'sign-tx-error-wrong-passphrase': 'Falsche Passphrase, bitte versuche es nochmal',
         'sign-tx-button-enter-pin': 'PIN eingeben',
         'create-choose-identicon-header1': 'Wähle einen Avatar für dein Konto',
         'create-set-passphrase-header1': 'Lege eine Passphrase fest',
@@ -28,6 +36,10 @@ const TRANSLATIONS = {
         'create-set-passphrase-warning': `Die Passphrase ist [strong]keine[/strong] Alternative für deine 24
             Wiederherstellungswörter!`,
         'recovery-words-title': 'Wiederherstellungswörter',
+        'tx-from': 'Von',
+        'tx-to': 'An',
+        'tx-message': 'Nachricht',
+        'tx-fee': 'Gebühr',
     },
 };
 
