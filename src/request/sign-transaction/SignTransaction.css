@@ -1,0 +1,52 @@
+.transaction {
+    display: flex;
+    flex-direction: inherit;
+}
+
+.transaction .center {
+    flex-direction: row;
+}
+
+.transaction .identicon {
+    width: 15rem;
+    height: 17.5rem;
+}
+
+.transaction .arrow {
+    margin: 0 2rem;
+}
+
+.transaction .arrow img {
+    height: 4rem;
+    width: 4rem;
+}
+
+.transaction .value {
+    margin: 2.25rem 0;
+    font-size: 3.25rem;
+}
+
+.transaction .row {
+    margin: 1.75rem 0;
+    align-items: flex-start;
+}
+
+.transaction label {
+    display: inline-block;
+    width: 10rem;
+    /* text-align: left; */
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    font-size: 1.75rem;
+    font-weight: bold;
+    opacity: 0.76;
+}
+
+.transaction .label {
+    margin-bottom: 1.25rem;
+}
+
+.transaction .address {
+    padding: 1rem 0;
+    display: inline;
+}

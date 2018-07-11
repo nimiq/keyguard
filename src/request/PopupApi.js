@@ -44,7 +44,7 @@ class PopupApi { // eslint-disable-line no-unused-vars
         I18n.translateDom();
 
         window.addEventListener('beforeunload', () => {
-            this.reject(new Error('Keyguard popup closed'));
+            // this.reject(new Error('Keyguard popup closed'));
         });
     }
 

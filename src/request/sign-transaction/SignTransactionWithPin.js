@@ -51,14 +51,17 @@ class SignTransactionWithPin extends SignTransaction {
         this.$enterPinPage = (this.$rootElement.querySelector('#enter-pin'));
 
         // Set data
-        const si = new Identicon(txRequest.sender);
-        this.$senderIdenticon.appendChild(si.getElement());
+        new Identicon(txRequest.sender, this.$senderIdenticon);
+        new Identicon(txRequest.recipient, this.$recipientIdenticon);
 
-        const ri = new Identicon(txRequest.recipient);
-        this.$senderIdenticon.appendChild(ri.getElement());
-
-        if (txRequest.senderLabel) this.$senderLabel.textContent = txRequest.senderLabel;
-        if (txRequest.recipientLabel) this.$recipientLabel.textContent = txRequest.recipientLabel;
+        if (txRequest.senderLabel) {
+            this.$senderLabel.classList.remove('display-none');
+            this.$senderLabel.textContent = txRequest.senderLabel;
+        }
+        if (txRequest.recipientLabel) {
+            this.$recipientLabel.classList.remove('display-none');
+            this.$recipientLabel.textContent = txRequest.recipientLabel;
+        }
 
         this.$senderAddress.textContent = txRequest.sender;
         this.$recipientAddress.textContent = txRequest.recipient;
