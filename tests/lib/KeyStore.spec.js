@@ -5,7 +5,7 @@ describe('KeyStore', () => {
         expect(instance1).toBe(instance2);
     });
 
-    it('connection can be opened and closed', async () => {
+    it('can open and close a connection', async () => {
         const db = await KeyStore.instance.connect();
         expect(KeyStore.instance._dbPromise).toBeTruthy();
         expect(db.name).toBe(Dummy.DUMMY_KEY_DATABASE_NAME);
@@ -13,7 +13,7 @@ describe('KeyStore', () => {
         expect(KeyStore.instance._dbPromise).toBeNull();
     });
 
-    it('can get a plain key', async () => {
+    it('can get plain keys', async () => {
         const [key1, key2] = await Promise.all([
             KeyStore.instance._getPlain(Dummy.keyInfo[0].userFriendlyAddress),
             KeyStore.instance._getPlain(Dummy.keyInfo[1].userFriendlyAddress)
@@ -22,7 +22,7 @@ describe('KeyStore', () => {
         expect(key2).toEqual(Dummy.keyDatabaseEntries[1]);
     });
 
-    it('can get and decrypt a key', async () => {
+    it('can get and decrypt keys', async () => {
         const [key1, key2] = await Promise.all([
             KeyStore.instance.get(Dummy.keyInfo[0].userFriendlyAddress, Dummy.encryptionPassword),
             KeyStore.instance.get(Dummy.keyInfo[1].userFriendlyAddress, Dummy.encryptionPassword)
@@ -33,7 +33,7 @@ describe('KeyStore', () => {
         expect(Nimiq.BufferUtils.equals(key2.exportPlain(), Dummy.keyPairs[1])).toBe(true);
     });
 
-    it('can get the type of a key', async () => {
+    it('can get the type of keys', async () => {
         const [type1, type2] = await Promise.all([
             KeyStore.instance.getType(Dummy.keyInfo[0].userFriendlyAddress),
             KeyStore.instance.getType(Dummy.keyInfo[1].userFriendlyAddress)
@@ -68,7 +68,7 @@ describe('KeyStore', () => {
         expect(removedKeys[0]).toBeUndefined();
         expect(removedKeys[1]).toBeUndefined();
 
-        // readd the keys to restore the state before the test
+        // re-add the keys to restore the state before the test
         await Promise.all([
             KeyStore.instance.putPlain(Dummy.keyDatabaseEntries[0]),
             KeyStore.instance.putPlain(Dummy.keyDatabaseEntries[1])
@@ -90,7 +90,7 @@ describe('KeyStore', () => {
         currentKeys = await KeyStore.instance.list();
         expect(currentKeys.length).toBe(1);
 
-        // add an unencrypted key
+        // encrypt and put key in DB
         const dummyKey2 = new Key(Nimiq.KeyPair.unserialize(new Nimiq.SerialBuffer(Dummy.keyPairs[1])),
             Dummy.keyInfo[1].type);
         await KeyStore.instance.put(dummyKey2, Dummy.encryptionPassword);

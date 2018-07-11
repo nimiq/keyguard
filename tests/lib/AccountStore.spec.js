@@ -5,7 +5,7 @@ describe('AccountStore', () => {
         expect(instance1).toBe(instance2);
     });
 
-    it('connection can be opened and closed', async () => {
+    it('can open and close a connection', async () => {
         const db = await AccountStore.instance.connect();
         expect(AccountStore.instance._dbPromise).toBeTruthy();
         expect(db.name).toBe(Dummy.DUMMY_ACCOUNT_DATABASE_NAME);
@@ -22,4 +22,6 @@ describe('AccountStore', () => {
         const accounts = await AccountStore.instance.dangerousListPlain();
         expect(accounts).toEqual(Dummy.deprecatedAccountDatabaseEntries);
     });
+
+    // TODO add test for drop
 });

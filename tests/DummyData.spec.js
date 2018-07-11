@@ -35,7 +35,7 @@ Dummy.keyDatabaseEntries = [
 /** @type {AccountInfo[]} */
 Dummy.deprecatedAccountInfo = Dummy.keyInfo.map((keyInfo, i) => ({
     userFriendlyAddress: keyInfo.userFriendlyAddress,
-    type: keyInfo.type === EncryptionType.LOW? 'low' : 'high',
+    type: keyInfo.type === EncryptionType.LOW ? 'low' : 'high',
     label: `Dummy account ${i}`
 }));
 
