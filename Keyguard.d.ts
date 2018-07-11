@@ -76,7 +76,7 @@ interface Newable {
     new(...args: any[]): any;
 }
 
-type ElementEvent = Event & {
+type DOMEvent = Event & {
     target: Element
 }
 

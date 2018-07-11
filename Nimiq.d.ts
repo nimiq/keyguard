@@ -146,7 +146,6 @@ declare namespace Nimiq {
         publicKey: PublicKey
         privateKey: PrivateKey
         isLocked: boolean
-        generate(): KeyPair
         static unserialize(buffer: SerialBuffer): KeyPair
         static fromEncrypted(buffer: SerialBuffer, passphraseOrPin: Uint8Array): Promise<KeyPair>
         static generate(): KeyPair

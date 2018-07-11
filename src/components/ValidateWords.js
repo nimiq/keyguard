@@ -172,7 +172,7 @@ class ValidateWords extends Nimiq.Observable {
     }
 
     /**
-     * @param {ElementEvent} e
+     * @param {DOMEvent} e
      * @private
      */
     _onClick(e) {
