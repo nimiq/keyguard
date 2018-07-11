@@ -1,18 +1,16 @@
 class ChooseIdenticon extends Nimiq.Observable {
     /**
-     * @param {EncryptionType} encryptionType
      * @param {HTMLElement} [$el]
      */
-    constructor(encryptionType, $el) {
+    constructor($el) {
         super();
 
         this.generateIdenticons = this.generateIdenticons.bind(this);
         this._clearSelection = this._clearSelection.bind(this);
 
         this.$el = ChooseIdenticon._createElement($el);
-        this._encryptionType = encryptionType;
 
-        /** @type {{ [address: string]: Key}} */
+        /** @type {{ [address: string]: Nimiq.KeyPair}} */
         this._volatileKeys = {};
 
         this.$identicons = /** @type {HTMLElement} */ (this.$el.querySelector('.identicons'));
@@ -64,20 +62,20 @@ class ChooseIdenticon extends Nimiq.Observable {
     generateIdenticons() {
         this.$el.classList.remove('active');
 
-        /** @type {{ [address: string]: Key}} */
-        const keys = {};
+        /** @type {{ [address: string]: Nimiq.KeyPair}} */
+        const keyPairs = {};
 
         for (let i = 0; i < 7; i++) {
             const keyPair = Nimiq.KeyPair.generate();
-            const key = new Key(keyPair, this._encryptionType);
-            keys[key.userFriendlyAddress] = key;
+            const address = keyPair.publicKey.toAddress().toUserFriendlyAddress();
+            keyPairs[address] = keyPair;
         }
 
-        this._volatileKeys = keys;
+        this._volatileKeys = keyPairs;
 
         this.$identicons.textContent = '';
 
-        Object.keys(keys).forEach(address => {
+        Object.keys(keyPairs).forEach(address => {
             const identicon = new Identicon(address);
             const $identicon = identicon.getElement();
             this.$identicons.appendChild($identicon);
@@ -103,7 +101,7 @@ class ChooseIdenticon extends Nimiq.Observable {
         }
 
         this.$confirmButton.addEventListener('click', () => this.fire(
-            ChooseIdenticon.EVENTS.CHOOSE_IDENTICON,
+            ChooseIdenticon.Events.CHOOSE_IDENTICON,
             this._volatileKeys[address],
         ));
 
@@ -122,6 +120,6 @@ class ChooseIdenticon extends Nimiq.Observable {
     }
 }
 
-ChooseIdenticon.EVENTS = {
+ChooseIdenticon.Events = {
     CHOOSE_IDENTICON: 'choose-identicon',
 };

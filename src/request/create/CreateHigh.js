@@ -34,7 +34,7 @@ class CreateHigh {
         const $passphraseConfirm = (this.$setPassphrase.querySelector('.confirm'));
 
         // create components
-        this._chooseIdenticon = new ChooseIdenticon(request.type, this.$chooseIdenticon);
+        this._chooseIdenticon = new ChooseIdenticon(this.$chooseIdenticon);
         this._recoveryWords = new RecoveryWords(this.$recoveryWords);
         this._validateWords = new ValidateWords(this.$validateWords);
         this._passphraseSetter = new PassphraseInput(true, $passphraseSetter);
@@ -42,11 +42,11 @@ class CreateHigh {
 
         // wire up logic
         this._chooseIdenticon.on(
-            ChooseIdenticon.EVENTS.CHOOSE_IDENTICON,
-            /** @param {Key} key */
-            key => {
-                this._selectedKey = key;
-                const keyAsUInt8 = Nimiq.BufferUtils.fromHex(key.keyPair.privateKey.toHex());
+            ChooseIdenticon.Events.CHOOSE_IDENTICON,
+            /** @param {Nimiq.KeyPair} keyPair */
+            keyPair => {
+                this._selectedKeyPair = keyPair;
+                const keyAsUInt8 = Nimiq.BufferUtils.fromHex(keyPair.privateKey.toHex());
                 this._recoveryWords.privateKey = keyAsUInt8;
                 this._validateWords.privateKey = keyAsUInt8;
                 this._validateWords.reset();
@@ -62,17 +62,13 @@ class CreateHigh {
             window.location.hash = CreateHigh.Pages.RECOVERY_WORDS;
         });
 
-        this._validateWords.on(ValidateWords.Events.BACK, () => {
-            window.location.hash = CreateHigh.Pages.RECOVERY_WORDS;
-        });
-
         this._validateWords.on(ValidateWords.Events.VALIDATED, () => {
             window.location.hash = CreateHigh.Pages.SET_PASSPHRASE;
         });
 
         this._passphraseSetter.on(
             PassphraseInput.Events.PASSPHRASE_ENTERED,
-            /** @param {string} passphrase */passphrase => {
+            /** @param {string} passphrase */ passphrase => {
                 this._passphrase = passphrase;
                 this._passphraseSetter.reset();
                 $passphraseConfirm.classList.remove('display-none');
@@ -90,7 +86,8 @@ class CreateHigh {
                     $passphraseSetter.classList.remove('display-none');
                 } else {
                     document.body.classList.add('loading');
-                    this._resolve(await KeyStore.instance.put(this._selectedKey, passphrase));
+                    const key = new Key(this._selectedKeyPair, request.type);
+                    this._resolve(await KeyStore.instance.put(key, passphrase));
                 }
             },
         );

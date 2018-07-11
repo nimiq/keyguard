@@ -1,18 +1,18 @@
 class LanguagePicker { // eslint-disable-line no-unused-vars
     /**
-     * @param {HTMLSelectElement} [el]
+     * @param {HTMLSelectElement} [$el]
      */
-    constructor(el) {
-        this.$el = el || this._createElement();
+    constructor($el) {
+        this.$el = $el || LanguagePicker._createElement($el);
     }
 
     /**
      * Produces a select element that the user can chose an available language from.
-     *
+     * @param {HTMLSelectElement} [$el]
      * @returns {HTMLSelectElement}
      */
-    _createElement() {
-        const element = document.createElement('select');
+    static _createElement($el) {
+        const $element = $el || document.createElement('select');
 
         I18n.availableLanguages().forEach(language => {
             const label = I18n.translatePhrase('_language', language);
@@ -25,15 +25,15 @@ class LanguagePicker { // eslint-disable-line no-unused-vars
                 option.setAttribute('selected', 'selected');
             }
 
-            element.appendChild(option);
+            $element.appendChild(option);
         });
 
-        element.classList.add('i18n-language-picker');
-        element.addEventListener('change', () => {
-            I18n.switchLanguage(element.value);
+        $element.classList.add('i18n-language-picker');
+        $element.addEventListener('change', () => {
+            I18n.switchLanguage($element.value);
         });
 
-        return element;
+        return $element;
     }
 
     /**

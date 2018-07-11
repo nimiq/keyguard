@@ -46,6 +46,12 @@
     padding-top: 16px;
 }
 
+.identicon {
+    display: block;
+    height: 140px;
+    width: 140px;
+}
+
 .identicon img {
     height: 100%;
     width: 100%;
@@ -55,15 +61,10 @@
     padding-bottom: 28px;
 }
 
-x-identicon {
-    display: block;
-    height: 140px;
-    width: 140px;
-}
-
-.x-route-container {
+/* TODO do we still need this?
+.route-container {
     min-height: calc(100vh - 120px);
-}
+}*/
 
 .warning {
     background-color: var(--warning-color);
@@ -99,7 +100,7 @@ x-identicon {
 }
 
 /* make code blocks look like keys on the keyboard */
-code {
+kbd {
     font-family: monospace;
     font-size: 15px;
     border: 1px solid white;

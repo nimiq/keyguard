@@ -25,21 +25,23 @@ class CreateLow {
         const $notMatchingMessage = /** @type {HTMLDivElement} */ (this.$setPin.querySelector('.not-matching-message'));
 
         // create components
-        this._chooseIdenticon = new ChooseIdenticon(request.type, this.$chooseIdenticon);
+        this._chooseIdenticon = new ChooseIdenticon(this.$chooseIdenticon);
         this._pinInput = new PinInput($pinInput);
 
         // wire up logic
         this._chooseIdenticon.on(
-            ChooseIdenticon.EVENTS.CHOOSE_IDENTICON,
-            /** @param {Key} key */
-            key => {
-                this._selectedKey = key;
+            ChooseIdenticon.Events.CHOOSE_IDENTICON,
+            /** @param {Nimiq.KeyPair} keyPair */
+            keyPair => {
+                this._selectedKeyPair = keyPair;
                 window.location.hash = CreateLow.Pages.SET_PIN;
                 this._pinInput.open();
             },
         );
 
-        this._pinInput.on(PinInput.Events.PIN_ENTERED, /** @param {number} pin */ async pin => {
+        this._pinInput.on(
+            PinInput.Events.PIN_ENTERED,
+            /** @param {number} pin */ async pin => {
             $confirmMessage.classList.add('hidden');
             $notMatchingMessage.classList.add('hidden');
 
@@ -53,7 +55,8 @@ class CreateLow {
                 $notMatchingMessage.classList.remove('hidden');
             } else {
                 document.body.classList.add('loading');
-                this._resolve(await KeyStore.instance.put(this._selectedKey, pin.toString()));
+                const key = new Key(this._selectedKeyPair, request.type);
+                this._resolve(await KeyStore.instance.put(key, pin.toString()));
             }
         });
     }

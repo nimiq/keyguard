@@ -26,7 +26,9 @@ class RecoveryWords extends Nimiq.Observable { // eslint-disable-line no-unused-
                 at a <strong>SAFE and SECRET</strong> place to recover this account in the future.
             </h2>
             <div class="grow"></div>
-            <div class="words-container"></div>
+            <div class="words-container">
+                <div class="title" data-i18n="recovery-words-title">Recovery Words</div>
+            </div>
             <div class="info-box">
                 <i class="info-icon"></i>
                 <p class="info-text">Move your mouse over the numbers or tap them to reveal each word.</p>
@@ -34,7 +36,7 @@ class RecoveryWords extends Nimiq.Observable { // eslint-disable-line no-unused-
             <div class="spacing-bottom center warning">
                 <strong>Anyone with access to these words can steal all your funds!</strong>
             </div>
-            <x-grow></x-grow>
+            <div class="grow"></div>
             <button>Continue</button>`;
 
         return $el;

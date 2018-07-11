@@ -6,7 +6,8 @@ class Identicon { // eslint-disable-line no-unused-vars
     constructor(address, $el) {
         this._address = address;
 
-        this.$el = this._createElement($el);
+        this.$el = Identicon._createElement($el);
+        this.$imgEl = this.$el.firstChild;
 
         this._updateIqon();
     }
@@ -30,13 +31,11 @@ class Identicon { // eslint-disable-line no-unused-vars
      * @param {HTMLDivElement} [$el]
      * @returns {HTMLDivElement}
      */
-    _createElement($el) {
+    static _createElement($el) {
         const $element = $el || document.createElement('div');
         const imageElement = document.createElement('img');
         $element.classList.add('identicon');
         $element.appendChild(imageElement);
-
-        this.$imgEl = imageElement;
 
         return $element;
     }

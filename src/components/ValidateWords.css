@@ -43,7 +43,7 @@
     color: var(--secondary-cta-color);
 }
 
-x-wordlist {
+#validate-words .word-list {
     display: block;
     height: 180px;
     max-width: 368px;

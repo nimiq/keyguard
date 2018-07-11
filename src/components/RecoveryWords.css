@@ -55,8 +55,7 @@
     display: none;
 }
 
-.recovery-words .words-container:before {
-    content: 'Recovery Words';
+.recovery-words .words-container .title {
     display: block;
     position: absolute;
     left: 50%;
@@ -74,11 +73,6 @@
     background-color: black;
     padding-left: 16px;
     transition: opacity 300ms;
-}
-
-.recovery-words .words-container.x-entry .x-word {
-    animation: x-recovery-phrase 300ms;
-    animation-fill-mode: backwards;
 }
 
 @keyframes words-container {

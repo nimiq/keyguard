@@ -458,7 +458,7 @@ h1,
     padding: 0;
 }
 
-h1+h2, h2.secondary {
+h1 + h2, h2.secondary {
     font-size: 1.875rem;
     font-weight: 400;
     text-align: center;
@@ -512,14 +512,14 @@ button.secondary {
     color: #5c5c5c;
 }
 
-.secondary+button,
-.secondary+[button] {
+.secondary + button,
+.secondary + [button] {
     margin-top: 5rem;
 }
 
-.secondary+.secondary,
-button+.secondary,
-.button+.secondary {
+.secondary + .secondary,
+button + .secondary,
+.button + .secondary {
     margin-top: 3rem;
     margin-bottom: 1rem;
 }
@@ -541,7 +541,7 @@ li {
 
     h2 {}
 
-    h1+h2 {
+    h1 + h2 {
         font-size: 1.625rem;
         padding-bottom: 1rem;
     }
