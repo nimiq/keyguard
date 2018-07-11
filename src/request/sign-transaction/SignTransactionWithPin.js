@@ -51,8 +51,8 @@ class SignTransactionWithPin extends SignTransaction {
         this.$enterPinPage = (this.$rootElement.querySelector('#enter-pin'));
 
         // Set data
-        new Identicon(txRequest.sender, this.$senderIdenticon);
-        new Identicon(txRequest.recipient, this.$recipientIdenticon);
+        new Identicon(txRequest.sender, this.$senderIdenticon); // eslint-disable-line no-new
+        new Identicon(txRequest.recipient, this.$recipientIdenticon); // eslint-disable-line no-new
 
         if (txRequest.senderLabel) {
             this.$senderLabel.classList.remove('display-none');
