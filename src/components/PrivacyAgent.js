@@ -1,3 +1,6 @@
+/* global Nimiq */
+/* global I18n */
+
 class PrivacyAgent extends Nimiq.Observable { // eslint-disable-line no-unused-vars
     /**
      * @param {HTMLElement} [element]

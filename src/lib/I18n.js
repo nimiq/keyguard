@@ -1,4 +1,5 @@
 /* global TRANSLATIONS */ // eslint-disable-line no-unused-vars
+/* global Nimiq */
 
 /**
  * @typedef {{[language: string]: {[id: string]: string}}} dict

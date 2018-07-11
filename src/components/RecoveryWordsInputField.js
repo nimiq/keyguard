@@ -1,3 +1,5 @@
+/* global Nimiq */
+/* global I18n */
 /* global AutoComplete */
 /* global MnemonicPhrase */
 /* global AnimationUtils */

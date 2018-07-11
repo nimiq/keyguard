@@ -1,3 +1,5 @@
+/* global Nimiq */
+/* global I18n */
 /* global RecoveryWordsInputField */
 /* global AnimationUtils */
 class RecoveryWordsInput extends Nimiq.Observable {
