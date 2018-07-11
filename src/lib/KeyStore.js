@@ -36,10 +36,7 @@ class KeyStore {
         this._dbPromise = new Promise((resolve, reject) => {
             const request = window.indexedDB.open(KeyStore.DB_NAME, KeyStore.DB_VERSION);
 
-            request.onsuccess = () => {
-                resolve(request.result);
-            };
-
+            request.onsuccess = () => resolve(request.result);
             request.onerror = () => reject(request.error);
 
             request.onupgradeneeded = event => {
@@ -221,9 +218,7 @@ class KeyStore {
      * @deprecated Only for database migration
      */
     async doMigrateAccountsToKeys() {
-        const accountStore = AccountStore.instance;
-
-        const keys = await accountStore.dangerousListPlain();
+        const keys = await AccountStore.instance.dangerousListPlain();
 
         keys.forEach(async key => {
             const keyEntry = {
@@ -236,7 +231,7 @@ class KeyStore {
         });
 
         // FIXME Uncomment after/for testing (and also adapt KeyStoreIndexeddb.spec.js)
-        // await accountStore.drop();
+        // await AccountStore.instance.drop();
 
         if (BrowserDetection.isIos() || BrowserDetection.isSafari()) {
             // Delete migrate cookie

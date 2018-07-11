@@ -1,4 +1,13 @@
 describe('AccountStore', () => {
+
+    beforeEach(async () => {
+        await Dummy.createDummyAccountStore();
+    });
+
+    afterEach(async () => {
+        await AccountStore.instance.close();
+    });
+
     it('is a singleton', () => {
         const instance1 = AccountStore.instance;
         const instance2 = AccountStore.instance;
@@ -8,7 +17,7 @@ describe('AccountStore', () => {
     it('can open and close a connection', async () => {
         const db = await AccountStore.instance.connect();
         expect(AccountStore.instance._dbPromise).toBeTruthy();
-        expect(db.name).toBe(Dummy.DUMMY_ACCOUNT_DATABASE_NAME);
+        expect(db.name).toBe(AccountStore.ACCOUNT_DATABASE);
         await AccountStore.instance.close();
         expect(AccountStore.instance._dbPromise).toBeNull();
     });

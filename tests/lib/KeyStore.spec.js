@@ -1,4 +1,13 @@
 describe('KeyStore', () => {
+
+    beforeEach(async () => {
+        await Dummy.createDummyKeyStore();
+    });
+
+    afterEach(async () => {
+        await KeyStore.instance.close();
+    });
+
     it('is a singleton', () => {
         const instance1 = KeyStore.instance;
         const instance2 = KeyStore.instance;
@@ -8,7 +17,7 @@ describe('KeyStore', () => {
     it('can open and close a connection', async () => {
         const db = await KeyStore.instance.connect();
         expect(KeyStore.instance._dbPromise).toBeTruthy();
-        expect(db.name).toBe(Dummy.DUMMY_KEY_DATABASE_NAME);
+        expect(db.name).toBe(KeyStore.DB_NAME);
         await KeyStore.instance.close();
         expect(KeyStore.instance._dbPromise).toBeNull();
     });
@@ -67,15 +76,13 @@ describe('KeyStore', () => {
         ]);
         expect(removedKeys[0]).toBeUndefined();
         expect(removedKeys[1]).toBeUndefined();
-
-        // re-add the keys to restore the state before the test
-        await Promise.all([
-            KeyStore.instance.putPlain(Dummy.keyDatabaseEntries[0]),
-            KeyStore.instance.putPlain(Dummy.keyDatabaseEntries[1])
-        ]);
     });
 
     it('can add and update keys', async () => {
+        // TODO Add 3rd and 4th keypair dummy data, so we can
+        // run this test with those, instead of having to
+        // remove the keys first
+
         // first clear database
         await Promise.all([
             KeyStore.instance.remove(Dummy.keyInfo[0].userFriendlyAddress),
@@ -109,14 +116,12 @@ describe('KeyStore', () => {
         // encryption of keys is not deterministic, thus reencrypted key bytes differ from Dummy.encryptedKeyPairs[1]
         let plainKey2 = await KeyStore.instance._getPlain(Dummy.keyInfo[1].userFriendlyAddress);
         expect(plainKey2.encryptedKeyPair).not.toEqual(Dummy.encryptedKeyPairs[1]);
-
-        // update the key2 database entry with the original Dummy.keyDatabaseEntries[1]
-        await KeyStore.instance.putPlain(Dummy.keyDatabaseEntries[1]);
-        plainKey2 = await KeyStore.instance._getPlain(Dummy.keyInfo[1].userFriendlyAddress);
-        expect(plainKey2.encryptedKeyPair).toEqual(Dummy.encryptedKeyPairs[1]);
     });
 
     it('can migrate accounts from deprecated AccountStore', async () => {
+        // Handle extern AccountStore
+        await Dummy.createDummyAccountStore();
+
         spyOnProperty(document, 'cookie', 'set').and.callFake((/** @type {string} */ cookie) => {
             expect(cookie.startsWith('migrate') || cookie.startsWith('accounts')).toBe(true);
             expect(cookie.endsWith('expires=Thu, 01 Jan 1970 00:00:01 GMT')).toBe(true);
@@ -136,5 +141,8 @@ describe('KeyStore', () => {
         ]);
         expect(key1).toEqual(Dummy.keyDatabaseEntries[0]);
         expect(key2).toEqual(Dummy.keyDatabaseEntries[1]);
+
+        // Handle extern AccountStore
+        await AccountStore.instance.close();
     });
 });

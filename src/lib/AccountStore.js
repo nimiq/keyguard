@@ -44,9 +44,12 @@ class AccountStore {
             };
 
             request.onerror = () => reject(request.error);
-            request.onupgradeneeded = () => {
-                this._dropped = true;
-                reject(new Error('Account database does not exist'));
+            request.onupgradeneeded = event => {
+                if (event.oldVersion < 1) {
+                    // Version 1 is the first version of the database.
+                    this._dropped = true;
+                    reject(new Error('Account database does not exist'));
+                }
             };
         });
 
