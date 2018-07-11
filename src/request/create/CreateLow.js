@@ -42,23 +42,24 @@ class CreateLow {
         this._pinInput.on(
             PinInput.Events.PIN_ENTERED,
             /** @param {number} pin */ async pin => {
-            $confirmMessage.classList.add('hidden');
-            $notMatchingMessage.classList.add('hidden');
+                $confirmMessage.classList.add('hidden');
+                $notMatchingMessage.classList.add('hidden');
 
-            if (!this._pin) {
-                this._pin = pin;
-                this._pinInput.reset();
-                $confirmMessage.classList.remove('hidden');
-            } else if (this._pin !== pin) {
-                this._pinInput.onPinIncorrect();
-                this._pin = null;
-                $notMatchingMessage.classList.remove('hidden');
-            } else {
-                document.body.classList.add('loading');
-                const key = new Key(this._selectedKeyPair, request.type);
-                this._resolve(await KeyStore.instance.put(key, pin.toString()));
-            }
-        });
+                if (!this._pin) {
+                    this._pin = pin;
+                    this._pinInput.reset();
+                    $confirmMessage.classList.remove('hidden');
+                } else if (this._pin !== pin) {
+                    this._pinInput.onPinIncorrect();
+                    this._pin = null;
+                    $notMatchingMessage.classList.remove('hidden');
+                } else {
+                    document.body.classList.add('loading');
+                    const key = new Key(this._selectedKeyPair, request.type);
+                    this._resolve(await KeyStore.instance.put(key, pin.toString()));
+                }
+            },
+        );
     }
 
     run() {
