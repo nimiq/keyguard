@@ -21,17 +21,18 @@ let hasMissingScripts = false;
 let hasUnneededScripts = false;
 
 requests.forEach(/** @param {string} request */ request => {
-    // Find API class
-    const apiFile = funcs.find(`src/request/${request}`, 'Api.js')[0];
-    // console.log("apiFile:", apiFile);
+    // Find entry file
+    const entryFile = funcs.find(`src/request/${request}`, 'index.js')[0];
+    // console.log("entryFile:", entryFile);
 
-    if (!apiFile) throw new Error(`Request >${request}< has no API class file`);
+    if (!entryFile) throw new Error(`Request >${request}< has no index.js file`);
 
     // Collect API dependencies
-    const deps = funcs.findDependencies(apiFile, class2Path, [funcs.stripExtension(apiFile)]);
+    const deps = funcs.findDependencies(entryFile, class2Path, ['index']);
     // console.log("deps:", deps);
 
     const relativeDepsPaths = deps.map(dep => {
+        if (dep === 'index') return 'index.js';
         const file = class2Path.get(dep);
         return file
             .replace(`src/request/${request}/`, '')
@@ -62,7 +63,7 @@ requests.forEach(/** @param {string} request */ request => {
     // console.log(unneededScripts);
     if (unneededScripts.length) {
         hasUnneededScripts = true;
-        console.warn('\x1b[33m%s\x1b[0m', `WARN: Unneeded scripts in ${request}:`);
+        console.warn('\x1b[31m%s\x1b[0m', `Error: Unneeded scripts in ${request}:`);
         console.log(unneededScripts);
     }
 

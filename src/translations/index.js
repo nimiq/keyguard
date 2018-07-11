@@ -1,14 +1,18 @@
-/* global I18n */
-
-const TRANSLATIONS = {
+const TRANSLATIONS = { // eslint-disable-line no-unused-vars
     en: {
         _language: 'English',
         loading: 'Loading...',
         'passphrase-strength': 'Strength',
         'passphrase-confirm': 'Confirm',
         'passphrase-placeholder': 'Enter passphrase',
-        'sign-tx-wrong-passphrase': 'Wrong passphrase, please try again',
+        'sign-tx-wrong-passphrase': 'Wrong Passphrase, please try again',
         'sign-tx-button-enter-pin': 'Enter PIN',
+        'create-choose-identicon-header1': 'Choose Your Account Avatar',
+        'create-set-passphrase-header1': 'Set a Passphrase',
+        'create-set-passphrase-header2': 'Please enter a Passphrase to secure your account.',
+        'create-set-passphrase-warning': `The Pass Phrase is [strong]not[/strong] an alternative for your 24 Recovery
+            Words!`,
+        'recovery-words-title': 'Recovery Words',
     },
     de: {
         _language: 'Deutsch',
@@ -18,7 +22,11 @@ const TRANSLATIONS = {
         'passphrase-placeholder': 'Passphrase eingeben',
         'sign-tx-wrong-passphrase': 'Falsche Passphrase, bitte versuche es nochmal',
         'sign-tx-button-enter-pin': 'PIN eingeben',
+        'create-choose-identicon-header1': 'Wähle einen Avatar für dein Konto',
+        'create-set-passphrase-header1': 'Lege eine Passphrase fest',
+        'create-set-passphrase-header2': 'Bitte gib eine Passphrase ein, um dein Konto zu sichern.',
+        'create-set-passphrase-warning': `Die Passphrase ist [strong]keine[/strong] Alternative für deine 24
+            Wiederherstellungswörter!`,
+        'recovery-words-title': 'Wiederherstellungswörter',
     },
 };
-
-I18n.initialize(TRANSLATIONS, 'en');

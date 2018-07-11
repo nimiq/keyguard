@@ -38,7 +38,7 @@ class PopupApi { // eslint-disable-line no-unused-vars
     /**
      * Method to be called by the Keyguard client via RPC
      *
-     * @param {object} request
+     * @param {KeyguardRequest} request
      */
     async request(request) {
         /**
@@ -61,7 +61,7 @@ class PopupApi { // eslint-disable-line no-unused-vars
     /**
      * Overwritten by each request's API class
      *
-     * @param {any} request
+     * @param {KeyguardRequest} request
      * @abstract
      */
     onRequest(request) { // eslint-disable-line no-unused-vars

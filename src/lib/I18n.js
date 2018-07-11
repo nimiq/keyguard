@@ -53,7 +53,12 @@ class I18n { // eslint-disable-line no-unused-vars
             translateElements(`i18n-${tag}`, (element, translation) => element.setAttribute(tag, translation));
         };
 
-        translateElements('i18n', (element, translation) => { element.textContent = translation; });
+        translateElements('i18n', (element, translation) => {
+            const doc = this.parser.parseFromString(translation, 'text/html');
+            const noHtml = /** @type {string} */ (doc.body.textContent);
+            const withMarkup = noHtml.replace('[strong]', '<strong>').replace('[/strong]', '</strong>');
+            element.innerHTML = withMarkup;
+        });
         translateAttribute('value');
         translateAttribute('placeholder');
     }
@@ -143,5 +148,13 @@ class I18n { // eslint-disable-line no-unused-vars
     static get fallbackLanguage() {
         if (!this._fallbackLanguage) throw new Error('I18n not initialized');
         return this._fallbackLanguage;
+    }
+
+    /** @returns {DOMParser} */
+    static get parser() {
+        /** @type {DOMParser} */
+        this._parser = this._parser || new DOMParser();
+
+        return this._parser;
     }
 }

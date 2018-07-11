@@ -3,27 +3,22 @@
 class Identicon { // eslint-disable-line no-unused-vars
     /**
      * @param {string} [address]
-     * @param {HTMLImageElement} [el]
+     * @param {HTMLDivElement} [$el]
      */
-    constructor(address, el) {
+    constructor(address, $el) {
         this._address = address;
 
-        /** @type {HTMLImageElement} */
-        this.$el = el || this.getElement();
+        this.$el = Identicon._createElement($el);
+        this.$imgEl = this.$el.firstChild;
 
         this._updateIqon();
     }
 
     /**
-     * @returns {HTMLImageElement}
+     * @returns {HTMLDivElement}
      */
     getElement() {
-        if (this.$el) return this.$el;
-
-        const element = document.createElement('img');
-        element.classList.add('identicon');
-
-        return element;
+        return this.$el;
     }
 
     /**
@@ -34,13 +29,26 @@ class Identicon { // eslint-disable-line no-unused-vars
         this._updateIqon();
     }
 
+    /**
+     * @param {HTMLDivElement} [$el]
+     * @returns {HTMLDivElement}
+     */
+    static _createElement($el) {
+        const $element = $el || document.createElement('div');
+        const imageElement = document.createElement('img');
+        $element.classList.add('identicon');
+        $element.appendChild(imageElement);
+
+        return $element;
+    }
+
     _updateIqon() {
         if (this._address) {
             Iqons.toDataUrl(this._address).then(url => {
-                this.$el.src = url;
+                /** @type {HTMLImageElement} */ (this.$imgEl).src = url;
             });
         } else {
-            this.$el.src = Iqons.placeholderToDataUrl();
+            /** @type {HTMLImageElement} */ (this.$imgEl).src = Iqons.placeholderToDataUrl();
         }
     }
 }

@@ -2,8 +2,7 @@
 /* global TransactionType */
 /* global KeyStore */
 /* global Utf8Tools */
-
-class SignTransactionView extends Nimiq.Observable { // eslint-disable-line no-unused-vars
+class SignTransaction { // eslint-disable-line no-unused-vars
     /**
      * Decrypt key and use it to sign a transaction constructed with the data from txRequest.
      *

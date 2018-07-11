@@ -49,10 +49,16 @@ type ExtendedTransactionRequest = BasicTransactionRequest & {
 
 type TransactionRequest = BasicTransactionRequest | ExtendedTransactionRequest
 
+type CreateRequest = {
+    type: EncryptionType
+}
+
 type MessageRequest = {
     message: string | Uint8Array
     signer: string
 }
+
+type KeyguardRequest = TransactionRequest | CreateRequest | MessageRequest
 
 type SignedMessageResult = {
     message: string | Uint8Array
@@ -68,6 +74,10 @@ interface Window {
 
 interface Newable {
     new(...args: any[]): any;
+}
+
+type DOMEvent = Event & {
+    target: Element
 }
 
 interface RpcServerInstance {}

@@ -1,0 +1,189 @@
+#choose-identicon {
+    -webkit-user-select: none;
+    user-select: none;
+    /* padding-bottom: 16px; */
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    /* max-height: 600px; */
+}
+
+#choose-identicon .identicon {
+    width: unset;
+    height: 128px;
+    position: absolute;
+    transition: transform 500ms;
+    will-change: transform;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    transform: scale(0.6);
+}
+
+#choose-identicon .identicon:hover {
+    cursor: pointer;
+}
+
+#choose-identicon .identicons {
+    display: flex;
+    flex-grow: 1;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 360px;
+    position: relative;
+}
+
+#choose-identicon .identicon:nth-child(1) {
+    transform: translate(0, 0);
+}
+
+#choose-identicon .identicon:nth-child(2) {
+    transform: translate(0, -128px);
+}
+
+#choose-identicon .identicon:nth-child(3) {
+    transform: translate(110px, -64px);
+}
+
+#choose-identicon .identicon:nth-child(4) {
+    transform: translate(-110px, -64px);
+}
+
+#choose-identicon .identicon:nth-child(5) {
+    transform: translate(110px, 64px);
+}
+
+#choose-identicon .identicon:nth-child(6) {
+    transform: translate(-110px, 64px);
+}
+
+#choose-identicon .identicon:nth-child(7) {
+    transform: translate(0, 128px);
+}
+
+#choose-identicon button {
+    opacity: 0;
+    /* transform: translate(0, 480px); */
+    transition: transform 500ms;
+    will-change: transform;
+    transition-delay: 300ms;
+    position: absolute;
+    bottom: 75px;
+    pointer-events: none;
+    width: calc(100% - 64px);
+}
+
+#choose-identicon .backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity;
+    will-change: opacity;
+    box-sizing: border-box;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flew-flow: column;
+}
+
+#choose-identicon .backdrop button+.secondary {
+    position: absolute;
+    margin-bottom: 16px;
+    bottom: 25px;
+}
+
+#choose-identicon .secondary {
+    margin-top: 30px;
+    margin-bottom: 20px;
+}
+
+#choose-identicon.selected .backdrop button {
+    opacity: 1;
+    z-index: 2;
+    transform: translate(0, 0);
+    pointer-events: all;
+    width: 97vw;
+}
+
+.identicon .address {
+    display: none;
+}
+
+.identicon.selected .address {
+    display: block;
+    text-align: center;
+    transform: scale(0.68);
+    margin-top: 1.7rem;
+}
+
+#choose-identicon.selected .backdrop {
+    pointer-events: all;
+    opacity: 1;
+}
+
+#choose-identicon .identicon.selected,
+#choose-identicon .identicon.returning {
+    z-index: 3;
+    transition-delay: 0s !important;
+}
+
+#choose-identicon .identicon.selected {
+    transform: scale(1.5) translateY(-40px);
+    width: unset;
+    pointer-events: none;
+    position: fixed;
+}
+
+@media (max-height: 620px) {
+    .identicon.selected .address {
+        margin-top: 0;
+    }
+}
+
+@media (max-width: 380px) {
+    #choose-identicon .identicon {
+        width: 30vw;
+        height: 30vw;
+    }
+
+    #choose-identicon .identicon:nth-child(2) {
+        transform: translate(0, -100%);
+    }
+
+    #choose-identicon .identicon:nth-child(3) {
+        transform: translate(84%, -50%);
+    }
+
+    #choose-identicon .identicon:nth-child(4) {
+        transform: translate(-84%, -50%);
+    }
+
+    #choose-identicon .identicon:nth-child(5) {
+        transform: translate(84%, 50%);
+    }
+
+    #choose-identicon .identicon:nth-child(6) {
+        transform: translate(-84%, 50%);
+    }
+
+    #choose-identicon .identicon:nth-child(7) {
+        transform: translate(0, 100%);
+    }
+
+    #choose-identicon .identicon.selected {
+        transform: scale(1.5) translateY(-32px);
+    }
+}
+
+#choose-identicon:not(.active) .identicon {
+    transform: translate(0, 0);
+}
+
+#choose-identicon .identicon:nth-child(3),
+#choose-identicon .identicon:nth-child(4),
+#choose-identicon .identicon:nth-child(7) {
+    transition-delay: 300ms;
+}

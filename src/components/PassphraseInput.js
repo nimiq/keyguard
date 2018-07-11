@@ -4,12 +4,12 @@
 class PassphraseInput extends Nimiq.Observable {
     /**
      * @param {boolean} [isPassphraseSetter]
-     * @param {HTMLFormElement} [el]
+     * @param {HTMLFormElement} [$el]
      */
-    constructor(isPassphraseSetter = false, el) {
+    constructor(isPassphraseSetter = false, $el) {
         super();
         this._isPassphraseSetter = isPassphraseSetter;
-        this.$el = el || this._createElement();
+        this.$el = PassphraseInput._createElement($el);
         this.$inputContainer = /** @type {HTMLElement} */ (this.$el.querySelector('.input-container'));
         this.$input = /** @type {HTMLInputElement} */ (this.$el.querySelector('input.password'));
         this.$eyeButton = /** @type {HTMLElement} */ (this.$el.querySelector('.eye-button'));
@@ -30,13 +30,15 @@ class PassphraseInput extends Nimiq.Observable {
     }
 
     /**
+     * @param {HTMLFormElement} [$el]
      * @returns {HTMLFormElement}
      */
-    _createElement() {
-        const el = document.createElement('form');
-        el.classList.add('passphrase-input');
+    static _createElement($el) {
+        $el = $el || document.createElement('form');
+        $el.classList.add('passphrase-input');
+
         /* eslint-disable max-len */
-        el.innerHTML = `
+        $el.innerHTML = `
             <div class="input-container">
                 <input class="password" type="password" placeholder="Enter Passphrase" data-i18n-placeholder="passphrase-placeholder">
                 <span class="eye-button icon-eye"/>
@@ -48,8 +50,9 @@ class PassphraseInput extends Nimiq.Observable {
             <button data-i18n="passphrase-confirm"></button>
         `;
         /* eslint-enable max-len */
-        I18n.translateDom(el);
-        return el;
+
+        I18n.translateDom($el);
+        return $el;
     }
 
     /**

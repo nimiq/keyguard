@@ -1,0 +1,51 @@
+#validate-words {
+    width: 100%;
+    color: white;
+    text-align: center;
+    flex-wrap: wrap;
+    font-size: 15px;
+    line-height: 32px;
+    flex-grow: 1;
+}
+
+#validate-words p {
+    margin-bottom: 32px;
+}
+
+#validate-words .target-index {
+    display: block;
+    font-size: 64px;
+    line-height: 80px;
+    margin-bottom: 42px;
+    font-weight: 200;
+}
+
+#validate-words .target-index::before {
+    content: '#';
+    font-size: 52px;
+}
+
+#validate-words button {
+    margin: 4px;
+    transform: translate3d(0, 0, 0);
+    will-change: transform;
+}
+
+#validate-words button.correct {
+    background-color: var(--success-color);
+    border-color: var(--success-color);
+    color: var(--secondary-text-color);
+}
+
+#validate-words button.wrong {
+    background-color: var(--error-color);
+    border-color: var(--error-color);
+    color: var(--secondary-cta-color);
+}
+
+#validate-words .word-list {
+    display: block;
+    height: 180px;
+    max-width: 368px;
+    margin: 0 auto;
+}
