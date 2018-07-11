@@ -115,17 +115,6 @@ KeyStore.DB_NAME = Dummy.DUMMY_KEY_DATABASE_NAME;
 
     beforeAll(async () => {
         Nimiq.GenesisConfig.test();
-        await Promise.all([
-            Nimiq.WasmHelper.doImportBrowser(),
-            createDummyAccountStore(),
-            createDummyKeyStore()
-        ]);
-    });
-
-    afterAll(async () => {
-        await Promise.all([
-            AccountStore.instance.close().then(() => deleteDatabase(Dummy.DUMMY_ACCOUNT_DATABASE_NAME)),
-            KeyStore.instance.close().then(() => deleteDatabase(Dummy.DUMMY_KEY_DATABASE_NAME))
-        ]);
+        await Nimiq.WasmHelper.doImportBrowser();
     });
 })();

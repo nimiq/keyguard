@@ -1,4 +1,14 @@
 describe('AccountStore', () => {
+
+    beforeEach(async () => {
+        await Dummy.createDummyAccountStore();
+    });
+
+    afterEach(async () => {
+        await AccountStore.instance.close();
+        await Dummy.deleteDatabase(Dummy.DUMMY_ACCOUNT_DATABASE_NAME);
+    });
+
     it('is a singleton', () => {
         const instance1 = AccountStore.instance;
         const instance2 = AccountStore.instance;
