@@ -13,7 +13,7 @@ class RecoveryWordsInputField extends Nimiq.Observable {
         /** @type {string} */ this._value = '';
         this.complete = false;
 
-        this.$ = this._createElements();
+        this.dom = this._createElements();
         this._setupAutocomplete();
     }
 
@@ -52,8 +52,6 @@ class RecoveryWordsInputField extends Nimiq.Observable {
         element.addEventListener('mouseleave', this.showPlaceholder.bind(this));
         element.appendChild(input);
 
-        // return element;
-        // return { $el: element, $input: input, $placeholder };
         return { element, input, placeholder };
     }
 
@@ -72,15 +70,16 @@ class RecoveryWordsInputField extends Nimiq.Observable {
     }
 
     focus() {
-        requestAnimationFrame(() => this.$.input.focus());
+        // cf. https://stackoverflow.com/questions/20747591
+        setTimeout(() => this.dom.input.focus(), 50);
     }
 
     get value() {
-        return this.$.input.value;
+        return this.dom.input.value;
     }
 
     get element() {
-        return this.$.element;
+        return this.dom.element;
     }
 
     _onBlur() {
@@ -106,7 +105,7 @@ class RecoveryWordsInputField extends Nimiq.Observable {
      */
     _checkValidity(setFocusToNextInput = false) {
         if (MnemonicPhrase.DEFAULT_WORDLIST.indexOf(this.value.toLowerCase()) >= 0) {
-            this.$.element.classList.add('complete');
+            this.dom.element.classList.add('complete');
             this.complete = true;
             this.fire(RecoveryWordsInputField.Events.VALID, this);
 
@@ -123,20 +122,20 @@ class RecoveryWordsInputField extends Nimiq.Observable {
     }
 
     async _onInvalid() {
-        this.$.input.value = '';
-        AnimationUtils.animate('shake', this.$.input);
+        this.dom.input.value = '';
+        AnimationUtils.animate('shake', this.dom.input);
     }
 
     _onValueChanged() {
         if (this._value === this.value) return;
 
         this.complete = false;
-        this.$.element.classList.remove('complete');
+        this.dom.element.classList.remove('complete');
         this._value = this.value;
     }
 
     showPlaceholder() {
-        if (this.$.element.classList.contains('has-placeholder')) return;
+        if (this.dom.element.classList.contains('has-placeholder')) return;
 
         // don't hide empty input fields
         if (this.value === '') return;
@@ -144,15 +143,14 @@ class RecoveryWordsInputField extends Nimiq.Observable {
         // don't hide focused input fields
         if (document.activeElement === this.$input) return;
 
-        this.$.element.classList.add('has-placeholder');
-        this.$.element.replaceChild(this.$.placeholder, this.$.input);
+        this.dom.element.classList.add('has-placeholder');
+        this.dom.element.replaceChild(this.dom.placeholder, this.dom.input);
     }
 
     _showInput() {
-        // if (this._revealedWord === target || !target.classList.contains('has-placeholder')) return;
-        if (!this.$.element.classList.contains('has-placeholder')) return;
+        if (!this.dom.element.classList.contains('has-placeholder')) return;
 
-        this.$.element.replaceChild(this.$.input, this.$.placeholder);
+        this.dom.element.replaceChild(this.dom.input, this.dom.placeholder);
 
         // hide word which was revealed before
         this.fire(RecoveryWordsInputField.Events.REVEALED);
@@ -162,7 +160,7 @@ class RecoveryWordsInputField extends Nimiq.Observable {
 
         RecoveryWordsInputField._revealedWord = this;
 
-        this.$.element.classList.remove('has-placeholder');
+        this.dom.element.classList.remove('has-placeholder');
     }
 }
 

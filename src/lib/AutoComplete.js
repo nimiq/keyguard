@@ -6,9 +6,7 @@
 */
 
 class AutoComplete { // eslint-disable-line no-unused-vars
-    // "use strict";
     /**
-     *
      * @param {Object} options
      */
     constructor(options) {
