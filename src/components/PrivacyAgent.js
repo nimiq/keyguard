@@ -1,9 +1,8 @@
 class PrivacyAgent extends Nimiq.Observable { // eslint-disable-line no-unused-vars
     /**
-     * @param {string} nexthash - the hash to route to when the user clicked "ok"
      * @param {HTMLElement} [element]
      */
-    constructor(nexthash = 'continue', element) {
+    constructor(element) {
         super();
         this.$el = this._createElement(element);
     }
@@ -65,4 +64,4 @@ class PrivacyAgent extends Nimiq.Observable { // eslint-disable-line no-unused-v
 
 PrivacyAgent.Events = {
     CONFIRM: 'privacy-agent-confirm',
-}
+};
