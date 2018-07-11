@@ -1,5 +1,9 @@
 /* global EncryptionType */
 /* global KeyStore */
+/* global PopupApi */
+/* global Nimiq */
+/* global AmountTooSmallError, NetworkMissmatchError */
+/* global SignTransactionWithPassphrase, SignTransactionWithPin */
 
 class SignTransactionApi extends PopupApi { // eslint-disable-line no-unused-vars
     /**

@@ -1,4 +1,6 @@
 /* global CreateHigh, CreateLow */
+/* global PopupApi */
+/* global EncryptionType */
 
 class CreateApi extends PopupApi { // eslint-disable-line no-unused-vars
     /**

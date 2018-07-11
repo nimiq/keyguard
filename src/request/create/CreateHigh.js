@@ -1,5 +1,9 @@
 /* global RecoveryWords */
 /* global ValidateWords */
+/* global ChooseIdenticon */
+/* global PassphraseInput */
+/* global Key */
+/* global KeyStore */
 
 class CreateHigh {
     /**
@@ -46,7 +50,7 @@ class CreateHigh {
             /** @param {Nimiq.KeyPair} keyPair */
             keyPair => {
                 this._selectedKeyPair = keyPair;
-                const keyAsUInt8 = Nimiq.BufferUtils.fromHex(keyPair.privateKey.toHex());
+                const keyAsUInt8 = keyPair.privateKey.serialize();
                 this._recoveryWords.privateKey = keyAsUInt8;
                 this._validateWords.privateKey = keyAsUInt8;
                 this._validateWords.reset();

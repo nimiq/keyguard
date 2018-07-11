@@ -1,3 +1,6 @@
+/* global Nimiq */
+/* global I18n */
+/* global Identicon */
 class ChooseIdenticon extends Nimiq.Observable {
     /**
      * @param {HTMLElement} [$el]

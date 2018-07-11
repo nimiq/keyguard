@@ -1,3 +1,10 @@
+/* global Key */
+/* global AddressUtils */
+/* global InvalidAddressError */
+/* global AccountStore */
+/* global EncryptionType */
+/* global BrowserDetection */
+
 /**
  * Usage:
  * <script src="lib/key.js"></script>

@@ -1,3 +1,7 @@
+/* global Nimiq */
+/* global TransactionType */
+/* global KeyStore */
+/* global Utf8Tools */
 class SignTransaction { // eslint-disable-line no-unused-vars
     /**
      * Decrypt key and use it to sign a transaction constructed with the data from txRequest.

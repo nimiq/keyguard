@@ -1,4 +1,8 @@
 /* global TRANSLATIONS */
+/* global Nimiq */
+/* global KeyStore */
+/* global RpcServer */
+/* global I18n */
 
 /**
  * @param {Function} RequestApiClass - Class object of the API which is to be exposed via postMessage RPC

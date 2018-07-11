@@ -1,3 +1,5 @@
+/* global I18n */
+
 class LanguagePicker { // eslint-disable-line no-unused-vars
     /**
      * @param {HTMLSelectElement} [$el]

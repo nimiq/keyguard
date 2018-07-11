@@ -1,3 +1,5 @@
+/* global SignTransaction */
+/* global PassphraseInput */
 /** Handles a sign-transaction request for keys with encryption type HIGH. */
 class SignTransactionWithPassphrase extends SignTransaction {
     /**

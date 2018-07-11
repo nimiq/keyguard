@@ -1,3 +1,7 @@
+/* global ChooseIdenticon */
+/* global PinInput */
+/* global Key */
+/* global KeyStore */
 class CreateLow {
     /**
      * @param {CreateRequest} request

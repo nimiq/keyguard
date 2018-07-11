@@ -1,3 +1,5 @@
+/* global TRANSLATIONS */ // eslint-disable-line no-unused-vars
+
 /**
  * @typedef {{[language: string]: {[id: string]: string}}} dict
  */

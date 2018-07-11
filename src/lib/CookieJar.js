@@ -1,3 +1,5 @@
+/* global Nimiq */
+
 class CookieJar { // eslint-disable-line no-unused-vars
     /**
      * @param {KeyInfo[]} keys

@@ -1,3 +1,5 @@
+/* global SignTransaction */
+/* global PinInput */
 /** Handles a sign-transaction request for keys with encryption type LOW. */
 class SignTransactionWithPin extends SignTransaction {
     /**

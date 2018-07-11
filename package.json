@@ -5,10 +5,12 @@
   "scripts": {
     "test": "karma start",
     "typecheck": "tsc",
-    "lint": "eslint src client",
-    "lintfix": "eslint --fix src client",
-    "pr": "tsc && eslint src client && karma start",
-    "watch": "tsc-watch --pretty --onSuccess \"eslint --fix src client\""
+    "lint": "eslint src client tools",
+    "lintfix": "eslint --fix src client tools",
+    "checkdeps": "node tools/dependencyValidator.js",
+    "pr": "npm run typecheck && npm run lint && npm run test && npm run checkdeps",
+    "watch": "tsc-watch --pretty --onSuccess \"npm run watchonsuccess\"",
+    "watchonsuccess": "npm run lintfix && npm run checkdeps"
   },
   "repository": {
     "type": "git",
@@ -26,6 +28,7 @@
   "homepage": "https://github.com/nimiq/keyguard-next#readme",
   "devDependencies": {
     "@types/jasmine": "^2.8.8",
+    "@types/node": "^10.5.2",
     "eslint": "^5.0.1",
     "eslint-config-airbnb-base": "^13.0.0",
     "eslint-plugin-import": "^2.13.0",

@@ -1,3 +1,7 @@
+/* global BrowserDetection */
+/* global KeyStore */
+/* global CookieJar */
+
 /**
  * A common parent class for pop-up requests.
  *
