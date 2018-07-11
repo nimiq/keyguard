@@ -1,4 +1,4 @@
-class PrivacyAgent {
+class PrivacyAgent { // eslint-disable-line no-unused-vars
     /**
      * @param {string} nexthash - the hash to route to when the user clicked "ok"
      * @param {HTMLElement} [el]
@@ -55,5 +55,4 @@ class PrivacyAgent {
     getElement() {
         return this.$el;
     }
-
 }

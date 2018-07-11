@@ -1,1 +1,2 @@
+/* global ImportWordsApi */
 runKeyguard(ImportWordsApi);

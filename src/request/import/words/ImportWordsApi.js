@@ -1,13 +1,15 @@
+/* global RecoveryWordsInput */
+/* global MnemonicPhrase */
+/* global PrivacyAgent */
 class ImportWordsApi extends PopupApi {
-
     constructor() {
         super();
 
         // start UI
-        if (({ interactive:1, complete:1 })[document.readyState]) {
+        if (({ interactive: 1, complete: 1 })[document.readyState]) {
             this._makeView();
         } else {
-            document.addEventListener("DOMContentLoaded", (e) => {
+            document.addEventListener('DOMContentLoaded', () => {
                 this._makeView();
             });
         }
@@ -72,4 +74,4 @@ ImportWordsApi.Pages = {
     PRIVACY_AGENT: 'privacy',
     ENTER_WORDS: 'words',
     ENTER_PASSPHRASE: 'passphrase',
-}
+};

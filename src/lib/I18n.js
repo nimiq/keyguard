@@ -118,6 +118,7 @@ class I18n { // eslint-disable-line no-unused-vars
         const languageToUse = this.getClosestSupportedLanguage(language);
 
         if (languageToUse !== language) {
+            // eslint-disable-next-line no-console
             console.warn(`Language ${language} not supported, using ${languageToUse} instead.`);
         }
 
@@ -125,10 +126,10 @@ class I18n { // eslint-disable-line no-unused-vars
             /** @type {string} */
             this._language = languageToUse;
 
-            if (({ interactive:1, complete:1 })[document.readyState]) {
+            if (({ interactive: 1, complete: 1 })[document.readyState]) {
                 this.translateDom();
             } else {
-                document.addEventListener("DOMContentLoaded", (e) => {
+                document.addEventListener('DOMContentLoaded', () => {
                     this.translateDom();
                 });
             }
@@ -156,5 +157,5 @@ class I18n { // eslint-disable-line no-unused-vars
 
 I18n.observer = new Nimiq.Observable();
 I18n.Events = {
-    LANGUAGE_CHANGED: 'language-changed'
+    LANGUAGE_CHANGED: 'language-changed',
 };

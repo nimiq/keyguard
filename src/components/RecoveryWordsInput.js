@@ -1,5 +1,6 @@
+/* global RecoveryWordsInputField */
+/* global AnimationUtils */
 class RecoveryWordsInput extends Nimiq.Observable {
-
     /**
      *
      * @param {HTMLElement} [el]
@@ -12,8 +13,8 @@ class RecoveryWordsInput extends Nimiq.Observable {
     }
 
     /**
-     *
      * @param {HTMLElement} [el]
+     * @returns {HTMLElement}
      */
     _createElement(el) {
         if (!el) el = document.createElement('div');
@@ -30,12 +31,12 @@ class RecoveryWordsInput extends Nimiq.Observable {
 
         for (let index = 0; index < 24; index++) {
             const field = new RecoveryWordsInputField(index);
-            field.$el.dataset.index = index.toString();
+            field.element.dataset.index = index.toString();
             field.on(RecoveryWordsInputField.Events.VALID, this._onFieldComplete.bind(this));
             field.on(RecoveryWordsInputField.Events.FOCUS_NEXT, this._setFocusToNextInput.bind(this));
 
             this.$fields.push(field);
-            form.appendChild(field.$el);
+            form.appendChild(field.element);
         }
 
         setTimeout(() => this.$fields[0].focus(), 100);
@@ -45,7 +46,7 @@ class RecoveryWordsInput extends Nimiq.Observable {
     }
 
     focus() {
-        this.$fields[0].$input.focus();
+        this.$fields[0].focus();
     }
 
     /** @returns {HTMLElement} */
@@ -72,7 +73,8 @@ class RecoveryWordsInput extends Nimiq.Observable {
         try {
             this.fire(RecoveryWordsInput.Events.COMPLETE, words);
         } catch (e) {
-            console.log(e);
+            // assume wrong words but printing out for debugging
+            console.error(e); // eslint-disable-line no-console
             this._animateError();
         }
     }
@@ -89,9 +91,8 @@ class RecoveryWordsInput extends Nimiq.Observable {
     _animateError() {
         AnimationUtils.animate('shake', this.$el);
     }
-
 }
 
 RecoveryWordsInput.Events = {
     COMPLETE: 'recovery-words-complete',
-}
+};

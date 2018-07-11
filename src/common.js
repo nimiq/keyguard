@@ -1,3 +1,4 @@
+/* global TRANSLATIONS */
 I18n.initialize(TRANSLATIONS, 'en');
 
 /**
