@@ -77,10 +77,14 @@ Object.keys(DICT).forEach(lang => {
             console.error('\x1b[31m%s\x1b[0m', `ERROR: Missing translation for >${lang}<: ${key}`);
             complete = false;
         } else if (lang === 'en') {
-            if (langDict[key] !== REF_DICT[key]) {
+            // Strip line breaks and indentation
+            const inDict = langDict[key].replace('/\n/g', '').replace(/\s+/g, ' ');
+            const inRef = REF_DICT[key].replace('/\n/g', '').replace(/\s+/g, ' ');
+
+            if (inDict !== inRef) {
                 console.error(
                     '\x1b[31m%s\x1b[0m',
-                    `ERROR: Different english for >${key}<: "${langDict[key]}" in dict vs. "${REF_DICT[key]}" in DOM`,
+                    `ERROR: Different english for >${key}< in dict vs. DOM:\n\t${inDict}\n\t${inRef}`,
                 );
                 complete = false;
             }

@@ -65,11 +65,10 @@ type SignedMessageResult = {
     proof: Nimiq.SignatureProof
 }
 
-interface Window { rpcServer: RpcServer; KeyStore: any }
-
 interface Window {
     rpcServer: RpcServerInstance
     KeyStore: any
+    TRANSLATIONS: dict
 }
 
 interface Newable {

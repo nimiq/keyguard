@@ -1,5 +1,3 @@
-/* global I18n */
-
 const TRANSLATIONS = {
     en: {
         _language: 'English',
@@ -12,7 +10,7 @@ const TRANSLATIONS = {
         'create-choose-identicon-header1': 'Choose Your Account Avatar',
         'create-set-passphrase-header1': 'Set a Passphrase',
         'create-set-passphrase-header2': 'Please enter a Passphrase to secure your account.',
-        'create-set-passphrase-warning': `The Pass Phrase is [strong]not[/strong] an alternative for your 24 Recovery
+        'create-set-passphrase-warning': `The Passphrase is [strong]not[/strong] an alternative for your 24 Recovery
             Words!`,
         'recovery-words-title': 'Recovery Words',
     },
@@ -32,3 +30,6 @@ const TRANSLATIONS = {
         'recovery-words-title': 'Wiederherstellungswörter',
     },
 };
+
+if (typeof module !== 'undefined') module.exports = TRANSLATIONS;
+else window.TRANSLATIONS = TRANSLATIONS;
