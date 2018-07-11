@@ -1,7 +1,11 @@
-/** Handles a sign-transaction request for keys with encryption type LOW.
- *  Calls this.fire('result', [result]) when done or this.fire('error', [error]) to return with an error.
+/* global SignTransactionView */
+/* global PinInput */
+
+/**
+ * Handles a sign-transaction request for keys with encryption type LOW.
+ * Calls this.fire('result', [result]) when done or this.fire('error', [error]) to return with an error.
  */
-class SignTransactionWithPin extends SignTransactionView {
+class SignTransactionWithPinView extends SignTransactionView {
     /**
      * @param {TransactionRequest} txRequest
      */
@@ -15,7 +19,7 @@ class SignTransactionWithPin extends SignTransactionView {
         this.$enterPin = /** @type {HTMLElement} */ (this.$rootElement.querySelector('#enter-pin'));
 
         this.$button.addEventListener('click', () => {
-            window.location.hash = SignTransactionWithPin.Pages.ENTER_PIN;
+            window.location.hash = SignTransactionWithPinView.Pages.ENTER_PIN;
         });
 
         this._pinInput = new PinInput();
@@ -27,7 +31,7 @@ class SignTransactionWithPin extends SignTransactionView {
         this._pinInput.on(PinInput.Events.PIN_ENTERED, this.handlePinInput.bind(this));
 
         // go to start page
-        window.location.hash = SignTransactionWithPin.Pages.TRANSACTION_DATA;
+        window.location.hash = SignTransactionWithPinView.Pages.TRANSACTION_DATA;
     }
 
     /** @param {string} pin */
@@ -49,7 +53,7 @@ class SignTransactionWithPin extends SignTransactionView {
     }
 }
 
-SignTransactionWithPin.Pages = {
+SignTransactionWithPinView.Pages = {
     TRANSACTION_DATA: 'transaction-data',
     ENTER_PIN: 'enter-pin',
 };

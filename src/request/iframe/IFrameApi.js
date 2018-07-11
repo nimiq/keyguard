@@ -1,3 +1,9 @@
+/* global BrowserDetection */
+/* global CookieJar */
+/* global AccountStore */
+/* global KeyStore */
+/* global runKeyguard */
+
 class IFrameApi {
     /**
      * @param {boolean} [listFromAccountStore] - Deprecated, only for database migration

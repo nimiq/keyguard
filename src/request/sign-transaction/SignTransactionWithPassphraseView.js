@@ -1,7 +1,11 @@
-/** Handles a sign-transaction request for keys with encryption type HIGH.
- *  Calls this.fire('result', [result]) when done or this.fire('error', [error]) to return with an error.
+/* global SignTransactionView */
+/* global PassphraseInput */
+
+/**
+ * Handles a sign-transaction request for keys with encryption type HIGH.
+ * Calls this.fire('result', [result]) when done or this.fire('error', [error]) to return with an error.
  */
-class SignTransactionWithPassphrase extends SignTransactionView {
+class SignTransactionWithPassphraseView extends SignTransactionView {
     /**
      * @param {TransactionRequest} txRequest
      */
@@ -22,7 +26,7 @@ class SignTransactionWithPassphrase extends SignTransactionView {
 
         this._passphraseInput.on(PassphraseInput.Events.PASSPHRASE_ENTERED, this._handlePassphraseInput.bind(this));
 
-        window.location.hash = SignTransactionWithPassphrase.Pages.ENTER_PASSPHRASE;
+        window.location.hash = SignTransactionWithPassphraseView.Pages.ENTER_PASSPHRASE;
     }
 
     /** @param {string} passphrase */
@@ -47,6 +51,6 @@ class SignTransactionWithPassphrase extends SignTransactionView {
     }
 }
 
-SignTransactionWithPassphrase.Pages = {
+SignTransactionWithPassphraseView.Pages = {
     ENTER_PASSPHRASE: 'enter-passphrase',
 };

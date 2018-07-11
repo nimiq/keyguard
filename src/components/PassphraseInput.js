@@ -1,3 +1,6 @@
+/* global Nimiq */
+/* global I18n */
+
 class PassphraseInput extends Nimiq.Observable {
     /**
      * @param {boolean} [isPassphraseSetter]

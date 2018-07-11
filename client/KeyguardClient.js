@@ -1,3 +1,6 @@
+/* global EncryptionType */
+/* global RpcClient */
+
 class KeyguardClient {
     constructor() {
         this._keyguardSrc = '../src/';

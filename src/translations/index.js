@@ -1,3 +1,5 @@
+/* global I18n */
+
 const TRANSLATIONS = {
     en: {
         _language: 'English',

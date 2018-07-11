@@ -1,3 +1,5 @@
+/* global Iqons */
+
 class Identicon { // eslint-disable-line no-unused-vars
     /**
      * @param {string} [address]

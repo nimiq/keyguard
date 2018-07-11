@@ -1,3 +1,5 @@
+/* global Nimiq */
+
 class PinInput extends Nimiq.Observable {
     /**
      * @param {HTMLDivElement} [el]

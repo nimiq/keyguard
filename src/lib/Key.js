@@ -1,3 +1,6 @@
+/* global Nimiq */
+/* global Utf8Tools */
+
 /**
  * Usage:
  * <script src="lib/key.js"></script>
