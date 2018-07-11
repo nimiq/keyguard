@@ -26,7 +26,10 @@ class ImportWordsApi extends PopupApi {
         this.$enterWords = /** @type {HTMLElement} */ (this.$rootElement.querySelector('#words'));
         this.$enterPassphrase = /** @type {HTMLElement} */ (this.$rootElement.querySelector('#passphrase'));
 
-        const privacyAgent = new PrivacyAgent(ImportWordsApi.Pages.ENTER_WORDS);
+        const privacyAgent = new PrivacyAgent();
+        privacyAgent.on(PrivacyAgent.Events.CONFIRM, () => {
+            window.location.hash = ImportWordsApi.Pages.ENTER_WORDS;
+        });
         this.$privacyAgent.appendChild(privacyAgent.getElement());
 
         const recoveryWordsInput = new RecoveryWordsInput();

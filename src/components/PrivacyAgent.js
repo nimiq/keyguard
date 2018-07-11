@@ -1,22 +1,24 @@
-class PrivacyAgent { // eslint-disable-line no-unused-vars
+class PrivacyAgent extends Nimiq.Observable { // eslint-disable-line no-unused-vars
     /**
      * @param {string} nexthash - the hash to route to when the user clicked "ok"
-     * @param {HTMLElement} [el]
+     * @param {HTMLElement} [element]
      */
-    constructor(nexthash = 'continue', el) {
-        this.$el = el || this._createElement(nexthash);
+    constructor(nexthash = 'continue', element) {
+        super();
+        this.$el = this._createElement(element);
     }
 
     /**
-     * @param {string} nextHash
+     * @param {HTMLElement} [existingElement]
      * @returns {HTMLElement}
      */
-    _createElement(nextHash) {
+    _createElement(existingElement) {
         /** @type HTMLElement */
-        const el = document.createElement('div');
-        el.classList.add('privacy-agent');
+        const element = existingElement || document.createElement('div');
+        element.classList.add('privacy-agent');
+
         /* eslint-disable max-len */
-        el.innerHTML = `
+        element.innerHTML = `
             <div class="privacy-agent-container">
                 <svg width="162" height="144" xmlns="http://www.w3.org/2000/svg"
                         xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -39,20 +41,28 @@ class PrivacyAgent { // eslint-disable-line no-unused-vars
                 <p><strong data-i18n="privacy-agent-warning">Anyone that can see your Recovery Words can steal all your funds!</strong></p>
             </div>
             <div class="grow"></div>
-            <a href="#continue"><button data-i18n="privacy-agent-ok">OK, all good</button></a>
+            <button data-i18n="privacy-agent-ok">OK, all good</button>
         `;
-        this.$ok = el.querySelector('a');
-        if (!this.$ok) {
+        /* eslint-enable max-len */
+
+        const $ok = element.querySelector('button');
+        if (!$ok) {
             throw new Error('Next link not found');
         }
-        this.$ok.href = `#${nextHash}`;
-        /* eslint-enable max-len */
-        I18n.translateDom(el);
-        return el;
+        $ok.addEventListener('click', () => {
+            this.fire(PrivacyAgent.Events.CONFIRM);
+        });
+
+        I18n.translateDom(element);
+        return element;
     }
 
     /** @returns {HTMLElement} */
     getElement() {
         return this.$el;
     }
+}
+
+PrivacyAgent.Events = {
+    CONFIRM: 'privacy-agent-confirm',
 }
