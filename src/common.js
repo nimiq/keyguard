@@ -1,5 +1,8 @@
 /* global TRANSLATIONS */
-I18n.initialize(TRANSLATIONS, 'en');
+/* global Nimiq */
+/* global KeyStore */
+/* global RpcServer */
+/* global I18n */
 
 /**
  * @param {Function} RequestApiClass - Class object of the API which is to be exposed via postMessage RPC
@@ -8,7 +11,7 @@ I18n.initialize(TRANSLATIONS, 'en');
 async function runKeyguard(RequestApiClass, options) { // eslint-disable-line no-unused-vars
     const defaultOptions = {
         loadNimiq: true,
-        rpcWhitelist: ['request'],
+        whitelist: ['request'],
     };
 
     options = Object.assign(defaultOptions, options);
@@ -30,6 +33,10 @@ async function runKeyguard(RequestApiClass, options) { // eslint-disable-line no
         }
     });
 
+    I18n.initialize(TRANSLATIONS, 'en');
+
     // FIXME Set correct allowedOrigin
-    window.rpcServer = RpcServer.create(RequestApiClass, '*', options.rpcWhitelist);
+    window.rpcServer = RpcServer.create(RequestApiClass, '*', options.whitelist);
+
+    I18n.translateDom();
 }

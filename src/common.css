@@ -12,13 +12,126 @@
 }
 
 .loading #loading {
-    display: block !important;
+    display: flex !important;
+    flex-flow: column;
     position: absolute;
+    height: 100vh;
+    width: 100vw;
     top: 0;
+    left: 0;
     z-index: 1;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.6);
 }
 
 .loading .page:target {
     opacity: 0.3;
     pointer-events: none;
+}
+
+.loading-animation {
+    opacity: 1;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64"><style>@keyframes dash-animation { to { transform: rotate(240deg) translateZ(0); } } %23circle { animation: 3s dash-animation infinite linear; transform: rotate(-120deg) translateZ(0); transform-origin: center; }</style><defs><clipPath id="hexClip"><path clip-rule="evenodd" d="M16 4.29h32L64 32 48 59.71H16L0 32zm4.62 8h22.76L54.76 32 43.38 51.71H20.62L9.24 32z"/></clipPath></defs><path fill-rule="evenodd" d="M16 4.29h32L64 32 48 59.71H16L0 32zm4.62 8h22.76L54.76 32 43.38 51.71H20.62L9.24 32z" fill="%23fff" opacity=".2"/><g clip-path="url(%23hexClip)"><circle id="circle" cx="32" cy="32" r="16" fill="none" stroke-width="32" stroke="%23F6AE2D" stroke-dasharray="16.666 84.666"/></g></svg>');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 72px;
+    z-index: 1;
+    display: block;
+    height: 72px;
+    width: 80px;
+}
+
+.loading-animation + h2 {
+    padding-top: 16px;
+}
+
+.identicon {
+    display: block;
+    height: 140px;
+    width: 140px;
+}
+
+.identicon img {
+    height: 100%;
+    width: 100%;
+}
+
+.pad-bottom {
+    padding-bottom: 28px;
+}
+
+/* TODO do we still need this?
+.route-container {
+    min-height: calc(100vh - 120px);
+}*/
+
+.warning {
+    background-color: var(--warning-color);
+    color: #3b3b3b;
+    border-radius: 8px;
+    padding: 15px;
+}
+
+.info-box {
+    display: flex;
+    border: 1px solid white;
+    border-radius: 8px;
+    padding: 4px;
+}
+
+.info-box .info-icon {
+    background-image: url('data:image/svg+xml,<svg fill="%23FFFFFF" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h24v24H0z" fill="none"/><path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/></svg>');
+    background-size: 90%;
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    width: 32px;
+    display: inline-block;
+    flex-grow: 0;
+    flex-shrink: 0;
+}
+
+.info-box .info-text {
+    text-align: left;
+}
+
+.spacing-top-16 {
+    margin-top: 16px;
+}
+
+/* make code blocks look like keys on the keyboard */
+kbd {
+    font-family: monospace;
+    font-size: 15px;
+    border: 1px solid white;
+    padding: 2px 6px;
+    border-radius: 5px;
+}
+
+.header-top {
+    width: 100%;
+    padding: 1em 1.8em;
+    overflow: auto;
+}
+
+#app {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 98vw;
+    max-width: var(--max-width);
+    min-height: calc(100vh - 60px);
+    padding-bottom: 18px;
+}
+
+@media (max-width: 480px) {
+    .header-top {
+        width: auto;
+        padding: 1em 0.5em;
+    }
+
+    .header-top nimiq-logo {
+        width: auto;
+    }
 }

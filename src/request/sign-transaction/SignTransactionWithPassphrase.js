@@ -1,27 +1,40 @@
-/** Handles a sign-transaction request for keys with encryption type HIGH.
- *  Calls this.fire('result', [result]) when done or this.fire('error', [error]) to return with an error.
- */
-class SignTransactionWithPassphrase extends SignTransactionView {
+/* global SignTransaction */
+/* global PassphraseInput */
+/** Handles a sign-transaction request for keys with encryption type HIGH. */
+class SignTransactionWithPassphrase extends SignTransaction {
     /**
      * @param {TransactionRequest} txRequest
+     * @param {Function} resolve
+     * @param {Function} reject
      */
-    constructor(txRequest) {
+    constructor(txRequest, resolve, reject) {
         super();
-
         this._txRequest = txRequest;
+        this._resolve = resolve;
+        this._reject = reject;
 
-        this.$rootElement = /** @type {HTMLElement} */ (document.getElementById('app'));
-        this.$enterPassphrase = /** @type {HTMLElement} */ (this.$rootElement.querySelector('#enter-passphrase'));
-        this.$error = /** @type {HTMLElement} */ (this.$rootElement.querySelector('#enter-passphrase #error'));
+        // set html elements
+        /** @type {HTMLDivElement} */
+        this.$rootElement = (document.getElementById('app'));
+
+        /** @type {HTMLDivElement} */
+        this.$enterPassphrase = (document.getElementById('enter-passphrase'));
+
+        /** @type {HTMLDivElement} */
+        this.$error = (this.$rootElement.querySelector('#enter-passphrase #error'));
 
         // TODO add identicons and other tx data to UI
 
+        // create components
         this._passphraseInput = new PassphraseInput();
-
         this.$enterPassphrase.appendChild(this._passphraseInput.getElement());
 
+        // wire up logic
         this._passphraseInput.on(PassphraseInput.Events.PASSPHRASE_ENTERED, this._handlePassphraseInput.bind(this));
+    }
 
+    run() {
+        // go to start page
         window.location.hash = SignTransactionWithPassphrase.Pages.ENTER_PASSPHRASE;
     }
 
@@ -33,7 +46,7 @@ class SignTransactionWithPassphrase extends SignTransactionView {
 
         try {
             const signedTx = await this._signTx(this._txRequest, passphrase);
-            this.fire('result', signedTx);
+            this._resolve(signedTx);
         } catch (e) {
             console.error(e);
 

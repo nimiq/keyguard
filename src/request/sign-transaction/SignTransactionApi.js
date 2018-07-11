@@ -1,4 +1,11 @@
-class SignTransactionApi extends PopupApi {
+/* global EncryptionType */
+/* global KeyStore */
+/* global PopupApi */
+/* global Nimiq */
+/* global AmountTooSmallError, NetworkMissmatchError */
+/* global SignTransactionWithPassphrase, SignTransactionWithPin */
+
+class SignTransactionApi extends PopupApi { // eslint-disable-line no-unused-vars
     /**
      * @param {TransactionRequest} txRequest
      */
@@ -19,12 +26,9 @@ class SignTransactionApi extends PopupApi {
         const keyType = await keyStore.getType(txRequest.sender);
 
         const handler = keyType === EncryptionType.HIGH
-            ? new SignTransactionWithPassphrase(txRequest)
-            : new SignTransactionWithPin(txRequest);
+            ? new SignTransactionWithPassphrase(txRequest, this.resolve.bind(this), this.reject.bind(this))
+            : new SignTransactionWithPin(txRequest, this.resolve.bind(this), this.reject.bind(this));
 
-        handler.on('result', /** @param {any} result */ result => { this.resolve(result); });
-        handler.on('error', /** @param {Error} error */ error => { this.reject(error); });
+        handler.run();
     }
 }
-
-runKeyguard(SignTransactionApi);

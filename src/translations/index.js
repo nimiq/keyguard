@@ -5,7 +5,7 @@ const TRANSLATIONS = { // eslint-disable-line no-unused-vars
         'passphrase-strength': 'Strength',
         'passphrase-confirm': 'Confirm',
         'passphrase-placeholder': 'Enter passphrase',
-        'sign-tx-wrong-passphrase': 'Wrong passphrase, please try again',
+        'sign-tx-wrong-passphrase': 'Wrong Passphrase, please try again',
         'sign-tx-button-enter-pin': 'Enter PIN',
         'privacy-agent-headline': 'Are you being watched?',
         'privacy-agent-info': 'Now is the perfect time to assess your surroundings. Nearby windows? Hidden cameras? '
@@ -14,6 +14,12 @@ const TRANSLATIONS = { // eslint-disable-line no-unused-vars
         'privacy-agent-ok': 'OK, all good',
         'recovery-words-input-label': 'Recovery Words',
         'recovery-words-input-field-placeholder': 'word #',
+        'create-choose-identicon-header1': 'Choose Your Account Avatar',
+        'create-set-passphrase-header1': 'Set a Passphrase',
+        'create-set-passphrase-header2': 'Please enter a Passphrase to secure your account.',
+        'create-set-passphrase-warning': `The Pass Phrase is [strong]not[/strong] an alternative for your 24 Recovery
+            Words!`,
+        'recovery-words-title': 'Recovery Words',
     },
     de: {
         _language: 'Deutsch',
@@ -31,5 +37,11 @@ const TRANSLATIONS = { // eslint-disable-line no-unused-vars
         'privacy-agent-ok': 'OK, alles in Ordnung',
         'recovery-words-input-label': 'Wiederherstellungswörter',
         'recovery-words-input-field-placeholder': 'Wort ',
+        'create-choose-identicon-header1': 'Wähle einen Avatar für dein Konto',
+        'create-set-passphrase-header1': 'Lege eine Passphrase fest',
+        'create-set-passphrase-header2': 'Bitte gib eine Passphrase ein, um dein Konto zu sichern.',
+        'create-set-passphrase-warning': `Die Passphrase ist [strong]keine[/strong] Alternative für deine 24
+            Wiederherstellungswörter!`,
+        'recovery-words-title': 'Wiederherstellungswörter',
     },
 };

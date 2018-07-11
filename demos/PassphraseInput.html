@@ -18,14 +18,10 @@
 <link href="../src/components/PassphraseInput.css" rel="stylesheet">
 
 <script type="text/javascript" src="http://cdn.nimiq.com/web-offline.js"></script>
-<script type="text/javascript" src="../src/lib/i18n.js"></script>
+<script type="text/javascript" src="../src/lib/I18n.js"></script>
+<script type="text/javascript" src="../src/translations/index.js"></script>
 <script type="text/javascript" src="../src/components/PassphraseInput.js"></script>
 <script type="text/javascript">
-    i18n.setLanguage('en');
-    translations.en.Confirm = 'Confirm';
-    translations.en['Strength:'] = 'Strength:';
-    translations.en['Enter-Pass-Phrase'] = 'Enter Pass Phrase';
-
     const passphraseSetter = new PassphraseInput(true);
     const passphraseGetter = new PassphraseInput();
     const passphraseSetterContainer = document.getElementById('passphrase-setter-container');

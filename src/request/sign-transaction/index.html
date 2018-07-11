@@ -3,24 +3,29 @@
 <head>
     <meta charset="UTF-8">
 
-    <script src="https://cdn.nimiq.com/web-offline.js"></script>
-    <script src="../../errors.js"></script>
-    <script src="../../lib/EncryptionType.js"></script>
-    <script src="../../lib/TransactionType.js"></script>
-    <script src="../../lib/Key.js"></script>
-    <script src="../../lib/KeyStoreIndexeddb.js"></script>
-    <script src="../../lib/RpcServer.js"></script>
-    <script src="../../lib/AddressUtils.js"></script>
-    <script src="../../lib/Utf8Tools.js"></script>
-    <script src="../../lib/i18n.js"></script>
-    <script src="../../common.js"></script>
-    <script src="../../components/PinInput.js"></script>
-    <script src="../../components/PassphraseInput.js"></script>
-    <script src="../PopupApi.js"></script>
-    <script src="SignTransactionApi.js"></script>
-    <script src="SignTransactionView.js"></script>
-    <script src="SignTransactionViewWithPassphrase.js"></script>
-    <script src="SignTransactionViewWithPin.js"></script>
+    <script defer src="https://cdn.nimiq.com/web-offline.js"></script>
+    <script defer src="../../errors.js"></script>
+    <script defer src="../../lib/EncryptionType.js"></script>
+    <script defer src="../../lib/TransactionType.js"></script>
+    <script defer src="../../lib/CookieJar.js"></script>
+    <script defer src="../../lib/BrowserDetection.js"></script>
+    <script defer src="../../lib/Key.js"></script>
+    <script defer src="../../lib/KeyStore.js"></script>
+    <script defer src="../../lib/AccountStore.js"></script>
+    <script defer src="../../lib/RpcServer.js"></script>
+    <script defer src="../../lib/AddressUtils.js"></script>
+    <script defer src="../../lib/Utf8Tools.js"></script>
+    <script defer src="../../lib/I18n.js"></script>
+    <script defer src="../../translations/index.js"></script>
+    <script defer src="../../common.js"></script>
+    <script defer src="../../components/PinInput.js"></script>
+    <script defer src="../../components/PassphraseInput.js"></script>
+    <script defer src="../PopupApi.js"></script>
+    <script defer src="SignTransactionApi.js"></script>
+    <script defer src="SignTransaction.js"></script>
+    <script defer src="SignTransactionWithPassphrase.js"></script>
+    <script defer src="SignTransactionWithPin.js"></script>
+    <script defer src="index.js"></script>
 
     <link href="../../nimiq-style.css" rel="stylesheet">
     <link rel="stylesheet" href="../../common.css">
@@ -46,7 +51,6 @@
 
         <!-- Default and loading screen -->
         <div id="loading" class="page">
-            <span data-i18n="loading">Loading...</span>
         </div>
 
     </div>

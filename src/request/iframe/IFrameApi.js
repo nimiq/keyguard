@@ -1,4 +1,9 @@
-class IFrameApi {
+/* global BrowserDetection */
+/* global CookieJar */
+/* global AccountStore */
+/* global KeyStore */
+
+class IFrameApi { // eslint-disable-line no-unused-vars
     /**
      * @param {boolean} [listFromAccountStore] - Deprecated, only for database migration
      * @returns {Promise<KeyInfo[] | AccountInfo[]>}
@@ -36,11 +41,3 @@ class IFrameApi {
         return KeyStore.instance.doMigrateAccountsToKeys();
     }
 }
-
-runKeyguard(IFrameApi, {
-    loadNimiq: false,
-    whitelist: [
-        'list',
-        'migrateAccountsToKeys',
-    ],
-});

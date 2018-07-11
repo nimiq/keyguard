@@ -1,10 +1,12 @@
+/* global Nimiq */
+
 class PinInput extends Nimiq.Observable {
     /**
-     * @param {HTMLDivElement} [el]
+     * @param {HTMLDivElement} [$el]
      */
-    constructor(el) {
+    constructor($el) {
         super();
-        this.$el = el || this._createElement();
+        this.$el = PinInput._createElement($el);
         this.$dotIndicator = /** @type {Element} */ (this.$el.querySelector('.pin-dot-indicator'));
         this.$dots = Array.from(this.$dotIndicator.children);
         this.$deleteButton = /** @type {Element} */ (this.$el.querySelector('.delete'));
@@ -22,12 +24,13 @@ class PinInput extends Nimiq.Observable {
     }
 
     /**
+     * @param {HTMLDivElement} [$el]
      * @returns {HTMLDivElement}
      */
-    _createElement() {
-        const el = document.createElement('div');
-        el.classList.add('pin-input', 'center');
-        el.innerHTML = `
+    static _createElement($el) {
+        $el = $el || document.createElement('div');
+        $el.classList.add('pin-input', 'center');
+        $el.innerHTML = `
             <div class="pin-dot-indicator">
                 <div></div>
                 <div></div>
@@ -50,7 +53,7 @@ class PinInput extends Nimiq.Observable {
                 <button class="delete"></button>
             </div>
         `;
-        return el;
+        return $el;
     }
 
     /**

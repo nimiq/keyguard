@@ -6,44 +6,6 @@
   "plugins": [
     "require-jsdoc-except"
   ],
-  "globals": {
-    "Nimiq": false,
-    "runKeyguard": false,
-
-    // Libraries
-    "AccountStore": false,
-    "AddressUtils": false,
-    "BrowserDetection": false,
-    "CookieJar": false,
-    "EncryptionType": false,
-    "I18n": false,
-    "Key": false,
-    "KeyStore": false,
-    "RpcServer": false,
-    "TransactionType": false,
-    "Utf8Tools": false,
-
-    // Components
-    "Identicon": false,
-    "Iqons": false,
-    "LanguagePicker": false,
-    "PassphraseInput": false,
-    "PinInput": false,
-
-    // Requests
-    "PopupApi": false,
-    "SignTransaction": false,
-    "SignTransactionView": false,
-    "SignTransactionWithPassphrase": false,
-    "SignTransactionWithPin": false,
-
-    // Errors
-    "AmountTooSmallError": false,
-    "InvalidAddressError": false,
-    "NetworkMissmatchError": false,
-    "TooManyAccountsSafariError": false,
-    "TooManyAccountsIOSError": false
-  },
   "rules": {
     "arrow-parens": ["error", "as-needed"],
     "class-methods-use-this": ["off"],
@@ -53,7 +15,7 @@
     "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
     "no-underscore-dangle": ["off"],
     "prefer-destructuring": ["off"],
-    "no-console": ["warn"],
+    "no-console": ["off"],
     "no-warning-comments": ["warn"],
     "require-jsdoc-except/require-jsdoc": ["error", {
       "require": {

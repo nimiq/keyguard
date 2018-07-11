@@ -1,5 +1,9 @@
 describe("I18n", function () {
 
+    beforeAll(() => {
+        I18n.initialize(TRANSLATIONS, 'en');
+    });
+
     it("dictionary has languages", function () {
         const languages = I18n.availableLanguages();
         expect(languages).not.toBeNull();
