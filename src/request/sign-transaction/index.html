@@ -15,6 +15,7 @@
     <script defer src="../../lib/RpcServer.js"></script>
     <script defer src="../../lib/AddressUtils.js"></script>
     <script defer src="../../lib/Utf8Tools.js"></script>
+    <script defer src="../../lib/Iqons.js"></script>
     <script defer src="../../lib/I18n.js"></script>
     <script defer src="../../lib/AnimationUtils.js"></script>
     <script defer src="../../translations/index.js"></script>
@@ -22,6 +23,7 @@
     <script defer src="../../components/PinInput.js"></script>
     <script defer src="../../components/PassphraseInput.js"></script>
     <script defer src="../../components/PassphraseConfirm.js"></script>
+    <script defer src="../../components/Identicon.js"></script>
     <script defer src="../PopupApi.js"></script>
     <script defer src="SignTransactionApi.js"></script>
     <script defer src="SignTransaction.js"></script>
@@ -33,17 +35,68 @@
     <link rel="stylesheet" href="../../common.css">
     <link rel="stylesheet" href="../../components/PinInput.css">
     <link rel="stylesheet" href="../../components/PassphraseInput.css">
+    <link rel="stylesheet" href="SignTransaction.css">
 </head>
 <body>
+    <div class="header-top">
+        <div class="nimiq-app-name">
+            <nimiq-logo>NIMIQ KEYGUARD</nimiq-logo>
+        </div>
+    </div>
+
     <div id="app">
 
-        <!-- For SignTransactionWithPassPhrase -->
+        <!-- For SignTransactionWithPassphrase -->
         <div id="enter-passphrase" class="page">
             <span id="error" data-i18n="sign-tx-wrong-passphrase" class="hidden">Wrong Passphrase, please try again</span>
         </div>
 
-        <!-- For SignTransactionWithPin -->
+        <!-- For SignTransactionWithPin and content for SignTransactionWithPassphrase -->
         <div id="transaction-data" class="page">
+            <h1 data-i18n="sign-tx-header">Authorize Transaction</h1>
+            <h2 data-i18n="sign-tx-byline">Please confirm the following transaction:</h2>
+
+            <div class="transaction">
+                <div class="center">
+                    <div id="sender-identicon"></div>
+                    <i class="arrow material-icons">arrow_forward</i>
+                    <div id="recipient-identicon"></div>
+                </div>
+
+                <div class="center">
+                    <span class="value" id="value"></span> NIM
+                </div>
+
+                <div class="row">
+                    <label data-i18n="tx-from">From</label>
+                    <div class="row-data">
+                        <div class="label" id="sender-label"></div>
+                        <div class="address" id="sender-address"></div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <label data-i18n="tx-to">To</label>
+                    <div class="row-data">
+                        <div class="label" id="recipient-label"></div>
+                        <div class="address" id="recipient-address"></div>
+                    </div>
+                </div>
+
+                <div class="extra-data-section display-none row">
+                    <label data-i18n="tx-message">Message</label>
+                    <div class="row-data">
+                        <div class="extra-data" id="message"></div>
+                    </div>
+                </div>
+
+                <div class="fee-section display-none row">
+                    <label data-i18n="tx-fee">Fee</label>
+                    <div class="row-data">
+                        <div class="fee" id="fee"></div>
+                    </div>
+                </div>
+            </div>
             <button data-i18n="sign-tx-button-enter-pin">Enter PIN</button>
         </div>
 

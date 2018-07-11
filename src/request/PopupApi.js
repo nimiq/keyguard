@@ -42,6 +42,10 @@ class PopupApi { // eslint-disable-line no-unused-vars
 
         I18n.initialize(window.TRANSLATIONS, 'en');
         I18n.translateDom();
+
+        window.addEventListener('beforeunload', () => {
+            this.reject(new Error('Keyguard popup closed'));
+        });
     }
 
     /**
@@ -59,11 +63,15 @@ class PopupApi { // eslint-disable-line no-unused-vars
             await KeyStore.instance.migrateAccountsToKeys();
         }
 
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             this._resolve = resolve;
             this._reject = reject;
 
-            this.onRequest(request);
+            try {
+                await this.onRequest(request);
+            } catch (e) {
+                this.reject(e);
+            }
         });
     }
 

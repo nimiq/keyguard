@@ -1,6 +1,9 @@
 /* global SignTransaction */
 /* global PassphraseInput */
-/** Handles a sign-transaction request for keys with encryption type HIGH. */
+
+/**
+ * Handles a sign-transaction request for keys with encryption type HIGH.
+ */
 class SignTransactionWithPassphrase extends SignTransaction {
     /**
      * @param {TransactionRequest} txRequest
@@ -18,7 +21,7 @@ class SignTransactionWithPassphrase extends SignTransaction {
         this.$rootElement = (document.getElementById('app'));
 
         /** @type {HTMLDivElement} */
-        this.$enterPassphrase = (document.getElementById('enter-passphrase'));
+        this.$enterPassphrase = (this.$rootElement.querySelector('#enter-passphrase'));
 
         /** @type {HTMLDivElement} */
         this.$error = (this.$rootElement.querySelector('#enter-passphrase #error'));
@@ -45,11 +48,10 @@ class SignTransactionWithPassphrase extends SignTransaction {
         this.$error.classList.add('hidden');
 
         try {
-            const signedTx = await this._signTx(this._txRequest, passphrase);
+            const signedTx = await this._doSignTransaction(this._txRequest, passphrase);
             this._resolve(signedTx);
         } catch (e) {
             console.error(e);
-
             document.body.classList.remove('loading');
 
             // Assume the passphrase was wrong
