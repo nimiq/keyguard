@@ -28,8 +28,8 @@ const TRANSLATIONS = { // eslint-disable-line no-unused-vars
                             + ' Versteckte Kameras? Jemand der über die Schulter schaut?',
         'privacy-agent-warning': 'Falls irgendjemand ihre Wiederherstellungswörter herausfindet '
                                + 'kann er ihre gesamten NIM stehlen!',
-        'privacy-agent-ok': 'OK, all good',
-        'recovery-words-input-label': 'Wiederherstellungsworte',
+        'privacy-agent-ok': 'OK, alles in Ordnung',
+        'recovery-words-input-label': 'Wiederherstellungswörter',
         'recovery-words-input-field-placeholder': 'Wort ',
     },
 };
