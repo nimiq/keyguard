@@ -33,10 +33,6 @@ async function runKeyguard(RequestApiClass, options) { // eslint-disable-line no
         }
     });
 
-    I18n.initialize(window.TRANSLATIONS, 'en');
-
     // FIXME Set correct allowedOrigin
     window.rpcServer = RpcServer.create(RequestApiClass, '*', options.whitelist);
-
-    I18n.translateDom();
 }

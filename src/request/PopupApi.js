@@ -38,6 +38,10 @@ class PopupApi { // eslint-disable-line no-unused-vars
 
         /** @type {Function} */
         this._reject = () => { throw new Error('Method not defined'); };
+
+        I18n.initialize(window.TRANSLATIONS, 'en');
+
+        I18n.translateDom();
     }
 
     /**
