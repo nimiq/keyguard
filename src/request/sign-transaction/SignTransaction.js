@@ -32,7 +32,7 @@ class SignTransaction { // eslint-disable-line no-unused-vars
         /** @type {HTMLDivElement} */
         const $fee = ($transaction.querySelector('#fee'));
         /** @type {HTMLDivElement} */
-        // const $message = ($transaction.querySelector('#message'));
+        const $message = ($transaction.querySelector('#message'));
 
         // Set data
         new Identicon(txRequest.sender, $senderIdenticon); // eslint-disable-line no-new
@@ -57,9 +57,9 @@ class SignTransaction { // eslint-disable-line no-unused-vars
             if ($feeSection) $feeSection.classList.remove('display-none');
         }
 
-        // if (txRequest.type === TransactionType.EXTENDED && txRequest.extraData) {
-        //     $message.textContent = txRequest.extraData;
-        // }
+        if (txRequest.type === TransactionType.EXTENDED && txRequest.extraData) {
+            $message.textContent = txRequest.extraData;
+        }
 
         return $transaction;
     }

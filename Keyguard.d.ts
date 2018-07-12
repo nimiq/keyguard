@@ -28,8 +28,8 @@ type AccountEntry = AccountInfo & {
     encryptedKeyPair: Uint8Array
 }
 
-type BasicTransactionRequest = {
-    type: TransactionType.BASIC
+type TransactionRequest = {
+    type: TransactionType.BASIC | TransactionType.EXTENDED
     sender: string
     senderLabel?: string
     recipient: string
@@ -39,6 +39,7 @@ type BasicTransactionRequest = {
     fee: number
     network: string
     validityStartHeight: number
+    extraData?: string,
     mockKeyType?: EncryptionType
 }
 
@@ -54,12 +55,6 @@ type SignedTransactionResult = {
     extraData?: string,
     hash: string
 }
-
-type ExtendedTransactionRequest = BasicTransactionRequest & {
-   type: TransactionType.EXTENDED
-}
-
-type TransactionRequest = BasicTransactionRequest | ExtendedTransactionRequest
 
 type CreateRequest = {
 }
