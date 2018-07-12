@@ -18,18 +18,24 @@ Dummy.encryptionPassword = 'password';
 Dummy.keyInfo = [
     {
         userFriendlyAddress: 'NQ02 93YX MNVP HYHK 2N12 BM6B QGFG PAEN 2F55',
-        type: /** @type {1 | 2} */ (2)
+        type: /** @type {EncryptionType} */ (2)
     },
     {
         userFriendlyAddress: 'NQ71 CT4K 7R9R EHSB 7HY9 TSTP XNRQ L2RK 8U4U',
-        type: /** @type {1 | 2} */ (1)
+        type: /** @type {EncryptionType} */ (1)
     }
+];
+
+/** @type {KeyEntry[]} */
+Dummy.keyDatabaseEntries = [
+    Object.assign({}, Dummy.keyInfo[0], {encryptedKeyPair: Dummy.encryptedKeyPairs[0]}),
+    Object.assign({}, Dummy.keyInfo[1], {encryptedKeyPair: Dummy.encryptedKeyPairs[1]})
 ];
 
 /** @type {AccountInfo[]} */
 Dummy.deprecatedAccountInfo = Dummy.keyInfo.map((keyInfo, i) => ({
     userFriendlyAddress: keyInfo.userFriendlyAddress,
-    type: keyInfo.type === 1? 'low' : 'high',
+    type: keyInfo.type === EncryptionType.LOW ? 'low' : 'high',
     label: `Dummy account ${i}`
 }));
 
@@ -44,71 +50,95 @@ Dummy.keyInfoCookieEncoded = '2SP/q27eP4zFYIl1MvEHwup1hPKU1Zskz5Tl0dLPH6d63f1s4o
 /** @type {string} */
 Dummy.cookie = `k=${Dummy.keyInfoCookieEncoded};accounts=${JSON.stringify(Dummy.deprecatedAccountInfo)};some=thing;`;
 
-Dummy.DUMMY_ACCOUNT_DATABASE_NAME = 'keyguard-dummy-account-database';
+/**
+ * @param {IDBDatabase} db
+ * @param {string} objectStoreName
+ * @param {object} entry
+ * @returns {Promise.<void>}
+ */
+Dummy.addEntryToDataBase = async function(db, objectStoreName, entry) {
+    return new Promise((resolve, reject) => {
+        const putTx = db.transaction([objectStoreName], 'readwrite')
+            .objectStore(objectStoreName)
+            .put(entry);
+        putTx.onsuccess = () => resolve(putTx.result);
+        putTx.onerror = reject;
+    });
+};
 
-/** @type {AccountStore} */
-Dummy.accountStore = new AccountStore(Dummy.DUMMY_ACCOUNT_DATABASE_NAME);
+Dummy.createDummyAccountStore = async function() {
+    // create database
+    const db = await new Promise((resolve, reject) => {
+        const request = window.indexedDB.open(AccountStore.ACCOUNT_DATABASE, AccountStore.VERSION++);
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+        request.onupgradeneeded = () => {
+            /** @type {IDBDatabase} */
+            const db = request.result;
+            if (db.objectStoreNames.contains(AccountStore.ACCOUNT_DATABASE)) {
+                db.deleteObjectStore(AccountStore.ACCOUNT_DATABASE);
+            }
+
+            db.createObjectStore(AccountStore.ACCOUNT_DATABASE, { keyPath: 'userFriendlyAddress' });
+        };
+    });
+
+    // fill database
+    await Promise.all([
+        Dummy.addEntryToDataBase(db, AccountStore.ACCOUNT_DATABASE, Dummy.deprecatedAccountDatabaseEntries[0]),
+        Dummy.addEntryToDataBase(db, AccountStore.ACCOUNT_DATABASE, Dummy.deprecatedAccountDatabaseEntries[1])
+    ]);
+
+    db.close();
+};
+
+Dummy.createDummyKeyStore = async function() {
+    const db = await new Promise((resolve, reject) => {
+        const request = window.indexedDB.open(KeyStore.DB_NAME, KeyStore.DB_VERSION++);
+
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+
+        request.onupgradeneeded = () => {
+            /** @type {IDBDatabase} */
+            const db = request.result;
+            if (db.objectStoreNames.contains(KeyStore.DB_KEY_STORE_NAME)) {
+                db.deleteObjectStore(KeyStore.DB_KEY_STORE_NAME);
+            }
+
+            const store = db.createObjectStore(KeyStore.DB_KEY_STORE_NAME, { keyPath: 'userFriendlyAddress' });
+            store.createIndex('by_type', 'type');
+        };
+    });
+
+    db.close();
+
+    await Promise.all([
+        KeyStore.instance.putPlain(Dummy.keyDatabaseEntries[0]),
+        KeyStore.instance.putPlain(Dummy.keyDatabaseEntries[1])
+    ]);
+};
+
+/**
+ * @param {string} dbName
+ */
+Dummy.deleteDatabase = async function(dbName) {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.deleteDatabase(dbName);
+        request.onerror = () => reject;
+        request.onsuccess = () => resolve(`Database ${dbName} deleted`);
+        request.onblocked = () => reject(new Error('Can\'t delete database, there is still an open connection.'));
+    });
+};
 
 (() => {
-    /**
-     * @param {IDBDatabase} db
-     * @param {string} objectStoreName
-     * @param {object} entry
-     * @returns {Promise.<void>}
-     */
-    async function addEntryToDataBase(db, objectStoreName, entry) {
-        return new Promise((resolve, reject) => {
-            const putTx = db.transaction([objectStoreName], 'readwrite')
-                .objectStore(objectStoreName)
-                .put(entry);
-            putTx.onsuccess = () => resolve(putTx.result);
-            putTx.onerror = reject;
-        });
-    }
-
-    async function createDummyAccountStore() {
-        // create database
-        const db = await new Promise((resolve, reject) => {
-            const request = window.indexedDB.open(Dummy.DUMMY_ACCOUNT_DATABASE_NAME, AccountStore.VERSION);
-            request.onsuccess = () => resolve(request.result);
-            request.onerror = () => reject(request.error);
-            request.onupgradeneeded = () => {
-                const db = request.result;
-                db.createObjectStore(AccountStore.ACCOUNT_DATABASE, { keyPath: 'userFriendlyAddress' });
-            };
-        });
-
-        // fill database
-        await Promise.all([
-            addEntryToDataBase(db, AccountStore.ACCOUNT_DATABASE, Dummy.deprecatedAccountDatabaseEntries[0]),
-            addEntryToDataBase(db, AccountStore.ACCOUNT_DATABASE, Dummy.deprecatedAccountDatabaseEntries[1])
-        ]);
-
-        db.close();
-    }
-
-    /** @param {string} dbName */
-    async function deleteDatabase(dbName) {
-        return new Promise((resolve, reject) => {
-            const request = indexedDB.deleteDatabase(dbName);
-            request.onerror = () => reject;
-            request.onsuccess = resolve;
-        });
-    }
-
     beforeAll(async () => {
         Nimiq.GenesisConfig.test();
-        await Promise.all([
-            Nimiq.WasmHelper.doImportBrowser(),
-            createDummyAccountStore()
-        ]);
-
-        AccountStore._instance = Dummy.accountStore;
+        await Nimiq.WasmHelper.doImportBrowser();
     });
 
     afterAll(async () => {
-        Dummy.accountStore.close();
-        await deleteDatabase(Dummy.DUMMY_ACCOUNT_DATABASE_NAME);
-        console.log('Clean up finished');
+        console.log(await Dummy.deleteDatabase(AccountStore.ACCOUNT_DATABASE));
+        console.log(await Dummy.deleteDatabase(KeyStore.DB_NAME));
     });
 })();

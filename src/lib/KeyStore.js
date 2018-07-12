@@ -21,22 +21,22 @@ class KeyStore {
         return this._instance;
     }
 
+    constructor() {
+        /** @type {Promise<IDBDatabase>|null} */
+        this._dbPromise = null;
+    }
+
     /**
      * @returns {Promise.<IDBDatabase>}
      * @private
      */
     async connect() {
-        if (this._db) return Promise.resolve(this._db);
+        if (this._dbPromise) return this._dbPromise;
 
-        return new Promise((resolve, reject) => {
+        this._dbPromise = new Promise((resolve, reject) => {
             const request = window.indexedDB.open(KeyStore.DB_NAME, KeyStore.DB_VERSION);
 
-            request.onsuccess = () => {
-                /** @type {IDBDatabase | null} */
-                this._db = request.result;
-                resolve(this._db);
-            };
-
+            request.onsuccess = () => resolve(request.result);
             request.onerror = () => reject(request.error);
 
             request.onupgradeneeded = event => {
@@ -54,6 +54,8 @@ class KeyStore {
                 // }
             };
         });
+
+        return this._dbPromise;
     }
 
     /**
@@ -188,10 +190,12 @@ class KeyStore {
         });
     }
 
-    close() {
-        if (!this._db) return;
-        this._db.close();
-        this._db = null;
+    /** @returns {Promise<void>} */
+    async close() {
+        if (!this._dbPromise) return;
+        const db = await this._dbPromise;
+        db.close();
+        this._dbPromise = null;
     }
 
     /**
@@ -210,13 +214,11 @@ class KeyStore {
      * stored the existing account labels. Both the 'accounts' database and cookie are
      * deleted afterwards.
      *
-     * @returns {Promise<boolean>}
+     * @returns {Promise<void>}
      * @deprecated Only for database migration
      */
     async doMigrateAccountsToKeys() {
-        const accountStore = AccountStore.instance;
-
-        const keys = await accountStore.dangerousListPlain();
+        const keys = await AccountStore.instance.dangerousListPlain();
 
         keys.forEach(async key => {
             const keyEntry = {
@@ -228,18 +230,16 @@ class KeyStore {
             await this.putPlain(keyEntry);
         });
 
-        // FIXME Uncomment after/for testing
-        // await accountStore.drop();
+        // FIXME Uncomment after/for testing (and also adapt KeyStoreIndexeddb.spec.js)
+        // await AccountStore.instance.drop();
 
         if (BrowserDetection.isIos() || BrowserDetection.isSafari()) {
             // Delete migrate cookie
-            document.cookie = 'migrate=0;expires=0';
+            document.cookie = 'migrate=0; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 
             // Delete accounts cookie
-            document.cookie = 'accounts=;expires=0';
+            document.cookie = 'accounts=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
         }
-
-        return true;
     }
 }
 
