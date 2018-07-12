@@ -1,8 +1,8 @@
 {
     "reporter": [
-      "lcov",
-       "text-summary",
-      "html"
+        "lcov",
+        "text-summary",
+        "html"
     ],
     "include": [
           "instrumented/**/*.js"

@@ -56,7 +56,7 @@
   },
   "exclude": [
     "karma.conf.js",
-    "./instrumented",
+    "instrumented",
     "coverage"
   ]
 }

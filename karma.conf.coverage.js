@@ -22,7 +22,7 @@ module.exports = function (/** @type {any} */ config) {
 
         // list of files / patterns to exclude
         exclude: [
-            'instrumented/request/**/*js'
+            'instrumented/request/**/index.js'
         ],
 
 
