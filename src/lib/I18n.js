@@ -79,7 +79,9 @@ class I18n { // eslint-disable-line no-unused-vars
      * @returns {string}
      */
     static _translate(id, language) {
-        if (!this.dictionary[language] || !this.dictionary[language][id]) throw new Error('Undefined!');
+        if (!this.dictionary[language] || !this.dictionary[language][id]) {
+            throw new Error(`Translation not found: ${id}!`);
+        }
         return this.dictionary[language][id];
     }
 
