@@ -102,7 +102,6 @@ Dummy.accountStore = new AccountStore(Dummy.DUMMY_ACCOUNT_DATABASE_NAME);
             Nimiq.WasmHelper.doImportBrowser(),
             createDummyAccountStore()
         ]);
-
         AccountStore._instance = Dummy.accountStore;
     });
 
