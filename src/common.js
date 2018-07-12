@@ -37,6 +37,4 @@ async function runKeyguard(RequestApiClass, options) { // eslint-disable-line no
 
     // FIXME Set correct allowedOrigin
     window.rpcServer = RpcServer.create(RequestApiClass, '*', options.whitelist);
-
-    I18n.translateDom();
 }

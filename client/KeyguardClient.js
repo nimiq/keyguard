@@ -2,10 +2,17 @@
 /* global RpcClient */
 
 class KeyguardClient {
-    constructor() {
-        this._keyguardSrc = '../src/';
+    constructor(src = '../src') {
+        this._keyguardSrc = src;
 
         this._connected = this._startIFrame();
+
+        this._targetName = 'Nimiq Keyguard';
+    }
+
+    /** @param {string} targetName */
+    set targetName(targetName) {
+        this._targetName = targetName;
     }
 
     /**
@@ -118,7 +125,7 @@ class KeyguardClient {
             $iframe.name = 'Nimiq Keyguard IFrame';
             $iframe.style.display = 'none';
             document.body.appendChild($iframe);
-            $iframe.src = `${this._keyguardSrc}request/iframe/`;
+            $iframe.src = `${this._keyguardSrc}/request/iframe/`;
             $iframe.onload = () => resolve($iframe);
             $iframe.onerror = reject;
         });
@@ -129,9 +136,11 @@ class KeyguardClient {
      * @param {any[]} [args]
      */
     async _startPopup(requestName, args) {
+        const requestUrl = `${this._keyguardSrc}/request/${requestName}/`;
+
         const $popup = window.open(
-            `${this._keyguardSrc}request/${requestName}/`,
-            'Nimiq Keyguard Popup',
+            requestUrl,
+            this._targetName,
             `left=${window.innerWidth / 2 - 250},top=100,width=500,height=820,location=yes,dependent=yes`,
         );
 
