@@ -1,8 +1,6 @@
 const fs = require('fs');
 const { spawnSync } = require('child_process');
 
-// const funcs = require('./functions');
-
 const localizedFiles = spawnSync('grep', ['-i', '-r', '-l', 'i18n', 'src'], { shell: true })
     .stdout.toString()
     .replace('src/lib/I18n.js\n', '')
@@ -67,7 +65,7 @@ const DICT = require('../src/translations/index.js');
 
 let allLanguagesComplete = true;
 
-// Validate completenes of each language
+// Validate completeness of each language
 Object.keys(DICT).forEach(lang => {
     const langDict = DICT[lang];
     let complete = true;
@@ -83,10 +81,9 @@ Object.keys(DICT).forEach(lang => {
 
             if (inDict !== inRef) {
                 console.error(
-                    '\x1b[31m%s\x1b[0m',
-                    `ERROR: Different english for >${key}< in dict vs. DOM:\n\t${inDict}\n\t${inRef}`,
+                    '\x1b[33m%s\x1b[0m',
+                    `WARN: Different english for >${key}< in dict vs. DOM:\n\t${inDict}\n\t${inRef}`,
                 );
-                complete = false;
             }
         }
     });
