@@ -6,12 +6,22 @@
         iframe {
             display: none;
         }
+
+        button {
+            display: block;
+            margin: 8px;
+            padding: 8px;
+            font-size: inherit;
+        }
     </style>
 </head>
 <body>
         <button onclick="keyguard.list()">list</button>
-        <button onclick="keyguard.create()">create</button>
-        <button onclick="signTransaction()">sign-transaction</button>
+        <button onclick="keyguard.create()">reate</button>
+        <button onclick="signTransaction()">sign-transaction(low, basic)</button>
+        <button onclick="signTransaction(EncryptionType.HIGH)">sign-transaction(high, basic)</button>
+        <button onclick="signTransaction(undefined, 'extended', 'Hokus pokus!')">sign-transaction(low, extended)</button>
+        <button onclick="signTransaction(EncryptionType.HIGH, 'extended', 'Hokus pokus!')">sign-transaction(high, extended)</button>
 
         <script src="../src/lib/EncryptionType.js"></script>
         <script src="RpcClient.js"></script>
@@ -19,9 +29,9 @@
         <script>
             window.keyguard = new KeyguardClient();
 
-            function signTransaction(type = 'basic') {
+            function signTransaction(keyType = EncryptionType.LOW, txType = 'basic', message = '') {
                 keyguard.signTransaction({
-                    type,
+                    type: txType,
                     sender: 'NQ47 FS55 KNXG 25XL 37N8 LD78 1DDH 8CS0 QBNF',
                     signer: 'NQ47 FS55 KNXG 25XL 37N8 LD78 1DDH 8CS0 QBNF',
                     senderLabel: 'Thomas the Tank Engine',
@@ -30,7 +40,8 @@
                     fee: 0.00138,
                     network: 'test',
                     validityStartHeight: 100000,
-                    mockKeyType: EncryptionType.LOW,
+                    extraData: message,
+                    mockKeyType: keyType,
                 });
             }
         </script>

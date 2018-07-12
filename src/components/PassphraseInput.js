@@ -47,6 +47,7 @@ class PassphraseInput extends Nimiq.Observable {
                 <div class="label"><span data-i18n="passphrase-strength">Strength</span>:</div>
                 <meter max="130" low="10" optimum="100" class="strength-indicator"></meter>
             </div>
+            <div class="grow"></div>
             <button data-i18n="passphrase-confirm">Confirm</button>
         `;
         /* eslint-enable max-len */
