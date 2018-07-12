@@ -2,11 +2,11 @@
 
 ## Development
 Install the dev dependencies:
-```bash
-// With NPM
+```sh
+# With NPM
 npm install
 
-// With Yarn
+# With Yarn
 yarn
 ```
 
