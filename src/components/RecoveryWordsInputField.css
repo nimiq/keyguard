@@ -1,7 +1,8 @@
-.recovery-word-field{
+.recovery-word-field {
     width: 100%;
     box-sizing: border-box;
-  }
+}
 
- .recovery-word-field.shake input {
-      border-bottom: 1px solid var(--error-color) !important;
+.recovery-word-field.shake input {
+    border-bottom: 1px solid var(--error-color) !important;
+}

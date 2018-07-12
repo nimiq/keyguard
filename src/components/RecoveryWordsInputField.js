@@ -41,13 +41,10 @@ class RecoveryWordsInputField extends Nimiq.Observable {
 
         input.addEventListener('keydown', this._onKeydown.bind(this));
         input.addEventListener('blur', this._onBlur.bind(this));
-        /** @type {HTMLInputElement} */
-        this.$input = input;
 
         const placeholder = document.createElement('div');
         placeholder.className = 'placeholder';
         placeholder.textContent = (this._index + 1).toString();
-        this.$placeholder = placeholder;
 
         element.addEventListener('click', this._showInput.bind(this));
         element.addEventListener('mouseenter', this._showInput.bind(this));
@@ -59,7 +56,7 @@ class RecoveryWordsInputField extends Nimiq.Observable {
 
     _setupAutocomplete() {
         this.autocomplete = new AutoComplete({
-            selector: this.$input,
+            selector: this.dom.input,
             source: /** @param{string} term @param{function} response */ (term, response) => {
                 term = term.toLowerCase();
                 const list = MnemonicPhrase.DEFAULT_WORDLIST.filter(word => word.startsWith(term));
@@ -143,7 +140,7 @@ class RecoveryWordsInputField extends Nimiq.Observable {
         if (this.value === '') return;
 
         // don't hide focused input fields
-        if (document.activeElement === this.$input) return;
+        if (document.activeElement === this.dom.input) return;
 
         this.dom.element.classList.add('has-placeholder');
         this.dom.element.replaceChild(this.dom.placeholder, this.dom.input);
