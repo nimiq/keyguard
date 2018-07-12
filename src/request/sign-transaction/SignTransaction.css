@@ -50,3 +50,9 @@
     padding: 1rem 0;
     display: inline;
 }
+
+.passphrase-input {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}

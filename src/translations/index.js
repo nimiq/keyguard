@@ -10,6 +10,7 @@ const TRANSLATIONS = {
         'sign-tx-wrong-passphrase': 'Wrong Passphrase, please try again',
         'sign-tx-header': 'Authorize Transaction',
         'sign-tx-byline': 'Please confirm the following transaction:',
+        'sign-tx-byline-passphrase': 'Enter your passphrase below to authorize this transaction:',
         'sign-tx-error-wrong-passphrase': 'Wrong Passphrase, please try again',
         'sign-tx-button-enter-pin': 'Enter PIN',
 
@@ -54,6 +55,7 @@ const TRANSLATIONS = {
         'sign-tx-wrong-passphrase': 'Falsche Passphrase, bitte versuche es nochmal',
         'sign-tx-header': 'Überweisung Authorisieren',
         'sign-tx-byline': 'Bitte bestätige die folgende Überweisung:',
+        'sign-tx-byline-passphrase': 'Bitte geb deine Passphrase ein, um die Überweisung zu bestätigen:',
         'sign-tx-error-wrong-passphrase': 'Falsche Passphrase, bitte versuche es nochmal',
         'sign-tx-button-enter-pin': 'PIN eingeben',
 

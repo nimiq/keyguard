@@ -21,6 +21,10 @@ class SignTransactionApi extends PopupApi { // eslint-disable-line no-unused-var
             if (txRequest.sender !== txRequest.signer) {
                 throw new Error('Sender must be signer for basic transactions');
             }
+
+            if (txRequest.extraData) {
+                throw new Error('Cannot add extraData to basic transaction');
+            }
         } else {
             throw new Error('Invalid transaction type');
         }

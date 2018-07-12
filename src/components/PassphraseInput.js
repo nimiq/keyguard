@@ -41,14 +41,14 @@ class PassphraseInput extends Nimiq.Observable {
 
         /* eslint-disable max-len */
         $el.innerHTML = `
-                <div class="input-container">
-                    <input class="password" type="password" placeholder="Enter Passphrase">
-                    <span class="eye-button icon-eye"/>
-                </div>
-                <div class="strength-indicator-container">
-                    <div class="label"><span data-i18n="passphrase-strength">Strength</span>:</div>
-                    <meter max="130" low="10" optimum="100" class="strength-indicator"></meter>
-                </div>
+            <div class="input-container">
+                <input class="password" type="password" placeholder="Enter Passphrase">
+                <span class="eye-button icon-eye"/>
+            </div>
+            <div class="strength-indicator-container">
+                <div class="label"><span data-i18n="passphrase-strength">Strength</span>:</div>
+                <meter max="130" low="10" optimum="100" class="strength-indicator"></meter>
+            </div>
         `;
         /* eslint-enable max-len */
 

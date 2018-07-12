@@ -1,7 +1,6 @@
 /* global SignTransaction */
 /* global PinInput */
 
-
 /**
  * Handles a sign-transaction request for keys with encryption type LOW.
  */
@@ -28,14 +27,14 @@ class SignTransactionWithPin extends SignTransaction {
             window.location.hash = SignTransactionWithPin.Pages.ENTER_PIN;
         });
 
-        // Set up pin input page
+        // Set up PIN input
         this._pinInput = new PinInput();
         $enterPinPage.appendChild(this._pinInput.getElement());
         this._pinInput.on(PinInput.Events.PIN_ENTERED, this.handlePinInput.bind(this));
     }
 
     run() {
-        // go to start page
+        // Go to start page
         window.location.hash = SignTransactionWithPin.Pages.TRANSACTION_DATA;
 
         window.addEventListener('hashchange', () => {
@@ -57,7 +56,6 @@ class SignTransactionWithPin extends SignTransaction {
             this._resolve(signedTx);
         } catch (e) {
             console.error(e);
-
             document.body.classList.remove('loading');
 
             // Assume the pin was wrong

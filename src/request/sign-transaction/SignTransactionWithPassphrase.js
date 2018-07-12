@@ -16,29 +16,27 @@ class SignTransactionWithPassphrase extends SignTransaction {
         this._resolve = resolve;
         this._reject = reject;
 
-        // set html elements
         /** @type {HTMLDivElement} */
-        this.$rootElement = (document.getElementById('app'));
-
-        /** @type {HTMLDivElement} */
-        this.$enterPassphrase = (this.$rootElement.querySelector('#enter-passphrase'));
+        const $enterPassphrase = (document.querySelector('#enter-passphrase'));
 
         /** @type {HTMLDivElement} */
-        this.$error = (this.$rootElement.querySelector('#enter-passphrase #error'));
+        this.$error = ($enterPassphrase.querySelector('#error'));
 
-        // TODO add identicons and other tx data to UI
+        /** @type {HTMLFormElement} */
+        const $passphraseInput = ($enterPassphrase.querySelector('#passphrase-input'));
 
-        // create components
-        this._passphraseInput = new PassphraseConfirm();
-        this.$enterPassphrase.appendChild(this._passphraseInput.getElement());
+        const $transaction = this.fillTransactionDetails(txRequest);
+        $enterPassphrase.insertBefore($transaction, $passphraseInput);
 
-        // wire up logic
-        this._passphraseInput.on(PassphraseConfirm.Events.PASSPHRASE_ENTERED, this._handlePassphraseInput.bind(this));
+        // Set up passphrase input
+        this._passphraseInput = new PassphraseInput(false, $passphraseInput);
+        this._passphraseInput.on(PassphraseInput.Events.PASSPHRASE_ENTERED, this._handlePassphraseInput.bind(this));
     }
 
     run() {
-        // go to start page
+        // Go to start page
         window.location.hash = SignTransactionWithPassphrase.Pages.ENTER_PASSPHRASE;
+        setTimeout(this._passphraseInput.focus, 200);
     }
 
     /** @param {string} passphrase */
@@ -56,7 +54,6 @@ class SignTransactionWithPassphrase extends SignTransaction {
 
             // Assume the passphrase was wrong
             this._passphraseInput.onPassphraseIncorrect();
-
             this.$error.classList.remove('hidden');
         }
     }
