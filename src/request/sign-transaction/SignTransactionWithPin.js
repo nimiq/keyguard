@@ -1,7 +1,5 @@
 /* global SignTransaction */
 /* global PinInput */
-/* global Identicon */
-/* global Nimiq */
 
 
 /**
@@ -19,65 +17,14 @@ class SignTransactionWithPin extends SignTransaction {
         this._resolve = resolve;
         this._reject = reject;
 
-        // Set DOM references
-        /** @type {HTMLDivElement} */
-        this.$rootElement = (document.getElementById('app'));
-
-        /** @type {HTMLDivElement} */
-        this.$senderIdenticon = (this.$rootElement.querySelector('#sender-identicon'));
-        /** @type {HTMLDivElement} */
-        this.$recipientIdenticon = (this.$rootElement.querySelector('#recipient-identicon'));
-
-        /** @type {HTMLDivElement} */
-        this.$senderLabel = (this.$rootElement.querySelector('#sender-label'));
-        /** @type {HTMLDivElement} */
-        this.$recipientLabel = (this.$rootElement.querySelector('#recipient-label'));
-
-        /** @type {HTMLDivElement} */
-        this.$senderAddress = (this.$rootElement.querySelector('#sender-address'));
-        /** @type {HTMLDivElement} */
-        this.$recipientAddress = (this.$rootElement.querySelector('#recipient-address'));
-
-        /** @type {HTMLDivElement} */
-        this.$value = (this.$rootElement.querySelector('#value'));
-        /** @type {HTMLDivElement} */
-        this.$fee = (this.$rootElement.querySelector('#fee'));
-        /** @type {HTMLDivElement} */
-        this.$message = (this.$rootElement.querySelector('#message'));
+        this.fillTransactionDetails(txRequest);
 
         /** @type {HTMLElement} */
-        this.$button = (this.$rootElement.querySelector('#transaction-data button'));
+        const $button = (document.querySelector('#transaction-data button'));
         /** @type {HTMLDivElement} */
-        this.$enterPinPage = (this.$rootElement.querySelector('#enter-pin'));
+        const $enterPinPage = (document.querySelector('#enter-pin'));
 
-        // Set data
-        new Identicon(txRequest.sender, this.$senderIdenticon); // eslint-disable-line no-new
-        new Identicon(txRequest.recipient, this.$recipientIdenticon); // eslint-disable-line no-new
-
-        if (txRequest.senderLabel) {
-            this.$senderLabel.classList.remove('display-none');
-            this.$senderLabel.textContent = txRequest.senderLabel;
-        }
-        if (txRequest.recipientLabel) {
-            this.$recipientLabel.classList.remove('display-none');
-            this.$recipientLabel.textContent = txRequest.recipientLabel;
-        }
-
-        this.$senderAddress.textContent = txRequest.sender;
-        this.$recipientAddress.textContent = txRequest.recipient;
-
-        this.$value.textContent = Nimiq.Policy.satoshisToCoins(txRequest.value).toString();
-        if (txRequest.fee > 0) {
-            this.$fee.textContent = Nimiq.Policy.satoshisToCoins(txRequest.fee).toString();
-            const $feeSection = this.$rootElement.querySelector('.fee-section');
-            if ($feeSection) $feeSection.classList.remove('display-none');
-        }
-
-        // if (txRequest.type === TransactionType.EXTENDED && txRequest.extraData) {
-        //     this.$message.textContent = extraData;
-        // }
-
-        this.$button.addEventListener('click', () => {
+        $button.addEventListener('click', () => {
             window.location.hash = SignTransactionWithPin.Pages.ENTER_PIN;
         });
 
@@ -86,7 +33,7 @@ class SignTransactionWithPin extends SignTransaction {
 
         // Set up pin input page
         this._pinInput = new PinInput();
-        this.$enterPinPage.appendChild(this._pinInput.getElement());
+        $enterPinPage.appendChild(this._pinInput.getElement());
         this._pinInput.on(PinInput.Events.PIN_ENTERED, this.handlePinInput.bind(this));
     }
 
