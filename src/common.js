@@ -1,4 +1,4 @@
-/* global TRANSLATIONS */
+/* global TRANSLATIONS */ // eslint-disable-line no-unused-vars
 /* global Nimiq */
 /* global KeyStore */
 /* global RpcServer */
@@ -33,7 +33,7 @@ async function runKeyguard(RequestApiClass, options) { // eslint-disable-line no
         }
     });
 
-    I18n.initialize(TRANSLATIONS, 'en');
+    I18n.initialize(window.TRANSLATIONS, 'en');
 
     // FIXME Set correct allowedOrigin
     window.rpcServer = RpcServer.create(RequestApiClass, '*', options.whitelist);
