@@ -1,3 +1,8 @@
+beforeAll(async () => {
+    Nimiq.GenesisConfig.test();
+    await Nimiq.WasmHelper.doImportBrowser();
+});
+
 const Dummy = {};
 
 Dummy.keyPairs = [
@@ -55,14 +60,14 @@ Dummy.DUMMY_KEY_DATABASE_NAME = 'keyguard-dummy-key-database';
 AccountStore.ACCOUNT_DATABASE = Dummy.DUMMY_ACCOUNT_DATABASE_NAME;
 KeyStore.DB_NAME = Dummy.DUMMY_KEY_DATABASE_NAME;
 
-(() => {
+Dummy.Utils = {
     /**
      * @param {IDBDatabase} db
      * @param {string} objectStoreName
      * @param {object} entry
-     * @returns {Promise.<void>}
+     * @returns {Promise<void>}
      */
-    async function addEntryToDataBase(db, objectStoreName, entry) {
+    addEntryToDatabase: async (db, objectStoreName, entry) => {
         return new Promise((resolve, reject) => {
             const putTx = db.transaction([objectStoreName], 'readwrite')
                 .objectStore(objectStoreName)
@@ -70,9 +75,10 @@ KeyStore.DB_NAME = Dummy.DUMMY_KEY_DATABASE_NAME;
             putTx.onsuccess = () => resolve(putTx.result);
             putTx.onerror = reject;
         });
-    }
+    },
 
-    async function createDummyAccountStore() {
+    /** @returns {Promise<void>} */
+    createDummyAccountStore: async () => {
         // create database
         const db = await new Promise((resolve, reject) => {
             const request = window.indexedDB.open(Dummy.DUMMY_ACCOUNT_DATABASE_NAME, AccountStore.VERSION);
@@ -86,14 +92,15 @@ KeyStore.DB_NAME = Dummy.DUMMY_KEY_DATABASE_NAME;
 
         // fill database
         await Promise.all([
-            addEntryToDataBase(db, AccountStore.ACCOUNT_DATABASE, Dummy.deprecatedAccountDatabaseEntries[0]),
-            addEntryToDataBase(db, AccountStore.ACCOUNT_DATABASE, Dummy.deprecatedAccountDatabaseEntries[1])
+            Dummy.Utils.addEntryToDatabase(db, AccountStore.ACCOUNT_DATABASE, Dummy.deprecatedAccountDatabaseEntries[0]),
+            Dummy.Utils.addEntryToDatabase(db, AccountStore.ACCOUNT_DATABASE, Dummy.deprecatedAccountDatabaseEntries[1])
         ]);
 
         db.close();
-    }
+    },
 
-    async function createDummyKeyStore() {
+    /** @returns {Promise<void>} */
+    createDummyKeyStore: async () => {
         // The key store can be created and filled by its api
         await KeyStore.instance.connect();
         await Promise.all([
@@ -101,31 +108,35 @@ KeyStore.DB_NAME = Dummy.DUMMY_KEY_DATABASE_NAME;
             KeyStore.instance.putPlain(Dummy.keyDatabaseEntries[1])
         ]);
         await KeyStore.instance.close();
-    }
+    },
 
-    /** @param {string} dbName */
-    async function deleteDatabase(dbName) {
+    /**
+     * @param {string} dbName
+     * @returns {Promise<void>}
+     */
+    deleteDatabase: async (dbName) => {
         return new Promise((resolve, reject) => {
             const request = indexedDB.deleteDatabase(dbName);
             request.onerror = () => reject;
             request.onsuccess = resolve;
-            request.onblocked = () => reject(new Error('Can\'t delete database, there is still an open connection.'));
+            request.onblocked = () => {
+                // wait for open connections to get closed
+                setTimeout(() => reject(new Error('Can\'t delete database, there is still an open connection.')), 300);
+            };
         });
-    }
+    },
 
-    beforeAll(async () => {
-        Nimiq.GenesisConfig.test();
-        await Promise.all([
-            Nimiq.WasmHelper.doImportBrowser(),
-            createDummyAccountStore(),
-            createDummyKeyStore()
-        ]);
-    });
+    /** @returns {Promise<void>} */
+    deleteDummyAccountStore: async () => {
+        await AccountStore.instance.close();
+        await Dummy.Utils.deleteDatabase(Dummy.DUMMY_ACCOUNT_DATABASE_NAME);
+        delete AccountStore._instance;
+    },
 
-    afterAll(async () => {
-        await Promise.all([
-            AccountStore.instance.close().then(() => deleteDatabase(Dummy.DUMMY_ACCOUNT_DATABASE_NAME)),
-            KeyStore.instance.close().then(() => deleteDatabase(Dummy.DUMMY_KEY_DATABASE_NAME))
-        ]);
-    });
-})();
+    /** @returns {Promise<void>} */
+    deleteDummyKeyStore: async () => {
+        await KeyStore.instance.close();
+        await Dummy.Utils.deleteDatabase(Dummy.DUMMY_KEY_DATABASE_NAME);
+        delete KeyStore._instance;
+    },
+};

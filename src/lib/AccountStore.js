@@ -46,6 +46,7 @@ class AccountStore {
             request.onerror = () => reject(request.error);
             request.onupgradeneeded = () => {
                 this._dropped = true;
+                request.result.close();
                 reject(new Error('Account database does not exist'));
             };
         });
@@ -116,16 +117,17 @@ class AccountStore {
 
     async close() {
         if (!this._dbPromise) return;
-        const db = await this._dbPromise;
-        db.close();
+        // If failed to open database (i.e. _dbPromise rejects) we don't need to close the db
+        const db = await this._dbPromise.catch(() => null);
         this._dbPromise = null;
+        if (db) db.close();
     }
 
     /**
-     * @returns {Promise<boolean | Error>}
+     * @returns {Promise<void>}
      */
     async drop() {
-        if (this._dropped) return true;
+        if (this._dropped) return Promise.resolve();
         await this.close();
 
         return new Promise((resolve, reject) => {
@@ -133,7 +135,7 @@ class AccountStore {
 
             request.onsuccess = () => {
                 this._dropped = true;
-                resolve(true);
+                resolve();
             };
 
             request.onerror = () => reject(request.error);

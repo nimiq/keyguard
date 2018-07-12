@@ -1,4 +1,7 @@
 describe('AccountStore', () => {
+    beforeEach(async () => Dummy.Utils.createDummyAccountStore());
+    afterEach(async () => Dummy.Utils.deleteDummyAccountStore());
+
     it('is a singleton', () => {
         const instance1 = AccountStore.instance;
         const instance2 = AccountStore.instance;
@@ -7,6 +10,7 @@ describe('AccountStore', () => {
 
     it('can open and close a connection', async () => {
         const db = await AccountStore.instance.connect();
+        expect(db.constructor).toBe(IDBDatabase);
         expect(AccountStore.instance._dbPromise).toBeTruthy();
         expect(db.name).toBe(Dummy.DUMMY_ACCOUNT_DATABASE_NAME);
         await AccountStore.instance.close();
@@ -23,5 +27,14 @@ describe('AccountStore', () => {
         expect(accounts).toEqual(Dummy.deprecatedAccountDatabaseEntries);
     });
 
-    // TODO add test for drop
+    it('can be dropped', async function (done) {
+        await AccountStore.instance.drop();
+        // should not be able to connect to database anymore
+        try {
+            await AccountStore.instance.connect();
+            done.fail();
+        } catch(e) {
+            done();
+        }
+    });
 });

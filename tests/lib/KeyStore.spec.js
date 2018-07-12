@@ -1,4 +1,7 @@
 describe('KeyStore', () => {
+    beforeEach(async () => Dummy.Utils.createDummyKeyStore());
+    afterEach(async () => Dummy.Utils.deleteDummyKeyStore());
+
     it('is a singleton', () => {
         const instance1 = KeyStore.instance;
         const instance2 = KeyStore.instance;
@@ -7,6 +10,7 @@ describe('KeyStore', () => {
 
     it('can open and close a connection', async () => {
         const db = await KeyStore.instance.connect();
+        expect(db.constructor).toBe(IDBDatabase);
         expect(KeyStore.instance._dbPromise).toBeTruthy();
         expect(db.name).toBe(Dummy.DUMMY_KEY_DATABASE_NAME);
         await KeyStore.instance.close();
@@ -67,20 +71,11 @@ describe('KeyStore', () => {
         ]);
         expect(removedKeys[0]).toBeUndefined();
         expect(removedKeys[1]).toBeUndefined();
-
-        // re-add the keys to restore the state before the test
-        await Promise.all([
-            KeyStore.instance.putPlain(Dummy.keyDatabaseEntries[0]),
-            KeyStore.instance.putPlain(Dummy.keyDatabaseEntries[1])
-        ]);
     });
 
     it('can add and update keys', async () => {
         // first clear database
-        await Promise.all([
-            KeyStore.instance.remove(Dummy.keyInfo[0].userFriendlyAddress),
-            KeyStore.instance.remove(Dummy.keyInfo[1].userFriendlyAddress),
-        ]);
+        await Dummy.Utils.deleteDummyKeyStore();
 
         let currentKeys = await KeyStore.instance.list();
         expect(currentKeys.length).toBe(0);
@@ -117,16 +112,16 @@ describe('KeyStore', () => {
     });
 
     it('can migrate accounts from deprecated AccountStore', async () => {
+        // clear key store and fill account store
+        await Promise.all([
+            Dummy.Utils.deleteDummyKeyStore(),
+            Dummy.Utils.createDummyAccountStore()
+        ]);
+
         spyOnProperty(document, 'cookie', 'set').and.callFake((/** @type {string} */ cookie) => {
             expect(cookie.startsWith('migrate') || cookie.startsWith('accounts')).toBe(true);
             expect(cookie.endsWith('expires=Thu, 01 Jan 1970 00:00:01 GMT')).toBe(true);
         });
-
-        // first clear the key store
-        await Promise.all([
-            KeyStore.instance.remove(Dummy.keyInfo[0].userFriendlyAddress),
-            KeyStore.instance.remove(Dummy.keyInfo[1].userFriendlyAddress),
-        ]);
 
         await KeyStore.instance.doMigrateAccountsToKeys();
 
@@ -136,5 +131,7 @@ describe('KeyStore', () => {
         ]);
         expect(key1).toEqual(Dummy.keyDatabaseEntries[0]);
         expect(key2).toEqual(Dummy.keyDatabaseEntries[1]);
+
+        await Dummy.Utils.deleteDummyAccountStore();
     });
 });

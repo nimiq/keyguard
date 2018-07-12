@@ -36,9 +36,7 @@ class KeyStore {
         this._dbPromise = new Promise((resolve, reject) => {
             const request = window.indexedDB.open(KeyStore.DB_NAME, KeyStore.DB_VERSION);
 
-            request.onsuccess = () => {
-                resolve(request.result);
-            };
+            request.onsuccess = () => resolve(request.result);
 
             request.onerror = () => reject(request.error);
 
@@ -92,9 +90,7 @@ class KeyStore {
             const getTx = db.transaction([KeyStore.DB_KEY_STORE_NAME])
                 .objectStore(KeyStore.DB_KEY_STORE_NAME)
                 .get(userFriendlyAddress);
-            getTx.onsuccess = () => {
-                resolve(getTx.result);
-            };
+            getTx.onsuccess = () => resolve(getTx.result);
             getTx.onerror = reject;
         });
     }
@@ -196,9 +192,10 @@ class KeyStore {
     /** @returns {Promise<void>} */
     async close() {
         if (!this._dbPromise) return;
-        const db = await this._dbPromise;
-        db.close();
+        // If failed to open database (i.e. _dbPromise rejects) we don't need to close the db
+        const db = await this._dbPromise.catch(() => null);
         this._dbPromise = null;
+        if (db) db.close();
     }
 
     /**
@@ -221,9 +218,7 @@ class KeyStore {
      * @deprecated Only for database migration
      */
     async doMigrateAccountsToKeys() {
-        const accountStore = AccountStore.instance;
-
-        const keys = await accountStore.dangerousListPlain();
+        const keys = await AccountStore.instance.dangerousListPlain();
 
         keys.forEach(async key => {
             const keyEntry = {
@@ -236,7 +231,7 @@ class KeyStore {
         });
 
         // FIXME Uncomment after/for testing (and also adapt KeyStoreIndexeddb.spec.js)
-        // await accountStore.drop();
+        // await AccountStore.instance.drop();
 
         if (BrowserDetection.isIos() || BrowserDetection.isSafari()) {
             // Delete migrate cookie
