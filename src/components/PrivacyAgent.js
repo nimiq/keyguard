@@ -47,10 +47,9 @@ class PrivacyAgent extends Nimiq.Observable { // eslint-disable-line no-unused-v
         `;
         /* eslint-enable max-len */
 
-        const $ok = element.querySelector('button');
-        if (!$ok) {
-            throw new Error('Next link not found');
-        }
+        /** @type {HTMLButtonElement} */
+        const $ok = (element.querySelector('button'));
+
         $ok.addEventListener('click', () => {
             this.fire(PrivacyAgent.Events.CONFIRM);
         });
