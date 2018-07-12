@@ -48,6 +48,9 @@ class RecoveryWords extends Nimiq.Observable { // eslint-disable-line no-unused-
      * @param {Uint8Array} privateKey
      */
     set privateKey(privateKey) {
+        // clear container before adding new content
+        this.$wordsContainer.textContent = '';
+
         const phrase = MnemonicPhrase.keyToMnemonic(privateKey);
         const words = phrase.split(/\s+/g);
 

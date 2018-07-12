@@ -60,7 +60,6 @@ class CreateHigh {
                 const keyAsUInt8 = keyPair.privateKey.serialize();
                 this._recoveryWords.privateKey = keyAsUInt8;
                 this._validateWords.privateKey = keyAsUInt8;
-                this._validateWords.reset();
                 window.location.hash = CreateHigh.Pages.PRIVACY_AGENT;
             },
         );
@@ -95,9 +94,9 @@ class CreateHigh {
             PassphraseInput.Events.PASSPHRASE_ENTERED,
             /** @param {string} passphrase */ async passphrase => {
                 if (this._passphrase !== passphrase) {
-                    this._passphraseGetter.onPassphraseIncorrect();
-                    this._passphraseGetter.reset();
+                    await this._passphraseGetter.onPassphraseIncorrect();
                     $passphraseConfirm.classList.add('display-none');
+                    // todo show wrong passphrase message
                     $passphraseSetter.classList.remove('display-none');
                 } else {
                     document.body.classList.add('loading');

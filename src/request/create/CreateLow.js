@@ -23,10 +23,10 @@ class CreateLow {
         const $pinInput = (this.$setPin.querySelector('.pinpad'));
 
         /** @type {HTMLDivElement} */
-        const $confirmMessage = /** @type {HTMLDivElement} */ (this.$setPin.querySelector('.confirm-message'));
+        const $confirmMessage = (this.$setPin.querySelector('.confirm-message'));
 
         /** @type {HTMLDivElement} */
-        const $notMatchingMessage = /** @type {HTMLDivElement} */ (this.$setPin.querySelector('.not-matching-message'));
+        const $notMatchingMessage = (this.$setPin.querySelector('.not-matching-message'));
 
         // create components
         this._chooseIdenticon = new ChooseIdenticon(this.$chooseIdenticon);
@@ -58,6 +58,7 @@ class CreateLow {
                     this._pin = null;
                     $notMatchingMessage.classList.remove('display-none');
                 } else {
+                    this._pinInput.close();
                     document.body.classList.add('loading');
                     const key = new Key(this._selectedKeyPair, request.type);
                     this._resolve(await KeyStore.instance.put(key, pin.toString()));
