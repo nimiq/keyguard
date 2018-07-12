@@ -28,9 +28,6 @@ class SignTransactionWithPin extends SignTransaction {
             window.location.hash = SignTransactionWithPin.Pages.ENTER_PIN;
         });
 
-        // Go to start page
-        window.location.hash = SignTransactionWithPin.Pages.TRANSACTION_DATA;
-
         // Set up pin input page
         this._pinInput = new PinInput();
         $enterPinPage.appendChild(this._pinInput.getElement());
@@ -40,6 +37,7 @@ class SignTransactionWithPin extends SignTransaction {
     run() {
         // go to start page
         window.location.hash = SignTransactionWithPin.Pages.TRANSACTION_DATA;
+
         window.addEventListener('hashchange', () => {
             if (window.location.hash.substr(1) === SignTransactionWithPin.Pages.ENTER_PIN) {
                 this._pinInput.open();
