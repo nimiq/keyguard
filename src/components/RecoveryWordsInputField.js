@@ -122,6 +122,7 @@ class RecoveryWordsInputField extends Nimiq.Observable {
 
     async _onInvalid() {
         this.dom.input.value = '';
+        this._onValueChanged();
         AnimationUtils.animate('shake', this.dom.input);
     }
 

@@ -119,11 +119,7 @@
     will-change: transform, opacity;
     transition-delay: 300ms;
 }
-
-datalist {
-    display: none;
-}
-
+/* can not be name-spaced as the AutoComplete lib renders suggestions outside of the components element */
 .autocomplete-suggestions {
     text-align: left;
     cursor: default;
