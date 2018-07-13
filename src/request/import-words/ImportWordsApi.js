@@ -1,7 +1,6 @@
 /* global PopupApi */
 /* global RecoveryWordsInput */
 /* global PassphraseInput */
-/* global MnemonicPhrase */
 /* global PrivacyAgent */
 /* global Nimiq */
 /* global Key */
@@ -24,22 +23,41 @@ class ImportWordsApi extends PopupApi {
      * @returns {{passphrase: PassphraseInput, passphraseConfirm: PassphraseInput}}
      */
     _makeView() {
-        const $app = /** @type {HTMLElement} */ (document.getElementById('app'));
-        const $privacyAgent = /** @type {HTMLElement} */ (document.getElementById(ImportWordsApi.Pages.PRIVACY_AGENT));
-        const $enterWords = /** @type {HTMLElement} */ (document.getElementById(ImportWordsApi.Pages.ENTER_WORDS));
-        const $enterPassphrase = /** @type {HTMLElement} */ (document.getElementById(ImportWordsApi.Pages.ENTER_PASSPHRASE));
-        const $confirmPassphrase = /** @type {HTMLElement} */ (document.getElementById(ImportWordsApi.Pages.CONFIRM_PASSPHRASE));
+        // Pages
+        /** @type {HTMLElement} */
+        const $privacy = (document.getElementById(ImportWordsApi.Pages.PRIVACY_AGENT));
+        /** @type {HTMLElement} */
+        const $words = (document.getElementById(ImportWordsApi.Pages.ENTER_WORDS));
+        /** @type {HTMLElement} */
+        const $enterPassphrase = (document.getElementById(ImportWordsApi.Pages.ENTER_PASSPHRASE));
+        /** @type {HTMLElement} */
+        const $confirmPassphrase = (document.getElementById(ImportWordsApi.Pages.CONFIRM_PASSPHRASE));
 
-        const privacyAgent = new PrivacyAgent();
+        // Containers
+        /** @type {HTMLElement} */
+        const $privacyAgent = ($privacy.querySelector('.agent'));
+        /** @type {HTMLElement} */
+        const $wordsInput = ($words.querySelector('.input'));
+        /** @type {HTMLFormElement} */
+        const $passphrase = ($enterPassphrase.querySelector('.passphrase'));
+        /** @type {HTMLFormElement} */
+        const $passphraseConfirmation = ($confirmPassphrase.querySelector('.passphrase-confirm'));
+
+        // Components
+        const privacyAgent = new PrivacyAgent($privacyAgent);
+        const recoveryWordsInput = new RecoveryWordsInput($wordsInput);
+        const passphrase = new PassphraseInput(true, $passphrase);
+        const passphraseConfirm = new PassphraseInput(false, $passphraseConfirmation);
+
+        // Events
         privacyAgent.on(PrivacyAgent.Events.CONFIRM, () => {
             window.location.hash = ImportWordsApi.Pages.ENTER_WORDS;
             recoveryWordsInput.focus();
         });
-        $privacyAgent.appendChild(privacyAgent.getElement());
 
-        const recoveryWordsInput = new RecoveryWordsInput();
         recoveryWordsInput.on(RecoveryWordsInput.Events.COMPLETE, this._onRecoveryWordsEntered.bind(this));
-        $enterWords.appendChild(recoveryWordsInput.getElement());
+        passphrase.on(PassphraseInput.Events.PASSPHRASE_ENTERED, this._handlePassphrase.bind(this));
+        passphraseConfirm.on(PassphraseInput.Events.PASSPHRASE_ENTERED, this._handlePassphraseConfirmation.bind(this));
 
         // for debugging: enable next line and c&p following lines in terminal to fill in correct words automatically
         // window.recoveryWordsInput = recoveryWordsInput;
@@ -53,14 +71,6 @@ class ImportWordsApi extends PopupApi {
         //     }, index * 50);
         // });
         // /debugging
-
-        const $passphrase = /** @type {HTMLFormElement} */ ($enterPassphrase.querySelector('.passphrase'));
-        const passphrase = new PassphraseInput(true, $passphrase);
-        passphrase.on(PassphraseInput.Events.PASSPHRASE_ENTERED, this._handlePassphrase.bind(this));
-
-        const $passphraseConfirm = /** @type {HTMLFormElement} */ ($confirmPassphrase.querySelector('.passphrase-confirm'));
-        const passphraseConfirm = new PassphraseInput(false, $passphraseConfirm);
-        passphraseConfirm.on(PassphraseInput.Events.PASSPHRASE_ENTERED, this._handlePassphraseConfirmation.bind(this));
 
         return { passphrase, passphraseConfirm };
     }
