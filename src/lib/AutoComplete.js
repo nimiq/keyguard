@@ -42,11 +42,12 @@ class AutoComplete { // eslint-disable-line no-unused-vars
             offsetTop: 1,
             cache: 1,
             menuClass: '',
-            renderItem: /** @param {string} item @param {string} search */ (item, search) => {
-                // escape special characters
-                search = search.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
-                const re = new RegExp(`(${search.split(' ').join('|')})`, 'gi');
-                return `<div class="autocomplete-suggestion" data-val="${item}">${item.replace(re, '<b>$1</b>')}</div>`;
+            renderItem: /** @param {string} item */ (item) => {
+                const element = document.createElement('div');
+                element.classList.add('autocomplete-suggestion');
+                element.dataset.val = item;
+                element.textContent = item;
+                return element;
             },
             // onSelect: /** @param {Event} e @param {string} term @param {Element} item */ (e, term, item) => {},
             onSelect: () => {},
@@ -138,11 +139,10 @@ class AutoComplete { // eslint-disable-line no-unused-vars
                 const val = that.value;
                 that.cache[val] = data;
                 if (data.length && val.length >= o.minChars) {
-                    let s = '';
+                    that.sc.innerHTML = '';
                     for (let x = 0; x < data.length; x++) {
-                        s += o.renderItem(data[x], val);
+                        that.sc.appendChild(o.renderItem(data[x]));
                     }
-                    that.sc.innerHTML = s;
                     that.updateSC(0);
                 } else that.sc.style.display = 'none';
             };
