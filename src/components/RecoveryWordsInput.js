@@ -42,8 +42,6 @@ class RecoveryWordsInput extends Nimiq.Observable {
             form.appendChild(field.element);
         }
 
-        setTimeout(() => this.focus(), 100);
-
         I18n.translateDom(el);
         return el;
     }
