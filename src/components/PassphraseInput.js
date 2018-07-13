@@ -1,4 +1,5 @@
 /* global Nimiq */
+/* global AnimationUtils */
 /* global I18n */
 
 class PassphraseInput extends Nimiq.Observable {

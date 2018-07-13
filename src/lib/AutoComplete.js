@@ -42,7 +42,7 @@ class AutoComplete { // eslint-disable-line no-unused-vars
             offsetTop: 1,
             cache: 1,
             menuClass: '',
-            renderItem: /** @param {string} item */ (item) => {
+            renderItem: /** @param {string} item */ item => {
                 const element = document.createElement('div');
                 element.classList.add('autocomplete-suggestion');
                 element.dataset.val = item;

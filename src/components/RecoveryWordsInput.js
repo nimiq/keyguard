@@ -1,5 +1,6 @@
 /* global Nimiq */
 /* global I18n */
+/* global MnemonicPhrase */
 /* global RecoveryWordsInputField */
 /* global AnimationUtils */
 class RecoveryWordsInput extends Nimiq.Observable {
@@ -82,7 +83,7 @@ class RecoveryWordsInput extends Nimiq.Observable {
             const privateKey = Nimiq.PrivateKey.unserialize(buffer);
             this.fire(RecoveryWordsInput.Events.COMPLETE, privateKey);
         } catch (e) {
-            if (e.message != 'Invalid checksum') console.error(e); // eslint-disable-line no-console
+            if (e.message !== 'Invalid checksum') console.error(e); // eslint-disable-line no-console
             else this._animateError(); // wrong words
         }
     }
