@@ -41,7 +41,7 @@ class RecoveryWordsInput extends Nimiq.Observable {
             form.appendChild(field.element);
         }
 
-        setTimeout(() => this.$fields[0].focus(), 100);
+        setTimeout(() => this.focus(), 100);
 
         I18n.translateDom(el);
         return el;
@@ -73,11 +73,12 @@ class RecoveryWordsInput extends Nimiq.Observable {
 
         const words = this.$fields.map(field => field.value).join(' ');
         try {
-            this.fire(RecoveryWordsInput.Events.COMPLETE, words);
+            const buffer = new Nimiq.SerialBuffer(MnemonicPhrase.mnemonicToKey(words));
+            const privateKey = Nimiq.PrivateKey.unserialize(buffer);
+            this.fire(RecoveryWordsInput.Events.COMPLETE, privateKey);
         } catch (e) {
-            // assume wrong words but printing out for debugging
-            console.error(e); // eslint-disable-line no-console
-            this._animateError();
+            if (e.message != 'Invalid checksum') console.error(e); // eslint-disable-line no-console
+            else this._animateError(); // wrong words
         }
     }
 
