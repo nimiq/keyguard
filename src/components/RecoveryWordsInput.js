@@ -51,8 +51,13 @@ class RecoveryWordsInput extends Nimiq.Observable {
         this.$fields[0].focus();
     }
 
-    /** @returns {HTMLElement} */
+    /** @returns {HTMLElement} @deprecated */
     getElement() {
+        return this.$el;
+    }
+
+    /** @type {HTMLElement} */
+    get element() {
         return this.$el;
     }
 
