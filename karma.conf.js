@@ -20,7 +20,7 @@ module.exports = function (/** @type {any} */ config) {
         ],
 
 
-        // list of files / patterns to exclude
+        // avoid calling runKeyguard
         exclude: [
             'src/request/**/index.js'
         ],
@@ -76,6 +76,6 @@ module.exports = function (/** @type {any} */ config) {
 
         // Concurrency level
         // how many browser should be started simultaneous
-        concurrency: 1
+        concurrency: 1,
     });
 };

@@ -35,6 +35,7 @@ class IFrameApi { // eslint-disable-line no-unused-vars
         if (BrowserDetection.isIos() || BrowserDetection.isSafari()) {
             // Set migrate flag cookie
             document.cookie = 'migrate=1;max-age=31536000';
+            return;
         }
 
         await KeyStore.instance.doMigrateAccountsToKeys();
