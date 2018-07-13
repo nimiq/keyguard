@@ -45,9 +45,10 @@ class AccountStore {
 
             request.onerror = () => reject(request.error);
             request.onupgradeneeded = () => {
+                // account database doesn't exist
                 this._dropped = true;
-                request.result.close();
-                reject(new Error('Account database does not exist'));
+                request.transaction.abort();
+                resolve(null);
             };
         });
 
@@ -59,6 +60,7 @@ class AccountStore {
      */
     async list() {
         const db = await this.connect();
+        if (!db) return [];
         return new Promise((resolve, reject) => {
             const results = /** @type {AccountInfo[]} */ ([]);
             const openCursorRequest = db.transaction([AccountStore.ACCOUNT_DATABASE], 'readonly')
@@ -96,6 +98,7 @@ class AccountStore {
      */
     async dangerousListPlain() {
         const db = await this.connect();
+        if (!db) return [];
         return new Promise((resolve, reject) => {
             const results = /** @type {AccountEntry[]} */ ([]);
             const openCursorRequest = db.transaction([AccountStore.ACCOUNT_DATABASE], 'readonly')
