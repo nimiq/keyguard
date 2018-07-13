@@ -17,6 +17,9 @@
     <script src="../src/components/RecoveryWordsInput.js" defer></script>
     <script src="../src/components/RecoveryWordsInputField.js" defer></script>
     <script src="../src/components/LanguagePicker.js" defer></script>
+
+    <script src="RecoveryWordsInput.js" defer></script>
+
     <style>
         html,
         body {
@@ -70,56 +73,8 @@
     <p>
         Your private key:
         <br />
-        <span id="privateKey">-</span>
+        <span id="private-key">-</span>
     </p>
-    <script>
-        I18n.initialize(TRANSLATIONS, 'en');
-        const languagePicker = new LanguagePicker();
-        document.body.appendChild(languagePicker.getElement());
-
-        const input = new RecoveryWordsInput();
-
-        input.on(RecoveryWordsInput.Events.COMPLETE, key => {
-            document.querySelector('#privateKey').textContent = Nimiq.BufferUtils.toHex(key);
-            //document.querySelectorAll('button.fill').forEach(button => button.setAttribute('disabled', 'disabled'));
-        });
-
-        document.querySelector('#recovery-words').appendChild(input.$el);
-
-        const randomKey = window.crypto.getRandomValues(new Uint8Array(32));
-        const words = MnemonicPhrase.keyToMnemonic(randomKey).split(' ');
-
-        function putWord(field, word, index) {
-            setTimeout(() => {
-                field.$input.value = word;
-                field._value = word;
-                field._onBlur();
-            }, index * 50);
-        }
-
-        document.querySelector('#reset-fields').addEventListener('click', () => {
-            input.$fields.forEach((field, index) => {
-                field.$input.value = '';
-                field._onBlur();
-                field._showInput();
-            });
-            document.querySelectorAll('button').forEach(button => button.removeAttribute('disabled'));
-        });
-
-        document.querySelector('#fill-correctly').addEventListener('click', () => {
-            input.$fields.forEach((field, index) => {
-                putWord(field, words[index], index);
-            });
-            document.querySelectorAll('button.fill').forEach(button => button.setAttribute('disabled', 'disabled'));
-        });
-
-        document.querySelector('#fill-randomly').addEventListener('click', () => {
-            input.$fields.forEach((field, index) => {
-                putWord(field, MnemonicPhrase.DEFAULT_WORDLIST[Math.floor(Math.random() * 2048)], index);
-            });
-            document.querySelectorAll('button.fill').forEach(button => button.setAttribute('disabled', 'disabled'));
-        });
-    </script>
 </body>
 
 </html>
