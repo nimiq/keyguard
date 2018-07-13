@@ -1,10 +1,10 @@
-const TRANSLATIONS = { // eslint-disable-line no-unused-vars
+const TRANSLATIONS = {
     en: {
         _language: 'English',
         loading: 'Loading...',
         'passphrase-strength': 'Strength',
         'passphrase-confirm': 'Confirm',
-        'passphrase-placeholder': 'Enter passphrase',
+        'passphrase-placeholder': 'Enter Passphrase',
         'sign-tx-wrong-passphrase': 'Wrong Passphrase, please try again',
         'sign-tx-button-enter-pin': 'Enter PIN',
         'privacy-agent-headline': 'Are you being watched?',
@@ -17,7 +17,7 @@ const TRANSLATIONS = { // eslint-disable-line no-unused-vars
         'create-choose-identicon-header1': 'Choose Your Account Avatar',
         'create-set-passphrase-header1': 'Set a Passphrase',
         'create-set-passphrase-header2': 'Please enter a Passphrase to secure your account.',
-        'create-set-passphrase-warning': `The Pass Phrase is [strong]not[/strong] an alternative for your 24 Recovery
+        'create-set-passphrase-warning': `The Passphrase is [strong]not[/strong] an alternative for your 24 Recovery
             Words!`,
         'import-heading': 'Import from Recovery Words',
         'import-words-subheading': 'Please enter your 24 Account Recovery Words.',
@@ -53,3 +53,6 @@ const TRANSLATIONS = { // eslint-disable-line no-unused-vars
         'recovery-words-title': 'Wiederherstellungswörter',
     },
 };
+
+if (typeof module !== 'undefined') module.exports = TRANSLATIONS;
+else window.TRANSLATIONS = TRANSLATIONS;

@@ -8,9 +8,12 @@
     "lint": "eslint src client tools",
     "lintfix": "eslint --fix src client tools",
     "checkdeps": "node tools/dependencyValidator.js",
-    "pr": "npm run typecheck && npm run lint && npm run test && npm run checkdeps",
+    "test-coverage": "karma start karma.conf.coverage.js",
+    "coverage": "nyc instrument ./src ./instrumented && npm run test-coverage",
+    "checklangs": "node tools/translationValidator.js",
+    "pr": "npm run typecheck && npm run lint && npm run test && npm run checkdeps && npm run checklangs",
     "watch": "tsc-watch --pretty --onSuccess \"npm run watchonsuccess\"",
-    "watchonsuccess": "npm run lintfix && npm run checkdeps"
+    "watchonsuccess": "npm run lintfix && npm run checkdeps && npm run checklangs"
   },
   "repository": {
     "type": "git",
@@ -36,8 +39,11 @@
     "jasmine-core": "^3.1.0",
     "karma": "^2.0.4",
     "karma-chrome-launcher": "^2.2.0",
+    "karma-istanbuljs-reporter": "^0.2.0",
     "karma-jasmine": "^1.1.2",
+    "nyc": "^12.0.2",
     "tsc-watch": "^1.0.22",
     "typescript": "^2.9.2"
-  }
+  },
+  "dependencies": {}
 }
