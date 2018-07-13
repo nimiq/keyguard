@@ -28,6 +28,11 @@
  */
 class PopupApi { // eslint-disable-line no-unused-vars
     constructor() {
+        if (window.self !== window.top) {
+            // PopupAPI may not run in a frame
+            throw new Error('Illegal use');
+        }
+
         /** @type {Function} */
         this._resolve = () => { throw new Error('Method not defined'); };
 
