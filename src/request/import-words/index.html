@@ -42,20 +42,31 @@
     <div id="app">
         <!-- privacy agent -->
         <div id="privacy" class="page">
-            <h1>Import Recovery Words</h1>
+            <h1 data-i18n="import-heading">Import from Recovery Words</h1>
             <div class="grow"></div>
         </div>
 
-        <!-- enter Recovery Words  -->
+        <!-- enter Recovery Words -->
         <div id="words" class="page">
-            <h1>Import Recovery Words</h1>
+            <h1 data-i18n="import-heading">Import from Recovery Words</h1>
+            <h2 data-i18n="import-words-subheading">Please enter your 24 Account Recovery Words.</h2>
             <div class="grow"></div>
         </div>
 
-        <!-- enter Passphrase to encrypt key  -->
+        <!-- enter Passphrase to encrypt key -->
         <div id="passphrase" class="page">
-            <h1>Import Recovery Words</h1>
-            <div class="grow"></div>
+            <h1 data-i18n="import-heading">Import from Recovery Words</h1>
+            <h2 data-i18n="import-passphrase-subheading">Please enter a Passphrase to secure your account.</h2>
+            <div class="grow" data-grow="0.5"></div>
+            <form class="passphrase"></form>
+        </div>
+
+        <!-- confirm Passphrase -->
+        <div id="confirm" class="page">
+            <h1 data-i18n="import-heading">Import from Recovery Words</h1>
+            <h2 data-i18n="import-confirm-subheading">Please repeat your Passphrase.</h2>
+            <div class="grow" data-grow="0.5"></div>
+            <form class="passphrase-confirm"></form>
         </div>
 
         <!-- Default and loading screen -->

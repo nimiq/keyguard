@@ -19,6 +19,10 @@ const TRANSLATIONS = { // eslint-disable-line no-unused-vars
         'create-set-passphrase-header2': 'Please enter a Passphrase to secure your account.',
         'create-set-passphrase-warning': `The Pass Phrase is [strong]not[/strong] an alternative for your 24 Recovery
             Words!`,
+        'import-heading': 'Import from Recovery Words',
+        'import-words-subheading': 'Please enter your 24 Account Recovery Words.',
+        'import-passphrase-subheading': 'Please enter a Passphrase to secure your key.',
+        'import-confirm-subheading': 'Please repeat your Passphrase:',
         'recovery-words-title': 'Recovery Words',
     },
     de: {
@@ -42,6 +46,10 @@ const TRANSLATIONS = { // eslint-disable-line no-unused-vars
         'create-set-passphrase-header2': 'Bitte gib eine Passphrase ein, um dein Konto zu sichern.',
         'create-set-passphrase-warning': `Die Passphrase ist [strong]keine[/strong] Alternative für deine 24
             Wiederherstellungswörter!`,
+        'import-heading': 'Mit Wiederherstellungswörtern importieren.',
+        'import-words-subheading': 'Bitte gib deine 24 Wiederherstellungswörter ein.',
+        'import-passphrase-subheading': 'Bitte gib eine Passphrase ein, um deinen Schlüssel zu schützen.',
+        'import-confirm-subheading': 'Bitte wiederhole deine Passphrase.',
         'recovery-words-title': 'Wiederherstellungswörter',
     },
 };

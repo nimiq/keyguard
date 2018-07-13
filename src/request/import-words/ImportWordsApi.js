@@ -12,7 +12,7 @@ class ImportWordsApi extends PopupApi {
         super();
 
         // start UI
-        this._makeView();
+        this.dom = this._makeView();
     }
 
     async onRequest() {
@@ -20,11 +20,15 @@ class ImportWordsApi extends PopupApi {
         window.location.hash = ImportWordsApi.Pages.PRIVACY_AGENT;
     }
 
+    /**
+     * @returns {{passphrase: PassphraseInput, passphraseConfirm: PassphraseInput}}
+     */
     _makeView() {
-        const $rootElement = /** @type {HTMLElement} */ (document.getElementById('app'));
-        const $privacyAgent = /** @type {HTMLElement} */ ($rootElement.querySelector('#privacy'));
-        const $enterWords = /** @type {HTMLElement} */ ($rootElement.querySelector('#words'));
-        const $enterPassphrase = /** @type {HTMLElement} */ ($rootElement.querySelector('#passphrase'));
+        const $app = /** @type {HTMLElement} */ (document.getElementById('app'));
+        const $privacyAgent = /** @type {HTMLElement} */ (document.getElementById(ImportWordsApi.Pages.PRIVACY_AGENT));
+        const $enterWords = /** @type {HTMLElement} */ (document.getElementById(ImportWordsApi.Pages.ENTER_WORDS));
+        const $enterPassphrase = /** @type {HTMLElement} */ (document.getElementById(ImportWordsApi.Pages.ENTER_PASSPHRASE));
+        const $confirmPassphrase = /** @type {HTMLElement} */ (document.getElementById(ImportWordsApi.Pages.CONFIRM_PASSPHRASE));
 
         const privacyAgent = new PrivacyAgent();
         privacyAgent.on(PrivacyAgent.Events.CONFIRM, () => {
@@ -42,7 +46,7 @@ class ImportWordsApi extends PopupApi {
         //
         // randomKey = window.crypto.getRandomValues(new Uint8Array(32));
         // words = MnemonicPhrase.keyToMnemonic(randomKey).split(' ');
-        // input.$fields.forEach((field, index) => {
+        // window.recoveryWordsInput.$fields.forEach((field, index) => {
         //     setTimeout(() => {
         //         field._value = field.dom.input.value = words[index];
         //         field._onBlur();
@@ -50,9 +54,15 @@ class ImportWordsApi extends PopupApi {
         // });
         // /debugging
 
-        const passphraseInput = new PassphraseInput(true);
-        passphraseInput.on(PassphraseInput.Events.PASSPHRASE_ENTERED, this._handlePassphraseInput.bind(this));
-        $enterPassphrase.appendChild(passphraseInput.getElement());
+        const $passphrase = /** @type {HTMLFormElement} */ ($enterPassphrase.querySelector('.passphrase'));
+        const passphrase = new PassphraseInput(true, $passphrase);
+        passphrase.on(PassphraseInput.Events.PASSPHRASE_ENTERED, this._handlePassphrase.bind(this));
+
+        const $passphraseConfirm = /** @type {HTMLFormElement} */ ($confirmPassphrase.querySelector('.passphrase-confirm'));
+        const passphraseConfirm = new PassphraseInput(false, $passphraseConfirm);
+        passphraseConfirm.on(PassphraseInput.Events.PASSPHRASE_ENTERED, this._handlePassphraseConfirmation.bind(this));
+
+        return { passphrase, passphraseConfirm };
     }
 
     /**
@@ -63,6 +73,19 @@ class ImportWordsApi extends PopupApi {
     _onRecoveryWordsEntered(privateKey) {
         this._privateKey = privateKey;
         window.location.hash = ImportWordsApi.Pages.ENTER_PASSPHRASE;
+        this.dom.passphrase.focus();
+    }
+
+    /**
+     * Store passphrase and ask for user confirmation
+     *
+     * @param {string} passphrase
+     */
+    async _handlePassphrase(passphrase) {
+        this._passphrase = passphrase;
+        this.dom.passphrase.reset();
+        window.location.hash = ImportWordsApi.Pages.CONFIRM_PASSPHRASE;
+        this.dom.passphraseConfirm.focus();
     }
 
     /**
@@ -70,9 +93,16 @@ class ImportWordsApi extends PopupApi {
      *
      * @param {string} passphrase
      */
-    async _handlePassphraseInput(passphrase) {
-        if (!this._privateKey) {
-            throw new Error('Private key not set!');
+    async _handlePassphraseConfirmation(passphrase) {
+        if (!this._passphrase) throw new Error('Passphrase not set!');
+        if (!this._privateKey) throw new Error('Private key not set!');
+
+        if (this._passphrase !== passphrase) {
+            await this.dom.passphraseConfirm.onPassphraseIncorrect();
+            this.dom.passphraseConfirm.reset();
+            window.location.hash = ImportWordsApi.Pages.ENTER_PASSPHRASE;
+            this.dom.passphrase.focus();
+            return;
         }
 
         document.body.classList.add('loading');
@@ -87,4 +117,5 @@ ImportWordsApi.Pages = {
     PRIVACY_AGENT: 'privacy',
     ENTER_WORDS: 'words',
     ENTER_PASSPHRASE: 'passphrase',
+    CONFIRM_PASSPHRASE: 'confirm',
 };
