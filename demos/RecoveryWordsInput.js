@@ -1,3 +1,10 @@
+/* global TRANSLATIONS */
+/* global I18n */
+/* global LanguagePicker */
+/* global RecoveryWordsInput */
+/* global Nimiq */
+/* global MnemonicPhrase */
+/* global RecoveryWordsInputField */
 I18n.initialize(TRANSLATIONS, 'en');
 const languagePicker = new LanguagePicker();
 document.body.appendChild(languagePicker.getElement());
