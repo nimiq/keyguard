@@ -43,7 +43,9 @@ class CreateHigh {
 
         // create components
         this._chooseIdenticon = new ChooseIdenticon(this.$chooseIdenticon);
-        this._privacyAgent = new PrivacyAgent(this.$privacyAgent);
+        /** @type {HTMLElement} */
+        const $privacyAgentContainer = (this.$privacyAgent.querySelector('.agent'));
+        this._privacyAgent = new PrivacyAgent($privacyAgentContainer);
         this._recoveryWords = new RecoveryWords(this.$recoveryWords);
         this._validateWords = new ValidateWords(this.$validateWords);
         this._passphraseSetter = new PassphraseInput(true, $passphraseSetter);
