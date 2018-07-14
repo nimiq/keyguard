@@ -3,22 +3,22 @@
     flex-direction: column;
     align-items: center;
     width: 100%;
-    max-width: 368px;
+    max-width: 46rem;
     flex-grow: 1;
     /* height: 100%; */
-    margin-top:  16px;
+    margin-top:  2rem;
 }
 
 .privacy-agent h1 {
     color: var(--error-color);
-    padding: 16px 0;
+    padding: 2rem 0;
     font-weight: 500;
-    font-size: 24px;
+    font-size: 3rem;
 }
 
 .privacy-agent p {
-    max-width: 400px;
-    font-size: 15px;
+    max-width: 50rem;
+    font-size: 1.875rem;
 }
 
 .privacy-agent svg {
@@ -36,13 +36,13 @@
     justify-content: center;
     box-sizing: border-box;
     background: white;
-    padding: 24px 16px;
+    padding: 3rem 2rem;
     display: flex;
     color: rgba(0,0,0,0.98);
-    border-radius: 12px;
+    border-radius: 1.5rem;
     text-align: center;
-    margin-bottom: 16px;
-    box-shadow:  rgba(0, 0, 0, 0.5) 0 2px 4px;
+    margin-bottom: 2rem;
+    box-shadow:  rgba(0, 0, 0, 0.5) 0 .25rem .5rem;
 }
 
 @media (max-height: 500px) {

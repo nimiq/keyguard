@@ -1,16 +1,16 @@
 .recovery-words-input {
     width: 100%;
-    max-width: 360px;
-    padding: 16px;
-    margin-top: 24px;
+    max-width: 45rem;
+    padding: 2rem;
+    margin-top: 3rem;
     box-sizing: border-box;
     position: relative;
     background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAJElEQVQYV2NkwAT/GdHE/jMwMDAiC4IFQIpggnABmCCKAEgQAABOBQUaykC8AAAAAElFTkSuQmCC');
     background-color: rgba(0, 0, 0, 0.4);
-    border: 1px solid white;
-    border-radius: 8px;
+    border: .125rem solid white;
+    border-radius: 1rem;
     color: white;
-    height: 250px;
+    height: 31.25rem;
 }
 
 .recovery-words-input .label {
@@ -29,8 +29,8 @@
     display: inline-block;
     border-radius: 3rem;
     background: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjZmZmIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMCAwaDI0djI0SDB6IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTE4IDhoLTFWNmMwLTIuNzYtMi4yNC01LTUtNVM3IDMuMjQgNyA2djJINmMtMS4xIDAtMiAuOS0yIDJ2MTBjMCAxLjEuOSAyIDIgMmgxMmMxLjEgMCAyLS45IDItMlYxMGMwLTEuMS0uOS0yLTItMnptLTYgOWMtMS4xIDAtMi0uOS0yLTJzLjktMiAyLTIgMiAuOSAyIDItLjkgMi0yIDJ6bTMuMS05SDguOVY2YzAtMS43MSAxLjM5LTMuMSAzLjEtMy4xIDEuNzEgMCAzLjEgMS4zOSAzLjEgMy4xdjJ6Ii8+PC9zdmc+');
-    background-size: 14px;
-    background-position: 9px center;
+    background-size: 1.75rem;
+    background-position: 1.125rem center;
     background-repeat: no-repeat;
     background-color: black;
     padding-left: 4rem;
@@ -45,16 +45,16 @@
 @keyframes recovery-words-animation {
     from {
         opacity: 0;
-        transform: translate(32px, 16px);
+        transform: translate(4rem, 2rem);
     }
 }
 
 .recovery-words-input {
     text-align: center;
-    line-height: 32px;
+    line-height: 4rem;
     will-change: transform;
     display: block;
-    margin-bottom: 28px;
+    margin-bottom: 3.5rem;
 }
 
 .recovery-words-input.shake, .recovery-words-input .shake {
@@ -70,28 +70,28 @@
 
 .recovery-words-input > form > * {
     flex: 1 0 20%;
-    margin: 2px;
+    margin: .25rem;
 }
 
 .recovery-words-input .recovery-words .placeholder {
-    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14),
-    0 1px 5px 0 rgba(0, 0, 0, 0.12),
-    0 3px 1px -2px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 .25rem .25rem 0 rgba(0, 0, 0, 0.14),
+    0 .125rem .625rem 0 rgba(0, 0, 0, 0.12),
+    0 .375rem .125rem -.25rem rgba(0, 0, 0, 0.2);
 }
 
 .recovery-words-input input[type="text"] {
     background-color: rgba(255, 255, 255, 0.05);
     width: 100%;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    border-bottom: .125rem solid rgba(255, 255, 255, 0.2);
     font-family: inherit;
     line-height: 2;
-    font-size: 15px;
-    padding: 0px;
-    border-radius: 2px;
+    font-size: 1.875rem;
+    padding: 0;
+    border-radius: .25rem;
 }
 
 .recovery-words-input input[type="text"]:focus {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+    border-bottom: .125rem solid rgba(255, 255, 255, 0.5);
 }
 
 .recovery-words-input input[type="text"]::-webkit-calendar-picker-indicator {
@@ -123,16 +123,16 @@
 .autocomplete-suggestions {
     text-align: left;
     cursor: default;
-    border: 1px solid #ccc;
+    border: .125rem solid #ccc;
     border-top: 0;
     background: #fff;
-    box-shadow: -1px 1px 3px rgba(0, 0, 0, .1);
+    box-shadow: -.125rem .125rem .375rem rgba(0, 0, 0, .1);
 
     /* core styles should not be changed */
     position: absolute;
     display: none;
     z-index: 9999;
-    max-height: 254px;
+    max-height: 31.75rem;
     overflow: hidden;
     box-sizing: border-box;
 }
@@ -146,7 +146,7 @@
     text-overflow: ellipsis;
     color: var(--secondary-text-color);
     color: black;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    border-bottom: .125rem solid rgba(0, 0, 0, 0.1);
 }
 
 .autocomplete-suggestion:last-child {

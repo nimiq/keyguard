@@ -3,30 +3,30 @@
     color: white;
     text-align: center;
     flex-wrap: wrap;
-    font-size: 15px;
-    line-height: 32px;
+    font-size: 1.875rem;
+    line-height: 4rem;
     flex-grow: 1;
 }
 
 #validate-words p {
-    margin-bottom: 32px;
+    margin-bottom: 4rem;
 }
 
 #validate-words .target-index {
     display: block;
-    font-size: 64px;
-    line-height: 80px;
-    margin-bottom: 42px;
+    font-size: 8rem;
+    line-height: 10rem;
+    margin-bottom: 5.25rem;
     font-weight: 200;
 }
 
 #validate-words .target-index::before {
     content: '#';
-    font-size: 52px;
+    font-size: 6.5rem;
 }
 
 #validate-words button {
-    margin: 4px;
+    margin: .5rem;
     transform: translate3d(0, 0, 0);
     will-change: transform;
 }
@@ -45,7 +45,7 @@
 
 #validate-words .word-list {
     display: block;
-    height: 180px;
-    max-width: 368px;
+    height: 22.5rem;
+    max-width: 46rem;
     margin: 0 auto;
 }
