@@ -35,21 +35,21 @@
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64"><style>@keyframes dash-animation { to { transform: rotate(240deg) translateZ(0); } } %23circle { animation: 3s dash-animation infinite linear; transform: rotate(-120deg) translateZ(0); transform-origin: center; }</style><defs><clipPath id="hexClip"><path clip-rule="evenodd" d="M16 4.29h32L64 32 48 59.71H16L0 32zm4.62 8h22.76L54.76 32 43.38 51.71H20.62L9.24 32z"/></clipPath></defs><path fill-rule="evenodd" d="M16 4.29h32L64 32 48 59.71H16L0 32zm4.62 8h22.76L54.76 32 43.38 51.71H20.62L9.24 32z" fill="%23fff" opacity=".2"/><g clip-path="url(%23hexClip)"><circle id="circle" cx="32" cy="32" r="16" fill="none" stroke-width="32" stroke="%23F6AE2D" stroke-dasharray="16.666 84.666"/></g></svg>');
     background-repeat: no-repeat;
     background-position: center;
-    background-size: 72px;
+    background-size: 9rem;
     z-index: 1;
     display: block;
-    height: 72px;
-    width: 80px;
+    height: 9rem;
+    width: 10rem;
 }
 
 .loading-animation + h2 {
-    padding-top: 16px;
+    padding-top: 2rem;
 }
 
 .identicon {
     display: block;
-    height: 140px;
-    width: 140px;
+    height: 17.5rem;
+    width: 17.5rem;
 }
 
 .identicon img {
@@ -58,26 +58,26 @@
 }
 
 .pad-bottom {
-    padding-bottom: 28px;
+    padding-bottom: 3.5rem;
 }
 
 /* TODO do we still need this?
 .route-container {
-    min-height: calc(100vh - 120px);
+    min-height: calc(100vh - 15rem);
 }*/
 
 .warning {
     background-color: var(--warning-color);
     color: #3b3b3b;
-    border-radius: 8px;
-    padding: 15px;
+    border-radius: 1rem;
+    padding: 1.875rem;
 }
 
 .info-box {
     display: flex;
-    border: 1px solid white;
-    border-radius: 8px;
-    padding: 4px;
+    border: .125rem solid white;
+    border-radius: 1rem;
+    padding: .5rem;
 }
 
 .info-box .info-icon {
@@ -85,7 +85,7 @@
     background-size: 90%;
     background-repeat: no-repeat;
     background-position: 0 0;
-    width: 32px;
+    width: 4rem;
     display: inline-block;
     flex-grow: 0;
     flex-shrink: 0;
@@ -96,16 +96,16 @@
 }
 
 .spacing-top-16 {
-    margin-top: 16px;
+    margin-top: 2rem;
 }
 
 /* make code blocks look like keys on the keyboard */
 kbd {
     font-family: monospace;
-    font-size: 15px;
-    border: 1px solid white;
-    padding: 2px 6px;
-    border-radius: 5px;
+    font-size: 1.875rem;
+    border: .125rem solid white;
+    padding: .25rem .75rem;
+    border-radius: .625rem;
 }
 
 .header-top {
@@ -121,8 +121,8 @@ kbd {
     align-items: center;
     width: 98vw;
     max-width: var(--max-width);
-    min-height: calc(100vh - 60px);
-    padding-bottom: 18px;
+    min-height: calc(100vh - 7.5rem);
+    padding-bottom: 2.25rem;
 }
 
 @media (max-width: 480px) {

@@ -4,5 +4,5 @@
 }
 
 .recovery-word-field.shake input {
-    border-bottom: 1px solid var(--error-color) !important;
+    border-bottom: .125rem solid var(--error-color) !important;
 }
