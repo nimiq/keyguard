@@ -25,7 +25,8 @@ class RecoveryWordsInput extends Nimiq.Observable {
 
         const label = document.createElement('div');
         label.classList.add('label');
-        label.innerHTML = '<div data-i18n="recovery-words-input-label"></div>';
+        // extra div in label is needed for CSS placement w/t setting a fixed width which doesn't work with I18n
+        label.innerHTML = '<div data-i18n="recovery-words-input-label">Recovery Words</div>';
         el.appendChild(label);
 
         const form = document.createElement('form');
