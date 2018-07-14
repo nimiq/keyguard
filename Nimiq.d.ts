@@ -149,6 +149,7 @@ declare namespace Nimiq {
         isLocked: boolean
         static unserialize(buffer: SerialBuffer): KeyPair
         static fromEncrypted(buffer: SerialBuffer, passphraseOrPin: Uint8Array): Promise<KeyPair>
+        static derive(key: PrivateKey): KeyPair
         static generate(): KeyPair
         exportEncrypted(passphrase: string | Uint8Array, unlockKey?: Uint8Array): Promise<SerialBuffer>
         serialize(): SerialBuffer
