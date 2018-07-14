@@ -15,27 +15,33 @@ module.exports = function (/** @type {any} */ config) {
         // list of files / patterns to load in the browser
         files: [
             'https://cdn.nimiq.com/web.js',
-            'src/**/*js',
+            'instrumented/**/*js',
             'tests/**/*.spec.js'
         ],
 
 
         // list of files / patterns to exclude
         exclude: [
-            'src/request/**/index.js'
+            'instrumented/request/**/index.js'
         ],
 
 
         // test results reporter to use
         // possible values: 'dots', 'progress'
         // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-        reporters: ['progress'], //, 'coverage'],
+        reporters: ['progress', 'istanbul'],
 
 
         // preprocess matching files before serving them to the browser
         // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
-        preprocessors: {
-            //'src/**/*.js': ['coverage']
+        preprocessors: { },
+
+
+        istanbulReporter: {
+            reporters: [
+                { type: 'text' },
+                { type: 'html' }
+            ]
         },
 
 
@@ -53,7 +59,7 @@ module.exports = function (/** @type {any} */ config) {
 
 
         // enable / disable watching file and executing tests whenever any file changes
-        autoWatch: true,
+        autoWatch: false,
 
 
         // On travis in sudo:false mode (which is much faster to start) we have to run chrome without sandbox

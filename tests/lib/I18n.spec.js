@@ -1,7 +1,7 @@
 describe("I18n", function () {
 
     beforeAll(() => {
-        I18n.initialize(TRANSLATIONS, 'en');
+        I18n.initialize(window.TRANSLATIONS, 'en');
     });
 
     it("dictionary has languages", function () {
@@ -18,7 +18,7 @@ describe("I18n", function () {
         }
     });
 
-    it("dictionary entries are complete", function () {
+    xit("dictionary entries are complete", function () { // Checked by tools/translationValidator
         const BASELINE = 'en';
         const english = I18n.dictionary[BASELINE];
         const languages = I18n.availableLanguages();

@@ -1,0 +1,14 @@
+{
+    "reporter": [
+        "lcov",
+        "text-summary",
+        "html"
+    ],
+    "include": [
+          "instrumented/**/*.js"
+    ],
+    "exclude": [
+        "karma.conf.coverage.js"
+    ],
+    "all": true
+}
