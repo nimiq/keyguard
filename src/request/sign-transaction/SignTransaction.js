@@ -53,8 +53,9 @@ class SignTransaction { // eslint-disable-line no-unused-vars
         $value.textContent = Nimiq.Policy.satoshisToCoins(txRequest.value).toString();
         if (txRequest.fee > 0) {
             $fee.textContent = Nimiq.Policy.satoshisToCoins(txRequest.fee).toString();
-            const $feeSection = $transaction.querySelector('.fee-section');
-            if ($feeSection) $feeSection.classList.remove('display-none');
+            /** @type {HTMLDivElement} */
+            const $feeSection = ($transaction.querySelector('.fee-section'));
+            $feeSection.classList.remove('display-none');
         }
 
         if (txRequest.type === TransactionType.EXTENDED && txRequest.extraData) {
