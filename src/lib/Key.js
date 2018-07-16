@@ -165,8 +165,10 @@ class Key { // eslint-disable-line no-unused-vars
      */
     createTransactionWithMessage(recipient, value, fee, validityStartHeight, message) {
         return this.createExtendedTransaction(
-            this.publicKey.toAddress(), Nimiq.Account.Type.BASIC,
-            recipient, Nimiq.Account.Type.BASIC,
+            this.publicKey.toAddress(),
+            Nimiq.Account.Type.BASIC,
+            recipient,
+            Nimiq.Account.Type.BASIC,
             value,
             fee,
             validityStartHeight,
@@ -186,8 +188,10 @@ class Key { // eslint-disable-line no-unused-vars
      */
     createVestingPayoutTransaction(sender, value, fee, validityStartHeight, message) {
         return this.createExtendedTransaction(
-            sender, Nimiq.Account.Type.VESTING,
-            this.publicKey.toAddress(), Nimiq.Account.Type.BASIC,
+            sender,
+            Nimiq.Account.Type.VESTING,
+            this.publicKey.toAddress(),
+            Nimiq.Account.Type.BASIC,
             value,
             fee,
             validityStartHeight,
@@ -210,8 +214,10 @@ class Key { // eslint-disable-line no-unused-vars
      * @returns {Nimiq.ExtendedTransaction} A prepared and signed Transaction object (to be sent to the network)
      */
     createExtendedTransaction(
-        sender, senderType,
-        recipient, recipientType,
+        sender,
+        senderType,
+        recipient,
+        recipientType,
         value,
         fee,
         validityStartHeight,
@@ -231,8 +237,10 @@ class Key { // eslint-disable-line no-unused-vars
         }
 
         const transaction = new Nimiq.ExtendedTransaction(
-            sender, senderType || Nimiq.Account.Type.BASIC,
-            recipient, recipientType || Nimiq.Account.Type.BASIC,
+            sender,
+            senderType || Nimiq.Account.Type.BASIC,
+            recipient,
+            recipientType || Nimiq.Account.Type.BASIC,
             value,
             fee,
             validityStartHeight,
