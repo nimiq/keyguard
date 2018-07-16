@@ -27,14 +27,20 @@ describe('AccountStore', () => {
         expect(accounts).toEqual(Dummy.deprecatedAccountDatabaseEntries);
     });
 
-    it('can be dropped', async function (done) {
+    it('lists no accounts if the database doesn\'t exist', async () => {
+        await Dummy.Utils.deleteDummyAccountStore();
+
+        const accounts = await AccountStore.instance.dangerousListPlain();
+        expect(accounts.length).toBe(0);
+
+        const accountInfo = await AccountStore.instance.list();
+        expect(accountInfo.length).toBe(0);
+    });
+
+    it('can be dropped', async function () {
         await AccountStore.instance.drop();
-        // should not be able to connect to database anymore
-        try {
-            await AccountStore.instance.connect();
-            done.fail();
-        } catch(e) {
-            done();
-        }
+        // database should not exist anymore
+        const db = await AccountStore.instance.connect();
+        expect(db).toBeNull();
     });
 });
