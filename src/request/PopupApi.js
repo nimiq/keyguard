@@ -63,7 +63,7 @@ class PopupApi { // eslint-disable-line no-unused-vars
             await KeyStore.instance.migrateAccountsToKeys();
         }
 
-        return new Promise(async (resolve, reject) => {
+        return new Promise((resolve, reject) => {
             this._resolve = resolve;
             this._reject = reject;
 
