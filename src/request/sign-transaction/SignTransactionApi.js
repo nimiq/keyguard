@@ -15,6 +15,19 @@ class SignTransactionApi extends PopupApi { // eslint-disable-line no-unused-var
         // Validation
         if (!txRequest) throw new Error('Invalid request');
 
+        // These checks throw an exception on failure
+        AddressUtils.isUserFriendlyAddress(txRequest.sender);
+        AddressUtils.isUserFriendlyAddress(txRequest.recipient);
+        AddressUtils.isUserFriendlyAddress(txRequest.signer);
+
+        // Normalization
+        txRequest.value = Nimiq.Policy.coinsToSatoshis(txRequest.value);
+        txRequest.fee = Nimiq.Policy.coinsToSatoshis(txRequest.fee);
+        txRequest.sender = AddressUtils.formatAddress(txRequest.sender);
+        txRequest.recipient = AddressUtils.formatAddress(txRequest.recipient);
+        txRequest.signer = AddressUtils.formatAddress(txRequest.signer);
+        // txRequest.extraData = Utf8Tools.utf8ByteArrayToString(Utf8Tools.stringToUtf8ByteArray(txRequest.extraData));
+
         if (txRequest.type === TransactionType.EXTENDED) {
             throw new Error('Extended transaction signing is not yet implemented');
         } else if (txRequest.type === TransactionType.BASIC) {
@@ -29,12 +42,7 @@ class SignTransactionApi extends PopupApi { // eslint-disable-line no-unused-var
             throw new Error('Invalid transaction type');
         }
 
-        // These checks throw an exception on failure
-        AddressUtils.isUserFriendlyAddress(txRequest.sender);
-        AddressUtils.isUserFriendlyAddress(txRequest.recipient);
-        AddressUtils.isUserFriendlyAddress(txRequest.signer);
-
-        if (Nimiq.Policy.coinsToSatoshis(txRequest.value) < 1) {
+        if (txRequest.value < 1) {
             throw new AmountTooSmallError();
         }
 
@@ -42,14 +50,6 @@ class SignTransactionApi extends PopupApi { // eslint-disable-line no-unused-var
             throw new NetworkMissmatchError(txRequest.network, Nimiq.GenesisConfig.NETWORK_NAME);
         }
         // End validation
-
-        // Normalization
-        txRequest.value = Nimiq.Policy.coinsToSatoshis(txRequest.value);
-        txRequest.fee = Nimiq.Policy.coinsToSatoshis(txRequest.fee);
-        txRequest.sender = AddressUtils.formatAddress(txRequest.sender);
-        txRequest.recipient = AddressUtils.formatAddress(txRequest.recipient);
-        txRequest.signer = AddressUtils.formatAddress(txRequest.signer);
-        // txRequest.extraData = Utf8Tools.utf8ByteArrayToString(Utf8Tools.stringToUtf8ByteArray(txRequest.extraData));
 
         // Get signer key type
         let keyType;

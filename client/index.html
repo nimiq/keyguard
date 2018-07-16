@@ -20,16 +20,17 @@
         <button onclick="keyguard.create()">reate</button>
         <button onclick="signTransaction()">sign-transaction(low, basic)</button>
         <button onclick="signTransaction(EncryptionType.HIGH)">sign-transaction(high, basic)</button>
-        <button onclick="signTransaction(undefined, 'extended', 'Hokus pokus!')">sign-transaction(low, extended)</button>
-        <button onclick="signTransaction(EncryptionType.HIGH, 'extended', 'Hokus pokus!')">sign-transaction(high, extended)</button>
+        <button onclick="signTransaction(undefined, TransactionType.EXTENDED, 'Hokus pokus!')">sign-transaction(low, extended)</button>
+        <button onclick="signTransaction(EncryptionType.HIGH, TransactionType.EXTENDED, 'Hokus pokus!')">sign-transaction(high, extended)</button>
 
         <script src="../src/lib/EncryptionType.js"></script>
+        <script src="../src/lib/TransactionType.js"></script>
         <script src="RpcClient.js"></script>
         <script src="KeyguardClient.js"></script>
         <script>
             window.keyguard = new KeyguardClient();
 
-            function signTransaction(keyType = EncryptionType.LOW, txType = 'basic', message = '') {
+            function signTransaction(keyType = EncryptionType.LOW, txType = TransactionType.BASIC, message = '') {
                 keyguard.signTransaction({
                     type: txType,
                     sender: 'NQ47 FS55 KNXG 25XL 37N8 LD78 1DDH 8CS0 QBNF',
