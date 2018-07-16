@@ -92,10 +92,13 @@ class KeyStore {
                 .objectStore(KeyStore.DB_KEY_STORE_NAME)
                 .get(userFriendlyAddress);
             getTx.onsuccess = () => {
-                if (!getTx.result) reject(new KeyNotFoundError());
+                if (!getTx.result) {
+                    reject(new KeyNotFoundError());
+                    return;
+                }
                 resolve(getTx.result);
             };
-            getTx.onerror = reject;
+            getTx.onerror = () => reject(getTx.error);
         });
     }
 
@@ -139,7 +142,7 @@ class KeyStore {
                 .objectStore(KeyStore.DB_KEY_STORE_NAME)
                 .put(keyEntry);
             putTx.onsuccess = () => resolve(putTx.result);
-            putTx.onerror = reject;
+            putTx.onerror = () => reject(putTx.error);
         });
     }
 
@@ -156,7 +159,7 @@ class KeyStore {
                 .objectStore(KeyStore.DB_KEY_STORE_NAME)
                 .delete(userFriendlyAddress);
             deleteTx.onsuccess = () => resolve(deleteTx.result);
-            deleteTx.onerror = reject;
+            deleteTx.onerror = () => reject(deleteTx.error);
         });
     }
 
