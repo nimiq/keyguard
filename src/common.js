@@ -1,8 +1,6 @@
-/* global TRANSLATIONS */ // eslint-disable-line no-unused-vars
 /* global Nimiq */
 /* global KeyStore */
 /* global RpcServer */
-/* global I18n */
 
 /**
  * @param {Function} RequestApiClass - Class object of the API which is to be exposed via postMessage RPC
@@ -33,10 +31,6 @@ async function runKeyguard(RequestApiClass, options) { // eslint-disable-line no
         }
     });
 
-    I18n.initialize(window.TRANSLATIONS, 'en');
-
     // FIXME Set correct allowedOrigin
     window.rpcServer = RpcServer.create(RequestApiClass, '*', options.whitelist);
-
-    I18n.translateDom();
 }

@@ -1,6 +1,7 @@
 /* global BrowserDetection */
 /* global KeyStore */
 /* global CookieJar */
+/* global I18n */
 
 /**
  * A common parent class for pop-up requests.
@@ -42,6 +43,9 @@ class PopupApi { // eslint-disable-line no-unused-vars
         window.addEventListener('beforeunload', () => {
             this.reject(new Error('Keyguard popup closed'));
         });
+
+        I18n.initialize(window.TRANSLATIONS, 'en');
+        I18n.translateDom();
     }
 
     /**
