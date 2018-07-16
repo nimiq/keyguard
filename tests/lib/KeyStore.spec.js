@@ -51,7 +51,7 @@ describe('KeyStore', () => {
         expect(keyInfo).toEqual(Dummy.keyInfo);
     });
 
-    it('can remove keys', async () => {
+    it('can remove keys', async (done) => {
         let currentKeys = await KeyStore.instance.list();
         expect(currentKeys).toEqual(Dummy.keyInfo);
 
@@ -64,13 +64,21 @@ describe('KeyStore', () => {
         currentKeys = await KeyStore.instance.list();
         expect(currentKeys.length).toBe(0);
 
-        // check that we can't get a removed key by address
-        const removedKeys = await Promise.all([
-            KeyStore.instance._getPlain(Dummy.keyInfo[0].userFriendlyAddress),
-            KeyStore.instance._getPlain(Dummy.keyInfo[1].userFriendlyAddress)
-        ]);
-        expect(removedKeys[0]).toBeUndefined();
-        expect(removedKeys[1]).toBeUndefined();
+        try {
+            await KeyStore.instance._getPlain(Dummy.keyInfo[0].userFriendlyAddress);
+            done.fail('KeyStore did not throw <Key not found> error');
+        } catch (error) {
+            expect(error.message).toEqual('Key not found');
+        }
+
+        try {
+            await KeyStore.instance._getPlain(Dummy.keyInfo[1].userFriendlyAddress);
+            done.fail('KeyStore did not throw <Key not found> error');
+        } catch (error) {
+            expect(error.message).toEqual('Key not found');
+        }
+
+        done();
     });
 
     it('can add and update keys', async () => {
