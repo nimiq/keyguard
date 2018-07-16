@@ -111,20 +111,55 @@ describe('KeyStore', () => {
         expect(plainKey2.encryptedKeyPair).toEqual(Dummy.encryptedKeyPairs[1]);
     });
 
-    it('can migrate accounts from deprecated AccountStore', async () => {
+    it('can migrate accounts from deprecated AccountStore on non-iOS', async () => {
         // clear key store and fill account store
         await Promise.all([
             Dummy.Utils.deleteDummyKeyStore(),
             Dummy.Utils.createDummyAccountStore()
         ]);
+        spyOn(BrowserDetection, 'isIos').and.returnValue(false);
 
+        let cookieSet = false;
         spyOnProperty(document, 'cookie', 'set').and.callFake((/** @type {string} */ cookie) => {
-            expect(cookie.startsWith('migrate') || cookie.startsWith('accounts')).toBe(true);
-            expect(cookie.endsWith('expires=Thu, 01 Jan 1970 00:00:01 GMT')).toBe(true);
+            cookieSet = true;
         });
 
         await KeyStore.instance.doMigrateAccountsToKeys();
 
+        expect(cookieSet).toBe(false);
+        const [key1, key2] = await Promise.all([
+            KeyStore.instance._getPlain(Dummy.keyInfo[0].userFriendlyAddress),
+            KeyStore.instance._getPlain(Dummy.keyInfo[1].userFriendlyAddress)
+        ]);
+        expect(key1).toEqual(Dummy.keyDatabaseEntries[0]);
+        expect(key2).toEqual(Dummy.keyDatabaseEntries[1]);
+
+        await Dummy.Utils.deleteDummyAccountStore();
+    });
+
+    it('can migrate accounts from deprecated AccountStore and deletes the cookie on iOS', async () => {
+        // clear key store and fill account store
+        await Promise.all([
+            Dummy.Utils.deleteDummyKeyStore(),
+            Dummy.Utils.createDummyAccountStore()
+        ]);
+        spyOn(BrowserDetection, 'isIos').and.returnValue(true);
+
+        let migrationCookieDeleted = false,
+            accountsCookieDeleted = false;
+        spyOnProperty(document, 'cookie', 'set').and.callFake((/** @type {string} */ cookie) => {
+            if (cookie.startsWith('migrate=')) {
+                migrationCookieDeleted = true;
+            } else if (cookie.startsWith('accounts=')) {
+                accountsCookieDeleted = true;
+            }
+            expect(migrationCookieDeleted || accountsCookieDeleted).toBe(true);
+            expect(cookie.includes('expires=Thu, 01 Jan 1970 00:00:01 GMT')).toBe(true);
+        });
+
+        await KeyStore.instance.doMigrateAccountsToKeys();
+
+        expect(migrationCookieDeleted && accountsCookieDeleted).toBe(true);
         const [key1, key2] = await Promise.all([
             KeyStore.instance._getPlain(Dummy.keyInfo[0].userFriendlyAddress),
             KeyStore.instance._getPlain(Dummy.keyInfo[1].userFriendlyAddress)
