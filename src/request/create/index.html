@@ -42,7 +42,7 @@
     <link rel="stylesheet" href="../../components/PassphraseInput.css">
     <link rel="stylesheet" href="../../components/RecoveryWords.css">
     <link rel="stylesheet" href="../../components/ValidateWords.css">
-    <link rel="stylesheet" href="./privacy-agent.css">
+    <link rel="stylesheet" href="../../components/PrivacyAgent.css">
     <link rel="stylesheet" href="./ChooseIdenticon.css">
 </head>
 <body>
@@ -88,8 +88,11 @@
                 Careful, this PIN is <strong>not recoverable!</strong> If you lose it, you lose access to your funds.
             </span>
         </div>
-        <div data-18n="create-confirm-pin" class="confirm-message hidden">Please repeat PIN to confirm</div>
-        <div data-18n="create-pin-not-matching" class="not-matching-message hidden">PIN not matching. Please try again.</div>
+        <div class="spacing-bottom-small position-relative">
+            &nbsp;
+            <div data-18n="create-confirm-pin" class="confirm-message fit display-none center">Please repeat PIN to confirm</div>
+            <div data-18n="create-pin-not-matching" class="not-matching-message fit display-none center">PIN not matching. Please try again.</div>
+        </div>
         <div class="grow"></div>
         <div class="pinpad"></div>
         <div class="grow"></div>

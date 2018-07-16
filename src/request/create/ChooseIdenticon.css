@@ -9,7 +9,6 @@
 }
 
 #choose-identicon .identicon {
-    width: unset;
     height: 16rem;
     position: absolute;
     transition: transform 500ms;

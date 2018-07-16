@@ -23,6 +23,7 @@
     top: 0;
     right: -.375rem;
     cursor: pointer;
+    background-size: 55%;
 }
 
 .passphrase-input button {
