@@ -1,11 +1,11 @@
 /* global TRANSLATIONS */ // eslint-disable-line no-unused-vars
+/* global Nimiq */
 
 /**
  * @typedef {{[language: string]: {[id: string]: string}}} dict
  */
 
 class I18n { // eslint-disable-line no-unused-vars
-    /* eslint-disable-next-line valid-jsdoc */
     /**
      * @param {dict} dictionary - Dictionary of all languages and phrases
      * @param {string} fallbackLanguage - Language to be used if no translation for the current language can be found
@@ -80,7 +80,7 @@ class I18n { // eslint-disable-line no-unused-vars
      */
     static _translate(id, language) {
         if (!this.dictionary[language] || !this.dictionary[language][id]) {
-            throw new Error(`Translation not found: ${id}!`);
+            throw new Error(`I18n: ${language}/${id} is undefined!`);
         }
         return this.dictionary[language][id];
     }
@@ -97,7 +97,6 @@ class I18n { // eslint-disable-line no-unused-vars
      */
     static switchLanguage(language) {
         this.language = language;
-        this.translateDom();
     }
 
     /**
@@ -129,10 +128,23 @@ class I18n { // eslint-disable-line no-unused-vars
         const languageToUse = this.getClosestSupportedLanguage(language);
 
         if (languageToUse !== language) {
+            // eslint-disable-next-line no-console
             console.warn(`Language ${language} not supported, using ${languageToUse} instead.`);
         }
 
-        this._language = languageToUse;
+        if (this._language !== languageToUse) {
+            /** @type {string} */
+            this._language = languageToUse;
+
+            if (({ interactive: 1, complete: 1 })[document.readyState]) {
+                this.translateDom();
+            } else {
+                document.addEventListener('DOMContentLoaded', () => {
+                    this.translateDom();
+                });
+            }
+            I18n.observer.fire(I18n.Events.LANGUAGE_CHANGED, this._language);
+        }
     }
 
     /** @type {string} */
@@ -160,3 +172,8 @@ class I18n { // eslint-disable-line no-unused-vars
         return this._parser;
     }
 }
+
+I18n.observer = new Nimiq.Observable();
+I18n.Events = {
+    LANGUAGE_CHANGED: 'language-changed',
+};

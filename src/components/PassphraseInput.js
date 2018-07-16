@@ -1,4 +1,5 @@
 /* global Nimiq */
+/* global AnimationUtils */
 /* global I18n */
 
 class PassphraseInput extends Nimiq.Observable {
@@ -56,10 +57,13 @@ class PassphraseInput extends Nimiq.Observable {
         return $el;
     }
 
-    /**
-     * @returns {HTMLFormElement}
-     */
+    /** @returns {HTMLElement} @deprecated */
     getElement() {
+        return this.$el;
+    }
+
+    /** @type {HTMLElement} */
+    get element() {
         return this.$el;
     }
 
@@ -75,12 +79,8 @@ class PassphraseInput extends Nimiq.Observable {
         }
     }
 
-    onPassphraseIncorrect() {
-        this.$inputContainer.classList.add('shake');
-        setTimeout(() => {
-            this.$inputContainer.classList.remove('shake');
-            this.reset();
-        }, 400);
+    async onPassphraseIncorrect() {
+        return AnimationUtils.animate('shake', this.$inputContainer);
     }
 
     /** @param {Event} event */
