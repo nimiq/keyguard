@@ -6,13 +6,6 @@ class KeyguardClient {
         this._keyguardSrc = src;
 
         this._connected = this._startIFrame();
-
-        this._targetName = 'Nimiq Keyguard';
-    }
-
-    /** @param {string} targetName */
-    set targetName(targetName) {
-        this._targetName = targetName;
     }
 
     /**
@@ -140,7 +133,7 @@ class KeyguardClient {
 
         const $popup = window.open(
             requestUrl,
-            this._targetName,
+            'NimiqPopup',
             `left=${window.innerWidth / 2 - 250},top=100,width=500,height=820,location=yes,dependent=yes`,
         );
 
