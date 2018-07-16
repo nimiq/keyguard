@@ -39,6 +39,7 @@ declare namespace Nimiq {
         static fromAscii(buf: string): Uint8Array
         static fromHex(buf: string): Uint8Array
         static toHex(buf: Uint8Array): string
+        static equals(buf1: Uint8Array, buf2: Uint8Array): boolean
     }
 
     class SerialBuffer extends Uint8Array {
@@ -148,6 +149,7 @@ declare namespace Nimiq {
         isLocked: boolean
         static unserialize(buffer: SerialBuffer): KeyPair
         static fromEncrypted(buffer: SerialBuffer, passphraseOrPin: Uint8Array): Promise<KeyPair>
+        static derive(key: PrivateKey): KeyPair
         static generate(): KeyPair
         exportEncrypted(passphrase: string | Uint8Array, unlockKey?: Uint8Array): Promise<SerialBuffer>
         serialize(): SerialBuffer

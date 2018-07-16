@@ -1,21 +1,21 @@
 .recovery-words {
-    margin-bottom: 24px;
+    margin-bottom: 3rem;
 }
 
 .recovery-words .info-box {
-    margin-bottom: 24px;
+    margin-bottom: 3rem;
 }
 
 .recovery-words .words-container {
     width: 100%;
-    max-width: 360px;
-    padding: 16px;
-    margin: 24px 0;
+    max-width: 45rem;
+    padding: 2rem;
+    margin: 3rem 0;
     box-sizing: border-box;
     position: relative;
     background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAJElEQVQYV2NkwAT/GdHE/jMwMDAiC4IFQIpggnABmCCKAEgQAABOBQUaykC8AAAAAElFTkSuQmCC');
     background-color: rgba(0, 0, 0, 0.4);
-    border: 1px solid white;
+    border: .125rem solid white;
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -59,25 +59,25 @@
     display: block;
     position: absolute;
     left: 50%;
-    width: 140px;
+    width: 17.5rem;
     box-sizing: border-box;
-    border-radius: 24px;
-    top: -13px;
-    font-size: 12px;
-    line-height: 26px;
-    margin-left: -70px;
+    border-radius: 3rem;
+    top: -1.625rem;
+    font-size: 1.5rem;
+    line-height: 3.25rem;
+    margin-left: -8.75rem;
     background: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjZmZmIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMCAwaDI0djI0SDB6IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTE4IDhoLTFWNmMwLTIuNzYtMi4yNC01LTUtNVM3IDMuMjQgNyA2djJINmMtMS4xIDAtMiAuOS0yIDJ2MTBjMCAxLjEuOSAyIDIgMmgxMmMxLjEgMCAyLS45IDItMlYxMGMwLTEuMS0uOS0yLTItMnptLTYgOWMtMS4xIDAtMi0uOS0yLTJzLjktMiAyLTIgMiAuOSAyIDItLjkgMi0yIDJ6bTMuMS05SDguOVY2YzAtMS43MSAxLjM5LTMuMSAzLjEtMy4xIDEuNzEgMCAzLjEgMS4zOSAzLjEgMy4xdjJ6Ii8+PC9zdmc+');
-    background-size: 14px;
-    background-position: 9px center;
+    background-size: 1.75rem;
+    background-position: 1.125rem center;
     background-repeat: no-repeat;
     background-color: black;
-    padding-left: 16px;
+    padding-left: 2rem;
     transition: opacity 300ms;
 }
 
 @keyframes words-container {
     from {
         opacity: 0;
-        transform: translate(32px, 16px);
+        transform: translate(4rem, 2rem);
     }
 }

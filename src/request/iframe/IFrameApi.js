@@ -21,7 +21,7 @@ class IFrameApi { // eslint-disable-line no-unused-vars
     }
 
     /**
-     * @returns {Promise<boolean>}
+     * @returns {Promise<void>}
      * @deprecated Only for database migration
      */
     async migrateAccountsToKeys() {
@@ -35,9 +35,9 @@ class IFrameApi { // eslint-disable-line no-unused-vars
         if (BrowserDetection.isIos() || BrowserDetection.isSafari()) {
             // Set migrate flag cookie
             document.cookie = 'migrate=1;max-age=31536000';
-            return true;
+            return;
         }
 
-        return KeyStore.instance.doMigrateAccountsToKeys();
+        await KeyStore.instance.doMigrateAccountsToKeys();
     }
 }

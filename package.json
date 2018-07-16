@@ -9,11 +9,11 @@
     "lintfix": "eslint --fix src client tools",
     "checkdeps": "node tools/dependencyValidator.js",
     "test-coverage": "karma start karma.conf.coverage.js",
-    "coverage": "nyc instrument ./src ./instrumented && npm run test-coverage",
+    "coverage": "nyc instrument ./src ./instrumented && yarn test-coverage",
     "checklangs": "node tools/translationValidator.js",
-    "pr": "npm run typecheck && npm run lint && npm run test && npm run checkdeps && npm run checklangs",
-    "watch": "tsc-watch --pretty --onSuccess \"npm run watchonsuccess\"",
-    "watchonsuccess": "npm run lintfix && npm run checkdeps && npm run checklangs"
+    "pr": "yarn typecheck && yarn lint && yarn test && yarn checkdeps && yarn checklangs",
+    "watch": "tsc-watch --pretty --onSuccess \"yarn lint\"",
+    "watchfix": "tsc-watch --pretty --onSuccess \"yarn lintfix\""
   },
   "repository": {
     "type": "git",

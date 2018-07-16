@@ -1,6 +1,7 @@
 /* global BrowserDetection */
 /* global KeyStore */
 /* global CookieJar */
+/* global I18n */
 
 /**
  * A common parent class for pop-up requests.
@@ -38,6 +39,9 @@ class PopupApi { // eslint-disable-line no-unused-vars
 
         /** @type {Function} */
         this._reject = () => { throw new Error('Method not defined'); };
+
+        I18n.initialize(window.TRANSLATIONS, 'en');
+        I18n.translateDom();
     }
 
     /**

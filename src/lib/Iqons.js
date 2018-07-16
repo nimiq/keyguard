@@ -234,7 +234,7 @@ class Iqons {
     }
 }
 
-Iqons.svgPath = '/apps/keyguard-next/src/lib/Iqons.min.svg';
+Iqons.svgPath = '../../lib/Iqons.min.svg';
 
 Iqons.CATALOG = {
     face: [
