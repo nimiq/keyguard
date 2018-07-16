@@ -15,10 +15,18 @@ const TRANSLATIONS = {
         'recovery-words-input-label': 'Recovery Words',
         'recovery-words-input-field-placeholder': 'word #',
         'create-choose-identicon-header1': 'Choose Your Account Avatar',
+        'create-backup-account-header': 'Backup your Account',
         'create-set-passphrase-header1': 'Set a Passphrase',
         'create-set-passphrase-header2': 'Please enter a Passphrase to secure your account.',
-        'create-set-passphrase-warning': `The Passphrase is [strong]not[/strong] an alternative for your 24 Recovery
-            Words!`,
+        'create-set-passphrase-warning': 'The Passphrase is [strong]not[/strong] an alternative for your 24 Recovery '
+                                       + 'Words!',
+        'create-confirm-passphrase': 'Please repeat your Passphrase:',
+        'create-choose-pin': 'Choose your PIN',
+        'create-enter-account-control-pin': 'Please enter an account control PIN',
+        'create-pin-warning': 'Careful, this PIN is [strong]not recoverable![/strong] If you lose it, you lose access '
+                            + 'to your funds.',
+        'create-confirm-pin': 'Please repeat PIN to confirm',
+        'create-pin-not-matching': 'PIN not matching. Please try again.',
         'import-heading': 'Import from Recovery Words',
         'import-words-subheading': 'Please enter your 24 Account Recovery Words.',
         'import-passphrase-subheading': 'Please enter a Passphrase to secure your key.',
@@ -44,8 +52,15 @@ const TRANSLATIONS = {
         'create-choose-identicon-header1': 'Wähle einen Avatar für dein Konto',
         'create-set-passphrase-header1': 'Lege eine Passphrase fest',
         'create-set-passphrase-header2': 'Bitte gib eine Passphrase ein, um dein Konto zu sichern.',
-        'create-set-passphrase-warning': `Die Passphrase ist [strong]keine[/strong] Alternative für deine 24
-            Wiederherstellungswörter!`,
+        'create-set-passphrase-warning': 'Die Passphrase ist [strong]keine[/strong] Alternative für deine 24 '
+                                       + 'Wiederherstellungswörter!',
+        'create-confirm-passphrase': 'Bitte Passphrase wiederholen:',
+        'create-choose-pin': 'PIN wählen',
+        'create-enter-account-control-pin': 'Bitte gib eine PIN für dein Konto ein',
+        'create-pin-warning': 'Vorsicht, die PIN ist [strong]nicht wiederherstellbar![/strong] Falls sie sie '
+                            + 'verlieren, verlieren sie auch den Zugang zu ihrem Guthaben!',
+        'create-confirm-pin': 'Zur Bestätigung, bitte PIN wiederholen',
+        'create-pin-not-matching': 'PIN stimmt nicht überein. Bitte noch einmal versuchen.',
         'import-heading': 'Mit Wiederherstellungswörtern importieren.',
         'import-words-subheading': 'Bitte gib deine 24 Wiederherstellungswörter ein.',
         'import-passphrase-subheading': 'Bitte gib eine Passphrase ein, um deinen Schlüssel zu schützen.',

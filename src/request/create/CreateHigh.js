@@ -1,6 +1,7 @@
 /* global RecoveryWords */
 /* global ValidateWords */
 /* global ChooseIdenticon */
+/* global PrivacyAgent */
 /* global PassphraseInput */
 /* global Key */
 /* global KeyStore */
@@ -18,6 +19,9 @@ class CreateHigh {
         // set html elements
         /** @type {HTMLDivElement} */
         this.$chooseIdenticon = (document.getElementById(CreateHigh.Pages.CHOOSE_IDENTICON));
+
+        /** @type {HTMLDivElement} */
+        this.$privacyAgent = (document.getElementById(CreateHigh.Pages.PRIVACY_AGENT));
 
         /** @type {HTMLDivElement} */
         this.$recoveryWords = (document.getElementById(CreateHigh.Pages.RECOVERY_WORDS));
@@ -39,6 +43,9 @@ class CreateHigh {
 
         // create components
         this._chooseIdenticon = new ChooseIdenticon(this.$chooseIdenticon);
+        /** @type {HTMLElement} */
+        const $privacyAgentContainer = (this.$privacyAgent.querySelector('.agent'));
+        this._privacyAgent = new PrivacyAgent($privacyAgentContainer);
         this._recoveryWords = new RecoveryWords(this.$recoveryWords);
         this._validateWords = new ValidateWords(this.$validateWords);
         this._passphraseSetter = new PassphraseInput(true, $passphraseSetter);
@@ -57,6 +64,10 @@ class CreateHigh {
                 window.location.hash = CreateHigh.Pages.PRIVACY_AGENT;
             },
         );
+
+        this._privacyAgent.on(PrivacyAgent.Events.CONFIRM, () => {
+            window.location.hash = CreateHigh.Pages.RECOVERY_WORDS;
+        });
 
         this._recoveryWords.on(RecoveryWords.Events.CONTINUE, () => {
             window.location.hash = CreateHigh.Pages.VALIDATE_WORDS;
