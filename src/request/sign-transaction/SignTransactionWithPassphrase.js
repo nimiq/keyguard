@@ -36,7 +36,7 @@ class SignTransactionWithPassphrase extends SignTransaction {
     run() {
         // Go to start page
         window.location.hash = SignTransactionWithPassphrase.Pages.ENTER_PASSPHRASE;
-        setTimeout(this._passphraseInput.focus, 200);
+        this._passphraseInput.focus();
     }
 
     /** @param {string} passphrase */
