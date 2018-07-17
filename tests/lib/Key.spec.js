@@ -66,7 +66,7 @@ describe("Key", function () {
         expect(Utf8Tools.utf8ByteArrayToString(tx.data)).toBe(message);
     });
 
-    fit("can create a valid vesting payout transaction", async function () {
+    it("can create a valid vesting payout transaction", async function () {
         const key = await Key.loadEncrypted(Dummy.encryptedKeyPairs[0], Dummy.encryptionPassword, EncryptionType.HIGH);
         const vestingContract = 'NQ47 FS55 KNXG 25XL 37N8 LD78 1DDH 8CS0 QBNF';
         const message = 'Test transaction message';
