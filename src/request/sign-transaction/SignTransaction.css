@@ -12,6 +12,12 @@
     height: 17.5rem;
 }
 
+.transaction #signer-identicon {
+    width: 6rem;
+    margin-left: 3.5rem;
+    margin-right: -2.5rem;
+}
+
 .transaction .arrow {
     margin: 0 2rem;
 }
@@ -33,10 +39,9 @@
 
 .transaction label {
     display: inline-block;
-    width: 10rem;
-    /* text-align: left; */
+    width: 12rem;
     text-transform: uppercase;
-    letter-spacing: 0.16em;
+    letter-spacing: 0.06em;
     font-size: 1.75rem;
     font-weight: bold;
     opacity: 0.76;

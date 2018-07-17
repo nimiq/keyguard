@@ -22,10 +22,12 @@ type AccountEntry = AccountInfo & {
 type TransactionRequest = {
     type: TransactionType.BASIC | TransactionType.EXTENDED
     sender: string
+    senderType?: Nimiq.Account.Type
     senderLabel?: string
     recipient: string
-    recipientLabel?: string
+    recipientType?: Nimiq.Account.Type
     signer: string
+    signerLabel?: string
     value: number
     fee: number
     network: string
@@ -37,8 +39,10 @@ type TransactionRequest = {
 type SignedTransactionResult = {
     type: TransactionType.BASIC | TransactionType.EXTENDED
     sender: string,
-    signerPubKey: Nimiq.SerialBuffer,
+    senderType?: Nimiq.Account.Type
     recipient: string,
+    recipientType?: Nimiq.Account.Type
+    signerPubKey: Nimiq.SerialBuffer,
     value: number,
     fee: number,
     validityStartHeight: number,

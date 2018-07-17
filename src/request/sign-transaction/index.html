@@ -63,6 +63,7 @@
             <div class="transaction">
                 <div class="center">
                     <div id="sender-identicon"></div>
+                    <div id="signer-identicon" class="display-none"></div>
                     <i class="arrow icon"><img src='data:image/svg+xml,<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="24px" height="24px" viewBox="0 0 24 24" enable-background="new 0 0 24 24" xml:space="preserve" fill="white"><path d="M8.59,16.59L13.17,12L8.59,7.41L10,6l6,6l-6,6L8.59,16.59z"/><path fill="none" d="M0,0h24v24H0V0z"/></svg>'></i>
                     <div id="recipient-identicon"></div>
                 </div>
@@ -79,10 +80,17 @@
                     </div>
                 </div>
 
+                <div class="signer-section display-none row">
+                    <label data-i18n="tx-signer">Signer</label>
+                    <div class="row-data">
+                            <div class="label display-none" id="signer-label"></div>
+                        <div class="address" id="signer-address"></div>
+                    </div>
+                </div>
+
                 <div class="row">
                     <label data-i18n="tx-to">To</label>
                     <div class="row-data">
-                        <div class="label display-none" id="recipient-label"></div>
                         <div class="address" id="recipient-address"></div>
                     </div>
                 </div>
@@ -101,7 +109,9 @@
                     </div>
                 </div>
             </div>
+
             <div class="grow"></div>
+
             <button data-i18n="sign-tx-button-enter-pin">Enter PIN</button>
         </div>
 

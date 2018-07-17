@@ -6,6 +6,7 @@
 /* global SignTransactionWithPassphrase, SignTransactionWithPin */
 /* global TransactionType */
 /* global AddressUtils */
+/* global Utf8Tools */
 
 class SignTransactionApi extends PopupApi { // eslint-disable-line no-unused-vars
     /**
@@ -19,6 +20,9 @@ class SignTransactionApi extends PopupApi { // eslint-disable-line no-unused-var
         AddressUtils.isUserFriendlyAddress(txRequest.sender);
         AddressUtils.isUserFriendlyAddress(txRequest.recipient);
         AddressUtils.isUserFriendlyAddress(txRequest.signer);
+        if (typeof txRequest.extraData !== 'string') {
+            throw new Error('Transaction extraData must be a string');
+        }
 
         // Normalization
         txRequest.value = Nimiq.Policy.coinsToSatoshis(txRequest.value);
@@ -26,11 +30,12 @@ class SignTransactionApi extends PopupApi { // eslint-disable-line no-unused-var
         txRequest.sender = AddressUtils.formatAddress(txRequest.sender);
         txRequest.recipient = AddressUtils.formatAddress(txRequest.recipient);
         txRequest.signer = AddressUtils.formatAddress(txRequest.signer);
-        // txRequest.extraData = Utf8Tools.utf8ByteArrayToString(Utf8Tools.stringToUtf8ByteArray(txRequest.extraData));
+        txRequest.extraData = Utf8Tools.utf8ByteArrayToString(
+            Utf8Tools.stringToUtf8ByteArray(txRequest.extraData || ''),
+        );
 
-        if (txRequest.type === TransactionType.EXTENDED) {
-            throw new Error('Extended transaction signing is not yet implemented');
-        } else if (txRequest.type === TransactionType.BASIC) {
+        switch (txRequest.type) {
+        case TransactionType.BASIC:
             if (txRequest.sender !== txRequest.signer) {
                 throw new Error('Sender must be signer for basic transactions');
             }
@@ -38,7 +43,13 @@ class SignTransactionApi extends PopupApi { // eslint-disable-line no-unused-var
             if (txRequest.extraData) {
                 throw new Error('Cannot add extraData to basic transaction');
             }
-        } else {
+
+            break;
+        case TransactionType.EXTENDED:
+            // Validate extended transactions
+
+            break;
+        default:
             throw new Error('Invalid transaction type');
         }
 
