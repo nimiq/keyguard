@@ -134,7 +134,7 @@ class Key { // eslint-disable-line no-unused-vars
      * @param {number} validityStartHeight - The validityStartHeight for the transaction
      * @returns {Nimiq.BasicTransaction} A prepared and signed Transaction object (to be sent to the network)
      */
-    createTransaction(recipient, value, fee, validityStartHeight) {
+    createBasicTransaction(recipient, value, fee, validityStartHeight) {
         if (typeof recipient === 'string') {
             recipient = Key.getUnfriendlyAddress(recipient);
         }
@@ -154,58 +154,12 @@ class Key { // eslint-disable-line no-unused-vars
     }
 
     /**
-     * Create an extended transaction with this key as the sender that is signed by this key.
-     *
-     * @param {Nimiq.Address | string} recipient - Address of the transaction receiver
-     * @param {number} value - Number of satoshis to send
-     * @param {number} fee - Number of satoshis to set as fee
-     * @param {number} validityStartHeight - The validityStartHeight for the transaction
-     * @param {string} message - Message to add to the transaction
-     * @returns {Nimiq.ExtendedTransaction} A prepared and signed Transaction object (to be sent to the network)
-     */
-    createTransactionWithMessage(recipient, value, fee, validityStartHeight, message) {
-        return this.createExtendedTransaction(
-            this.publicKey.toAddress(),
-            Nimiq.Account.Type.BASIC,
-            recipient,
-            Nimiq.Account.Type.BASIC,
-            value,
-            fee,
-            validityStartHeight,
-            message,
-        );
-    }
-
-    /**
-     * Create an extended transaction that pays out vested NIM to this key and that is signed by this key.
-     *
-     * @param {Nimiq.Address | string} sender - Address of the transaction sending vesting contract
-     * @param {number} value - Number of Satoshis to send
-     * @param {number} fee - Number of satoshis to set as fee
-     * @param {number} validityStartHeight - The validityStartHeight for the transaction
-     * @param {string} [message] - Text to add to the transaction
-     * @returns {Nimiq.ExtendedTransaction} A prepared and signed Transaction object (to be sent to the network)
-     */
-    createVestingPayoutTransaction(sender, value, fee, validityStartHeight, message) {
-        return this.createExtendedTransaction(
-            sender,
-            Nimiq.Account.Type.VESTING,
-            this.publicKey.toAddress(),
-            Nimiq.Account.Type.BASIC,
-            value,
-            fee,
-            validityStartHeight,
-            message,
-        );
-    }
-
-    /**
      * Create an extended transaction that is signed by this key.
      *
      * @param {Nimiq.Address | string} sender - Address of the transaction receiver
-     * @param {Nimiq.Account.Type | null} [senderType]
+     * @param {Nimiq.Account.Type} [senderType]
      * @param {Nimiq.Address | string} recipient - Address of the transaction receiver
-     * @param {Nimiq.Account.Type | null} [recipientType]
+     * @param {Nimiq.Account.Type} [recipientType]
      * @param {number} value - Number of Satoshis to send
      * @param {number} fee - Number of satoshis to set as fee
      * @param {number} validityStartHeight - The validityStartHeight for the transaction

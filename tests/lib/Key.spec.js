@@ -28,7 +28,7 @@ describe("Key", function () {
         const key = await Key.loadEncrypted(Dummy.encryptedKeyPairs[0], Dummy.encryptionPassword, EncryptionType.HIGH);
         const recipient = 'NQ47 FS55 KNXG 25XL 37N8 LD78 1DDH 8CS0 QBNF';
 
-        const tx = await key.createTransaction(recipient, 100 * 1e5, 1, 100000);
+        const tx = await key.createBasicTransaction(recipient, 100 * 1e5, 1, 100000);
 
         expect(tx instanceof Nimiq.BasicTransaction).toBe(true);
         expect(tx.verify()).toBe(true);
@@ -49,7 +49,7 @@ describe("Key", function () {
         const recipient = 'NQ47 FS55 KNXG 25XL 37N8 LD78 1DDH 8CS0 QBNF';
         const message = 'Test transaction message';
 
-        const tx = await key.createTransactionWithMessage(recipient, 100 * 1e5, 1, 100000, message);
+        const tx = await key.createExtendedTransaction(key.address, undefined, recipient, undefined, 100 * 1e5, 1, 100000, message);
 
         expect(tx instanceof Nimiq.ExtendedTransaction).toBe(true);
         expect(tx.verify()).toBe(true);
@@ -66,18 +66,19 @@ describe("Key", function () {
         expect(Utf8Tools.utf8ByteArrayToString(tx.data)).toBe(message);
     });
 
-    it("can create a valid vesting payout transaction", async function () {
+    fit("can create a valid vesting payout transaction", async function () {
         const key = await Key.loadEncrypted(Dummy.encryptedKeyPairs[0], Dummy.encryptionPassword, EncryptionType.HIGH);
         const vestingContract = 'NQ47 FS55 KNXG 25XL 37N8 LD78 1DDH 8CS0 QBNF';
         const message = 'Test transaction message';
 
-        const tx = await key.createVestingPayoutTransaction(vestingContract, 100 * 1e5, 1, 100000, message);
+        const tx = await key.createExtendedTransaction(vestingContract, Nimiq.Account.Type.VESTING, key.address, undefined, 100 * 1e5, 1, 100000, message);
 
         expect(tx instanceof Nimiq.ExtendedTransaction).toBe(true);
         expect(tx.verify()).toBe(true);
 
         const signatureProof = Nimiq.SignatureProof.unserialize(tx.proof);
-        expect(signatureProof.verify(null, tx.serializeContent())).toBe(true);
+        expect(signatureProof.verify(signatureProof.publicKey.toAddress(), tx.serializeContent())).toBe(true);
+        expect(signatureProof.publicKey.toAddress().toUserFriendlyAddress()).toBe(Dummy.keyInfo[0].userFriendlyAddress);
 
         expect(tx.sender.toUserFriendlyAddress()).toBe(vestingContract);
         expect(tx.senderType).toBe(Nimiq.Account.Type.VESTING);
