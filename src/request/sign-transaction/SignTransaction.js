@@ -15,15 +15,19 @@ class SignTransaction { // eslint-disable-line no-unused-vars
         /** @type {HTMLDivElement} */
         const $senderIdenticon = ($transaction.querySelector('#sender-identicon'));
         /** @type {HTMLDivElement} */
+        const $signerIdenticon = ($transaction.querySelector('#signer-identicon'));
+        /** @type {HTMLDivElement} */
         const $recipientIdenticon = ($transaction.querySelector('#recipient-identicon'));
 
         /** @type {HTMLDivElement} */
         const $senderLabel = ($transaction.querySelector('#sender-label'));
         /** @type {HTMLDivElement} */
-        const $recipientLabel = ($transaction.querySelector('#recipient-label'));
+        const $signerLabel = ($transaction.querySelector('#signer-label'));
 
         /** @type {HTMLDivElement} */
         const $senderAddress = ($transaction.querySelector('#sender-address'));
+        /** @type {HTMLDivElement} */
+        const $signerAddress = ($transaction.querySelector('#signer-address'));
         /** @type {HTMLDivElement} */
         const $recipientAddress = ($transaction.querySelector('#recipient-address'));
 
@@ -38,13 +42,25 @@ class SignTransaction { // eslint-disable-line no-unused-vars
         new Identicon(txRequest.sender, $senderIdenticon); // eslint-disable-line no-new
         new Identicon(txRequest.recipient, $recipientIdenticon); // eslint-disable-line no-new
 
+        if (txRequest.sender !== txRequest.signer) {
+            new Identicon(txRequest.signer, $signerIdenticon); // eslint-disable-line no-new
+            $signerIdenticon.classList.remove('display-none');
+
+            $signerAddress.textContent = txRequest.signer;
+
+            if (txRequest.signerLabel) {
+                $signerLabel.classList.remove('display-none');
+                $signerLabel.textContent = txRequest.signerLabel;
+            }
+
+            /** @type {HTMLDivElement} */
+            const $signerSection = ($transaction.querySelector('.signer-section'));
+            $signerSection.classList.remove('display-none');
+        }
+
         if (txRequest.senderLabel) {
             $senderLabel.classList.remove('display-none');
             $senderLabel.textContent = txRequest.senderLabel;
-        }
-        if (txRequest.recipientLabel) {
-            $recipientLabel.classList.remove('display-none');
-            $recipientLabel.textContent = txRequest.recipientLabel;
         }
 
         $senderAddress.textContent = txRequest.sender;
@@ -60,6 +76,9 @@ class SignTransaction { // eslint-disable-line no-unused-vars
 
         if (txRequest.type === TransactionType.EXTENDED && txRequest.extraData) {
             $message.textContent = txRequest.extraData;
+            /** @type {HTMLDivElement} */
+            const $extraDataSection = ($transaction.querySelector('.extra-data-section'));
+            $extraDataSection.classList.remove('display-none');
         }
 
         return $transaction;
@@ -79,7 +98,7 @@ class SignTransaction { // eslint-disable-line no-unused-vars
             const { value, fee, recipient, signer, validityStartHeight } = txRequest;
 
             const key = await KeyStore.instance.get(signer, passphraseOrPin);
-            const tx = key.createTransaction(recipient, value, fee, validityStartHeight);
+            const tx = key.createBasicTransaction(recipient, value, fee, validityStartHeight);
 
             const signatureProof = Nimiq.SignatureProof.unserialize(new Nimiq.SerialBuffer(tx.proof));
 
@@ -97,20 +116,39 @@ class SignTransaction { // eslint-disable-line no-unused-vars
         }
 
         if (txRequest.type === TransactionType.EXTENDED) {
+            const key = await KeyStore.instance.get(txRequest.signer, passphraseOrPin);
+            const tx = key.createExtendedTransaction(
+                txRequest.sender,
+                txRequest.senderType,
+                txRequest.recipient,
+                txRequest.recipientType,
+                txRequest.value,
+                txRequest.fee,
+                txRequest.validityStartHeight,
+                txRequest.extraData,
+            );
 
-            // return {
-            //     sender: tx.sender.toUserFriendlyAddress(),
-            //     signerPubKey: signatureProof.publicKey.serialize(),
-            //     recipient: tx.recipient.toUserFriendlyAddress(),
-            //     value: Nimiq.Policy.satoshisToCoins(tx.value),
-            //     fee: Nimiq.Policy.satoshisToCoins(tx.fee),
-            //     validityStartHeight: tx.validityStartHeight,
-            //     signature: signatureProof.signature.serialize(),
-            //     extraData: Utf8Tools.utf8ByteArrayToString(tx.data),
-            //     hash: tx.hash().toBase64(),
-            // };
+            const signatureProof = Nimiq.SignatureProof.unserialize(new Nimiq.SerialBuffer(tx.proof));
+
+            return {
+                type: TransactionType.EXTENDED,
+                sender: tx.sender.toUserFriendlyAddress(),
+                senderType: tx.senderType,
+                signerPubKey: signatureProof.publicKey.serialize(),
+                recipient: tx.recipient.toUserFriendlyAddress(),
+                recipientType: tx.recipientType,
+                value: Nimiq.Policy.satoshisToCoins(tx.value),
+                fee: Nimiq.Policy.satoshisToCoins(tx.fee),
+                validityStartHeight: tx.validityStartHeight,
+                signature: signatureProof.signature.serialize(),
+                hash: tx.hash().toBase64(),
+            };
         }
 
-        throw new Error('Unknown transaction type. Must be "basic" or "extended"');
+        // The check for a valid transaction type is already done in onRequest in SignTransactionApi,
+        // but Typescript complains if this function has a path with no return.
+        // Thus logically, this should never be hit.
+        // The alternative would be to remove the check for the extended type and just run that if type is not basic.
+        throw new Error('Invalid transaction type');
     }
 }

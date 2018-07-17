@@ -238,15 +238,15 @@ declare namespace Nimiq {
 
     abstract class Transaction {
         sender: Address
-        senderType: number
+        senderType: Account.Type
         recipient: Address
-        recipientType: number
+        recipientType: Account.Type
         value: number
         fee: number
         feePerByte: number
         networkId: number
         validityStartHeight: number
-        flags: number
+        flags: Transaction.Flag
         hasFlag(flag: number): boolean
         data: Uint8Array
         proof: Uint8Array
@@ -296,13 +296,13 @@ declare namespace Nimiq {
     class ExtendedTransaction extends Transaction {
         constructor(
             sender: Address,
-            senderType: number,
+            senderType: Account.Type,
             recipient: Address,
-            recipientType: number,
+            recipientType: Account.Type,
             value: number,
             fee: number,
             validityStartHeight: number,
-            flags: number,
+            flags: Transaction.Flag,
             data: Uint8Array
         )
     }
