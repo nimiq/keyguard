@@ -121,7 +121,7 @@ Dummy.Utils = {
             request.onsuccess = resolve;
             request.onblocked = () => {
                 // wait for open connections to get closed
-                setTimeout(() => reject(new Error('Can\'t delete database, there is still an open connection.')), 300);
+                setTimeout(() => reject(new Error('Can\'t delete database, there is still an open connection.')), 1000);
             };
         });
     },
