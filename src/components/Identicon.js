@@ -49,6 +49,7 @@ class Identicon { // eslint-disable-line no-unused-vars
 
         if (this._address) {
             Iqons.toDataUrl(this._address).then(url => {
+                // Placeholder setting above is synchronous, thus this async result will replace the placeholder
                 /** @type {HTMLImageElement} */ (this.$imgEl).src = url;
             });
         }
