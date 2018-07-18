@@ -159,6 +159,10 @@ class Iqons {
             });
     }
 
+    static get hasAssets() {
+        return !!this._assets;
+    }
+
     /** @type {string[]} */
     static get colors() {
         return [
