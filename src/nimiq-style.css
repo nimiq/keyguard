@@ -351,6 +351,10 @@ main {
     align-items: center;
 }
 
+.position-relative {
+    position: relative;
+}
+
 .fit {
     position: absolute;
     top: 0;
@@ -393,6 +397,10 @@ ul > li, ol >li {
 
 .spacing-bottom {
     margin-bottom: 4.5rem;
+}
+
+.spacing-bottom-small {
+    margin-bottom: 2.25rem;
 }
 
 .-left {

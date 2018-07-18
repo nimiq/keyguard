@@ -22,7 +22,7 @@ class PrivacyAgent extends Nimiq.Observable { // eslint-disable-line no-unused-v
         /* eslint-disable max-len */
         element.innerHTML = `
             <div class="privacy-agent-container">
-                <svg width="162" height="144" xmlns="http://www.w3.org/2000/svg"
+                <svg viewBox="0 0 162 144" xmlns="http://www.w3.org/2000/svg"
                         xmlns:xlink="http://www.w3.org/1999/xlink">
                     <defs>
                         <path d="M108 27.54l53.28 30.76a16 16 0 0 1 8 13.86v61.53a16 16 0 0 1-8 13.85L108 178.3a16 16 0 0 1-16 0l-53.28-30.76a16 16 0 0 1-8-13.85V72.16a16 16 0 0 1 8-13.86L92 27.54a16 16 0 0 1 16 0z"

@@ -24,6 +24,8 @@
 .privacy-agent svg {
     opacity: 0.8;
     display: block;
+    width: 20.25rem;
+    height: 18rem;
 }
 
 .privacy-agent button {
