@@ -18,7 +18,7 @@ describe("Key", function () {
 
         try {
             await Key.loadEncrypted(Dummy.encryptedKeyPairs[0], 'wrong password', EncryptionType.HIGH);
-            done.fail("Wrong password not detected.");
+            done.fail('Wrong password not detected.');
         } catch (e) {
             done();
         }

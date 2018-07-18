@@ -35,8 +35,8 @@ describe('MnemonicPhrase', function() {
         const tooShort = 'prefer foil call dove gym shop style blur used chuckle rain destroy person leader affair pretty weekend resemble ostrich ugly token glass nature';
         // duplicated last byte
         const tooLong = 'prefer foil call dove gym shop style blur used chuckle rain destroy person leader affair pretty weekend resemble ostrich ugly token glass nature visa visa';
-        expect(() => console.log(MnemonicPhrase.mnemonicToKey(tooShort))).toThrowError();
-        expect(() => console.log(MnemonicPhrase.mnemonicToKey(tooLong))).toThrowError();
+        expect(() => MnemonicPhrase.mnemonicToKey(tooShort)).toThrowError();
+        expect(() => MnemonicPhrase.mnemonicToKey(tooLong)).toThrowError();
     });
 
     it('fail when key is not exactly 32 bytes long', function() {
@@ -44,7 +44,7 @@ describe('MnemonicPhrase', function() {
         const tooShort = new Uint8Array([ 169, 203, 76, 129, 160, 230, 129, 141, 117, 240, 195, 239, 197, 18, 196, 30, 26, 52, 253, 1, 21, 81, 249, 22, 234, 115, 246, 14, 62, 197, 228 ]);
         // duplicated last byte
         const tooLong = new Uint8Array([ 169, 203, 76, 129, 160, 230, 129, 141, 117, 240, 195, 239, 197, 18, 196, 30, 26, 52, 253, 1, 21, 81, 249, 22, 234, 115, 246, 14, 62, 197, 228, 233, 233 ]);
-        expect(() => console.log(MnemonicPhrase.keyToMnemonic(tooShort))).toThrowError();
-        expect(() => console.log(MnemonicPhrase.keyToMnemonic(tooLong))).toThrowError();
+        expect(() => MnemonicPhrase.keyToMnemonic(tooShort)).toThrowError();
+        expect(() => MnemonicPhrase.keyToMnemonic(tooLong)).toThrowError();
     });
 });
