@@ -18,9 +18,11 @@
     <script defer src="../../lib/Utf8Tools.js"></script>
     <script defer src="../../lib/KeyStore.js"></script>
     <script defer src="../../lib/AnimationUtils.js"></script>
+    <script defer src="../../lib/QrScanner.js"></script>
     <script defer src="../../lib/I18n.js"></script>
     <script defer src="../../translations/index.js"></script>
     <script defer src="../../common.js"></script>
+    <script defer src="../../components/FileImport.js"></script>
     <script defer src="../../components/PassphraseInput.js"></script>
     <script defer src="../../components/PinInput.js"></script>
     <script defer src="../PopupApi.js"></script>
@@ -29,33 +31,40 @@
 
     <link rel="stylesheet" href="../../nimiq-style.css">
     <link rel="stylesheet" href="../../common.css">
+    <link rel="stylesheet" href="../../components/FileImport.css">
     <link rel="stylesheet" href="../../components/PassphraseInput.css">
     <link rel="stylesheet" href="../../components/PinInput.css">
 </head>
 <body>
+    <div class="header-top">
+        <div class="nimiq-app-name">
+            <span class="nimiq-logo">NIMIQ KEYGUARD</span>
+        </div>
+    </div>
+
     <div id="app">
         <!-- File import -->
         <div id="file-import" class="page">
-            <h1 data-i18n="import-heading">Import Access File</h1>
+            <h1 data-i18n="import-file-heading">Import Access File</h1>
             <div class="grow"></div>
             <div id="file-import-component"></div>
             <div class="grow"></div>
         </div>
 
         <!-- Enter Passphrase -->
-        <div id="passphrase" class="page">
-            <h1 data-i18n="import-file-heading-enter-passphrase">Enter your Passphrase</h1>
+        <div id="enter-passphrase" class="page">
+            <h1 data-i18n="import-file-enter-passphrase-heading">Enter your Passphrase</h1>
             <h2 data-i18n="import-file-enter-passphrase-subheading">Please enter your Passphrase to unlock your Account Access File.</h2>
             <div class="grow"></div>
-            <form class="passphrase-component"></form>
+            <form id="passphrase-component"></form>
         </div>
 
         <!-- Enter PIN -->
-        <div id="confirm" class="page">
-            <h1 data-i18n="import-heading">Enter your PIN</h1>
-            <h2 data-i18n="import-confirm-subheading">Please enter your PIN to unlock your Account Access File.</h2>
+        <div id="enter-pin" class="page">
+            <h1 data-i18n="import-file-enter-pin-heading">Enter your PIN</h1>
+            <h2 data-i18n="import-file-enter-pin-subheading">Please enter your PIN to unlock your Account Access File.</h2>
             <div class="grow"></div>
-            <div class="pin-component"></div>
+            <div id="pin-component"></div>
             <div class="grow"></div>
         </div>
 
