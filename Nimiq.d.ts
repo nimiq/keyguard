@@ -83,7 +83,9 @@ declare namespace Nimiq {
         static doImportBrowser: () => void
     }
 
-    class CryptoWorker {}
+    class CryptoWorker {
+        static getInstanceAsync(): Promise<Worker>
+    }
     class CryptoWorkerImpl {}
     class CRC32 {}
     class BigNumber {}
