@@ -1,4 +1,10 @@
+/* eslint-disable prefer-promise-reject-errors, no-throw-literal */
+
+// eslint-disable-next-line max-len
+/** @typedef {HTMLImageElement | SVGImageElement | HTMLVideoElement | HTMLCanvasElement | ImageBitmap | File} imageOrFileOrUrl */
+
 class QrScanner {
+    // eslint-disable-next-line valid-jsdoc
     /**
      * @param {HTMLVideoElement} video
      * @param {((value: string) => string | PromiseLike<string>)} [onDecode]
@@ -30,11 +36,17 @@ class QrScanner {
     _updateSourceRect() {
         const smallestDimension = Math.min(this.$video.videoWidth, this.$video.videoHeight);
         const sourceRectSize = Math.round(2 / 3 * smallestDimension);
-        this._sourceRect.width = this._sourceRect.height = sourceRectSize;
+        this._sourceRect.width = sourceRectSize;
+        this._sourceRect.height = sourceRectSize;
         this._sourceRect.x = (this.$video.videoWidth - sourceRectSize) / 2;
         this._sourceRect.y = (this.$video.videoHeight - sourceRectSize) / 2;
     }
 
+    /**
+     * Triggers this._onDecode for each frame, calls itself recursively until the video is paused or ends
+     *
+     * @returns {boolean}
+     */
     _scanFrame() {
         if (this.$video.paused || this.$video.ended) return false;
         requestAnimationFrame(() => {
@@ -46,11 +58,14 @@ class QrScanner {
                 })
                 .then(() => this._scanFrame());
         });
+
+        return true;
     }
 
     /**
      * @param {string | object} [facingMode]
      * @param {boolean} [exact]
+     * @returns {Promise<MediaStream>}
      */
     _getCameraStream(facingMode, exact = false) {
         const constraintsToTry = [{
@@ -63,7 +78,7 @@ class QrScanner {
             if (exact) {
                 facingMode = { exact: facingMode };
             }
-            constraintsToTry.forEach(constraint => constraint.facingMode = facingMode);
+            constraintsToTry.forEach(constraint => { constraint.facingMode = facingMode; });
         }
         return this._getMatchingCameraStream(constraintsToTry);
     }
@@ -139,7 +154,7 @@ class QrScanner {
     }
 
     /**
-     * @param {HTMLImageElement | SVGImageElement | HTMLVideoElement | HTMLCanvasElement | ImageBitmap | File} imageOrFileOrUrl
+     * @param {imageOrFileOrUrl} imageOrFileOrUrl
      * @param {object?} sourceRect
      * @param {Worker?} worker
      * @param {HTMLCanvasElement?} canvas
@@ -154,13 +169,11 @@ class QrScanner {
             /** @type {number | undefined} */
             let timeout;
             /** @type {EventListener} */
-            let onMessage;
-            /** @type {EventListener} */
             let onError;
             /**
              * @param {Event} event
              */
-            onMessage = event => {
+            const onMessage = event => {
                 // @ts-ignore
                 if (event.data.type !== 'qrResult') {
                     return;
@@ -206,6 +219,7 @@ class QrScanner {
      * @param {object?} sourceRect
      * @param {HTMLCanvasElement?} canvas
      * @param {boolean} [fixedCanvasSize]
+     * @returns {ImageData}
      */
     static _getImageData(image, sourceRect = null, canvas = null, fixedCanvasSize = false) {
         canvas = canvas || document.createElement('canvas');
@@ -213,8 +227,11 @@ class QrScanner {
         const sourceRectY = sourceRect && sourceRect.y ? sourceRect.y : 0;
         // @ts-ignore
         const sourceRectWidth = sourceRect && sourceRect.width ? sourceRect.width : image.width || image.videoWidth;
-        // @ts-ignore
-        const sourceRectHeight = sourceRect && sourceRect.height ? sourceRect.height : image.height || image.videoHeight;
+        const sourceRectHeight = sourceRect && sourceRect.height
+            ? sourceRect.height
+            : image.height
+            // @ts-ignore
+            || image.videoHeight;
         if (!fixedCanvasSize && (canvas.width !== sourceRectWidth || canvas.height !== sourceRectHeight)) {
             canvas.width = sourceRectWidth;
             canvas.height = sourceRectHeight;
@@ -222,18 +239,30 @@ class QrScanner {
         const context = canvas.getContext('2d', { alpha: false });
         if (!context) throw ('Cannot get canvas 2D context');
         context.imageSmoothingEnabled = false; // gives less blurry images
-        context.drawImage(image, sourceRectX, sourceRectY, sourceRectWidth, sourceRectHeight, 0, 0, canvas.width, canvas.height);
+        context.drawImage(
+            image,
+            sourceRectX,
+            sourceRectY,
+            sourceRectWidth,
+            sourceRectHeight,
+            0,
+            0,
+            canvas.width,
+            canvas.height,
+        );
         return context.getImageData(0, 0, canvas.width, canvas.height);
     }
 
     /**
-     * @param {HTMLImageElement | SVGImageElement | HTMLVideoElement | HTMLCanvasElement | ImageBitmap | File} imageOrFileOrUrl
+     * @param {imageOrFileOrUrl} imageOrFileOrUrl
      * @returns {Promise<HTMLImageElement | HTMLVideoElement | HTMLCanvasElement | ImageBitmap>}
      */
     static async _loadImage(imageOrFileOrUrl) {
-        if (imageOrFileOrUrl instanceof HTMLCanvasElement || imageOrFileOrUrl instanceof HTMLVideoElement
+        if (imageOrFileOrUrl instanceof HTMLCanvasElement
+            || imageOrFileOrUrl instanceof HTMLVideoElement
             // @ts-ignore
-            || window.ImageBitmap && imageOrFileOrUrl instanceof window.ImageBitmap) {
+            || (window.ImageBitmap && imageOrFileOrUrl instanceof window.ImageBitmap)
+        ) {
             // @ts-ignore
             return Promise.resolve(imageOrFileOrUrl);
         } if (imageOrFileOrUrl instanceof Image) {
@@ -267,10 +296,8 @@ class QrScanner {
                 resolve();
             } else {
                 /** @type {EventListener} */
-                let onLoad;
-                /** @type {EventListener} */
                 let onError;
-                onLoad = () => {
+                const onLoad = () => { // eslint-disable-line require-jsdoc-except/require-jsdoc
                     image.removeEventListener('load', onLoad);
                     image.removeEventListener('error', onError);
                     resolve();
