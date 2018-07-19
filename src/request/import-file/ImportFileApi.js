@@ -118,7 +118,7 @@ class ImportFileApi extends PopupApi {
         this.$loading.style.display = 'flex';
         try {
             const key = await Key.loadEncrypted(this._encryptedKeyPair, passphraseOrPin, type);
-            KeyStore.instance.put(key, passphraseOrPin);
+            await KeyStore.instance.put(key, passphraseOrPin);
             return key.getPublicInfo();
         } catch (e) {
             this.$loading.style.display = 'none';
