@@ -12,6 +12,16 @@
     justify-content: center;
 }
 
+#loading {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    max-height: 100vh;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
 .page:target ~ #loading {
     display: none;
 }

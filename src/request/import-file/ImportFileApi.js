@@ -16,6 +16,9 @@ class ImportFileApi extends PopupApi {
         // Start UI
         this.dom = this._makeView();
 
+        /** @type {HTMLDivElement} */
+        this.$loading = (document.querySelector('#loading'));
+
         window.addEventListener('hashchange', () => {
             if (window.location.hash.substr(1) !== ImportFileApi.Pages.ENTER_PIN) {
                 this.dom.pinInput.close();
@@ -109,11 +112,13 @@ class ImportFileApi extends PopupApi {
      * @returns {Promise<KeyInfo | false>}
      */
     async _decryptAndStoreKey(passphraseOrPin, type) {
+        this.$loading.style.display = 'flex';
         try {
             const key = await Key.loadEncrypted(this._encryptedKeyPair, passphraseOrPin, type);
             KeyStore.instance.put(key, passphraseOrPin);
             return key.getPublicInfo();
         } catch (e) {
+            this.$loading.style.display = 'none';
             return false;
         }
     }
