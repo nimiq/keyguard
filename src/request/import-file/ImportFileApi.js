@@ -29,6 +29,9 @@ class ImportFileApi extends PopupApi {
     async onRequest() {
         // show UI
         window.location.hash = ImportFileApi.Pages.FILE_IMPORT;
+
+        // Async pre-load the crypto worker to reduce wait time at first decrypt
+        Nimiq.CryptoWorker.getInstanceAsync();
     }
 
     /**
