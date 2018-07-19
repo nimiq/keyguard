@@ -39,11 +39,18 @@ const TRANSLATIONS = {
         'import-passphrase-subheading': 'Please enter a Passphrase to secure your key.',
         'import-confirm-subheading': 'Please repeat your Passphrase:',
         'recovery-words-title': 'Recovery Words',
+
         'tx-from': 'From',
         'tx-to': 'To',
         'tx-signer': 'Signer',
         'tx-message': 'Message',
         'tx-fee': 'Fee',
+
+        'import-file-heading': 'Import Access File',
+        'import-file-enter-passphrase-heading': 'Enter your Passphrase',
+        'import-file-enter-passphrase-subheading': 'Please enter your Passphrase to unlock your Account Access File.',
+        'import-file-enter-pin-heading': 'Enter your PIN',
+        'import-file-enter-pin-subheading': 'Please enter your PIN to unlock your Account Access File.',
     },
     de: {
         _language: 'Deutsch',
@@ -85,11 +92,19 @@ const TRANSLATIONS = {
         'import-passphrase-subheading': 'Bitte gib eine Passphrase ein, um deinen Schlüssel zu schützen.',
         'import-confirm-subheading': 'Bitte wiederhole deine Passphrase.',
         'recovery-words-title': 'Wiederherstellungswörter',
+
         'tx-from': 'Von',
         'tx-to': 'An',
         'tx-signer': 'Zeichner',
         'tx-message': 'Nachricht',
         'tx-fee': 'Gebühr',
+
+        'import-file-heading': 'Zugangsdatei Import',
+        'import-file-enter-passphrase-heading': 'Gib deine Passphrase ein',
+        'import-file-enter-passphrase-subheading': 'Bitte gib deine Passphrase ein um deine Zugangsdatei zu '
+                                                 + 'entschlüsseln',
+        'import-file-enter-pin-heading': 'Gib deine PIN ein',
+        'import-file-enter-pin-subheading': 'Bitte gib deine PIN ein um deine Zugangsdatei zu entschlüsseln.',
     },
 };
 
