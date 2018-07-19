@@ -75,7 +75,7 @@
 
 .info-box {
     display: flex;
-    border: .125rem solid white;
+    border: 1px solid white;
     border-radius: 1rem;
     padding: .5rem;
 }
@@ -103,7 +103,7 @@
 kbd {
     font-family: monospace;
     font-size: 1.875rem;
-    border: .125rem solid white;
+    border: 1px solid white;
     padding: .25rem .75rem;
     border-radius: .625rem;
 }
@@ -121,7 +121,6 @@ kbd {
     justify-content: start;
     align-items: center;
     width: 98vw;
-    max-width: var(--max-width);
     min-height: calc(100vh - 7.5rem);
     padding-bottom: 2.25rem;
 }
