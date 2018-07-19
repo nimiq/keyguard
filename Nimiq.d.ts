@@ -37,6 +37,7 @@ declare namespace Nimiq {
 
     class BufferUtils {
         static fromAscii(buf: string): Uint8Array
+        static fromBase64(buf: string): Uint8Array
         static fromHex(buf: string): Uint8Array
         static toHex(buf: Uint8Array): string
         static equals(buf1: Uint8Array, buf2: Uint8Array): boolean
