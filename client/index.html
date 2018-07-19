@@ -24,6 +24,7 @@
         <button onclick="signTransaction(EncryptionType.HIGH, TransactionType.EXTENDED, 'Hokus pokus!')">sign-transaction(high, extended)</button>
         <button onclick="signVestingPayout()">sign-vesting-payout-transaction</button>
         <button onclick="signVestingPayout(false)">sign-vesting-external-transaction</button>
+        <button onclick="importFile()">import-file</button>
 
         <script src="../src/lib/EncryptionType.js"></script>
         <script src="../src/lib/TransactionType.js"></script>
@@ -64,6 +65,10 @@
                     extraData: 'Finally, I can move my stash!',
                     mockKeyType: EncryptionType.HIGH,
                 });
+
+            async function importFile() {
+                const keyInfo = await keyguard.importFile();
+                console.log(keyInfo);
             }
         </script>
 </body>
