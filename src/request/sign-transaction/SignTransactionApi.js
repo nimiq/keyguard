@@ -20,7 +20,7 @@ class SignTransactionApi extends PopupApi { // eslint-disable-line no-unused-var
         AddressUtils.isUserFriendlyAddress(txRequest.sender);
         AddressUtils.isUserFriendlyAddress(txRequest.recipient);
         AddressUtils.isUserFriendlyAddress(txRequest.signer);
-        if (typeof txRequest.extraData !== 'string') {
+        if (txRequest.type === TransactionType.EXTENDED && typeof txRequest.extraData !== 'string') {
             throw new Error('Transaction extraData must be a string');
         }
 
@@ -30,18 +30,16 @@ class SignTransactionApi extends PopupApi { // eslint-disable-line no-unused-var
         txRequest.sender = AddressUtils.formatAddress(txRequest.sender);
         txRequest.recipient = AddressUtils.formatAddress(txRequest.recipient);
         txRequest.signer = AddressUtils.formatAddress(txRequest.signer);
-        txRequest.extraData = Utf8Tools.utf8ByteArrayToString(
-            Utf8Tools.stringToUtf8ByteArray(txRequest.extraData || ''),
-        );
+        if (txRequest.type === TransactionType.EXTENDED) {
+            txRequest.extraData = Utf8Tools.utf8ByteArrayToString(
+                Utf8Tools.stringToUtf8ByteArray(txRequest.extraData || ''),
+            );
+        }
 
         switch (txRequest.type) {
         case TransactionType.BASIC:
             if (txRequest.sender !== txRequest.signer) {
                 throw new Error('Sender must be signer for basic transactions');
-            }
-
-            if (txRequest.extraData) {
-                throw new Error('Cannot add extraData to basic transaction');
             }
 
             break;
