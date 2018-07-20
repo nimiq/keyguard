@@ -148,8 +148,8 @@ class Iqons {
      * @returns {Promise<Document>}
      */
     static async _getAssets() {
-        if (this._assets) return this._assets;
-        return fetch(this.svgPath)
+        /** @type {Promise<Document>} */
+        this._assetPromise = this._assetPromise || fetch(this.svgPath)
             .then(response => response.text())
             .then(assetsText => {
                 const parser = new DOMParser();
@@ -157,6 +157,11 @@ class Iqons {
                 this._assets = assets;
                 return assets;
             });
+        return this._assetPromise;
+    }
+
+    static get hasAssets() {
+        return !!this._assets;
     }
 
     /** @type {string[]} */

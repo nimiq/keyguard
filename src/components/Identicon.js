@@ -43,12 +43,15 @@ class Identicon { // eslint-disable-line no-unused-vars
     }
 
     _updateIqon() {
+        if (!this._address || !Iqons.hasAssets) {
+            /** @type {HTMLImageElement} */ (this.$imgEl).src = Iqons.placeholderToDataUrl();
+        }
+
         if (this._address) {
             Iqons.toDataUrl(this._address).then(url => {
+                // Placeholder setting above is synchronous, thus this async result will replace the placeholder
                 /** @type {HTMLImageElement} */ (this.$imgEl).src = url;
             });
-        } else {
-            /** @type {HTMLImageElement} */ (this.$imgEl).src = Iqons.placeholderToDataUrl();
         }
     }
 }
