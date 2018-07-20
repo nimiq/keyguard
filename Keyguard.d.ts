@@ -19,8 +19,8 @@ type AccountEntry = AccountInfo & {
     encryptedKeyPair: Uint8Array
 }
 
-type TransactionRequest = {
-    type: TransactionType.BASIC | TransactionType.EXTENDED
+type BasicTransactionRequest = {
+    type: BASIC_TX,
     sender: string
     senderType?: Nimiq.Account.Type
     senderLabel?: string
@@ -32,22 +32,40 @@ type TransactionRequest = {
     fee: number
     network: string
     validityStartHeight: number
-    extraData?: string,
     mockKeyType?: EncryptionType
 }
 
-type SignedTransactionResult = {
-    type: TransactionType.BASIC | TransactionType.EXTENDED
-    sender: string,
+type ExtendedTransactionRequest = {
+    type: EXTENDED_TX,
+    sender: string
     senderType?: Nimiq.Account.Type
-    recipient: string,
+    senderLabel?: string
+    recipient: string
     recipientType?: Nimiq.Account.Type
-    signerPubKey: Nimiq.SerialBuffer,
-    value: number,
-    fee: number,
+    signer: string
+    signerLabel?: string
+    value: number
+    fee: number
+    network: string
+    validityStartHeight: number
+    mockKeyType?: EncryptionType
+    extraData: string
+}
+
+type TransactionRequest = BasicTransactionRequest | ExtendedTransactionRequest
+
+type SignedTransactionResult = {
+    type: BASIC_TX | EXTENDED_TX
+    sender: string
+    senderType?: Nimiq.Account.Type
+    recipient: string
+    recipientType?: Nimiq.Account.Type
+    signerPubKey: Nimiq.SerialBuffer
+    value: number
+    fee: number
     validityStartHeight: number,
-    signature: Nimiq.SerialBuffer,
-    extraData?: string,
+    signature: Nimiq.SerialBuffer
+    extraData?: string
     hash: string
 }
 
