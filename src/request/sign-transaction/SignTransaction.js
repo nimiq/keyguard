@@ -116,41 +116,33 @@ class SignTransaction { // eslint-disable-line no-unused-vars
             };
         }
 
-        if (txRequest.type === TransactionType.EXTENDED) {
-            const key = await KeyStore.instance.get(txRequest.signer, passphraseOrPin);
-            const tx = key.createExtendedTransaction(
-                txRequest.sender,
-                txRequest.senderType,
-                txRequest.recipient,
-                txRequest.recipientType,
-                txRequest.value,
-                txRequest.fee,
-                txRequest.validityStartHeight,
-                txRequest.extraData,
-            );
+        const key = await KeyStore.instance.get(txRequest.signer, passphraseOrPin);
+        const tx = key.createExtendedTransaction(
+            txRequest.sender,
+            txRequest.senderType,
+            txRequest.recipient,
+            txRequest.recipientType,
+            txRequest.value,
+            txRequest.fee,
+            txRequest.validityStartHeight,
+            txRequest.extraData,
+        );
 
-            const signatureProof = Nimiq.SignatureProof.unserialize(new Nimiq.SerialBuffer(tx.proof));
+        const signatureProof = Nimiq.SignatureProof.unserialize(new Nimiq.SerialBuffer(tx.proof));
 
-            return {
-                type: TransactionType.EXTENDED,
-                sender: tx.sender.toUserFriendlyAddress(),
-                senderType: tx.senderType,
-                signerPubKey: signatureProof.publicKey.serialize(),
-                recipient: tx.recipient.toUserFriendlyAddress(),
-                recipientType: tx.recipientType,
-                value: Nimiq.Policy.satoshisToCoins(tx.value),
-                fee: Nimiq.Policy.satoshisToCoins(tx.fee),
-                network: Nimiq.GenesisConfig.NETWORK_NAME,
-                validityStartHeight: tx.validityStartHeight,
-                signature: signatureProof.signature.serialize(),
-                hash: tx.hash().toBase64(),
-            };
-        }
-
-        // The check for a valid transaction type is already done in onRequest in SignTransactionApi,
-        // but Typescript complains if this function has a path with no return.
-        // Thus logically, this should never be hit.
-        // The alternative would be to remove the check for the extended type and just run that if type is not basic.
-        throw new Error('Invalid transaction type');
+        return {
+            type: TransactionType.EXTENDED,
+            sender: tx.sender.toUserFriendlyAddress(),
+            senderType: tx.senderType,
+            signerPubKey: signatureProof.publicKey.serialize(),
+            recipient: tx.recipient.toUserFriendlyAddress(),
+            recipientType: tx.recipientType,
+            value: Nimiq.Policy.satoshisToCoins(tx.value),
+            fee: Nimiq.Policy.satoshisToCoins(tx.fee),
+            network: Nimiq.GenesisConfig.NETWORK_NAME,
+            validityStartHeight: tx.validityStartHeight,
+            signature: signatureProof.signature.serialize(),
+            hash: tx.hash().toBase64(),
+        };
     }
 }
