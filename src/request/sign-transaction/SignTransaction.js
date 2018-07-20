@@ -42,7 +42,7 @@ class SignTransaction { // eslint-disable-line no-unused-vars
         new Identicon(txRequest.sender, $senderIdenticon); // eslint-disable-line no-new
         new Identicon(txRequest.recipient, $recipientIdenticon); // eslint-disable-line no-new
 
-        if (txRequest.sender !== txRequest.signer) {
+        if (txRequest.type === TransactionType.EXTENDED && txRequest.sender !== txRequest.signer) {
             new Identicon(txRequest.signer, $signerIdenticon); // eslint-disable-line no-new
             $signerIdenticon.classList.remove('display-none');
 
@@ -95,9 +95,9 @@ class SignTransaction { // eslint-disable-line no-unused-vars
     async _doSignTransaction(txRequest, passphraseOrPin) {
         if (txRequest.type === TransactionType.BASIC) {
             // eslint-disable-next-line object-curly-newline
-            const { value, fee, recipient, signer, validityStartHeight } = txRequest;
+            const { sender, recipient, value, fee, validityStartHeight } = txRequest;
 
-            const key = await KeyStore.instance.get(signer, passphraseOrPin);
+            const key = await KeyStore.instance.get(sender, passphraseOrPin);
             const tx = key.createBasicTransaction(recipient, value, fee, validityStartHeight);
 
             const signatureProof = Nimiq.SignatureProof.unserialize(new Nimiq.SerialBuffer(tx.proof));
@@ -109,6 +109,7 @@ class SignTransaction { // eslint-disable-line no-unused-vars
                 recipient: tx.recipient.toUserFriendlyAddress(),
                 value: Nimiq.Policy.satoshisToCoins(tx.value),
                 fee: Nimiq.Policy.satoshisToCoins(tx.fee),
+                network: Nimiq.GenesisConfig.NETWORK_NAME,
                 validityStartHeight: tx.validityStartHeight,
                 signature: signatureProof.signature.serialize(),
                 hash: tx.hash().toBase64(),
@@ -139,6 +140,7 @@ class SignTransaction { // eslint-disable-line no-unused-vars
                 recipientType: tx.recipientType,
                 value: Nimiq.Policy.satoshisToCoins(tx.value),
                 fee: Nimiq.Policy.satoshisToCoins(tx.fee),
+                network: Nimiq.GenesisConfig.NETWORK_NAME,
                 validityStartHeight: tx.validityStartHeight,
                 signature: signatureProof.signature.serialize(),
                 hash: tx.hash().toBase64(),

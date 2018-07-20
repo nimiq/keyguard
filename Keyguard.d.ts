@@ -10,7 +10,7 @@ type KeyEntry = KeyInfo & {
 // Deprecated, only used for migrating databases
 type AccountInfo = {
     userFriendlyAddress: string,
-    type: string,
+    type: string
     label: string
 }
 
@@ -19,8 +19,20 @@ type AccountEntry = AccountInfo & {
     encryptedKeyPair: Uint8Array
 }
 
-type TransactionRequest = {
-    type: TransactionType.BASIC | TransactionType.EXTENDED
+type BasicTransactionRequest = {
+    type: BASIC_TX
+    sender: string
+    senderLabel?: string
+    recipient: string
+    value: number
+    fee: number
+    network: string
+    validityStartHeight: number
+    mockKeyType?: EncryptionType
+}
+
+type ExtendedTransactionRequest = {
+    type: EXTENDED_TX
     sender: string
     senderType?: Nimiq.Account.Type
     senderLabel?: string
@@ -32,22 +44,25 @@ type TransactionRequest = {
     fee: number
     network: string
     validityStartHeight: number
-    extraData?: string,
     mockKeyType?: EncryptionType
+    extraData: string
 }
 
+type TransactionRequest = BasicTransactionRequest | ExtendedTransactionRequest
+
 type SignedTransactionResult = {
-    type: TransactionType.BASIC | TransactionType.EXTENDED
-    sender: string,
+    type: BASIC_TX | EXTENDED_TX
+    sender: string
     senderType?: Nimiq.Account.Type
-    recipient: string,
+    recipient: string
     recipientType?: Nimiq.Account.Type
-    signerPubKey: Nimiq.SerialBuffer,
-    value: number,
-    fee: number,
-    validityStartHeight: number,
-    signature: Nimiq.SerialBuffer,
-    extraData?: string,
+    signerPubKey: Nimiq.SerialBuffer
+    value: number
+    fee: number
+    network: string
+    validityStartHeight: number
+    signature: Nimiq.SerialBuffer
+    extraData?: string
     hash: string
 }
 
