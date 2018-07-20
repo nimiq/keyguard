@@ -19,7 +19,7 @@ declare namespace Key {
 // Deprecated, only used for migrating databases
 type AccountInfo = {
     userFriendlyAddress: string,
-    type: string,
+    type: string
     label: string
 }
 
@@ -29,14 +29,10 @@ type AccountEntry = AccountInfo & {
 }
 
 type BasicTransactionRequest = {
-    type: BASIC_TX,
+    type: BASIC_TX
     sender: string
-    senderType?: Nimiq.Account.Type
     senderLabel?: string
     recipient: string
-    recipientType?: Nimiq.Account.Type
-    signer: string
-    signerLabel?: string
     value: number
     fee: number
     network: string
@@ -45,7 +41,7 @@ type BasicTransactionRequest = {
 }
 
 type ExtendedTransactionRequest = {
-    type: EXTENDED_TX,
+    type: EXTENDED_TX
     sender: string
     senderType?: Nimiq.Account.Type
     senderLabel?: string
@@ -72,7 +68,8 @@ type SignedTransactionResult = {
     signerPubKey: Nimiq.SerialBuffer
     value: number
     fee: number
-    validityStartHeight: number,
+    network: string
+    validityStartHeight: number
     signature: Nimiq.SerialBuffer
     extraData?: string
     hash: string
