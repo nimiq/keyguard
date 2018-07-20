@@ -8,6 +8,6 @@ const BASIC = 'basic';
 const EXTENDED = 'extended';
 
 const TransactionType = { // eslint-disable-line no-unused-vars
-    BASIC: BASIC,
-    EXTENDED: EXTENDED
+    BASIC,
+    EXTENDED,
 };
