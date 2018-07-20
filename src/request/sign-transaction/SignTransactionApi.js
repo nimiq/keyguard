@@ -19,33 +19,28 @@ class SignTransactionApi extends PopupApi { // eslint-disable-line no-unused-var
         // These checks throw an exception on failure
         AddressUtils.isUserFriendlyAddress(txRequest.sender);
         AddressUtils.isUserFriendlyAddress(txRequest.recipient);
-        AddressUtils.isUserFriendlyAddress(txRequest.signer);
-        if (txRequest.type === TransactionType.EXTENDED && typeof txRequest.extraData !== 'string') {
-            throw new Error('Transaction extraData must be a string');
-        }
 
         // Normalization
         txRequest.value = Nimiq.Policy.coinsToSatoshis(txRequest.value);
         txRequest.fee = Nimiq.Policy.coinsToSatoshis(txRequest.fee);
         txRequest.sender = AddressUtils.formatAddress(txRequest.sender);
         txRequest.recipient = AddressUtils.formatAddress(txRequest.recipient);
-        txRequest.signer = AddressUtils.formatAddress(txRequest.signer);
-        if (txRequest.type === TransactionType.EXTENDED) {
-            txRequest.extraData = Utf8Tools.utf8ByteArrayToString(
-                Utf8Tools.stringToUtf8ByteArray(txRequest.extraData || ''),
-            );
-        }
 
         switch (txRequest.type) {
         case TransactionType.BASIC:
-            if (txRequest.sender !== txRequest.signer) {
-                throw new Error('Sender must be signer for basic transactions');
-            }
-
             break;
         case TransactionType.EXTENDED:
-            // Validate extended transactions
+            // Validate
+            AddressUtils.isUserFriendlyAddress(txRequest.signer);
+            if (typeof txRequest.extraData !== 'string') {
+                throw new Error('Transaction extraData must be a string');
+            }
 
+            // Normalize
+            txRequest.signer = AddressUtils.formatAddress(txRequest.signer);
+            txRequest.extraData = Utf8Tools.utf8ByteArrayToString(
+                Utf8Tools.stringToUtf8ByteArray(txRequest.extraData || ''),
+            );
             break;
         default:
             throw new Error('Invalid transaction type');
@@ -65,7 +60,9 @@ class SignTransactionApi extends PopupApi { // eslint-disable-line no-unused-var
         if (txRequest.mockKeyType) keyType = txRequest.mockKeyType;
         else {
             const keyStore = KeyStore.instance;
-            keyType = await keyStore.getType(txRequest.signer);
+            keyType = await keyStore.getType(txRequest.type === TransactionType.BASIC
+                ? txRequest.sender
+                : txRequest.signer);
         }
 
         const handler = keyType === EncryptionType.HIGH
