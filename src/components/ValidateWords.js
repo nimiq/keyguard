@@ -104,7 +104,7 @@ class ValidateWords extends Nimiq.Observable {
     }
 
     _generateIndices() {
-        this._requiredWords = [0, 1, 2].map(this._generateIndex);
+        this._requiredWords = [0, 1, 2].map(ValidateWords._generateIndex);
     }
 
     /**
@@ -112,8 +112,8 @@ class ValidateWords extends Nimiq.Observable {
      * @returns {number}
      * @private
      */
-    _generateIndex(round) {
-        return Math.floor(Math.random() * 8) + round * 8;
+    static _generateIndex(index) {
+        return Math.floor(Math.random() * 8) + index * 8;
     }
 
     /**
@@ -187,13 +187,13 @@ class ValidateWords extends Nimiq.Observable {
 
         if ($button.textContent !== this._targetWord) {
             // wrong choice
-            this._showAsWrong($button);
+            ValidateWords._showAsWrong($button);
             const correctButtonIndex = this._wordList.indexOf(this._targetWord);
-            this._showAsCorrect(this.$buttons[correctButtonIndex]);
+            ValidateWords._showAsCorrect(this.$buttons[correctButtonIndex]);
             setTimeout(() => this.reset(), 820);
         } else {
             // correct choice
-            this._showAsCorrect($button);
+            ValidateWords._showAsCorrect($button);
             setTimeout(() => this._next(), 500);
         }
     }
@@ -202,7 +202,7 @@ class ValidateWords extends Nimiq.Observable {
      * @param {HTMLButtonElement} $button
      * @private
      */
-    _showAsWrong($button) {
+    static _showAsWrong($button) {
         $button.classList.add('wrong');
         // this.animate('shake', $button);
     }
@@ -211,7 +211,7 @@ class ValidateWords extends Nimiq.Observable {
      * @param {HTMLButtonElement} $button
      * @private
      */
-    _showAsCorrect($button) {
+    static _showAsCorrect($button) {
         $button.classList.add('correct');
     }
 }
