@@ -6,18 +6,8 @@ class ValidateWords extends Nimiq.Observable {
      */
     constructor($el) {
         super();
-        this.$el = ValidateWords._createElement($el);
 
-        this.$buttons = this.$el.querySelectorAll('button');
-        this.$targetIndex = /** @type {HTMLElement} */ (this.$el.querySelector('.target-index'));
-        this.$el.addEventListener('click', this._onClick.bind(this));
-
-        this.$skip = this.$el.querySelector('.skip');
-
-        if (this.$skip) {
-            this.$skip.addEventListener('click', () => this.fire(ValidateWords.Events.VALIDATED));
-        }
-
+        /** @type {number} */
         this._round = 0;
         /** @type {number[]} */
         this._requiredWords = [];
@@ -27,6 +17,21 @@ class ValidateWords extends Nimiq.Observable {
         this._wordList = [];
         /** @type {string} */
         this._targetWord = '';
+
+        this.$el = ValidateWords._createElement($el);
+
+        this.$buttons = this.$el.querySelectorAll('button');
+        this.$targetIndex = /** @type {HTMLElement} */ (this.$el.querySelector('.target-index'));
+        this.$el.addEventListener('click', this._onClick.bind(this));
+
+        /** @type {HTMLFormElement} */
+        this.$skip = (this.$el.querySelector('.skip'));
+
+        /** @type {HTMLFormElement} */
+        this.$backWords = (this.$el.querySelector('.back-words'));
+
+        this.$skip.addEventListener('click', () => this.fire(ValidateWords.Events.SKIPPED));
+        this.$backWords.addEventListener('click', () => this.fire(ValidateWords.Events.BACK));
     }
 
     /**
@@ -52,8 +57,9 @@ class ValidateWords extends Nimiq.Observable {
                 <button class="small"></button>
             </div>
             <div class="grow"></div>
-            <span class="skip">[Skip]</span>
-            <a class="secondary" href="#recovery-words">Back to words</a>`;
+            <a class="secondary back-words">Back to words</a>
+            <a class="secondary skip">Skip</a>
+        `;
 
         return $el;
     }
@@ -211,6 +217,7 @@ class ValidateWords extends Nimiq.Observable {
 }
 
 ValidateWords.Events = {
+    SKIPPED: 'skipped',
     VALIDATED: 'validated',
     BACK: 'back',
 };

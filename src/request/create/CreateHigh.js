@@ -79,10 +79,21 @@ class CreateHigh {
         });
 
         this._validateWords.on(ValidateWords.Events.VALIDATED, async () => {
-            document.body.classList.add('loading');
-            const key = new Key(this._selectedKeyPair, request.type);
-            this._resolve(await KeyStore.instance.put(key, this._passphrase));
+            this.finish(request);
         });
+
+        this._validateWords.on(ValidateWords.Events.SKIPPED, async () => {
+            this.finish(request);
+        });
+    }
+
+    /**
+     * @param {CreateRequest} request
+     */
+    async finish(request) {
+        document.body.classList.add('loading');
+        const key = new Key(this._selectedKeyPair, request.type);
+        this._resolve(await KeyStore.instance.put(key, this._passphrase));
     }
 
     run() {
