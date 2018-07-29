@@ -10,11 +10,15 @@ class ChooseIdenticon extends Nimiq.Observable {
 
         this.generateIdenticons = this.generateIdenticons.bind(this);
         this._clearSelection = this._clearSelection.bind(this);
+        this._onSelectionConfirmed = this._onSelectionConfirmed.bind(this);
 
         this.$el = ChooseIdenticon._createElement($el);
 
         /** @type {{ [address: string]: Nimiq.KeyPair}} */
         this._volatileKeys = {};
+
+        /** @type {?string} */
+        this._selectedAddress = null;
 
         this.$identicons = /** @type {HTMLElement} */ (this.$el.querySelector('.identicons'));
         this.$confirmButton = /** @type {HTMLElement} */ (this.$el.querySelector('.backdrop button'));
@@ -23,6 +27,7 @@ class ChooseIdenticon extends Nimiq.Observable {
 
         this.$generateMoreButton.addEventListener('click', this.generateIdenticons);
         this.$backdrop.addEventListener('click', this._clearSelection);
+        this.$confirmButton.addEventListener('click', this._onSelectionConfirmed);
     }
 
     /**
@@ -104,15 +109,21 @@ class ChooseIdenticon extends Nimiq.Observable {
             $returningIdenticon.classList.remove('returning');
         }
 
-        // don't use addEventListener here to override easily when other identicon is selected
-        this.$confirmButton.onclick = () => this.fire(
-            ChooseIdenticon.Events.CHOOSE_IDENTICON,
-            this._volatileKeys[address],
-        );
-
+        this._selectedAddress = address;
         this.$selectedIdenticon = $identicon;
         this.$el.classList.add('selected');
         $identicon.classList.add('selected');
+    }
+
+    /**
+     * @private
+     */
+    _onSelectionConfirmed() {
+        if (!this._selectedAddress) throw new Error('Invalid state');
+        this.fire(
+            ChooseIdenticon.Events.CHOOSE_IDENTICON,
+            this._volatileKeys[this._selectedAddress],
+        )
     }
 
     _clearSelection() {

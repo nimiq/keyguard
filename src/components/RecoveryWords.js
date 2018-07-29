@@ -53,6 +53,7 @@ class RecoveryWords extends Nimiq.Observable { // eslint-disable-line no-unused-
 
         const phrase = MnemonicPhrase.keyToMnemonic(privateKey);
         const words = phrase.split(/\s+/g);
+        this.$wordsContainer.querySelectorAll('.word-section').forEach((elem) => this.$wordsContainer.removeChild(elem));
 
         for (let sectionIndex = 0; sectionIndex < 3; sectionIndex++) {
             const section = document.createElement('div');

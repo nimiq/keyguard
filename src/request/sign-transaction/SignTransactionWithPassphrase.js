@@ -26,11 +26,11 @@ class SignTransactionWithPassphrase extends SignTransaction {
         // TODO add identicons and other tx data to UI
 
         // create components
-        this._passphraseInput = new PassphraseInput();
+        this._passphraseInput = new PassphraseConfirm();
         this.$enterPassphrase.appendChild(this._passphraseInput.getElement());
 
         // wire up logic
-        this._passphraseInput.on(PassphraseInput.Events.PASSPHRASE_ENTERED, this._handlePassphraseInput.bind(this));
+        this._passphraseInput.on(PassphraseConfirm.Events.PASSPHRASE_ENTERED, this._handlePassphraseInput.bind(this));
     }
 
     run() {
