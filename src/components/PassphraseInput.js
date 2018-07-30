@@ -4,7 +4,7 @@
 
 class PassphraseInput extends Nimiq.Observable {
     /**
-     * @param {?HTMLFormElement} $el
+     * @param {?HTMLElement} $el
      * @param {string} placeholder
      * @param {boolean} [showStrengthIndicator]
      */

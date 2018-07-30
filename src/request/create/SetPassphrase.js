@@ -2,7 +2,7 @@
 /* global I18n */
 class SetPassphrase extends Nimiq.Observable {
     /**
-     * @param {?HTMLElement} [$el]
+     * @param {?HTMLFormElement} [$el]
      */
     constructor($el) {
         super();
@@ -28,29 +28,27 @@ class SetPassphrase extends Nimiq.Observable {
         this._passphraseSecond = new PassphraseInput($passphraseSecond, I18n.translatePhrase('repeat-passphrase-placeholder'), false);
         this._passphraseSecond.on(PassphraseInput.Events.VALID, this._checkEnableContinue);
 
-        this.$el.querySelector('form').addEventListener('submit', event => this._submit(event));
+        this.$el.addEventListener('submit', event => this._submit(event));
     }
 
     /**
-     * @param {?HTMLElement} [$el]
-     * @returns {HTMLElement}
+     * @param {?HTMLFormElement} [$el]
+     * @returns {HTMLFormElement}
      */
     static _createElement($el) {
-        $el = $el || document.createElement('div');
+        $el = $el || document.createElement('form');
 
         /* eslint-disable max-len */
         $el.innerHTML = `
             <h1 data-i18n="create-set-passphrase-header1">Set a Passphrase</h1>
             <h2 data-i18n="create-set-passphrase-header2">Please enter a Passphrase to secure your account.</h2>
             <p data-i18n="create-set-passphrase-warning">The Passphrase is [strong]not[/strong] an alternative for your 24 Recovery Words!</p>
-            <div class="grow" data-grow="0.5"></div>
+            <div class="grow"></div>
             <div class="my-account"></div>
-            <div class="grow" data-grow="0.5"></div>
-            <form>
-                <div class="passphrase-first"></div>
-                <div class="passphrase-second"></div>
-                <button data-i18n="passphrase-confirm" type="submit" class="confirm-passphrase" disabled>Confirm</button>
-            </form>
+            <div class="passphrase-first"></div>
+            <div class="passphrase-second"></div>
+            <div class="grow"></div>
+            <button data-i18n="passphrase-confirm" type="submit" class="confirm-passphrase" disabled>Confirm</button>
         `;
         /* eslint-enable max-len */
 

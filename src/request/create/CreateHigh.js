@@ -17,19 +17,22 @@ class CreateHigh {
         this._reject = reject;
 
         // set html elements
-        /** @type {HTMLDivElement} */
+        /** @type {HTMLElement} */
         this.$chooseIdenticon = (document.getElementById(CreateHigh.Pages.CHOOSE_IDENTICON));
 
-        /** @type {HTMLDivElement} */
+        /** @type {HTMLElement} */
+        this.$downloadKeyfile = (document.getElementById(CreateHigh.Pages.DOWNLOAD_KEYFILE));
+
+        /** @type {HTMLElement} */
         this.$privacyAgent = (document.getElementById(CreateHigh.Pages.PRIVACY_AGENT));
 
-        /** @type {HTMLDivElement} */
+        /** @type {HTMLElement} */
         this.$recoveryWords = (document.getElementById(CreateHigh.Pages.RECOVERY_WORDS));
 
-        /** @type {HTMLDivElement} */
+        /** @type {HTMLElement} */
         this.$validateWords = (document.getElementById(CreateHigh.Pages.VALIDATE_WORDS));
 
-        /** @type {HTMLDivElement} */
+        /** @type {HTMLFormElement} */
         this.$setPassphrase = (document.getElementById(CreateHigh.Pages.SET_PASSPHRASE));
 
 
@@ -39,6 +42,7 @@ class CreateHigh {
 
         // create components
         this._chooseIdenticon = new ChooseIdenticon(this.$chooseIdenticon);
+        this._downloadKeyfile = new DownloadKeyfile(this.$downloadKeyfile);
         /** @type {HTMLElement} */
         const $privacyAgentContainer = (this.$privacyAgent.querySelector('.agent'));
         this._privacyAgent = new PrivacyAgent($privacyAgentContainer);
@@ -63,6 +67,14 @@ class CreateHigh {
         this._setPassphrase.on(SetPassphrase.Events.CHOOSE, /** @param {string} passphrase */ (passphrase) => {
             this._passphrase = passphrase;
             this._setPassphrase.reset();
+            window.location.hash = CreateHigh.Pages.DOWNLOAD_KEYFILE;
+        });
+
+        this._downloadKeyfile.on(DownloadKeyfile.Events.DOWNLOADED, () => {
+            window.location.hash = CreateHigh.Pages.PRIVACY_AGENT;
+        });
+
+        this._downloadKeyfile.on(DownloadKeyfile.Events.CONTINUE, () => {
             window.location.hash = CreateHigh.Pages.PRIVACY_AGENT;
         });
 
@@ -106,6 +118,7 @@ class CreateHigh {
 
 CreateHigh.Pages = {
     CHOOSE_IDENTICON: 'choose-identicon',
+    DOWNLOAD_KEYFILE: 'download-keyfile',
     PRIVACY_AGENT: 'privacy-agent',
     RECOVERY_WORDS: 'recovery-words',
     VALIDATE_WORDS: 'validate-words',

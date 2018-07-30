@@ -23,6 +23,7 @@
     <script defer src="../../lib/AnimationUtils.js"></script>
     <script defer src="../../translations/index.js"></script>
     <script defer src="../../common.js"></script>
+    <script defer src="../../components/DownloadKeyfile.js"></script>
     <script defer src="../../components/PinInput.js"></script>
     <script defer src="../../components/PassphraseInput.js"></script>
     <script defer src="../../components/Identicon.js"></script>
@@ -49,25 +50,22 @@
 <body>
 <div id="app">
 
-    <div id="choose-identicon" class="page">
+    <div id="choose-identicon" class="page"></div>
 
-    </div>
+    <form id="set-passphrase" class="page"></form>
+
+    <div id="download-keyfile" class="page"></div>
 
     <div id="privacy-agent" class="page">
         <h1 data-18n="create-backup-account-header">Backup your Account</h1>
         <div class="grow"></div>
         <div class="agent"></div>
+        <div class="grow"></div>
     </div>
 
-    <div id="recovery-words" class="page">
+    <div id="recovery-words" class="page"></div>
 
-    </div>
-
-    <div id="validate-words" class="page">
-
-    </div>
-
-    <div id="set-passphrase" class="page"></div>
+    <div id="validate-words" class="page"></div>
 
     <div id="set-pin" class="page">
         <h1 data-i18n="create-choose-pin">Choose your PIN</h1>
