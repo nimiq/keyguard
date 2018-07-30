@@ -35,6 +35,7 @@ class ValidateWords extends Nimiq.Observable {
      */
     static _createElement($el) {
         $el = $el || document.createElement('div');
+        $el.classList.add('validate-words');
 
         $el.innerHTML = `<h1>Validate Recovery Words</h1>
             <p>Please select the following word from your list:</p>
@@ -77,12 +78,12 @@ class ValidateWords extends Nimiq.Observable {
     set mnemonic(mnemonic) {
         if (!mnemonic) return;
         this._mnemonic = mnemonic.split(/\s+/g);
+        this.reset();
     }
 
     reset() {
         if (!this._mnemonic) return;
         this._round = 0;
-        this.mnemonic = this._mnemonic.join(' ');
         this._generateIndices();
         this._setContent(this._round);
     }
@@ -101,12 +102,12 @@ class ValidateWords extends Nimiq.Observable {
     }
 
     /**
-     * @param {number} index
+     * @param {number} round
      * @returns {number}
      * @private
      */
-    _generateIndex(index) {
-        return Math.floor(Math.random() * 8) + index * 8;
+    _generateIndex(round) {
+        return Math.floor(Math.random() * 8) + round * 8;
     }
 
     /**
@@ -114,11 +115,13 @@ class ValidateWords extends Nimiq.Observable {
      * @private
      */
     _setContent(round) {
-        this._set(
-            this._generateWords(this._requiredWords[round]), // wordlist
-            this._requiredWords[round] + 1, // targetIndex
-            this._mnemonic[this._requiredWords[round]], // targetWord
-        );
+        this.$el.querySelectorAll('.correct').forEach(button => button.classList.remove('correct'));
+        this.$el.querySelectorAll('.wrong').forEach(button => button.classList.remove('wrong'));
+        const wordList = this._generateWords(this._requiredWords[round]);
+        this.setWordList(wordList);
+        const targetIndex = this._requiredWords[round] + 1;
+        this.setTargetIndex(targetIndex);
+        this._targetWord = this._mnemonic[this._requiredWords[round]];
     }
 
     /**
@@ -141,19 +144,6 @@ class ValidateWords extends Nimiq.Observable {
     }
 
     // per round
-
-    /**
-     * @param {string[]} wordList
-     * @param {number} targetIndex
-     * @param {string} targetWord
-     */
-    _set(wordList, targetIndex, targetWord) {
-        this.$el.querySelectorAll('.correct').forEach(button => button.classList.remove('correct'));
-        this.$el.querySelectorAll('.wrong').forEach(button => button.classList.remove('wrong'));
-        this.setWordList(wordList);
-        this.setTargetIndex(targetIndex);
-        this._targetWord = targetWord;
-    }
 
     /**
      * @param {string[]} wordList

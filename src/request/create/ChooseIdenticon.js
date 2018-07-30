@@ -32,6 +32,7 @@ class ChooseIdenticon extends Nimiq.Observable {
      */
     static _createElement($el) {
         $el = $el || document.createElement('div');
+        $el.classList.add('choose-identicon');
 
         $el.innerHTML = `<h1 data-i18n="create-choose-identicon-header1">Choose Your Account Avatar</h1>
             <h2>The Avatar will be 'unique' to this Account. You can not change it later.</h2>
@@ -103,10 +104,11 @@ class ChooseIdenticon extends Nimiq.Observable {
             $returningIdenticon.classList.remove('returning');
         }
 
-        this.$confirmButton.addEventListener('click', () => this.fire(
+        // don't use addEventListener here to override easily when other identicon is selected
+        this.$confirmButton.onclick = () => this.fire(
             ChooseIdenticon.Events.CHOOSE_IDENTICON,
             this._volatileKeys[address],
-        ));
+        );
 
         this.$selectedIdenticon = $identicon;
         this.$el.classList.add('selected');
