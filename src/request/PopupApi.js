@@ -56,7 +56,7 @@ class PopupApi { // eslint-disable-line no-unused-vars
          * @deprecated Only for database migration
          */
         if ((BrowserDetection.isIos() || BrowserDetection.isSafari()) && this._hasMigrateFlag()) {
-            await KeyStore.instance.doMigrateAccountsToKeys();
+            await KeyStore.instance.migrateAccountsToKeys();
         }
 
         return new Promise((resolve, reject) => {

@@ -1,3 +1,5 @@
+/* global Dummy */
+/* global AccountStore */
 describe('AccountStore', () => {
     beforeEach(async () => Dummy.Utils.createDummyAccountStore());
     afterEach(async () => Dummy.Utils.deleteDummyAccountStore());
@@ -19,12 +21,12 @@ describe('AccountStore', () => {
 
     it('can list the account info', async () => {
         const accountInfo = await AccountStore.instance.list();
-        expect(accountInfo).toEqual(Dummy.deprecatedAccountInfo);
+        expect(accountInfo).toEqual(Dummy.deprecatedAccountInfos);
     });
 
     it('can list the accounts including encrypted keys', async () => {
         const accounts = await AccountStore.instance.dangerousListPlain();
-        expect(accounts).toEqual(Dummy.deprecatedAccountDatabaseEntries);
+        expect(accounts).toEqual(Dummy.deprecatedAccountRecords);
     });
 
     it('lists no accounts if the database doesn\'t exist', async () => {

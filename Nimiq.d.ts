@@ -35,6 +35,11 @@ declare namespace Nimiq {
     class SortedList {}
     class Assert {}
 
+    class CryptoUtils {
+        static encryptOtpKdf(data: Uint8Array, key: Uint8Array): Promise<Uint8Array>
+        static decryptOtpKdf(data: Uint8Array, key: Uint8Array): Promise<Uint8Array>
+    }
+
     class BufferUtils {
         static fromAscii(buf: string): Uint8Array
         static fromHex(buf: string): Uint8Array
@@ -129,16 +134,24 @@ declare namespace Nimiq {
         static fromBase64(base64: string): Hash
         static fromHex(hex: string): Hash
         static isHash(o: any): boolean
+        subarray(begin: number, end: number): Uint8Array
     }
 
     class PrivateKey extends Serializable {
+        constructor(arg: Uint8Array)
         static generate(): PrivateKey
         static unserialize(buf: SerialBuffer): PrivateKey
         serialize(): SerialBuffer
         static SIZE: 32
     }
 
+    class ExtendedPrivateKey extends Serializable {
+        privateKey: PrivateKey
+        derivePath(path: string): ExtendedPrivateKey
+    }
+
     class PublicKey extends Serializable {
+        static derive(privateKey: PrivateKey): PublicKey
         serialize(): SerialBuffer
         toAddress(): Address
     }
@@ -157,6 +170,13 @@ declare namespace Nimiq {
         relock(): void
         unlock(key: string | Uint8Array): Promise<void>
         equals(o: any): boolean
+    }
+
+    class Entropy extends Serializable {
+        constructor(arg: Uint8Array)
+        static generate(): Entropy
+        toExtendedPrivateKey(): ExtendedPrivateKey
+        toMnemonic(): Array<string>
     }
 
     class RandomSecret {}
@@ -179,6 +199,7 @@ declare namespace Nimiq {
         toUserFriendlyAddress(): string
         static fromUserFriendlyAddress(str: string): Address
         equals(o: Address): boolean
+        serialize(): SerialBuffer
     }
 
     class Account {

@@ -1,10 +1,19 @@
 type KeyInfo = {
-    userFriendlyAddress: string,
-    type: EncryptionType
+    id: string,
+    type: Key.Type,
+    encrypted: boolean,
+    userFriendlyId: string,
 }
 
-type KeyEntry = KeyInfo & {
-    encryptedKeyPair: Uint8Array
+type KeyRecord = {
+    id: string,
+    type: Key.Type,
+    encrypted: boolean,
+    secret: Uint8Array
+}
+
+declare namespace Key {
+    type Type = 0 | 1
 }
 
 // Deprecated, only used for migrating databases
@@ -50,7 +59,6 @@ type ExtendedTransactionRequest = BasicTransactionRequest & {
 type TransactionRequest = BasicTransactionRequest | ExtendedTransactionRequest
 
 type CreateRequest = {
-    type: EncryptionType
 }
 
 type MessageRequest = {

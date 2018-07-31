@@ -38,6 +38,6 @@ class IFrameApi { // eslint-disable-line no-unused-vars
             return;
         }
 
-        await KeyStore.instance.doMigrateAccountsToKeys();
+        await KeyStore.instance.migrateAccountsToKeys();
     }
 }

@@ -1,8 +1,6 @@
+/* global Nimiq */
 /* global Key */
-/* global AddressUtils */
-/* global InvalidAddressError */
 /* global AccountStore */
-/* global EncryptionType */
 /* global BrowserDetection */
 
 /**
@@ -17,17 +15,17 @@ class KeyStore {
     /** @type {KeyStore} */
     static get instance() {
         /** @type {KeyStore} */
-        this._instance = this._instance || new KeyStore();
-        return this._instance;
+        KeyStore._instance = KeyStore._instance || new KeyStore();
+        return KeyStore._instance;
     }
 
     constructor() {
-        /** @type {Promise<IDBDatabase>|null} */
+        /** @type {?Promise<IDBDatabase>} */
         this._dbPromise = null;
     }
 
     /**
-     * @returns {Promise.<IDBDatabase>}
+     * @returns {Promise<IDBDatabase>}
      * @private
      */
     async connect() {
@@ -35,24 +33,16 @@ class KeyStore {
 
         this._dbPromise = new Promise((resolve, reject) => {
             const request = window.indexedDB.open(KeyStore.DB_NAME, KeyStore.DB_VERSION);
-
             request.onsuccess = () => resolve(request.result);
-
             request.onerror = () => reject(request.error);
-
             request.onupgradeneeded = event => {
                 /** @type {IDBDatabase} */
                 const db = request.result;
 
                 if (event.oldVersion < 1) {
                     // Version 1 is the first version of the database.
-                    const store = db.createObjectStore(KeyStore.DB_KEY_STORE_NAME, { keyPath: 'userFriendlyAddress' });
-                    store.createIndex('by_type', 'type');
+                    db.createObjectStore(KeyStore.DB_KEY_STORE_NAME, { keyPath: 'id' });
                 }
-
-                // if (event.oldVersion < 2) {
-                //     // Version 2 ...
-                // }
             };
         });
 
@@ -60,151 +50,113 @@ class KeyStore {
     }
 
     /**
-     * @param {string} userFriendlyAddress
-     * @param {Uint8Array | string} passphrase
-     * @returns {Promise.<Key>}
+     * @param {string} id
+     * @param {Uint8Array} [passphrase]
+     * @returns {Promise<?Key>}
      */
-    async get(userFriendlyAddress, passphrase) {
-        const key = await this._getPlain(userFriendlyAddress);
-        return Key.loadEncrypted(key.encryptedKeyPair, passphrase, key.type);
+    async get(id, passphrase) {
+        /** @type {?KeyRecord} */
+        const keyRecord = await this._get(id);
+        if (!keyRecord) {
+            return null;
+        }
+
+        if (!keyRecord.encrypted) {
+            return new Key(keyRecord.secret, keyRecord.type);
+        }
+
+        if (!passphrase) {
+            throw new Error('Passphrase required');
+        }
+
+        const plainSecret = await Nimiq.CryptoUtils.decryptOtpKdf(new Nimiq.SerialBuffer(keyRecord.secret), passphrase);
+        return new Key(plainSecret, keyRecord.type);
     }
 
     /**
-     * @param {string} userFriendlyAddress
-     * @returns {Promise.<EncryptionType>}
+     * @param {string} id
+     * @returns {Promise<?KeyRecord>}
+     * @private
      */
-    async getType(userFriendlyAddress) {
-        const key = await this._getPlain(userFriendlyAddress);
-        return key.type;
-    }
-
-    /**
-     * @param {string} userFriendlyAddress
-     * @returns {Promise<KeyEntry>}
-     */
-    async _getPlain(userFriendlyAddress) {
-        userFriendlyAddress = this._formatAddress(userFriendlyAddress);
-
+    async _get(id) {
         const db = await this.connect();
-        return new Promise((resolve, reject) => {
-            const getTx = db.transaction([KeyStore.DB_KEY_STORE_NAME])
-                .objectStore(KeyStore.DB_KEY_STORE_NAME)
-                .get(userFriendlyAddress);
-            getTx.onsuccess = () => resolve(getTx.result);
-            getTx.onerror = reject;
-        });
+        const request = db.transaction([KeyStore.DB_KEY_STORE_NAME])
+            .objectStore(KeyStore.DB_KEY_STORE_NAME)
+            .get(id);
+        return KeyStore._requestAsPromise(request);
     }
 
     /**
      * @param {Key} key
-     * @param {Uint8Array | string} passphrase
-     * @param {Uint8Array | string} [unlockKey]
+     * @param {Uint8Array} [passphrase]
      * @returns {Promise<void>}
      */
-    async put(key, passphrase, unlockKey) {
-        const encryptedKeyPair = await key.exportEncrypted(passphrase, unlockKey);
+    async put(key, passphrase) {
+        const secret = !passphrase
+            ? key.secret
+            : await Nimiq.CryptoUtils.encryptOtpKdf(new Nimiq.SerialBuffer(key.secret), passphrase);
 
-        const keyEntry = {
-            encryptedKeyPair,
-            userFriendlyAddress: key.userFriendlyAddress,
+        const keyRecord = /** @type {KeyRecord} */ {
+            id: key.id,
             type: key.type,
+            encrypted: !!passphrase,
+            secret,
         };
 
-        return this._putPlain(keyEntry);
+        return this._put(keyRecord);
     }
 
     /**
-     * @param {KeyEntry} keyEntry
-     * @returns {Promise<void>}
-     * @deprecated Only for database migration
-     */
-    async putPlain(keyEntry) {
-        return this._putPlain(keyEntry);
-    }
-
-    /**
-     * @param {KeyEntry} keyEntry
+     * @param {KeyRecord} keyRecord
      * @returns {Promise<void>}
      */
-    async _putPlain(keyEntry) {
-        keyEntry.userFriendlyAddress = this._formatAddress(keyEntry.userFriendlyAddress);
-
+    async _put(keyRecord) {
         const db = await this.connect();
-        return new Promise((resolve, reject) => {
-            const putTx = db.transaction([KeyStore.DB_KEY_STORE_NAME], 'readwrite')
-                .objectStore(KeyStore.DB_KEY_STORE_NAME)
-                .put(keyEntry);
-            putTx.onsuccess = () => resolve(putTx.result);
-            putTx.onerror = reject;
-        });
+        const request = db.transaction([KeyStore.DB_KEY_STORE_NAME], 'readwrite')
+            .objectStore(KeyStore.DB_KEY_STORE_NAME)
+            .put(keyRecord);
+        return KeyStore._requestAsPromise(request);
     }
 
     /**
-     * @param {string} userFriendlyAddress
+     * @param {string} id
      * @returns {Promise<void>}
      */
-    async remove(userFriendlyAddress) {
-        userFriendlyAddress = this._formatAddress(userFriendlyAddress);
-
+    async remove(id) {
         const db = await this.connect();
-        return new Promise((resolve, reject) => {
-            const deleteTx = db.transaction([KeyStore.DB_KEY_STORE_NAME], 'readwrite')
-                .objectStore(KeyStore.DB_KEY_STORE_NAME)
-                .delete(userFriendlyAddress);
-            deleteTx.onsuccess = () => resolve(deleteTx.result);
-            deleteTx.onerror = reject;
-        });
+        const request = db.transaction([KeyStore.DB_KEY_STORE_NAME], 'readwrite')
+            .objectStore(KeyStore.DB_KEY_STORE_NAME)
+            .delete(id);
+        return KeyStore._requestAsPromise(request);
     }
 
     /**
-     * @returns {Promise<KeyInfo[]>}
+     * @returns {Promise<Array<KeyInfo>>}
      */
     async list() {
         const db = await this.connect();
-        return new Promise((resolve, reject) => {
-            const results = /** @type {KeyInfo[]} */ ([]);
-            const openCursorRequest = db.transaction([KeyStore.DB_KEY_STORE_NAME], 'readonly')
-                .objectStore(KeyStore.DB_KEY_STORE_NAME)
-                .openCursor();
-            openCursorRequest.onsuccess = () => {
-                const cursor = openCursorRequest.result;
-                if (cursor) {
-                    const key = cursor.value;
+        const request = db.transaction([KeyStore.DB_KEY_STORE_NAME], 'readonly')
+            .objectStore(KeyStore.DB_KEY_STORE_NAME)
+            .openCursor();
 
-                    // Because: To use Key.getPublicInfo(), we would need to create Key
-                    // instances out of the key object that we receive from the DB.
-                    /** @type {KeyInfo} */
-                    const keyInfo = {
-                        userFriendlyAddress: key.userFriendlyAddress,
-                        type: key.type,
-                    };
-
-                    results.push(keyInfo);
-                    cursor.continue();
-                } else {
-                    resolve(results);
-                }
-            };
-            openCursorRequest.onerror = () => reject(openCursorRequest.error);
-        });
+        const results = /** Array<KeyRecord> */ await KeyStore._readAllFromCursor(request);
+        return results.map(keyRecord => /** @type {KeyInfo} */ ({
+            id: keyRecord.id,
+            type: keyRecord.type,
+            encrypted: keyRecord.encrypted,
+            userFriendlyId: Key.idToUserFriendlyId(keyRecord.id),
+        }));
     }
 
-    /** @returns {Promise<void>} */
+    /**
+     * @returns {Promise<void>}
+     */
     async close() {
         if (!this._dbPromise) return;
         // If failed to open database (i.e. _dbPromise rejects) we don't need to close the db
         const db = await this._dbPromise.catch(() => null);
         this._dbPromise = null;
         if (db) db.close();
-    }
-
-    /**
-     * @param {string} userFriendlyAddress
-     * @returns {string}
-     */
-    _formatAddress(userFriendlyAddress) {
-        if (!AddressUtils.isValidAddress(userFriendlyAddress)) throw new InvalidAddressError();
-        return AddressUtils.formatAddress(userFriendlyAddress);
     }
 
     /**
@@ -217,17 +169,20 @@ class KeyStore {
      * @returns {Promise<void>}
      * @deprecated Only for database migration
      */
-    async doMigrateAccountsToKeys() {
+    async migrateAccountsToKeys() {
         const keys = await AccountStore.instance.dangerousListPlain();
-
         keys.forEach(async key => {
-            const keyEntry = {
-                encryptedKeyPair: key.encryptedKeyPair,
-                userFriendlyAddress: key.userFriendlyAddress,
-                // Translate between old text type and new number type
-                type: /** @type {EncryptionType} */ (key.type === 'high' ? EncryptionType.HIGH : EncryptionType.LOW),
+            const address = Nimiq.Address.fromUserFriendlyAddress(key.userFriendlyAddress);
+            const legacyKeyId = Nimiq.BufferUtils.toHex(Nimiq.Hash.blake2b(address.serialize()).subarray(0, 6));
+
+            const keyRecord = /** @type {KeyRecord} */ {
+                id: legacyKeyId,
+                type: Key.Type.LEGACY,
+                encrypted: true,
+                secret: key.encryptedKeyPair,
             };
-            await this.putPlain(keyEntry);
+
+            await this._put(keyRecord);
         });
 
         // FIXME Uncomment after/for testing (and also adapt KeyStoreIndexeddb.spec.js)
@@ -241,7 +196,43 @@ class KeyStore {
             document.cookie = 'accounts=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
         }
     }
+
+    /**
+     * @param {IDBRequest} request
+     * @returns {Promise<*>}
+     * @private
+     */
+    static _requestAsPromise(request) {
+        return new Promise((resolve, reject) => {
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+        });
+    }
+
+    /**
+     * @param {IDBRequest} request
+     * @returns {Promise<Array<*>>}
+     * @private
+     */
+    static _readAllFromCursor(request) {
+        return new Promise((resolve, reject) => {
+            /** @type Array<*> */
+            const results = [];
+            request.onsuccess = () => {
+                const cursor = request.result;
+                if (cursor) {
+                    results.push(cursor.value);
+                    cursor.continue();
+                } else {
+                    resolve(results);
+                }
+            };
+            request.onerror = () => reject(request.error);
+        });
+    }
 }
+/** @type {?KeyStore} */
+KeyStore._instance = null;
 
 KeyStore.DB_VERSION = 1;
 KeyStore.DB_NAME = 'nimiq-keyguard';
