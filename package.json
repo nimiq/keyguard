@@ -45,5 +45,7 @@
     "tsc-watch": "^1.0.22",
     "typescript": "^2.9.2"
   },
-  "dependencies": {}
+  "dependencies": {
+    "hoek": "^5.0.3"
+  }
 }
