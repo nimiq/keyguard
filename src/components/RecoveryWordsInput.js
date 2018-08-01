@@ -89,10 +89,14 @@ class RecoveryWordsInput extends Nimiq.Observable {
 
     /**
      * @param {number} index
+     * @param {?string} paste
      */
-    _setFocusToNextInput(index) {
+    _setFocusToNextInput(index, paste) {
         if (index < this.$fields.length) {
             this.$fields[index].focus();
+            if (paste) {
+                this.$fields[index].fillValueFrom(paste);
+            }
         }
     }
 

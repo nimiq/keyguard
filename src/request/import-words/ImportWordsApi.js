@@ -6,6 +6,7 @@
 /* global Key */
 /* global EncryptionType */
 /* global KeyStore */
+
 class ImportWordsApi extends PopupApi {
     constructor() {
         super();
@@ -20,7 +21,7 @@ class ImportWordsApi extends PopupApi {
     }
 
     /**
-     * @returns {{passphrase: PassphraseInput, passphraseConfirm: PassphraseInput}}
+     * @returns {{passphrase: PassphraseConfirm, passphraseConfirm: PassphraseConfirm}}
      */
     _makeView() {
         // Pages
@@ -46,8 +47,8 @@ class ImportWordsApi extends PopupApi {
         // Components
         const privacyAgent = new PrivacyAgent($privacyAgent);
         const recoveryWordsInput = new RecoveryWordsInput($wordsInput);
-        const passphrase = new PassphraseInput(true, $passphrase);
-        const passphraseConfirm = new PassphraseInput(false, $passphraseConfirmation);
+        const passphrase = new PassphraseConfirm(true, $passphrase);
+        const passphraseConfirm = new PassphraseConfirm(false, $passphraseConfirmation);
 
         // Events
         privacyAgent.on(PrivacyAgent.Events.CONFIRM, () => {

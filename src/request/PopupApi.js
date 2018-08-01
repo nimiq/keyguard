@@ -42,6 +42,10 @@ class PopupApi { // eslint-disable-line no-unused-vars
 
         I18n.initialize(window.TRANSLATIONS, 'en');
         I18n.translateDom();
+
+        window.addEventListener('beforeunload', () => {
+            this.reject(new Error('Keyguard popup closed'));
+        });
     }
 
     /**
@@ -56,14 +60,14 @@ class PopupApi { // eslint-disable-line no-unused-vars
          * @deprecated Only for database migration
          */
         if ((BrowserDetection.isIos() || BrowserDetection.isSafari()) && this._hasMigrateFlag()) {
-            await KeyStore.instance.doMigrateAccountsToKeys();
+            await KeyStore.instance.migrateAccountsToKeys();
         }
 
         return new Promise((resolve, reject) => {
             this._resolve = resolve;
             this._reject = reject;
 
-            this.onRequest(request);
+            this.onRequest(request).catch(reject);
         });
     }
 
@@ -73,14 +77,14 @@ class PopupApi { // eslint-disable-line no-unused-vars
      * @param {KeyguardRequest} request
      * @abstract
      */
-    onRequest(request) { // eslint-disable-line no-unused-vars
+    async onRequest(request) { // eslint-disable-line no-unused-vars
         throw new Error('Not implemented');
     }
 
     /**
      * Called by a page's API class on success
      *
-     * @param {any} result
+     * @param {*} result
      * @returns {Promise<void>}
      */
     async resolve(result) {

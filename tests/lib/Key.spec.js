@@ -1,91 +1,46 @@
-describe("Key", function () {
-    it("can load a plain key pair", function () {
-        const key = Key.loadPlain(Dummy.keyPairs[0], EncryptionType.LOW);
-        const keyFromHex = Key.loadPlain(Nimiq.BufferUtils.toHex(Dummy.keyPairs[0]), EncryptionType.LOW);
+/* global Nimiq */
+/* global Key */
+/* global Dummy */
+describe('Key', () => {
+    it('can sign a message (LEGACY)', () => {
+        const key = new Key(Dummy.keys[0], Key.Type.LEGACY);
+        const pubkey = Nimiq.PublicKey.derive(new Nimiq.PrivateKey(Dummy.keys[0]));
+        const data = Nimiq.BufferUtils.fromAscii('hello');
 
-        expect(key.address).toBeDefined();
-        expect(key.userFriendlyAddress).toBe(Dummy.keyInfo[0].userFriendlyAddress);
-        expect(key.type).toBe(EncryptionType.LOW);
-        expect(key.equals(keyFromHex)).toBe(true);
+        const signature1 = key.sign('m', data);
+        expect(signature1.verify(pubkey, data)).toBe(true);
+
+        const signature2 = key.sign('m/0\'', data);
+        expect(signature2.verify(pubkey, data)).toBe(true);
+        expect(signature1).toEqual(signature2);
     });
 
-    it("can load an encrypted key pair", async function (done) {
-        const key = await Key.loadEncrypted(Dummy.encryptedKeyPairs[0], Dummy.encryptionPassword, EncryptionType.HIGH);
+    it('can sign a message (BIP39)', () => {
+        const key = new Key(Dummy.keys[1], Key.Type.BIP39);
+        const data = Nimiq.BufferUtils.fromAscii('hello');
 
-        expect(key.address).toBeDefined();
-        expect(key.userFriendlyAddress).toBe(Dummy.keyInfo[0].userFriendlyAddress);
-        expect(key.type).toBe(EncryptionType.HIGH);
+        const pubkey1 = key.derivePublicKey('m');
+        const signature1 = key.sign('m', data);
+        expect(signature1.verify(pubkey1, data)).toBe(true);
 
-        try {
-            await Key.loadEncrypted(Dummy.encryptedKeyPairs[0], 'wrong password', EncryptionType.HIGH);
-            done.fail('Wrong password not detected.');
-        } catch (e) {
-            done();
-        }
+        const pubkey2 = key.derivePublicKey('m/0\'');
+        const signature2 = key.sign('m/0\'', data);
+        expect(signature2.verify(pubkey2, data)).toBe(true);
+        expect(signature1).not.toEqual(signature2);
     });
 
-    it("can create a valid basic transaction", async function () {
-        const key = await Key.loadEncrypted(Dummy.encryptedKeyPairs[0], Dummy.encryptionPassword, EncryptionType.HIGH);
-        const recipient = 'NQ47 FS55 KNXG 25XL 37N8 LD78 1DDH 8CS0 QBNF';
-
-        const tx = await key.createTransaction(recipient, 100 * 1e5, 1, 100000);
-
-        expect(tx instanceof Nimiq.BasicTransaction).toBe(true);
-        expect(tx.verify()).toBe(true);
-
-        expect(Nimiq.SignatureProof.verifyTransaction(tx)).toBe(true);
-
-        expect(tx.sender.toUserFriendlyAddress()).toBe(Dummy.keyInfo[0].userFriendlyAddress);
-        expect(tx.senderType).toBe(Nimiq.Account.Type.BASIC);
-        expect(tx.recipient.toUserFriendlyAddress()).toBe(recipient);
-        expect(tx.recipientType).toBe(Nimiq.Account.Type.BASIC);
-        expect(tx.value).toBe(100 * 1e5);
-        expect(tx.fee).toBe(1);
-        expect(tx.validityStartHeight).toBe(100000);
+    it('can derive addresses (LEGACY)', () => {
+        const key = new Key(Dummy.keys[0], Key.Type.LEGACY);
+        const address = 'NQ71 CT4K 7R9R EHSB 7HY9 TSTP XNRQ L2RK 8U4U';
+        expect(key.deriveAddress('m').toUserFriendlyAddress()).toEqual(address);
+        expect(key.deriveAddress('m/0\'').toUserFriendlyAddress()).toEqual(address);
     });
 
-    it("can create a valid transaction with message", async function () {
-        const key = await Key.loadEncrypted(Dummy.encryptedKeyPairs[0], Dummy.encryptionPassword, EncryptionType.HIGH);
-        const recipient = 'NQ47 FS55 KNXG 25XL 37N8 LD78 1DDH 8CS0 QBNF';
-        const message = 'Test transaction message';
-
-        const tx = await key.createTransactionWithMessage(recipient, 100 * 1e5, 1, 100000, message);
-
-        expect(tx instanceof Nimiq.ExtendedTransaction).toBe(true);
-        expect(tx.verify()).toBe(true);
-
-        expect(Nimiq.SignatureProof.verifyTransaction(tx)).toBe(true);
-
-        expect(tx.sender.toUserFriendlyAddress()).toBe(Dummy.keyInfo[0].userFriendlyAddress);
-        expect(tx.senderType).toBe(Nimiq.Account.Type.BASIC);
-        expect(tx.recipient.toUserFriendlyAddress()).toBe(recipient);
-        expect(tx.recipientType).toBe(Nimiq.Account.Type.BASIC);
-        expect(tx.value).toBe(100 * 1e5);
-        expect(tx.fee).toBe(1);
-        expect(tx.validityStartHeight).toBe(100000);
-        expect(Utf8Tools.utf8ByteArrayToString(tx.data)).toBe(message);
-    });
-
-    it("can create a valid vesting payout transaction", async function () {
-        const key = await Key.loadEncrypted(Dummy.encryptedKeyPairs[0], Dummy.encryptionPassword, EncryptionType.HIGH);
-        const vestingContract = 'NQ47 FS55 KNXG 25XL 37N8 LD78 1DDH 8CS0 QBNF';
-        const message = 'Test transaction message';
-
-        const tx = await key.createVestingPayoutTransaction(vestingContract, 100 * 1e5, 1, 100000, message);
-
-        expect(tx instanceof Nimiq.ExtendedTransaction).toBe(true);
-        expect(tx.verify()).toBe(true);
-
-        const signatureProof = Nimiq.SignatureProof.unserialize(tx.proof);
-        expect(signatureProof.verify(null, tx.serializeContent())).toBe(true);
-
-        expect(tx.sender.toUserFriendlyAddress()).toBe(vestingContract);
-        expect(tx.senderType).toBe(Nimiq.Account.Type.VESTING);
-        expect(tx.recipient.toUserFriendlyAddress()).toBe(Dummy.keyInfo[0].userFriendlyAddress);
-        expect(tx.recipientType).toBe(Nimiq.Account.Type.BASIC);
-        expect(tx.value).toBe(100 * 1e5);
-        expect(tx.fee).toBe(1);
-        expect(tx.validityStartHeight).toBe(100000);
-        expect(Utf8Tools.utf8ByteArrayToString(tx.data)).toBe(message);
+    it('can derive addresses (BIP39)', () => {
+        const key = new Key(Dummy.keys[0], Key.Type.BIP39);
+        const address1 = 'NQ55 07AD F3U4 9FTD XP5N 1UMS 2FVT 3N69 Q0H9';
+        const address2 = 'NQ15 YMBC GHHD S4DY CPR5 LC74 HAKD ES3R 5B7P';
+        expect(key.deriveAddress('m').toUserFriendlyAddress()).toEqual(address1);
+        expect(key.deriveAddress('m/0\'').toUserFriendlyAddress()).toEqual(address2);
     });
 });

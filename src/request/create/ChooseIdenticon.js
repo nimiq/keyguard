@@ -10,11 +10,15 @@ class ChooseIdenticon extends Nimiq.Observable {
 
         this.generateIdenticons = this.generateIdenticons.bind(this);
         this._clearSelection = this._clearSelection.bind(this);
+        this._onSelectionConfirmed = this._onSelectionConfirmed.bind(this);
 
         this.$el = ChooseIdenticon._createElement($el);
 
-        /** @type {{ [address: string]: Nimiq.KeyPair}} */
-        this._volatileKeys = {};
+        /** @type {{ [address: string]: Nimiq.Entropy}} */
+        this._volatileEntropies = {};
+
+        /** @type {?string} */
+        this._selectedAddress = null;
 
         this.$identicons = /** @type {HTMLElement} */ (this.$el.querySelector('.identicons'));
         this.$confirmButton = /** @type {HTMLElement} */ (this.$el.querySelector('.backdrop button'));
@@ -23,6 +27,7 @@ class ChooseIdenticon extends Nimiq.Observable {
 
         this.$generateMoreButton.addEventListener('click', this.generateIdenticons);
         this.$backdrop.addEventListener('click', this._clearSelection);
+        this.$confirmButton.addEventListener('click', this._onSelectionConfirmed);
     }
 
     /**
@@ -66,20 +71,24 @@ class ChooseIdenticon extends Nimiq.Observable {
     generateIdenticons() {
         this.$el.classList.remove('active');
 
-        /** @type {{ [address: string]: Nimiq.KeyPair}} */
-        const keyPairs = {};
+        /** @type {{ [address: string]: Nimiq.Entropy}} */
+        const entropies = {};
 
         for (let i = 0; i < 7; i++) {
-            const keyPair = Nimiq.KeyPair.generate();
-            const address = keyPair.publicKey.toAddress().toUserFriendlyAddress();
-            keyPairs[address] = keyPair;
+            const entropy = Nimiq.Entropy.generate();
+            if (Nimiq.MnemonicUtils.isCollidingChecksum(entropy)) {
+                i--;
+                continue;
+            }
+            const address = entropy.toExtendedPrivateKey().derive(0).toAddress().toUserFriendlyAddress();
+            entropies[address] = entropy;
         }
 
-        this._volatileKeys = keyPairs;
+        this._volatileEntropies = entropies;
 
         this.$identicons.textContent = '';
 
-        Object.keys(keyPairs).forEach(address => {
+        Object.keys(entropies).forEach(address => {
             const identicon = new Identicon(address);
             const $identicon = identicon.getElement();
             this.$identicons.appendChild($identicon);
@@ -104,15 +113,21 @@ class ChooseIdenticon extends Nimiq.Observable {
             $returningIdenticon.classList.remove('returning');
         }
 
-        // don't use addEventListener here to override easily when other identicon is selected
-        this.$confirmButton.onclick = () => this.fire(
-            ChooseIdenticon.Events.CHOOSE_IDENTICON,
-            this._volatileKeys[address],
-        );
-
+        this._selectedAddress = address;
         this.$selectedIdenticon = $identicon;
         this.$el.classList.add('selected');
         $identicon.classList.add('selected');
+    }
+
+    /**
+     * @private
+     */
+    _onSelectionConfirmed() {
+        if (!this._selectedAddress) throw new Error('Invalid state');
+        this.fire(
+            ChooseIdenticon.Events.CHOOSE_IDENTICON,
+            this._volatileEntropies[this._selectedAddress],
+        )
     }
 
     _clearSelection() {

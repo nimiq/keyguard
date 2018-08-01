@@ -1,6 +1,9 @@
 /* global SignTransaction */
 /* global PassphraseInput */
-/** Handles a sign-transaction request for keys with encryption type HIGH. */
+
+/**
+ * Handles a sign-transaction request for keys with encryption type HIGH.
+ */
 class SignTransactionWithPassphrase extends SignTransaction {
     /**
      * @param {TransactionRequest} txRequest
@@ -13,29 +16,27 @@ class SignTransactionWithPassphrase extends SignTransaction {
         this._resolve = resolve;
         this._reject = reject;
 
-        // set html elements
         /** @type {HTMLDivElement} */
-        this.$rootElement = (document.getElementById('app'));
-
-        /** @type {HTMLDivElement} */
-        this.$enterPassphrase = (document.getElementById('enter-passphrase'));
+        const $enterPassphrase = (document.querySelector('#enter-passphrase'));
 
         /** @type {HTMLDivElement} */
-        this.$error = (this.$rootElement.querySelector('#enter-passphrase #error'));
+        this.$error = ($enterPassphrase.querySelector('#error'));
 
-        // TODO add identicons and other tx data to UI
+        /** @type {HTMLFormElement} */
+        const $passphraseInput = ($enterPassphrase.querySelector('#passphrase-input'));
 
-        // create components
-        this._passphraseInput = new PassphraseInput();
-        this.$enterPassphrase.appendChild(this._passphraseInput.getElement());
+        const $transaction = this.fillTransactionDetails(txRequest);
+        $enterPassphrase.insertBefore($transaction, $passphraseInput);
 
-        // wire up logic
+        // Set up passphrase input
+        this._passphraseInput = new PassphraseInput(false, $passphraseInput);
         this._passphraseInput.on(PassphraseInput.Events.PASSPHRASE_ENTERED, this._handlePassphraseInput.bind(this));
     }
 
     run() {
-        // go to start page
+        // Go to start page
         window.location.hash = SignTransactionWithPassphrase.Pages.ENTER_PASSPHRASE;
+        this._passphraseInput.focus();
     }
 
     /** @param {string} passphrase */
@@ -45,16 +46,14 @@ class SignTransactionWithPassphrase extends SignTransaction {
         this.$error.classList.add('hidden');
 
         try {
-            const signedTx = await this._signTx(this._txRequest, passphrase);
+            const signedTx = await this._doSignTransaction(this._txRequest, passphrase);
             this._resolve(signedTx);
         } catch (e) {
             console.error(e);
-
             document.body.classList.remove('loading');
 
             // Assume the passphrase was wrong
             this._passphraseInput.onPassphraseIncorrect();
-
             this.$error.classList.remove('hidden');
         }
     }

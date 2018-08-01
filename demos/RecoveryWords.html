@@ -20,7 +20,7 @@
     <script>
     const randomKey = window.crypto.getRandomValues(new Uint8Array(32));
     const words = new RecoveryWords();
-    words.privateKey = randomKey;
+    words.entropy = randomKey;
     document.body.appendChild(words.getElement());
     </script>
 </body>

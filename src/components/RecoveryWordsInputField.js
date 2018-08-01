@@ -20,6 +20,18 @@ class RecoveryWordsInputField extends Nimiq.Observable {
     }
 
     /**
+     * @param {string} paste
+     */
+    fillValueFrom(paste) {
+        if (paste.indexOf(' ') !== -1) {
+            this.dom.input.value = paste.substr(0, paste.indexOf(' '));
+            this.fire(RecoveryWordsInputField.Events.FOCUS_NEXT, this._index + 1, paste.substr(paste.indexOf(' ') + 1));
+        } else {
+            this.dom.input.value = paste;
+        }
+    }
+
+    /**
      * @returns {{ element: HTMLElement, input: HTMLInputElement, placeholder: HTMLDivElement }}
      */
     _createElements() {
@@ -40,6 +52,7 @@ class RecoveryWordsInputField extends Nimiq.Observable {
         setPlaceholder();
 
         input.addEventListener('keydown', this._onKeydown.bind(this));
+        input.addEventListener('paste', this._onPaste.bind(this));
         input.addEventListener('blur', this._onBlur.bind(this));
 
         const placeholder = document.createElement('div');
@@ -95,6 +108,19 @@ class RecoveryWordsInputField extends Nimiq.Observable {
 
         if (e.keyCode === 32 /* space */ || e.keyCode === 13 /* enter */) {
             this._checkValidity(true);
+        }
+    }
+
+    /**
+     * @param {ClipboardEvent} e
+     */
+     _onPaste(e) {
+        let paste = (e.clipboardData || window.clipboardData).getData('text');
+        paste = paste.replace(/\s+/g, ' ');
+        if (paste && paste.split(' ').length > 1) {
+            e.preventDefault();
+            e.stopPropagation();
+            this.fillValueFrom(paste);
         }
     }
 

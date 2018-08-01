@@ -4,35 +4,36 @@
 
 class PassphraseInput extends Nimiq.Observable {
     /**
-     * @param {boolean} [isPassphraseSetter]
-     * @param {HTMLFormElement} [$el]
+     * @param {?HTMLElement} $el
+     * @param {string} placeholder
+     * @param {boolean} [showStrengthIndicator]
      */
-    constructor(isPassphraseSetter = false, $el) {
+    constructor($el, placeholder = 'Enter Passphrase', showStrengthIndicator = false) {
         super();
-        this._isPassphraseSetter = isPassphraseSetter;
+        this._showStrengthIndicator = showStrengthIndicator;
         this.$el = PassphraseInput._createElement($el);
         this.$inputContainer = /** @type {HTMLElement} */ (this.$el.querySelector('.input-container'));
         this.$input = /** @type {HTMLInputElement} */ (this.$el.querySelector('input.password'));
         this.$eyeButton = /** @type {HTMLElement} */ (this.$el.querySelector('.eye-button'));
         this.$confirmButton = /** @type {HTMLButtonElement} */ (this.$el.querySelector('button'));
-        this.$strengthIndicator = /** @type {HTMLElement} */ (this.$el.querySelector('.strength-indicator'));
-        this.$strengthIndicatorContainer = /** @type {HTMLElement} */ (
-            this.$el.querySelector('.strength-indicator-container'));
 
-        this.$el.addEventListener('submit', event => this._submit(event));
+        this.$strengthIndicator = /** @type {HTMLElement} */ (this.$el.querySelector('.strength-indicator'));
+        this.$strengthIndicatorContainer = /** @type {HTMLElement} */ (this.$el.querySelector('.strength-indicator-container'));
+        if (!showStrengthIndicator) {
+            this.$strengthIndicatorContainer.style.display = 'none';
+        }
+
+        this.$input.placeholder = placeholder;
+
         this.$eyeButton.addEventListener('click', () => this._changeVisibility());
 
-        if (!isPassphraseSetter) {
-            this.$strengthIndicatorContainer.style.display = 'none';
-        } else {
-            this._updateStrength();
-            this.$input.addEventListener('input', () => this._updateStrength());
-        }
+        this._onInputChanged();
+        this.$input.addEventListener('input', () => this._onInputChanged());
     }
 
     /**
-     * @param {HTMLFormElement} [$el]
-     * @returns {HTMLFormElement}
+     * @param {?HTMLElement} [$el]
+     * @returns {HTMLElement}
      */
     static _createElement($el) {
         $el = $el || document.createElement('form');
@@ -41,14 +42,13 @@ class PassphraseInput extends Nimiq.Observable {
         /* eslint-disable max-len */
         $el.innerHTML = `
             <div class="input-container">
-                <input class="password" type="password" data-i18n-placeholder="passphrase-placeholder" placeholder="Enter Passphrase">
+                <input class="password" type="password" placeholder="Enter Passphrase">
                 <span class="eye-button icon-eye"/>
             </div>
             <div class="strength-indicator-container">
                 <div class="label"><span data-i18n="passphrase-strength">Strength</span>:</div>
                 <meter max="130" low="10" optimum="100" class="strength-indicator"></meter>
             </div>
-            <button data-i18n="passphrase-confirm">Confirm</button>
         `;
         /* eslint-enable max-len */
 
@@ -73,20 +73,13 @@ class PassphraseInput extends Nimiq.Observable {
     reset() {
         this.$input.value = '';
         this._changeVisibility(false);
-        if (this._isPassphraseSetter) {
-            this._updateStrength();
+        if (this._showStrengthIndicator) {
+            this._onInputChanged();
         }
     }
 
     async onPassphraseIncorrect() {
         return AnimationUtils.animate('shake', this.$inputContainer);
-    }
-
-    /** @param {Event} event */
-    _submit(event) {
-        event.preventDefault();
-        if (this._isPassphraseSetter && this.$input.value.length < PassphraseInput.MIN_LENGTH) return;
-        this.fire(PassphraseInput.Events.PASSPHRASE_ENTERED, this.$input.value);
     }
 
     /** @param {boolean} [becomeVisible] */
@@ -100,10 +93,12 @@ class PassphraseInput extends Nimiq.Observable {
         this.$input.focus();
     }
 
-    _updateStrength() {
+    _onInputChanged() {
         const passphraseLength = this.$input.value.length;
-        this.$confirmButton.disabled = passphraseLength < PassphraseInput.MIN_LENGTH;
         this._updateStrengthIndicator();
+        this.valid = passphraseLength >= PassphraseInput.MIN_LENGTH;
+
+        this.fire(PassphraseInput.Events.VALID, this.valid);
     }
 
     _updateStrengthIndicator() {
@@ -122,10 +117,17 @@ class PassphraseInput extends Nimiq.Observable {
         }
         this.$strengthIndicator.setAttribute('value', String(strengthIndicatorValue));
     }
+
+    /**
+     * @returns {string}
+     */
+    get text() {
+        return this.$input.value;
+    }
 }
 
 PassphraseInput.Events = {
-    PASSPHRASE_ENTERED: 'passphrase-entered',
+    VALID: 'passphrase-valid',
 };
 
 PassphraseInput.MIN_LENGTH = 10;

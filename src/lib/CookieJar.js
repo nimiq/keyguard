@@ -1,4 +1,4 @@
-/* global Nimiq */
+/* global Key */
 
 class CookieJar { // eslint-disable-line no-unused-vars
     /**
@@ -39,13 +39,7 @@ class CookieJar { // eslint-disable-line no-unused-vars
      * @returns {string}
      */
     static _encodeCookie(keys) {
-        const str = keys.map(keyInfo => {
-            const address = Nimiq.Address.fromUserFriendlyAddress(keyInfo.userFriendlyAddress);
-            const encodedAddress = /** @type {string} */ (address.toBase64());
-            return keyInfo.type.toString() + encodedAddress.slice(0, 27);
-        }).join('');
-
-        return str;
+        return keys.map(keyInfo => `${keyInfo.type}${keyInfo.encrypted ? 1 : 0}${keyInfo.id}`).join('');
     }
 
     /**
@@ -55,18 +49,22 @@ class CookieJar { // eslint-disable-line no-unused-vars
     static _decodeCookie(str) {
         if (!str) return [];
 
-        if (str.length % 28 !== 0) throw new Error('Malformed cookie');
+        if (str.length % 14 !== 0) throw new Error('Malformed cookie');
 
-        const keys = str.match(/.{28}/g);
+        const keys = str.match(/.{14}/g);
         if (!keys) return []; // Make TS happy (match() can potentially return NULL)
 
         return keys.map(key => {
             const type = parseInt(key[0], 10);
-            const userFriendlyAddress = Nimiq.Address.fromBase64(key.substr(1)).toUserFriendlyAddress();
+            const encrypted = key[1] === '1';
+            const id = key.substr(2);
+            const userFriendlyId = Key.idToUserFriendlyId(id);
 
             return /** @type {KeyInfo} */ ({
-                userFriendlyAddress,
+                id,
                 type,
+                encrypted,
+                userFriendlyId,
             });
         });
     }

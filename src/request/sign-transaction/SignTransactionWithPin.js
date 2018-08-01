@@ -1,6 +1,9 @@
 /* global SignTransaction */
 /* global PinInput */
-/** Handles a sign-transaction request for keys with encryption type LOW. */
+
+/**
+ * Handles a sign-transaction request for keys with encryption type LOW.
+ */
 class SignTransactionWithPin extends SignTransaction {
     /**
      * @param {TransactionRequest} txRequest
@@ -13,31 +16,34 @@ class SignTransactionWithPin extends SignTransaction {
         this._resolve = resolve;
         this._reject = reject;
 
-        // set html elements
-        /** @type {HTMLDivElement} */
-        this.$rootElement = (document.getElementById('app'));
-        /** @type {HTMLDivElement} */
-        this.$button = (this.$rootElement.querySelector('#transaction-data button'));
-        /** @type {HTMLDivElement} */
-        this.$enterPin = (this.$rootElement.querySelector('#enter-pin'));
+        this.fillTransactionDetails(txRequest);
 
+        /** @type {HTMLElement} */
+        const $button = (document.querySelector('#transaction-data button'));
+        /** @type {HTMLDivElement} */
+        const $enterPinPage = (document.querySelector('#enter-pin'));
 
-        // create components
-        this._pinInput = new PinInput();
-        this.$enterPin.appendChild(this._pinInput.getElement());
-
-        // wire up logic
-        this.$button.addEventListener('click', () => {
-            this._pinInput.open();
+        $button.addEventListener('click', () => {
             window.location.hash = SignTransactionWithPin.Pages.ENTER_PIN;
         });
 
+        // Set up PIN input
+        this._pinInput = new PinInput();
+        $enterPinPage.appendChild(this._pinInput.getElement());
         this._pinInput.on(PinInput.Events.PIN_ENTERED, this.handlePinInput.bind(this));
     }
 
     run() {
-        // go to start page
+        // Go to start page
         window.location.hash = SignTransactionWithPin.Pages.TRANSACTION_DATA;
+
+        window.addEventListener('hashchange', () => {
+            if (window.location.hash.substr(1) === SignTransactionWithPin.Pages.ENTER_PIN) {
+                this._pinInput.open();
+            } else {
+                this._pinInput.close();
+            }
+        });
     }
 
     /** @param {string} pin */
@@ -45,12 +51,11 @@ class SignTransactionWithPin extends SignTransaction {
         document.body.classList.add('loading');
 
         try {
-            const signedTx = await this._signTx(this._txRequest, pin);
+            const signedTx = await this._doSignTransaction(this._txRequest, pin);
             this._pinInput.close();
             this._resolve(signedTx);
         } catch (e) {
             console.error(e);
-
             document.body.classList.remove('loading');
 
             // Assume the pin was wrong

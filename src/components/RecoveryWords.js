@@ -31,10 +31,6 @@ class RecoveryWords extends Nimiq.Observable { // eslint-disable-line no-unused-
             <div class="words-container">
                 <div class="title" data-i18n="recovery-words-title">Recovery Words</div>
             </div>
-            <div class="info-box">
-                <i class="info-icon"></i>
-                <p class="info-text">Move your mouse over the numbers or tap them to reveal each word.</p>
-            </div>
             <div class="spacing-bottom center warning">
                 <strong>Anyone with access to these words can steal all your funds!</strong>
             </div>
@@ -45,36 +41,27 @@ class RecoveryWords extends Nimiq.Observable { // eslint-disable-line no-unused-
     }
 
     /**
-     * @param {Uint8Array} privateKey
+     * @param {Nimiq.Entropy} entropy
      */
-    set privateKey(privateKey) {
-        // clear container before adding new content
-        this.$wordsContainer.textContent = '';
+    set entropy(entropy) {
+        const words = Nimiq.MnemonicUtils.entropyToMnemonic(entropy, Nimiq.MnemonicUtils.DEFAULT_WORDLIST);
+        this.$wordsContainer.querySelectorAll('.word-section').forEach((elem) => this.$wordsContainer.removeChild(elem));
 
-        const phrase = MnemonicPhrase.keyToMnemonic(privateKey);
-        const words = phrase.split(/\s+/g);
+        const section = document.createElement('div');
+        section.classList.add('word-section');
+        for (let wordIndex = 0; wordIndex < 24; wordIndex++) {
 
-        for (let sectionIndex = 0; sectionIndex < 3; sectionIndex++) {
-            const section = document.createElement('div');
-            section.classList.add('word-section', `section-${sectionIndex + 1}`);
-            for (let wordIndex = sectionIndex * 8; wordIndex < (sectionIndex + 1) * 8; wordIndex++) {
-                const placeholder = document.createElement('span');
-                placeholder.classList.add('word-placeholder');
-                placeholder.textContent = `${wordIndex + 1}`;
+            const content = document.createElement('span');
+            content.classList.add('word-content');
+            content.textContent = words[wordIndex];
+            content.title = `word #${wordIndex + 1}`;
 
-                const content = document.createElement('span');
-                content.classList.add('word-content');
-                content.textContent = words[wordIndex];
-                content.title = `word #${wordIndex + 1}`;
-
-                const word = document.createElement('div');
-                word.classList.add('word');
-                word.appendChild(placeholder);
-                word.appendChild(content);
-                section.appendChild(word);
-            }
-            this.$wordsContainer.appendChild(section);
+            const word = document.createElement('div');
+            word.classList.add('word');
+            word.appendChild(content);
+            section.appendChild(word);
         }
+        this.$wordsContainer.appendChild(section);
     }
 
     /** @returns {Element} */

@@ -1,3 +1,4 @@
+/* global Nimiq */
 /* global RecoveryWords */
 /* global ValidateWords */
 /* global ChooseIdenticon */
@@ -17,52 +18,65 @@ class CreateHigh {
         this._reject = reject;
 
         // set html elements
-        /** @type {HTMLDivElement} */
+        /** @type {HTMLElement} */
         this.$chooseIdenticon = (document.getElementById(CreateHigh.Pages.CHOOSE_IDENTICON));
 
-        /** @type {HTMLDivElement} */
+        /** @type {HTMLElement} */
+        this.$downloadKeyfile = (document.getElementById(CreateHigh.Pages.DOWNLOAD_KEYFILE));
+
+        /** @type {HTMLElement} */
         this.$privacyAgent = (document.getElementById(CreateHigh.Pages.PRIVACY_AGENT));
 
-        /** @type {HTMLDivElement} */
+        /** @type {HTMLElement} */
         this.$recoveryWords = (document.getElementById(CreateHigh.Pages.RECOVERY_WORDS));
 
-        /** @type {HTMLDivElement} */
+        /** @type {HTMLElement} */
         this.$validateWords = (document.getElementById(CreateHigh.Pages.VALIDATE_WORDS));
 
-        /** @type {HTMLDivElement} */
+        /** @type {HTMLFormElement} */
         this.$setPassphrase = (document.getElementById(CreateHigh.Pages.SET_PASSPHRASE));
 
-        /** @type {HTMLFormElement} */
-        const $passphraseSetter = (this.$setPassphrase.querySelector('.passphrase-setter'));
 
-        /** @type {HTMLFormElement} */
-        const $passphraseGetter = (this.$setPassphrase.querySelector('.passphrase-getter'));
 
         /** @type {HTMLDivElement} */
         const $passphraseConfirm = (this.$setPassphrase.querySelector('.confirm'));
 
         // create components
         this._chooseIdenticon = new ChooseIdenticon(this.$chooseIdenticon);
+        this._downloadKeyfile = new DownloadKeyfile(this.$downloadKeyfile);
         /** @type {HTMLElement} */
         const $privacyAgentContainer = (this.$privacyAgent.querySelector('.agent'));
         this._privacyAgent = new PrivacyAgent($privacyAgentContainer);
         this._recoveryWords = new RecoveryWords(this.$recoveryWords);
         this._validateWords = new ValidateWords(this.$validateWords);
-        this._passphraseSetter = new PassphraseInput(true, $passphraseSetter);
-        this._passphraseGetter = new PassphraseInput(false, $passphraseGetter);
+        this._setPassphrase = new SetPassphrase(this.$setPassphrase);
 
         // wire up logic
         this._chooseIdenticon.on(
             ChooseIdenticon.Events.CHOOSE_IDENTICON,
-            /** @param {Nimiq.KeyPair} keyPair */
-            keyPair => {
-                this._selectedKeyPair = keyPair;
-                const keyAsUInt8 = keyPair.privateKey.serialize();
-                this._recoveryWords.privateKey = keyAsUInt8;
-                this._validateWords.privateKey = keyAsUInt8;
-                window.location.hash = CreateHigh.Pages.PRIVACY_AGENT;
+            /** @param {Nimiq.Entropy} entropy */
+            entropy => {
+                this._selectedEntropy = entropy;
+                this._recoveryWords.entropy = entropy;
+                this._validateWords.entropy = entropy;
+                this._validateWords.reset();
+                window.location.hash = CreateHigh.Pages.SET_PASSPHRASE;
             },
         );
+
+        this._setPassphrase.on(SetPassphrase.Events.CHOOSE, /** @param {string} passphrase */ (passphrase) => {
+            this._passphrase = passphrase;
+            this._setPassphrase.reset();
+            window.location.hash = CreateHigh.Pages.DOWNLOAD_KEYFILE;
+        });
+
+        this._downloadKeyfile.on(DownloadKeyfile.Events.DOWNLOADED, () => {
+            window.location.hash = CreateHigh.Pages.PRIVACY_AGENT;
+        });
+
+        this._downloadKeyfile.on(DownloadKeyfile.Events.CONTINUE, () => {
+            window.location.hash = CreateHigh.Pages.PRIVACY_AGENT;
+        });
 
         this._privacyAgent.on(PrivacyAgent.Events.CONFIRM, () => {
             window.location.hash = CreateHigh.Pages.RECOVERY_WORDS;
@@ -76,35 +90,24 @@ class CreateHigh {
             window.location.hash = CreateHigh.Pages.RECOVERY_WORDS;
         });
 
-        this._validateWords.on(ValidateWords.Events.VALIDATED, () => {
-            window.location.hash = CreateHigh.Pages.SET_PASSPHRASE;
+        this._validateWords.on(ValidateWords.Events.VALIDATED, async () => {
+            await this.finish(request);
         });
 
-        this._passphraseSetter.on(
-            PassphraseInput.Events.PASSPHRASE_ENTERED,
-            /** @param {string} passphrase */ passphrase => {
-                this._passphrase = passphrase;
-                this._passphraseSetter.reset();
-                $passphraseConfirm.classList.remove('display-none');
-                $passphraseSetter.classList.add('display-none');
-            },
-        );
+        this._validateWords.on(ValidateWords.Events.SKIPPED, async () => {
+            this.finish(request);
+        });
+    }
 
-        this._passphraseGetter.on(
-            PassphraseInput.Events.PASSPHRASE_ENTERED,
-            /** @param {string} passphrase */ async passphrase => {
-                if (this._passphrase !== passphrase) {
-                    await this._passphraseGetter.onPassphraseIncorrect();
-                    $passphraseConfirm.classList.add('display-none');
-                    // todo show wrong passphrase message
-                    $passphraseSetter.classList.remove('display-none');
-                } else {
-                    document.body.classList.add('loading');
-                    const key = new Key(this._selectedKeyPair, request.type);
-                    this._resolve(await KeyStore.instance.put(key, passphrase));
-                }
-            },
-        );
+    /**
+     * @param {CreateRequest} request
+     */
+    async finish(request) { // eslint-disable-line no-unused-vars
+        document.body.classList.add('loading');
+        const key = new Key(this._selectedEntropy.serialize());
+        // XXX Should we use utf8 encoding here instead?
+        const passphrase = Nimiq.BufferUtils.fromAscii(this._passphrase);
+        this._resolve(await KeyStore.instance.put(key, passphrase));
     }
 
     run() {
@@ -117,6 +120,7 @@ class CreateHigh {
 
 CreateHigh.Pages = {
     CHOOSE_IDENTICON: 'choose-identicon',
+    DOWNLOAD_KEYFILE: 'download-keyfile',
     PRIVACY_AGENT: 'privacy-agent',
     RECOVERY_WORDS: 'recovery-words',
     VALIDATE_WORDS: 'validate-words',
