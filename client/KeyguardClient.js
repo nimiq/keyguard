@@ -1,4 +1,3 @@
-/* global EncryptionType */
 /* global RpcClient */
 
 class KeyguardClient {
@@ -27,15 +26,10 @@ class KeyguardClient {
     }
 
     /**
-     * @param {EncryptionType} [type]
-     * @param {string} [label]
      * @returns {Promise<void>}
      */
-    async create(type, label) {
-        return this._startPopup('create', [{
-            type: type || EncryptionType.HIGH,
-            label,
-        }]);
+    async create() {
+        return this._startPopup('create');
     }
 
     /**

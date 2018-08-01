@@ -37,7 +37,6 @@ type BasicTransactionRequest = {
     fee: number
     network: string
     validityStartHeight: number
-    mockKeyType?: EncryptionType
 }
 
 type ExtendedTransactionRequest = {
@@ -53,7 +52,6 @@ type ExtendedTransactionRequest = {
     fee: number
     network: string
     validityStartHeight: number
-    mockKeyType?: EncryptionType
     extraData: string
 }
 

@@ -97,7 +97,10 @@ class SignTransaction { // eslint-disable-line no-unused-vars
             // eslint-disable-next-line object-curly-newline
             const { sender, recipient, value, fee, validityStartHeight } = txRequest;
 
-            const key = await KeyStore.instance.get(sender, passphraseOrPin);
+            const passphrase = Nimiq.BufferUtils.fromAscii(passphraseOrPin);
+            const key = await KeyStore.instance.get(sender, passphrase);
+
+            
             const tx = key.createBasicTransaction(recipient, value, fee, validityStartHeight);
 
             const signatureProof = Nimiq.SignatureProof.unserialize(new Nimiq.SerialBuffer(tx.proof));

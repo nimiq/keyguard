@@ -4,20 +4,18 @@
 /* global PinInput */
 /* global Nimiq */
 /* global Key */
-/* global EncryptionType */
 /* global KeyStore */
 
 class ImportFileApi extends PopupApi {
     constructor() {
         super();
 
-        this._encryptedKeyPair = new Uint8Array(0);
+        this._encryptedKey = new Uint8Array(0);
 
         // Start UI
         this.dom = this._makeView();
 
-        /** @type {HTMLDivElement} */
-        this.$loading = (document.querySelector('#loading'));
+        this.$loading = /** @type {HTMLDivElement} */ (document.querySelector('#loading'));
 
         window.addEventListener('hashchange', () => {
             if (window.location.hash.substr(1) !== ImportFileApi.Pages.ENTER_PIN) {
@@ -56,7 +54,7 @@ class ImportFileApi extends PopupApi {
 
         // Components
         const fileImportComponent = new FileImport($fileImportComponent);
-        const passphraseInput = new PassphraseInput(false, $passphraseInput);
+        const passphraseInput = new PassphraseInput($passphraseInput);
         const pinInput = new PinInput($pinInput);
 
         // Events
@@ -73,17 +71,17 @@ class ImportFileApi extends PopupApi {
     /**
      * Determine key type and forward user to either Passphrase or PIN input
      *
-     * @param {string} encryptedBase64KeyPair - Encrypted KeyPair in base64 format
+     * @param {string} encryptedKeyBase64 - Encrypted KeyPair in base64 format
      */
-    _onFileImported(encryptedBase64KeyPair) {
-        if (encryptedBase64KeyPair.substr(0, 2) === '#2') {
+    _onFileImported(encryptedKeyBase64) {
+        if (encryptedKeyBase64.substr(0, 2) === '#2') {
             // PIN encoded
-            this._encryptedKeyPair = Nimiq.BufferUtils.fromBase64(encryptedBase64KeyPair.substr(2));
+            this._encryptedKey = Nimiq.BufferUtils.fromBase64(encryptedKeyBase64.substr(2));
             window.location.hash = ImportFileApi.Pages.ENTER_PIN;
             this.dom.pinInput.open();
         } else {
             // Passphrase encoded
-            this._encryptedKeyPair = Nimiq.BufferUtils.fromBase64(encryptedBase64KeyPair);
+            this._encryptedKey = Nimiq.BufferUtils.fromBase64(encryptedKeyBase64);
             window.location.hash = ImportFileApi.Pages.ENTER_PASSPHRASE;
             this.dom.passphraseInput.focus();
         }
@@ -93,7 +91,7 @@ class ImportFileApi extends PopupApi {
      * @param {string} passphrase
      */
     async _onPassphraseEntered(passphrase) {
-        const keyInfo = await this._decryptAndStoreKey(passphrase, EncryptionType.HIGH);
+        const keyInfo = await this._decryptAndStoreKey(passphrase);
 
         if (!keyInfo) this.dom.passphraseInput.onPassphraseIncorrect();
         else this.resolve(keyInfo);
@@ -103,26 +101,34 @@ class ImportFileApi extends PopupApi {
      * @param {string} pin
      */
     async _onPinEntered(pin) {
-        const keyInfo = await this._decryptAndStoreKey(pin, EncryptionType.LOW);
+        const keyInfo = await this._decryptAndStoreKey(pin);
 
         if (!keyInfo) this.dom.pinInput.onPinIncorrect();
         else this.resolve(keyInfo);
     }
 
-    /**
+    /**im
      * @param {string} passphraseOrPin
-     * @param {EncryptionType} type
-     * @returns {Promise<KeyInfo | false>}
+     * @returns {Promise<?KeyInfo>}
      */
-    async _decryptAndStoreKey(passphraseOrPin, type) {
+    async _decryptAndStoreKey(passphraseOrPin) {
         this.$loading.style.display = 'flex';
         try {
-            const key = await Key.loadEncrypted(this._encryptedKeyPair, passphraseOrPin, type);
-            await KeyStore.instance.put(key, passphraseOrPin);
-            return key.getPublicInfo();
+            const encryptionKey = Nimiq.BufferUtils.fromAscii(passphraseOrPin);
+            const secret = await Nimiq.CryptoUtils.decryptOtpKdf(this._encryptedKey, encryptionKey);
+            // TODO add support for BIP39 key import
+            const key = new Key(secret, Key.Type.LEGACY);
+            await KeyStore.instance.put(key, encryptionKey);
+
+            return /** @type {KeyInfo} */ {
+                id: key.id,
+                type: key.type,
+                encrypted: true,
+                userFriendlyId: key.userFriendlyId,
+            };
         } catch (e) {
             this.$loading.style.display = 'none';
-            return false;
+            return null;
         }
     }
 }

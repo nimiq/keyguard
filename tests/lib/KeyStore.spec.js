@@ -52,7 +52,7 @@ describe('KeyStore', () => {
         expect(keyInfos).toEqual(Dummy.keyInfos);
     });
 
-    it('can remove keys', async (done) => {
+    it('can remove keys', async () => {
         let currentKeys = await KeyStore.instance.list();
         expect(currentKeys).toEqual(Dummy.keyInfos);
 

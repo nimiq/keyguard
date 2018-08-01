@@ -3,9 +3,9 @@
 class Key {
     /**
      * @param {Uint8Array} secret
-     * @param {Key.Type} type
+     * @param {Key.Type} [type]
      */
-    constructor(secret, type) {
+    constructor(secret, type = Key.Type.BIP39) {
         this._secret = secret;
         this._type = type;
     }

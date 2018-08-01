@@ -1,3 +1,4 @@
+/* global Nimiq */
 /* global RecoveryWords */
 /* global ValidateWords */
 /* global ChooseIdenticon */
@@ -102,10 +103,12 @@ class CreateHigh {
     /**
      * @param {CreateRequest} request
      */
-    async finish(request) {
+    async finish(request) { // eslint-disable-line no-unused-vars
         document.body.classList.add('loading');
-        const key = new Key(this._selectedKeyPair, request.type);
-        this._resolve(await KeyStore.instance.put(key, this._passphrase));
+        const key = new Key(this._selectedKeyPair.privateKey.serialize());
+        // XXX Should we use utf8 encoding here instead?
+        const passphrase = Nimiq.BufferUtils.fromAscii(this._passphrase);
+        this._resolve(await KeyStore.instance.put(key, passphrase));
     }
 
     run() {

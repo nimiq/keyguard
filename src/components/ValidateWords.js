@@ -108,7 +108,7 @@ class ValidateWords extends Nimiq.Observable {
     }
 
     /**
-     * @param {number} round
+     * @param {number} index
      * @returns {number}
      * @private
      */

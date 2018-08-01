@@ -84,7 +84,7 @@ class PopupApi { // eslint-disable-line no-unused-vars
     /**
      * Called by a page's API class on success
      *
-     * @param {any} result
+     * @param {*} result
      * @returns {Promise<void>}
      */
     async resolve(result) {
