@@ -6,6 +6,7 @@
 /* global Key */
 /* global EncryptionType */
 /* global KeyStore */
+
 class ImportWordsApi extends PopupApi {
     constructor() {
         super();
