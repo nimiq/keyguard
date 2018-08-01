@@ -6,45 +6,73 @@
 class RecoveryWordsInput extends Nimiq.Observable {
     /**
      *
-     * @param {HTMLElement} [el]
+     * @param {HTMLElement} [$el]
+     * @param {boolean} input
      */
-    constructor(el) {
+    constructor($el, input=true) {
         super();
         this._mnemonic = '';
-        /** @type{RecoveryWordsInputField[]} */ this.$fields = [];
-        this.$el = this._createElement(el);
+        /** @type{Object[]} */ this.$fields = [];
+        this.$el = this._createElement($el, input);
     }
 
     /**
-     * @param {HTMLElement} [el]
-     * @returns {HTMLElement}
+     * @param {Nimiq.Entropy | Uint8Array} entropy
      */
-    _createElement(el) {
-        if (!el) el = document.createElement('div');
-        el.classList.add('recovery-words-input');
+    set entropy(entropy) {
+        const words = Nimiq.MnemonicUtils.entropyToMnemonic(entropy, Nimiq.MnemonicUtils.DEFAULT_WORDLIST);
+        // this.$wordsContainer.querySelectorAll('.word-section').forEach((elem) => this.$wordsContainer.removeChild(elem));
 
-        const label = document.createElement('div');
-        label.classList.add('label');
-        // extra div in label is needed for CSS placement w/t setting a fixed width which doesn't work with I18n
-        label.innerHTML = '<div data-i18n="recovery-words-input-label">Recovery Words</div>';
-        el.appendChild(label);
+        for (let i = 0; i < 24; i++) {
+            this.$fields[i].textContent = words[i];
+        }
+    }
 
-        const form = document.createElement('form');
-        form.setAttribute('autocomplete', 'off');
-        el.appendChild(form);
+    /**
+     * @param {HTMLElement} [$el]
+     * @param {boolean} input
+     * @returns {HTMLElement}
+     * */
+    _createElement($el, input=true) {
+        $el = $el || document.createElement('div');
+        $el.classList.add('recovery-words');
 
-        for (let index = 0; index < 24; index++) {
-            const field = new RecoveryWordsInputField(index);
-            field.element.dataset.index = index.toString();
-            field.on(RecoveryWordsInputField.Events.VALID, this._onFieldComplete.bind(this));
-            field.on(RecoveryWordsInputField.Events.FOCUS_NEXT, this._setFocusToNextInput.bind(this));
+        $el.innerHTML = `
+            <div class="words-container">
+                <div class="title" data-i18n="recovery-words-title">Recovery Words</div>
+                <div class="word-section"> </div>
+            </div>
+        `;
 
-            this.$fields.push(field);
-            form.appendChild(field.element);
+        const wordSection = /** @type {HTMLElement} */ ($el.querySelector('.word-section'));
+
+        for (let i = 0; i < 24; i++) {
+            if (input) {
+                const field = new RecoveryWordsInputField(i);
+                field.element.classList.add('word');
+                field.element.dataset.i = i.toString();
+                field.on(RecoveryWordsInputField.Events.VALID, this._onFieldComplete.bind(this));
+                field.on(RecoveryWordsInputField.Events.FOCUS_NEXT, this._setFocusToNextInput.bind(this));
+
+                this.$fields.push(field);
+                wordSection.appendChild(field.element);
+            } else {
+                const content = document.createElement('span');
+                content.classList.add('word-content');
+                content.title = `word #${i + 1}`;
+                this.$fields.push(content);
+
+                const word = document.createElement('div');
+                word.classList.add('word');
+                word.classList.add('recovery-words-input-field');
+                word.appendChild(content);
+                wordSection.appendChild(word);
+            }
         }
 
-        I18n.translateDom(el);
-        return el;
+        I18n.translateDom($el);
+
+        return $el;
     }
 
     focus() {
@@ -66,8 +94,6 @@ class RecoveryWordsInput extends Nimiq.Observable {
      */
     _onFieldComplete(field) {
         if (!field.value) return;
-
-        field.showPlaceholder();
 
         this._checkPhraseComplete();
     }
@@ -106,5 +132,5 @@ class RecoveryWordsInput extends Nimiq.Observable {
 }
 
 RecoveryWordsInput.Events = {
-    COMPLETE: 'recovery-words-complete',
+    COMPLETE: 'recovery-words-complete'
 };

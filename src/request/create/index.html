@@ -28,7 +28,7 @@
     <script defer src="../../components/PassphraseInput.js"></script>
     <script defer src="../../components/Identicon.js"></script>
     <script defer src="../../components/PrivacyAgent.js"></script>
-    <script defer src="../../components/RecoveryWords.js"></script>
+    <script defer src="../../components/RecoveryWordsInput.js"></script>
     <script defer src="../../components/ValidateWords.js"></script>
     <script defer src="../PopupApi.js"></script>
     <script defer src="ChooseIdenticon.js"></script>
@@ -41,7 +41,7 @@
     <link rel="stylesheet" href="../../common.css">
     <link rel="stylesheet" href="../../components/PinInput.css">
     <link rel="stylesheet" href="../../components/PassphraseInput.css">
-    <link rel="stylesheet" href="../../components/RecoveryWords.css">
+    <link rel="stylesheet" href="../../components/RecoveryWordsInput.css">
     <link rel="stylesheet" href="../../components/ValidateWords.css">
     <link rel="stylesheet" href="../../components/PrivacyAgent.css">
     <link rel="stylesheet" href="./ChooseIdenticon.css">
@@ -62,7 +62,20 @@
         <div class="grow"></div>
     </div>
 
-    <div id="recovery-words" class="page"></div>
+    <div id="recovery-words" class="page">
+        <h1>Backup your 24 Recovery Words</h1>
+        <h2 secondary>
+            Write down and physically store the complete following list of 24 Account Recovery Words
+            at a <strong>SAFE and SECRET</strong> place to recover this account in the future.
+        </h2>
+        <div class="grow"></div>
+        <div class="words-container-container"></div>
+        <div class="spacing-bottom center warning">
+            <strong>Anyone with access to these words can steal all your funds!</strong>
+        </div>
+        <div class="grow"></div>
+        <button>Continue</button>
+    </div>
 
     <div id="validate-words" class="page"></div>
 
