@@ -56,14 +56,10 @@ class SignTransactionApi extends PopupApi { // eslint-disable-line no-unused-var
         // End validation
 
         // Get signer key type
-        let keyType;
-        if (txRequest.mockKeyType) keyType = txRequest.mockKeyType;
-        else {
-            const keyStore = KeyStore.instance;
-            keyType = await keyStore.getType(txRequest.type === TransactionType.BASIC
-                ? txRequest.sender
-                : txRequest.signer);
-        }
+        const keyStore = KeyStore.instance;
+        const keyType = await keyStore.getType(txRequest.type === TransactionType.BASIC
+            ? txRequest.sender
+            : txRequest.signer);
 
         const handler = keyType === EncryptionType.HIGH
             ? new SignTransactionWithPassphrase(txRequest, this.resolve.bind(this), this.reject.bind(this))
