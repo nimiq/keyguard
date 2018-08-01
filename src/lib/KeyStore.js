@@ -4,6 +4,7 @@
 /* global AccountStore */
 /* global EncryptionType */
 /* global BrowserDetection */
+/* global KeyNotFoundError */
 
 /**
  * Usage:
@@ -90,8 +91,14 @@ class KeyStore {
             const getTx = db.transaction([KeyStore.DB_KEY_STORE_NAME])
                 .objectStore(KeyStore.DB_KEY_STORE_NAME)
                 .get(userFriendlyAddress);
-            getTx.onsuccess = () => resolve(getTx.result);
-            getTx.onerror = reject;
+            getTx.onsuccess = () => {
+                if (!getTx.result) {
+                    reject(new KeyNotFoundError());
+                    return;
+                }
+                resolve(getTx.result);
+            };
+            getTx.onerror = () => reject(getTx.error);
         });
     }
 
@@ -135,7 +142,7 @@ class KeyStore {
                 .objectStore(KeyStore.DB_KEY_STORE_NAME)
                 .put(keyEntry);
             putTx.onsuccess = () => resolve(putTx.result);
-            putTx.onerror = reject;
+            putTx.onerror = () => reject(putTx.error);
         });
     }
 
@@ -152,7 +159,7 @@ class KeyStore {
                 .objectStore(KeyStore.DB_KEY_STORE_NAME)
                 .delete(userFriendlyAddress);
             deleteTx.onsuccess = () => resolve(deleteTx.result);
-            deleteTx.onerror = reject;
+            deleteTx.onerror = () => reject(deleteTx.error);
         });
     }
 

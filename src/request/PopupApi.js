@@ -40,6 +40,10 @@ class PopupApi { // eslint-disable-line no-unused-vars
         /** @type {Function} */
         this._reject = () => { throw new Error('Method not defined'); };
 
+        window.addEventListener('beforeunload', () => {
+            this.reject(new Error('Keyguard popup closed'));
+        });
+
         I18n.initialize(window.TRANSLATIONS, 'en');
         I18n.translateDom();
     }
@@ -63,7 +67,7 @@ class PopupApi { // eslint-disable-line no-unused-vars
             this._resolve = resolve;
             this._reject = reject;
 
-            this.onRequest(request);
+            this.onRequest(request).catch(reject);
         });
     }
 
@@ -73,7 +77,7 @@ class PopupApi { // eslint-disable-line no-unused-vars
      * @param {KeyguardRequest} request
      * @abstract
      */
-    onRequest(request) { // eslint-disable-line no-unused-vars
+    async onRequest(request) { // eslint-disable-line no-unused-vars
         throw new Error('Not implemented');
     }
 

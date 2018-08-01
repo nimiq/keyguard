@@ -5,7 +5,10 @@ const TRANSLATIONS = {
         'passphrase-strength': 'Strength',
         'passphrase-confirm': 'Confirm',
         'passphrase-placeholder': 'Enter Passphrase',
-        'sign-tx-wrong-passphrase': 'Wrong Passphrase, please try again',
+        'sign-tx-header': 'Authorize Transaction',
+        'sign-tx-byline': 'Please confirm the following transaction:',
+        'sign-tx-byline-passphrase': 'Enter your passphrase below to authorize this transaction:',
+        'sign-tx-error-wrong-passphrase': 'Wrong Passphrase, please try again',
         'sign-tx-button-enter-pin': 'Enter PIN',
         'privacy-agent-headline': 'Are you being watched?',
         'privacy-agent-info': 'Now is the perfect time to assess your surroundings. Nearby windows? Hidden cameras? '
@@ -32,6 +35,11 @@ const TRANSLATIONS = {
         'import-passphrase-subheading': 'Please enter a Passphrase to secure your key.',
         'import-confirm-subheading': 'Please repeat your Passphrase:',
         'recovery-words-title': 'Recovery Words',
+        'tx-from': 'From',
+        'tx-to': 'To',
+        'tx-signer': 'Signer',
+        'tx-message': 'Message',
+        'tx-fee': 'Fee',
     },
     de: {
         _language: 'Deutsch',
@@ -39,7 +47,10 @@ const TRANSLATIONS = {
         'passphrase-strength': 'Stärke',
         'passphrase-confirm': 'Bestätigen',
         'passphrase-placeholder': 'Passphrase eingeben',
-        'sign-tx-wrong-passphrase': 'Falsche Passphrase, bitte versuche es nochmal',
+        'sign-tx-header': 'Überweisung Authorisieren',
+        'sign-tx-byline': 'Bitte bestätige die folgende Überweisung:',
+        'sign-tx-byline-passphrase': 'Bitte geb deine Passphrase ein, um die Überweisung zu bestätigen:',
+        'sign-tx-error-wrong-passphrase': 'Falsche Passphrase, bitte versuche es nochmal',
         'sign-tx-button-enter-pin': 'PIN eingeben',
         'privacy-agent-headline': 'Werden sie beobachtet?',
         'privacy-agent-info': 'Jetzt ist eine gute Zeit um sich einmal umzuschauen. Gibt es Fenster in der Nähe? '
@@ -66,6 +77,11 @@ const TRANSLATIONS = {
         'import-passphrase-subheading': 'Bitte gib eine Passphrase ein, um deinen Schlüssel zu schützen.',
         'import-confirm-subheading': 'Bitte wiederhole deine Passphrase.',
         'recovery-words-title': 'Wiederherstellungswörter',
+        'tx-from': 'Von',
+        'tx-to': 'An',
+        'tx-signer': 'Zeichner',
+        'tx-message': 'Nachricht',
+        'tx-fee': 'Gebühr',
     },
 };
 
