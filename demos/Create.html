@@ -7,11 +7,9 @@
 <body>
 <link href="../src/nimiq-style.css" rel="stylesheet">
 <script src="http://cdn.nimiq.com/web-offline.js"></script>
-<script src="../src/lib/EncryptionType.js"></script>
 
 <div>
-    <button id="high">Create account with high encryption type</button>
-    <button id="low">Create account with low encryption type</button>
+    <button>Create account</button>
 </div>
 
 <script>
@@ -22,7 +20,7 @@
         Nimiq.GenesisConfig.test();
     })();
 
-    document.querySelector('button#high').addEventListener('click', async () => {
+    document.querySelector('button').addEventListener('click', async () => {
 
         const keyguard = window.open('../src/request/create/');
 
@@ -37,38 +35,7 @@
 
         await new Promise(res => checkIfKeyguardReady(res));
 
-        const createRequest = {
-            type: EncryptionType.HIGH
-        };
-
-        const result = await keyguard.rpcServer.request(createRequest);
-
-        if (result) {
-            console.log(result);
-            keyguard.close();
-        }
-    });
-
-    document.querySelector('button#low').addEventListener('click', async () => {
-
-        const keyguard = window.open('../src/request/create/');
-
-        // We need this check because we call the rpcServer object directly and not via RPC Client
-        function checkIfKeyguardReady(resolve) {
-            if (keyguard.rpcServer !== undefined) {
-                resolve();
-            } else {
-                self.setTimeout(() => checkIfKeyguardReady(resolve), 25);
-            }
-        }
-
-        await new Promise(res => checkIfKeyguardReady(res));
-
-        const createRequest = {
-            type: EncryptionType.LOW
-        };
-
-        const result = await keyguard.rpcServer.request(createRequest);
+        const result = await keyguard.rpcServer.request();
 
         if (result) {
             console.log(result);

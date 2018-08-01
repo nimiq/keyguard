@@ -95,7 +95,7 @@ class CreateHigh {
         });
 
         this._validateWords.on(ValidateWords.Events.SKIPPED, async () => {
-            await this.finish(request);
+            this.finish(request);
         });
     }
 
