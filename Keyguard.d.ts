@@ -77,6 +77,7 @@ interface Newable {
 
 type DOMEvent = Event & {
     target: Element
+    data: any
 }
 
 interface RpcServerInstance {}

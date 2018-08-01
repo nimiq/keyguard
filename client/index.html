@@ -12,12 +12,18 @@
         <button onclick="keyguard.list()">list</button>
         <button onclick="keyguard.create()">create</button>
         <button onclick="keyguard.signTransaction()">sign-transaction</button>
+        <button onclick="importFile()">import-file</button>
 
         <script src="../src/lib/EncryptionType.js"></script>
         <script src="RpcClient.js"></script>
         <script src="KeyguardClient.js"></script>
         <script>
             window.keyguard = new KeyguardClient();
+
+            async function importFile() {
+                const keyInfo = await keyguard.importFile();
+                console.log(keyInfo);
+            }
         </script>
 </body>
 </html>
