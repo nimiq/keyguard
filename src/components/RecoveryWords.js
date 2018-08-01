@@ -41,14 +41,10 @@ class RecoveryWords extends Nimiq.Observable { // eslint-disable-line no-unused-
     }
 
     /**
-     * @param {Uint8Array} privateKey
+     * @param {Nimiq.Entropy} entropy
      */
-    set privateKey(privateKey) {
-        // clear container before adding new content
-        this.$wordsContainer.textContent = '';
-
-        const phrase = MnemonicPhrase.keyToMnemonic(privateKey);
-        const words = phrase.split(/\s+/g);
+    set entropy(entropy) {
+        const words = Nimiq.MnemonicUtils.entropyToMnemonic(entropy, Nimiq.MnemonicUtils.DEFAULT_WORDLIST);
         this.$wordsContainer.querySelectorAll('.word-section').forEach((elem) => this.$wordsContainer.removeChild(elem));
 
         const section = document.createElement('div');

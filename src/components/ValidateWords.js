@@ -72,18 +72,18 @@ class ValidateWords extends Nimiq.Observable {
     }
 
     /**
-     * @param {Uint8Array} privateKey
+     * @param {Nimiq.Entropy | Uint8Array} entropy
      */
-    set privateKey(privateKey) {
-        this.mnemonic = MnemonicPhrase.keyToMnemonic(privateKey);
+    set entropy(entropy) {
+        this.mnemonic = Nimiq.MnemonicUtils.entropyToMnemonic(entropy, Nimiq.MnemonicUtils.DEFAULT_WORDLIST);
     }
 
     /**
-     * @param {string} mnemonic
+     * @param {string[]} mnemonic
      */
     set mnemonic(mnemonic) {
         if (!mnemonic) return;
-        this._mnemonic = mnemonic.split(/\s+/g);
+        this._mnemonic = mnemonic;
         this.reset();
     }
 

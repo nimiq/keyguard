@@ -14,8 +14,8 @@ class ChooseIdenticon extends Nimiq.Observable {
 
         this.$el = ChooseIdenticon._createElement($el);
 
-        /** @type {{ [address: string]: Nimiq.KeyPair}} */
-        this._volatileKeys = {};
+        /** @type {{ [address: string]: Nimiq.Entropy}} */
+        this._volatileEntropies = {};
 
         /** @type {?string} */
         this._selectedAddress = null;
@@ -71,20 +71,24 @@ class ChooseIdenticon extends Nimiq.Observable {
     generateIdenticons() {
         this.$el.classList.remove('active');
 
-        /** @type {{ [address: string]: Nimiq.KeyPair}} */
-        const keyPairs = {};
+        /** @type {{ [address: string]: Nimiq.Entropy}} */
+        const entropies = {};
 
         for (let i = 0; i < 7; i++) {
-            const keyPair = Nimiq.KeyPair.generate();
-            const address = keyPair.publicKey.toAddress().toUserFriendlyAddress();
-            keyPairs[address] = keyPair;
+            const entropy = Nimiq.Entropy.generate();
+            if (Nimiq.MnemonicUtils.isCollidingChecksum(entropy)) {
+                i--;
+                continue;
+            }
+            const address = entropy.toExtendedPrivateKey().derive(0).toAddress().toUserFriendlyAddress();
+            entropies[address] = entropy;
         }
 
-        this._volatileKeys = keyPairs;
+        this._volatileEntropies = entropies;
 
         this.$identicons.textContent = '';
 
-        Object.keys(keyPairs).forEach(address => {
+        Object.keys(entropies).forEach(address => {
             const identicon = new Identicon(address);
             const $identicon = identicon.getElement();
             this.$identicons.appendChild($identicon);
@@ -122,7 +126,7 @@ class ChooseIdenticon extends Nimiq.Observable {
         if (!this._selectedAddress) throw new Error('Invalid state');
         this.fire(
             ChooseIdenticon.Events.CHOOSE_IDENTICON,
-            this._volatileKeys[this._selectedAddress],
+            this._volatileEntropies[this._selectedAddress],
         )
     }
 

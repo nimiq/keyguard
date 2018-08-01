@@ -54,12 +54,11 @@ class CreateHigh {
         // wire up logic
         this._chooseIdenticon.on(
             ChooseIdenticon.Events.CHOOSE_IDENTICON,
-            /** @param {Nimiq.KeyPair} keyPair */
-            keyPair => {
-                this._selectedKeyPair = keyPair;
-                const keyAsUInt8 = keyPair.privateKey.serialize();
-                this._recoveryWords.privateKey = keyAsUInt8;
-                this._validateWords.privateKey = keyAsUInt8;
+            /** @param {Nimiq.Entropy} entropy */
+            entropy => {
+                this._selectedEntropy = entropy;
+                this._recoveryWords.entropy = entropy;
+                this._validateWords.entropy = entropy;
                 this._validateWords.reset();
                 window.location.hash = CreateHigh.Pages.SET_PASSPHRASE;
             },
@@ -92,11 +91,11 @@ class CreateHigh {
         });
 
         this._validateWords.on(ValidateWords.Events.VALIDATED, async () => {
-            this.finish(request);
+            await this.finish(request);
         });
 
         this._validateWords.on(ValidateWords.Events.SKIPPED, async () => {
-            this.finish(request);
+            await this.finish(request);
         });
     }
 
@@ -105,7 +104,7 @@ class CreateHigh {
      */
     async finish(request) { // eslint-disable-line no-unused-vars
         document.body.classList.add('loading');
-        const key = new Key(this._selectedKeyPair.privateKey.serialize());
+        const key = new Key(this._selectedEntropy.serialize());
         // XXX Should we use utf8 encoding here instead?
         const passphrase = Nimiq.BufferUtils.fromAscii(this._passphrase);
         this._resolve(await KeyStore.instance.put(key, passphrase));

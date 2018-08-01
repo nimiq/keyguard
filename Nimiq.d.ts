@@ -139,18 +139,37 @@ declare namespace Nimiq {
         static isHash(o: any): boolean
         subarray(begin: number, end: number): Uint8Array
     }
+    
+    class Entropy extends Serializable {
+        constructor(arg: Uint8Array)
+        static generate(): Entropy
+        toExtendedPrivateKey(password?: string, wordlist?: string[]): ExtendedPrivateKey
+        toMnemonic(wordlist?: string[]): string[]
+        static unserialize(buf: SerialBuffer): Entropy
+        serialize(buf?: SerialBuffer): SerialBuffer
+        overwrite(entropy: Entropy): void
+        static SIZE: 32
+    }
+    
+    class ExtendedPrivateKey extends Serializable {
+        static generateMasterKey(seed: Uint8Array): ExtendedPrivateKey
+        derive(index: number): ExtendedPrivateKey
+        static isValidPath(path: string): boolean
+        derivePath(path: string): ExtendedPrivateKey
+        static derivePathFromSeed(path: string, seed: Uint8Array): ExtendedPrivateKey
+        static unserialize(buf: SerialBuffer): ExtendedPrivateKey
+        serialize(buf?: SerialBuffer): SerialBuffer
+        privateKey: PrivateKey
+        toAddress(): Address
+        static CHAIN_CODE_SIZE: 32
+    }
 
     class PrivateKey extends Serializable {
         constructor(arg: Uint8Array)
         static generate(): PrivateKey
         static unserialize(buf: SerialBuffer): PrivateKey
-        serialize(): SerialBuffer
+        serialize(buf?: SerialBuffer): SerialBuffer
         static SIZE: 32
-    }
-
-    class ExtendedPrivateKey extends Serializable {
-        privateKey: PrivateKey
-        derivePath(path: string): ExtendedPrivateKey
     }
 
     class PublicKey extends Serializable {
@@ -175,13 +194,6 @@ declare namespace Nimiq {
         equals(o: any): boolean
     }
 
-    class Entropy extends Serializable {
-        constructor(arg: Uint8Array)
-        static generate(): Entropy
-        toExtendedPrivateKey(): ExtendedPrivateKey
-        toMnemonic(): Array<string>
-    }
-
     class RandomSecret {}
 
     class Signature extends Serializable {
@@ -194,6 +206,26 @@ declare namespace Nimiq {
     class Commitment {}
     class CommitmentPair {}
     class PartialSignature {}
+    
+    class MnemonicUtils {
+        static entropyToMnemonic(entropy: string | ArrayBuffer | Uint8Array | Entropy, wordlist?: string[]): string[]
+        static entropyToLegacyMnemonic(entropy: string | ArrayBuffer | Uint8Array | Entropy, wordlist?: string[]): string[]
+        static mnemonicToEntropy(mnemonic: string | string[], wordlist?: string[]): string[]
+        static legacyMnemonicToEntropy(mnemonic: string | string[], wordlist?: string[]): string[]
+        static mnemonicToSeed(mnemonic: string | string[], password?: string): Uint8Array
+        static mnemonicToExtendedPrivateKey(mnemonic: string | string[], password?: string): ExtendedPrivateKey
+        static isCollidingChecksum(entropy: Entropy): boolean
+        static getMnemonicType(mnemonic: string | string[], wordlist?: string[]): number
+        
+        static DEFAULT_WORDLIST: string[]
+        static ENGLISH_WORDLIST: string[]
+        
+        static MNEMONIC_TYPE: {
+            LEGACY: 0,
+            BIP39: 1,
+            UNKNOWN: 2
+        }
+    }
 
     class Address extends Serializable {
         static fromString(str: string): Address
