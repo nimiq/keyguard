@@ -55,12 +55,12 @@
     // "emitDecoratorMetadata": true,         /* Enables experimental support for emitting type metadata for decorators. */
   },
   "include": [
-    "Nimiq.d.ts",
-    "Keyguard.d.ts",
-    "src/**/*.js",
-    "tests/**/*.js"
+    "client/Keyguard.d.ts",
+    "server/Nimiq.d.ts",
+    "server/Types.d.ts",
+    "server/src/**/*.js",
+    "server/tests/**/*.js",
+    "server/node_modules/@types/jasmine"
   ],
-  "exclude": [
-    "node_modules"
-  ]
+  "types": [ "jasmine"]
 }
