@@ -1,5 +1,5 @@
 /* global PopupApi */
-/* global RecoveryWordsInput */
+/* global RecoveryWords */
 /* global PassphraseInput */
 /* global PrivacyAgent */
 /* global Nimiq */
@@ -45,7 +45,7 @@ class ImportWordsApi extends PopupApi {
 
         // Components
         const privacyAgent = new PrivacyAgent($privacyAgent);
-        const recoveryWordsInput = new RecoveryWordsInput($wordsInput);
+        const recoveryWordsInput = new RecoveryWords($wordsInput);
         const passphrase = new PassphraseConfirm(true, $passphrase);
         const passphraseConfirm = new PassphraseConfirm(false, $passphraseConfirmation);
 
@@ -55,7 +55,7 @@ class ImportWordsApi extends PopupApi {
             recoveryWordsInput.focus();
         });
 
-        recoveryWordsInput.on(RecoveryWordsInput.Events.COMPLETE, this._onRecoveryWordsEntered.bind(this));
+        recoveryWordsInput.on(RecoveryWords.Events.COMPLETE, this._onRecoveryWordsEntered.bind(this));
         passphrase.on(PassphraseInput.Events.PASSPHRASE_ENTERED, this._handlePassphrase.bind(this));
         passphraseConfirm.on(PassphraseInput.Events.PASSPHRASE_ENTERED, this._handlePassphraseConfirmation.bind(this));
 

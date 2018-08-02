@@ -1,7 +1,7 @@
 /* global TRANSLATIONS */
 /* global I18n */
 /* global LanguagePicker */
-/* global RecoveryWordsInput */
+/* global RecoveryWords */
 /* global Nimiq */
 /* global MnemonicPhrase */
 /* global RecoveryWordsInputField */
@@ -9,11 +9,12 @@ I18n.initialize(TRANSLATIONS, 'en');
 const languagePicker = new LanguagePicker();
 document.body.appendChild(languagePicker.getElement());
 
-const input = new RecoveryWordsInput();
 /** @type {HTMLElement} */
 const $privateKey = (document.querySelector('#private-key'));
 /** @type {HTMLElement} */
 const $recoveryWords = (document.querySelector('#recovery-words'));
+/** @type {HTMLElement} */
+const $recoveryWordsInput = (document.querySelector('#recovery-words-input'));
 /** @type {HTMLElement} */
 const $resetFields = (document.querySelector('#reset-fields'));
 /** @type {HTMLElement} */
@@ -23,12 +24,24 @@ const $fillCorrectly = (document.querySelector('.fill-correctly'));
 /** @type {HTMLElement} */
 const $startApi = (document.querySelector('.start-api'));
 
-input.on(RecoveryWordsInput.Events.COMPLETE, /** @param {Nimiq.PrivateKey} privateKey */ privateKey => {
+const input = new RecoveryWords(null, true);
+input.on(RecoveryWords.Events.COMPLETE, /** @param {Nimiq.PrivateKey} privateKey */privateKey => {
     $privateKey.textContent = privateKey.toHex();
     //document.querySelectorAll('button.fill').forEach(button => button.setAttribute('disabled', 'disabled'));
 });
+const recoveryWords = new RecoveryWords(null, false);
 
-$recoveryWords.appendChild(input.$el);
+(async () => {
+    // Because the mocked KeyStore.prototype.get function below is defined in this
+    // window's scope, Nimiq also needs to be defined and initialized here
+    await Nimiq.WasmHelper.doImportBrowser();
+    Nimiq.GenesisConfig.test();
+    recoveryWords.entropy = Nimiq.Entropy.generate();
+})();
+
+
+$recoveryWords.appendChild(recoveryWords.$el);
+$recoveryWordsInput.appendChild(input.$el);
 
 /**
  *
