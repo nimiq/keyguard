@@ -39,7 +39,9 @@ class RecoveryWords extends Nimiq.Observable {
 
         $el.innerHTML = `
             <div class="words-container">
-                <div class="title" data-i18n="recovery-words-title">Recovery Words</div>
+                <div class="title-wrapper">
+                    <div class="title" data-i18n="recovery-words-title">Recovery Words</div>
+                </div>
                 <div class="word-section"> </div>
             </div>
         `;

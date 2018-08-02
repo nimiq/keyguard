@@ -1,21 +1,26 @@
 .title {
-    display: block;
-    position: absolute;
-    left: 50%;
-    width: 17.5rem;
+    display: inline-block;
     box-sizing: border-box;
     border-radius: 3rem;
-    top: -1.625rem;
     font-size: 1.5rem;
     line-height: 3.25rem;
-    margin-left: -8.75rem;
     background: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjZmZmIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMCAwaDI0djI0SDB6IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTE4IDhoLTFWNmMwLTIuNzYtMi4yNC01LTUtNVM3IDMuMjQgNyA2djJINmMtMS4xIDAtMiAuOS0yIDJ2MTBjMCAxLjEuOSAyIDIgMmgxMmMxLjEgMCAyLS45IDItMlYxMGMwLTEuMS0uOS0yLTItMnptLTYgOWMtMS4xIDAtMi0uOS0yLTJzLjktMiAyLTIgMiAuOSAyIDItLjkgMi0yIDJ6bTMuMS05SDguOVY2YzAtMS43MSAxLjM5LTMuMSAzLjEtMy4xIDEuNzEgMCAzLjEgMS4zOSAzLjEgMy4xdjJ6Ii8+PC9zdmc+');
     background-size: 1.75rem;
     background-position: 1.125rem center;
     background-repeat: no-repeat;
     background-color: black;
-    padding-left: 2rem;
+    padding-left: 4rem;
+    padding-right: 2rem;
+    margin-left: auto;
+    margin-right: auto;
     transition: opacity 300ms;
+}
+
+.title-wrapper {
+    position: absolute;
+    top: -1.625rem;
+    width: 100%;
+    margin-left: -2rem;
 }
 
 .recovery-words {
