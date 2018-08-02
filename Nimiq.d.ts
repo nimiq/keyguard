@@ -85,7 +85,7 @@ declare namespace Nimiq {
     class IWorker {}
 
     class WasmHelper {
-        static doImportBrowser: () => void
+        static doImportBrowser(): void
     }
 
     class CryptoWorker {
@@ -210,8 +210,8 @@ declare namespace Nimiq {
     class MnemonicUtils {
         static entropyToMnemonic(entropy: string | ArrayBuffer | Uint8Array | Entropy, wordlist?: string[]): string[]
         static entropyToLegacyMnemonic(entropy: string | ArrayBuffer | Uint8Array | Entropy, wordlist?: string[]): string[]
-        static mnemonicToEntropy(mnemonic: string | string[], wordlist?: string[]): string[]
-        static legacyMnemonicToEntropy(mnemonic: string | string[], wordlist?: string[]): string[]
+        static mnemonicToEntropy(mnemonic: string | string[], wordlist?: string[]): Entropy
+        static legacyMnemonicToEntropy(mnemonic: string | string[], wordlist?: string[]): Entropy
         static mnemonicToSeed(mnemonic: string | string[], password?: string): Uint8Array
         static mnemonicToExtendedPrivateKey(mnemonic: string | string[], password?: string): ExtendedPrivateKey
         static isCollidingChecksum(entropy: Entropy): boolean
@@ -220,10 +220,10 @@ declare namespace Nimiq {
         static DEFAULT_WORDLIST: string[]
         static ENGLISH_WORDLIST: string[]
         
-        static MNEMONIC_TYPE: {
+        static MnemonicType: {
+            UNKNOWN: -1,
             LEGACY: 0,
             BIP39: 1,
-            UNKNOWN: 2
         }
     }
 
@@ -296,7 +296,7 @@ declare namespace Nimiq {
             EXTENDED: 1
         }
         static Flag: {
-            NONE: 1
+            NONE: 0
             CONTRACT_CREATION: 0b1
         }
     }
@@ -337,8 +337,10 @@ declare namespace Nimiq {
             value: number,
             fee: number,
             validityStartHeight: number,
-            flags: Transaction.Flag,
-            data: Uint8Array
+            flags: Transaction.Flag | number,
+            data: Uint8Array,
+            proof?: Uint8Array,
+            networkId?: number
         )
     }
 
@@ -422,12 +424,19 @@ declare namespace Nimiq {
         static test(): void
         static dev(): void
         static bounty(): void
+
         static NETWORK_ID: number
         static NETWORK_NAME: string
         static GENESIS_BLOCK: Block
         static GENESIS_HASH: Hash
         static GENESIS_ACCOUNTS: string
         static SEED_PEERS: PeerAddress[]
+        static CONFIGS: {
+            main: { NETWORK_ID: number }
+            test: { NETWORK_ID: number }
+            dev: { NETWORK_ID: number }
+            bounty: { NETWORK_ID: number }
+        }
     }
 
     class CloseType {}

@@ -68,7 +68,7 @@ Dummy.deprecatedAccountInfos = [
     },
 ];
 
-/** @type {AccountEntry[]} */
+/** @type {AccountRecord[]} */
 Dummy.deprecatedAccountRecords = [
     Object.assign({}, Dummy.deprecatedAccountInfos[0], { encryptedKeyPair: Dummy.encryptedKeys[0] }),
 ];

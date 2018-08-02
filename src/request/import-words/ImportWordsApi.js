@@ -4,14 +4,27 @@
 /* global PrivacyAgent */
 /* global Nimiq */
 /* global Key */
-/* global EncryptionType */
 /* global KeyStore */
+/* global PassphraseConfirm */
+
 class ImportWordsApi extends PopupApi {
     constructor() {
         super();
 
         // start UI
         this.dom = this._makeView();
+
+        /**
+         * @type {?Key}
+         * @private
+         */
+        this._key = null;
+
+        /**
+         * @type {?string}
+         * @private
+         */
+        this._passphrase = null;
     }
 
     async onRequest() {
@@ -78,10 +91,29 @@ class ImportWordsApi extends PopupApi {
     /**
      * Store key and request passphrase
      *
-     * @param {Nimiq.PrivateKey} privateKey
+     * @param {Array<string>} words
+     * @param {number} mnemonicType
      */
-    _onRecoveryWordsEntered(privateKey) {
-        this._privateKey = privateKey;
+    _onRecoveryWordsEntered(words, mnemonicType) {
+        switch (mnemonicType) {
+        case Nimiq.MnemonicUtils.MnemonicType.BIP39: {
+            const entropy = Nimiq.MnemonicUtils.mnemonicToEntropy(words);
+            this._key = new Key(entropy.serialize(), Key.Type.BIP39);
+            break;
+        }
+        case Nimiq.MnemonicUtils.MnemonicType.LEGACY: {
+            const entropy = Nimiq.MnemonicUtils.legacyMnemonicToEntropy(words);
+            this._key = new Key(entropy.serialize(), Key.Type.LEGACY);
+            break;
+        }
+        case Nimiq.MnemonicUtils.MnemonicType.UNKNOWN: {
+            // TODO handle this case
+            throw new Error('TODO');
+        }
+        default:
+            throw new Error('Invalid mnemonic type');
+        }
+
         window.location.hash = ImportWordsApi.Pages.ENTER_PASSPHRASE;
         this.dom.passphrase.focus();
     }
@@ -104,8 +136,8 @@ class ImportWordsApi extends PopupApi {
      * @param {string} passphrase
      */
     async _handlePassphraseConfirmation(passphrase) {
+        if (!this._key) throw new Error('Key not set!');
         if (!this._passphrase) throw new Error('Passphrase not set!');
-        if (!this._privateKey) throw new Error('Private key not set!');
 
         if (this._passphrase !== passphrase) {
             await this.dom.passphraseConfirm.onPassphraseIncorrect();
@@ -117,9 +149,7 @@ class ImportWordsApi extends PopupApi {
 
         document.body.classList.add('loading');
 
-        const keyPair = Nimiq.KeyPair.derive(this._privateKey);
-        const key = new Key(keyPair, EncryptionType.HIGH);
-        this._resolve(await KeyStore.instance.put(key, passphrase));
+        this._resolve(await KeyStore.instance.put(this._key, Nimiq.BufferUtils.fromAscii(passphrase)));
     }
 }
 

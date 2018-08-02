@@ -1,6 +1,5 @@
 /* global Nimiq */
 /* global I18n */
-/* global MnemonicPhrase */
 /* global RecoveryWordsInputField */
 /* global AnimationUtils */
 class RecoveryWordsInput extends Nimiq.Observable {
@@ -10,7 +9,7 @@ class RecoveryWordsInput extends Nimiq.Observable {
      */
     constructor(el) {
         super();
-        this._mnemonic = '';
+
         /** @type{RecoveryWordsInputField[]} */ this.$fields = [];
         this.$el = this._createElement(el);
     }
@@ -78,9 +77,8 @@ class RecoveryWordsInput extends Nimiq.Observable {
 
         const words = this.$fields.map(field => field.value).join(' ');
         try {
-            const buffer = new Nimiq.SerialBuffer(MnemonicPhrase.mnemonicToKey(words));
-            const privateKey = Nimiq.PrivateKey.unserialize(buffer);
-            this.fire(RecoveryWordsInput.Events.COMPLETE, privateKey);
+            const type = Nimiq.MnemonicUtils.getMnemonicType(words); // throws on invalid mnemonic
+            this.fire(RecoveryWordsInput.Events.COMPLETE, words, type);
         } catch (e) {
             if (e.message !== 'Invalid checksum') console.error(e); // eslint-disable-line no-console
             else this._animateError(); // wrong words
