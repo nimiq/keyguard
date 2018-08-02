@@ -104,9 +104,8 @@ class RecoveryWords extends Nimiq.Observable {
 
         const words = this.$fields.map(field => field.value).join(' ');
         try {
-            const buffer = new Nimiq.SerialBuffer(MnemonicPhrase.mnemonicToKey(words));
-            const privateKey = Nimiq.PrivateKey.unserialize(buffer);
-            this.fire(RecoveryWords.Events.COMPLETE, privateKey);
+            const type = Nimiq.MnemonicUtils.getMnemonicType(words); // throws on invalid mnemonic
+            this.fire(RecoveryWords.Events.COMPLETE, words, type);
         } catch (e) {
             if (e.message !== 'Invalid checksum') console.error(e); // eslint-disable-line no-console
             else this._animateError(); // wrong words

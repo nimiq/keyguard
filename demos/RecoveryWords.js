@@ -2,15 +2,15 @@
 /* global I18n */
 /* global LanguagePicker */
 /* global RecoveryWords */
-/* global Nimiq */
 /* global MnemonicPhrase */
-/* global RecoveryWordsInputField */
 I18n.initialize(TRANSLATIONS, 'en');
 const languagePicker = new LanguagePicker();
 document.body.appendChild(languagePicker.getElement());
 
 /** @type {HTMLElement} */
 const $privateKey = (document.querySelector('#private-key'));
+/** @type {HTMLElement} */
+const $mnemonicType = (document.querySelector('#mnemonic-type'));
 /** @type {HTMLElement} */
 const $recoveryWords = (document.querySelector('#recovery-words'));
 /** @type {HTMLElement} */
@@ -25,9 +25,19 @@ const $fillCorrectly = (document.querySelector('.fill-correctly'));
 const $startApi = (document.querySelector('.start-api'));
 
 const input = new RecoveryWords(null, true);
-input.on(RecoveryWords.Events.COMPLETE, /** @param {Nimiq.PrivateKey} privateKey */privateKey => {
-    $privateKey.textContent = privateKey.toHex();
-    //document.querySelectorAll('button.fill').forEach(button => button.setAttribute('disabled', 'disabled'));
+input.on(RecoveryWords.Events.COMPLETE, (/** @param {Array<string>} words */ words, mnemonicType) => {
+    $mnemonicType.textContent = mnemonicType;
+    switch (mnemonicType) {
+        case Nimiq.MnemonicUtils.MnemonicType.BIP39:
+        case Nimiq.MnemonicUtils.MnemonicType.UNKNOWN:
+            $privateKey.textContent = Nimiq.BufferUtils.toHex(Nimiq.MnemonicUtils.mnemonicToEntropy(words).serialize());
+            break;
+        case Nimiq.MnemonicUtils.MnemonicType.LEGACY:
+            $privateKey.textContent = Nimiq.BufferUtils.toHex(Nimiq.MnemonicUtils.legacyMnemonicToEntropy(words).serialize());
+            break;
+        default:
+            throw new Error('Invalid mnemonic type');
+    }
 });
 const recoveryWords = new RecoveryWords(null, false);
 
