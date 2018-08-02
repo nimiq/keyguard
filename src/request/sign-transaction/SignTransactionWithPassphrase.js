@@ -29,8 +29,8 @@ class SignTransactionWithPassphrase extends SignTransaction {
         $enterPassphrase.insertBefore($transaction, $passphraseInput);
 
         // Set up passphrase input
-        this._passphraseInput = new PassphraseInput(false, $passphraseInput);
-        this._passphraseInput.on(PassphraseInput.Events.PASSPHRASE_ENTERED, this._handlePassphraseInput.bind(this));
+        this._passphraseInput = new PassphraseConfirm(false, $passphraseInput);
+        this._passphraseInput.on(PassphraseConfirm.Events.PASSPHRASE_ENTERED, this._handlePassphraseInput.bind(this));
     }
 
     run() {
