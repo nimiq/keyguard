@@ -3,11 +3,11 @@ Note: A global typescript namespace 'Keyguard' is declared.
 
 # Install:
 ````
-npm install --save-dev nimiq-keyguard-client
+npm install --save-dev @nimiq/keyguard-client
 ````
 or
 ````
-yarn add --dev nimiq-keyguard-client
+yarn add --dev @nimiq/keyguard-client
 ````
 
 # Usage:
@@ -15,6 +15,6 @@ Add a new file 'Keyguard.d.ts' to your project folder and make sure it is includ
 should contain:
 ````
 // tslint:disable-next-line no-reference
-/// <reference path="./node_modules/nimiq-keyguard-client/Keyguard.d.ts" />
+/// <reference path="./node_modules/@nimiq/keyguard-client/Keyguard.d.ts" />
 
 ````
