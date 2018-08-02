@@ -45,7 +45,7 @@ class ImportWordsApi extends PopupApi {
 
         // Components
         const privacyAgent = new PrivacyAgent($privacyAgent);
-        const recoveryWordsInput = new RecoveryWords($wordsInput);
+        const recoveryWordsInput = new RecoveryWords($wordsInput, true);
         const passphrase = new PassphraseConfirm(true, $passphrase);
         const passphraseConfirm = new PassphraseConfirm(false, $passphraseConfirmation);
 

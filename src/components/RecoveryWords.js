@@ -7,13 +7,13 @@ class RecoveryWords extends Nimiq.Observable {
     /**
      *
      * @param {HTMLElement} [$el]
-     * @param {boolean} input
+     * @param {boolean} providesInput
      */
-    constructor($el, input=true) {
+    constructor($el, providesInput) {
         super();
         this._mnemonic = '';
         /** @type{Object[]} */ this.$fields = [];
-        this.$el = this._createElement($el, input);
+        this.$el = this._createElement($el, providesInput);
     }
 
     /**

@@ -47,9 +47,7 @@ class CreateHigh {
         /** @type {HTMLElement} */
         const $privacyAgentContainer = (this.$privacyAgent.querySelector('.agent'));
         this._privacyAgent = new PrivacyAgent($privacyAgentContainer);
-        /** @type {HTMLElement} */
-        const $wordsContainerContainer = (this.$recoveryWords.querySelector('.words-container-container'));
-        this._recoveryWords = new RecoveryWords($wordsContainerContainer, false);
+        this._recoveryWords = new BackupRecoveryWords(this.$recoveryWords);
         this._validateWords = new ValidateWords(this.$validateWords);
         this._setPassphrase = new SetPassphrase(this.$setPassphrase);
 
@@ -84,7 +82,7 @@ class CreateHigh {
             window.location.hash = CreateHigh.Pages.RECOVERY_WORDS;
         });
 
-        this._recoveryWords.on(RecoveryWords.Events.CONTINUE, () => {
+        this._recoveryWords.on(BackupRecoveryWords.Events.CONTINUE, () => {
             window.location.hash = CreateHigh.Pages.VALIDATE_WORDS;
         });
 
