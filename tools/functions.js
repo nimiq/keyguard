@@ -91,7 +91,7 @@ function findDependencies(startFile, class2Path, deps) {
         if (dep === 'Nimiq') return;
 
         const depPath = class2Path.get(dep);
-        if (!depPath) throw new Error(`Unknown dependency: ${dep}`);
+        if (!depPath) throw new Error(`Unknown dependency ${dep} referenced from ${startFile}`);
 
         // deps are passed by reference
         findDependencies(depPath, class2Path, deps); // recurse

@@ -91,7 +91,7 @@ class AccountStore {
     }
 
     /**
-     * @returns {Promise<AccountEntry[]>}
+     * @returns {Promise<AccountRecord[]>}
      * @deprecated Only for database migration
      *
      * @description Returns the encrypted keypairs!
@@ -100,14 +100,14 @@ class AccountStore {
         const db = await this.connect();
         if (!db) return [];
         return new Promise((resolve, reject) => {
-            const results = /** @type {AccountEntry[]} */ ([]);
+            const results = /** @type {AccountRecord[]} */ ([]);
             const openCursorRequest = db.transaction([AccountStore.ACCOUNT_DATABASE], 'readonly')
                 .objectStore(AccountStore.ACCOUNT_DATABASE)
                 .openCursor();
             openCursorRequest.onsuccess = () => {
                 const cursor = openCursorRequest.result;
                 if (cursor) {
-                    const key = /** @type {AccountEntry} */ (cursor.value);
+                    const key = /** @type {AccountRecord} */ (cursor.value);
                     results.push(key);
                     cursor.continue();
                 } else {

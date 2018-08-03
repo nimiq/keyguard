@@ -1,75 +1,79 @@
-type KeyInfo = {
-    userFriendlyAddress: string,
-    type: EncryptionType
+type KeyRecord = {
+    id: string,
+    type: Key.Type,
+    encrypted: boolean,
+    secret: Uint8Array
 }
 
-type KeyEntry = KeyInfo & {
-    encryptedKeyPair: Uint8Array
+declare namespace Key {
+    type Type = 0 | 1
 }
 
 // Deprecated, only used for migrating databases
 type AccountInfo = {
     userFriendlyAddress: string,
-    type: string,
+    type: string
     label: string
 }
 
 // Deprecated, only used for migrating databases
-type AccountEntry = AccountInfo & {
+type AccountRecord = AccountInfo & {
     encryptedKeyPair: Uint8Array
 }
 
-type BasicTransactionRequest = {
-    type: TransactionType.BASIC
+type SignTransactionRequest = {
+    keyId: string
+    keyPath: string
+    keyLabel?: string
+
     sender: string
+    senderType: Nimiq.Account.Type
+    senderLabel?: string
     recipient: string
-    signer: string
+    recipientType: Nimiq.Account.Type
+    recipientLabel?: string
     value: number
     fee: number
-    network: string
     validityStartHeight: number
+    data: string
+    flags: number
+    network: string
 }
 
-type SignedTransactionResult = {
-    sender: string,
-    senderPubKey: Nimiq.SerialBuffer,
-    recipient: string,
-    value: number,
-    fee: number,
-    validityStartHeight: number,
-    signature: Nimiq.SerialBuffer,
-    extraData: string,
-    hash: string
+type ParsedSignTransactionRequest = {
+    keyInfo: KeyInfo
+    keyPath: string
+    transaction: Nimiq.ExtendedTransaction
+
+    keyLabel?: string
+    senderLabel?: string
+    recipientLabel?: string
 }
 
-type ExtendedTransactionRequest = BasicTransactionRequest & {
-   type: TransactionType.EXTENDED
-   extraData: string
+type SignTransactionResult = {
+    publicKey: string,
+    signature: string
 }
-
-type TransactionRequest = BasicTransactionRequest | ExtendedTransactionRequest
 
 type CreateRequest = {
-    type: EncryptionType
 }
 
-type MessageRequest = {
-    message: string | Uint8Array
-    signer: string
+type SignMessageRequest = {
+    keyId: string
+    keyPath: string
+    keyLabel?: string
+
+    message: string
 }
 
-type KeyguardRequest = TransactionRequest | CreateRequest | MessageRequest
+type KeyguardRequest = CreateRequest | SignTransactionRequest | SignMessageRequest
 
-type SignedMessageResult = {
-    message: string | Uint8Array
-    proof: Nimiq.SignatureProof
+type SignMessageResult = {
+    message: string
+    publicKey: string,
+    signature: string
 }
 
-interface Window {
-    rpcServer: RpcServerInstance
-    KeyStore: any
-    TRANSLATIONS: dict
-}
 
 interface Newable {
     new(...args: any[]): any;
@@ -77,6 +81,13 @@ interface Newable {
 
 type DOMEvent = Event & {
     target: Element
+    data: any
+}
+
+interface Window {
+    rpcServer: RpcServerInstance
+    KeyStore: any
+    TRANSLATIONS: dict
 }
 
 interface RpcServerInstance {}

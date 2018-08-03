@@ -5,8 +5,17 @@ const TRANSLATIONS = {
         'passphrase-strength': 'Strength',
         'passphrase-confirm': 'Confirm',
         'passphrase-placeholder': 'Enter Passphrase',
+        'repeat-passphrase-placeholder': 'Repeat Passphrase',
+
         'sign-tx-wrong-passphrase': 'Wrong Passphrase, please try again',
-        'sign-tx-button-enter-pin': 'Enter PIN',
+        'sign-tx-header': 'Authorize Transaction',
+        'sign-tx-byline': 'Please confirm the following transaction:',
+        'sign-tx-byline-passphrase': 'Enter your passphrase below to authorize this transaction:',
+        'sign-tx-error-wrong-passphrase': 'Wrong Passphrase, please try again',
+        'sign-tx-button-confirm': 'Confirm transaction',
+        'sign-tx-incl': 'incl.',
+        'sign-tx-fee': 'fee',
+
         'privacy-agent-headline': 'Are you being watched?',
         'privacy-agent-info': 'Now is the perfect time to assess your surroundings. Nearby windows? Hidden cameras? '
                             + 'Shoulder spies?',
@@ -32,6 +41,16 @@ const TRANSLATIONS = {
         'import-passphrase-subheading': 'Please enter a Passphrase to secure your key.',
         'import-confirm-subheading': 'Please repeat your Passphrase:',
         'recovery-words-title': 'Recovery Words',
+
+        'tx-from': 'From',
+        'tx-to': 'To',
+        'tx-data': 'Data',
+
+        'import-file-heading': 'Import Access File',
+        'import-file-enter-passphrase-heading': 'Enter your Passphrase',
+        'import-file-enter-passphrase-subheading': 'Please enter your Passphrase to unlock your Account Access File.',
+        'import-file-enter-pin-heading': 'Enter your PIN',
+        'import-file-enter-pin-subheading': 'Please enter your PIN to unlock your Account Access File.',
     },
     de: {
         _language: 'Deutsch',
@@ -39,8 +58,17 @@ const TRANSLATIONS = {
         'passphrase-strength': 'Stärke',
         'passphrase-confirm': 'Bestätigen',
         'passphrase-placeholder': 'Passphrase eingeben',
+        'repeat-passphrase-placeholder': 'Passphrase wiederholen',
+
         'sign-tx-wrong-passphrase': 'Falsche Passphrase, bitte versuche es nochmal',
-        'sign-tx-button-enter-pin': 'PIN eingeben',
+        'sign-tx-header': 'Überweisung Authorisieren',
+        'sign-tx-byline': 'Bitte bestätige die folgende Überweisung:',
+        'sign-tx-byline-passphrase': 'Bitte geb deine Passphrase ein, um die Überweisung zu bestätigen:',
+        'sign-tx-error-wrong-passphrase': 'Falsche Passphrase, bitte versuche es nochmal',
+        'sign-tx-button-confirm': 'Überweisung bestätigen',
+        'sign-tx-incl': 'inkl.',
+        'sign-tx-fee': 'Gebühr',
+
         'privacy-agent-headline': 'Werden sie beobachtet?',
         'privacy-agent-info': 'Jetzt ist eine gute Zeit um sich einmal umzuschauen. Gibt es Fenster in der Nähe? '
                             + ' Versteckte Kameras? Jemand der über die Schulter schaut?',
@@ -66,6 +94,17 @@ const TRANSLATIONS = {
         'import-passphrase-subheading': 'Bitte gib eine Passphrase ein, um deinen Schlüssel zu schützen.',
         'import-confirm-subheading': 'Bitte wiederhole deine Passphrase.',
         'recovery-words-title': 'Wiederherstellungswörter',
+
+        'tx-from': 'Von',
+        'tx-to': 'An',
+        'tx-data': 'Daten',
+
+        'import-file-heading': 'Zugangsdatei Import',
+        'import-file-enter-passphrase-heading': 'Gib deine Passphrase ein',
+        'import-file-enter-passphrase-subheading': 'Bitte gib deine Passphrase ein um deine Zugangsdatei zu '
+                                                 + 'entschlüsseln',
+        'import-file-enter-pin-heading': 'Gib deine PIN ein',
+        'import-file-enter-pin-subheading': 'Bitte gib deine PIN ein um deine Zugangsdatei zu entschlüsseln.',
     },
 };
 

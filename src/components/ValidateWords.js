@@ -1,23 +1,12 @@
 /* global Nimiq */
-/* global MnemonicPhrase */
 class ValidateWords extends Nimiq.Observable {
     /**
      * @param {HTMLElement} [$el]
      */
     constructor($el) {
         super();
-        this.$el = ValidateWords._createElement($el);
 
-        this.$buttons = this.$el.querySelectorAll('button');
-        this.$targetIndex = /** @type {HTMLElement} */ (this.$el.querySelector('.target-index'));
-        this.$el.addEventListener('click', this._onClick.bind(this));
-
-        this.$skip = this.$el.querySelector('.skip');
-
-        if (this.$skip) {
-            this.$skip.addEventListener('click', () => this.fire(ValidateWords.Events.VALIDATED));
-        }
-
+        /** @type {number} */
         this._round = 0;
         /** @type {number[]} */
         this._requiredWords = [];
@@ -27,6 +16,21 @@ class ValidateWords extends Nimiq.Observable {
         this._wordList = [];
         /** @type {string} */
         this._targetWord = '';
+
+        this.$el = ValidateWords._createElement($el);
+
+        this.$buttons = this.$el.querySelectorAll('button');
+        this.$targetIndex = /** @type {HTMLElement} */ (this.$el.querySelector('.target-index'));
+        this.$el.addEventListener('click', this._onClick.bind(this));
+
+        /** @type {HTMLFormElement} */
+        this.$skip = (this.$el.querySelector('.skip'));
+
+        /** @type {HTMLFormElement} */
+        this.$backWords = (this.$el.querySelector('.back-words'));
+
+        this.$skip.addEventListener('click', () => this.fire(ValidateWords.Events.SKIPPED));
+        this.$backWords.addEventListener('click', () => this.fire(ValidateWords.Events.BACK));
     }
 
     /**
@@ -52,8 +56,9 @@ class ValidateWords extends Nimiq.Observable {
                 <button class="small"></button>
             </div>
             <div class="grow"></div>
-            <span class="skip">[Skip]</span>
-            <a class="secondary" href="#recovery-words">Back to words</a>`;
+            <a class="secondary back-words">Back to words</a>
+            <a class="secondary skip">Skip</a>
+        `;
 
         return $el;
     }
@@ -66,18 +71,18 @@ class ValidateWords extends Nimiq.Observable {
     }
 
     /**
-     * @param {Uint8Array} privateKey
+     * @param {Nimiq.Entropy | Uint8Array} entropy
      */
-    set privateKey(privateKey) {
-        this.mnemonic = MnemonicPhrase.keyToMnemonic(privateKey);
+    set entropy(entropy) {
+        this.mnemonic = Nimiq.MnemonicUtils.entropyToMnemonic(entropy, Nimiq.MnemonicUtils.DEFAULT_WORDLIST);
     }
 
     /**
-     * @param {string} mnemonic
+     * @param {string[]} mnemonic
      */
     set mnemonic(mnemonic) {
         if (!mnemonic) return;
-        this._mnemonic = mnemonic.split(/\s+/g);
+        this._mnemonic = mnemonic;
         this.reset();
     }
 
@@ -98,16 +103,16 @@ class ValidateWords extends Nimiq.Observable {
     }
 
     _generateIndices() {
-        this._requiredWords = [0, 1, 2].map(this._generateIndex);
+        this._requiredWords = [0, 1, 2].map(ValidateWords._generateIndex);
     }
 
     /**
-     * @param {number} round
+     * @param {number} index
      * @returns {number}
      * @private
      */
-    _generateIndex(round) {
-        return Math.floor(Math.random() * 8) + round * 8;
+    static _generateIndex(index) {
+        return Math.floor(Math.random() * 8) + index * 8;
     }
 
     /**
@@ -181,13 +186,13 @@ class ValidateWords extends Nimiq.Observable {
 
         if ($button.textContent !== this._targetWord) {
             // wrong choice
-            this._showAsWrong($button);
+            ValidateWords._showAsWrong($button);
             const correctButtonIndex = this._wordList.indexOf(this._targetWord);
-            this._showAsCorrect(this.$buttons[correctButtonIndex]);
+            ValidateWords._showAsCorrect(this.$buttons[correctButtonIndex]);
             setTimeout(() => this.reset(), 820);
         } else {
             // correct choice
-            this._showAsCorrect($button);
+            ValidateWords._showAsCorrect($button);
             setTimeout(() => this._next(), 500);
         }
     }
@@ -196,7 +201,7 @@ class ValidateWords extends Nimiq.Observable {
      * @param {HTMLButtonElement} $button
      * @private
      */
-    _showAsWrong($button) {
+    static _showAsWrong($button) {
         $button.classList.add('wrong');
         // this.animate('shake', $button);
     }
@@ -205,12 +210,13 @@ class ValidateWords extends Nimiq.Observable {
      * @param {HTMLButtonElement} $button
      * @private
      */
-    _showAsCorrect($button) {
+    static _showAsCorrect($button) {
         $button.classList.add('correct');
     }
 }
 
 ValidateWords.Events = {
+    SKIPPED: 'skipped',
     VALIDATED: 'validated',
     BACK: 'back',
 };

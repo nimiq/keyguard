@@ -2,27 +2,85 @@
 <html>
 
 <head>
-    <title>Show 24 Words</title>
+    <title>Recovery Words Input</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <link href="../src/nimiq-style.css" rel="stylesheet">
+    <!-- <script src="../autocomplete.js"></script> -->
     <link href="../src/common.css" rel="stylesheet">
+    <link href="../src/nimiq-style.css" rel="stylesheet">
     <link href="../src/components/RecoveryWords.css" rel="stylesheet">
-    <script src="../src/lib/MnemonicPhrase.js"></script>
-    <script src="../src/components/RecoveryWords.js"></script>
+    <script defer src="https://cdn.nimiq-network.com/branches/key-derivation/web-offline.js"></script>
+    <script src="../src/lib/I18n.js" defer></script>
+    <script src="../src/translations/index.js" defer></script>
+    <script src="../src/lib/AutoComplete.js" defer></script>
+    <script src="../src/lib/AnimationUtils.js" defer></script>
+    <script src="../src/components/RecoveryWords.js" defer></script>
+    <script src="../src/components/RecoveryWordsInputField.js" defer></script>
+    <script src="../src/components/LanguagePicker.js" defer></script>
+
+    <script src="RecoveryWords.js" defer></script>
+
     <style>
-        .recovery-words .word {
-            width: 5rem;
+        html,
+        body {
+            min-height: 100%;
+            width: 100%;
+            color: white;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: var(--primary-background);
+        }
+
+        body > * { position: static; }
+
+        p {
+            text-align: center;
+            line-height: 2;
+        }
+
+        code {
+            font-family: monospace;
+            font-size: 1.875rem;
+            border: .125rem solid white;
+            padding: .25rem .75rem;
+            border-radius: .625rem;
+        }
+
+        .button-row {
+            margin-top: 1em;
+        }
+
+        #privateKey {
+            margin-top: 2em;
         }
     </style>
 </head>
 
 <body>
-    <script>
-    const randomKey = window.crypto.getRandomValues(new Uint8Array(32));
-    const words = new RecoveryWords();
-    words.privateKey = randomKey;
-    document.body.appendChild(words.getElement());
-    </script>
+    <h1>Recover your Private Key</h1>
+    <h2>Press <code>Space</code> or <code>Tab</code> at the end of a word to jump to the next field.</h2>
+
+    <div id="recovery-words"></div>
+    <div id="recovery-words-input"></div>
+
+    <div class="button-row" style="text-align: center;">
+        <button class="fill-correctly small fill">Fill correctly</button>
+        <button class="fill-randomly small fill">Fill randomly</button>
+        <button class="start-api small fill">Start API</button>
+        <br><button id="reset-fields" class="small reset" style="margin-top: 0.5em;">Reset</button>
+    </div>
+    <p>
+        Your private key:
+        <br />
+        <span id="private-key">-</span>
+    </p>
+    <p>
+        Mnemonic type:
+        <br />
+        <span id="mnemonic-type">-</span>
+    </p>
 </body>
 
 </html>

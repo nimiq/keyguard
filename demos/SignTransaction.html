@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SignTransaction</title>
+    <link href="../src/nimiq-style.css" rel="stylesheet">
+    <script src="https://cdn.nimiq-network.com/branches/key-derivation/web.js"></script>
+    <script src="../src/lib/Key.js"></script>
+
+    <style>
+        .row {
+            margin: 2rem 0;
+        }
+
+        label, input {
+            display: block;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<form>
+    <div class="row">
+        <label>Transaction fee (satoshi)</label>
+        <input id="fee" value="0">
+    </div>
+
+    <div class="row">
+        <label>Transaction data (ascii)</label>
+        <input id="data" value="">
+    </div>
+
+    <div class="row">
+        <label>Key passphrase</label>
+        <input id="passphrase" value="password123">
+    </div>
+
+    <button type="button">Sign transaction</button>
+</form>
+
+<script>
+    (async () => {
+        await Nimiq.WasmHelper.doImportBrowser();
+        Nimiq.GenesisConfig.test();
+    })();
+
+    document.querySelector('button').addEventListener('click', async () => {
+        const fee = parseInt(document.querySelector('#fee').value) || 0;
+        const data = document.querySelector('#data').value || '';
+        const passphrase = document.querySelector('#passphrase').value || '';
+        signTransaction(passphrase, fee, data);
+    });
+
+    async function signTransaction(keyPassphrase, txFee, txData) {
+        // todo fix behavior on second click
+        const keyguard = window.open('../src/request/sign-transaction/', 'keyguard');
+
+        // We need this check because we call the rpcServer object directly and not via RPC Client
+        function checkIfKeyguardReady(resolve) {
+            if (keyguard.rpcServer !== undefined) {
+                resolve();
+            } else {
+                self.setTimeout(() => checkIfKeyguardReady(resolve), 25);
+            }
+        }
+
+        await new Promise(res => checkIfKeyguardReady(res));
+
+        // Generate a random key and put it into the KeyStore.
+        const secret = Nimiq.Entropy.generate().serialize();
+        const key = new Key(secret, Key.Type.BIP39);
+        const passphrase = keyPassphrase ? Nimiq.BufferUtils.fromAscii(keyPassphrase) : undefined;
+        await keyguard.KeyStore.instance.put(key, passphrase);
+
+        const path = "m/0'/0'";
+        const txRequest = {
+            keyId: key.id,
+            keyPath: path,
+
+            sender: key.deriveAddress(path).toUserFriendlyAddress(),
+            senderLabel: 'Spending Account',
+            recipient: 'NQ82 HP54 C9D4 2FAG 69QD 6Q71 LURR 5187 0V3X',
+            recipientLabel: 'amazon.com',
+            value: 12300000,
+            fee: txFee,
+            data: Nimiq.BufferUtils.toBase64(Nimiq.BufferUtils.fromAscii(txData)),
+            validityStartHeight: 0,
+            network: 'test',
+        };
+
+        console.log(txRequest);
+
+        try {
+            const result = await keyguard.rpcServer.request(txRequest);
+            console.log('Keyguard result', result);
+
+            const publicKey = Nimiq.PublicKey.unserialize(Nimiq.BufferUtils.fromBase64(result.publicKey));
+            const signature = Nimiq.Signature.unserialize(Nimiq.BufferUtils.fromBase64(result.signature));
+            const tx = new Nimiq.ExtendedTransaction(
+                Nimiq.Address.fromUserFriendlyAddress(txRequest.sender),
+                Nimiq.Account.Type.BASIC,
+                Nimiq.Address.fromUserFriendlyAddress(txRequest.recipient),
+                Nimiq.Account.Type.BASIC,
+                txRequest.value,
+                txRequest.fee,
+                txRequest.validityStartHeight,
+                Nimiq.Transaction.Flag.NONE,
+                Nimiq.BufferUtils.fromAscii(txData),
+                Nimiq.SignatureProof.singleSig(publicKey, signature).serialize(),
+                Nimiq.GenesisConfig.CONFIGS[txRequest.network].NETWORK_ID
+            );
+            console.log(`Tx: ${tx}`);
+            console.log(`Tx valid: ${tx.verify()}`);
+        } catch (e) {
+            console.error(e);
+        }
+
+        // Delete key.
+        await keyguard.KeyStore.instance.remove(key.id);
+        keyguard.close();
+    }
+</script>
+
+</body>
+</html>

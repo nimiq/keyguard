@@ -2,45 +2,45 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <!-- TODO: Don't use nimiq-network.com for releases -->
     <meta http-equiv="Content-Security-Policy"
-          content="default-src 'self' 'unsafe-eval' https://cdn.nimiq.com;
+          content="default-src 'self' 'unsafe-eval' https://cdn.nimiq.com https://cdn.nimiq-network.com;
           img-src http: https: blob: data:; child-src 'self' blob:; style-src 'self';">
 
-    <script defer src="https://cdn.nimiq.com/web-offline.js"></script>
-    <script defer src="../../errors.js"></script>
-    <script defer src="../../lib/EncryptionType.js"></script>
+    <script defer src="https://cdn.nimiq-network.com/branches/key-derivation/web-offline.js"></script>
+    <script defer src="../../lib/AutoComplete.js"></script>
     <script defer src="../../lib/Key.js"></script>
+    <script defer src="../../lib/KeyInfo.js"></script>
     <script defer src="../../lib/KeyStore.js"></script>
     <script defer src="../../lib/AccountStore.js"></script>
     <script defer src="../../lib/RpcServer.js"></script>
-    <script defer src="../../lib/AddressUtils.js"></script>
-    <script defer src="../../lib/Utf8Tools.js"></script>
     <script defer src="../../lib/Iqons.js"></script>
     <script defer src="../../lib/BrowserDetection.js"></script>
     <script defer src="../../lib/I18n.js"></script>
-    <script defer src="../../lib/MnemonicPhrase.js"></script>
     <script defer src="../../lib/CookieJar.js"></script>
     <script defer src="../../lib/AnimationUtils.js"></script>
     <script defer src="../../translations/index.js"></script>
     <script defer src="../../common.js"></script>
-    <script defer src="../../components/PinInput.js"></script>
-    <script defer src="../../components/PassphraseInput.js"></script>
     <script defer src="../../components/Identicon.js"></script>
+    <script defer src="../../components/DownloadKeyfile.js"></script>
     <script defer src="../../components/PrivacyAgent.js"></script>
     <script defer src="../../components/RecoveryWords.js"></script>
     <script defer src="../../components/ValidateWords.js"></script>
+    <script defer src="../../components/RecoveryWordsInputField.js"></script>
+    <script defer src="../../components/BackupRecoveryWords.js"></script>
+    <script defer src="../../components/PassphraseInput.js"></script>
+    <script defer src="../../components/SetPassphrase.js"></script>
     <script defer src="../PopupApi.js"></script>
     <script defer src="ChooseIdenticon.js"></script>
-    <script defer src="CreateHigh.js"></script>
-    <script defer src="CreateLow.js"></script>
+    <script defer src="Create.js"></script>
     <script defer src="CreateApi.js"></script>
     <script defer src="index.js"></script>
 
     <link rel="stylesheet" href="../../nimiq-style.css">
     <link rel="stylesheet" href="../../common.css">
-    <link rel="stylesheet" href="../../components/PinInput.css">
     <link rel="stylesheet" href="../../components/PassphraseInput.css">
     <link rel="stylesheet" href="../../components/RecoveryWords.css">
+    <link rel="stylesheet" href="../../components/RecoveryWordsInputField.css">
     <link rel="stylesheet" href="../../components/ValidateWords.css">
     <link rel="stylesheet" href="../../components/PrivacyAgent.css">
     <link rel="stylesheet" href="./ChooseIdenticon.css">
@@ -48,37 +48,22 @@
 <body>
 <div id="app">
 
-    <div id="choose-identicon" class="page">
+    <div id="choose-identicon" class="page"></div>
 
-    </div>
+    <form id="set-passphrase" class="page"></form>
+
+    <div id="download-keyfile" class="page"></div>
 
     <div id="privacy-agent" class="page">
         <h1 data-18n="create-backup-account-header">Backup your Account</h1>
         <div class="grow"></div>
         <div class="agent"></div>
+        <div class="grow"></div>
     </div>
 
-    <div id="recovery-words" class="page">
+    <div id="recovery-words" class="page"></div>
 
-    </div>
-
-    <div id="validate-words" class="page">
-
-    </div>
-
-    <div id="set-passphrase" class="page">
-        <h1 data-i18n="create-set-passphrase-header1">Set a Passphrase</h1>
-        <h2 data-i18n="create-set-passphrase-header2">Please enter a Passphrase to secure your account.</h2>
-        <p data-i18n="create-set-passphrase-warning">The Passphrase is [strong]not[/strong] an alternative for your 24 Recovery Words!</p>
-        <div class="grow" data-grow="0.5"></div>
-        <div class="my-account"></div>
-        <div class="grow" data-grow="0.5"></div>
-        <div class="passphrase-setter"></div>
-        <section class="center confirm display-none">
-            <h2 data-i18n="create-confirm-passphrase">Please repeat your Passphrase:</h2>
-            <div class="passphrase-getter"></div>
-        </section>
-    </div>
+    <div id="validate-words" class="page"></div>
 
     <div id="set-pin" class="page">
         <h1 data-i18n="create-choose-pin">Choose your PIN</h1>

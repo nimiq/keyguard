@@ -6,18 +6,70 @@
         iframe {
             display: none;
         }
+
+        button {
+            display: block;
+            margin: 8px;
+            padding: 8px;
+            font-size: inherit;
+        }
     </style>
 </head>
 <body>
         <button onclick="keyguard.list()">list</button>
-        <button onclick="keyguard.create()">create</button>
-        <button onclick="keyguard.signTransaction()">sign-transaction</button>
+        <button onclick="keyguard.create()">reate</button>
+        <button onclick="signTransaction()">sign-transaction(low, basic)</button>
+        <button onclick="signTransaction(EncryptionType.HIGH)">sign-transaction(high, basic)</button>
+        <button onclick="signTransaction(undefined, TransactionType.EXTENDED, 'Hokus pokus!')">sign-transaction(low, extended)</button>
+        <button onclick="signTransaction(EncryptionType.HIGH, TransactionType.EXTENDED, 'Hokus pokus!')">sign-transaction(high, extended)</button>
+        <button onclick="signVestingPayout()">sign-vesting-payout-transaction</button>
+        <button onclick="signVestingPayout(false)">sign-vesting-external-transaction</button>
+        <button onclick="importFile()">import-file</button>
 
         <script src="../src/lib/EncryptionType.js"></script>
+        <script src="../src/lib/TransactionType.js"></script>
         <script src="RpcClient.js"></script>
         <script src="KeyguardClient.js"></script>
         <script>
             window.keyguard = new KeyguardClient();
+
+            function signTransaction(keyType = EncryptionType.LOW, txType = TransactionType.BASIC, message = '') {
+                keyguard.signTransaction({
+                    type: txType,
+                    sender: 'NQ47 FS55 KNXG 25XL 37N8 LD78 1DDH 8CS0 QBNF',
+                    senderLabel: 'Thomas the Tank Engine',
+                    recipient: 'NQ94 VESA PKTA 9YQ0 XKGC HVH0 Q9DF VSFU STSP',
+                    signer: 'NQ47 FS55 KNXG 25XL 37N8 LD78 1DDH 8CS0 QBNF',
+                    value: 100,
+                    fee: 0.00138,
+                    network: 'test',
+                    validityStartHeight: 100000,
+                    extraData: message,
+                    mockKeyType: keyType,
+                });
+            }
+
+            function signVestingPayout(toOwner = true) {
+                keyguard.signTransaction({
+                    type: TransactionType.EXTENDED,
+                    sender: 'NQ74 FLQL DRE3 99PF CET0 3N7D JKLF MQP6 87KS',
+                    senderLabel: 'Vesting Contract',
+                    senderType: 1, // Vesting
+                    recipient: toOwner ? 'NQ47 FS55 KNXG 25XL 37N8 LD78 1DDH 8CS0 QBNF' : 'NQ94 VESA PKTA 9YQ0 XKGC HVH0 Q9DF VSFU STSP',
+                    signer: 'NQ47 FS55 KNXG 25XL 37N8 LD78 1DDH 8CS0 QBNF',
+                    signerLabel: 'Vesting Owner',
+                    value: 100,
+                    fee: 0.00138,
+                    network: 'test',
+                    validityStartHeight: 100000,
+                    extraData: 'Finally, I can move my stash!',
+                    mockKeyType: EncryptionType.HIGH,
+                });
+
+            async function importFile() {
+                const keyInfo = await keyguard.importFile();
+                console.log(keyInfo);
+            }
         </script>
 </body>
 </html>

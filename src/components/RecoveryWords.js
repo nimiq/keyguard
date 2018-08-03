@@ -1,88 +1,135 @@
 /* global Nimiq */
-/* global MnemonicPhrase */
-class RecoveryWords extends Nimiq.Observable { // eslint-disable-line no-unused-vars
-    /**
-     * @param {HTMLElement} [$el]
-     */
-    constructor($el) {
-        super();
-        this.$el = this._createElement($el);
-        this.$wordsContainer = /** @type {HTMLElement} */ (this.$el.querySelector('.words-container'));
+/* global I18n */
+/* global RecoveryWordsInputField */
+/* global AnimationUtils */
 
-        const $button = /** @type {HTMLElement} */ (this.$el.querySelector('button'));
-        $button.addEventListener('click', () => this.fire(RecoveryWords.Events.CONTINUE));
+class RecoveryWords extends Nimiq.Observable {
+    /**
+     *
+     * @param {HTMLElement} [$el]
+     * @param {boolean} providesInput
+     */
+    constructor($el, providesInput) {
+        super();
+        this._mnemonic = '';
+        /** @type{Object[]} */ this.$fields = [];
+        this.$el = this._createElement($el, providesInput);
+    }
+
+    /**
+     * @param {Nimiq.Entropy | Uint8Array} entropy
+     */
+    set entropy(entropy) {
+        const words = Nimiq.MnemonicUtils.entropyToMnemonic(entropy, Nimiq.MnemonicUtils.DEFAULT_WORDLIST);
+        for (let i = 0; i < 24; i++) {
+            this.$fields[i].textContent = words[i];
+        }
     }
 
     /**
      * @param {HTMLElement} [$el]
-     * @returns {Element}
+     * @param {boolean} input
+     * @returns {HTMLElement}
      * */
-    _createElement($el) {
+    _createElement($el, input = true) {
         $el = $el || document.createElement('div');
         $el.classList.add('recovery-words');
 
         $el.innerHTML = `
-            <h1>Backup your 24 Recovery Words</h1>
-            <h2 secondary>
-                Write down and physically store the complete following list of 24 Account Recovery Words
-                at a <strong>SAFE and SECRET</strong> place to recover this account in the future.
-            </h2>
-            <div class="grow"></div>
             <div class="words-container">
-                <div class="title" data-i18n="recovery-words-title">Recovery Words</div>
+                <div class="title-wrapper">
+                    <div class="title" data-i18n="recovery-words-title">Recovery Words</div>
+                </div>
+                <div class="word-section"> </div>
             </div>
-            <div class="info-box">
-                <i class="info-icon"></i>
-                <p class="info-text">Move your mouse over the numbers or tap them to reveal each word.</p>
-            </div>
-            <div class="spacing-bottom center warning">
-                <strong>Anyone with access to these words can steal all your funds!</strong>
-            </div>
-            <div class="grow"></div>
-            <button>Continue</button>`;
+        `;
+
+        const wordSection = /** @type {HTMLElement} */ ($el.querySelector('.word-section'));
+
+        for (let i = 0; i < 24; i++) {
+            if (input) {
+                const field = new RecoveryWordsInputField(i);
+                field.element.classList.add('word');
+                field.element.dataset.i = i.toString();
+                field.on(RecoveryWordsInputField.Events.VALID, this._onFieldComplete.bind(this));
+                field.on(RecoveryWordsInputField.Events.FOCUS_NEXT, this._setFocusToNextInput.bind(this));
+
+                this.$fields.push(field);
+                wordSection.appendChild(field.element);
+            } else {
+                const content = document.createElement('span');
+                content.classList.add('word-content');
+                content.title = `word #${i + 1}`;
+                this.$fields.push(content);
+
+                const word = document.createElement('div');
+                word.classList.add('word');
+                word.classList.add('recovery-words-input-field');
+                word.appendChild(content);
+                wordSection.appendChild(word);
+            }
+        }
+
+        I18n.translateDom($el);
 
         return $el;
     }
 
+    focus() {
+        this.$fields[0].focus();
+    }
+
+    /** @returns {HTMLElement} @deprecated */
+    getElement() {
+        return this.$el;
+    }
+
+    /** @type {HTMLElement} */
+    get element() {
+        return this.$el;
+    }
+
     /**
-     * @param {Uint8Array} privateKey
+     * @param {RecoveryWordsInputField} field
      */
-    set privateKey(privateKey) {
-        // clear container before adding new content
-        this.$wordsContainer.textContent = '';
+    _onFieldComplete(field) {
+        if (!field.value) return;
 
-        const phrase = MnemonicPhrase.keyToMnemonic(privateKey);
-        const words = phrase.split(/\s+/g);
+        this._checkPhraseComplete();
+    }
 
-        for (let sectionIndex = 0; sectionIndex < 3; sectionIndex++) {
-            const section = document.createElement('div');
-            section.classList.add('word-section', `section-${sectionIndex + 1}`);
-            for (let wordIndex = sectionIndex * 8; wordIndex < (sectionIndex + 1) * 8; wordIndex++) {
-                const placeholder = document.createElement('span');
-                placeholder.classList.add('word-placeholder');
-                placeholder.textContent = `${wordIndex + 1}`;
+    _checkPhraseComplete() {
+        const check = this.$fields.find(field => !field.complete);
+        if (typeof check !== 'undefined') return;
 
-                const content = document.createElement('span');
-                content.classList.add('word-content');
-                content.textContent = words[wordIndex];
-                content.title = `word #${wordIndex + 1}`;
-
-                const word = document.createElement('div');
-                word.classList.add('word');
-                word.appendChild(placeholder);
-                word.appendChild(content);
-                section.appendChild(word);
-            }
-            this.$wordsContainer.appendChild(section);
+        const words = this.$fields.map(field => field.value).join(' ');
+        try {
+            const type = Nimiq.MnemonicUtils.getMnemonicType(words); // throws on invalid mnemonic
+            this.fire(RecoveryWords.Events.COMPLETE, words, type);
+        } catch (e) {
+            if (e.message !== 'Invalid checksum') console.error(e); // eslint-disable-line no-console
+            else this._animateError(); // wrong words
         }
     }
 
-    /** @returns {Element} */
-    getElement() {
-        return this.$el;
+    /**
+     * @param {number} index
+     * @param {?string} paste
+     */
+    _setFocusToNextInput(index, paste) {
+        if (index < this.$fields.length) {
+            this.$fields[index].focus();
+            if (paste) {
+                this.$fields[index].fillValueFrom(paste);
+            }
+        }
+    }
+
+    _animateError() {
+        AnimationUtils.animate('shake', this.$el);
     }
 }
 
 RecoveryWords.Events = {
-    CONTINUE: 'continue',
+    COMPLETE: 'recovery-words-complete',
 };

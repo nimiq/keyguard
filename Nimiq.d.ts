@@ -35,10 +35,18 @@ declare namespace Nimiq {
     class SortedList {}
     class Assert {}
 
+    class CryptoUtils {
+        static encryptOtpKdf(data: Uint8Array, key: Uint8Array): Promise<Uint8Array>
+        static decryptOtpKdf(data: Uint8Array, key: Uint8Array): Promise<Uint8Array>
+    }
+
     class BufferUtils {
-        static fromAscii(buf: string): Uint8Array
-        static fromHex(buf: string): Uint8Array
+        static fromAscii(buf: string): SerialBuffer
+        static fromBase64(buf: string): SerialBuffer
+        static fromHex(buf: string): SerialBuffer
         static toHex(buf: Uint8Array): string
+        static toAscii(buf: Uint8Array): string
+        static toBase64(buf: Uint8Array): string
         static equals(buf1: Uint8Array, buf2: Uint8Array): boolean
     }
 
@@ -79,10 +87,12 @@ declare namespace Nimiq {
     class IWorker {}
 
     class WasmHelper {
-        static doImportBrowser: () => void
+        static doImportBrowser(): void
     }
 
-    class CryptoWorker {}
+    class CryptoWorker {
+        static getInstanceAsync(): Promise<Worker>
+    }
     class CryptoWorkerImpl {}
     class CRC32 {}
     class BigNumber {}
@@ -129,16 +139,43 @@ declare namespace Nimiq {
         static fromBase64(base64: string): Hash
         static fromHex(hex: string): Hash
         static isHash(o: any): boolean
+        subarray(begin: number, end: number): Uint8Array
+    }
+    
+    class Entropy extends Serializable {
+        constructor(arg: Uint8Array)
+        static generate(): Entropy
+        toExtendedPrivateKey(password?: string, wordlist?: string[]): ExtendedPrivateKey
+        toMnemonic(wordlist?: string[]): string[]
+        static unserialize(buf: SerialBuffer): Entropy
+        serialize(buf?: SerialBuffer): SerialBuffer
+        overwrite(entropy: Entropy): void
+        static SIZE: 32
+    }
+    
+    class ExtendedPrivateKey extends Serializable {
+        static generateMasterKey(seed: Uint8Array): ExtendedPrivateKey
+        derive(index: number): ExtendedPrivateKey
+        static isValidPath(path: string): boolean
+        derivePath(path: string): ExtendedPrivateKey
+        static derivePathFromSeed(path: string, seed: Uint8Array): ExtendedPrivateKey
+        static unserialize(buf: SerialBuffer): ExtendedPrivateKey
+        serialize(buf?: SerialBuffer): SerialBuffer
+        privateKey: PrivateKey
+        toAddress(): Address
+        static CHAIN_CODE_SIZE: 32
     }
 
     class PrivateKey extends Serializable {
+        constructor(arg: Uint8Array)
         static generate(): PrivateKey
         static unserialize(buf: SerialBuffer): PrivateKey
-        serialize(): SerialBuffer
+        serialize(buf?: SerialBuffer): SerialBuffer
         static SIZE: 32
     }
 
     class PublicKey extends Serializable {
+        static derive(privateKey: PrivateKey): PublicKey
         serialize(): SerialBuffer
         toAddress(): Address
     }
@@ -171,6 +208,26 @@ declare namespace Nimiq {
     class Commitment {}
     class CommitmentPair {}
     class PartialSignature {}
+    
+    class MnemonicUtils {
+        static entropyToMnemonic(entropy: string | ArrayBuffer | Uint8Array | Entropy, wordlist?: string[]): string[]
+        static entropyToLegacyMnemonic(entropy: string | ArrayBuffer | Uint8Array | Entropy, wordlist?: string[]): string[]
+        static mnemonicToEntropy(mnemonic: string | string[], wordlist?: string[]): Entropy
+        static legacyMnemonicToEntropy(mnemonic: string | string[], wordlist?: string[]): Entropy
+        static mnemonicToSeed(mnemonic: string | string[], password?: string): Uint8Array
+        static mnemonicToExtendedPrivateKey(mnemonic: string | string[], password?: string): ExtendedPrivateKey
+        static isCollidingChecksum(entropy: Entropy): boolean
+        static getMnemonicType(mnemonic: string | string[], wordlist?: string[]): number
+        
+        static DEFAULT_WORDLIST: string[]
+        static ENGLISH_WORDLIST: string[]
+        
+        static MnemonicType: {
+            UNKNOWN: -1,
+            LEGACY: 0,
+            BIP39: 1,
+        }
+    }
 
     class Address extends Serializable {
         static fromString(str: string): Address
@@ -179,6 +236,7 @@ declare namespace Nimiq {
         toUserFriendlyAddress(): string
         static fromUserFriendlyAddress(str: string): Address
         equals(o: Address): boolean
+        serialize(): SerialBuffer
     }
 
     class Account {
@@ -217,15 +275,15 @@ declare namespace Nimiq {
 
     abstract class Transaction {
         sender: Address
-        senderType: number
+        senderType: Account.Type
         recipient: Address
-        recipientType: number
+        recipientType: Account.Type
         value: number
         fee: number
         feePerByte: number
         networkId: number
         validityStartHeight: number
-        flags: number
+        flags: Transaction.Flag
         hasFlag(flag: number): boolean
         data: Uint8Array
         proof: Uint8Array
@@ -240,7 +298,7 @@ declare namespace Nimiq {
             EXTENDED: 1
         }
         static Flag: {
-            NONE: 1
+            NONE: 0
             CONTRACT_CREATION: 0b1
         }
     }
@@ -266,7 +324,9 @@ declare namespace Nimiq {
             recipient: Address,
             value: number,
             fee: number,
-            validityStartHeight: number
+            validityStartHeight: number,
+            signature?: Signature,
+            networkId?: number
         )
         senderPubKey: PublicKey
         signature: Signature
@@ -275,14 +335,16 @@ declare namespace Nimiq {
     class ExtendedTransaction extends Transaction {
         constructor(
             sender: Address,
-            senderType: number,
+            senderType: Account.Type,
             recipient: Address,
-            recipientType: number,
+            recipientType: Account.Type,
             value: number,
             fee: number,
             validityStartHeight: number,
-            flags: number,
-            data: Uint8Array
+            flags: Transaction.Flag | number,
+            data: Uint8Array,
+            proof?: Uint8Array,
+            networkId?: number
         )
     }
 
@@ -366,12 +428,16 @@ declare namespace Nimiq {
         static test(): void
         static dev(): void
         static bounty(): void
+
         static NETWORK_ID: number
         static NETWORK_NAME: string
         static GENESIS_BLOCK: Block
         static GENESIS_HASH: Hash
         static GENESIS_ACCOUNTS: string
         static SEED_PEERS: PeerAddress[]
+        static CONFIGS: {
+            [key: string]: { NETWORK_ID: number }
+        }
     }
 
     class CloseType {}
