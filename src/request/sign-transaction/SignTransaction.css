@@ -56,8 +56,14 @@
     display: inline;
 }
 
-#enter-passphrase .passphrase-input {
+.confirm-form .passphrase-input {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
+    margin-bottom: 0;
+}
+
+.confirm-form #error {
+    margin: 1rem 0 2rem 0;
+    color: var(--error-color);
 }

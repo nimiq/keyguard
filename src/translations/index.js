@@ -12,7 +12,7 @@ const TRANSLATIONS = {
         'sign-tx-byline': 'Please confirm the following transaction:',
         'sign-tx-byline-passphrase': 'Enter your passphrase below to authorize this transaction:',
         'sign-tx-error-wrong-passphrase': 'Wrong Passphrase, please try again',
-        'sign-tx-button-enter-pin': 'Enter PIN',
+        'sign-tx-button-confirm': 'Confirm transaction',
 
         'privacy-agent-headline': 'Are you being watched?',
         'privacy-agent-info': 'Now is the perfect time to assess your surroundings. Nearby windows? Hidden cameras? '
@@ -65,7 +65,7 @@ const TRANSLATIONS = {
         'sign-tx-byline': 'Bitte bestätige die folgende Überweisung:',
         'sign-tx-byline-passphrase': 'Bitte geb deine Passphrase ein, um die Überweisung zu bestätigen:',
         'sign-tx-error-wrong-passphrase': 'Falsche Passphrase, bitte versuche es nochmal',
-        'sign-tx-button-enter-pin': 'PIN eingeben',
+        'sign-tx-button-confirm': 'Überweisung bestätigen',
 
         'privacy-agent-headline': 'Werden sie beobachtet?',
         'privacy-agent-info': 'Jetzt ist eine gute Zeit um sich einmal umzuschauen. Gibt es Fenster in der Nähe? '

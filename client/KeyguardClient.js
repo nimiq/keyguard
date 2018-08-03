@@ -55,33 +55,19 @@ class KeyguardClient {
     }
 
     /**
-     * @param {TransactionRequest} txRequest
-     * @returns {Promise<SignedTransactionResult>}
+     * @param {SignTransactionRequest} request
+     * @returns {Promise<SignTransactionResult>}
      */
-    async signTransaction(txRequest) {
-        return this._startPopup('sign-transaction', [txRequest]);
+    async signTransaction(request) {
+        return this._startPopup('sign-transaction', [request]);
     }
 
     /**
-     * @param {string | Uint8Array} message - A utf-8 string or byte array of max 255 bytes
-     * @param {string} signer - The address of the signer
-     * @returns {Promise<SignedMessageResult>}
+     * @param {SignMessageRequest} request
+     * @returns {Promise<SignMessageResult>}
      */
-    async signMessage(message, signer) {
-        /** @type {MessageRequest} */
-        const msgRequest = {
-            message,
-            signer,
-        };
-        return this._startPopup('sign-message', [msgRequest]);
-    }
-
-    /**
-     * @param {string} address
-     * @returns {Promise<void>}
-     */
-    async changeEncryption(address) {
-        return this._startPopup('change-encryption', [address]);
+    async signMessage(request) {
+        return this._startPopup('sign-message', [request]);
     }
 
     /**

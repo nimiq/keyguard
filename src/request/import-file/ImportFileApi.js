@@ -4,6 +4,7 @@
 /* global PinInput */
 /* global Nimiq */
 /* global Key */
+/* global KeyInfo */
 /* global KeyStore */
 
 class ImportFileApi extends PopupApi {
@@ -107,7 +108,7 @@ class ImportFileApi extends PopupApi {
         else this.resolve(keyInfo);
     }
 
-    /**im
+    /**
      * @param {string} passphraseOrPin
      * @returns {Promise<?KeyInfo>}
      */
@@ -120,12 +121,7 @@ class ImportFileApi extends PopupApi {
             const key = new Key(secret, Key.Type.LEGACY);
             await KeyStore.instance.put(key, encryptionKey);
 
-            return /** @type {KeyInfo} */ {
-                id: key.id,
-                type: key.type,
-                encrypted: true,
-                userFriendlyId: key.userFriendlyId,
-            };
+            return new KeyInfo(key.id, key.type, /* encrypted */ true);
         } catch (e) {
             this.$loading.style.display = 'none';
             return null;

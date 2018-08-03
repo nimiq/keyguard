@@ -1,4 +1,4 @@
-/* global Key */
+/* global KeyInfo */
 
 class CookieJar { // eslint-disable-line no-unused-vars
     /**
@@ -26,7 +26,6 @@ class CookieJar { // eslint-disable-line no-unused-vars
         }
 
         const match = document.cookie.match(new RegExp('k=([^;]+)'));
-
         if (match && match[1]) {
             return this._decodeCookie(match[1]);
         }
@@ -55,17 +54,10 @@ class CookieJar { // eslint-disable-line no-unused-vars
         if (!keys) return []; // Make TS happy (match() can potentially return NULL)
 
         return keys.map(key => {
-            const type = parseInt(key[0], 10);
+            const type = /** @type {Key.Type} */ (parseInt(key[0], 10));
             const encrypted = key[1] === '1';
             const id = key.substr(2);
-            const userFriendlyId = Key.idToUserFriendlyId(id);
-
-            return /** @type {KeyInfo} */ ({
-                id,
-                type,
-                encrypted,
-                userFriendlyId,
-            });
+            return new KeyInfo(id, type, encrypted);
         });
     }
 }

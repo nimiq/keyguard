@@ -1,10 +1,3 @@
-type KeyInfo = {
-    id: string,
-    type: Key.Type,
-    encrypted: boolean,
-    userFriendlyId: string,
-}
-
 type KeyRecord = {
     id: string,
     type: Key.Type,
@@ -45,6 +38,16 @@ type SignTransactionRequest = {
     data: string
     flags: number
     network: string
+}
+
+type ParsedSignTransactionRequest = {
+    keyInfo: KeyInfo
+    keyPath: string
+    transaction: Nimiq.ExtendedTransaction
+
+    keyLabel?: string
+    senderLabel?: string
+    recipientLabel?: string
 }
 
 type SignTransactionResult = {

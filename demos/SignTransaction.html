@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SignTransaction</title>
+</head>
+<body>
+<link href="../src/nimiq-style.css" rel="stylesheet">
+<script src="https://cdn.nimiq-network.com/branches/key-derivation/web.js"></script>
+<script src="../src/lib/Key.js"></script>
+<script src="../src/lib/Utf8Tools.js"></script>
+
+<div>
+    <button>Sign Transaction</button>
+    <br>
+    <br>
+    <div class="center">The passphrase is 'password123'</div>
+</div>
+
+<script>
+    (async () => {
+        // Because the mocked KeyStore.prototype.get function below is defined in this
+        // window's scope, Nimiq also needs to be defined and initialized here
+        await Nimiq.WasmHelper.doImportBrowser();
+        Nimiq.GenesisConfig.test();
+    })();
+
+    document.querySelector('button').addEventListener('click', async () => {
+        // todo fix behavior on second click
+        const keyguard = window.open('../src/request/sign-transaction/', 'keyguard');
+
+        // We need this check because we call the rpcServer object directly and not via RPC Client
+        function checkIfKeyguardReady(resolve) {
+            if (keyguard.rpcServer !== undefined) {
+                resolve();
+            } else {
+                self.setTimeout(() => checkIfKeyguardReady(resolve), 25);
+            }
+        }
+
+        await new Promise(res => checkIfKeyguardReady(res));
+
+        // Generate a random key and put it into the KeyStore.
+        const secret = Nimiq.Entropy.generate().serialize();
+        const key = new Key(secret, Key.Type.BIP39);
+        const passphrase = Nimiq.BufferUtils.fromAscii('password123');
+        await keyguard.KeyStore.instance.put(key, passphrase);
+
+        const path = "m/0'/0'";
+        const txRequest = {
+            keyId: key.id,
+            keyPath: path,
+
+            sender: key.deriveAddress(path).toUserFriendlyAddress(),
+            senderLabel: 'Spending Account',
+            recipient: 'NQ82 HP54 C9D4 2FAG 69QD 6Q71 LURR 5187 0V3X',
+            recipientLabel: 'amazon.com',
+            value: 100000,
+            fee: 138,
+            validityStartHeight: 0,
+            network: 'test',
+        };
+
+        try {
+            const result = await keyguard.rpcServer.request(txRequest);
+            console.log('KeyGuard result:', result);
+
+            const publicKey = Nimiq.PublicKey.unserialize(Nimiq.BufferUtils.fromBase64(result.publicKey));
+            const signature = Nimiq.Signature.unserialize(Nimiq.BufferUtils.fromBase64(result.signature));
+            const tx = new Nimiq.BasicTransaction(
+                publicKey,
+                Nimiq.Address.fromUserFriendlyAddress(txRequest.recipient),
+                txRequest.value,
+                txRequest.fee,
+                txRequest.validityStartHeight,
+                signature,
+                Nimiq.GenesisConfig.CONFIGS[txRequest.network].NETWORK_ID
+            );
+            console.log(`Tx: ${tx}`);
+            console.log(`Tx valid: ${tx.verify()}`);
+        } catch (e) {
+            console.error(e);
+        }
+
+        // Delete key.
+        await keyguard.KeyStore.instance.remove(key.id);
+
+        keyguard.close();
+    });
+</script>
+
+</body>
+</html>

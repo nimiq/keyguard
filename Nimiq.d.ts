@@ -41,10 +41,12 @@ declare namespace Nimiq {
     }
 
     class BufferUtils {
-        static fromAscii(buf: string): Uint8Array
-        static fromBase64(buf: string): Uint8Array
-        static fromHex(buf: string): Uint8Array
+        static fromAscii(buf: string): SerialBuffer
+        static fromBase64(buf: string): SerialBuffer
+        static fromHex(buf: string): SerialBuffer
         static toHex(buf: Uint8Array): string
+        static toAscii(buf: Uint8Array): string
+        static toBase64(buf: Uint8Array): string
         static equals(buf1: Uint8Array, buf2: Uint8Array): boolean
     }
 
@@ -322,7 +324,9 @@ declare namespace Nimiq {
             recipient: Address,
             value: number,
             fee: number,
-            validityStartHeight: number
+            validityStartHeight: number,
+            signature?: Signature,
+            networkId?: number
         )
         senderPubKey: PublicKey
         signature: Signature
@@ -432,10 +436,7 @@ declare namespace Nimiq {
         static GENESIS_ACCOUNTS: string
         static SEED_PEERS: PeerAddress[]
         static CONFIGS: {
-            main: { NETWORK_ID: number }
-            test: { NETWORK_ID: number }
-            dev: { NETWORK_ID: number }
-            bounty: { NETWORK_ID: number }
+            [key: string]: { NETWORK_ID: number }
         }
     }
 
