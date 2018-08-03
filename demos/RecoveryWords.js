@@ -1,8 +1,8 @@
 /* global TRANSLATIONS */
+/* global Nimiq */
 /* global I18n */
 /* global LanguagePicker */
 /* global RecoveryWords */
-/* global MnemonicPhrase */
 I18n.initialize(TRANSLATIONS, 'en');
 const languagePicker = new LanguagePicker();
 document.body.appendChild(languagePicker.getElement());
@@ -42,8 +42,6 @@ input.on(RecoveryWords.Events.COMPLETE, (/** @param {Array<string>} words */ wor
 const recoveryWords = new RecoveryWords(null, false);
 
 (async () => {
-    // Because the mocked KeyStore.prototype.get function below is defined in this
-    // window's scope, Nimiq also needs to be defined and initialized here
     await Nimiq.WasmHelper.doImportBrowser();
     Nimiq.GenesisConfig.test();
     recoveryWords.entropy = Nimiq.Entropy.generate();
@@ -68,25 +66,23 @@ function putWord(field, word, index) {
 }
 
 $resetFields.addEventListener('click', () => {
-    input.$fields.forEach((field, index) => {
+    input.$fields.forEach(field => {
         field.dom.input.value = '';
         field._onBlur();
-        field._showInput();
     });
     document.querySelectorAll('button').forEach(button => button.removeAttribute('disabled'));
 });
 
 $fillRandomly.addEventListener('click', () => {
     input.$fields.forEach((field, index) => {
-        putWord(field, MnemonicPhrase.DEFAULT_WORDLIST[Math.floor(Math.random() * 2048)], index);
+        putWord(field, Nimiq.MnemonicUtils.DEFAULT_WORDLIST[Math.floor(Math.random() * 2048)], index);
     });
     document.querySelectorAll('button.fill').forEach(button => button.setAttribute('disabled', 'disabled'));
 });
 
 $fillCorrectly.addEventListener('click', () => {
-    /** @type {Uint8Array} */
-    const randomKey = (window.crypto.getRandomValues(new Uint8Array(32)));
-    const words = MnemonicPhrase.keyToMnemonic(randomKey).split(' ');
+    const randomEntropy = Nimiq.Entropy.generate();
+    const words = Nimiq.MnemonicUtils.entropyToMnemonic(randomEntropy);
     for (let i = 0; i < 24; i++) {
         putWord(input.$fields[i], words[i], i);
     }
