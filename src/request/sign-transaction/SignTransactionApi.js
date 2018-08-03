@@ -101,7 +101,7 @@ class SignTransactionApi extends PopupApi { // eslint-disable-line no-unused-var
             flags,
             data,
             new Uint8Array(0), // proof
-            networkId
+            networkId,
         );
     }
 }

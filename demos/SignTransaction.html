@@ -3,29 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <title>SignTransaction</title>
+    <link href="../src/nimiq-style.css" rel="stylesheet">
+    <script src="https://cdn.nimiq-network.com/branches/key-derivation/web.js"></script>
+    <script src="../src/lib/Key.js"></script>
+
+    <style>
+        .row {
+            margin: 2rem 0;
+        }
+
+        label, input {
+            display: block;
+            margin: 5px;
+        }
+    </style>
 </head>
 <body>
-<link href="../src/nimiq-style.css" rel="stylesheet">
-<script src="https://cdn.nimiq-network.com/branches/key-derivation/web.js"></script>
-<script src="../src/lib/Key.js"></script>
-<script src="../src/lib/Utf8Tools.js"></script>
 
-<div>
-    <button>Sign Transaction</button>
-    <br>
-    <br>
-    <div class="center">The passphrase is 'password123'</div>
-</div>
+<form>
+    <div class="row">
+        <label>Transaction fee (satoshi)</label>
+        <input id="fee" value="0">
+    </div>
+
+    <div class="row">
+        <label>Transaction data (ascii)</label>
+        <input id="data" value="">
+    </div>
+
+    <div class="row">
+        <label>Key passphrase</label>
+        <input id="passphrase" value="password123">
+    </div>
+
+    <button type="button">Sign transaction</button>
+</form>
 
 <script>
     (async () => {
-        // Because the mocked KeyStore.prototype.get function below is defined in this
-        // window's scope, Nimiq also needs to be defined and initialized here
         await Nimiq.WasmHelper.doImportBrowser();
         Nimiq.GenesisConfig.test();
     })();
 
     document.querySelector('button').addEventListener('click', async () => {
+        const fee = parseInt(document.querySelector('#fee').value) || 0;
+        const data = document.querySelector('#data').value || '';
+        const passphrase = document.querySelector('#passphrase').value || '';
+        signTransaction(passphrase, fee, data);
+    });
+
+    async function signTransaction(keyPassphrase, txFee, txData) {
         // todo fix behavior on second click
         const keyguard = window.open('../src/request/sign-transaction/', 'keyguard');
 
@@ -43,7 +70,7 @@
         // Generate a random key and put it into the KeyStore.
         const secret = Nimiq.Entropy.generate().serialize();
         const key = new Key(secret, Key.Type.BIP39);
-        const passphrase = Nimiq.BufferUtils.fromAscii('password123');
+        const passphrase = keyPassphrase ? Nimiq.BufferUtils.fromAscii(keyPassphrase) : undefined;
         await keyguard.KeyStore.instance.put(key, passphrase);
 
         const path = "m/0'/0'";
@@ -55,25 +82,32 @@
             senderLabel: 'Spending Account',
             recipient: 'NQ82 HP54 C9D4 2FAG 69QD 6Q71 LURR 5187 0V3X',
             recipientLabel: 'amazon.com',
-            value: 100000,
-            fee: 138,
+            value: 12300000,
+            fee: txFee,
+            data: Nimiq.BufferUtils.toBase64(Nimiq.BufferUtils.fromAscii(txData)),
             validityStartHeight: 0,
             network: 'test',
         };
 
+        console.log(txRequest);
+
         try {
             const result = await keyguard.rpcServer.request(txRequest);
-            console.log('KeyGuard result:', result);
+            console.log('Keyguard result', result);
 
             const publicKey = Nimiq.PublicKey.unserialize(Nimiq.BufferUtils.fromBase64(result.publicKey));
             const signature = Nimiq.Signature.unserialize(Nimiq.BufferUtils.fromBase64(result.signature));
-            const tx = new Nimiq.BasicTransaction(
-                publicKey,
+            const tx = new Nimiq.ExtendedTransaction(
+                Nimiq.Address.fromUserFriendlyAddress(txRequest.sender),
+                Nimiq.Account.Type.BASIC,
                 Nimiq.Address.fromUserFriendlyAddress(txRequest.recipient),
+                Nimiq.Account.Type.BASIC,
                 txRequest.value,
                 txRequest.fee,
                 txRequest.validityStartHeight,
-                signature,
+                Nimiq.Transaction.Flag.NONE,
+                Nimiq.BufferUtils.fromAscii(txData),
+                Nimiq.SignatureProof.singleSig(publicKey, signature).serialize(),
                 Nimiq.GenesisConfig.CONFIGS[txRequest.network].NETWORK_ID
             );
             console.log(`Tx: ${tx}`);
@@ -84,9 +118,8 @@
 
         // Delete key.
         await keyguard.KeyStore.instance.remove(key.id);
-
         keyguard.close();
-    });
+    }
 </script>
 
 </body>

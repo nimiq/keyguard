@@ -1,5 +1,6 @@
 /* global Nimiq */
 /* global I18n */
+/* global PassphraseInput */
 class SetPassphrase extends Nimiq.Observable {
     /**
      * @param {?HTMLFormElement} [$el]
@@ -12,20 +13,22 @@ class SetPassphrase extends Nimiq.Observable {
         this._checkEnableContinue = this._checkEnableContinue.bind(this);
 
         /** @type {HTMLFormElement} */
-        const $passphraseFirst = (this.$el.querySelector(".passphrase-first"));
+        const $passphraseFirst = (this.$el.querySelector('.passphrase-first'));
 
         /** @type {HTMLFormElement} */
-        const $passphraseSecond = (this.$el.querySelector(".passphrase-second"));
+        const $passphraseSecond = (this.$el.querySelector('.passphrase-second'));
 
         /** @type {HTMLFormElement} */
-        this.$confirmButton = (this.$el.querySelector(".confirm-passphrase"));
+        this.$confirmButton = (this.$el.querySelector('.confirm-passphrase'));
 
         /** @type {PassphraseInput} */
-        this._passphraseFirst = new PassphraseInput($passphraseFirst, I18n.translatePhrase('passphrase-placeholder'), true);
+        this._passphraseFirst = new PassphraseInput($passphraseFirst,
+            I18n.translatePhrase('passphrase-placeholder'), true);
         this._passphraseFirst.on(PassphraseInput.Events.VALID, this._checkEnableContinue);
 
         /** @type {PassphraseInput} */
-        this._passphraseSecond = new PassphraseInput($passphraseSecond, I18n.translatePhrase('repeat-passphrase-placeholder'), false);
+        this._passphraseSecond = new PassphraseInput($passphraseSecond,
+            I18n.translatePhrase('repeat-passphrase-placeholder'), false);
         this._passphraseSecond.on(PassphraseInput.Events.VALID, this._checkEnableContinue);
 
         this.$el.addEventListener('submit', event => this._submit(event));

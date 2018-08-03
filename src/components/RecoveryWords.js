@@ -1,8 +1,8 @@
 /* global Nimiq */
 /* global I18n */
-/* global MnemonicPhrase */
 /* global RecoveryWordsInputField */
 /* global AnimationUtils */
+
 class RecoveryWords extends Nimiq.Observable {
     /**
      *
@@ -21,8 +21,6 @@ class RecoveryWords extends Nimiq.Observable {
      */
     set entropy(entropy) {
         const words = Nimiq.MnemonicUtils.entropyToMnemonic(entropy, Nimiq.MnemonicUtils.DEFAULT_WORDLIST);
-        // this.$wordsContainer.querySelectorAll('.word-section').forEach((elem) => this.$wordsContainer.removeChild(elem));
-
         for (let i = 0; i < 24; i++) {
             this.$fields[i].textContent = words[i];
         }
@@ -33,7 +31,7 @@ class RecoveryWords extends Nimiq.Observable {
      * @param {boolean} input
      * @returns {HTMLElement}
      * */
-    _createElement($el, input=true) {
+    _createElement($el, input = true) {
         $el = $el || document.createElement('div');
         $el.classList.add('recovery-words');
 
@@ -133,5 +131,5 @@ class RecoveryWords extends Nimiq.Observable {
 }
 
 RecoveryWords.Events = {
-    COMPLETE: 'recovery-words-complete'
+    COMPLETE: 'recovery-words-complete',
 };

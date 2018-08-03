@@ -71,17 +71,18 @@ class ChooseIdenticon extends Nimiq.Observable {
     generateIdenticons() {
         this.$el.classList.remove('active');
 
-        /** @type {{ [address: string]: Nimiq.Entropy}} */
+        /** @type {{[address: string]: Nimiq.Entropy}} */
         const entropies = {};
 
         for (let i = 0; i < 7; i++) {
             const entropy = Nimiq.Entropy.generate();
-            if (Nimiq.MnemonicUtils.isCollidingChecksum(entropy)) {
-                i--;
-                continue;
+            if (!Nimiq.MnemonicUtils.isCollidingChecksum(entropy)) {
+                const address = entropy.toExtendedPrivateKey().derive(0).toAddress().toUserFriendlyAddress();
+                entropies[address] = entropy;
+            } else {
+                // Try again.
+                i -= 1;
             }
-            const address = entropy.toExtendedPrivateKey().derive(0).toAddress().toUserFriendlyAddress();
-            entropies[address] = entropy;
         }
 
         this._volatileEntropies = entropies;
@@ -124,10 +125,7 @@ class ChooseIdenticon extends Nimiq.Observable {
      */
     _onSelectionConfirmed() {
         if (!this._selectedAddress) throw new Error('Invalid state');
-        this.fire(
-            ChooseIdenticon.Events.CHOOSE_IDENTICON,
-            this._volatileEntropies[this._selectedAddress],
-        )
+        this.fire(ChooseIdenticon.Events.CHOOSE_IDENTICON, this._volatileEntropies[this._selectedAddress]);
     }
 
     _clearSelection() {

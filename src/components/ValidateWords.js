@@ -1,5 +1,4 @@
 /* global Nimiq */
-/* global MnemonicPhrase */
 class ValidateWords extends Nimiq.Observable {
     /**
      * @param {HTMLElement} [$el]

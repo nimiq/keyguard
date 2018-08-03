@@ -1,7 +1,6 @@
 /* global Nimiq */
-/* global AnimationUtils */
 /* global I18n */
-
+/* global PassphraseInput */
 /**
  * @deprecated
  */
@@ -18,7 +17,8 @@ class PassphraseConfirm extends Nimiq.Observable {
         this._isPassphraseSetter = isPassphraseSetter;
         this.$el = PassphraseConfirm._createElement($el);
         this.$passphraseInput = /** @type {HTMLElement} */ (this.$el.querySelector('.passphrase-input'));
-        this._passphraseInput = new PassphraseInput(this.$passphraseInput, I18n.translatePhrase('passphrase-placeholder'), isPassphraseSetter);
+        this._passphraseInput = new PassphraseInput(this.$passphraseInput,
+            I18n.translatePhrase('passphrase-placeholder'), isPassphraseSetter);
         this.$confirmButton = /** @type {HTMLButtonElement} */ (this.$el.querySelector('button'));
 
         this.$el.addEventListener('submit', event => this._submit(event));

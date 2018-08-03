@@ -2,18 +2,22 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Create</title>
+    <title>Import</title>
 </head>
 <body>
 <link href="../src/nimiq-style.css" rel="stylesheet">
 
 <div>
-    <button>Create Account</button>
+    <button id="import-words">Import from words</button>
+    <button id="import-file">Import from file</button>
 </div>
 
 <script>
-    document.querySelector('button').addEventListener('click', async () => {
-        const keyguard = window.open('../src/request/create/');
+    document.querySelector('#import-words').addEventListener('click', () => requestImport('words'));
+    document.querySelector('#import-file').addEventListener('click', () => requestImport('file'));
+
+    async function requestImport(type) {
+        const keyguard = window.open(`../src/request/import-${type}/`, 'keyguard');
 
         // We need this check because we call the rpcServer object directly and not via RPC Client
         function checkIfKeyguardReady(resolve) {
@@ -33,7 +37,7 @@
         }
 
         keyguard.close();
-    });
+    }
 </script>
 
 </body>

@@ -1,13 +1,14 @@
 /* global Nimiq */
-/* global RecoveryWords */
-/* global ValidateWords */
 /* global ChooseIdenticon */
+/* global SetPassphrase */
+/* global DownloadKeyfile */
 /* global PrivacyAgent */
-/* global PassphraseInput */
+/* global BackupRecoveryWords */
+/* global ValidateWords */
 /* global Key */
 /* global KeyStore */
 
-class CreateHigh {
+class Create {
     /**
      * @param {CreateRequest} request
      * @param {Function} resolve
@@ -19,27 +20,22 @@ class CreateHigh {
 
         // set html elements
         /** @type {HTMLElement} */
-        this.$chooseIdenticon = (document.getElementById(CreateHigh.Pages.CHOOSE_IDENTICON));
+        this.$chooseIdenticon = (document.getElementById(Create.Pages.CHOOSE_IDENTICON));
 
         /** @type {HTMLElement} */
-        this.$downloadKeyfile = (document.getElementById(CreateHigh.Pages.DOWNLOAD_KEYFILE));
+        this.$downloadKeyfile = (document.getElementById(Create.Pages.DOWNLOAD_KEYFILE));
 
         /** @type {HTMLElement} */
-        this.$privacyAgent = (document.getElementById(CreateHigh.Pages.PRIVACY_AGENT));
+        this.$privacyAgent = (document.getElementById(Create.Pages.PRIVACY_AGENT));
 
         /** @type {HTMLElement} */
-        this.$recoveryWords = (document.getElementById(CreateHigh.Pages.RECOVERY_WORDS));
+        this.$recoveryWords = (document.getElementById(Create.Pages.RECOVERY_WORDS));
 
         /** @type {HTMLElement} */
-        this.$validateWords = (document.getElementById(CreateHigh.Pages.VALIDATE_WORDS));
+        this.$validateWords = (document.getElementById(Create.Pages.VALIDATE_WORDS));
 
         /** @type {HTMLFormElement} */
-        this.$setPassphrase = (document.getElementById(CreateHigh.Pages.SET_PASSPHRASE));
-
-
-
-        /** @type {HTMLDivElement} */
-        const $passphraseConfirm = (this.$setPassphrase.querySelector('.confirm'));
+        this.$setPassphrase = (document.getElementById(Create.Pages.SET_PASSPHRASE));
 
         // create components
         this._chooseIdenticon = new ChooseIdenticon(this.$chooseIdenticon);
@@ -60,34 +56,34 @@ class CreateHigh {
                 this._recoveryWords.entropy = entropy;
                 this._validateWords.entropy = entropy;
                 this._validateWords.reset();
-                window.location.hash = CreateHigh.Pages.SET_PASSPHRASE;
+                window.location.hash = Create.Pages.SET_PASSPHRASE;
             },
         );
 
-        this._setPassphrase.on(SetPassphrase.Events.CHOOSE, /** @param {string} passphrase */ (passphrase) => {
+        this._setPassphrase.on(SetPassphrase.Events.CHOOSE, /** @param {string} passphrase */ passphrase => {
             this._passphrase = passphrase;
             this._setPassphrase.reset();
-            window.location.hash = CreateHigh.Pages.DOWNLOAD_KEYFILE;
+            window.location.hash = Create.Pages.DOWNLOAD_KEYFILE;
         });
 
         this._downloadKeyfile.on(DownloadKeyfile.Events.DOWNLOADED, () => {
-            window.location.hash = CreateHigh.Pages.PRIVACY_AGENT;
+            window.location.hash = Create.Pages.PRIVACY_AGENT;
         });
 
         this._downloadKeyfile.on(DownloadKeyfile.Events.CONTINUE, () => {
-            window.location.hash = CreateHigh.Pages.PRIVACY_AGENT;
+            window.location.hash = Create.Pages.PRIVACY_AGENT;
         });
 
         this._privacyAgent.on(PrivacyAgent.Events.CONFIRM, () => {
-            window.location.hash = CreateHigh.Pages.RECOVERY_WORDS;
+            window.location.hash = Create.Pages.RECOVERY_WORDS;
         });
 
         this._recoveryWords.on(BackupRecoveryWords.Events.CONTINUE, () => {
-            window.location.hash = CreateHigh.Pages.VALIDATE_WORDS;
+            window.location.hash = Create.Pages.VALIDATE_WORDS;
         });
 
         this._validateWords.on(ValidateWords.Events.BACK, () => {
-            window.location.hash = CreateHigh.Pages.RECOVERY_WORDS;
+            window.location.hash = Create.Pages.RECOVERY_WORDS;
         });
 
         this._validateWords.on(ValidateWords.Events.VALIDATED, async () => {
@@ -112,13 +108,13 @@ class CreateHigh {
 
     run() {
         // go to start page
-        window.location.hash = CreateHigh.Pages.CHOOSE_IDENTICON;
+        window.location.hash = Create.Pages.CHOOSE_IDENTICON;
 
         this._chooseIdenticon.generateIdenticons();
     }
 }
 
-CreateHigh.Pages = {
+Create.Pages = {
     CHOOSE_IDENTICON: 'choose-identicon',
     DOWNLOAD_KEYFILE: 'download-keyfile',
     PRIVACY_AGENT: 'privacy-agent',

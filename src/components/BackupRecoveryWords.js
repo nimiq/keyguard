@@ -1,5 +1,6 @@
 /* global Nimiq */
 /* global I18n */
+/* global RecoveryWords */
 class BackupRecoveryWords extends Nimiq.Observable {
     /**
      * @param {?HTMLElement} [$el]
@@ -11,11 +12,11 @@ class BackupRecoveryWords extends Nimiq.Observable {
         this.$el = BackupRecoveryWords._createElement($el);
 
         /** @type {HTMLElement} */
-        this.$confirmButton = (this.$el.querySelector(".continue"));
-        this.$container = (this.$el.querySelector(".words-container-container"));
-
+        this.$container = (this.$el.querySelector('.words-container-container'));
         this._recoveryWords = new RecoveryWords(this.$container, false);
 
+        /** @type {HTMLElement} */
+        this.$confirmButton = (this.$el.querySelector('.continue'));
         this.$confirmButton.addEventListener('click', () => {
             this.fire(BackupRecoveryWords.Events.CONTINUE);
         });

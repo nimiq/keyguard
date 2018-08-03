@@ -9,7 +9,9 @@ funcs.find('src', '.js').forEach(file => {
     class2Path.set(className, file);
 });
 class2Path.set('TRANSLATIONS', 'src/translations/index.js');
-class2Path.set('Nimiq', 'https://cdn.nimiq.com/web-offline.js');
+// Use this once key-derivation branch is merged:
+// class2Path.set('Nimiq', 'https://cdn.nimiq.com/web-offline.js');
+class2Path.set('Nimiq', 'https://cdn.nimiq-network.com/branches/key-derivation/web-offline.js');
 class2Path.delete('index');
 
 const requests = funcs.listDirectories('src/request');

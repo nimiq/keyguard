@@ -1,11 +1,10 @@
-/* global PopupApi */
-/* global RecoveryWords */
-/* global PassphraseInput */
-/* global PrivacyAgent */
 /* global Nimiq */
 /* global Key */
 /* global KeyStore */
-/* global PassphraseConfirm */
+/* global PopupApi */
+/* global RecoveryWords */
+/* global PrivacyAgent */
+/* global SetPassphrase */
 
 class ImportWordsApi extends PopupApi {
     constructor() {
@@ -43,18 +42,18 @@ class ImportWordsApi extends PopupApi {
 
         // Components
         const privacyAgent = new PrivacyAgent($privacyAgent);
-        const recoveryWordsInput = new RecoveryWords($wordsInput, true);
+        const recoveryWords = new RecoveryWords($wordsInput, true);
         const setPassphrase = new SetPassphrase($setPassphrase);
 
         // Events
         privacyAgent.on(PrivacyAgent.Events.CONFIRM, () => {
             window.location.hash = ImportWordsApi.Pages.ENTER_WORDS;
-            recoveryWordsInput.focus();
+            recoveryWords.focus();
         });
 
-        recoveryWordsInput.on(RecoveryWords.Events.COMPLETE, this._onRecoveryWordsEntered.bind(this));
+        recoveryWords.on(RecoveryWords.Events.COMPLETE, this._onRecoveryWordsEntered.bind(this));
 
-        setPassphrase.on(SetPassphrase.Events.CHOOSE, /** @param {string} passphrase */ async (passphrase) => {
+        setPassphrase.on(SetPassphrase.Events.CHOOSE, /** @param {string} passphrase */ async passphrase => {
             document.body.classList.add('loading');
 
             if (this._key) {
@@ -111,5 +110,5 @@ class ImportWordsApi extends PopupApi {
 ImportWordsApi.Pages = {
     PRIVACY_AGENT: 'privacy',
     ENTER_WORDS: 'words',
-    SET_PASSPHRASE: 'set-passphrase'
+    SET_PASSPHRASE: 'set-passphrase',
 };

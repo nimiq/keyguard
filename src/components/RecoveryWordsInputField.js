@@ -1,8 +1,8 @@
 /* global Nimiq */
 /* global I18n */
 /* global AutoComplete */
-/* global MnemonicPhrase */
 /* global AnimationUtils */
+
 class RecoveryWordsInputField extends Nimiq.Observable {
     /**
      *
@@ -68,7 +68,7 @@ class RecoveryWordsInputField extends Nimiq.Observable {
             selector: this.dom.input,
             source: /** @param{string} term @param{function} response */ (term, response) => {
                 term = term.toLowerCase();
-                const list = MnemonicPhrase.DEFAULT_WORDLIST.filter(word => word.startsWith(term));
+                const list = Nimiq.MnemonicUtils.DEFAULT_WORDLIST.filter(word => word.startsWith(term));
                 response(list);
             },
             onSelect: this._focusNext.bind(this),
@@ -126,7 +126,7 @@ class RecoveryWordsInputField extends Nimiq.Observable {
      * @param {boolean} [setFocusToNextInput]
      */
     _checkValidity(setFocusToNextInput = false) {
-        if (MnemonicPhrase.DEFAULT_WORDLIST.indexOf(this.value.toLowerCase()) >= 0) {
+        if (Nimiq.MnemonicUtils.DEFAULT_WORDLIST.indexOf(this.value.toLowerCase()) >= 0) {
             this.dom.element.classList.add('complete');
             this.complete = true;
             this.fire(RecoveryWordsInputField.Events.VALID, this);

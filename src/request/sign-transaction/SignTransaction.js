@@ -55,7 +55,8 @@ class SignTransaction {
         }
 
         // Set value and fee.
-        $value.textContent = Nimiq.Policy.satoshisToCoins(transaction.value).toString();
+        const total = transaction.value + transaction.fee;
+        $value.textContent = Nimiq.Policy.satoshisToCoins(total).toString();
         if (transaction.fee > 0) {
             $fee.textContent = Nimiq.Policy.satoshisToCoins(transaction.fee).toString();
             /** @type {HTMLDivElement} */
@@ -65,11 +66,11 @@ class SignTransaction {
 
         // Set transaction extra data.
         if (transaction.data.byteLength > 0) {
-            // FIXME Detect and use proper encoding
+            // FIXME Detect and use proper encoding.
             $data.textContent = Nimiq.BufferUtils.toAscii(transaction.data);
             /** @type {HTMLDivElement} */
-            const $extraDataSection = ($transaction.querySelector('.extra-data-section'));
-            $extraDataSection.classList.remove('display-none');
+            const $dataSection = ($transaction.querySelector('.data-section'));
+            $dataSection.classList.remove('display-none');
         }
 
         /** @type {HTMLFormElement} */
