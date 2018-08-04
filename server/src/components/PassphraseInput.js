@@ -15,10 +15,11 @@ class PassphraseInput extends Nimiq.Observable {
         this.$inputContainer = /** @type {HTMLElement} */ (this.$el.querySelector('.input-container'));
         this.$input = /** @type {HTMLInputElement} */ (this.$el.querySelector('input.password'));
         this.$eyeButton = /** @type {HTMLElement} */ (this.$el.querySelector('.eye-button'));
-        this.$confirmButton = /** @type {HTMLButtonElement} */ (this.$el.querySelector('button'));
 
-        this.$strengthIndicator = /** @type {HTMLElement} */ (this.$el.querySelector('.strength-indicator'));
-        this.$strengthIndicatorContainer = /** @type {HTMLElement} */ (this.$el.querySelector('.strength-indicator-container'));
+        /** @type {HTMLElement} */
+        this.$strengthIndicator = (this.$el.querySelector('.strength-indicator'));
+        /** @type {HTMLElement} */
+        this.$strengthIndicatorContainer = (this.$el.querySelector('.strength-indicator-container'));
         if (!showStrengthIndicator) {
             this.$strengthIndicatorContainer.style.display = 'none';
         }

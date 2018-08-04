@@ -14,3 +14,13 @@ declare interface Window {
 declare interface Newable {
     new(...args: any[]): any;
 }
+
+type ParsedSignTransactionRequest = {
+    keyInfo: Keyguard.KeyInfo
+    keyPath: string
+    transaction: Nimiq.ExtendedTransaction
+
+    keyLabel?: string
+    senderLabel?: string
+    recipientLabel?: string
+}

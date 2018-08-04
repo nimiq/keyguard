@@ -3,7 +3,7 @@
 class Key {
     /**
      * @param {Uint8Array} secret
-     * @param {Keyguard.Key.Type} [type]
+     * @param {Keyguard.KeyType} [type]
      */
     constructor(secret, type = Key.Type.BIP39) {
         this._secret = secret;
@@ -56,7 +56,7 @@ class Key {
     }
 
     /**
-     * @type {Keyguard.Key.Type}
+     * @type {Keyguard.KeyType}
      */
     get type() {
         return this._type;
@@ -88,7 +88,8 @@ class Key {
         return `UserFriendly ${id}`;
     }
 }
+
 Key.Type = {
-    LEGACY: /** @type {Key.Type} */ 0,
-    BIP39: /** @type {Key.Type} */ 1,
+    LEGACY: /** @type {Keyguard.KeyType} */ 0,
+    BIP39: /** @type {Keyguard.KeyType} */ 1,
 };

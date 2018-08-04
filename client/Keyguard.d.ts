@@ -1,24 +1,21 @@
 declare namespace Keyguard {
     interface KeyInfo {
         id: string;
-        type: Key.Type;
-        encrypted: boolean;
-        userFriendlyId: string;
-    }
-
-    interface KeyRecord {
-        id: string;
-        type: Key.Type;
+        type: KeyType;
         encrypted: boolean;
         secret: Uint8Array;
     }
 
-    namespace Key {
-        enum Type {
-            // todo replace by meaningful names
-            'ONE',
-            'TWO',
-        }
+    interface KeyRecord {
+        id: string;
+        type: KeyType;
+        encrypted: boolean;
+        secret: Uint8Array;
+    }
+
+    enum KeyType {
+        LEGACY = 0,
+        BIP39 = 1
     }
 
     // Deprecated, only used for migrating databases
@@ -29,75 +26,57 @@ declare namespace Keyguard {
     }
 
     // Deprecated, only used for migrating databases
-    type AccountEntry = AccountInfo & {
+    type AccountRecord = AccountInfo & {
         encryptedKeyPair: Uint8Array;
     };
 
-    type BASIC_TX = 'basic';
-    type EXTENDED_TX = 'extended';
+    type SignTransactionRequest = {
+        keyId: string
+        keyPath: string
+        keyLabel?: string
 
-    interface BasicTransactionRequest {
-        type: BASIC_TX;
-        sender: string;
-        senderLabel?: string;
-        recipient: string;
-        value: number;
-        fee: number;
-        network: string;
-        validityStartHeight: number;
+        sender: string
+        senderType: Nimiq.Account.Type
+        senderLabel?: string
+        recipient: string
+        recipientType: Nimiq.Account.Type
+        recipientLabel?: string
+        value: number
+        fee: number
+        validityStartHeight: number
+        data: string
+        flags: number
+        network: string
     }
 
-    interface ExtendedTransactionRequest {
-        type: EXTENDED_TX;
-        sender: string;
-        senderType?: Nimiq.Account.Type;
-        senderLabel?: string;
-        recipient: string;
-        recipientType?: Nimiq.Account.Type;
-        signer: string;
-        signerLabel?: string;
-        value: number;
-        fee: number;
-        network: string;
-        validityStartHeight: number;
-        extraData: string;
+    type CreateRequest = {}
+
+    type SignMessageRequest = {
+        keyId: string
+        keyPath: string
+        keyLabel?: string
+
+        message: string
     }
 
-    type TransactionRequest = BasicTransactionRequest | ExtendedTransactionRequest
+    type KeyguardRequest = CreateRequest | SignTransactionRequest | SignMessageRequest
 
-    interface SignedTransactionResult {
-        type: BASIC_TX | EXTENDED_TX;
-        sender: string;
-        senderType?: Nimiq.Account.Type;
-        recipient: string;
-        recipientType?: Nimiq.Account.Type;
-        signerPubKey: Nimiq.SerialBuffer;
-        value: number;
-        fee: number;
-        network: string;
-        validityStartHeight: number;
-        signature: Nimiq.SerialBuffer;
-        extraData?: string;
-        hash: string;
+    type SignTransactionResult = {
+        publicKey: string,
+        signature: string
     }
 
-    interface CreateRequest {}
-
-    interface MessageRequest {
-        message: string | Uint8Array;
-        signer: string;
+    type SignMessageResult = {
+        message: string
+        publicKey: string,
+        signature: string
     }
 
-    type Request = TransactionRequest | CreateRequest | MessageRequest;
-
-    interface SignedMessageResult {
-        message: string | Uint8Array;
-        proof: Nimiq.SignatureProof;
-    }
-
+    // todo remove after moving after moving rpc client to own package
     interface RpcClientInstance {
         call(command: string, args?: any[]): Promise<any>;
 
         close(): void;
     }
 }
+

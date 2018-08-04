@@ -1,6 +1,7 @@
 /* global Nimiq */
 /* global AccountStore */
 /* global Key */
+/* global KeyInfo */
 /* global KeyStore */
 beforeAll(async () => {
     Nimiq.GenesisConfig.test();
@@ -27,20 +28,18 @@ Dummy.encryptedKeys = [
 /** @type {string} */
 Dummy.encryptionPassword = 'password';
 
-/** @type {Keyguard.KeyInfo[]} */
+/** @type {KeyInfo[]} */
 Dummy.keyInfos = [
-    {
-        id: '2ec615522906',
-        type: Key.Type.LEGACY,
-        encrypted: true,
-        userFriendlyId: 'UserFriendly 2ec615522906',
-    },
-    {
-        id: 'ef553f34a779',
-        type: Key.Type.BIP39,
-        encrypted: false,
-        userFriendlyId: 'UserFriendly ef553f34a779',
-    },
+    new KeyInfo(
+        '2ec615522906',
+        Key.Type.LEGACY,
+        true,
+    ),
+    new KeyInfo(
+        'ef553f34a779',
+        Key.Type.BIP39,
+        false,
+    ),
 ];
 
 /** @type {Keyguard.KeyRecord[]} */
@@ -68,7 +67,7 @@ Dummy.deprecatedAccountInfos = [
     },
 ];
 
-/** @type {Keyguard.AccountEntry[]} */
+/** @type {Keyguard.AccountRecord[]} */
 Dummy.deprecatedAccountRecords = [
     Object.assign({}, Dummy.deprecatedAccountInfos[0], { encryptedKeyPair: Dummy.encryptedKeys[0] }),
 ];

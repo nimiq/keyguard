@@ -12,7 +12,9 @@ const TRANSLATIONS = {
         'sign-tx-byline': 'Please confirm the following transaction:',
         'sign-tx-byline-passphrase': 'Enter your passphrase below to authorize this transaction:',
         'sign-tx-error-wrong-passphrase': 'Wrong Passphrase, please try again',
-        'sign-tx-button-enter-pin': 'Enter PIN',
+        'sign-tx-button-confirm': 'Confirm transaction',
+        'sign-tx-incl': 'incl.',
+        'sign-tx-fee': 'fee',
 
         'privacy-agent-headline': 'Are you being watched?',
         'privacy-agent-info': 'Now is the perfect time to assess your surroundings. Nearby windows? Hidden cameras? '
@@ -42,9 +44,7 @@ const TRANSLATIONS = {
 
         'tx-from': 'From',
         'tx-to': 'To',
-        'tx-signer': 'Signer',
-        'tx-message': 'Message',
-        'tx-fee': 'Fee',
+        'tx-data': 'Data',
 
         'import-file-heading': 'Import Access File',
         'import-file-enter-passphrase-heading': 'Enter your Passphrase',
@@ -65,7 +65,9 @@ const TRANSLATIONS = {
         'sign-tx-byline': 'Bitte bestätige die folgende Überweisung:',
         'sign-tx-byline-passphrase': 'Bitte geb deine Passphrase ein, um die Überweisung zu bestätigen:',
         'sign-tx-error-wrong-passphrase': 'Falsche Passphrase, bitte versuche es nochmal',
-        'sign-tx-button-enter-pin': 'PIN eingeben',
+        'sign-tx-button-confirm': 'Überweisung bestätigen',
+        'sign-tx-incl': 'inkl.',
+        'sign-tx-fee': 'Gebühr',
 
         'privacy-agent-headline': 'Werden sie beobachtet?',
         'privacy-agent-info': 'Jetzt ist eine gute Zeit um sich einmal umzuschauen. Gibt es Fenster in der Nähe? '
@@ -95,9 +97,7 @@ const TRANSLATIONS = {
 
         'tx-from': 'Von',
         'tx-to': 'An',
-        'tx-signer': 'Zeichner',
-        'tx-message': 'Nachricht',
-        'tx-fee': 'Gebühr',
+        'tx-data': 'Daten',
 
         'import-file-heading': 'Zugangsdatei Import',
         'import-file-enter-passphrase-heading': 'Gib deine Passphrase ein',

@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/nimiq/keyguard-next#readme",
   "devDependencies": {
-    "@nimiq/core-types": "^0.1.5",
+    "@nimiq/core-types": "^0.1.7",
     "tsc-watch": "^1.0.22",
     "tslint": "^5.11.0",
     "typescript": "^2.9.2"

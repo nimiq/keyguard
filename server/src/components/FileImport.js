@@ -10,10 +10,12 @@ class FileImport extends Nimiq.Observable {
         super();
         this.$el = FileImport._createElement($el);
 
+        /** @type {HTMLElement} */
+        this.$errorMessage = (this.$el.querySelector('.error-message'));
         /** @type {HTMLInputElement} */
         this.$fileInput = (this.$el.querySelector('input'));
         /** @type {HTMLDivElement} */
-        this.$importIcon = (this.$el.querySelector('.import-file-icon'));
+        this.$importIcon = (this.$el.querySelector('.file-import-icon'));
 
         // TODO Re-add the drop target interaction and event listeners?
 
@@ -30,6 +32,7 @@ class FileImport extends Nimiq.Observable {
         $el.classList.add('file-import');
 
         $el.innerHTML = `
+            <span class="error-message"></span>
             <div class="file-import-icon"></div>
             <button>Select file</button>
             <input type="file" accept="image/*">`;
@@ -52,6 +55,7 @@ class FileImport extends Nimiq.Observable {
      * @param {DOMEvent} event
      */
     _onFileSelected(event) {
+        this.$errorMessage.textContent = '';
         // @ts-ignore
         const files = event.target.files;
         this._readFile(files[0]);
@@ -60,7 +64,7 @@ class FileImport extends Nimiq.Observable {
 
     _onQrError() {
         AnimationUtils.animate('shake', this.$importIcon);
-        // XToast.error('Couldn\'t read Backup File');
+        this.$errorMessage.textContent = 'Couldn\'t read Backup File';
     }
 
     /**

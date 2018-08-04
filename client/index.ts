@@ -1,4 +1,5 @@
 import RpcClient from './RpcClient';
+import SignMessageRequest = Keyguard.SignMessageRequest;
 
 export default class KeyguardClient {
     // FIXME Replace by real origin (or from config)
@@ -18,18 +19,17 @@ export default class KeyguardClient {
 
     /**
      * @param {boolean} [listFromAccountStore] Deprecated, list from old AccountStore
-     * @returns {Promise<KeyInfo[] | AccountInfo[]>}
+     * @returns {
      */
-    public async list(listFromAccountStore = false) {
+    public async list(listFromAccountStore = false): Promise<Keyguard.KeyInfo[] | Keyguard.AccountInfo[]> {
         await this._connected;
         return this._iframeClient.call('list', [listFromAccountStore]);
     }
 
     /**
-     * @returns {Promise<boolean>}
      * @deprecated Only for database migration
      */
-    public async migrateDB() {
+    public async migrateDB(): Promise<boolean> {
         await this._connected;
         return this._iframeClient.call('migrateAccountsToKeys');
     }
@@ -48,53 +48,21 @@ export default class KeyguardClient {
         return this._startPopup('import-file');
     }
 
-    /**
-     * @param {string} address
-     * @returns {Promise<void>}
-     */
-    public async export(address: string) {
+    public async export(address: string): Promise<void> {
         return this._startPopup('export-words', [address]);
     }
 
-    /**
-     * @param {TransactionRequest} txRequest
-     * @returns {Promise<SignedTransactionResult>}
-     */
-    public async signTransaction(txRequest: Keyguard.TransactionRequest) {
-        return this._startPopup('sign-transaction', [txRequest]);
+    public async signTransaction(request: Keyguard.SignTransactionRequest): Promise<Keyguard.SignTransactionResult> {
+        return this._startPopup('sign-transaction', [request]);
     }
 
-    /**
-     * @param {string | Uint8Array} message - A utf-8 string or byte array of max 255 bytes
-     * @param {string} signer - The address of the signer
-     * @returns {Promise<SignedMessageResult>}
-     */
-    public async signMessage(message: string | Uint8Array, signer: string) {
-        /** @type {MessageRequest} */
-        const msgRequest = {
-            message,
-            signer,
-        };
-        return this._startPopup('sign-message', [msgRequest]);
+    async signMessage(request: SignMessageRequest): Promise<Keyguard.SignMessageResult> {
+        return this._startPopup('sign-message', [request]);
     }
 
-    /**
-     * @param {string} address
-     * @returns {Promise<void>}
-     */
-    public async changeEncryption(address: string) {
-        return this._startPopup('change-encryption', [address]);
-    }
-
-    /**
-     * @param {string} address
-     * @returns {Promise<void>}
-     */
-    public async delete(address: string) {
+    public async delete(address: string): Promise<void> {
         return this._startPopup('delete', [address]);
     }
-
-    /* PRIVATE METHODS */
 
     private async _startIFrame() {
         const $iframe = await this._createIframe();

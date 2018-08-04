@@ -1,11 +1,10 @@
-/* global PopupApi */
-/* global RecoveryWordsInput */
-/* global PassphraseInput */
-/* global PrivacyAgent */
 /* global Nimiq */
 /* global Key */
-/* global EncryptionType */
 /* global KeyStore */
+/* global PopupApi */
+/* global RecoveryWords */
+/* global PrivacyAgent */
+/* global SetPassphrase */
 
 class ImportWordsApi extends PopupApi {
     constructor() {
@@ -13,6 +12,9 @@ class ImportWordsApi extends PopupApi {
 
         // start UI
         this.dom = this._makeView();
+
+        /** @type {?Key} */
+        this._key = null;
     }
 
     async onRequest() {
@@ -21,7 +23,7 @@ class ImportWordsApi extends PopupApi {
     }
 
     /**
-     * @returns {{passphrase: PassphraseConfirm, passphraseConfirm: PassphraseConfirm}}
+     * @returns {{setPassphrase: SetPassphrase}}
      */
     _makeView() {
         // Pages
@@ -29,36 +31,35 @@ class ImportWordsApi extends PopupApi {
         const $privacy = (document.getElementById(ImportWordsApi.Pages.PRIVACY_AGENT));
         /** @type {HTMLElement} */
         const $words = (document.getElementById(ImportWordsApi.Pages.ENTER_WORDS));
-        /** @type {HTMLElement} */
-        const $enterPassphrase = (document.getElementById(ImportWordsApi.Pages.ENTER_PASSPHRASE));
-        /** @type {HTMLElement} */
-        const $confirmPassphrase = (document.getElementById(ImportWordsApi.Pages.CONFIRM_PASSPHRASE));
+        /** @type {HTMLFormElement} */
+        const $setPassphrase = (document.getElementById(ImportWordsApi.Pages.SET_PASSPHRASE));
 
         // Containers
         /** @type {HTMLElement} */
         const $privacyAgent = ($privacy.querySelector('.agent'));
         /** @type {HTMLElement} */
         const $wordsInput = ($words.querySelector('.input'));
-        /** @type {HTMLFormElement} */
-        const $passphrase = ($enterPassphrase.querySelector('.passphrase'));
-        /** @type {HTMLFormElement} */
-        const $passphraseConfirmation = ($confirmPassphrase.querySelector('.passphrase-confirm'));
 
         // Components
         const privacyAgent = new PrivacyAgent($privacyAgent);
-        const recoveryWordsInput = new RecoveryWordsInput($wordsInput);
-        const passphrase = new PassphraseConfirm(true, $passphrase);
-        const passphraseConfirm = new PassphraseConfirm(false, $passphraseConfirmation);
+        const recoveryWords = new RecoveryWords($wordsInput, true);
+        const setPassphrase = new SetPassphrase($setPassphrase);
 
         // Events
         privacyAgent.on(PrivacyAgent.Events.CONFIRM, () => {
             window.location.hash = ImportWordsApi.Pages.ENTER_WORDS;
-            recoveryWordsInput.focus();
+            recoveryWords.focus();
         });
 
-        recoveryWordsInput.on(RecoveryWordsInput.Events.COMPLETE, this._onRecoveryWordsEntered.bind(this));
-        passphrase.on(PassphraseInput.Events.PASSPHRASE_ENTERED, this._handlePassphrase.bind(this));
-        passphraseConfirm.on(PassphraseInput.Events.PASSPHRASE_ENTERED, this._handlePassphraseConfirmation.bind(this));
+        recoveryWords.on(RecoveryWords.Events.COMPLETE, this._onRecoveryWordsEntered.bind(this));
+
+        setPassphrase.on(SetPassphrase.Events.CHOOSE, /** @param {string} passphrase */ async passphrase => {
+            document.body.classList.add('loading');
+
+            if (this._key) {
+                this._resolve(await KeyStore.instance.put(this._key, Nimiq.BufferUtils.fromAscii(passphrase)));
+            }
+        });
 
         // for debugging: enable next line and c&p following lines in terminal to fill in correct words automatically
         // window.recoveryWordsInput = recoveryWordsInput;
@@ -73,60 +74,41 @@ class ImportWordsApi extends PopupApi {
         // });
         // /debugging
 
-        return { passphrase, passphraseConfirm };
+        return { setPassphrase };
     }
 
     /**
      * Store key and request passphrase
      *
-     * @param {Nimiq.PrivateKey} privateKey
+     * @param {Array<string>} words
+     * @param {number} mnemonicType
      */
-    _onRecoveryWordsEntered(privateKey) {
-        this._privateKey = privateKey;
-        window.location.hash = ImportWordsApi.Pages.ENTER_PASSPHRASE;
-        this.dom.passphrase.focus();
-    }
-
-    /**
-     * Store passphrase and ask for user confirmation
-     *
-     * @param {string} passphrase
-     */
-    async _handlePassphrase(passphrase) {
-        this._passphrase = passphrase;
-        this.dom.passphrase.reset();
-        window.location.hash = ImportWordsApi.Pages.CONFIRM_PASSPHRASE;
-        this.dom.passphraseConfirm.focus();
-    }
-
-    /**
-     * Encrypt key with passphrase and store
-     *
-     * @param {string} passphrase
-     */
-    async _handlePassphraseConfirmation(passphrase) {
-        if (!this._passphrase) throw new Error('Passphrase not set!');
-        if (!this._privateKey) throw new Error('Private key not set!');
-
-        if (this._passphrase !== passphrase) {
-            await this.dom.passphraseConfirm.onPassphraseIncorrect();
-            this.dom.passphraseConfirm.reset();
-            window.location.hash = ImportWordsApi.Pages.ENTER_PASSPHRASE;
-            this.dom.passphrase.focus();
-            return;
+    _onRecoveryWordsEntered(words, mnemonicType) {
+        switch (mnemonicType) {
+        case Nimiq.MnemonicUtils.MnemonicType.BIP39: {
+            const entropy = Nimiq.MnemonicUtils.mnemonicToEntropy(words);
+            this._key = new Key(entropy.serialize(), Key.Type.BIP39);
+            break;
+        }
+        case Nimiq.MnemonicUtils.MnemonicType.LEGACY: {
+            const entropy = Nimiq.MnemonicUtils.legacyMnemonicToEntropy(words);
+            this._key = new Key(entropy.serialize(), Key.Type.LEGACY);
+            break;
+        }
+        case Nimiq.MnemonicUtils.MnemonicType.UNKNOWN: {
+            // TODO handle this case
+            throw new Error('TODO');
+        }
+        default:
+            throw new Error('Invalid mnemonic type');
         }
 
-        document.body.classList.add('loading');
-
-        const keyPair = Nimiq.KeyPair.derive(this._privateKey);
-        const key = new Key(keyPair, EncryptionType.HIGH);
-        this._resolve(await KeyStore.instance.put(key, passphrase));
+        window.location.hash = ImportWordsApi.Pages.SET_PASSPHRASE;
     }
 }
 
 ImportWordsApi.Pages = {
     PRIVACY_AGENT: 'privacy',
     ENTER_WORDS: 'words',
-    ENTER_PASSPHRASE: 'passphrase',
-    CONFIRM_PASSPHRASE: 'confirm',
+    SET_PASSPHRASE: 'set-passphrase',
 };

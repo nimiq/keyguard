@@ -1,5 +1,6 @@
 /* global Nimiq */
 /* global Key */
+/* global KeyInfo */
 /* global AccountStore */
 /* global BrowserDetection */
 
@@ -75,6 +76,16 @@ class KeyStore {
 
     /**
      * @param {string} id
+     * @returns {Promise<?Keyguard.KeyInfo>}
+     */
+    async getInfo(id) {
+        /** @type {?Keyguard.KeyRecord} */
+        const keyRecord = await this._get(id);
+        return keyRecord ? new KeyInfo(keyRecord.id, keyRecord.type, keyRecord.encrypted) : null;
+    }
+
+    /**
+     * @param {string} id
      * @returns {Promise<?Keyguard.KeyRecord>}
      * @private
      */
@@ -83,7 +94,7 @@ class KeyStore {
         const request = db.transaction([KeyStore.DB_KEY_STORE_NAME])
             .objectStore(KeyStore.DB_KEY_STORE_NAME)
             .get(id);
-        return KeyStore._requestAsPromise(request);
+        return KeyStore._requestToPromise(request);
     }
 
     /**
@@ -115,7 +126,7 @@ class KeyStore {
         const request = db.transaction([KeyStore.DB_KEY_STORE_NAME], 'readwrite')
             .objectStore(KeyStore.DB_KEY_STORE_NAME)
             .put(keyRecord);
-        return KeyStore._requestAsPromise(request);
+        return KeyStore._requestToPromise(request);
     }
 
     /**
@@ -127,7 +138,7 @@ class KeyStore {
         const request = db.transaction([KeyStore.DB_KEY_STORE_NAME], 'readwrite')
             .objectStore(KeyStore.DB_KEY_STORE_NAME)
             .delete(id);
-        return KeyStore._requestAsPromise(request);
+        return KeyStore._requestToPromise(request);
     }
 
     /**
@@ -140,12 +151,8 @@ class KeyStore {
             .openCursor();
 
         const results = /** Array<KeyRecord> */ await KeyStore._readAllFromCursor(request);
-        return results.map(keyRecord => /** @type {Keyguard.KeyInfo} */ ({
-            id: keyRecord.id,
-            type: keyRecord.type,
-            encrypted: keyRecord.encrypted,
-            userFriendlyId: Key.idToUserFriendlyId(keyRecord.id),
-        }));
+
+        return results.map(keyRecord => new KeyInfo(keyRecord.id, keyRecord.type, keyRecord.encrypted));
     }
 
     /**
@@ -202,7 +209,7 @@ class KeyStore {
      * @returns {Promise<*>}
      * @private
      */
-    static _requestAsPromise(request) {
+    static _requestToPromise(request) {
         return new Promise((resolve, reject) => {
             request.onsuccess = () => resolve(request.result);
             request.onerror = () => reject(request.error);

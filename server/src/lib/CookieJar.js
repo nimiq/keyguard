@@ -1,8 +1,8 @@
-/* global Key */
+/* global KeyInfo */
 
 class CookieJar { // eslint-disable-line no-unused-vars
     /**
-     * @param {Keyguard.KeyInfo[]} keys
+     * @param {KeyInfo[]} keys
      */
     static fill(keys) {
         const maxAge = 60 * 60 * 24 * 365;
@@ -12,7 +12,7 @@ class CookieJar { // eslint-disable-line no-unused-vars
 
     /**
      * @param {boolean} [listDeprecatedAccounts] - @deprecated Only for database migration
-     * @returns {Keyguard.KeyInfo[] | Keyguard.AccountInfo[]}
+     * @returns {KeyInfo[] | Keyguard.AccountInfo[]}
      */
     static eat(listDeprecatedAccounts) {
         // Legacy cookie
@@ -26,7 +26,6 @@ class CookieJar { // eslint-disable-line no-unused-vars
         }
 
         const match = document.cookie.match(new RegExp('k=([^;]+)'));
-
         if (match && match[1]) {
             return this._decodeCookie(match[1]);
         }
@@ -35,7 +34,7 @@ class CookieJar { // eslint-disable-line no-unused-vars
     }
 
     /**
-     * @param {Keyguard.KeyInfo[]} keys
+     * @param {KeyInfo[]} keys
      * @returns {string}
      */
     static _encodeCookie(keys) {
@@ -44,7 +43,7 @@ class CookieJar { // eslint-disable-line no-unused-vars
 
     /**
      * @param {string} str
-     * @returns {Keyguard.KeyInfo[]}
+     * @returns {KeyInfo[]}
      */
     static _decodeCookie(str) {
         if (!str) return [];
@@ -55,17 +54,10 @@ class CookieJar { // eslint-disable-line no-unused-vars
         if (!keys) return []; // Make TS happy (match() can potentially return NULL)
 
         return keys.map(key => {
-            const type = parseInt(key[0], 10);
+            const type = /** @type {Keyguard.KeyType} */ (parseInt(key[0], 10));
             const encrypted = key[1] === '1';
             const id = key.substr(2);
-            const userFriendlyId = Key.idToUserFriendlyId(id);
-
-            return /** @type {Keyguard.KeyInfo} */ ({
-                id,
-                type,
-                encrypted,
-                userFriendlyId,
-            });
+            return new KeyInfo(id, type, encrypted);
         });
     }
 }

@@ -1,8 +1,8 @@
 /* global Nimiq */
 /* global I18n */
 /* global AutoComplete */
-/* global MnemonicPhrase */
 /* global AnimationUtils */
+
 class RecoveryWordsInputField extends Nimiq.Observable {
     /**
      *
@@ -58,10 +58,6 @@ class RecoveryWordsInputField extends Nimiq.Observable {
         const placeholder = document.createElement('div');
         placeholder.className = 'placeholder';
         placeholder.textContent = (this._index + 1).toString();
-
-        element.addEventListener('click', this._showInput.bind(this));
-        element.addEventListener('mouseenter', this._showInput.bind(this));
-        element.addEventListener('mouseleave', this.showPlaceholder.bind(this));
         element.appendChild(input);
 
         return { element, input, placeholder };
@@ -72,7 +68,7 @@ class RecoveryWordsInputField extends Nimiq.Observable {
             selector: this.dom.input,
             source: /** @param{string} term @param{function} response */ (term, response) => {
                 term = term.toLowerCase();
-                const list = MnemonicPhrase.DEFAULT_WORDLIST.filter(word => word.startsWith(term));
+                const list = Nimiq.MnemonicUtils.DEFAULT_WORDLIST.filter(word => word.startsWith(term));
                 response(list);
             },
             onSelect: this._focusNext.bind(this),
@@ -114,7 +110,8 @@ class RecoveryWordsInputField extends Nimiq.Observable {
     /**
      * @param {ClipboardEvent} e
      */
-     _onPaste(e) {
+    _onPaste(e) {
+        // @ts-ignore window.clipboardData not defined
         let paste = (e.clipboardData || window.clipboardData).getData('text');
         paste = paste.replace(/\s+/g, ' ');
         if (paste && paste.split(' ').length > 1) {
@@ -129,7 +126,7 @@ class RecoveryWordsInputField extends Nimiq.Observable {
      * @param {boolean} [setFocusToNextInput]
      */
     _checkValidity(setFocusToNextInput = false) {
-        if (MnemonicPhrase.DEFAULT_WORDLIST.indexOf(this.value.toLowerCase()) >= 0) {
+        if (Nimiq.MnemonicUtils.DEFAULT_WORDLIST.indexOf(this.value.toLowerCase()) >= 0) {
             this.dom.element.classList.add('complete');
             this.complete = true;
             this.fire(RecoveryWordsInputField.Events.VALID, this);
@@ -158,35 +155,6 @@ class RecoveryWordsInputField extends Nimiq.Observable {
         this.complete = false;
         this.dom.element.classList.remove('complete');
         this._value = this.value;
-    }
-
-    showPlaceholder() {
-        if (this.dom.element.classList.contains('has-placeholder')) return;
-
-        // don't hide empty input fields
-        if (this.value === '') return;
-
-        // don't hide focused input fields
-        if (document.activeElement === this.dom.input) return;
-
-        this.dom.element.classList.add('has-placeholder');
-        this.dom.element.replaceChild(this.dom.placeholder, this.dom.input);
-    }
-
-    _showInput() {
-        if (!this.dom.element.classList.contains('has-placeholder')) return;
-
-        this.dom.element.replaceChild(this.dom.input, this.dom.placeholder);
-
-        // hide word which was revealed before
-        this.fire(RecoveryWordsInputField.Events.REVEALED);
-        if (RecoveryWordsInputField._revealedWord !== undefined) {
-            RecoveryWordsInputField._revealedWord.showPlaceholder();
-        }
-
-        RecoveryWordsInputField._revealedWord = this;
-
-        this.dom.element.classList.remove('has-placeholder');
     }
 }
 

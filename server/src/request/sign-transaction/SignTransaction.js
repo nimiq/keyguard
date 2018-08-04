@@ -1,33 +1,30 @@
 /* global Nimiq */
-/* global TransactionType */
 /* global KeyStore */
 /* global Identicon */
+/* global PassphraseInput */
 
-class SignTransaction { // eslint-disable-line no-unused-vars
+class SignTransaction {
     /**
-     * @param {Keyguard.TransactionRequest} txRequest
-     * @returns {HTMLDivElement}
+     * @param {ParsedSignTransactionRequest} request
+     * @param {Function} resolve
+     * @param {Function} reject
      */
-    fillTransactionDetails(txRequest) {
+    constructor(request, resolve, reject) {
         /** @type {HTMLDivElement} */
-        const $transaction = (document.querySelector('#transaction-data .transaction'));
+        const $transaction = (document.querySelector('#confirm-transaction .transaction'));
 
         /** @type {HTMLDivElement} */
         const $senderIdenticon = ($transaction.querySelector('#sender-identicon'));
-        /** @type {HTMLDivElement} */
-        const $signerIdenticon = ($transaction.querySelector('#signer-identicon'));
         /** @type {HTMLDivElement} */
         const $recipientIdenticon = ($transaction.querySelector('#recipient-identicon'));
 
         /** @type {HTMLDivElement} */
         const $senderLabel = ($transaction.querySelector('#sender-label'));
         /** @type {HTMLDivElement} */
-        const $signerLabel = ($transaction.querySelector('#signer-label'));
+        const $recipientLabel = ($transaction.querySelector('#recipient-label'));
 
         /** @type {HTMLDivElement} */
         const $senderAddress = ($transaction.querySelector('#sender-address'));
-        /** @type {HTMLDivElement} */
-        const $signerAddress = ($transaction.querySelector('#signer-address'));
         /** @type {HTMLDivElement} */
         const $recipientAddress = ($transaction.querySelector('#recipient-address'));
 
@@ -36,116 +33,109 @@ class SignTransaction { // eslint-disable-line no-unused-vars
         /** @type {HTMLDivElement} */
         const $fee = ($transaction.querySelector('#fee'));
         /** @type {HTMLDivElement} */
-        const $message = ($transaction.querySelector('#message'));
+        const $data = ($transaction.querySelector('#data'));
 
-        // Set data
-        new Identicon(txRequest.sender, $senderIdenticon); // eslint-disable-line no-new
-        new Identicon(txRequest.recipient, $recipientIdenticon); // eslint-disable-line no-new
-
-        if (txRequest.type === TransactionType.EXTENDED && txRequest.sender !== txRequest.signer) {
-            new Identicon(txRequest.signer, $signerIdenticon); // eslint-disable-line no-new
-            $signerIdenticon.classList.remove('display-none');
-
-            $signerAddress.textContent = txRequest.signer;
-
-            if (txRequest.signerLabel) {
-                $signerLabel.classList.remove('display-none');
-                $signerLabel.textContent = txRequest.signerLabel;
-            }
-
-            /** @type {HTMLDivElement} */
-            const $signerSection = ($transaction.querySelector('.signer-section'));
-            $signerSection.classList.remove('display-none');
-        }
-
-        if (txRequest.senderLabel) {
+        // Set sender data.
+        const transaction = request.transaction;
+        const senderAddress = transaction.sender.toUserFriendlyAddress();
+        new Identicon(senderAddress, $senderIdenticon); // eslint-disable-line no-new
+        $senderAddress.textContent = senderAddress;
+        if (request.senderLabel) {
             $senderLabel.classList.remove('display-none');
-            $senderLabel.textContent = txRequest.senderLabel;
+            $senderLabel.textContent = request.senderLabel;
         }
 
-        $senderAddress.textContent = txRequest.sender;
-        $recipientAddress.textContent = txRequest.recipient;
+        // Set recipient data.
+        const recipientAddress = transaction.recipient.toUserFriendlyAddress();
+        new Identicon(recipientAddress, $recipientIdenticon); // eslint-disable-line no-new
+        $recipientAddress.textContent = recipientAddress;
+        if (request.recipientLabel) {
+            $recipientLabel.classList.remove('display-none');
+            $recipientLabel.textContent = request.recipientLabel;
+        }
 
-        $value.textContent = Nimiq.Policy.satoshisToCoins(txRequest.value).toString();
-        if (txRequest.fee > 0) {
-            $fee.textContent = Nimiq.Policy.satoshisToCoins(txRequest.fee).toString();
+        // Set value and fee.
+        const total = transaction.value + transaction.fee;
+        $value.textContent = Nimiq.Policy.satoshisToCoins(total).toString();
+        if (transaction.fee > 0) {
+            $fee.textContent = Nimiq.Policy.satoshisToCoins(transaction.fee).toString();
             /** @type {HTMLDivElement} */
             const $feeSection = ($transaction.querySelector('.fee-section'));
             $feeSection.classList.remove('display-none');
         }
 
-        if (txRequest.type === TransactionType.EXTENDED && txRequest.extraData) {
-            $message.textContent = txRequest.extraData;
+        // Set transaction extra data.
+        if (transaction.data.byteLength > 0) {
+            // FIXME Detect and use proper encoding.
+            $data.textContent = Nimiq.BufferUtils.toAscii(transaction.data);
             /** @type {HTMLDivElement} */
-            const $extraDataSection = ($transaction.querySelector('.extra-data-section'));
-            $extraDataSection.classList.remove('display-none');
+            const $dataSection = ($transaction.querySelector('.data-section'));
+            $dataSection.classList.remove('display-none');
         }
 
-        return $transaction;
+        /** @type {HTMLFormElement} */
+        const $confirmForm = (document.querySelector('#confirm-transaction form'));
+        $confirmForm.addEventListener('submit', event => this._onConfirm(request, resolve, reject, event));
+
+        // Set up passphrase input.
+        /** @type {HTMLDivElement} */
+        const $passphraseInput = ($confirmForm.querySelector('#passphrase-input'));
+        this._passphraseInput = new PassphraseInput($passphraseInput);
+        if (!request.keyInfo.encrypted) {
+            $passphraseInput.classList.add('display-none');
+        }
+
+        /** @type {HTMLDivElement} */
+        this.$error = ($confirmForm.querySelector('#error'));
     }
 
     /**
-     * Decrypt key and use it to sign a transaction constructed with the data from txRequest.
-     *
-     * @param {Keyguard.TransactionRequest} txRequest
-     * @param {string} passphraseOrPin
-     * @returns {Promise<Keyguard.SignedTransactionResult>}
-     * @protected
+     * @param {ParsedSignTransactionRequest} request
+     * @param {Function} resolve
+     * @param {Function} reject
+     * @param {Event} event
+     * @returns {Promise<void>}
+     * @private
      */
-    async _doSignTransaction(txRequest, passphraseOrPin) {
-        if (txRequest.type === TransactionType.BASIC) {
-            // eslint-disable-next-line object-curly-newline
-            const { sender, recipient, value, fee, validityStartHeight } = txRequest;
+    async _onConfirm(request, resolve, reject, event) {
+        event.preventDefault();
 
-            const passphrase = Nimiq.BufferUtils.fromAscii(passphraseOrPin);
-            const key = await KeyStore.instance.get(sender, passphrase);
+        document.body.classList.add('loading');
+        this.$error.classList.add('hidden');
 
-            
-            const tx = key.createBasicTransaction(recipient, value, fee, validityStartHeight);
+        try {
+            // XXX Passphrase encoding
+            const passphrase = Nimiq.BufferUtils.fromAscii(this._passphraseInput.text);
+            const key = await KeyStore.instance.get(request.keyInfo.id, passphrase);
+            if (!key) {
+                reject(new Error('Failed to retrieve key'));
+                return;
+            }
 
-            const signatureProof = Nimiq.SignatureProof.unserialize(new Nimiq.SerialBuffer(tx.proof));
-
-            return {
-                type: TransactionType.BASIC,
-                sender: tx.sender.toUserFriendlyAddress(),
-                signerPubKey: signatureProof.publicKey.serialize(),
-                recipient: tx.recipient.toUserFriendlyAddress(),
-                value: Nimiq.Policy.satoshisToCoins(tx.value),
-                fee: Nimiq.Policy.satoshisToCoins(tx.fee),
-                network: Nimiq.GenesisConfig.NETWORK_NAME,
-                validityStartHeight: tx.validityStartHeight,
-                signature: signatureProof.signature.serialize(),
-                hash: tx.hash().toBase64(),
+            const publicKey = key.derivePublicKey(request.keyPath);
+            const signature = key.sign(request.keyPath, request.transaction.serializeContent());
+            const result = /** @type {SignTransactionResult} */ {
+                publicKey: Nimiq.BufferUtils.toBase64(publicKey.serialize()),
+                signature: Nimiq.BufferUtils.toBase64(signature.serialize()),
             };
+            resolve(result);
+        } catch (e) {
+            console.error(e);
+            document.body.classList.remove('loading');
+
+            // Assume the passphrase was wrong
+            this._passphraseInput.onPassphraseIncorrect();
+            this.$error.classList.remove('hidden');
         }
+    }
 
-        const key = await KeyStore.instance.get(txRequest.signer, passphraseOrPin);
-        const tx = key.createExtendedTransaction(
-            txRequest.sender,
-            txRequest.senderType,
-            txRequest.recipient,
-            txRequest.recipientType,
-            txRequest.value,
-            txRequest.fee,
-            txRequest.validityStartHeight,
-            txRequest.extraData,
-        );
-
-        const signatureProof = Nimiq.SignatureProof.unserialize(new Nimiq.SerialBuffer(tx.proof));
-
-        return {
-            type: TransactionType.EXTENDED,
-            sender: tx.sender.toUserFriendlyAddress(),
-            senderType: tx.senderType,
-            signerPubKey: signatureProof.publicKey.serialize(),
-            recipient: tx.recipient.toUserFriendlyAddress(),
-            recipientType: tx.recipientType,
-            value: Nimiq.Policy.satoshisToCoins(tx.value),
-            fee: Nimiq.Policy.satoshisToCoins(tx.fee),
-            network: Nimiq.GenesisConfig.NETWORK_NAME,
-            validityStartHeight: tx.validityStartHeight,
-            signature: signatureProof.signature.serialize(),
-            hash: tx.hash().toBase64(),
-        };
+    run() {
+        // Go to start page
+        window.location.hash = SignTransaction.Pages.CONFIRM_TRANSACTION;
+        this._passphraseInput.focus();
     }
 }
+
+SignTransaction.Pages = {
+    CONFIRM_TRANSACTION: 'confirm-transaction',
+};
