@@ -1,6 +1,6 @@
 {
   "name": "@nimiq/keyguard-client",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Nimiq Keyguard client library",
   "main": "index.ts",
   "scripts": {
