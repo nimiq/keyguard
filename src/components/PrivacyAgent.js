@@ -37,7 +37,7 @@ class PrivacyAgent extends Nimiq.Observable { // eslint-disable-line no-unused-v
                                 fill="#000" fill-rule="nonzero" mask="url(#b)"/>
                     </g>
                 </svg>
-                <h1 data-i18n="privacy-agent-headline">Are you being watched?</h1>
+                <h1 data-i18n="privacy-agent-heading">Are you being watched?</h1>
                 <p data-i18n="privacy-agent-info">Now is the perfect time to assess your surroundings. Nearby windows? Hidden cameras? Shoulder
                     spies?</p>
                 <p><strong data-i18n="privacy-agent-warning">Anyone that can see your Recovery Words can steal all your funds!</strong></p>

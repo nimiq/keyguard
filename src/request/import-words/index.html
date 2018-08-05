@@ -2,6 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <title>Nimiq Keyguard</title>
     <!--<meta http-equiv="Content-Security-Policy"-->
           <!--content="default-src 'self' 'unsafe-eval' https://cdn.nimiq.com;-->
           <!--img-src http: https: blob: data:; child-src 'self' blob:; style-src 'self';">-->
@@ -17,14 +18,19 @@
     <script defer src="../../lib/AccountStore.js"></script>
     <script defer src="../../lib/KeyStore.js"></script>
     <script defer src="../../lib/I18n.js"></script>
+    <script defer src="../../lib/Iqons.js"></script>
     <script defer src="../../translations/index.js"></script>
     <script defer src="../../common.js"></script>
+    <script defer src="../../components/Identicon.js"></script>
     <script defer src="../../components/PrivacyAgent.js"></script>
     <script defer src="../../components/RecoveryWords.js"></script>
     <script defer src="../../components/RecoveryWordsInputField.js"></script>
     <script defer src="../../components/PassphraseInput.js"></script>
     <script defer src="../../components/SetPassphrase.js"></script>
     <script defer src="../PopupApi.js"></script>
+    <script defer src="EnterRecoveryWords.js"></script>
+    <script defer src="ChooseKeyType.js"></script>
+    <script defer src="ImportWords.js"></script>
     <script defer src="ImportWordsApi.js"></script>
     <script defer src="index.js"></script>
 
@@ -34,28 +40,27 @@
     <link rel="stylesheet" href="../../components/RecoveryWords.css">
     <link rel="stylesheet" href="../../components/RecoveryWordsInputField.css">
     <link rel="stylesheet" href="../../components/PassphraseInput.css">
+    <link rel="stylesheet" href="./ChooseKeyType.css">
 </head>
 <body>
     <div id="app">
         <!-- privacy agent -->
         <div id="privacy" class="page">
-            <h1 data-i18n="import-heading">Import from Recovery Words</h1>
+            <h1 data-i18n="import-words-heading">Import from recovery words</h1>
             <div class="grow"></div>
             <div class="agent"></div>
         </div>
 
-        <!-- enter Recovery Words -->
-        <div id="words" class="page">
-            <h1 data-i18n="import-heading">Import from Recovery Words</h1>
-            <h2 data-i18n="import-words-subheading">Please enter your 24 Account Recovery Words.</h2>
-            <div class="grow"></div>
-            <div class="input"></div>
-        </div>
+        <!-- enter recovery words -->
+        <form id="words" class="page"></form>
 
-        <!--set password-->
+        <!-- choose key type -->
+        <form id="choose-key-type" class="page"></form>
+
+        <!-- set passphrase -->
         <form id="set-passphrase" class="page"></form>
 
-        <!-- Default and loading screen -->
+        <!-- default and loading screen -->
         <div id="loading" class="page">
             <div class="loading-animation"></div>
             <span data-i18n="loading">Loading...</span>

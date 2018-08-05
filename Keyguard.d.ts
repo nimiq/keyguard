@@ -55,9 +55,6 @@ type SignTransactionResult = {
     signature: string
 }
 
-type CreateRequest = {
-}
-
 type SignMessageRequest = {
     keyId: string
     keyPath: string
@@ -66,13 +63,21 @@ type SignMessageRequest = {
     message: string
 }
 
-type KeyguardRequest = CreateRequest | SignTransactionRequest | SignMessageRequest
-
 type SignMessageResult = {
     message: string
     publicKey: string,
     signature: string
 }
+
+type CreateRequest = {
+    defaultKeyPath: string
+}
+
+type ImportWordsRequest = {
+    defaultKeyPath: string
+}
+
+type KeyguardRequest = CreateRequest | ImportWordsRequest | SignTransactionRequest | SignMessageRequest
 
 
 interface Newable {

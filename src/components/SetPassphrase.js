@@ -10,26 +10,25 @@ class SetPassphrase extends Nimiq.Observable {
 
         /** @type {HTMLElement} */
         this.$el = SetPassphrase._createElement($el);
-        this._checkEnableContinue = this._checkEnableContinue.bind(this);
 
-        /** @type {HTMLFormElement} */
+        /** @type {HTMLDivElement} */
         const $passphraseFirst = (this.$el.querySelector('.passphrase-first'));
 
-        /** @type {HTMLFormElement} */
+        /** @type {HTMLDivElement} */
         const $passphraseSecond = (this.$el.querySelector('.passphrase-second'));
 
-        /** @type {HTMLFormElement} */
+        /** @type {HTMLButtonElement} */
         this.$confirmButton = (this.$el.querySelector('.confirm-passphrase'));
 
         /** @type {PassphraseInput} */
         this._passphraseFirst = new PassphraseInput($passphraseFirst,
             I18n.translatePhrase('passphrase-placeholder'), true);
-        this._passphraseFirst.on(PassphraseInput.Events.VALID, this._checkEnableContinue);
+        this._passphraseFirst.on(PassphraseInput.Events.VALID, this._checkEnableContinue.bind(this));
 
         /** @type {PassphraseInput} */
         this._passphraseSecond = new PassphraseInput($passphraseSecond,
-            I18n.translatePhrase('repeat-passphrase-placeholder'), false);
-        this._passphraseSecond.on(PassphraseInput.Events.VALID, this._checkEnableContinue);
+            I18n.translatePhrase('passphrase-repeat-placeholder'), false);
+        this._passphraseSecond.on(PassphraseInput.Events.VALID, this._checkEnableContinue.bind(this));
 
         this.$el.addEventListener('submit', event => this._submit(event));
     }
@@ -43,15 +42,14 @@ class SetPassphrase extends Nimiq.Observable {
 
         /* eslint-disable max-len */
         $el.innerHTML = `
-            <h1 data-i18n="create-set-passphrase-header1">Set a Passphrase</h1>
-            <h2 data-i18n="create-set-passphrase-header2">Please enter a Passphrase to secure your account.</h2>
-            <p data-i18n="create-set-passphrase-warning">The Passphrase is [strong]not[/strong] an alternative for your 24 Recovery Words!</p>
+            <h1 data-i18n="set-passphrase-heading">Set a passphrase</h1>
+            <h2 data-i18n="set-passphrase-subheading">Please enter a passphrase to secure your account.</h2>
             <div class="grow"></div>
             <div class="my-account"></div>
             <div class="passphrase-first"></div>
             <div class="passphrase-second"></div>
             <div class="grow"></div>
-            <button data-i18n="passphrase-confirm" type="submit" class="confirm-passphrase" disabled>Confirm</button>
+            <button data-i18n="set-passphrase-confirm" type="submit" class="confirm-passphrase" disabled>Confirm</button>
         `;
         /* eslint-enable max-len */
 
