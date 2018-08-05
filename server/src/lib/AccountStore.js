@@ -47,7 +47,9 @@ class AccountStore {
             request.onupgradeneeded = () => {
                 // account database doesn't exist
                 this._dropped = true;
-                request.transaction.abort();
+                if (request.transaction) {
+                    request.transaction.abort();
+                }
                 resolve(null);
             };
         });

@@ -38,19 +38,21 @@ class RpcServer { // eslint-disable-line no-unused-vars
             }
 
             /**
-             * @param {MessageEvent} message
+             * @param {MessageEvent} messageEvent
              * @param {string} status
              * @param {any} result
              */
-            _replyTo(message, status, result) {
+            _replyTo(messageEvent, status, result) {
                 console.debug('RpcServer REPLY', result);
 
-                if (message.source) {
-                    message.source.postMessage({
+                if (messageEvent.source) {
+                    const message = {
                         status,
                         result,
-                        id: message.data.id,
-                    }, message.origin);
+                        id: messageEvent.data.id,
+                    };
+
+                    message.source.postMessage(message, messageEvent.origin);
                 }
             }
 
