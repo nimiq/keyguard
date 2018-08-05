@@ -57,6 +57,7 @@ type SignTransactionResult = {
 
 type RemoveKeyRequest = {
     keyId: string
+    keyLabel?: string
 }
 
 type CreateRequest = {

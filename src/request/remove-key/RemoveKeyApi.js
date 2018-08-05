@@ -8,6 +8,7 @@ class RemoveKeyApi extends PopupApi {
      * @param {RemoveKeyRequest} request
      */
     async onRequest(request) {
+        console.log(request);
         const parsedRequest = await RemoveKeyApi._parseRequest(request);
 
         /** @type {HTMLElement} */
@@ -15,8 +16,8 @@ class RemoveKeyApi extends PopupApi {
         /** @type {HTMLElement} */
         this.$confirmRemoval = (document.getElementById(RemoveKeyApi.Pages.CONFIRM_REMOVAL));
 
-        this._removalWarning = new RemovalWarning(this.$removalWarning);
-        this._confirmRemoval = new ConfirmRemoval(this.$confirmRemoval, parsedRequest.keyId);
+        this._removalWarning = new RemovalWarning(this.$removalWarning, parsedRequest);
+        this._confirmRemoval = new ConfirmRemoval(this.$confirmRemoval, parsedRequest);
 
         this._removalWarning.on(RemovalWarning.Events.CONTINUE, () => {
             window.location.hash = RemoveKeyApi.Pages.CONFIRM_REMOVAL;
@@ -62,7 +63,27 @@ class RemoveKeyApi extends PopupApi {
             throw new Error('Unknown keyId');
         }
 
+        // Validate labels.
+        if (request.keyLabel !== undefined && (typeof request.keyLabel !== 'string' || request.keyLabel.length > 64)) {
+            throw new Error('Invalid label');
+        }
+
         return request;
+    }
+
+    /**
+     * @param {HTMLElement} $text
+     * @param {RemoveKeyRequest} request
+     */
+    static get_friendly_key_description($text, request) {
+        const userFriendlyId = Key.idToUserFriendlyId(request.keyId);
+
+        /** @type {HTMLElement} */
+        if (request.keyLabel !== undefined) {
+            $text.textContent = request.keyLabel + ' (' + userFriendlyId + ') ';
+        } else {
+            $text.textContent = userFriendlyId;
+        }
     }
 }
 
