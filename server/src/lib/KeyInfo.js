@@ -13,7 +13,7 @@ class KeyInfo {
         /** @private */
         this._type = type;
         /** @private */
-        this._encryptd = encrypted;
+        this._encrypted = encrypted;
     }
 
     /**
@@ -34,7 +34,7 @@ class KeyInfo {
      * @type {boolean}
      */
     get encrypted() {
-        return this._encryptd;
+        return this._encrypted;
     }
 
     /**

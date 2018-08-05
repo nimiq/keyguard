@@ -109,6 +109,6 @@ const TRANSLATIONS = {
 };
 
 // I guess for future use?
-//if (typeof module !== 'undefined') module.exports = TRANSLATIONS;
-//else
+// if (typeof module !== 'undefined') module.exports = TRANSLATIONS;
+// else
 window.TRANSLATIONS = TRANSLATIONS;

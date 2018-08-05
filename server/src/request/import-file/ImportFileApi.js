@@ -110,7 +110,7 @@ class ImportFileApi extends PopupApi {
 
     /**
      * @param {string} passphraseOrPin
-     * @returns {Promise<?Keyguard.KeyInfo>}
+     * @returns {Promise<?KeyInfo>}
      */
     async _decryptAndStoreKey(passphraseOrPin) {
         this.$loading.style.display = 'flex';
@@ -118,7 +118,7 @@ class ImportFileApi extends PopupApi {
             const encryptionKey = Nimiq.BufferUtils.fromAscii(passphraseOrPin);
             const secret = await Nimiq.CryptoUtils.decryptOtpKdf(this._encryptedKey, encryptionKey);
             // TODO add support for BIP39 key import
-            const key = new Key(secret, Keyguard.KeyType.LEGACY);
+            const key = new Key(secret, Key.Type.LEGACY);
             await KeyStore.instance.put(key, encryptionKey);
 
             return new KeyInfo(key.id, key.type, /* encrypted */ true);

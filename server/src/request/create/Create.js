@@ -10,7 +10,7 @@
 
 class Create {
     /**
-     * @param {CreateRequest} request
+     * @param {Keyguard.CreateRequest} request
      * @param {Function} resolve
      * @param {Function} reject
      */
@@ -96,7 +96,7 @@ class Create {
     }
 
     /**
-     * @param {CreateRequest} request
+     * @param {Keyguard.CreateRequest} request
      */
     async finish(request) { // eslint-disable-line no-unused-vars
         document.body.classList.add('loading');

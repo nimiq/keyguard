@@ -1,5 +1,4 @@
 /* global Nimiq */
-/* global KeyStore */
 /* global RpcServer */
 
 /**
@@ -15,7 +14,7 @@ async function runKeyguard(RequestApiClass, options) { // eslint-disable-line no
     options = Object.assign(defaultOptions, options);
 
     // Expose KeyStore to mockup overwrites
-    //window.KeyStore = KeyStore;
+    // window.KeyStore = KeyStore;
 
     if (options.loadNimiq) {
         // Load web assembly encryption library into browser (if supported)
