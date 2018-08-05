@@ -77,7 +77,11 @@ type ImportWordsRequest = {
     defaultKeyPath: string
 }
 
-type KeyguardRequest = CreateRequest | ImportWordsRequest | SignTransactionRequest | SignMessageRequest
+type RemoveKeyRequest = {
+    keyId: string
+}
+
+type KeyguardRequest = CreateRequest | ImportWordsRequest | RemoveKeyRequest | SignTransactionRequest | SignMessageRequest
 
 
 interface Newable {

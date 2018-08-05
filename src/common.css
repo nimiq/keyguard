@@ -3,7 +3,6 @@
     flex-grow: 1;
     flex-direction: column;
     align-items: center;
-    max-height: calc(100vh - 15rem);
 }
 
 .page:target,
