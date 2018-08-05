@@ -30,7 +30,9 @@
         await new Promise(res => checkIfKeyguardReady(res));
 
         try {
-            const result = await keyguard.rpcServer.request();
+            const result = await keyguard.rpcServer.request({
+                defaultKeyPath: "m/242'/0'/0'"
+            });
             console.log('Keyguard result', result);
         } catch (e) {
             console.error(e);

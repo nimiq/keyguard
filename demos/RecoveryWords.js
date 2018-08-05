@@ -18,6 +18,8 @@ const $recoveryWordsInput = (document.querySelector('#recovery-words-input'));
 /** @type {HTMLElement} */
 const $resetFields = (document.querySelector('#reset-fields'));
 /** @type {HTMLElement} */
+const $generateCollision = (document.querySelector('.generate-collision'));
+/** @type {HTMLElement} */
 const $fillRandomly = (document.querySelector('.fill-randomly'));
 /** @type {HTMLElement} */
 const $fillCorrectly = (document.querySelector('.fill-correctly'));
@@ -64,6 +66,21 @@ function putWord(field, word, index) {
         field._onBlur();
     }, index * 50);
 }
+
+$generateCollision.addEventListener('click', async () => {
+    const generateCollision = resolve => {
+        let entropy = Nimiq.Entropy.generate();
+        for (let i = 0; !Nimiq.MnemonicUtils.isCollidingChecksum(entropy) && i < 500; i++) {
+            entropy = Nimiq.Entropy.generate();
+        }
+        if (Nimiq.MnemonicUtils.isCollidingChecksum(entropy)) {
+            resolve(entropy);
+        } else {
+            setTimeout(() => generateCollision(resolve), 50);
+        }
+    }
+    recoveryWords.entropy = await new Promise(resolve => generateCollision(resolve));
+});
 
 $resetFields.addEventListener('click', () => {
     input.$fields.forEach(field => {

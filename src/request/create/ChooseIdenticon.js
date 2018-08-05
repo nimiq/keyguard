@@ -39,7 +39,7 @@ class ChooseIdenticon extends Nimiq.Observable {
         $el = $el || document.createElement('div');
         $el.classList.add('choose-identicon');
 
-        $el.innerHTML = `<h1 data-i18n="create-choose-identicon-header1">Choose Your Account Avatar</h1>
+        $el.innerHTML = `<h1 data-i18n="create-choose-identicon-heading">Choose Your Account Avatar</h1>
             <h2>The Avatar will be 'unique' to this Account. You can not change it later.</h2>
             <div class="grow"></div>
             <div class="identicons">
