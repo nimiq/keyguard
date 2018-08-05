@@ -1,0 +1,37 @@
+.key-type-form h2.key-type-or {
+    margin: 3rem 0;
+    font-weight: 400;
+}
+
+.key-type-option input {
+    display: none;
+}
+
+.key-type-option span {
+    font-size: 1.625rem;
+}
+
+.key-type-option label {
+    cursor: pointer;
+    border: 1px solid transparent;
+    border-radius: 3.5rem;
+}
+
+.key-type-option label:hover {
+    background: rgba(255, 255, 255, .1);
+}
+
+.key-type-option input:checked + label {
+    border-color: rgba(255, 255, 255, .5);
+    background: rgba(255, 255, 255, .2);
+}
+
+.key-type-option .identicon {
+    width: 12.5rem;
+    height: 12.5rem;
+    margin: 1rem 2rem;
+}
+
+.key-type-info {
+    margin-right: 2rem;
+}

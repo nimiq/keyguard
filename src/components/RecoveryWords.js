@@ -11,9 +11,18 @@ class RecoveryWords extends Nimiq.Observable {
      */
     constructor($el, providesInput) {
         super();
-        this._mnemonic = '';
-        /** @type{Object[]} */ this.$fields = [];
+
+        /** @type {Object[]} */
+        this.$fields = [];
+
+        /** @type {HTMLElement} */
         this.$el = this._createElement($el, providesInput);
+
+        /**
+         * @type {?{words: Array<string>, type: number}}
+         * @private
+         */
+        this._mnemonic = null;
     }
 
     /**
@@ -52,6 +61,7 @@ class RecoveryWords extends Nimiq.Observable {
                 field.element.classList.add('word');
                 field.element.dataset.i = i.toString();
                 field.on(RecoveryWordsInputField.Events.VALID, this._onFieldComplete.bind(this));
+                field.on(RecoveryWordsInputField.Events.INVALID, this._onFieldIncomplete.bind(this));
                 field.on(RecoveryWordsInputField.Events.FOCUS_NEXT, this._setFocusToNextInput.bind(this));
 
                 this.$fields.push(field);
@@ -89,26 +99,40 @@ class RecoveryWords extends Nimiq.Observable {
         return this.$el;
     }
 
-    /**
-     * @param {RecoveryWordsInputField} field
-     */
-    _onFieldComplete(field) {
-        if (!field.value) return;
-
+    _onFieldComplete() {
         this._checkPhraseComplete();
     }
 
-    _checkPhraseComplete() {
-        const check = this.$fields.find(field => !field.complete);
-        if (typeof check !== 'undefined') return;
+    _onFieldIncomplete() {
+        if (this._mnemonic) {
+            this._mnemonic = null;
+            this.fire(RecoveryWords.Events.INCOMPLETE);
+        }
+    }
 
-        const words = this.$fields.map(field => field.value).join(' ');
+    _checkPhraseComplete() {
+        // Check if all fields are complete
+        if (this.$fields.some(field => !field.complete)) {
+            this._onFieldIncomplete();
+            return;
+        }
+
         try {
-            const type = Nimiq.MnemonicUtils.getMnemonicType(words); // throws on invalid mnemonic
-            this.fire(RecoveryWords.Events.COMPLETE, words, type);
+            const mnemonic = this.$fields.map(field => field.value);
+            const type = Nimiq.MnemonicUtils.getMnemonicType(mnemonic); // throws on invalid mnemonic
+            this._mnemonic = { words: mnemonic, type };
+            this.fire(RecoveryWords.Events.COMPLETE, mnemonic, type);
         } catch (e) {
-            if (e.message !== 'Invalid checksum') console.error(e); // eslint-disable-line no-console
-            else this._animateError(); // wrong words
+            if (e.message !== 'Invalid checksum') {
+                console.error(e); // eslint-disable-line no-console
+            } else {
+                // wrong words
+                if (this._mnemonic) {
+                    this._mnemonic = null;
+                    this.fire(RecoveryWords.Events.INVALID);
+                }
+                this._animateError();
+            }
         }
     }
 
@@ -128,8 +152,18 @@ class RecoveryWords extends Nimiq.Observable {
     _animateError() {
         AnimationUtils.animate('shake', this.$el);
     }
+
+    get mnemonic() {
+        return this._mnemonic ? this._mnemonic.words : null;
+    }
+
+    get mnemonicType() {
+        return this._mnemonic ? this._mnemonic.type : null;
+    }
 }
 
 RecoveryWords.Events = {
     COMPLETE: 'recovery-words-complete',
+    INCOMPLETE: 'recovery-words-incomplete',
+    INVALID: 'recovery-words-invalid',
 };
