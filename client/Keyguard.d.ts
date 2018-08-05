@@ -1,9 +1,12 @@
 declare namespace Keyguard {
     interface KeyInfo {
-        id: string;
-        type: KeyType;
-        encrypted: boolean;
-        secret: Uint8Array;
+        id: string,
+        type: KeyType,
+        encrypted: boolean,
+        userFriendlyId: string,
+        _id: string,
+        _type: KeyType,
+        _encrypted: boolean,
     }
 
     interface KeyRecord {
@@ -59,7 +62,7 @@ declare namespace Keyguard {
         message: string
     }
 
-    type KeyguardRequest = CreateRequest | SignTransactionRequest | SignMessageRequest
+    type Request = CreateRequest | SignTransactionRequest | SignMessageRequest
 
     type SignTransactionResult = {
         publicKey: string,

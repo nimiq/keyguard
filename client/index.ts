@@ -19,7 +19,6 @@ export default class KeyguardClient {
 
     /**
      * @param {boolean} [listFromAccountStore] Deprecated, list from old AccountStore
-     * @returns {
      */
     public async list(listFromAccountStore = false): Promise<Keyguard.KeyInfo[] | Keyguard.AccountInfo[]> {
         await this._connected;
