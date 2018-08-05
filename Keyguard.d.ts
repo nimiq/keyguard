@@ -79,6 +79,7 @@ type ImportWordsRequest = {
 
 type RemoveKeyRequest = {
     keyId: string
+    keyLabel?: string
 }
 
 type KeyguardRequest = CreateRequest | ImportWordsRequest | RemoveKeyRequest | SignTransactionRequest | SignMessageRequest

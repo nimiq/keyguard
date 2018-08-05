@@ -5,13 +5,13 @@
 class ConfirmRemoval extends Nimiq.Observable {
     /**
      * @param {HTMLElement} [$el]
-     * @param {string} keyId
+     * @param {RemoveKeyRequest} request
      */
-    constructor($el, keyId) {
+    constructor($el, request) {
         super();
 
-        this.$el = ConfirmRemoval._createElement($el);
-        this.keyId = keyId;
+        this.$el = ConfirmRemoval._createElement($el, request);
+        this.keyId = request.keyId;
 
         this.$cancel = /** @type {HTMLElement} */ (this.$el.querySelector('.cancel'));
         this.$remove = /** @type {HTMLButtonElement} */ (this.$el.querySelector('.remove'));
@@ -39,16 +39,17 @@ class ConfirmRemoval extends Nimiq.Observable {
 
     /**
      * @param {HTMLElement} [$el]
+     * @param {RemoveKeyRequest} request
      *
      * @returns {HTMLElement}
      */
-    static _createElement($el) {
+    static _createElement($el, request) {
         $el = $el || document.createElement('div');
         $el.classList.add('.confirm-removal');
 
         $el.innerHTML = `
             <h1>Confirm Key Removal</h1>
-            <h2>Enter your password to confirm the removal of your key. This cannot be undone.</h2>
+            <h2>Enter your password to confirm the removal of <strong class="key-label-friendlyid">your key</strong>. This cannot be undone.</h2>
             <div class="grow"></div>
             <div class="passphrase"></div>
             <div class="grow"></div>
@@ -57,6 +58,10 @@ class ConfirmRemoval extends Nimiq.Observable {
                 <button class="small remove">Remove key</button>
             </div>
         `;
+
+        /** @type {HTMLElement} */
+        const $keyLabelFriendlyId = ($el.querySelector('.key-label-friendlyid'));
+        RemoveKeyApi.get_friendly_key_description($keyLabelFriendlyId, request);
 
         I18n.translateDom($el);
 

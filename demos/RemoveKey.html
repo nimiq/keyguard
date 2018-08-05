@@ -44,6 +44,7 @@
 
         const delRequest = {
             keyId: key.id,
+            keyLabel: "Main Login"
         };
 
         const result = await keyguard.rpcServer.request(delRequest);
