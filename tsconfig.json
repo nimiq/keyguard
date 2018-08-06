@@ -57,10 +57,15 @@
   "include": [
     "Nimiq.d.ts",
     "Keyguard.d.ts",
+    "node_modules/@nimiq/rpc/types/RpcServer.d.ts",
     "src/**/*.js",
     "tests/**/*.js"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "karma.conf.js",
+    "demos",
+    "instrumented",
+    "coverage"
   ]
 }

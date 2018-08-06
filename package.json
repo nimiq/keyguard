@@ -48,6 +48,6 @@
     "typescript": "^2.9.2"
   },
   "dependencies": {
-    "rpc": "https://github.com/nimiq/rpc.git#1bd7b266cf79926fb29d9e10ff1faee11bad027b"
+    "@nimiq/rpc": "https://github.com/nimiq/rpc.git#256b329a521c273300935dab0fbec795bd178361"
   }
 }
