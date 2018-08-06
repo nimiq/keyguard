@@ -46,5 +46,8 @@
     "nyc": "^12.0.2",
     "tsc-watch": "^1.0.22",
     "typescript": "^2.9.2"
+  },
+  "dependencies": {
+    "rpc": "https://github.com/nimiq/rpc.git#1bd7b266cf79926fb29d9e10ff1faee11bad027b"
   }
 }
