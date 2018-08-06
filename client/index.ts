@@ -55,7 +55,7 @@ export default class KeyguardClient {
         return this._startPopup('sign-transaction', [request]);
     }
 
-    async signMessage(request: SignMessageRequest): Promise<Keyguard.SignMessageResult> {
+    public async signMessage(request: SignMessageRequest): Promise<Keyguard.SignMessageResult> {
         return this._startPopup('sign-message', [request]);
     }
 
