@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Remove Key</title>
+</head>
+<body>
+<link href="../src/nimiq-style.css" rel="stylesheet">
+<script src="https://cdn.nimiq-network.com/branches/key-derivation/web-offline.js"></script>
+<script src="../src/lib/Key.js"></script>
+
+<div>
+    <button>Remove Key API</button>
+    password: 1234567890
+</div>
+
+<script>
+    (async () => {
+        // Because the mocked KeyStore.prototype.get function below is defined in this
+        // window's scope, Nimiq also needs to be defined and initialized here
+        await Nimiq.WasmHelper.doImportBrowser();
+        Nimiq.GenesisConfig.test();
+    })();
+
+    document.querySelector('button').addEventListener('click', async () => {
+
+        const keyguard = window.open('../src/request/remove-key/');
+
+        // We need this check because we call the rpcServer object directly and not via RPC Client
+        function checkIfKeyguardReady(resolve) {
+            if (keyguard.rpcServer !== undefined) {
+                resolve();
+            } else {
+                self.setTimeout(() => checkIfKeyguardReady(resolve), 25);
+            }
+        }
+
+        await new Promise(res => checkIfKeyguardReady(res));
+
+        const secret = Nimiq.Entropy.generate().serialize();
+        const key = new Key(secret, Key.Type.BIP39);
+        const passphrase = Nimiq.BufferUtils.fromAscii('1234567890');
+        await keyguard.KeyStore.instance.put(key, passphrase);
+
+        const delRequest = {
+            keyId: key.id,
+            keyLabel: "Main Login"
+        };
+
+        const result = await keyguard.rpcServer.request(delRequest);
+        keyguard.close();
+
+        document.body.appendChild(document.createTextNode("Result: Key removed: " + result + "; "));
+    });
+</script>
+
+</body>
+</html>

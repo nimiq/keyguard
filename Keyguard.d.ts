@@ -55,6 +55,11 @@ type SignTransactionResult = {
     signature: string
 }
 
+type RemoveKeyRequest = {
+    keyId: string
+    keyLabel?: string
+}
+
 type CreateRequest = {
 }
 
