@@ -1,45 +1,52 @@
-/* global ConfirmRemoval */
+/* global Key */
 /* global KeyStore */
+/* global Nimiq */
+/* global PassphraseInput */
 /* global PopupApi */
-/* global RemovalWarning */
-
-class RemoveKeyApi extends PopupApi {
+class RemoveKeyApi extends PopupApi { // eslint-disable-line no-unused-vars
     /**
      * @param {RemoveKeyRequest} request
      */
     async onRequest(request) {
-        console.log(request);
         const parsedRequest = await RemoveKeyApi._parseRequest(request);
 
+        const $cancel = /** @type {HTMLElement} */ (document.querySelector('.cancel'));
+        const $remove = /** @type {HTMLButtonElement} */ (document.querySelector('.remove'));
+        $remove.disabled = true;
+        const $passphrase = /** @type {HTMLElement} */ (document.querySelector('.passphrase'));
+
+        // Set user friendly key description
+        const $keyLabelFriendlyId = /** @type {HTMLElement} */ (document.querySelector('.key-label-friendlyid'));
+        const userFriendlyId = Key.idToUserFriendlyId(request.keyId);
         /** @type {HTMLElement} */
-        this.$removalWarning = (document.getElementById(RemoveKeyApi.Pages.REMOVAL_WARNING));
-        /** @type {HTMLElement} */
-        this.$confirmRemoval = (document.getElementById(RemoveKeyApi.Pages.CONFIRM_REMOVAL));
+        if (request.keyLabel !== undefined) {
+            $keyLabelFriendlyId.textContent = `${request.keyLabel} (${userFriendlyId})`;
+        } else {
+            $keyLabelFriendlyId.textContent = userFriendlyId;
+        }
 
-        this._removalWarning = new RemovalWarning(this.$removalWarning, parsedRequest);
-        this._confirmRemoval = new ConfirmRemoval(this.$confirmRemoval, parsedRequest);
+        const passphraseInput = new PassphraseInput($passphrase);
 
-        this._removalWarning.on(RemovalWarning.Events.CONTINUE, () => {
-            window.location.hash = RemoveKeyApi.Pages.CONFIRM_REMOVAL;
-        });
-
-        this._removalWarning.on(RemovalWarning.Events.CANCEL, () => {
+        $cancel.addEventListener('click', () => {
             document.body.classList.add('loading');
             this.resolve(false);
         });
+        $remove.addEventListener('click', async () => {
+            try {
+                const passphrase = Nimiq.BufferUtils.fromAscii(passphraseInput.text);
+                await KeyStore.instance.get(request.keyId, passphrase);
 
-        this._confirmRemoval.on(ConfirmRemoval.Events.REMOVE, async () => {
-            await KeyStore.instance.remove(parsedRequest.keyId);
-            document.body.classList.add('loading');
-            this.resolve(true);
+                await KeyStore.instance.remove(parsedRequest.keyId);
+                document.body.classList.add('loading');
+                this.resolve(true);
+            } catch (e) {
+                passphraseInput.onPassphraseIncorrect();
+            }
         });
-
-        this._confirmRemoval.on(ConfirmRemoval.Events.CANCEL, () => {
-            document.body.classList.add('loading');
-            this.resolve(false);
+        passphraseInput.on(PassphraseInput.Events.VALID, /** @param {boolean} isValid */ isValid => {
+            $remove.disabled = !isValid;
         });
-
-        window.location.hash = RemoveKeyApi.Pages.REMOVAL_WARNING;
+        window.location.hash = 'remove-key';
     }
 
     /**
@@ -70,24 +77,4 @@ class RemoveKeyApi extends PopupApi {
 
         return request;
     }
-
-    /**
-     * @param {HTMLElement} $text
-     * @param {RemoveKeyRequest} request
-     */
-    static get_friendly_key_description($text, request) {
-        const userFriendlyId = Key.idToUserFriendlyId(request.keyId);
-
-        /** @type {HTMLElement} */
-        if (request.keyLabel !== undefined) {
-            $text.textContent = request.keyLabel + ' (' + userFriendlyId + ') ';
-        } else {
-            $text.textContent = userFriendlyId;
-        }
-    }
 }
-
-RemoveKeyApi.Pages = {
-    REMOVAL_WARNING: 'removal-warning',
-    CONFIRM_REMOVAL: 'confirm-removal',
-};

@@ -137,8 +137,14 @@ button,
     font-family: inherit;
 }
 
+button.destructive {
+    background-color: var(--error-color);
+    color: white;
+}
+
 button[disabled],
-[button][disabled] {
+[button][disabled],
+button.destructive[disabled] {
     background: transparent;
     box-shadow: none;
     color: white;
