@@ -1,9 +1,9 @@
 /* global Nimiq */
 /* global KeyStore */
-/* global PopupApi */
+/* global TopLevelApi */
 /* global SignTransaction */
 
-class SignTransactionApi extends PopupApi { // eslint-disable-line no-unused-vars
+class SignTransactionApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
      * @param {SignTransactionRequest} request
      */
@@ -39,7 +39,10 @@ class SignTransactionApi extends PopupApi { // eslint-disable-line no-unused-var
             throw new Error('keyPath is required');
         }
 
-        // FIXME Validate path.
+        // Check that keyPath is valid.
+        if (!Nimiq.ExtendedPrivateKey.isValidPath(request.keyPath)) {
+            throw new Error('Invalid keyPath');
+        }
 
         // Parse transaction.
         const transaction = SignTransactionApi._parseTransaction(request);
@@ -83,13 +86,13 @@ class SignTransactionApi extends PopupApi { // eslint-disable-line no-unused-var
      * @private
      */
     static _parseTransaction(request) {
-        const sender = Nimiq.Address.fromString(request.sender);
+        const sender = new Nimiq.Address(request.sender);
         const senderType = request.senderType || Nimiq.Account.Type.BASIC;
-        const recipient = Nimiq.Address.fromString(request.recipient);
+        const recipient = new Nimiq.Address(request.recipient);
         const recipientType = request.recipientType || Nimiq.Account.Type.BASIC;
         const flags = request.flags || Nimiq.Transaction.Flag.NONE;
-        const data = (request.data && Nimiq.BufferUtils.fromBase64(request.data)) || new Uint8Array(0);
-        const networkId = Nimiq.GenesisConfig.CONFIGS[request.network].NETWORK_ID;
+        const data = request.data || new Uint8Array(0);
+        const networkId = request.networkId || Nimiq.GenesisConfig.NETWORK_ID;
         return new Nimiq.ExtendedTransaction(
             sender,
             senderType,

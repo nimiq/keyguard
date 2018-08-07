@@ -1,8 +1,8 @@
 /* global Nimiq */
-/* global PopupApi */
+/* global TopLevelApi */
 /* global ImportWords */
 
-class ImportWordsApi extends PopupApi { // eslint-disable-line no-unused-vars
+class ImportWordsApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
      * @param {ImportWordsRequest} request
      */

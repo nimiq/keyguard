@@ -82,13 +82,13 @@
     lodash "^4.17.5"
     to-fast-properties "^2.0.0"
 
-"@nimiq/core-types@^0.1.7":
-  version "0.1.7"
-  resolved "https://registry.yarnpkg.com/@nimiq/core-types/-/core-types-0.1.7.tgz#1828fbdacde4b5d11e414568370c82ae640c9eb1"
+"@nimiq/core-types@^0.1.8":
+  version "0.1.8"
+  resolved "https://registry.yarnpkg.com/@nimiq/core-types/-/core-types-0.1.8.tgz#f1873df6e28e4eef7f11ef2a05932e324b5c0431"
 
-"@nimiq/rpc@^0.0.1":
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/@nimiq/rpc/-/rpc-0.0.1.tgz#467780b15be0cbe7afb0ae7683d8aec3fc303b54"
+"@nimiq/rpc@^0.0.3":
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/@nimiq/rpc/-/rpc-0.0.3.tgz#8f4f7e3d5ebbbb59a3bc120e37a1ec38b4e62e5a"
 
 "@types/jasmine@^2.8.8":
   version "2.8.8"

@@ -87,6 +87,10 @@ class SignTransaction {
 
         /** @type {HTMLDivElement} */
         this.$error = ($confirmForm.querySelector('#error'));
+
+        /** @type HTMLAnchorElement */
+        const $cancel = ($confirmForm.querySelector('a.cancel'));
+        $cancel.addEventListener('click', () => reject(new Error('Canceled')));
     }
 
     /**
@@ -115,8 +119,8 @@ class SignTransaction {
             const publicKey = key.derivePublicKey(request.keyPath);
             const signature = key.sign(request.keyPath, request.transaction.serializeContent());
             const result = /** @type {SignTransactionResult} */ {
-                publicKey: Nimiq.BufferUtils.toBase64(publicKey.serialize()),
-                signature: Nimiq.BufferUtils.toBase64(signature.serialize()),
+                publicKey: publicKey.serialize(),
+                signature: signature.serialize(),
             };
             resolve(result);
         } catch (e) {
