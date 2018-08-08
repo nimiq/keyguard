@@ -26,13 +26,20 @@ class RecoveryWords extends Nimiq.Observable {
     }
 
     /**
+     * @param {string[]} words
+     */
+    setWords(words) {
+        for (let i = 0; i < 24; i++) {
+            this.$fields[i].textContent = words[i];
+        }
+    }
+
+    /**
      * @param {Nimiq.Entropy | Uint8Array} entropy
      */
     set entropy(entropy) {
         const words = Nimiq.MnemonicUtils.entropyToMnemonic(entropy, Nimiq.MnemonicUtils.DEFAULT_WORDLIST);
-        for (let i = 0; i < 24; i++) {
-            this.$fields[i].textContent = words[i];
-        }
+        this.setWords(words);
     }
 
     /**

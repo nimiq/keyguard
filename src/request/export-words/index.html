@@ -14,61 +14,38 @@
     <script defer src="../../lib/KeyStore.js"></script>
     <script defer src="../../lib/AccountStore.js"></script>
     <script defer src="../../lib/RpcServer.js"></script>
-    <script defer src="../../lib/Iqons.js"></script>
     <script defer src="../../lib/BrowserDetection.js"></script>
     <script defer src="../../lib/I18n.js"></script>
     <script defer src="../../lib/CookieJar.js"></script>
     <script defer src="../../lib/AnimationUtils.js"></script>
     <script defer src="../../translations/index.js"></script>
     <script defer src="../../common.js"></script>
-    <script defer src="../../components/Identicon.js"></script>
-    <script defer src="../../components/DownloadKeyfile.js"></script>
-    <script defer src="../../components/PrivacyAgent.js"></script>
-    <script defer src="../../components/PrivacyWarning.js"></script>
-    <script defer src="../../components/RecoveryWords.js"></script>
-    <script defer src="../../components/ValidateWords.js"></script>
-    <script defer src="../../components/RecoveryWordsInputField.js"></script>
     <script defer src="../../components/BackupRecoveryWords.js"></script>
+    <script defer src="../../components/PrivacyWarning.js"></script>
     <script defer src="../../components/PassphraseInput.js"></script>
-    <script defer src="../../components/SetPassphrase.js"></script>
+    <script defer src="../../components/RecoveryWords.js"></script>
+    <script defer src="../../components/RecoveryWordsInputField.js"></script>
+    <script defer src="../../components/ValidateWords.js"></script>
     <script defer src="../PopupApi.js"></script>
-    <script defer src="ChooseIdenticon.js"></script>
-    <script defer src="Create.js"></script>
-    <script defer src="CreateApi.js"></script>
+    <script defer src="ExportWordsApi.js"></script>
+    <script defer src="KeyPrivacy.js"></script>
     <script defer src="index.js"></script>
 
     <link rel="stylesheet" href="../../nimiq-style.css">
     <link rel="stylesheet" href="../../common.css">
-    <link rel="stylesheet" href="../../components/PassphraseInput.css">
     <link rel="stylesheet" href="../../components/RecoveryWords.css">
     <link rel="stylesheet" href="../../components/RecoveryWordsInputField.css">
     <link rel="stylesheet" href="../../components/ValidateWords.css">
     <link rel="stylesheet" href="../../components/PrivacyAgent.css">
-    <link rel="stylesheet" href="./ChooseIdenticon.css">
 </head>
 <body>
 <div id="app">
 
-    <div id="choose-identicon" class="page"></div>
-
-    <form id="set-passphrase" class="page"></form>
-
-    <div id="download-keyfile" class="page"></div>
-
-    <div id="privacy-agent" class="page">
-        <h1 data-18n="create-backup-account-heading">Backup your Account</h1>
-        <div class="grow"></div>
-        <div class="agent"></div>
-        <div class="grow"></div>
-    </div>
+    <div id="passphrase-privacy-agent" class="page"></div>
 
     <div id="recovery-words" class="page"></div>
 
     <div id="validate-words" class="page"></div>
-
-    <div id="loading" class="page">
-        <div class="loading-animation"></div>
-    </div>
 
 </div>
 </body>
