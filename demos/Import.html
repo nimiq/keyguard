@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Import</title>
+    <script src="../node_modules/@nimiq/rpc/dist/rpc.umd.js"></script>
 </head>
 <body>
 <link href="../src/nimiq-style.css" rel="stylesheet">
@@ -18,19 +19,11 @@
 
     async function requestImport(type) {
         const keyguard = window.open(`../src/request/import-${type}/`, 'keyguard');
-
-        // We need this check because we call the rpcServer object directly and not via RPC Client
-        function checkIfKeyguardReady(resolve) {
-            if (keyguard.rpcServer !== undefined) {
-                resolve();
-            } else {
-                self.setTimeout(() => checkIfKeyguardReady(resolve), 25);
-            }
-        }
-        await new Promise(res => checkIfKeyguardReady(res));
+        const rpc = new Rpc.PostMessageRpcClient(keyguard, '*');
+        await rpc.init();
 
         try {
-            const result = await keyguard.rpcServer.request({
+            const result = await rpc.call('request', {
                 defaultKeyPath: "m/242'/0'/0'"
             });
             console.log('Keyguard result', result);

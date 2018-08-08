@@ -23,6 +23,7 @@ async function runKeyguard(RequestApiClass, options) { // eslint-disable-line no
     // Close window if user navigates back to loading screen
     window.addEventListener('hashchange', () => {
         if (window.location.hash === '') {
+            // FIXME !! this doesn't work for redirects !!
             window.close();
         }
     });

@@ -8,6 +8,8 @@
     <script src="../src/lib/Key.js"></script>
     <script src="../src/lib/KeyStore.js"></script>
     <script src="../node_modules/@nimiq/rpc/dist/rpc.umd.js"></script>
+    <script src="../client/RequestBehavior.js"></script>
+    <script src="../client/KeyguardClient.js"></script>
 
     <style>
         .row {
@@ -51,8 +53,8 @@
         Nimiq.GenesisConfig.test();
     })();
 
-    const redirectClient = new Rpc.RedirectRpcClient('../src/request/sign-transaction/', '*');
-    redirectClient.onResponse('request', (result, id, state) => {
+    const client = new KeyguardClient();
+    client.on(KeyguardClient.Command.SIGN_TRANSACTION, (result, state) => {
         console.log('Keyguard result', result);
         console.log('State', state);
 
@@ -60,7 +62,7 @@
         if (state.keyId) {
             KeyStore.instance.remove(state.keyId);
         }
-    }, (error, id, state) => {
+    }, (error, state) => {
         console.error('Keyguard error', error);
         console.log('State', state);
 
@@ -69,15 +71,15 @@
             KeyStore.instance.remove(state.keyId);
         }
     });
-    redirectClient.init();
+    client.init();
 
     document.querySelector('button#redirect').addEventListener('click', async () => {
         signTransactionRedirect(await generateRequest());
     });
 
     document.querySelector('button#popup').addEventListener('click', async () => {
-        const popup = window.open('../src/request/sign-transaction/', 'keyguard');
-        signTransactionPopup(popup, await generateRequest());
+        client.createPopup(KeyguardClient.Command.SIGN_TRANSACTION);
+        signTransactionPopup(await generateRequest());
     });
 
     async function generateRequest() {
@@ -109,18 +111,13 @@
     }
 
     function signTransactionRedirect(txRequest) {
-        const returnUrl = `${location.protocol}//${location.hostname}${location.pathname}`;
-        redirectClient.callAndSaveLocalState(returnUrl, { keyId: txRequest.keyId }, 'request', txRequest);
+        return client.signTransaction(txRequest, RedirectRequestBehavior.withLocalState({ keyId: txRequest.keyId }));
     }
 
-    async function signTransactionPopup(popup, txRequest) {
-        const popupClient = new Rpc.PostMessageRpcClient(popup, '*');
-        await popupClient.init();
-
+    async function signTransactionPopup(txRequest) {
         try {
-            const result = await popupClient.call('request', txRequest);
+            const result = await client.signTransaction(txRequest);
             console.log('Keyguard result', result);
-
             document.querySelector('#result').textContent = 'TX signed';
         } catch (e) {
             console.error('Keyguard error', e);
@@ -128,7 +125,6 @@
         }
 
         KeyStore.instance.remove(txRequest.keyId);
-        popup.close();
     }
 </script>
 
