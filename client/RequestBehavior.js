@@ -29,7 +29,7 @@ class RequestBehavior {
      * @param {string} endpoint
      * @returns {string}
      */
-    static getAllowedOrigin(endpoint) {
+    static getAllowedOrigin(endpoint) { // eslint-disable-line no-unused-vars
         // FIXME derive from endpoint url
         return '*';
     }
@@ -42,7 +42,6 @@ class RequestBehavior {
     static getRequestUrl(endpoint, command) {
         return `${endpoint}/request/${command}/`;
     }
-
 }
 /** @enum {number} */
 RequestBehavior.Type = {
