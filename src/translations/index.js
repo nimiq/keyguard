@@ -45,16 +45,15 @@ const TRANSLATIONS = {
         'import-file-enter-pin-subheading': 'Please enter your PIN to unlock your Account Access File.',
 
         'sign-tx-wrong-passphrase': 'Wrong Passphrase, please try again',
-        'sign-tx-heading': 'Authorize Transaction',
-        'sign-tx-subheading': 'Please confirm the following transaction:',
+        'sign-tx-heading': 'New Transaction',
         'sign-tx-error-wrong-passphrase': 'Wrong Passphrase, please try again',
         'sign-tx-button-confirm': 'Confirm transaction',
-        'sign-tx-incl': 'incl.',
+        'sign-tx-includes': 'includes',
         'sign-tx-fee': 'fee',
-
-        'tx-from': 'From',
-        'tx-to': 'To',
-        'tx-data': 'Data',
+        'sign-tx-youre-sending': 'You\'re sending',
+        'sign-tx-to': 'to',
+        'sign-tx-pay-with': 'Pay with',
+        'sign-tx-passphrase-prompt': 'Enter your passphrase',
 
     },
     de: {
@@ -106,12 +105,15 @@ const TRANSLATIONS = {
         'import-file-enter-pin-subheading': 'Bitte gib deine PIN ein um deine Zugangsdatei zu entschlüsseln.',
 
         'sign-tx-wrong-passphrase': 'Falsche Passphrase, bitte versuche es nochmal',
-        'sign-tx-heading': 'Überweisung Authorisieren',
-        'sign-tx-subheading': 'Bitte bestätige die folgende Überweisung:',
+        'sign-tx-heading': 'Neue Überweisung',
         'sign-tx-error-wrong-passphrase': 'Falsche Passphrase, bitte versuche es nochmal',
         'sign-tx-button-confirm': 'Überweisung bestätigen',
-        'sign-tx-incl': 'inkl.',
+        'sign-tx-includes': 'inklusive',
         'sign-tx-fee': 'Gebühr',
+        'sign-tx-youre-sending': 'Du sendest',
+        'sign-tx-to': 'an',
+        'sign-tx-pay-with': 'Zahle mit',
+        'sign-tx-passphrase-prompt': 'Gib deine Passphrase ein',
 
         'tx-from': 'Von',
         'tx-to': 'An',

@@ -3,7 +3,7 @@
 /* global Identicon */
 /* global PassphraseInput */
 
-class SignTransaction {
+class BaseLayout {
     /**
      * @param {ParsedSignTransactionRequest} request
      * @param {Function} resolve
@@ -11,29 +11,29 @@ class SignTransaction {
      */
     constructor(request, resolve, reject) {
         /** @type {HTMLDivElement} */
-        const $transaction = (document.querySelector('#confirm-transaction .transaction'));
+        const $pageBody = (document.querySelector('#confirm-transaction .transaction'));
 
         /** @type {HTMLDivElement} */
-        const $senderIdenticon = ($transaction.querySelector('#sender-identicon'));
+        const $senderIdenticon = ($pageBody.querySelector('#sender-identicon'));
         /** @type {HTMLDivElement} */
-        const $recipientIdenticon = ($transaction.querySelector('#recipient-identicon'));
+        const $recipientIdenticon = ($pageBody.querySelector('#recipient-identicon'));
 
         /** @type {HTMLDivElement} */
-        const $senderLabel = ($transaction.querySelector('#sender-label'));
+        const $senderLabel = ($pageBody.querySelector('#sender-label'));
         /** @type {HTMLDivElement} */
-        const $recipientLabel = ($transaction.querySelector('#recipient-label'));
+        const $recipientLabel = ($pageBody.querySelector('#recipient-label'));
 
         /** @type {HTMLDivElement} */
-        const $senderAddress = ($transaction.querySelector('#sender-address'));
+        const $senderAddress = ($pageBody.querySelector('#sender-address'));
         /** @type {HTMLDivElement} */
-        const $recipientAddress = ($transaction.querySelector('#recipient-address'));
+        const $recipientAddress = ($pageBody.querySelector('#recipient-address'));
 
         /** @type {HTMLDivElement} */
-        const $value = ($transaction.querySelector('#value'));
+        const $value = ($pageBody.querySelector('#value'));
         /** @type {HTMLDivElement} */
-        const $fee = ($transaction.querySelector('#fee'));
+        const $fee = ($pageBody.querySelector('#fee'));
         /** @type {HTMLDivElement} */
-        const $data = ($transaction.querySelector('#data'));
+        const $data = ($pageBody.querySelector('#data'));
 
         // Set sender data.
         const transaction = request.transaction;
@@ -46,30 +46,42 @@ class SignTransaction {
         }
 
         // Set recipient data.
-        const recipientAddress = transaction.recipient.toUserFriendlyAddress();
-        new Identicon(recipientAddress, $recipientIdenticon); // eslint-disable-line no-new
-        $recipientAddress.textContent = recipientAddress;
-        if (request.recipientLabel) {
-            $recipientLabel.classList.remove('display-none');
-            $recipientLabel.textContent = request.recipientLabel;
+        if ($recipientAddress) {
+            const recipientAddress = transaction.recipient.toUserFriendlyAddress();
+            if (request.layout === 'checkout') {
+                new Identicon(undefined, $recipientIdenticon); // eslint-disable-line no-new
+            } else {
+                new Identicon(recipientAddress, $recipientIdenticon); // eslint-disable-line no-new
+            }
+            $recipientAddress.textContent = recipientAddress;
+            if (request.recipientLabel) {
+                $recipientLabel.classList.remove('display-none');
+                $recipientLabel.textContent = request.recipientLabel;
+            }
         }
 
         // Set value and fee.
         const total = transaction.value + transaction.fee;
-        $value.textContent = Nimiq.Policy.satoshisToCoins(total).toString();
-        if (transaction.fee > 0) {
+        const totalNim = Nimiq.Policy.satoshisToCoins(total);
+        let totalNimFormatted = '';
+
+        if (parseFloat(totalNim.toFixed(2)) === totalNim) totalNimFormatted = totalNim.toFixed(2);
+        else totalNimFormatted = totalNim.toString();
+
+        $value.textContent = totalNimFormatted;
+        if ($fee && transaction.fee > 0) {
             $fee.textContent = Nimiq.Policy.satoshisToCoins(transaction.fee).toString();
             /** @type {HTMLDivElement} */
-            const $feeSection = ($transaction.querySelector('.fee-section'));
+            const $feeSection = ($pageBody.querySelector('.fee-section'));
             $feeSection.classList.remove('display-none');
         }
 
         // Set transaction extra data.
-        if (transaction.data.byteLength > 0) {
+        if ($data && transaction.data.byteLength > 0) {
             // FIXME Detect and use proper encoding.
             $data.textContent = Nimiq.BufferUtils.toAscii(transaction.data);
             /** @type {HTMLDivElement} */
-            const $dataSection = ($transaction.querySelector('.data-section'));
+            const $dataSection = ($pageBody.querySelector('.data-section'));
             $dataSection.classList.remove('display-none');
         }
 
@@ -81,16 +93,37 @@ class SignTransaction {
         /** @type {HTMLDivElement} */
         const $passphraseInput = ($confirmForm.querySelector('#passphrase-input'));
         this._passphraseInput = new PassphraseInput($passphraseInput);
+
+        /** @type {HTMLButtonElement} */
+        const $submitButton = ($confirmForm.querySelector('.submit-button'));
+
         if (!request.keyInfo.encrypted) {
             $passphraseInput.classList.add('display-none');
+            $submitButton.classList.remove('display-none');
+        } else {
+            this._passphraseInput.input.addEventListener('input', () => {
+                $submitButton.classList.toggle('display-none', this._passphraseInput.input.value.length === 0);
+            });
         }
 
         /** @type {HTMLDivElement} */
         this.$error = ($confirmForm.querySelector('#error'));
 
+        /** @type {HTMLAnchorElement} */
+        const $backButton = (document.querySelector('.page-header .page-header-back-button'));
+        if ($backButton) $backButton.addEventListener('click', () => reject(new Error('Canceled')));
+
         /** @type HTMLAnchorElement */
-        const $cancel = ($confirmForm.querySelector('a.cancel'));
-        $cancel.addEventListener('click', () => reject(new Error('Canceled')));
+        const $formCancel = ($confirmForm.querySelector('a.cancel'));
+        $formCancel.addEventListener('click', () => reject(new Error('Canceled')));
+
+        /** @type {HTMLElement} */
+        const $appName = (document.querySelector('#app-name'));
+        $appName.textContent = request.appName;
+        /** @type HTMLAnchorElement */
+        const $cancelLink = ($appName.parentNode);
+        $cancelLink.classList.remove('display-none');
+        $cancelLink.addEventListener('click', () => window.close());
     }
 
     /**
@@ -105,7 +138,7 @@ class SignTransaction {
         event.preventDefault();
 
         document.body.classList.add('loading');
-        this.$error.classList.add('hidden');
+        this.$error.classList.add('display-none');
 
         try {
             // XXX Passphrase encoding
@@ -129,17 +162,17 @@ class SignTransaction {
 
             // Assume the passphrase was wrong
             this._passphraseInput.onPassphraseIncorrect();
-            this.$error.classList.remove('hidden');
+            this.$error.classList.remove('display-none');
         }
     }
 
     run() {
         // Go to start page
-        window.location.hash = SignTransaction.Pages.CONFIRM_TRANSACTION;
+        window.location.hash = BaseLayout.Pages.CONFIRM_TRANSACTION;
         this._passphraseInput.focus();
     }
 }
 
-SignTransaction.Pages = {
+BaseLayout.Pages = {
     CONFIRM_TRANSACTION: 'confirm-transaction',
 };

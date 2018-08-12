@@ -1,15 +1,24 @@
 /* global Nimiq */
 /* global KeyStore */
 /* global TopLevelApi */
-/* global SignTransaction */
+/* global LayoutStandard */
+/* global LayoutCheckout */
 
-class SignTransactionApi extends TopLevelApi { // eslint-disable-line no-unused-vars
+class SignTransactionApi extends TopLevelApi {
     /**
      * @param {SignTransactionRequest} request
      */
     async onRequest(request) {
         const parsedRequest = await SignTransactionApi._parseRequest(request);
-        const handler = new SignTransaction(parsedRequest, this.resolve.bind(this), this.reject.bind(this));
+        const $layoutContainer = document.getElementById('layout-container');
+
+        const handler = new SignTransactionApi.Layouts[parsedRequest.layout](
+            $layoutContainer,
+            parsedRequest,
+            this.resolve.bind(this),
+            this.reject.bind(this),
+        );
+
         handler.run();
     }
 
@@ -21,6 +30,11 @@ class SignTransactionApi extends TopLevelApi { // eslint-disable-line no-unused-
     static async _parseRequest(request) {
         if (!request) {
             throw new Error('Empty request');
+        }
+
+        // Check that the layout is valid
+        if (request.layout && !SignTransactionApi.Layouts[request.layout]) {
+            throw new Error('Invalid selected layout');
         }
 
         // Check that keyId is given.
@@ -70,6 +84,10 @@ class SignTransactionApi extends TopLevelApi { // eslint-disable-line no-unused-
         }
 
         return /** @type {ParsedSignTransactionRequest} */ {
+            layout: request.layout || 'standard',
+            shopOrigin: request.shopOrigin,
+            appName: request.appName,
+
             keyInfo,
             keyPath: request.keyPath,
             transaction,
@@ -108,3 +126,9 @@ class SignTransactionApi extends TopLevelApi { // eslint-disable-line no-unused-
         );
     }
 }
+
+SignTransactionApi.Layouts = {
+    standard: LayoutStandard,
+    checkout: LayoutCheckout,
+    // 'cashlink': LayoutCashlink,
+};

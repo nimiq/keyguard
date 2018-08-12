@@ -20,8 +20,10 @@
     <script defer src="../../components/PassphraseInput.js"></script>
     <script defer src="../../components/Identicon.js"></script>
     <script defer src="../TopLevelApi.js"></script>
+    <script defer src="BaseLayout.js"></script>
+    <script defer src="LayoutStandard.js"></script>
+    <script defer src="LayoutCheckout.js"></script>
     <script defer src="SignTransactionApi.js"></script>
-    <script defer src="SignTransaction.js"></script>
     <script defer src="index.js"></script>
 
     <link rel="stylesheet" href="../../nimiq-style.css">
@@ -32,64 +34,30 @@
 <body>
     <div class="header-top">
         <div class="nimiq-app-name">
-            <span class="nimiq-logo">NIMIQ KEYGUARD</span>
+            <span class="nimiq-logo"></span>
         </div>
     </div>
 
     <div id="app">
+        <div style="flex-grow: 1;"></div>
+
         <div id="confirm-transaction" class="page">
-            <h1 data-i18n="sign-tx-heading">Authorize Transaction</h1>
-            <h2 data-i18n="sign-tx-subheading">Please confirm the following transaction:</h2>
+            <div id="layout-container"></div>
 
-            <div class="transaction">
-                <div class="center">
-                    <div id="sender-identicon"></div>
-                    <i class="arrow icon"><img src='data:image/svg+xml,<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="24px" height="24px" viewBox="0 0 24 24" enable-background="new 0 0 24 24" xml:space="preserve" fill="white"><path d="M8.59,16.59L13.17,12L8.59,7.41L10,6l6,6l-6,6L8.59,16.59z"/><path fill="none" d="M0,0h24v24H0V0z"/></svg>'></i>
-                    <div id="recipient-identicon"></div>
-                </div>
-
-                <div class="center total">
-                    <div class="value">
-                        <span id="value"></span>&nbsp;NIM
-                    </div>
-                    <div class="fee-section display-none">
-                        <span data-i18n="sign-tx-incl">incl.</span>&nbsp;<span id="fee"></span>&nbsp;NIM&nbsp;<span data-i18n="sign-tx-fee">fee</span>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <label data-i18n="tx-from">From</label>
-                    <div class="row-data">
-                        <div class="label display-none" id="sender-label"></div>
-                        <div class="address" id="sender-address"></div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <label data-i18n="tx-to">To</label>
-                    <div class="row-data">
-                        <div class="label display-none" id="recipient-label"></div>
-                        <div class="address" id="recipient-address"></div>
-                    </div>
-                </div>
-
-                <div class="data-section display-none row">
-                    <label data-i18n="tx-data">Data</label>
-                    <div class="row-data">
-                        <div class="data" id="data"></div>
-                    </div>
-                </div>
+            <div class="page-footer">
+                <form class="confirm-form center">
+                    <a class="cancel icon-cancel" cancel-passphrase></a>
+                    <div class="prompt" data-i18n="sign-tx-passphrase-prompt">Enter your passphrase</div>
+                    <div id="passphrase-input"></div>
+                    <div id="error" data-i18n="sign-tx-error-wrong-passphrase" class="display-none">Wrong Passphrase, please try again</div>
+                    <button class="submit-button display-none" data-i18n="sign-tx-button-confirm">Confirm transaction</button>
+                </form>
             </div>
-
-            <div class="grow"></div>
-
-            <form class="confirm-form center">
-                <div id="passphrase-input"></div>
-                <div id="error" data-i18n="sign-tx-error-wrong-passphrase" class="hidden">Wrong Passphrase, please try again</div>
-                <button data-i18n="sign-tx-button-confirm">Confirm transaction</button>
-                <a class="secondary cancel">Cancel</a>
-            </form>
         </div>
+
+        <a class="global-close display-none">Back to <span id="app-name"></span></a>
+
+        <div style="flex-grow: 1;"></div>
 
         <!-- Default and loading screen -->
         <div id="loading" class="page">
