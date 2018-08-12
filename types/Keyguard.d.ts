@@ -22,6 +22,10 @@ type AccountRecord = AccountInfo & {
 }
 
 type SignTransactionRequest = {
+    layout?: 'standard' | 'checkout' | 'cashlink'
+    shopOrigin?: string
+    appName: string
+
     keyId: string
     keyPath: string
     keyLabel?: string
@@ -41,6 +45,10 @@ type SignTransactionRequest = {
 }
 
 type ParsedSignTransactionRequest = {
+    layout: 'standard' | 'checkout' | 'cashlink'
+    shopOrigin?: string
+    appName: string
+
     keyInfo: KeyInfo
     keyPath: string
     transaction: Nimiq.ExtendedTransaction

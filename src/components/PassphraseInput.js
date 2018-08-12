@@ -8,7 +8,7 @@ class PassphraseInput extends Nimiq.Observable {
      * @param {string} placeholder
      * @param {boolean} [showStrengthIndicator]
      */
-    constructor($el, placeholder = 'Enter Passphrase', showStrengthIndicator = false) {
+    constructor($el, placeholder = '••••••••', showStrengthIndicator = false) {
         super();
         this._showStrengthIndicator = showStrengthIndicator;
         this.$el = PassphraseInput._createElement($el);
@@ -67,6 +67,11 @@ class PassphraseInput extends Nimiq.Observable {
         return this.$el;
     }
 
+    /** @type {HTMLInputElement} */
+    get input() {
+        return this.$input;
+    }
+
     focus() {
         this.$input.focus();
     }
@@ -80,7 +85,8 @@ class PassphraseInput extends Nimiq.Observable {
     }
 
     async onPassphraseIncorrect() {
-        return AnimationUtils.animate('shake', this.$inputContainer);
+        await AnimationUtils.animate('shake', this.$inputContainer);
+        this.reset();
     }
 
     /** @param {boolean} [becomeVisible] */

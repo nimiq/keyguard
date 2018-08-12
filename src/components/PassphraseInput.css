@@ -1,6 +1,5 @@
 .passphrase-input {
     width: 100%;
-    max-width: var(--max-width);
     margin: 2rem 0;
 }
 
@@ -10,20 +9,34 @@
 }
 
 .passphrase-input input {
-    padding-right: 5rem;
+    padding-left: 32px;
+    padding-right: 32px;
     margin: 0;
+    border: none !important;
+    font-size: 24px;
+    letter-spacing: 10px;
+    max-width: unset;
+}
+
+.passphrase-input input::placeholder {
+    letter-spacing: 10px;
+}
+
+.passphrase-input input[type="text"] {
+    letter-spacing: 2px;
 }
 
 .passphrase-input .input-container.shake input {
-    border-bottom: .125rem solid var(--error-color) !important;
+    color: var(--error-color);
 }
 
 .passphrase-input .eye-button {
     position: absolute;
-    top: 0;
-    right: -.375rem;
-    cursor: pointer;
-    background-size: 55%;
+    top: 4px;
+    right: 0;
+    width: 26px;
+    height: 26px;
+    background-size: 24px;
 }
 
 .passphrase-input button {

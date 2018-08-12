@@ -1,74 +1,206 @@
-.transaction {
+#layout-container {
     display: flex;
-    flex-direction: inherit;
-}
-
-.transaction .center {
-    flex-direction: row;
-}
-
-.transaction .identicon {
-    width: 15rem;
-    height: 17.5rem;
-}
-
-.transaction #signer-identicon {
-    width: 6rem;
-    margin-left: 3.5rem;
-    margin-right: -2.5rem;
-}
-
-.transaction .arrow {
-    margin: 0 2rem;
-}
-
-.transaction .arrow img {
-    height: 4rem;
-    width: 4rem;
-}
-
-.transaction .total {
-    margin: 2.25rem 0;
     flex-direction: column;
 }
 
-.transaction .total .value {
-    font-size: 3.25rem;
+/*
+#######################################
+#### S T A N D A R D   L A Y O U T ####
+#######################################
+*/
+
+.layout-standard {
+    margin-bottom: 37px; /* + 8px from .confirm-form = 45px */
+}
+
+.transaction .accounts {
+    flex-direction: row;
+    align-items: flex-start;
+    background: #fafafa;
+    padding: 24px 16px;
+}
+
+.transaction .account {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.transaction .account .identicon {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 16px;
+}
+
+.transaction .account .label {
+    font-size: 18px;
+    line-height: 20px;
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+
+.transaction .arrow {
+    margin: 24px 8px;
+    height: 16px;
+    width: 16px;
+}
+
+.transaction .total {
+    margin: 20px 0 16px 0;
+    flex-direction: column;
+}
+
+.transaction .total .value #value {
+    font-size: 64px;
+    font-weight: 300;
 }
 
 .transaction .total .fee-section {
-    font-size: 1.5rem;
+    font-size: 14px;
+    margin-top: 16px;
 }
 
-.transaction .row {
-    margin: 1.75rem 0;
-    align-items: flex-start;
+.transaction .total .fee-section span:not(.nim-symbol) {
+    opacity: 0.5;
 }
 
-.transaction label {
-    display: inline-block;
-    width: 12rem;
+.transaction .data-section {
+    line-height: 20px;
+    padding: 0 24px;
+}
+
+/*
+#######################################
+#### C H E C K O U T   L A Y O U T ####
+#######################################
+*/
+
+.layout-checkout h1 {
+    font-size: 24px;
+    font-weight: 300;
+    text-align: left;
+    padding: 32px 32px 24px 32px;
+}
+
+.layout-checkout h1 strong {
+    font-weight: 500;
+}
+
+.layout-checkout h1 .nim-symbol::before {
+    opacity: 1;
+}
+
+.layout-checkout .shop-account {
+    position: relative;
+}
+
+.layout-checkout .shop-account .identicon-cover {
+    position: absolute;
+    left: 41px;
+    top: 9px;
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    background-color: white;
+    /* background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z" fill="%23000"/><path d="M0 0h24v24H0z" fill="none"/></svg>'); */ /* Shopping Cart icon */
+    background-image: url('https://amazon.com/favicon.ico');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 36px;
+}
+
+.layout-checkout .account {
+    flex-direction: row;
+    padding: 0 32px;
+}
+
+.layout-checkout .account .identicon {
+    margin-right: 16px;
+    margin-bottom: 0;
+    flex-shrink: 0;
+}
+
+.layout-checkout .account-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.layout-checkout .account .label {
+    margin-bottom: 4px;
+}
+
+.layout-checkout .address {
+    line-height: 20px;
+}
+
+.layout-checkout .data-section {
+    padding: 20px 32px 0 32px;
+    text-align: left;
+}
+
+.layout-checkout .sender-section {
+    display: flex;
+    flex-direction: column;
+    margin-top: 40px;
+    padding-bottom: 24px;
+    background: #fafafa;
+    border-top: solid 1px #f0f0f0;
+    border-bottom: solid 1px #f0f0f0;
+}
+
+.layout-checkout .sender-section h2 {
+    padding: 24px 24px 32px 24px;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
-    font-size: 1.75rem;
-    font-weight: bold;
-    opacity: 0.76;
+    font-size: 14px;
+    line-height: 0.86;
+    letter-spacing: 1.5px;
+    font-weight: 400;
 }
 
-.transaction .label {
-    margin-bottom: 1.25rem;
+/*
+#################################
+#### C O N F I R M   F O R M ####
+#################################
+*/
+
+.confirm-form {
+    position: relative;
+    width: 100%;
+    margin: 8px;
+    padding: 10px;
+    background: #724ceb;
+    border-radius: 4px;
+    color: white;
 }
 
-.transaction .address {
-    padding: 1rem 0;
-    display: inline;
+.confirm-form .cancel {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    opacity: 0.5;
+    width: 26px;
+    height: 26px;
+    background-size: 30px;
+}
+
+.confirm-form .cancel:hover {
+    opacity: 0.8;
+}
+
+.confirm-form .prompt {
+    text-transform: uppercase;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    line-height: 0.86;
+    margin-top: 7px;
 }
 
 .confirm-form .passphrase-input {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-    margin-bottom: 0;
+    margin: 40px 0;
 }
 
 .confirm-form #error {
