@@ -52,12 +52,13 @@ class LayoutStandard extends BaseLayout { // eslint-disable-line no-unused-vars
                         <span id="value"></span>
                         <span class="nim-symbol"></span>
                     </div>
-                    <div class="fee-section display-none">
-                        <span data-i18n="sign-tx-includes">includes</span>
-                        <span id="fee"></span>
-                        <span class="nim-symbol"></span>
-                        <span data-i18n="sign-tx-fee">fee</span>
-                    </div>
+                </div>
+
+                <div class="center fee-section display-none">
+                    <span data-i18n="sign-tx-includes">includes</span>
+                    <span id="fee"></span>
+                    <span class="nim-symbol"></span>
+                    <span data-i18n="sign-tx-fee">fee</span>
                 </div>
 
                 <div class="center data-section display-none">

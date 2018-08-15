@@ -52,21 +52,34 @@
 
 .transaction .total .value #value {
     font-size: 64px;
+    line-height: 76px;
     font-weight: 300;
 }
 
-.transaction .total .fee-section {
-    font-size: 14px;
-    margin-top: 16px;
+.transaction .fee-section {
+    display: block;
+    text-transform: uppercase;
+    font-size: 13px;
+    letter-spacing: 0.8px;
+    font-weight: 500;
 }
 
-.transaction .total .fee-section span:not(.nim-symbol) {
+.transaction .fee-section:not(.display-none) {
+    margin-top: -16px;
+    margin-bottom: 24px;
+}
+
+.transaction .fee-section span:not(.nim-symbol) {
     opacity: 0.5;
 }
 
 .transaction .data-section {
-    line-height: 20px;
+    line-height: 1.3;
     padding: 0 24px;
+}
+
+.transaction .fee-section:not(.display-none) + .data-section {
+    margin-bottom: -13px;
 }
 
 /*
