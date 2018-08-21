@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "outDir": "./build/",
+    "target": "esnext",
+    "module": "esnext",
+    "strict": true,
+    "jsx": "preserve",
+    "importHelpers": true,
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "esModuleInterop": true,
+    "sourceMap": true,
+    "baseUrl": ".",
+    "declaration": true,
+    "declarationDir": "./dist/src/",
+    "lib": [
+      "es2015",
+      "es6",
+      "dom",
+      "dom.iterable",
+      "scripthost"
+    ]
+  },
+  "include": [
+    "src/*.ts",
+    "types/Nimiq.d.ts"
+  ],
+  "exclude": [
+    "**/node_modules",
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "name": "@nimiq/keyguard-client",
+  "version": "0.0.5",
+  "description": "Nimiq Keyguard client library",
+  "main": "dist/KeyguardClient.common.js",
+  "module": "dist/KeyguardClient.umd.js",
+  "types": "types/index.d.ts",
+  "scripts": {
+    "typecheck": "tsc",
+    "lint": "tslint 'src/*.ts'",
+    "lint-fix": "tslint --fix 'src/*.ts'",
+    "test": "jest",
+    "build": "tsc && rollup -c"
+  },
+  "files": [
+    "dist",
+    "types"
+  ],
+  "keywords": [
+    "Nimiq",
+    "Keyguard"
+  ],
+  "author": "Nimiq",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/nimiq/keyguard-next/issues"
+  },
+  "homepage": "https://github.com/nimiq/keyguard-next/client#readme",
+  "devDependencies": {
+    "@nimiq/core-types": "^1.0.0",
+    "@nimiq/rpc": "^0.0.6",
+    "rollup": "^0.64.0",
+    "ts-loader": "^4.4.2",
+    "tslint": "^5.11.0",
+    "typescript": "^3.0.1"
+  }
+}

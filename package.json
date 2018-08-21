@@ -5,8 +5,8 @@
   "scripts": {
     "test": "karma start",
     "typecheck": "tsc",
-    "lint": "eslint src client tools",
-    "lintfix": "eslint --fix src client tools",
+    "lint": "eslint src tools",
+    "lintfix": "eslint --fix src tools",
     "checkdeps": "node tools/dependencyValidator.js",
     "test-coverage": "karma start karma.conf.coverage.js",
     "coverage": "nyc instrument ./src ./instrumented && yarn test-coverage",
