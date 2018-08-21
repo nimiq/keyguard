@@ -1,10 +1,10 @@
 /* global BackupRecoveryWords */
-/* global PopupApi */
+/* global TopLevelApi */
 /* global Nimiq */
 /* global KeyPrivacy */
 /* global KeyStore */
 /* global ValidateWords */
-class ExportWordsApi extends PopupApi {
+class ExportWordsApi extends TopLevelApi {
     constructor() {
         super();
 
@@ -21,7 +21,8 @@ class ExportWordsApi extends PopupApi {
         this._recoveryWords = new BackupRecoveryWords($recoveryWords);
         this._validateWords = new ValidateWords($validateWords);
 
-        this.$loading = /** @type {HTMLDivElement} */ (document.querySelector('#loading'));
+        /** @type {HTMLDivElement} */
+        this.$loading = (document.querySelector('#loading'));
     }
 
     /**
