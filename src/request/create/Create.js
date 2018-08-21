@@ -53,7 +53,8 @@ class Create {
             /** @param {Nimiq.Entropy} entropy */
             entropy => {
                 this._selectedEntropy = entropy;
-                this._recoveryWords.entropy = entropy;
+                this._recoveryWords.setWords(Nimiq.MnemonicUtils.entropyToMnemonic(Nimiq.Entropy.generate(),
+                    Nimiq.MnemonicUtils.DEFAULT_WORDLIST));
                 this._validateWords.entropy = entropy;
                 this._validateWords.reset();
                 window.location.hash = Create.Pages.SET_PASSPHRASE;

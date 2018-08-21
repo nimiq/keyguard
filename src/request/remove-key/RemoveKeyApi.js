@@ -18,12 +18,7 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         // Set user friendly key description
         const $keyLabelFriendlyId = /** @type {HTMLElement} */ (document.querySelector('.key-label-friendlyid'));
         const userFriendlyId = Key.idToUserFriendlyId(request.keyId);
-        /** @type {HTMLElement} */
-        if (request.keyLabel !== undefined) {
-            $keyLabelFriendlyId.textContent = `${request.keyLabel} (${userFriendlyId})`;
-        } else {
-            $keyLabelFriendlyId.textContent = userFriendlyId;
-        }
+        $keyLabelFriendlyId.textContent = request.keyLabel ? `${request.keyLabel} (${userFriendlyId})` : userFriendlyId;
 
         const passphraseInput = new PassphraseInput($passphrase);
 

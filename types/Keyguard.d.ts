@@ -55,6 +55,11 @@ type SignTransactionResult = {
     signature: Uint8Array
 }
 
+type ExportWordsRequest = {
+    keyId: string
+    keyLabel?: string
+}
+
 type SignMessageRequest = {
     keyId: string
     keyPath: string

@@ -30,6 +30,13 @@ class BackupRecoveryWords extends Nimiq.Observable {
     }
 
     /**
+     * @param {string[]} words
+     */
+    setWords(words) {
+        this._recoveryWords.setWords(words);
+    }
+
+    /**
      * @param {?HTMLElement} [$el]
      * @returns {HTMLElement}
      */
