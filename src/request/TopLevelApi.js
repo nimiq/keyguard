@@ -9,7 +9,7 @@
  * Usage:
  * Inherit this class in your popup request API class:
  * ```
- *  class SignTransactionApi extends PopupApi {
+ *  class SignTransactionApi extends TopLevelApi {
  *
  *      // Define the onRequest method to receive the client's request object:
  *      onRequest(request) {
@@ -27,7 +27,7 @@
  *  runKeyguard(SignTransactionApi);
  * ```
  */
-class PopupApi { // eslint-disable-line no-unused-vars
+class TopLevelApi { // eslint-disable-line no-unused-vars
     constructor() {
         if (window.self !== window.top) {
             // PopupAPI may not run in a frame

@@ -26,18 +26,18 @@ type SignTransactionRequest = {
     keyPath: string
     keyLabel?: string
 
-    sender: string
+    sender: Uint8Array
     senderType: Nimiq.Account.Type
     senderLabel?: string
-    recipient: string
+    recipient: Uint8Array
     recipientType: Nimiq.Account.Type
     recipientLabel?: string
     value: number
     fee: number
     validityStartHeight: number
-    data: string
+    data: Uint8Array
     flags: number
-    network: string
+    networkId: number
 }
 
 type ParsedSignTransactionRequest = {
@@ -51,8 +51,8 @@ type ParsedSignTransactionRequest = {
 }
 
 type SignTransactionResult = {
-    publicKey: string,
-    signature: string
+    publicKey: Uint8Array
+    signature: Uint8Array
 }
 
 type ExportWordsRequest = {
@@ -100,14 +100,7 @@ type DOMEvent = Event & {
 }
 
 interface Window {
-    rpcServer: RpcServerInstance
+    rpcServer: Rpc.RpcServer
     KeyStore: any
     TRANSLATIONS: dict
-}
-
-interface RpcServerInstance {}
-
-interface RpcClientInstance {
-    call(command: string, args?: any[]): Promise<any>
-    close(): void
 }
