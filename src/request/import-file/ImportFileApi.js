@@ -11,7 +11,7 @@ class ImportFileApi extends TopLevelApi {
     constructor() {
         super();
 
-        this._encryptedKey = new Uint8Array(0);
+        this._encryptedKey = new Nimiq.SerialBuffer(0);
 
         // Start UI
         this.dom = this._makeView();

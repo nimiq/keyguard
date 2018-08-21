@@ -30,6 +30,7 @@
   },
   "homepage": "https://github.com/nimiq/keyguard-next#readme",
   "devDependencies": {
+    "@nimiq/core-types": "^1.0.0",
     "@types/jasmine": "^2.8.8",
     "@types/node": "^10.5.2",
     "browserify": "^14.5.0",
@@ -42,7 +43,6 @@
     "karma-chrome-launcher": "^2.2.0",
     "karma-istanbuljs-reporter": "^0.2.0",
     "karma-jasmine": "^1.1.2",
-    "@nimiq/core-types": "^0.1.8",
     "nyc": "^12.0.2",
     "tsc-watch": "^1.0.22",
     "typescript": "^2.9.2"
