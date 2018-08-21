@@ -1,4 +1,4 @@
-/* global PopupApi */
+/* global TopLevelApi */
 /* global FileImport */
 /* global PassphraseInput */
 /* global PinInput */
@@ -7,7 +7,7 @@
 /* global KeyInfo */
 /* global KeyStore */
 
-class ImportFileApi extends PopupApi {
+class ImportFileApi extends TopLevelApi {
     constructor() {
         super();
 

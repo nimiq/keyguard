@@ -1,7 +1,7 @@
-/* global PopupApi */
+/* global TopLevelApi */
 /* global Create */
 
-class CreateApi extends PopupApi { // eslint-disable-line no-unused-vars
+class CreateApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
      * @param {CreateRequest} request
      */

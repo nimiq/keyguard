@@ -1,9 +1,8 @@
 /* global Nimiq */
-/* global KeyStore */
-/* global RpcServer */
+/* global Rpc */
 
 /**
- * @param {Function} RequestApiClass - Class object of the API which is to be exposed via postMessage RPC
+ * @param {Newable} RequestApiClass - Class object of the API which is to be exposed via postMessage RPC
  * @param {object} [options]
  */
 async function runKeyguard(RequestApiClass, options) { // eslint-disable-line no-unused-vars
@@ -13,9 +12,6 @@ async function runKeyguard(RequestApiClass, options) { // eslint-disable-line no
     };
 
     options = Object.assign(defaultOptions, options);
-
-    // Expose KeyStore to mockup overwrites
-    window.KeyStore = KeyStore;
 
     if (options.loadNimiq) {
         // Load web assembly encryption library into browser (if supported)
@@ -27,10 +23,16 @@ async function runKeyguard(RequestApiClass, options) { // eslint-disable-line no
     // Close window if user navigates back to loading screen
     window.addEventListener('hashchange', () => {
         if (window.location.hash === '') {
+            // FIXME !! this doesn't work for redirects !!
             window.close();
         }
     });
 
+    // Instantiate handler.
+    const api = new RequestApiClass();
+
     // FIXME Set correct allowedOrigin
-    window.rpcServer = RpcServer.create(RequestApiClass, '*', options.whitelist);
+    window.rpcServer = new Rpc.RpcServer('*');
+    window.rpcServer.onRequest('request', (state, request) => api.request(request));
+    window.rpcServer.init();
 }

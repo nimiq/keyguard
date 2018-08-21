@@ -30,7 +30,7 @@ class IFrameApi { // eslint-disable-line no-unused-vars
          * Thus when the Keyguard client requests the iframe to migrate the
          * database, the iframe needs to signal to the popup that it should run
          * the migration the next time it is opened. Thus this signalling cookie.
-         * The cookie is then detected in the PopupApi.request() method.
+         * The cookie is then detected in the TopLevelApi.request() method.
          */
         if (BrowserDetection.isIos() || BrowserDetection.isSafari()) {
             // Set migrate flag cookie

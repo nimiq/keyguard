@@ -55,9 +55,9 @@
     // "emitDecoratorMetadata": true,         /* Enables experimental support for emitting type metadata for decorators. */
   },
   "include": [
-    "Nimiq.d.ts",
-    "Keyguard.d.ts",
-    "node_modules/@nimiq/rpc/types/RpcServer.d.ts",
+    "types/Nimiq.d.ts",
+    "types/Keyguard.d.ts",
+    "types/RpcServer.d.ts",
     "src/**/*.js",
     "tests/**/*.js"
   ],
