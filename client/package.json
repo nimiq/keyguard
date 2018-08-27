@@ -9,7 +9,6 @@
     "typecheck": "tsc",
     "lint": "tslint 'src/*.ts'",
     "lint-fix": "tslint --fix 'src/*.ts'",
-    "test": "jest",
     "build": "tsc && rollup -c"
   },
   "files": [
