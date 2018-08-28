@@ -11,14 +11,14 @@
 */
 
 .layout-standard {
-    margin-bottom: 37px; /* + 8px from .confirm-form = 45px */
+    margin-bottom: 4.625; /* + 1rem from .confirm-form = 45px */
 }
 
 .transaction .accounts {
     flex-direction: row;
     align-items: flex-start;
     background: #fafafa;
-    padding: 24px 16px;
+    padding: 3rem 2rem;
 }
 
 .transaction .account {
@@ -28,46 +28,46 @@
 }
 
 .transaction .account .identicon {
-    width: 64px;
-    height: 64px;
-    margin-bottom: 16px;
+    width: 8rem;
+    height: 8rem;
+    margin-bottom: 2rem;
 }
 
 .transaction .account .label {
-    font-size: 18px;
-    line-height: 20px;
+    font-size: 2.25rem;
+    line-height: 2.5rem;
     font-weight: 500;
-    margin-bottom: 10px;
+    margin-bottom: 1.25rem;
 }
 
 .transaction .arrow {
-    margin: 24px 8px;
-    height: 16px;
-    width: 16px;
+    margin: 3rem 1rem;
+    height: 2rem;
+    width: 2rem;
 }
 
 .transaction .total {
-    margin: 20px 0 16px 0;
+    margin: 2.5rem 0 2rem 0;
     flex-direction: column;
 }
 
 .transaction .total .value #value {
-    font-size: 64px;
-    line-height: 76px;
+    font-size: 8rem;
+    line-height: 9.5rem;
     font-weight: 300;
 }
 
 .transaction .fee-section {
     display: block;
     text-transform: uppercase;
-    font-size: 13px;
-    letter-spacing: 0.8px;
+    font-size: 1.625rem;
+    letter-spacing: 0.1rem;
     font-weight: 500;
 }
 
 .transaction .fee-section:not(.display-none) {
-    margin-top: -16px;
-    margin-bottom: 24px;
+    margin-top: -2rem;
+    margin-bottom: 3rem;
 }
 
 .transaction .fee-section span:not(.nim-symbol) {
@@ -76,11 +76,11 @@
 
 .transaction .data-section {
     line-height: 1.3;
-    padding: 0 24px;
+    padding: 0 3rem;
 }
 
 .transaction .fee-section:not(.display-none) + .data-section {
-    margin-bottom: -13px;
+    margin-bottom: -1.625rem;
 }
 
 /*
@@ -90,10 +90,10 @@
 */
 
 .layout-checkout h1 {
-    font-size: 24px;
+    font-size: 3rem;
     font-weight: 300;
     text-align: left;
-    margin: 32px 32px 8px 32px;
+    margin: 4rem 4rem 1rem 4rem;
 }
 
 .layout-checkout h1 strong {
@@ -112,24 +112,24 @@
     position: absolute;
     left: 41px;
     top: 22px;
-    width: 46px;
-    height: 46px;
-    border-radius: 12px;
+    width: 5.75rem;
+    height: 5.75rem;
+    border-radius: 1.5rem;
     background-color: white;
     /* background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z" fill="%23000"/><path d="M0 0h24v24H0z" fill="none"/></svg>'); */ /* Shopping Cart icon */
     background-image: url('https://amazon.com/favicon.ico');
     background-repeat: no-repeat;
     background-position: center;
-    background-size: 36px;
+    background-size: 4.5rem;
 }
 
 .layout-checkout .account {
     flex-direction: row;
-    padding: 13px 32px;
+    padding: 1.625rem 4rem;
 }
 
 .layout-checkout .account .identicon {
-    margin-right: 16px;
+    margin-right: 2rem;
     margin-bottom: 0;
     flex-shrink: 0;
 }
@@ -140,17 +140,17 @@
 }
 
 .layout-checkout .account .label {
-    margin-bottom: 4px;
+    margin-bottom: 0.5rem;
 }
 
 .layout-checkout .address {
-    line-height: 20px;
+    line-height: 2.5rem;
 }
 
 .layout-checkout .data-section {
-    padding: 8px 32px;
+    padding: 1rem 4rem;
     text-align: left;
-    font-size: 16px;
+    font-size: 2rem;
     line-height: 1.3;
     opacity: 0.7;
 }
@@ -158,18 +158,18 @@
 .layout-checkout .sender-section {
     display: flex;
     flex-direction: column;
-    margin-top: 24px;
-    padding-bottom: 16px;
+    margin-top: 3rem;
+    padding-bottom: 2rem;
     background: #fafafa;
     border-top: solid 1px #f0f0f0;
     border-bottom: solid 1px #f0f0f0;
 }
 
 .layout-checkout .sender-section h2 {
-    margin: 24px 24px 16px 24px;
+    margin: 3rem 3rem 2rem 3rem;
     text-transform: uppercase;
-    font-size: 14px;
+    font-size: 1.75rem;
     line-height: 0.86;
-    letter-spacing: 1.5px;
+    letter-spacing: 0.1875rem;
     font-weight: 400;
 }
