@@ -1,31 +1,31 @@
 .header-top {
     width: 100%;
-    padding: 30px 31px;
+    padding: 3.75rem;
 }
 
 .header-top .nimiq-app-name {
-    height: 29px;
+    height: 3.625rem;
 }
 
 .header-top .nimiq-logo::before {
     display: inline-block;
     content: '';
-    width: 33px;
-    height: 29px;
+    width: 4.125rem;
+    height: 3.625rem;
     background-image: url('data:image/svg+xml,<svg width="499" height="440" xmlns="http://www.w3.org/2000/svg"><path d="M389.33 20.73C382.65 9.28 366.48 0 353.24 0h-208c-13.26 0-29.4 9.28-36.09 20.73L5.33 198.87c-6.68 11.45-6.68 30.02 0 41.47l103.82 178.14c6.68 11.45 22.85 20.74 36.09 20.74h208c13.26 0 29.4-9.28 36.09-20.74l103.82-178.14c6.68-11.45 6.68-30.01 0-41.47L389.33 20.73zM272.6 347.45v41.1h-38.74v-39.53c-23.53-2.82-51.45-13.02-70.28-30.12l25.57-39.06c20.4 15.06 37.96 22.9 57.1 22.9 22.43 0 32.31-9.1 32.31-27.29 0-40.63-105.4-39.84-105.4-111.06 0-38.74 23.2-65.57 60.7-73.1V50.51h38.74v40c25.57 3.6 43.92 16.16 59.45 32.47l-29.49 33.26c-14.43-13.02-26.66-19.77-43.45-19.77-19.13 0-29.49 7.53-29.49 25.26 0 37.49 105.41 34.35 105.41 109.96-.15 37.8-21.33 67.13-62.43 75.76z" fill="%23FFC107" fill-rule="evenodd"/></svg>');
     background-repeat: no-repeat;
-    background-size: 33px;
+    background-size: 4.125rem;
 }
 
 .header-top .nimiq-logo::after {
     content: 'NIMIQ';
-    font-size: 17px;
-    line-height: 29px;
+    font-size: 2.125rem;
+    line-height: 3.625rem;
     font-weight: 600;
-    letter-spacing: 2px;
+    letter-spacing: 0.25rem;
     color: white;
     vertical-align: top;
-    margin-left: 15px;
+    margin-left: 1.875rem;
 }
 
 .page {
@@ -34,9 +34,9 @@
     align-items: center;
     background: white;
     width: 100vw;
-    max-width: 450px;
-    border-radius: 8px;
-    box-shadow: 0 10px 20px 0 rgba(0, 0, 0, 0.11);
+    max-width: 56.25rem; /* 450px */
+    border-radius: 1rem;
+    box-shadow: 0 1.25rem 2.5rem 0 rgba(0, 0, 0, 0.11);
 }
 
 .page-header, .page-body, .page-footer {
@@ -46,9 +46,9 @@
 
 .page-header {
     position: relative;
-    height: 88px;
+    height: 11rem;
     box-sizing: border-box;
-    padding: 34px;
+    padding: 4.25rem;
     border-bottom: solid 1px #f2f2f2;
     flex-direction: row;
     align-items: center;
@@ -56,19 +56,19 @@
 }
 
 .page-header-back-button {
-    width: 24px;
-    height: 24px;
+    width: 3rem;
+    height: 3rem;
     position: absolute;
-    left: 34px;
-    top: 32px;
+    left: 4.25rem;
+    top: 4rem;
 }
 
 .page-header h1,
 .page-header h2 {
-    font-size: 15px;
+    font-size: 1.875rem;
     text-transform: uppercase;
-    letter-spacing: 1.9px;
-    line-height: 20px;
+    letter-spacing: 0.25rem;
+    line-height: 2.5rem;
     font-weight: bold;
 }
 
@@ -185,36 +185,36 @@
 
 .address {
     font-family: "Andale Mono", monospace;
-    font-size: 12px;
-    line-height: 18px;
+    font-size: 1.5rem;
+    line-height: 2.25rem;
     word-spacing: -0.2em;
 }
 
 .global-close {
-    height: 27px;
-    border-radius: 13.5px;
+    height: 3.375rem;
+    border-radius: 1.6875rem;
     background-color: rgba(0, 0, 0, 0.1);
-    font-size: 14px;
+    font-size: 1.75rem;
     font-weight: 600;
-    line-height: 27px;
+    line-height: 3.375rem;
     color: white;
-    padding: 0 12px;
+    padding: 0 1.5rem;
     cursor: pointer;
-    margin-top: 64px;
-    margin-bottom: 40px;
+    margin-top: 8rem;
+    margin-bottom: 5rem;
 }
 
 .global-close::before {
     content: '';
     display: inline-block;
-    height: 11px;
-    width: 11px;
+    height: 1.375rem;
+    width: 1.375rem;
     background-image: url('data:image/svg+xml,<svg height="24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h24v24H0z" fill="none"/><path fill="%23fff" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>');
     background-repeat: no-repeat;
-    background-size: 16px;
+    background-size: 2rem;
     background-position: center;
-    margin-right: 8px;
-    margin-bottom: -1px;
+    margin-right: 1rem;
+    margin-bottom: -0.125rem;
 }
 
 /* make code blocks look like keys on the keyboard */
@@ -232,5 +232,5 @@ kbd {
     justify-content: start;
     align-items: center;
     width: 98vw;
-    min-height: calc(100vh - 89px);
+    min-height: calc(100vh - 11.125rem); /* window hight - header height */
 }
