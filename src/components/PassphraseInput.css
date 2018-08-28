@@ -9,21 +9,21 @@
 }
 
 .passphrase-input input {
-    padding-left: 32px;
-    padding-right: 32px;
+    padding-left: 4rem;
+    padding-right: 4rem;
     margin: 0;
     border: none !important;
-    font-size: 24px;
-    letter-spacing: 10px;
+    font-size: 3rem;
+    letter-spacing: 1.25rem;
     max-width: unset;
 }
 
 .passphrase-input input::placeholder {
-    letter-spacing: 10px;
+    letter-spacing: 1.25rem;
 }
 
 .passphrase-input input[type="text"] {
-    letter-spacing: 2px;
+    letter-spacing: 0.25rem;
 }
 
 .passphrase-input .input-container.shake input {
@@ -32,11 +32,11 @@
 
 .passphrase-input .eye-button {
     position: absolute;
-    top: 4px;
-    right: 0;
-    width: 26px;
-    height: 26px;
-    background-size: 24px;
+    top: 0.5rem;
+    left: 0;
+    width: 3.25rem;
+    height: 3.25rem;
+    background-size: 3rem;
 }
 
 .passphrase-input button {

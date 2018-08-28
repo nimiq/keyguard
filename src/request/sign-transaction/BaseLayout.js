@@ -1,7 +1,7 @@
 /* global Nimiq */
 /* global KeyStore */
 /* global Identicon */
-/* global PassphraseInput */
+/* global PassphraseBox */
 
 class BaseLayout {
     /**
@@ -82,37 +82,25 @@ class BaseLayout {
             $dataSection.classList.remove('display-none');
         }
 
+        // Set up passphrase box.
         /** @type {HTMLFormElement} */
-        const $confirmForm = (document.querySelector('#confirm-transaction form'));
-        $confirmForm.addEventListener('submit', event => this._onConfirm(request, resolve, reject, event));
+        const $passphraseBox = (document.querySelector('#passphrase-box'));
+        this._passphraseBox = new PassphraseBox($passphraseBox, {
+            bgColor: 'purple',
+            hideInput: !request.keyInfo.encrypted,
+            promptI18nTag: 'passphrasebox-enter-passphrase',
+            buttonI18nTag: 'passphrasebox-confirm-tx',
+        });
 
-        // Set up passphrase input.
-        /** @type {HTMLDivElement} */
-        const $passphraseInput = ($confirmForm.querySelector('#passphrase-input'));
-        this._passphraseInput = new PassphraseInput($passphraseInput);
-
-        /** @type {HTMLButtonElement} */
-        const $submitButton = ($confirmForm.querySelector('.submit-button'));
-
-        if (!request.keyInfo.encrypted) {
-            $passphraseInput.classList.add('display-none');
-            $submitButton.classList.remove('display-none');
-        } else {
-            this._passphraseInput.input.addEventListener('input', () => {
-                $submitButton.classList.toggle('display-none', this._passphraseInput.input.value.length === 0);
-            });
-        }
-
-        /** @type {HTMLDivElement} */
-        this.$error = ($confirmForm.querySelector('#error'));
+        this._passphraseBox.on(
+            PassphraseBox.Events.SUBMIT,
+            passphrase => this._onConfirm(request, resolve, reject, passphrase),
+        );
+        this._passphraseBox.on(PassphraseBox.Events.CANCEL, () => reject(new Error('Canceled')));
 
         /** @type {HTMLAnchorElement} */
         const $backButton = (document.querySelector('.page-header .page-header-back-button'));
         if ($backButton) $backButton.addEventListener('click', () => reject(new Error('Canceled')));
-
-        /** @type HTMLAnchorElement */
-        const $formCancel = ($confirmForm.querySelector('a.cancel'));
-        $formCancel.addEventListener('click', () => reject(new Error('Canceled')));
 
         /** @type {HTMLElement} */
         const $appName = (document.querySelector('#app-name'));
@@ -127,20 +115,17 @@ class BaseLayout {
      * @param {ParsedSignTransactionRequest} request
      * @param {Function} resolve
      * @param {Function} reject
-     * @param {Event} event
+     * @param {string} passphrase
      * @returns {Promise<void>}
      * @private
      */
-    async _onConfirm(request, resolve, reject, event) {
-        event.preventDefault();
-
+    async _onConfirm(request, resolve, reject, passphrase) {
         document.body.classList.add('loading');
-        this.$error.classList.add('display-none');
 
         try {
             // XXX Passphrase encoding
-            const passphrase = Nimiq.BufferUtils.fromAscii(this._passphraseInput.text);
-            const key = await KeyStore.instance.get(request.keyInfo.id, passphrase);
+            const passphraseBuf = Nimiq.BufferUtils.fromAscii(passphrase);
+            const key = await KeyStore.instance.get(request.keyInfo.id, passphraseBuf);
             if (!key) {
                 reject(new Error('Failed to retrieve key'));
                 return;
@@ -158,15 +143,14 @@ class BaseLayout {
             document.body.classList.remove('loading');
 
             // Assume the passphrase was wrong
-            this._passphraseInput.onPassphraseIncorrect();
-            this.$error.classList.remove('display-none');
+            this._passphraseBox.onPassphraseIncorrect();
         }
     }
 
     run() {
         // Go to start page
         window.location.hash = BaseLayout.Pages.CONFIRM_TRANSACTION;
-        this._passphraseInput.focus();
+        this._passphraseBox.focus();
     }
 
     /**
