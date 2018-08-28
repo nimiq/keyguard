@@ -1,0 +1,79 @@
+.passphrase-box {
+    position: relative;
+    width: 100%;
+    margin: 1rem;
+    padding: 1.25rem;
+    border-radius: 0.5rem;
+}
+
+.passphrase-box.purple {
+    background: #724ceb;
+    color: white;
+}
+.passphrase-box.red button {
+    color: #724ceb;
+}
+
+.passphrase-box.red {
+    background: #ca3333;
+    color: white;
+}
+.passphrase-box.red button {
+    color: #ca3333;
+}
+
+.passphrase-box.yellow {
+    background: #f5af2d;
+    color: black;
+    color: white;
+}
+.passphrase-box.yellow button {
+    color: #f5af2d;
+}
+
+.passphrase-box .cancel {
+    position: absolute;
+    right: 1.25rem;
+    top: 1.25rem;
+    opacity: 0.5;
+    width: 3.25rem;
+    height: 3.25rem;
+    background-size: 3.75rem;
+}
+
+.passphrase-box .cancel:hover {
+    opacity: 0.8;
+}
+
+.passphrase-box .prompt {
+    text-transform: uppercase;
+    font-size: 1.75rem;
+    font-weight: 600;
+    letter-spacing: 0.25rem;
+    line-height: 0.86;
+    margin-top: 1rem;
+    margin-bottom: 4.25rem;
+}
+
+.passphrase-box .passphrase-input {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    margin: 0.75rem 0 5rem 0;
+}
+
+.passphrase-box .submit {
+    margin-bottom: 1.75rem;
+}
+
+.passphrase-box.input-valid .passphrase-input {
+    margin-bottom: 2rem;
+}
+
+.passphrase-box:not(.input-valid) .submit {
+    display: none;
+}
+
+.passphrase-box.input-valid .prompt {
+    display: none;
+}

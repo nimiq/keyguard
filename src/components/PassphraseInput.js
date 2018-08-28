@@ -79,9 +79,7 @@ class PassphraseInput extends Nimiq.Observable {
     reset() {
         this.$input.value = '';
         this._changeVisibility(false);
-        if (this._showStrengthIndicator) {
-            this._onInputChanged();
-        }
+        this._onInputChanged();
     }
 
     async onPassphraseIncorrect() {
@@ -134,7 +132,7 @@ class PassphraseInput extends Nimiq.Observable {
 }
 
 PassphraseInput.Events = {
-    VALID: 'passphrase-valid',
+    VALID: 'passphraseinput-valid',
 };
 
-PassphraseInput.MIN_LENGTH = 10;
+PassphraseInput.MIN_LENGTH = 8;
