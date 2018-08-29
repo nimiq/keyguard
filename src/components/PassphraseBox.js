@@ -48,28 +48,29 @@ class PassphraseBox extends Nimiq.Observable {
         // To enable i18n validation with the dynamic nature of the passphrase box's contents,
         // all possible i18n tags and texts have to be specified here in the below format to
         // enable the validator to find them with its regular expression.
+        /* eslint-disable max-len */
         const promptVersions = {
-            'passphrasebox-enter-passphrase': 'data-i18n="passphrasebox-enter-passphrase">Enter your passphrase<',
-            'passphrasebox-protect-keyfile':
-                'data-i18n="passphrasebox-protect-keyfile">Protect your keyfile with a password<',
-            'passphrasebox-repeat-password': 'data-i18n="passphrasebox-repeat-password">Repeat your password<',
+            'passphrasebox-enter-passphrase': '<div class="prompt" data-i18n="passphrasebox-enter-passphrase">Enter your passphrase</div>',
+            'passphrasebox-protect-keyfile': '<div class="prompt" data-i18n="passphrasebox-protect-keyfile">Protect your keyfile with a password</div>',
+            'passphrasebox-repeat-password': '<div class="prompt" data-i18n="passphrasebox-repeat-password">Repeat your password</div>',
         };
         const buttonVersions = {
-            'passphrasebox-continue': 'data-i18n="passphrasebox-continue">Continue<',
-            'passphrasebox-log-in': 'data-i18n="passphrasebox-log-in">Log in to your wallet<',
-            'passphrasebox-log-out': 'data-i18n="passphrasebox-log-out">Confirm logout<',
-            'passphrasebox-download': 'data-i18n="passphrasebox-download">Download key file<',
-            'passphrasebox-confirm-tx': 'data-i18n="passphrasebox-confirm-tx">Confirm transaction<',
+            'passphrasebox-continue': '<button class="submit" data-i18n="passphrasebox-continue">Continue</button>',
+            'passphrasebox-log-in': '<button class="submit" data-i18n="passphrasebox-log-in">Log in to your wallet</button>',
+            'passphrasebox-log-out': '<button class="submit" data-i18n="passphrasebox-log-out">Confirm logout</button>',
+            'passphrasebox-download': '<button class="submit" data-i18n="passphrasebox-download">Download key file</button>',
+            'passphrasebox-confirm-tx': '<button class="submit" data-i18n="passphrasebox-confirm-tx">Confirm transaction</button>',
         };
+        /* eslint-enable max-len */
 
         if (!promptVersions[i18nTags.prompt]) throw new Error('PassphraseBox prompt i18n tag not defined');
         if (!buttonVersions[i18nTags.button]) throw new Error('PassphraseBox button i18n tag not defined');
 
         $el.innerHTML = `
             <a class="cancel icon-cancel"></a>
-            <div class="prompt" ${promptVersions[i18nTags.prompt]}/div>
+            ${promptVersions[i18nTags.prompt]}
             <div passphrase-input></div>
-            <button class="submit" ${buttonVersions[i18nTags.button]}/button>
+            ${buttonVersions[i18nTags.button]}
         `;
 
         I18n.translateDom($el);
