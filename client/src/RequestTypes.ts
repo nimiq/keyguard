@@ -9,6 +9,17 @@ export enum KeyguardCommand {
     SIGN_MESSAGE = 'sign-message',
 }
 
+export interface CreateRequest {
+    appName: string;
+    defaultKeyPath: string;
+}
+
+export interface CreateResult {
+    keyId: string;
+    keyPath: string;
+    address: Uint8Array;
+}
+
 export interface SignTransactionRequest {
     layout?: 'standard' | 'checkout' | 'cashlink';
     shopOrigin?: string;

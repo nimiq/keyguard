@@ -2,6 +2,7 @@ import {RedirectRpcClient} from '@nimiq/rpc';
 import {RequestBehavior} from './RequestBehavior';
 import {
     KeyguardCommand,
+    CreateRequest,
     SignMessageResult,
     SignTransactionRequest,
     SignTransactionResult,
@@ -35,8 +36,8 @@ export class KeyguardClient {
         this._observable.on(`${command}-reject`, reject);
     }
 
-    public create(defaultKeyPath: string, requestBehavior = this._defaultBehavior) {
-        return this._request(requestBehavior,  KeyguardCommand.CREATE, [{ defaultKeyPath }]);
+    public create(request: CreateRequest, requestBehavior = this._defaultBehavior) {
+        return this._request(requestBehavior,  KeyguardCommand.CREATE, [request]);
     }
 
     public remove(keyId: string, requestBehavior = this._defaultBehavior) {
