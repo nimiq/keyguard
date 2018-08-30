@@ -16,8 +16,8 @@ export class KeyguardClient {
         this._observable.on(`${command}-resolve`, resolve);
         this._observable.on(`${command}-reject`, reject);
     }
-    create(defaultKeyPath, requestBehavior = this._defaultBehavior) {
-        return this._request(requestBehavior, KeyguardCommand.CREATE, [{ defaultKeyPath }]);
+    create(request, requestBehavior = this._defaultBehavior) {
+        return this._request(requestBehavior, KeyguardCommand.CREATE, [request]);
     }
     remove(keyId, requestBehavior = this._defaultBehavior) {
         return this._request(requestBehavior, KeyguardCommand.REMOVE, [{ keyId }]);

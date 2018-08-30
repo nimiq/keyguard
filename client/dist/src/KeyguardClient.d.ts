@@ -1,5 +1,5 @@
 import { RequestBehavior } from './RequestBehavior';
-import { KeyguardCommand, SignMessageResult, SignTransactionRequest, SignTransactionResult, SignMessageRequest } from './RequestTypes';
+import { KeyguardCommand, CreateRequest, SignMessageResult, SignTransactionRequest, SignTransactionResult, SignMessageRequest } from './RequestTypes';
 export declare class KeyguardClient {
     private static readonly DEFAULT_ENDPOINT;
     private readonly _endpoint;
@@ -9,7 +9,7 @@ export declare class KeyguardClient {
     constructor(endpoint?: string, defaultBehavior?: RequestBehavior);
     init(): Promise<void>;
     on(command: KeyguardCommand, resolve: (...args: any[]) => any, reject: (...args: any[]) => any): void;
-    create(defaultKeyPath: string, requestBehavior?: RequestBehavior): Promise<any>;
+    create(request: CreateRequest, requestBehavior?: RequestBehavior): Promise<any>;
     remove(keyId: string, requestBehavior?: RequestBehavior): Promise<any>;
     importWords(defaultKeyPath: string, requestBehavior?: RequestBehavior): Promise<any>;
     importFile(requestBehavior?: RequestBehavior): Promise<any>;
