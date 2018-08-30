@@ -1,6 +1,6 @@
 {
   "name": "@nimiq/keyguard-client",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Nimiq Keyguard client library",
   "main": "dist/KeyguardClient.common.js",
   "module": "dist/KeyguardClient.umd.js",
