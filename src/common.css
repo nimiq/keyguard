@@ -217,6 +217,10 @@
     margin-bottom: -0.125rem;
 }
 
+.flex-grow {
+    flex-grow: 1;
+}
+
 /* make code blocks look like keys on the keyboard */
 kbd {
     font-family: monospace;

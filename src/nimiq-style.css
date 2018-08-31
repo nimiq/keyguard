@@ -512,8 +512,9 @@ p {
 
 
 p {
-    text-align: center;
-    line-height: 2.375rem;
+    font-size: 2rem;
+    line-height: 1.3;
+    color: #3e4552;
 }
 
 a {

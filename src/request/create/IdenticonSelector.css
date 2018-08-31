@@ -1,0 +1,205 @@
+/* FIXME: Identicons are blurry when scaled to 1.5 when selected in Chrome */
+
+.identicon-selector {
+    -webkit-user-select: none;
+    user-select: none;
+    /* padding-bottom: 2rem; */
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    /* max-height: 75rem; */
+}
+
+.identicon-selector .identicon {
+    width: 14.25rem;
+    height: 14.25rem;
+    position: absolute;
+    transition: transform 500ms;
+    will-change: transform;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    transform: scale(0.6);
+}
+
+.identicon-selector .identicon:hover {
+    cursor: pointer;
+}
+
+.identicon-selector .identicons {
+    display: flex;
+    flex-grow: 1;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 41rem;
+    position: relative;
+}
+
+.identicon-selector .identicon:nth-child(1) {
+    transform: translate(0, 0);
+}
+
+.identicon-selector .identicon:nth-child(2) {
+    transform: translate(0, -14.25rem);
+}
+
+.identicon-selector .identicon:nth-child(3) {
+    transform: translate(12.5rem, -7.25rem);
+}
+
+.identicon-selector .identicon:nth-child(4) {
+    transform: translate(-12.5rem, -7.25rem);
+}
+
+.identicon-selector .identicon:nth-child(5) {
+    transform: translate(12.5rem, 7.25rem);
+}
+
+.identicon-selector .identicon:nth-child(6) {
+    transform: translate(-12.5rem, 7.25rem);
+}
+
+.identicon-selector .identicon:nth-child(7) {
+    transform: translate(0, 14.25rem);
+}
+
+.identicon-selector .generate-more {
+    background: #e5e5e5;
+    padding: 8px 14px;
+    width: unset;
+    height: unset;
+    font-size: 14px;
+    line-height: 0.86;
+    box-shadow: unset;
+    text-transform: unset;
+    letter-spacing: 0;
+    color: black;
+    margin: 4rem 0;
+}
+
+.identicon-selector .backdrop button {
+    opacity: 0;
+    /* transform: translate(0, 60rem); */
+    transition: transform 500ms;
+    will-change: transform;
+    transition-delay: 300ms;
+    position: absolute;
+    bottom: 9.375rem;
+    pointer-events: none;
+    width: calc(100% - 15rem);
+}
+
+.identicon-selector .backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity;
+    will-change: opacity;
+    box-sizing: border-box;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-flow: column;
+}
+
+.identicon-selector .backdrop button+.secondary {
+    position: absolute;
+    margin-bottom: 2rem;
+    bottom: 3.125rem;
+}
+
+.identicon-selector .secondary {
+    margin-top: 3.75rem;
+    margin-bottom: 2.5rem;
+}
+
+.identicon-selector.selected .backdrop button {
+    opacity: 1;
+    z-index: 2;
+    transform: translate(0, 0);
+    pointer-events: all;
+}
+
+.identicon-selector .identicon .address {
+    display: none;
+    text-align: center;
+    transform: scale(0.68);
+    margin-top: 1.7rem;
+    color: white;
+}
+
+.identicon-selector .identicon.selected .address {
+    display: block;
+}
+
+.identicon-selector.selected .backdrop {
+    pointer-events: all;
+    opacity: 1;
+}
+
+.identicon-selector .identicon.selected,
+.identicon-selector .identicon.returning {
+    z-index: 3;
+    transition-delay: 0s !important;
+}
+
+.identicon-selector .identicon.selected {
+    transform: scale(1.5) translateY(-5rem);
+    width: unset;
+    pointer-events: none;
+    position: fixed;
+}
+
+@media (max-height: 620px) {
+    .identicon-selector .identicon.selected .address {
+        margin-top: 0;
+    }
+}
+
+@media (max-width: 380px) {
+    .identicon-selector .identicon {
+        width: 30vw;
+        height: 30vw;
+    }
+
+    .identicon-selector .identicon:nth-child(2) {
+        transform: translate(0, -100%);
+    }
+
+    .identicon-selector .identicon:nth-child(3) {
+        transform: translate(84%, -50%);
+    }
+
+    .identicon-selector .identicon:nth-child(4) {
+        transform: translate(-84%, -50%);
+    }
+
+    .identicon-selector .identicon:nth-child(5) {
+        transform: translate(84%, 50%);
+    }
+
+    .identicon-selector .identicon:nth-child(6) {
+        transform: translate(-84%, 50%);
+    }
+
+    .identicon-selector .identicon:nth-child(7) {
+        transform: translate(0, 100%);
+    }
+
+    .identicon-selector .identicon.selected {
+        transform: scale(1.5) translateY(-4rem);
+    }
+}
+
+.identicon-selector:not(.active) .identicon {
+    transform: translate(0, 0);
+}
+
+.identicon-selector .identicon:nth-child(3),
+.identicon-selector .identicon:nth-child(4),
+.identicon-selector .identicon:nth-child(7) {
+    transition-delay: 300ms;
+}

@@ -1,5 +1,5 @@
 /* global Nimiq */
-/* global ChooseIdenticon */
+/* global IdenticonSelector */
 /* global SetPassphrase */
 /* global DownloadKeyfile */
 /* global PrivacyAgent */
@@ -18,9 +18,8 @@ class Create {
         this._resolve = resolve;
         this._reject = reject;
 
-        // set html elements
-        /** @type {HTMLElement} */
-        this.$chooseIdenticon = (document.getElementById(Create.Pages.CHOOSE_IDENTICON));
+        /** @type {HTMLDivElement} */
+        const $identiconSelector = (document.querySelector('.identicon-selector'));
 
         /** @type {HTMLElement} */
         this.$downloadKeyfile = (document.getElementById(Create.Pages.DOWNLOAD_KEYFILE));
@@ -37,8 +36,9 @@ class Create {
         /** @type {HTMLFormElement} */
         this.$setPassphrase = (document.getElementById(Create.Pages.SET_PASSPHRASE));
 
-        // create components
-        this._chooseIdenticon = new ChooseIdenticon(this.$chooseIdenticon);
+        // Create components
+
+        this._identiconSelector = new IdenticonSelector($identiconSelector, request.defaultKeyPath);
         this._downloadKeyfile = new DownloadKeyfile(this.$downloadKeyfile);
         /** @type {HTMLElement} */
         const $privacyAgentContainer = (this.$privacyAgent.querySelector('.agent'));
@@ -47,16 +47,16 @@ class Create {
         this._validateWords = new ValidateWords(this.$validateWords);
         this._setPassphrase = new SetPassphrase(this.$setPassphrase);
 
-        // wire up logic
-        this._chooseIdenticon.on(
-            ChooseIdenticon.Events.CHOOSE_IDENTICON,
+        // Wire up logic
+
+        this._identiconSelector.on(
+            IdenticonSelector.Events.IDENTICON_SELECTED,
             /** @param {Nimiq.Entropy} entropy */
             entropy => {
                 this._selectedEntropy = entropy;
-                this._recoveryWords.setWords(Nimiq.MnemonicUtils.entropyToMnemonic(Nimiq.Entropy.generate(),
-                    Nimiq.MnemonicUtils.DEFAULT_WORDLIST));
-                this._validateWords.entropy = entropy;
-                this._validateWords.reset();
+                const mnemonic = Nimiq.MnemonicUtils.entropyToMnemonic(entropy);
+                this._recoveryWords.setWords(mnemonic);
+                this._validateWords.setWords(mnemonic);
                 window.location.hash = Create.Pages.SET_PASSPHRASE;
             },
         );
@@ -85,15 +85,24 @@ class Create {
 
         this._validateWords.on(ValidateWords.Events.BACK, () => {
             window.location.hash = Create.Pages.RECOVERY_WORDS;
+            this._validateWords.reset();
         });
 
-        this._validateWords.on(ValidateWords.Events.VALIDATED, async () => {
-            await this.finish(request);
-        });
-
-        this._validateWords.on(ValidateWords.Events.SKIPPED, async () => {
+        this._validateWords.on(ValidateWords.Events.VALIDATED, () => {
             this.finish(request);
         });
+
+        this._validateWords.on(ValidateWords.Events.SKIPPED, () => {
+            this.finish(request);
+        });
+
+        /** @type {HTMLElement} */
+        const $appName = (document.querySelector('#app-name'));
+        $appName.textContent = request.appName;
+        /** @type HTMLAnchorElement */
+        const $cancelLink = ($appName.parentNode);
+        $cancelLink.classList.remove('display-none');
+        $cancelLink.addEventListener('click', () => window.close());
     }
 
     /**
@@ -110,16 +119,15 @@ class Create {
     run() {
         // go to start page
         window.location.hash = Create.Pages.CHOOSE_IDENTICON;
-
-        this._chooseIdenticon.generateIdenticons();
+        this._identiconSelector.generateIdenticons();
     }
 }
 
 Create.Pages = {
     CHOOSE_IDENTICON: 'choose-identicon',
+    SET_PASSPHRASE: 'set-passphrase',
     DOWNLOAD_KEYFILE: 'download-keyfile',
     PRIVACY_AGENT: 'privacy-agent',
     RECOVERY_WORDS: 'recovery-words',
     VALIDATE_WORDS: 'validate-words',
-    SET_PASSPHRASE: 'set-passphrase',
 };

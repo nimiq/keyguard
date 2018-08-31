@@ -74,13 +74,14 @@ class ValidateWords extends Nimiq.Observable {
      * @param {Nimiq.Entropy | Uint8Array} entropy
      */
     set entropy(entropy) {
-        this.mnemonic = Nimiq.MnemonicUtils.entropyToMnemonic(entropy, Nimiq.MnemonicUtils.DEFAULT_WORDLIST);
+        const words = Nimiq.MnemonicUtils.entropyToMnemonic(entropy, Nimiq.MnemonicUtils.DEFAULT_WORDLIST);
+        this.setWords(words);
     }
 
     /**
      * @param {string[]} mnemonic
      */
-    set mnemonic(mnemonic) {
+    setWords(mnemonic) {
         if (!mnemonic) return;
         this._mnemonic = mnemonic;
         this.reset();
@@ -123,9 +124,9 @@ class ValidateWords extends Nimiq.Observable {
         this.$el.querySelectorAll('.correct').forEach(button => button.classList.remove('correct'));
         this.$el.querySelectorAll('.wrong').forEach(button => button.classList.remove('wrong'));
         const wordList = this._generateWords(this._requiredWords[round]);
-        this.setWordList(wordList);
+        this._setWordList(wordList);
         const targetIndex = this._requiredWords[round] + 1;
-        this.setTargetIndex(targetIndex);
+        this._setTargetIndex(targetIndex);
         this._targetWord = this._mnemonic[this._requiredWords[round]];
     }
 
@@ -153,7 +154,7 @@ class ValidateWords extends Nimiq.Observable {
     /**
      * @param {string[]} wordList
      */
-    setWordList(wordList) {
+    _setWordList(wordList) {
         this._wordList = wordList;
         wordList.forEach((word, index) => {
             this.$buttons[index].textContent = word;
@@ -164,7 +165,7 @@ class ValidateWords extends Nimiq.Observable {
     /**
      * @param {number} index
      */
-    setTargetIndex(index) {
+    _setTargetIndex(index) {
         this.$targetIndex.textContent = index.toString();
     }
 

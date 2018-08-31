@@ -53,7 +53,7 @@ class ExportWordsApi extends TopLevelApi {
                     throw new Error('Unknown mnemonic type');
                 }
                 this._recoveryWords.setWords(words);
-                this._validateWords.mnemonic = words;
+                this._validateWords.setWords(words);
                 window.location.hash = ExportWordsApi.Pages.RECOVERY_WORDS;
             } catch (e) {
                 this._keyPrivacy.onPassphraseIncorrect();

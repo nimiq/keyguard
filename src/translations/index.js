@@ -22,7 +22,9 @@ const TRANSLATIONS = {
         'recovery-words-input-label': 'Recovery Words',
         'recovery-words-input-field-placeholder': 'word #',
 
-        'create-choose-identicon-heading': 'Choose Your Account Avatar',
+        'create-heading-choose-identicon': 'Choose your account avatar',
+        'create-text-select-avatar': 'Select an avatar for your wallet\'s default account from the selection below.',
+        'create-hint-more-accounts': 'You can add more accounts later.',
         'create-backup-account-heading': 'Backup your Account',
 
         'enter-recovery-words-heading': 'Import from recovery words',
@@ -59,6 +61,10 @@ const TRANSLATIONS = {
         'passphrasebox-log-out': 'Confirm logout',
         'passphrasebox-download': 'Download key file',
         'passphrasebox-confirm-tx': 'Confirm transaction',
+
+        'identicon-selector-loading': 'Mixing colors',
+        'identicon-selector-button-select': 'Select',
+        'identicon-selector-link-back': 'Back',
     },
     de: {
         _language: 'Deutsch',
@@ -84,8 +90,10 @@ const TRANSLATIONS = {
         'recovery-words-input-label': 'Wiederherstellungswörter',
         'recovery-words-input-field-placeholder': 'Wort ',
 
-        'create-choose-identicon-heading': 'Wähle einen Avatar für dein Konto',
-        'create-backup-account-heading': 'Backup your Account',
+        'create-heading-choose-identicon': 'Wähle deinen Konto Avatar',
+        'create-text-select-avatar': 'Wähle einen Avatar für den Standard-Account deiner Wallet aus der Auswahl unten.',
+        'create-hint-more-accounts': 'Neue Konten kannst du später hinzufügen.',
+        'create-backup-account-heading': 'Sichere dein Konto',
 
         'enter-recovery-words-heading': 'Mit Wiederherstellungswörtern importieren',
         'enter-recovery-words-subheading': 'Bitte gib deine 24 Wiederherstellungswörter ein.',
@@ -123,6 +131,10 @@ const TRANSLATIONS = {
         'passphrasebox-log-out': 'Abmeldung bestätigen',
         'passphrasebox-download': 'KeyFile herunterladen',
         'passphrasebox-confirm-tx': 'Überweisung bestätigen',
+
+        'identicon-selector-loading': 'Mische Farben',
+        'identicon-selector-button-select': 'Auswählen',
+        'identicon-selector-link-back': 'Zurück',
     },
 };
 
