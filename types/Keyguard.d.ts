@@ -83,7 +83,14 @@ type SignMessageResult = {
 }
 
 type CreateRequest = {
-    defaultKeyPath: string
+    appName: string;
+    defaultKeyPath: string;
+}
+
+type CreateResult = {
+    keyId: string;
+    keyPath: string;
+    address: Uint8Array;
 }
 
 type ImportWordsRequest = {

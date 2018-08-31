@@ -1,14 +1,14 @@
 class Demo {
     static serve() {
         const server = new Rpc.RpcServer('*');
-        server.onRequest('setUp',
-            (state, keyPassphrase) => Demo.setUp(keyPassphrase).then(() => 'setUp'));
-        server.onRequest('tearDown',
-            () => Demo.tearDown().then(() => 'tearDown'));
+        server.onRequest('setUpKey',
+            (state, keyPassphrase) => Demo.setUpKey(keyPassphrase).then(() => 'setUpKey'));
+        server.onRequest('tearDownKey',
+            () => Demo.tearDownKey().then(() => 'tearDownKey'));
         server.init();
     }
 
-    static async setUp(keyPassphrase) {
+    static async setUpKey(keyPassphrase) {
         const entropy = new Nimiq.Entropy(Nimiq.BufferUtils.fromHex(Demo.ENTROPY));
 
         const secret = entropy.serialize();
@@ -17,7 +17,7 @@ class Demo {
         await KeyStore.instance.put(key, passphrase);
     }
 
-    static async tearDown() {
+    static async tearDownKey() {
         const entropy = new Nimiq.Entropy(Nimiq.BufferUtils.fromHex(Demo.ENTROPY));
 
         const secret = entropy.serialize();
