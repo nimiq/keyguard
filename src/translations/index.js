@@ -8,11 +8,11 @@ const TRANSLATIONS = {
         'passphrase-placeholder': 'Enter passphrase',
         'passphrase-repeat-placeholder': 'Repeat passphrase',
 
-        'privacy-agent-heading': 'Are you being watched?',
-        'privacy-agent-info': 'Now is the perfect time to assess your surroundings. Nearby windows? Hidden cameras? '
-                            + 'Shoulder spies?',
-        'privacy-agent-warning': 'Anyone that can see your Recovery Words can steal all your funds!',
-        'privacy-agent-ok': 'OK, all good',
+        'privacy-warning-heading': 'Are you being watched?',
+        'privacy-warning-text': 'Now is the perfect time to assess your surroundings. '
+                              + 'Nearby windows? Hidden cameras? Shoulder spies? '
+                              + 'Anyone with your backup phrase can access and spend your NIM.',
+        'privacy-agent-continue': 'Continue',
 
         'recovery-words-title': 'Recovery Words',
         'recovery-words-input-label': 'Recovery Words',
@@ -25,7 +25,7 @@ const TRANSLATIONS = {
         'create-text-keyfile-info': 'Your Key File gives you full access to your wallet. '
                                   + 'You\'ll need it everytime you log in.',
         'create-hint-keyfile-password': 'To protect your wallet, first protect it with a password.',
-        'create-backup-account-heading': 'Backup your Account',
+        'create-heading-backup-account': 'Create a backup',
 
         'enter-recovery-words-heading': 'Import from recovery words',
         'enter-recovery-words-subheading': 'Please enter your 24 recovery words.',
@@ -86,12 +86,12 @@ const TRANSLATIONS = {
         'passphrase-placeholder': 'Passphrase eingeben',
         'passphrase-repeat-placeholder': 'Passphrase wiederholen',
 
-        'privacy-agent-heading': 'Werden sie beobachtet?',
-        'privacy-agent-info': 'Jetzt ist eine gute Zeit um sich einmal umzuschauen. Gibt es Fenster in der Nähe? '
-                            + ' Versteckte Kameras? Jemand der über die Schulter schaut?',
-        'privacy-agent-warning': 'Falls irgendjemand ihre Wiederherstellungswörter herausfindet '
-                               + 'kann er ihre gesamten NIM stehlen!',
-        'privacy-agent-ok': 'OK, alles in Ordnung',
+        'privacy-warning-heading': 'Wirst du beobachtet?',
+        'privacy-warning-text': 'Jetzt ist eine gute Zeit um sich umzuschauen. Gibt es Fenster in der Nähe? '
+                              + 'Versteckte Kameras? Jemand der über deine Schulter schaut? '
+                              + 'Jeder der deine Wiederherstellungswörter hat, kann auf deine NIM zugreifen '
+                              + 'und sie ausgeben.',
+        'privacy-agent-continue': 'Weiter',
 
         'recovery-words-title': 'Wiederherstellungswörter',
         'recovery-words-input-label': 'Wiederherstellungswörter',
@@ -104,7 +104,7 @@ const TRANSLATIONS = {
         'create-text-keyfile-info': 'Deine Wallet Datei gibt dir vollen Zugang zu deiner Wallet. '
                                   + 'Du brauchst sie jedesmal wenn du dich einloggst.',
         'create-hint-keyfile-password': 'Um deine Wallet zu schützen, schütze es mit einem Passwort.',
-        'create-backup-account-heading': 'Sichere dein Konto',
+        'create-heading-backup-account': 'Erstelle ein Backup',
 
         'enter-recovery-words-heading': 'Mit Wiederherstellungswörtern importieren',
         'enter-recovery-words-subheading': 'Bitte gib deine 24 Wiederherstellungswörter ein.',

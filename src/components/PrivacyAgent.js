@@ -9,41 +9,46 @@ class PrivacyAgent extends Nimiq.Observable { // eslint-disable-line no-unused-v
     constructor(element) {
         super();
         this.$el = this._createElement(element);
+
+        /** @type {HTMLElement} */
+        const $privacyWarning = (this.$el.querySelector('.privacy-warning'));
+
+        /** @type {HTMLButtonElement} */
+        const $button = (this.$el.querySelector('button'));
+
+        this._privacyWarning = new PrivacyWarning($privacyWarning);
+
+        $button.addEventListener('click', () => {
+            this.fire(PrivacyAgent.Events.CONFIRM);
+        });
     }
 
     /**
-     * @param {HTMLElement} [existingElement]
+     * @param {HTMLElement} [$el]
      * @returns {HTMLElement}
      */
-    _createElement(existingElement) {
+    _createElement($el) {
         /** @type HTMLElement */
-        const element = existingElement || document.createElement('div');
+        $el = $el || document.createElement('div');
+        $el.classList.add('privacy-agent');
 
-        /* eslint-disable max-len */
-        element.innerHTML = `
-            <div class="privacy-agent-container-container"></div>
+        $el.innerHTML = `
+            <div class="privacy-warning"></div>
             <div class="grow"></div>
-            <button data-i18n="privacy-agent-ok">OK, all good</button>
+            <button data-i18n="privacy-agent-continue">Continue</button>
         `;
-        /* eslint-enable max-len */
 
-        /** @type {HTMLElement} */
-        const $privacyAgent = (element.querySelector('.privacy-agent-container-container'));
-        this._privacyAgent = new PrivacyWarning($privacyAgent);
-
-        /** @type {HTMLButtonElement} */
-        const $ok = (element.querySelector('button'));
-
-        $ok.addEventListener('click', () => {
-            this.fire(PrivacyAgent.Events.CONFIRM);
-        });
-
-        I18n.translateDom(element);
-        return element;
+        I18n.translateDom($el);
+        return $el;
     }
 
-    /** @returns {HTMLElement} */
+    /** @returns {HTMLElement} @deprecated */
     getElement() {
+        return this.$el;
+    }
+
+    /** @type {HTMLElement} */
+    get element() {
         return this.$el;
     }
 }

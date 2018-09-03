@@ -30,7 +30,7 @@ class Create {
         const $downloadKeyfile = (document.querySelector('.download-keyfile'));
 
         /** @type {HTMLElement} */
-        this.$privacyAgent = (document.getElementById(Create.Pages.PRIVACY_AGENT));
+        const $privacyAgent = (document.querySelector('.privacy-agent'));
 
         /** @type {HTMLElement} */
         this.$recoveryWords = (document.getElementById(Create.Pages.RECOVERY_WORDS));
@@ -42,9 +42,7 @@ class Create {
 
         this._identiconSelector = new IdenticonSelector($identiconSelector, request.defaultKeyPath);
         this._downloadKeyfile = new DownloadKeyfile($downloadKeyfile);
-        /** @type {HTMLElement} */
-        const $privacyAgentContainer = (this.$privacyAgent.querySelector('.agent'));
-        this._privacyAgent = new PrivacyAgent($privacyAgentContainer);
+        this._privacyAgent = new PrivacyAgent($privacyAgent);
         this._recoveryWords = new BackupRecoveryWords(this.$recoveryWords);
         this._validateWords = new ValidateWords(this.$validateWords);
         this._passphraseSetter = new PassphraseSetterBox($setPassphrase);
