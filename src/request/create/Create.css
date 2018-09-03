@@ -2,6 +2,10 @@
     margin: 4rem;
 }
 
+.page .actionbox p {
+    margin: 0 10rem 3rem;
+}
+
 .page p + p {
     margin-top: -2.5rem;
 }

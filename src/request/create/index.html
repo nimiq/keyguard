@@ -42,6 +42,7 @@
     <link rel="stylesheet" href="../../common.css">
     <link rel="stylesheet" href="../../components/PassphraseInput.css">
     <link rel="stylesheet" href="../../components/PassphraseBox.css">
+    <link rel="stylesheet" href="../../components/DownloadKeyfile.css">
     <link rel="stylesheet" href="../../components/RecoveryWords.css">
     <link rel="stylesheet" href="../../components/RecoveryWordsInputField.css">
     <link rel="stylesheet" href="../../components/ValidateWords.css">
@@ -95,7 +96,26 @@
             </div>
         </div>
 
-        <div id="download-keyfile" class="page"></div>
+        <div id="download-keyfile" class="page">
+            <div class="page-header">
+                <a tabindex="0" class="page-header-back-button icon-back-arrow"></a>
+                <h1 data-i18n="create-heading-keyfile">This is your Key File</h1>
+            </div>
+
+            <div class="page-body">
+                <div class="keyfile-info">
+                    <div class="icon icon-keyfile"></div>
+                    <div class="keyfile-text">
+                        <p data-i18n="create-text-keyfile-info">Your Key File gives you full access to your wallet. You'll need it everytime you log in.</p>
+                        <p data-i18n="create-hint-keyfile-password">To protect your wallet, first protect it with a password.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-footer">
+                <div class="download-keyfile"></div>
+            </div>
+        </div>
 
         <div id="privacy-agent" class="page">
             <h1 data-18n="create-backup-account-heading">Backup your Account</h1>

@@ -27,7 +27,7 @@ class Create {
         const $setPassphrase = (document.querySelector('.passphrase-box'));
 
         /** @type {HTMLElement} */
-        this.$downloadKeyfile = (document.getElementById(Create.Pages.DOWNLOAD_KEYFILE));
+        const $downloadKeyfile = (document.querySelector('.download-keyfile'));
 
         /** @type {HTMLElement} */
         this.$privacyAgent = (document.getElementById(Create.Pages.PRIVACY_AGENT));
@@ -41,7 +41,7 @@ class Create {
         // Create components
 
         this._identiconSelector = new IdenticonSelector($identiconSelector, request.defaultKeyPath);
-        this._downloadKeyfile = new DownloadKeyfile(this.$downloadKeyfile);
+        this._downloadKeyfile = new DownloadKeyfile($downloadKeyfile);
         /** @type {HTMLElement} */
         const $privacyAgentContainer = (this.$privacyAgent.querySelector('.agent'));
         this._privacyAgent = new PrivacyAgent($privacyAgentContainer);
@@ -66,20 +66,26 @@ class Create {
 
         this._passphraseSetter.on(PassphraseSetterBox.Events.SUBMIT, /** @param {string} passphrase */ passphrase => {
             this._passphrase = passphrase;
+            // TODO Encrypt entropy/seed
+            this._downloadKeyfile.setSecret(new Uint8Array(0), true);
+            const keyfileIcon = /** @type {HTMLElement} */ (document.querySelector('.page#download-keyfile .icon'));
+            keyfileIcon.classList.remove('icon-keyfile-insecure');
+            keyfileIcon.classList.add('icon-keyfile-secure');
             window.location.hash = Create.Pages.DOWNLOAD_KEYFILE;
             this._passphraseSetter.reset();
         });
 
         this._passphraseSetter.on(PassphraseSetterBox.Events.SKIP, () => {
+            // TODO Generate seed
+            this._downloadKeyfile.setSecret(new Uint8Array(0), false);
+            const keyfileIcon = /** @type {HTMLElement} */ (document.querySelector('.page#download-keyfile .icon'));
+            keyfileIcon.classList.remove('icon-keyfile-secure');
+            keyfileIcon.classList.add('icon-keyfile-insecure');
             window.location.hash = Create.Pages.DOWNLOAD_KEYFILE;
             this._passphraseSetter.reset();
         });
 
         this._downloadKeyfile.on(DownloadKeyfile.Events.DOWNLOADED, () => {
-            window.location.hash = Create.Pages.PRIVACY_AGENT;
-        });
-
-        this._downloadKeyfile.on(DownloadKeyfile.Events.CONTINUE, () => {
             window.location.hash = Create.Pages.PRIVACY_AGENT;
         });
 

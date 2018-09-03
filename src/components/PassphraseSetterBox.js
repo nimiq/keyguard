@@ -37,12 +37,12 @@ class PassphraseSetterBox extends Nimiq.Observable {
      */
     static _createElement($el, options) {
         $el = $el || document.createElement('form');
-        $el.classList.add('passphrase-box', 'setter', 'center', options.bgColor);
+        $el.classList.add('passphrase-box', 'actionbox', 'setter', 'center', options.bgColor);
 
         /* eslint-disable max-len */
         $el.innerHTML = `
-            <div class="prompt protect" data-i18n="passphrasebox-protect-keyfile">Protect your keyfile with a password</div>
-            <div class="prompt repeat" data-i18n="passphrasebox-repeat-password">Repeat your password</div>
+            <h2 class="prompt protect" data-i18n="passphrasebox-protect-keyfile">Protect your keyfile with a password</h2>
+            <h2 class="prompt repeat" data-i18n="passphrasebox-repeat-password">Repeat your password</h2>
 
             <div passphrase-input></div>
 

@@ -37,7 +37,7 @@ class PassphraseBox extends Nimiq.Observable {
      */
     static _createElement($el, options) {
         $el = $el || document.createElement('form');
-        $el.classList.add('passphrase-box', 'center', options.bgColor);
+        $el.classList.add('passphrase-box', 'actionbox', 'center', options.bgColor);
 
         // To enable i18n validation with the dynamic nature of the passphrase box's contents,
         // all possible i18n tags and texts have to be specified here in the below format to
@@ -47,7 +47,6 @@ class PassphraseBox extends Nimiq.Observable {
             'passphrasebox-continue': '<button class="submit" data-i18n="passphrasebox-continue">Continue</button>',
             'passphrasebox-log-in': '<button class="submit" data-i18n="passphrasebox-log-in">Log in to your wallet</button>',
             'passphrasebox-log-out': '<button class="submit" data-i18n="passphrasebox-log-out">Confirm logout</button>',
-            // 'passphrasebox-download': '<button class="submit" data-i18n="passphrasebox-download">Download key file</button>',
             'passphrasebox-confirm-tx': '<button class="submit" data-i18n="passphrasebox-confirm-tx">Confirm transaction</button>',
         };
         /* eslint-enable max-len */
@@ -56,7 +55,7 @@ class PassphraseBox extends Nimiq.Observable {
 
         $el.innerHTML = `
             <a class="cancel icon-cancel"></a>
-            <div class="prompt" data-i18n="passphrasebox-enter-passphrase">Enter your passphrase</div>
+            <h2 class="prompt" data-i18n="passphrasebox-enter-passphrase">Enter your passphrase</h2>
             <div passphrase-input></div>
             ${buttonVersions[options.buttonI18nTag]}
         `;

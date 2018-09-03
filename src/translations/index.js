@@ -70,6 +70,12 @@ const TRANSLATIONS = {
         'identicon-selector-loading': 'Mixing colors',
         'identicon-selector-button-select': 'Select',
         'identicon-selector-link-back': 'Back',
+
+        'downloadkeyfile-heading-protected': 'Your Key File is protected!',
+        'downloadkeyfile-heading-unprotected': 'Your Key File is not protected!',
+        'downloadkeyfile-safe-place': 'Store it in a safe place. If you lose it, it cannot be recovered!',
+        'downloadkeyfile-download': 'Download Key File',
+        'downloadkeyfile-download-anyway': 'Download anyway',
     },
     de: {
         _language: 'Deutsch',
@@ -145,6 +151,13 @@ const TRANSLATIONS = {
         'identicon-selector-loading': 'Mische Farben',
         'identicon-selector-button-select': 'Auswählen',
         'identicon-selector-link-back': 'Zurück',
+
+        'downloadkeyfile-heading-protected': 'Dein Schlüsseldatei ist geschützt!',
+        'downloadkeyfile-heading-unprotected': 'Dein Schlüsseldatei ist nicht geschützt!',
+        'downloadkeyfile-safe-place': 'Lagere sie in einem sicheren Ort. Wenn du sie verlierst, '
+                                    + 'kann sie nicht wiederhergestellt werden!',
+        'downloadkeyfile-download': 'Schlüsseldatei herunterladen',
+        'downloadkeyfile-download-anyway': 'Trotzdem herunterladen',
     },
 };
 
