@@ -40,7 +40,7 @@ class Create {
         const $recoveryWordsSkip = (document.querySelector('#recovery-words .skip'));
 
         /** @type {HTMLElement} */
-        this.$validateWords = (document.getElementById(Create.Pages.VALIDATE_WORDS));
+        const $validateWords = (document.querySelector('.validate-words'));
 
         // Create components
 
@@ -48,7 +48,7 @@ class Create {
         this._downloadKeyfile = new DownloadKeyfile($downloadKeyfile);
         this._privacyAgent = new PrivacyAgent($privacyAgent);
         this._recoveryWords = new RecoveryWords($recoveryWords, false);
-        this._validateWords = new ValidateWords(this.$validateWords);
+        this._validateWords = new ValidateWords($validateWords);
         this._passphraseSetter = new PassphraseSetterBox($setPassphrase);
 
         // Wire up logic

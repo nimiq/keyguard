@@ -1,50 +1,80 @@
-#validate-words {
+.validate-words {
     width: 100%;
-    color: white;
     text-align: center;
     flex-wrap: wrap;
     font-size: 1.875rem;
     line-height: 4rem;
 }
 
-#validate-words p {
+.validate-words p {
     margin-bottom: 4rem;
+    text-align: left;
 }
 
-#validate-words .target-index {
+.validate-words .target-index {
     display: block;
     font-size: 8rem;
-    line-height: 10rem;
-    margin-bottom: 5.25rem;
-    font-weight: 200;
+    line-height: 9rem;
+    margin-bottom: 4.75rem;
+    font-weight: 100;
 }
 
-#validate-words .target-index::before {
+.validate-words .target-index::before {
     content: '#';
     font-size: 6.5rem;
 }
 
-#validate-words button {
-    margin: .5rem;
-    transform: translate3d(0, 0, 0);
-    will-change: transform;
+.validate-words button {
+    margin: 0.75rem;
+    height: 7rem;
+    line-height: 7rem;
+    color: #2a60dd;
+    border: solid 2px;
+    box-shadow: none;
+    letter-spacing: 0;
 }
 
-#validate-words button.correct {
+.validate-words button.correct {
     background-color: var(--success-color);
     border-color: var(--success-color);
     color: var(--secondary-text-color);
 }
 
-#validate-words button.wrong {
+.validate-words button.wrong {
     background-color: var(--error-color);
     border-color: var(--error-color);
     color: var(--secondary-cta-color);
 }
 
-#validate-words .word-list {
+.validate-words .word-list {
     display: block;
-    height: 22.5rem;
-    max-width: 46rem;
-    margin: 0 auto;
+    margin: 0 4rem;
+}
+
+.validate-words .back-to-words {
+    margin-top: 4.25rem;
+}
+
+.validate-words .back-to-words a {
+    color: #999999;
+    text-transform: uppercase;
+    font-size: 2rem;
+    line-height: 1.25;
+    letter-spacing: 0.1875rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.validate-words .skip {
+    margin-top: 7.5rem;
+    margin-bottom: 2.5rem;
+}
+
+.validate-words .skip a {
+    color: black;
+    opacity: 0.5;
+    font-size: 1.75rem;
+    line-height: 1.5;
+    cursor: pointer;
+    text-decoration: underline;
 }

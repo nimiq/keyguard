@@ -30,6 +30,7 @@ const TRANSLATIONS = {
                                   + 'You\'ll need it everytime you log in.',
         'create-hint-keyfile-password': 'To protect your wallet, first protect it with a password.',
         'create-heading-backup-account': 'Create a backup',
+        'create-heading-validate-backup': 'Validate your backup',
 
         'enter-recovery-words-heading': 'Import from recovery words',
         'enter-recovery-words-subheading': 'Please enter your 24 recovery words.',
@@ -80,6 +81,10 @@ const TRANSLATIONS = {
         'downloadkeyfile-safe-place': 'Store it in a safe place. If you lose it, it cannot be recovered!',
         'downloadkeyfile-download': 'Download Key File',
         'downloadkeyfile-download-anyway': 'Download anyway',
+
+        'validate-words-text': 'Please select the correct word from your list of recovery words.',
+        'validate-words-back': 'Back to words',
+        'validate-words-skip': 'Skip validation for now',
     },
     de: {
         _language: 'Deutsch',
@@ -114,6 +119,7 @@ const TRANSLATIONS = {
                                   + 'Du brauchst sie jedesmal wenn du dich einloggst.',
         'create-hint-keyfile-password': 'Um deine Wallet zu schützen, schütze es mit einem Passwort.',
         'create-heading-backup-account': 'Erstelle ein Backup',
+        'create-heading-validate-backup': 'Überprüfe dein Backup',
 
         'enter-recovery-words-heading': 'Mit Wiederherstellungswörtern importieren',
         'enter-recovery-words-subheading': 'Bitte gib deine 24 Wiederherstellungswörter ein.',
@@ -167,6 +173,10 @@ const TRANSLATIONS = {
                                     + 'kann sie nicht wiederhergestellt werden!',
         'downloadkeyfile-download': 'Schlüsseldatei herunterladen',
         'downloadkeyfile-download-anyway': 'Trotzdem herunterladen',
+
+        'validate-words-text': 'Bitte wähle das richtige Wort aus deiner Liste von Wiederherstellungswörtern aus.',
+        'validate-words-back': 'Zurück zu den Wörtern',
+        'validate-words-skip': 'Überprüfung erstmal überspringen',
     },
 };
 
