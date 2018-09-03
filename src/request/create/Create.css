@@ -34,3 +34,24 @@
     margin: 4rem;
     margin-right: 0;
 }
+
+.recovery-words {
+    margin: 0 4rem 4rem;
+}
+
+.page#recovery-words button {
+    width: calc(100% - 15rem);
+    background: #724ceb;
+    color: white;
+    margin-bottom: 2.5rem;
+}
+
+.page#recovery-words .skip {
+    color: black;
+    font-size: 1.75rem;
+    line-height: 1.5;
+    opacity: 0.5;
+    text-decoration: underline;
+    cursor: pointer;
+    margin-bottom: 2.5rem;
+}

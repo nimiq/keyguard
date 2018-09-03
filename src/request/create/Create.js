@@ -3,7 +3,7 @@
 /* global PassphraseSetterBox */
 /* global DownloadKeyfile */
 /* global PrivacyAgent */
-/* global BackupRecoveryWords */
+/* global RecoveryWords */
 /* global ValidateWords */
 /* global Key */
 /* global KeyStore */
@@ -33,7 +33,11 @@ class Create {
         const $privacyAgent = (document.querySelector('.privacy-agent'));
 
         /** @type {HTMLElement} */
-        this.$recoveryWords = (document.getElementById(Create.Pages.RECOVERY_WORDS));
+        const $recoveryWords = (document.querySelector('.recovery-words'));
+        /** @type {HTMLElement} */
+        const $recoveryWordsButton = (document.querySelector('#recovery-words button'));
+        /** @type {HTMLElement} */
+        const $recoveryWordsSkip = (document.querySelector('#recovery-words .skip'));
 
         /** @type {HTMLElement} */
         this.$validateWords = (document.getElementById(Create.Pages.VALIDATE_WORDS));
@@ -43,7 +47,7 @@ class Create {
         this._identiconSelector = new IdenticonSelector($identiconSelector, request.defaultKeyPath);
         this._downloadKeyfile = new DownloadKeyfile($downloadKeyfile);
         this._privacyAgent = new PrivacyAgent($privacyAgent);
-        this._recoveryWords = new BackupRecoveryWords(this.$recoveryWords);
+        this._recoveryWords = new RecoveryWords($recoveryWords, false);
         this._validateWords = new ValidateWords(this.$validateWords);
         this._passphraseSetter = new PassphraseSetterBox($setPassphrase);
 
@@ -64,7 +68,7 @@ class Create {
 
         this._passphraseSetter.on(PassphraseSetterBox.Events.SUBMIT, /** @param {string} passphrase */ passphrase => {
             this._passphrase = passphrase;
-            // TODO Encrypt entropy/seed
+            // TODO Encrypt seed
             this._downloadKeyfile.setSecret(new Uint8Array(0), true);
             const keyfileIcon = /** @type {HTMLElement} */ (document.querySelector('.page#download-keyfile .icon'));
             keyfileIcon.classList.remove('icon-keyfile-insecure');
@@ -91,8 +95,12 @@ class Create {
             window.location.hash = Create.Pages.RECOVERY_WORDS;
         });
 
-        this._recoveryWords.on(BackupRecoveryWords.Events.CONTINUE, () => {
+        $recoveryWordsButton.addEventListener('click', () => {
             window.location.hash = Create.Pages.VALIDATE_WORDS;
+        });
+
+        $recoveryWordsSkip.addEventListener('click', () => {
+            this.finish(request);
         });
 
         this._validateWords.on(ValidateWords.Events.BACK, () => {
@@ -104,7 +112,7 @@ class Create {
             this.finish(request);
         });
 
-        this._validateWords.on(ValidateWords.Events.SKIPPED, () => {
+        this._validateWords.on(ValidateWords.Events.SKIP, () => {
             this.finish(request);
         });
 
@@ -120,12 +128,21 @@ class Create {
     /**
      * @param {CreateRequest} request
      */
-    async finish(request) { // eslint-disable-line no-unused-vars
+    async finish(request) {
         document.body.classList.add('loading');
         const key = new Key(this._selectedEntropy.serialize());
         // XXX Should we use utf8 encoding here instead?
         const passphrase = Nimiq.BufferUtils.fromAscii(this._passphrase);
-        this._resolve(await KeyStore.instance.put(key, passphrase));
+        await KeyStore.instance.put(key, passphrase);
+
+        /** @type {CreateResult} */
+        const result = {
+            keyId: key.id,
+            keyPath: request.defaultKeyPath,
+            address: key.deriveAddress(request.defaultKeyPath).serialize(),
+        };
+
+        this._resolve(result);
     }
 
     run() {

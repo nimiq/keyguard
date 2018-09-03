@@ -1,4 +1,4 @@
-/* global BackupRecoveryWords */
+/* global RecoveryWords */
 /* global TopLevelApi */
 /* global Nimiq */
 /* global KeyPrivacy */
@@ -12,13 +12,13 @@ class ExportWordsApi extends TopLevelApi {
         /** @type {HTMLElement} */
         const $keyPrivacy = (document.getElementById(ExportWordsApi.Pages.ENTER_PASSPHRASE));
         /** @type {HTMLElement} */
-        const $recoveryWords = (document.getElementById(ExportWordsApi.Pages.RECOVERY_WORDS));
+        const $recoveryWords = (document.querySelector('.recovery-words'));
         /** @type {HTMLElement} */
         const $validateWords = (document.getElementById(ExportWordsApi.Pages.VALIDATE_WORDS));
 
         // Components
         this._keyPrivacy = new KeyPrivacy($keyPrivacy);
-        this._recoveryWords = new BackupRecoveryWords($recoveryWords);
+        this._recoveryWords = new RecoveryWords($recoveryWords, false);
         this._validateWords = new ValidateWords($validateWords);
 
         /** @type {HTMLDivElement} */
@@ -60,7 +60,8 @@ class ExportWordsApi extends TopLevelApi {
             }
         });
 
-        this._recoveryWords.on(BackupRecoveryWords.Events.CONTINUE, () => {
+        /** @type {HTMLElement} */
+        (document.querySelector('#recovery-words button')).addEventListener('click', () => {
             window.location.hash = ExportWordsApi.Pages.VALIDATE_WORDS;
         });
 

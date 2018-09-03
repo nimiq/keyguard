@@ -121,6 +121,7 @@
     z-index: 2;
     transform: translate(0, 0);
     pointer-events: all;
+    margin: 0;
 }
 
 .identicon-selector .identicon .address {

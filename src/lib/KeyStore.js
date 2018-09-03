@@ -110,7 +110,7 @@ class KeyStore {
         const keyRecord = /** @type {KeyRecord} */ {
             id: key.id,
             type: key.type,
-            encrypted: !!passphrase,
+            encrypted: !!passphrase && passphrase.length > 0,
             secret,
         };
 

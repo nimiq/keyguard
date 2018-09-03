@@ -153,8 +153,7 @@ button,
     text-transform: uppercase;
     letter-spacing: 0.1875rem;
     height: 8rem;
-    /* width: 100%; */
-    /* max-width: 46rem; */
+    margin: 0 7.5rem;
     border-radius: 4rem;
     padding: 0 6rem;
     vertical-align: middle;
@@ -168,8 +167,6 @@ button,
     border: none;
     outline: none;
     line-height: 1.25;
-    /* margin-bottom: .5rem; */
-    /* min-height: 7rem; */
     font-family: inherit;
 }
 

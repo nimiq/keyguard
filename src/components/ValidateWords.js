@@ -29,7 +29,7 @@ class ValidateWords extends Nimiq.Observable {
         /** @type {HTMLFormElement} */
         this.$backWords = (this.$el.querySelector('.back-words'));
 
-        this.$skip.addEventListener('click', () => this.fire(ValidateWords.Events.SKIPPED));
+        this.$skip.addEventListener('click', () => this.fire(ValidateWords.Events.SKIP));
         this.$backWords.addEventListener('click', () => this.fire(ValidateWords.Events.BACK));
     }
 
@@ -217,7 +217,7 @@ class ValidateWords extends Nimiq.Observable {
 }
 
 ValidateWords.Events = {
-    SKIPPED: 'skipped',
-    VALIDATED: 'validated',
-    BACK: 'back',
+    SKIP: 'validate-words-skip',
+    VALIDATED: 'validate-words-validated',
+    BACK: 'validate-words-back',
 };

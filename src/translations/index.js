@@ -17,6 +17,10 @@ const TRANSLATIONS = {
         'recovery-words-title': 'Recovery Words',
         'recovery-words-input-label': 'Recovery Words',
         'recovery-words-input-field-placeholder': 'word #',
+        'recovery-words-explanation': 'There really is no password recovery. The following words are a backup '
+                                    + 'of your Key File and will grant you access to your wallet even if your '
+                                    + 'Key File is lost.',
+        'recovery-words-storing': 'Write those words on a piece of paper and store it at a safe, offline place.',
 
         'create-heading-choose-identicon': 'Choose your account avatar',
         'create-text-select-avatar': 'Select an avatar for your wallet\'s default account from the selection below.',
@@ -96,6 +100,11 @@ const TRANSLATIONS = {
         'recovery-words-title': 'Wiederherstellungswörter',
         'recovery-words-input-label': 'Wiederherstellungswörter',
         'recovery-words-input-field-placeholder': 'Wort ',
+        'recovery-words-explanation': 'Es gibt wirklich keine Password-Wiederherstellung. Die folgenden Wörter '
+                                    + 'sind ein Backup von deiner Schlüsseldatei und werden dir Zugang zu deiner '
+                                    + 'Wallet gewähren, auch wenn deine Schlüsseldatei verloren ist.',
+        'recovery-words-storing': 'Schreibe diese Wörter auf ein Stück Papier und verwahre es an einem sicheren, '
+                                + 'analogen Ort.',
 
         'create-heading-choose-identicon': 'Wähle deinen Konto Avatar',
         'create-text-select-avatar': 'Wähle einen Avatar für den Standard-Account deiner Wallet aus der Auswahl unten.',

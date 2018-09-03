@@ -33,9 +33,7 @@
 
 .recovery-words .words-container {
     width: 100%;
-    max-width: 45rem;
     padding: 2rem;
-    margin-top: 3rem;
     box-sizing: border-box;
     position: relative;
     background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAJElEQVQYV2NkwAT/GdHE/jMwMDAiC4IFQIpggnABmCCKAEgQAABOBQUaykC8AAAAAElFTkSuQmCC');
