@@ -1,6 +1,6 @@
 /* global Nimiq */
 /* global IdenticonSelector */
-/* global SetPassphrase */
+/* global PassphraseSetterBox */
 /* global DownloadKeyfile */
 /* global PrivacyAgent */
 /* global BackupRecoveryWords */
@@ -18,8 +18,13 @@ class Create {
         this._resolve = resolve;
         this._reject = reject;
 
+        this._passphrase = '';
+
         /** @type {HTMLDivElement} */
         const $identiconSelector = (document.querySelector('.identicon-selector'));
+
+        /** @type {HTMLFormElement} */
+        const $setPassphrase = (document.querySelector('.passphrase-box'));
 
         /** @type {HTMLElement} */
         this.$downloadKeyfile = (document.getElementById(Create.Pages.DOWNLOAD_KEYFILE));
@@ -33,9 +38,6 @@ class Create {
         /** @type {HTMLElement} */
         this.$validateWords = (document.getElementById(Create.Pages.VALIDATE_WORDS));
 
-        /** @type {HTMLFormElement} */
-        this.$setPassphrase = (document.getElementById(Create.Pages.SET_PASSPHRASE));
-
         // Create components
 
         this._identiconSelector = new IdenticonSelector($identiconSelector, request.defaultKeyPath);
@@ -45,7 +47,7 @@ class Create {
         this._privacyAgent = new PrivacyAgent($privacyAgentContainer);
         this._recoveryWords = new BackupRecoveryWords(this.$recoveryWords);
         this._validateWords = new ValidateWords(this.$validateWords);
-        this._setPassphrase = new SetPassphrase(this.$setPassphrase);
+        this._passphraseSetter = new PassphraseSetterBox($setPassphrase);
 
         // Wire up logic
 
@@ -58,13 +60,19 @@ class Create {
                 this._recoveryWords.setWords(mnemonic);
                 this._validateWords.setWords(mnemonic);
                 window.location.hash = Create.Pages.SET_PASSPHRASE;
+                this._passphraseSetter.focus();
             },
         );
 
-        this._setPassphrase.on(SetPassphrase.Events.CHOOSE, /** @param {string} passphrase */ passphrase => {
+        this._passphraseSetter.on(PassphraseSetterBox.Events.SUBMIT, /** @param {string} passphrase */ passphrase => {
             this._passphrase = passphrase;
-            this._setPassphrase.reset();
             window.location.hash = Create.Pages.DOWNLOAD_KEYFILE;
+            this._passphraseSetter.reset();
+        });
+
+        this._passphraseSetter.on(PassphraseSetterBox.Events.SKIP, () => {
+            window.location.hash = Create.Pages.DOWNLOAD_KEYFILE;
+            this._passphraseSetter.reset();
         });
 
         this._downloadKeyfile.on(DownloadKeyfile.Events.DOWNLOADED, () => {

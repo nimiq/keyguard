@@ -10,9 +10,7 @@ class PassphraseBox extends Nimiq.Observable {
     constructor($el, options = {}) {
         const defaults = {
             bgColor: 'purple',
-            hideInput: false,
-            isSetter: false,
-            promptI18nTag: 'passphrasebox-enter-passphrase',
+            hideInput: false, // TODO: When a key is not encrypted, no passphrase is required
             buttonI18nTag: 'passphrasebox-confirm-tx',
         };
 
@@ -21,10 +19,7 @@ class PassphraseBox extends Nimiq.Observable {
         /** @type {object} */
         this.options = Object.assign(defaults, options);
 
-        this.$el = PassphraseBox._createElement($el, {
-            prompt: this.options.promptI18nTag,
-            button: this.options.buttonI18nTag,
-        }, this.options.bgColor);
+        this.$el = PassphraseBox._createElement($el, this.options);
 
         this._passphraseInput = new PassphraseInput(this.$el.querySelector('[passphrase-input]'));
         this._passphraseInput.on(PassphraseInput.Events.VALID, isValid => this._onInputChangeValidity(isValid));
@@ -37,40 +32,33 @@ class PassphraseBox extends Nimiq.Observable {
 
     /**
      * @param {?HTMLFormElement} [$el]
-     * @param {{prompt: string, button: string}} i18nTags
-     * @param {'purple' | 'red' | 'yellow'} bgColor
+     * @param {object} options
      * @returns {HTMLFormElement}
      */
-    static _createElement($el, i18nTags, bgColor) {
+    static _createElement($el, options) {
         $el = $el || document.createElement('form');
-        $el.classList.add('passphrase-box', 'center', bgColor);
+        $el.classList.add('passphrase-box', 'center', options.bgColor);
 
         // To enable i18n validation with the dynamic nature of the passphrase box's contents,
         // all possible i18n tags and texts have to be specified here in the below format to
         // enable the validator to find them with its regular expression.
         /* eslint-disable max-len */
-        const promptVersions = {
-            'passphrasebox-enter-passphrase': '<div class="prompt" data-i18n="passphrasebox-enter-passphrase">Enter your passphrase</div>',
-            'passphrasebox-protect-keyfile': '<div class="prompt" data-i18n="passphrasebox-protect-keyfile">Protect your keyfile with a password</div>',
-            'passphrasebox-repeat-password': '<div class="prompt" data-i18n="passphrasebox-repeat-password">Repeat your password</div>',
-        };
         const buttonVersions = {
             'passphrasebox-continue': '<button class="submit" data-i18n="passphrasebox-continue">Continue</button>',
             'passphrasebox-log-in': '<button class="submit" data-i18n="passphrasebox-log-in">Log in to your wallet</button>',
             'passphrasebox-log-out': '<button class="submit" data-i18n="passphrasebox-log-out">Confirm logout</button>',
-            'passphrasebox-download': '<button class="submit" data-i18n="passphrasebox-download">Download key file</button>',
+            // 'passphrasebox-download': '<button class="submit" data-i18n="passphrasebox-download">Download key file</button>',
             'passphrasebox-confirm-tx': '<button class="submit" data-i18n="passphrasebox-confirm-tx">Confirm transaction</button>',
         };
         /* eslint-enable max-len */
 
-        if (!promptVersions[i18nTags.prompt]) throw new Error('PassphraseBox prompt i18n tag not defined');
-        if (!buttonVersions[i18nTags.button]) throw new Error('PassphraseBox button i18n tag not defined');
+        if (!buttonVersions[options.buttonI18nTag]) throw new Error('PassphraseBox button i18n tag not defined');
 
         $el.innerHTML = `
             <a class="cancel icon-cancel"></a>
-            ${promptVersions[i18nTags.prompt]}
+            <div class="prompt" data-i18n="passphrasebox-enter-passphrase">Enter your passphrase</div>
             <div passphrase-input></div>
-            ${buttonVersions[i18nTags.button]}
+            ${buttonVersions[options.buttonI18nTag]}
         `;
 
         I18n.translateDom($el);

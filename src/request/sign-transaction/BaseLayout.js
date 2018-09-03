@@ -88,7 +88,6 @@ class BaseLayout {
         this._passphraseBox = new PassphraseBox($passphraseBox, {
             bgColor: 'purple',
             hideInput: !request.keyInfo.encrypted,
-            promptI18nTag: 'passphrasebox-enter-passphrase',
             buttonI18nTag: 'passphrasebox-confirm-tx',
         });
 

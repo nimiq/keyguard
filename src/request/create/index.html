@@ -31,7 +31,7 @@
     <script defer src="../../components/RecoveryWords.js"></script>
     <script defer src="../../components/BackupRecoveryWords.js"></script>
     <script defer src="../../components/PassphraseInput.js"></script>
-    <script defer src="../../components/SetPassphrase.js"></script>
+    <script defer src="../../components/PassphraseSetterBox.js"></script>
     <script defer src="../TopLevelApi.js"></script>
     <script defer src="IdenticonSelector.js"></script>
     <script defer src="Create.js"></script>
@@ -41,6 +41,7 @@
     <link rel="stylesheet" href="../../nimiq-style.css">
     <link rel="stylesheet" href="../../common.css">
     <link rel="stylesheet" href="../../components/PassphraseInput.css">
+    <link rel="stylesheet" href="../../components/PassphraseBox.css">
     <link rel="stylesheet" href="../../components/RecoveryWords.css">
     <link rel="stylesheet" href="../../components/RecoveryWordsInputField.css">
     <link rel="stylesheet" href="../../components/ValidateWords.css">
@@ -60,7 +61,7 @@
 
         <div id="choose-identicon" class="page">
             <div class="page-header">
-                <a class="page-header-back-button icon-back-arrow"></a>
+                <a tabindex="0" class="page-header-back-button icon-back-arrow"></a>
                 <h1 data-i18n="create-heading-choose-identicon">Choose your account avatar</h1>
             </div>
 
@@ -73,7 +74,26 @@
             </div>
         </div>
 
-        <form id="set-passphrase" class="page"></form>
+        <div id="set-passphrase" class="page">
+            <div class="page-header">
+                <a tabindex="0" class="page-header-back-button icon-back-arrow"></a>
+                <h1 data-i18n="create-heading-keyfile">This is your Key File</h1>
+            </div>
+
+            <div class="page-body">
+                <div class="keyfile-info">
+                    <div class="icon-keyfile"></div>
+                    <div class="keyfile-text">
+                        <p data-i18n="create-text-keyfile-info">Your Key File gives you full access to your wallet. You'll need it everytime you log in.</p>
+                        <p data-i18n="create-hint-keyfile-password">To protect your wallet, first protect it with a password.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-footer">
+                <form class="passphrase-box"></form>
+            </div>
+        </div>
 
         <div id="download-keyfile" class="page"></div>
 
@@ -88,7 +108,7 @@
 
         <div id="validate-words" class="page"></div>
 
-        <a class="global-close display-none">Back to <span id="app-name"></span></a>
+        <a tabindex="0" class="global-close display-none">Back to <span id="app-name"></span></a>
 
         <div class="flex-grow"></div>
 

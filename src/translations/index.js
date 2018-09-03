@@ -8,10 +8,6 @@ const TRANSLATIONS = {
         'passphrase-placeholder': 'Enter passphrase',
         'passphrase-repeat-placeholder': 'Repeat passphrase',
 
-        'set-passphrase-heading': 'Set a passphrase',
-        'set-passphrase-subheading': 'Please enter a passphrase to secure your account.',
-        'set-passphrase-confirm': 'Confirm',
-
         'privacy-agent-heading': 'Are you being watched?',
         'privacy-agent-info': 'Now is the perfect time to assess your surroundings. Nearby windows? Hidden cameras? '
                             + 'Shoulder spies?',
@@ -25,6 +21,10 @@ const TRANSLATIONS = {
         'create-heading-choose-identicon': 'Choose your account avatar',
         'create-text-select-avatar': 'Select an avatar for your wallet\'s default account from the selection below.',
         'create-hint-more-accounts': 'You can add more accounts later.',
+        'create-heading-keyfile': 'This is your Key File',
+        'create-text-keyfile-info': 'Your Key File gives you full access to your wallet. '
+                                  + 'You\'ll need it everytime you log in.',
+        'create-hint-keyfile-password': 'To protect your wallet, first protect it with a password.',
         'create-backup-account-heading': 'Backup your Account',
 
         'enter-recovery-words-heading': 'Import from recovery words',
@@ -61,6 +61,11 @@ const TRANSLATIONS = {
         'passphrasebox-log-out': 'Confirm logout',
         'passphrasebox-download': 'Download key file',
         'passphrasebox-confirm-tx': 'Confirm transaction',
+        'passphrasebox-password-strength-8': 'Great, that\'s a good password!',
+        'passphrasebox-password-strength-10': 'Super, that\'s a strong password!',
+        'passphrasebox-password-strength-12': 'Excellent, that\'s a very strong password!',
+        'passphrasebox-password-hint': 'Your password should have at least 8 characters.',
+        'passphrasebox-password-skip': 'Skip password protection for now',
 
         'identicon-selector-loading': 'Mixing colors',
         'identicon-selector-button-select': 'Select',
@@ -74,10 +79,6 @@ const TRANSLATIONS = {
         'passphrase-strength': 'Stärke',
         'passphrase-placeholder': 'Passphrase eingeben',
         'passphrase-repeat-placeholder': 'Passphrase wiederholen',
-
-        'set-passphrase-heading': 'Lege ein Passwort fest',
-        'set-passphrase-subheading': 'Bitte gib ein Passwort ein, um dein Konto zu sichern.',
-        'set-passphrase-confirm': 'Bestätigen',
 
         'privacy-agent-heading': 'Werden sie beobachtet?',
         'privacy-agent-info': 'Jetzt ist eine gute Zeit um sich einmal umzuschauen. Gibt es Fenster in der Nähe? '
@@ -93,6 +94,10 @@ const TRANSLATIONS = {
         'create-heading-choose-identicon': 'Wähle deinen Konto Avatar',
         'create-text-select-avatar': 'Wähle einen Avatar für den Standard-Account deiner Wallet aus der Auswahl unten.',
         'create-hint-more-accounts': 'Neue Konten kannst du später hinzufügen.',
+        'create-heading-keyfile': 'Das ist deine Wallet Datei',
+        'create-text-keyfile-info': 'Deine Wallet Datei gibt dir vollen Zugang zu deiner Wallet. '
+                                  + 'Du brauchst sie jedesmal wenn du dich einloggst.',
+        'create-hint-keyfile-password': 'Um deine Wallet zu schützen, schütze es mit einem Passwort.',
         'create-backup-account-heading': 'Sichere dein Konto',
 
         'enter-recovery-words-heading': 'Mit Wiederherstellungswörtern importieren',
@@ -131,6 +136,11 @@ const TRANSLATIONS = {
         'passphrasebox-log-out': 'Abmeldung bestätigen',
         'passphrasebox-download': 'KeyFile herunterladen',
         'passphrasebox-confirm-tx': 'Überweisung bestätigen',
+        'passphrasebox-password-strength-8': 'Schön, das ist ein gutes Passwort!',
+        'passphrasebox-password-strength-10': 'Super, das ist ein starkes Passwort!',
+        'passphrasebox-password-strength-12': 'Exzellent, das ist ein sehr starkes Passwort!',
+        'passphrasebox-password-hint': 'Dein Passwort muss mindestens 8 Zeichen haben.',
+        'passphrasebox-password-skip': 'Passwortschutz erstmal überspringen',
 
         'identicon-selector-loading': 'Mische Farben',
         'identicon-selector-button-select': 'Auswählen',

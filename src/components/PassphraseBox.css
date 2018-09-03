@@ -63,6 +63,7 @@
 }
 
 .passphrase-box .submit {
+    width: calc(100% - 11rem);
     margin-bottom: 1.75rem;
 }
 
@@ -75,5 +76,63 @@
 }
 
 .passphrase-box.input-valid .prompt {
+    display: none !important;
+}
+
+/* S E T T E R */
+
+.passphrase-box .password-strength {
+    font-size: 1.5rem;
+    line-height: 1.75rem;
+    margin-bottom: 3.25rem;
     display: none;
+}
+
+.passphrase-box.input-valid.strength-8 .password-strength.strength-8 {
+    display: initial;
+}
+
+.passphrase-box.input-valid.strength-10 .password-strength.strength-10 {
+    display: initial;
+}
+
+.passphrase-box.input-valid.strength-12 .password-strength.strength-12 {
+    display: initial;
+}
+
+.passphrase-box .password-hint,
+.passphrase-box .password-skip {
+    font-size: 1.75rem;
+    line-height: 1.5;
+}
+
+.passphrase-box.input-valid .password-hint,
+.passphrase-box.input-valid .password-skip {
+    display: none;
+}
+
+.passphrase-box .password-hint {
+    margin-top: -0.625rem;
+    margin-bottom: 0.5rem;
+}
+
+.passphrase-box .password-skip {
+    opacity: 0.7;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.passphrase-box .prompt.repeat {
+    display: none;
+}
+
+.passphrase-box.repeat .password-hint,
+.passphrase-box.repeat .password-skip,
+.passphrase-box.repeat .password-strength,
+.passphrase-box.repeat .prompt.protect {
+    display: none !important;
+}
+
+.passphrase-box.repeat .prompt.repeat {
+    display: initial;
 }

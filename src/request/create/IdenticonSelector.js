@@ -54,7 +54,7 @@ class IdenticonSelector extends Nimiq.Observable {
 
             <div class="backdrop center">
                 <button data-i18n="identicon-selector-button-select">Select</button>
-                <a class="secondary" data-i18n="identicon-selector-link-back">Back</a>
+                <a tabindex="0" class="secondary" data-i18n="identicon-selector-link-back">Back</a>
             </div>`;
 
         I18n.translateDom($el);
