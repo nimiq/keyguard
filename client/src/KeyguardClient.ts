@@ -3,10 +3,13 @@ import {RequestBehavior} from './RequestBehavior';
 import {
     KeyguardCommand,
     CreateRequest,
+    CreateResult,
     SignMessageResult,
     SignTransactionRequest,
     SignTransactionResult,
     SignMessageRequest,
+    ImportRequest,
+    ImportResult,
 } from './RequestTypes';
 
 export class KeyguardClient {
@@ -40,7 +43,7 @@ export class KeyguardClient {
         this._observable.on(`${command}-reject`, reject);
     }
 
-    public create(request: CreateRequest, requestBehavior = this._defaultBehavior) {
+    public create(request: CreateRequest, requestBehavior = this._defaultBehavior): Promise<CreateResult> {
         return this._request(requestBehavior,  KeyguardCommand.CREATE, [request]);
     }
 
@@ -48,12 +51,8 @@ export class KeyguardClient {
         return this._request(requestBehavior,  KeyguardCommand.REMOVE, [{ keyId }]);
     }
 
-    public importWords(defaultKeyPath: string, requestBehavior = this._defaultBehavior) {
-        return this._request(requestBehavior,  KeyguardCommand.IMPORT_WORDS, [{ defaultKeyPath }]);
-    }
-
-    public importFile(requestBehavior = this._defaultBehavior) {
-        return this._request(requestBehavior,  KeyguardCommand.IMPORT_FILE, []);
+    public import(request: ImportRequest, requestBehavior = this._defaultBehavior): Promise<ImportResult> {
+        return this._request(requestBehavior,  KeyguardCommand.IMPORT, [request]);
     }
 
     public async exportWords(keyId: string, requestBehavior = this._defaultBehavior) {

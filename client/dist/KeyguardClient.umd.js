@@ -35,8 +35,7 @@
     (function (KeyguardCommand) {
         KeyguardCommand["CREATE"] = "create";
         KeyguardCommand["REMOVE"] = "remove-key";
-        KeyguardCommand["IMPORT_WORDS"] = "import-words";
-        KeyguardCommand["IMPORT_FILE"] = "import-file";
+        KeyguardCommand["IMPORT"] = "import";
         KeyguardCommand["EXPORT_WORDS"] = "export-words";
         KeyguardCommand["EXPORT_FILE"] = "export-file";
         KeyguardCommand["SIGN_TRANSACTION"] = "sign-transaction";
@@ -65,11 +64,8 @@
         remove(keyId, requestBehavior = this._defaultBehavior) {
             return this._request(requestBehavior, exports.KeyguardCommand.REMOVE, [{ keyId }]);
         }
-        importWords(defaultKeyPath, requestBehavior = this._defaultBehavior) {
-            return this._request(requestBehavior, exports.KeyguardCommand.IMPORT_WORDS, [{ defaultKeyPath }]);
-        }
-        importFile(requestBehavior = this._defaultBehavior) {
-            return this._request(requestBehavior, exports.KeyguardCommand.IMPORT_FILE, []);
+        import(request, requestBehavior = this._defaultBehavior) {
+            return this._request(requestBehavior, exports.KeyguardCommand.IMPORT, [request]);
         }
         async exportWords(keyId, requestBehavior = this._defaultBehavior) {
             return this._request(requestBehavior, exports.KeyguardCommand.EXPORT_WORDS, [{ keyId }]);
