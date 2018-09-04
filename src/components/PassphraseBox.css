@@ -24,6 +24,7 @@
 }
 
 .passphrase-box.input-valid .passphrase-input {
+    margin-top: 1rem;
     margin-bottom: 2rem;
 }
 
