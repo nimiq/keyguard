@@ -5,19 +5,20 @@
 
 class IFrameApi { // eslint-disable-line no-unused-vars
     /**
-     * @param {boolean} [listFromAccountStore] - Deprecated, only for database migration
-     * @returns {Promise<KeyInfo[] | AccountInfo[]>}
+     * @param {boolean} [listFromLegacyStore] - Deprecated, only for database migration
+     * @returns {Promise<KeyInfoObject[] | AccountInfo[]>}
      */
-    async list(listFromAccountStore) {
+    async list(listFromLegacyStore) {
         if (BrowserDetection.isIos() || BrowserDetection.isSafari()) {
-            return CookieJar.eat(listFromAccountStore);
+            return CookieJar.eat(listFromLegacyStore);
         }
 
-        if (listFromAccountStore) {
+        if (listFromLegacyStore) {
             return AccountStore.instance.list();
         }
 
-        return KeyStore.instance.list();
+        const keyInfos = await KeyStore.instance.list();
+        return keyInfos.map(ki => ki.toObject());
     }
 
     /**

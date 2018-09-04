@@ -5,6 +5,7 @@ class Demo {
             (state, keyPassphrase) => Demo.setUpKey(keyPassphrase).then(() => 'setUpKey'));
         server.onRequest('tearDownKey',
             () => Demo.tearDownKey().then(() => 'tearDownKey'));
+        server.onRequest('list', () => Demo.list());
         server.init();
     }
 
@@ -23,6 +24,10 @@ class Demo {
         const secret = entropy.serialize();
         const key = new Key(secret, Key.Type.BIP39);
         await KeyStore.instance.remove(key.id);
+    }
+
+    static async list() {
+        return (await KeyStore.instance.list()).map(ki => ki.toObject());
     }
 }
 Demo.ENTROPY = 'abb107d2c9adafed0b2ff41c0cfbe4ad4352b11362c5ca83bb4fc7faa7d4cf69';

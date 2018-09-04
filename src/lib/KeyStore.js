@@ -142,7 +142,7 @@ class KeyStore {
     }
 
     /**
-     * @returns {Promise<Array<KeyInfo>>}
+     * @returns {Promise<KeyInfo[]>}
      */
     async list() {
         const db = await this.connect();
@@ -150,7 +150,7 @@ class KeyStore {
             .objectStore(KeyStore.DB_KEY_STORE_NAME)
             .openCursor();
 
-        const results = /** Array<KeyRecord> */ await KeyStore._readAllFromCursor(request);
+        const results = /** KeyRecord[] */ await KeyStore._readAllFromCursor(request);
         return results.map(keyRecord => new KeyInfo(keyRecord.id, keyRecord.type, keyRecord.encrypted));
     }
 
@@ -217,12 +217,12 @@ class KeyStore {
 
     /**
      * @param {IDBRequest} request
-     * @returns {Promise<Array<*>>}
+     * @returns {Promise<KeyRecord[]>}
      * @private
      */
     static _readAllFromCursor(request) {
         return new Promise((resolve, reject) => {
-            /** @type Array<*> */
+            /** @type {KeyRecord[]} */
             const results = [];
             request.onsuccess = () => {
                 const cursor = request.result;
