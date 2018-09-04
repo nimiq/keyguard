@@ -43,4 +43,24 @@ class KeyInfo {
     get userFriendlyId() {
         return Key.idToUserFriendlyId(this._id);
     }
+
+    /**
+     * @returns {KeyInfoObject}
+     */
+    toObject() {
+        return {
+            id: this.id,
+            type: this.type,
+            encrypted: this.encrypted,
+            // userFriendlyId: this.userFriendlyId,
+        };
+    }
+
+    /**
+     * @param {KeyInfoObject} obj
+     * @returns {KeyInfo}
+     */
+    static fromObject(obj) {
+        return new KeyInfo(obj.id, obj.type, obj.encrypted);
+    }
 }

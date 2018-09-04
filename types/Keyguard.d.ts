@@ -1,7 +1,7 @@
 type KeyRecord = {
-    id: string,
-    type: Key.Type,
-    encrypted: boolean,
+    id: string
+    type: Key.Type
+    encrypted: boolean
     secret: Uint8Array
 }
 
@@ -11,7 +11,7 @@ declare namespace Key {
 
 // Deprecated, only used for migrating databases
 type AccountInfo = {
-    userFriendlyAddress: string,
+    userFriendlyAddress: string
     type: string
     label: string
 }
@@ -19,6 +19,13 @@ type AccountInfo = {
 // Deprecated, only used for migrating databases
 type AccountRecord = AccountInfo & {
     encryptedKeyPair: Uint8Array
+}
+
+type KeyInfoObject = {
+    id: string
+    type: Key.Type
+    encrypted: boolean
+    userFriendlyId?: string
 }
 
 type SignTransactionRequest = {
@@ -78,19 +85,19 @@ type SignMessageRequest = {
 
 type SignMessageResult = {
     message: string
-    publicKey: string,
+    publicKey: string
     signature: string
 }
 
 type CreateRequest = {
-    appName: string;
-    defaultKeyPath: string;
+    appName: string
+    defaultKeyPath: string
 }
 
 type CreateResult = {
-    keyId: string;
-    keyPath: string;
-    address: Uint8Array;
+    keyId: string
+    keyPath: string
+    address: Uint8Array
 }
 
 type ImportWordsRequest = {
@@ -106,7 +113,7 @@ type KeyguardRequest = CreateRequest | ImportWordsRequest | RemoveKeyRequest | S
 
 
 interface Newable {
-    new(...args: any[]): any;
+    new(...args: any[]): any
 }
 
 type DOMEvent = Event & {
