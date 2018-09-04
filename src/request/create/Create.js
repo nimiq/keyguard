@@ -7,6 +7,7 @@
 /* global ValidateWords */
 /* global Key */
 /* global KeyStore */
+/* global ProgressIndicator */
 
 class Create {
     /**
@@ -123,7 +124,17 @@ class Create {
         const $cancelLink = ($appName.parentNode);
         $cancelLink.classList.remove('display-none');
         $cancelLink.addEventListener('click', () => window.close());
-    }
+
+        // Set up progress indicators
+        /* eslint-disable no-new */
+        new ProgressIndicator(document.querySelector(`#${Create.Pages.CHOOSE_IDENTICON} .progress-indicator`), 6, 2);
+        new ProgressIndicator(document.querySelector(`#${Create.Pages.SET_PASSPHRASE}   .progress-indicator`), 6, 3);
+        new ProgressIndicator(document.querySelector(`#${Create.Pages.DOWNLOAD_KEYFILE} .progress-indicator`), 6, 3);
+        new ProgressIndicator(document.querySelector(`#${Create.Pages.PRIVACY_AGENT}    .progress-indicator`), 6, 4);
+        new ProgressIndicator(document.querySelector(`#${Create.Pages.RECOVERY_WORDS}   .progress-indicator`), 6, 4);
+        new ProgressIndicator(document.querySelector(`#${Create.Pages.VALIDATE_WORDS}   .progress-indicator`), 6, 5);
+        /* eslint-enable no-new */
+    } // constructor
 
     /**
      * @param {CreateRequest} request

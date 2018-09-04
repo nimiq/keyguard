@@ -55,3 +55,17 @@
     cursor: pointer;
     margin-bottom: 2.5rem;
 }
+
+.page-header {
+    padding-top: 5.75rem;
+}
+
+.page-header .progress-indicator {
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.page-header .page-header-back-button {
+    top: 4.75rem;
+}
