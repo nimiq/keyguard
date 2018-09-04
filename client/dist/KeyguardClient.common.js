@@ -35,7 +35,7 @@ class RequestBehavior {
 (function (KeyguardCommand) {
     KeyguardCommand["CREATE"] = "create";
     KeyguardCommand["REMOVE"] = "remove-key";
-    KeyguardCommand["IMPORT"] = "import";
+    KeyguardCommand["IMPORT"] = "import-file";
     KeyguardCommand["EXPORT_WORDS"] = "export-words";
     KeyguardCommand["EXPORT_FILE"] = "export-file";
     KeyguardCommand["SIGN_TRANSACTION"] = "sign-transaction";

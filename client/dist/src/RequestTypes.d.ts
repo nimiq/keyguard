@@ -1,7 +1,7 @@
 export declare enum KeyguardCommand {
     CREATE = "create",
     REMOVE = "remove-key",
-    IMPORT = "import",
+    IMPORT = "import-file",
     EXPORT_WORDS = "export-words",
     EXPORT_FILE = "export-file",
     SIGN_TRANSACTION = "sign-transaction",
