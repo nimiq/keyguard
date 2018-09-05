@@ -3,11 +3,8 @@
 .identicon-selector {
     -webkit-user-select: none;
     user-select: none;
-    /* padding-bottom: 2rem; */
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-    /* max-height: 75rem; */
+    width: 100%;
+    text-align: center;
 }
 
 .identicon-selector .identicon {
@@ -151,7 +148,6 @@
     transform: scale(1.5) translateY(-5rem);
     width: unset;
     pointer-events: none;
-    position: fixed;
 }
 
 @media (max-height: 620px) {
