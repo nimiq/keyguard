@@ -7,7 +7,7 @@ class ChooseKeyType extends Nimiq.Observable {
      * @param {string} [defaultKeyPath]
      * @param {Nimiq.Entropy} [entropy]
      */
-    constructor($el, defaultKeyPath = '', entropy) {
+    constructor($el, defaultKeyPath = 'm/44\'/242\'/0\'/0\'', entropy) {
         super();
         this._defaultKeyPath = defaultKeyPath;
         this._entropy = entropy;
@@ -65,7 +65,7 @@ class ChooseKeyType extends Nimiq.Observable {
                         <strong data-i18n="choose-key-type-legacy-address-heading">Single address</strong><br>
                         <span data-i18n="choose-key-type-legacy-address-info">Created before xx/xx/2018</span><br>
                         <br>
-                        <span class="address-legacy"></span>                        
+                        <span class="address-legacy"></span>
                     </div>
                 </label>
             </div>
@@ -78,7 +78,7 @@ class ChooseKeyType extends Nimiq.Observable {
                         <strong data-i18n="choose-key-type-bip39-address-heading">Multiple addresses</strong><br>
                         <span data-i18n="choose-key-type-bip39-address-info">Created after xx/xx/2018</span><br>
                         <br>
-                        <span class="address-bip39"></span>                        
+                        <span class="address-bip39"></span>
                     </div>
                 </label>
             </div>

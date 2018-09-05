@@ -1,7 +1,6 @@
 /* global TopLevelApi */
 /* global FileImport */
-/* global PassphraseInput */
-/* global PinInput */
+/* global PassphraseBox */
 /* global Nimiq */
 /* global Key */
 /* global KeyInfo */
@@ -14,77 +13,71 @@ class ImportFileApi extends TopLevelApi {
         this._encryptedKey = new Nimiq.SerialBuffer(0);
 
         // Start UI
-        this.dom = this._makeView();
+        const dom = this._makeView();
+        this._passphraseBox = dom.passphraseBox;
 
         this.$loading = /** @type {HTMLDivElement} */ (document.querySelector('#loading'));
-
-        window.addEventListener('hashchange', () => {
-            if (window.location.hash.substr(1) !== ImportFileApi.Pages.ENTER_PIN) {
-                this.dom.pinInput.close();
-            }
-        });
     }
 
-    async onRequest() {
+    /**
+     * @param {ImportRequest} request
+     */
+    async onRequest(request) {
+        // Global cancel link
+        /** @type {HTMLElement} */
+        const $appName = (document.querySelector('#app-name'));
+        $appName.textContent = request.appName;
+        /** @type HTMLAnchorElement */
+        const $cancelLink = ($appName.parentNode);
+        $cancelLink.classList.remove('display-none');
+        $cancelLink.addEventListener('click', () => window.close());
+
         // show UI
         window.location.hash = ImportFileApi.Pages.FILE_IMPORT;
 
-        // Async pre-load the crypto worker to reduce wait time at first decrypt
+        // Async pre-load the crypto worker to reduce wait time at first decrypt attempt
         Nimiq.CryptoWorker.getInstanceAsync();
     }
 
     /**
-     * @returns {{passphraseInput: PassphraseInput, pinInput: PinInput}}
+     * @returns {{passphraseBox: PassphraseBox}}
      */
     _makeView() {
-        // Pages
-        /** @type {HTMLElement} */
-        const $importPage = (document.getElementById(ImportFileApi.Pages.FILE_IMPORT));
-        /** @type {HTMLElement} */
-        const $passphrasePage = (document.getElementById(ImportFileApi.Pages.ENTER_PASSPHRASE));
-        /** @type {HTMLElement} */
-        const $pinPage = (document.getElementById(ImportFileApi.Pages.ENTER_PIN));
-
         // Containers
         /** @type {HTMLDivElement} */
-        const $fileImportComponent = ($importPage.querySelector('#file-import-component'));
+        const $fileImport = (document.querySelector('.file-import'));
         /** @type {HTMLFormElement} */
-        const $passphraseInput = ($passphrasePage.querySelector('#passphrase-component'));
-        /** @type {HTMLDivElement} */
-        const $pinInput = ($pinPage.querySelector('#pin-component'));
+        const $passphraseBox = (document.querySelector('.passphrase-box'));
 
         // Components
-        const fileImportComponent = new FileImport($fileImportComponent);
-        const passphraseInput = new PassphraseInput($passphraseInput);
-        const pinInput = new PinInput($pinInput);
+        const fileImport = new FileImport($fileImport);
+        const passphraseBox = new PassphraseBox($passphraseBox);
 
         // Events
-        fileImportComponent.on(FileImport.Events.IMPORT, this._onFileImported.bind(this));
-        passphraseInput.on(PassphraseInput.Events.PASSPHRASE_ENTERED, this._onPassphraseEntered.bind(this));
-        pinInput.on(PinInput.Events.PIN_ENTERED, this._onPinEntered.bind(this));
+        fileImport.on(FileImport.Events.IMPORT, this._onFileImported.bind(this));
+        passphraseBox.on(PassphraseBox.Events.SUBMIT, this._onPassphraseEntered.bind(this));
 
         return {
-            passphraseInput,
-            pinInput,
+            passphraseBox,
         };
     }
 
     /**
-     * Determine key type and forward user to either Passphrase or PIN input
+     * Determine key type and forward user to Passphrase input
      *
      * @param {string} encryptedKeyBase64 - Encrypted KeyPair in base64 format
      */
     _onFileImported(encryptedKeyBase64) {
         if (encryptedKeyBase64.substr(0, 2) === '#2') {
-            // PIN encoded
+            // PIN-encoded
             this._encryptedKey = Nimiq.BufferUtils.fromBase64(encryptedKeyBase64.substr(2));
-            window.location.hash = ImportFileApi.Pages.ENTER_PIN;
-            this.dom.pinInput.open();
+            window.location.hash = ImportFileApi.Pages.ENTER_PASSPHRASE;
+            this._passphraseBox.focus();
         } else {
-            // Passphrase encoded
+            // Passphrase-encoded
             this._encryptedKey = Nimiq.BufferUtils.fromBase64(encryptedKeyBase64);
             window.location.hash = ImportFileApi.Pages.ENTER_PASSPHRASE;
-            this.dom.passphraseInput.focus();
+            this._passphraseBox.focus();
         }
     }
 
@@ -94,28 +87,19 @@ class ImportFileApi extends TopLevelApi {
     async _onPassphraseEntered(passphrase) {
         const keyInfo = await this._decryptAndStoreKey(passphrase);
 
-        if (!keyInfo) this.dom.passphraseInput.onPassphraseIncorrect();
+        if (!keyInfo) this._passphraseBox.onPassphraseIncorrect();
         else this.resolve(keyInfo);
     }
 
     /**
-     * @param {string} pin
-     */
-    async _onPinEntered(pin) {
-        const keyInfo = await this._decryptAndStoreKey(pin);
-
-        if (!keyInfo) this.dom.pinInput.onPinIncorrect();
-        else this.resolve(keyInfo);
-    }
-
-    /**
-     * @param {string} passphraseOrPin
+     * @param {string} passphrase
      * @returns {Promise<?KeyInfo>}
      */
-    async _decryptAndStoreKey(passphraseOrPin) {
+    async _decryptAndStoreKey(passphrase) {
         this.$loading.style.display = 'flex';
         try {
-            const encryptionKey = Nimiq.BufferUtils.fromAscii(passphraseOrPin);
+            // TODO Support for UTF-8 passwords
+            const encryptionKey = Nimiq.BufferUtils.fromAscii(passphrase);
             const secret = await Nimiq.CryptoUtils.decryptOtpKdf(this._encryptedKey, encryptionKey);
             // TODO add support for BIP39 key import
             const key = new Key(secret, Key.Type.LEGACY);
@@ -132,5 +116,4 @@ class ImportFileApi extends TopLevelApi {
 ImportFileApi.Pages = {
     FILE_IMPORT: 'file-import',
     ENTER_PASSPHRASE: 'enter-passphrase',
-    ENTER_PIN: 'enter-pin',
 };

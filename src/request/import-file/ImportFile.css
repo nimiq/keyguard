@@ -1,0 +1,57 @@
+.page p {
+    margin: 4rem;
+}
+
+.page .actionbox p {
+    margin: 0 10rem 3rem;
+}
+
+.page p + p {
+    margin-top: -2.5rem;
+}
+
+.page .file-import {
+    margin: 4rem;
+    margin-bottom: 0;
+    width: auto;
+    align-self: stretch;
+}
+
+.page-body,
+.page#enter-passphrase .page-footer {
+    /* TODO: Move this to common.css, but have to adapt sign-transaction stylings */
+    background: #fafafa;
+
+    border-bottom-left-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+}
+
+.page#file-import .page-footer {
+    border-top: solid 1px #f2f2f2;
+    justify-content: start;
+}
+
+.page-footer a {
+    margin: 3rem 4rem;
+    color: #2a60dd;
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 2rem;
+    line-height: 1.3;
+}
+
+button.go-to-words {
+    background: #e5e5e5;
+    padding: 1rem 1.75rem;
+    width: unset;
+    height: unset;
+    font-size: 1.75rem;
+    line-height: 0.86;
+    box-shadow: none;
+    text-transform: none;
+    letter-spacing: 0;
+    color: black;
+    margin: 0 4rem;
+    margin-top: -2rem;
+    align-self: flex-start;
+}

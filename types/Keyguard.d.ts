@@ -100,8 +100,13 @@ type CreateResult = {
     address: Uint8Array
 }
 
-type ImportWordsRequest = {
-    defaultKeyPath: string
+type ImportRequest = {
+    appName: string;
+}
+
+type ImportResult = {
+    keyId: string;
+    addresses: {keyPath: string, address: Uint8Array}[]
 }
 
 type RemoveKeyRequest = {
@@ -109,8 +114,7 @@ type RemoveKeyRequest = {
     keyLabel?: string
 }
 
-type KeyguardRequest = CreateRequest | ImportWordsRequest | RemoveKeyRequest | SignTransactionRequest | SignMessageRequest
-
+type KeyguardRequest = CreateRequest | ImportRequest | RemoveKeyRequest | SignTransactionRequest | SignMessageRequest
 
 interface Newable {
     new(...args: any[]): any
