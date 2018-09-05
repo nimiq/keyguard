@@ -34,10 +34,13 @@ const TRANSLATIONS = {
 
         'import-heading-log-in': 'Log in',
         'import-link-no-wallet': 'Don\'t have a wallet yet?',
+        'import-heading-protect': 'Protect your wallet',
+        'import-text-set-password': 'You can now set a password to encrypt your wallet on this device.',
 
         'import-file-lost-file': 'Lost your Key File? You can recover your account with your 24 Recovery Words.',
         'import-file-button-words': 'Enter Recovery Words',
         'import-file-heading-unlock': 'Unlock your Key File',
+        'import-file-text-unprotected-keyfile': 'Your Key File is unprotected.',
 
         'file-import-prompt': 'Drop your Key File here',
         'file-import-click-hint': 'Or click to select a file.',
@@ -125,11 +128,15 @@ const TRANSLATIONS = {
 
         'import-heading-log-in': 'Einloggen',
         'import-link-no-wallet': 'Du hast noch keine Wallet?',
+        'import-heading-protect': 'Wallet verschlüsseln',
+        'import-text-set-password': 'Du kannst jetzt ein Passwort eingeben, um deine Wallet auf diesem '
+                                  + 'Gerät zu verschlüsseln.',
 
         'import-file-lost-file': 'Schlüsseldatei verloren? Du kannst deinen Account mit deinen 24 '
                                + 'Wiederherstellungswörtern wiederherstellen',
         'import-file-button-words': 'Wiederherstellungswörter eingeben',
         'import-file-heading-unlock': 'Entsperre deine Schlüsseldatei',
+        'import-file-text-unprotected-keyfile': 'Deine Schlüsseldatei ist ungeschützt.',
 
         'file-import-prompt': 'Ziehe deine Schlüsseldatei auf dieses Feld',
         'file-import-click-hint': 'Oder klicke um eine Datei auszuwählen.',

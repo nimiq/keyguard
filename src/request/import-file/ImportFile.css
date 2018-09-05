@@ -31,7 +31,7 @@
     justify-content: start;
 }
 
-.page-footer a {
+.page-footer .create-wallet {
     margin: 3rem 4rem;
     color: #2a60dd;
     text-decoration: underline;
@@ -54,4 +54,19 @@ button.go-to-words {
     margin: 0 4rem;
     margin-top: -2rem;
     align-self: flex-start;
+}
+
+.page#enter-passphrase .page-body {
+    justify-content: center;
+    align-items: center;
+}
+
+.keyfile-info {
+    display: flex;
+    flex-direction: row;
+}
+
+.icon-keyfile {
+    margin: 4rem;
+    margin-right: 0;
 }

@@ -22,6 +22,7 @@
     <script defer src="../../components/FileImport.js"></script>
     <script defer src="../../components/PassphraseInput.js"></script>
     <script defer src="../../components/PassphraseBox.js"></script>
+    <script defer src="../../components/PassphraseSetterBox.js"></script>
     <script defer src="../TopLevelApi.js"></script>
     <script defer src="ImportFileApi.js"></script>
     <script defer src="index.js"></script>
@@ -56,13 +57,14 @@
             </div>
 
             <div class="page-footer">
-                <a data-i18n="import-link-no-wallet">Don't have a wallet yet?</a>
+                <a class="create-wallet" data-i18n="import-link-no-wallet">Don't have a wallet yet?</a>
             </div>
         </div>
 
         <!-- Enter Passphrase -->
         <div id="enter-passphrase" class="page">
             <div class="page-header">
+                <a tabindex="0" class="page-header-back-button icon-back-arrow"></a>
                 <h1 data-i18n="import-file-heading-unlock">Unlock your Key File</h1>
             </div>
 
@@ -72,6 +74,28 @@
 
             <div class="page-footer">
                 <div class="passphrase-box"></div>
+            </div>
+        </div>
+
+        <!-- Set Passphrase -->
+        <div id="set-passphrase" class="page">
+            <div class="page-header">
+                <a tabindex="0" class="page-header-back-button icon-back-arrow"></a>
+                <h1 data-i18n="import-heading-protect">Protect your wallet</h1>
+            </div>
+
+            <div class="page-body">
+                <div class="keyfile-info">
+                    <div class="icon icon-keyfile"></div>
+                    <div class="keyfile-text">
+                        <p data-i18n="import-file-text-unprotected-keyfile">Your Key File is unprotected.</p>
+                        <p data-i18n="import-text-set-password">You can now set a password to encrypt your wallet on this device.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-footer">
+                <div class="passphrase-setter-box"></div>
             </div>
         </div>
 
