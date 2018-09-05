@@ -56,12 +56,13 @@ describe('IframeApi', () => {
         await Dummy.Utils.createDummyKeyStore();
         spyOn(BrowserDetection, 'isIos').and.returnValue(false);
 
-        const listedKeys = await iframeApi.list();
+        const listedKeyObjects = /** @type {KeyInfoObject[]} */ (await iframeApi.list());
+        const listedKeyInfos = listedKeyObjects.map(kio => KeyInfo.fromObject(kio));
 
         expect(CookieJar.eat).not.toHaveBeenCalled();
         expect(AccountStore.instance.list).not.toHaveBeenCalled();
         expect(KeyStore.instance.list).toHaveBeenCalled();
-        expect(listedKeys).toEqual(Dummy.keyInfos);
+        expect(listedKeyInfos).toEqual(Dummy.keyInfos);
 
         await Dummy.Utils.deleteDummyKeyStore();
     });
