@@ -5,12 +5,12 @@
 class IdenticonSelector extends Nimiq.Observable {
     /**
      * @param {HTMLElement} [$el]
-     * @param {string} [defaultKeyPath]
+     * @param {string} keyPath
      */
-    constructor($el, defaultKeyPath) {
+    constructor($el, keyPath) {
         super();
 
-        this._defaultKeyPath = defaultKeyPath;
+        this._keyPath = keyPath;
 
         this._clearSelection = this._clearSelection.bind(this);
         this._onSelectionConfirmed = this._onSelectionConfirmed.bind(this);
@@ -78,8 +78,8 @@ class IdenticonSelector extends Nimiq.Observable {
             const entropy = Nimiq.Entropy.generate();
             if (!Nimiq.MnemonicUtils.isCollidingChecksum(entropy)) {
                 const masterKey = entropy.toExtendedPrivateKey();
-                const defaultKey = masterKey.derivePath(this._defaultKeyPath || IdenticonSelector.DEFAULT_KEY_PATH);
-                const address = defaultKey.toAddress().toUserFriendlyAddress();
+                const key = masterKey.derivePath(this._keyPath);
+                const address = key.toAddress().toUserFriendlyAddress();
                 entropies[address] = entropy;
             } else {
                 // Try again.
@@ -143,5 +143,3 @@ class IdenticonSelector extends Nimiq.Observable {
 IdenticonSelector.Events = {
     IDENTICON_SELECTED: 'identicon-selected',
 };
-
-IdenticonSelector.DEFAULT_KEY_PATH = 'm/44\'/242\'/0\'/0\'';
