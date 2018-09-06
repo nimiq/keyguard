@@ -47,7 +47,6 @@
 
 .page-header {
     position: relative;
-    height: 11rem;
     box-sizing: border-box;
     padding: 4.25rem;
     border-bottom: solid 1px #f2f2f2;
@@ -71,6 +70,7 @@
     letter-spacing: 0.25rem;
     line-height: 2.5rem;
     font-weight: bold;
+    margin: 0;
 }
 
 .page-body {
