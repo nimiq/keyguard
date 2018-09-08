@@ -1,23 +1,44 @@
-/* FIXME: Identicons are blurry when scaled to 1.5 when selected in Chrome */
-
 .identicon-selector {
-    -webkit-user-select: none;
-    user-select: none;
     width: 100%;
     text-align: center;
 }
 
-.identicon-selector .identicon {
+.identicon-selector .wrapper {
     width: 14.25rem;
     height: 14.25rem;
     position: absolute;
-    transition: transform 500ms;
     will-change: transform;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-    transform: scale(0.6);
 }
 
-.identicon-selector .identicon:hover {
+.identicon-selector .wrapper .identicon {
+    width: 100%;
+    height: 100%;
+    animation: pop-in 500ms ease;
+    animation-fill-mode: forwards;
+    transform: scale(0);
+}
+
+.identicon-selector .wrapper .address {
+    visibility: hidden;
+    text-align: center;
+    transform: scale(0.5);
+    margin-top: 5rem;
+    color: white;
+}
+
+@keyframes pop-in {
+    from { transform: scale(0); }
+    to   { transform: scale(1); }
+}
+
+.identicon-selector .wrapper .identicon,
+.identicon-selector .wrapper .identicon img,
+.identicon-selector .wrapper .address {
+    transition: transform 500ms;
+}
+
+.identicon-selector .wrapper:hover {
     cursor: pointer;
 }
 
@@ -31,33 +52,22 @@
     position: relative;
 }
 
-.identicon-selector .identicon:nth-child(1) {
-    transform: translate(0, 0);
-}
+.identicon-selector .wrapper:nth-child(1) { transform: translate(  0.0rem, -14.25rem); }
+.identicon-selector .wrapper:nth-child(2) { transform: translate(-12.5rem,  -7.25rem); }
+.identicon-selector .wrapper:nth-child(3) { transform: translate( 12.5rem,  -7.25rem); }
+.identicon-selector .wrapper:nth-child(4) { transform: translate(  0.0rem,   0.00rem); }
+.identicon-selector .wrapper:nth-child(5) { transform: translate(-12.5rem,   7.25rem); }
+.identicon-selector .wrapper:nth-child(6) { transform: translate( 12.5rem,   7.25rem); }
+.identicon-selector .wrapper:nth-child(7) { transform: translate(  0.0rem,  14.25rem); }
 
-.identicon-selector .identicon:nth-child(2) {
-    transform: translate(0, -14.25rem);
-}
+.identicon-selector .wrapper:nth-child(1) .identicon { animation-delay: 100ms; }
+.identicon-selector .wrapper:nth-child(2) .identicon { animation-delay: 150ms; }
+.identicon-selector .wrapper:nth-child(3) .identicon { animation-delay: 150ms; }
+.identicon-selector .wrapper:nth-child(4) .identicon { animation-delay: 200ms; }
+.identicon-selector .wrapper:nth-child(5) .identicon { animation-delay: 250ms; }
+.identicon-selector .wrapper:nth-child(6) .identicon { animation-delay: 250ms; }
+.identicon-selector .wrapper:nth-child(7) .identicon { animation-delay: 300ms; }
 
-.identicon-selector .identicon:nth-child(3) {
-    transform: translate(12.5rem, -7.25rem);
-}
-
-.identicon-selector .identicon:nth-child(4) {
-    transform: translate(-12.5rem, -7.25rem);
-}
-
-.identicon-selector .identicon:nth-child(5) {
-    transform: translate(12.5rem, 7.25rem);
-}
-
-.identicon-selector .identicon:nth-child(6) {
-    transform: translate(-12.5rem, 7.25rem);
-}
-
-.identicon-selector .identicon:nth-child(7) {
-    transform: translate(0, 14.25rem);
-}
 
 .identicon-selector .generate-more {
     background: #e5e5e5;
@@ -73,18 +83,6 @@
     margin: 4rem 0;
 }
 
-.identicon-selector .backdrop button {
-    opacity: 0;
-    /* transform: translate(0, 60rem); */
-    transition: transform 500ms;
-    will-change: transform;
-    transition-delay: 300ms;
-    position: absolute;
-    bottom: 9.375rem;
-    pointer-events: none;
-    width: calc(100% - 15rem);
-}
-
 .identicon-selector .backdrop {
     position: absolute;
     top: 0;
@@ -93,7 +91,7 @@
     z-index: 1;
     pointer-events: none;
     opacity: 0;
-    transition: opacity;
+    transition: opacity 500ms;
     will-change: opacity;
     box-sizing: border-box;
     height: 100%;
@@ -102,101 +100,48 @@
     flex-flow: column;
 }
 
-.identicon-selector .backdrop button+.secondary {
+.identicon-selector .backdrop button {
+    opacity: 0;
+    transition: transform 500ms;
+    will-change: transform;
+    transition-delay: 300ms;
     position: absolute;
-    margin-bottom: 2rem;
-    bottom: 3.125rem;
-}
-
-.identicon-selector .secondary {
-    margin-top: 3.75rem;
-    margin-bottom: 2.5rem;
-}
-
-.identicon-selector.selected .backdrop button {
-    opacity: 1;
-    z-index: 2;
-    transform: translate(0, 0);
-    pointer-events: all;
+    bottom: 6rem;
+    pointer-events: none;
+    width: calc(100% - 15rem);
     margin: 0;
 }
 
-.identicon-selector .identicon .address {
-    display: none;
-    text-align: center;
-    transform: scale(0.68);
-    margin-top: 1.7rem;
-    color: white;
+.identicon-selector .backdrop .secondary {
+    position: absolute;
+    margin-bottom: 2rem;
+    bottom: 0;
 }
 
-.identicon-selector .identicon.selected .address {
-    display: block;
-}
-
-.identicon-selector.selected .backdrop {
-    pointer-events: all;
+.identicon-selector.selected .backdrop,
+.identicon-selector.selected .backdrop button {
     opacity: 1;
+    pointer-events: all;
 }
 
-.identicon-selector .identicon.selected,
-.identicon-selector .identicon.returning {
+.identicon-selector .wrapper.selected,
+.identicon-selector .wrapper.returning {
     z-index: 3;
+    transition: transform 500ms;
     transition-delay: 0s !important;
 }
 
-.identicon-selector .identicon.selected {
-    transform: scale(1.5) translateY(-5rem);
-    width: unset;
+.identicon-selector .wrapper.selected {
+    transform: translateY(-5rem);
+    width: 100%;
     pointer-events: none;
 }
 
-@media (max-height: 620px) {
-    .identicon-selector .identicon.selected .address {
-        margin-top: 0;
-    }
+.identicon-selector .wrapper.selected img {
+    transform: scale(1.5);
 }
 
-@media (max-width: 380px) {
-    .identicon-selector .identicon {
-        width: 30vw;
-        height: 30vw;
-    }
-
-    .identicon-selector .identicon:nth-child(2) {
-        transform: translate(0, -100%);
-    }
-
-    .identicon-selector .identicon:nth-child(3) {
-        transform: translate(84%, -50%);
-    }
-
-    .identicon-selector .identicon:nth-child(4) {
-        transform: translate(-84%, -50%);
-    }
-
-    .identicon-selector .identicon:nth-child(5) {
-        transform: translate(84%, 50%);
-    }
-
-    .identicon-selector .identicon:nth-child(6) {
-        transform: translate(-84%, 50%);
-    }
-
-    .identicon-selector .identicon:nth-child(7) {
-        transform: translate(0, 100%);
-    }
-
-    .identicon-selector .identicon.selected {
-        transform: scale(1.5) translateY(-4rem);
-    }
-}
-
-.identicon-selector:not(.active) .identicon {
-    transform: translate(0, 0);
-}
-
-.identicon-selector .identicon:nth-child(3),
-.identicon-selector .identicon:nth-child(4),
-.identicon-selector .identicon:nth-child(7) {
-    transition-delay: 300ms;
+.identicon-selector .wrapper.selected .address {
+    visibility: visible;
+    transform: scale(1.1);
 }

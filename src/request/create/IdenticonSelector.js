@@ -92,34 +92,42 @@ class IdenticonSelector extends Nimiq.Observable {
         this.$identicons.textContent = '';
 
         Object.keys(entropies).forEach(address => {
+            const $wrapper = document.createElement('div');
+            $wrapper.classList.add('wrapper');
+
             const identicon = new Identicon(address);
             const $identicon = identicon.getElement();
-            this.$identicons.appendChild($identicon);
+
             const $address = document.createElement('div');
             $address.classList.add('address');
             $address.textContent = address;
-            $identicon.appendChild($address);
-            $identicon.addEventListener('click', () => this._onIdenticonSelected($identicon, address));
+
+            $wrapper.appendChild($identicon);
+            $wrapper.appendChild($address);
+
+            $wrapper.addEventListener('click', () => this._onIdenticonSelected($wrapper, address));
+
+            this.$identicons.appendChild($wrapper);
         });
 
         setTimeout(() => this.$el.classList.add('active'), 100);
     }
 
     /**
-     * @param {HTMLElement} $identicon
+     * @param {HTMLElement} $el
      * @param {string} address
      * @private
      */
-    _onIdenticonSelected($identicon, address) {
-        const $returningIdenticon = this.$el.querySelector('.identicon.returning');
+    _onIdenticonSelected($el, address) {
+        const $returningIdenticon = this.$el.querySelector('.wrapper.returning');
         if ($returningIdenticon) {
             $returningIdenticon.classList.remove('returning');
         }
 
         this._selectedAddress = address;
-        this.$selectedIdenticon = $identicon;
+        this.$selectedIdenticon = $el;
         this.$el.classList.add('selected');
-        $identicon.classList.add('selected');
+        $el.classList.add('selected');
     }
 
     /**
