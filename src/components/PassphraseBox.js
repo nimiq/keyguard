@@ -83,6 +83,13 @@ class PassphraseBox extends Nimiq.Observable {
     }
 
     /**
+     * @param {number} [minLength]
+     */
+    setMinLength(minLength) {
+        this._passphraseInput.setMinLength(minLength);
+    }
+
+    /**
      * @returns {Promise<void>}
      */
     async onPassphraseIncorrect() {

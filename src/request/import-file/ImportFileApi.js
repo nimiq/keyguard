@@ -82,20 +82,27 @@ class ImportFileApi extends TopLevelApi {
      */
     _onFileImported(encryptedKeyBase64) {
         if (encryptedKeyBase64.substr(0, 2) === '#3') {
-            this._encryptedKey = Nimiq.BufferUtils.fromBase64(encryptedKeyBase64.substr(2));
+            // BIP39 Key File
             this._keyType = Key.Type.BIP39;
+
+            this._encryptedKey = Nimiq.BufferUtils.fromBase64(encryptedKeyBase64.substr(2));
+            this._passphraseBox.setMinLength();
 
             if (this._encryptedKey.length === Nimiq.CryptoUtils.ENCRYPTION_SIZE) this._goToEnterPassphrase();
             else this._goToSetPassphrase();
         } else {
+            // Legacy Account Access File
+            this._keyType = Key.Type.LEGACY;
+
             if (encryptedKeyBase64.substr(0, 2) === '#2') {
                 // PIN-encoded
                 this._encryptedKey = Nimiq.BufferUtils.fromBase64(encryptedKeyBase64.substr(2));
+                this._passphraseBox.setMinLength(6);
             } else {
                 // Passphrase-encoded
                 this._encryptedKey = Nimiq.BufferUtils.fromBase64(encryptedKeyBase64);
+                this._passphraseBox.setMinLength(8);
             }
-            this._keyType = Key.Type.LEGACY;
 
             this._goToEnterPassphrase();
         }
@@ -111,8 +118,8 @@ class ImportFileApi extends TopLevelApi {
             return;
         }
 
-        // TODO Generate first 20 addresses
-        this.resolve(keyInfo);
+        // TODO Generate first 100 addresses
+        this.resolve(keyInfo.toObject());
     }
 
     /**
