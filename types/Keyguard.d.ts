@@ -91,7 +91,7 @@ type SignMessageResult = {
 
 type CreateRequest = {
     appName: string;
-    defaultKeyPath?: string;
+    defaultKeyPath: string;
 }
 
 type CreateResult = {

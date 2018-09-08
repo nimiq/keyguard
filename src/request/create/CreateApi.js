@@ -26,7 +26,7 @@ class CreateApi extends TopLevelApi { // eslint-disable-line no-unused-vars
             throw new Error('appName is required');
         }
 
-        if (request.defaultKeyPath && !Nimiq.ExtendedPrivateKey.isValidPath(request.defaultKeyPath)) {
+        if (!request.defaultKeyPath || !Nimiq.ExtendedPrivateKey.isValidPath(request.defaultKeyPath)) {
             throw new Error('Invalid defaultKeyPath');
         }
 

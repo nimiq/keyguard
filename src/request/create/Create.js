@@ -43,8 +43,7 @@ class Create {
 
         // Create components
 
-        this._identiconSelector = new IdenticonSelector($identiconSelector,
-            request.defaultKeyPath || Create.DEFAULT_KEY_PATH);
+        this._identiconSelector = new IdenticonSelector($identiconSelector, request.defaultKeyPath);
         this._downloadKeyfile = new DownloadKeyfile($downloadKeyfile);
         this._privacyAgent = new PrivacyAgent($privacyAgent);
         this._recoveryWords = new RecoveryWords($recoveryWords, false);
@@ -145,7 +144,7 @@ class Create {
         const passphrase = Nimiq.BufferUtils.fromAscii(this._passphrase);
         await KeyStore.instance.put(key, passphrase);
 
-        const keyPath = request.defaultKeyPath || Create.DEFAULT_KEY_PATH;
+        const keyPath = request.defaultKeyPath;
 
         /** @type {CreateResult} */
         const result = {
@@ -163,8 +162,6 @@ class Create {
         this._identiconSelector.generateIdenticons();
     }
 }
-
-Create.DEFAULT_KEY_PATH = 'm/44\'/242\'/0\'/0\'';
 
 Create.Pages = {
     CHOOSE_IDENTICON: 'choose-identicon',
