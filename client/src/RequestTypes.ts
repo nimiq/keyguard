@@ -8,6 +8,10 @@ export enum KeyguardCommand {
     SIGN_MESSAGE = 'sign-message',
 }
 
+declare namespace Key {
+    type Type = 0 | 1;
+}
+
 export interface CreateRequest {
     appName: string;
     defaultKeyPath?: string;
@@ -21,10 +25,13 @@ export interface CreateResult {
 
 export interface ImportRequest {
     appName: string;
+    defaultKeyPath: string;
+    requestedKeyPaths: string[];
 }
 
 export interface ImportResult {
     keyId: string;
+    keyType: Key.Type;
     addresses: Array<{keyPath: string, address: Uint8Array}>;
 }
 

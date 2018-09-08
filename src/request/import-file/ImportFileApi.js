@@ -4,7 +4,6 @@
 /* global PassphraseSetterBox */
 /* global Nimiq */
 /* global Key */
-/* global KeyInfo */
 /* global KeyStore */
 
 class ImportFileApi extends TopLevelApi {
@@ -26,6 +25,8 @@ class ImportFileApi extends TopLevelApi {
      * @param {ImportRequest} request
      */
     async onRequest(request) {
+        this._request = request;
+
         // Global cancel link
         /** @type {HTMLElement} */
         const $appName = (document.querySelector('#app-name'));
@@ -35,11 +36,7 @@ class ImportFileApi extends TopLevelApi {
         $cancelLink.classList.remove('display-none');
         $cancelLink.addEventListener('click', () => window.close());
 
-        // show UI
-        window.location.hash = ImportFileApi.Pages.FILE_IMPORT;
-
-        // Async pre-load the crypto worker to reduce wait time at first decrypt attempt
-        Nimiq.CryptoWorker.getInstanceAsync();
+        this.run();
     }
 
     /**
@@ -108,30 +105,64 @@ class ImportFileApi extends TopLevelApi {
         }
     }
 
-    /**
-     * @param {string?} passphrase
-     */
-    async _onPassphraseEntered(passphrase) {
-        const keyInfo = await this._decryptAndStoreKey(passphrase);
-        if (!keyInfo) {
-            this._passphraseBox.onPassphraseIncorrect();
-            return;
-        }
+    run() {
+        window.location.hash = ImportFileApi.Pages.FILE_IMPORT;
 
-        // TODO Generate first 100 addresses
-        this.resolve(keyInfo.toObject());
+        // Async pre-load the crypto worker to reduce wait time at first decrypt attempt
+        Nimiq.CryptoWorker.getInstanceAsync();
     }
 
     /**
      * @param {string?} passphrase
-     * @returns {Promise<?KeyInfo>}
+     */
+    async _onPassphraseEntered(passphrase) {
+        const key = await this._decryptAndStoreKey(passphrase);
+        if (!key) {
+            this._passphraseBox.onPassphraseIncorrect();
+            return;
+        }
+
+        /** @type {{keyPath: string, address: Uint8Array}[]} */
+        const addresses = [];
+
+        if (key.type === Key.Type.LEGACY) {
+            const address = key.deriveAddress('');
+            addresses.push({
+                keyPath: '',
+                address: address.serialize(),
+            });
+        } else if (key.type === Key.Type.BIP39) {
+            /** @type {ImportRequest} */
+            (this._request).requestedKeyPaths.forEach(keyPath => {
+                addresses.push({
+                    keyPath,
+                    address: key.deriveAddress(keyPath).serialize(),
+                });
+            });
+        } else {
+            throw new Error(`Unkown key type ${key.type}`);
+        }
+
+        /** @type {ImportResult} */
+        const result = {
+            keyId: key.id,
+            keyType: key.type,
+            addresses,
+        };
+
+        this.resolve(result);
+    }
+
+    /**
+     * @param {string?} passphrase
+     * @returns {Promise<?Key>}
      */
     async _decryptAndStoreKey(passphrase) {
         this.$loading.style.display = 'flex';
         try {
             // Separating the processing of the encryptionKey (password) and the secret (key) is necessary
             // to cover these scenarios:
-            //     1. Encrypted key file with password
+            //     1. Encrypted key file with password or PIN
             //     2. Unencrypted key file and no new password set
             //     3. Unencrypted key file and new password set
 
@@ -149,13 +180,14 @@ class ImportFileApi extends TopLevelApi {
                     /** @type {Uint8Array} */ (encryptionKey),
                 );
             } else {
+                // Key File was not encrypted and the imported Uint8Array is the plain secret
                 secret = this._encryptedKey;
             }
 
             const key = new Key(secret, this._keyType);
             await KeyStore.instance.put(key, encryptionKey || undefined);
 
-            return new KeyInfo(key.id, key.type, passphrase !== null);
+            return key;
         } catch (e) {
             this.$loading.style.display = 'none';
             return null;

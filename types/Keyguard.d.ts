@@ -102,11 +102,14 @@ type CreateResult = {
 
 type ImportRequest = {
     appName: string;
+    defaultKeyPath: string;
+    requestedKeyPaths: string[];
 }
 
 type ImportResult = {
     keyId: string;
-    addresses: {keyPath: string, address: Uint8Array}[]
+    keyType: Key.Type;
+    addresses: {keyPath: string, address: Uint8Array}[];
 }
 
 type RemoveKeyRequest = {
