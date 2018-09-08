@@ -151,6 +151,9 @@ class BaseLayout {
         // Go to start page
         window.location.hash = BaseLayout.Pages.CONFIRM_TRANSACTION;
         this._passphraseBox.focus();
+
+        // Async pre-load the crypto worker to reduce wait time at first decrypt attempt
+        Nimiq.CryptoWorker.getInstanceAsync();
     }
 
     /**
