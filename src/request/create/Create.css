@@ -1,0 +1,71 @@
+.page p {
+    margin: 4rem;
+}
+
+.page .actionbox p {
+    margin: 0 10rem 3rem;
+}
+
+.page p + p {
+    margin-top: -2.5rem;
+}
+
+.page#choose-identicon .page-body {
+    position: relative;
+}
+
+.page-body, .page-footer {
+    /* TODO: Move this to common.css, but have to adapt sign-transaction stylings */
+    background: #fafafa;
+    align-items: center;
+
+    border-bottom-left-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+}
+
+.keyfile-info {
+    display: flex;
+    flex-direction: row;
+}
+
+.icon-keyfile,
+.icon-keyfile-insecure,
+.icon-keyfile-secure {
+    margin: 4rem;
+    margin-right: 0;
+}
+
+.recovery-words {
+    margin: 0 4rem 4rem;
+}
+
+.page#recovery-words button {
+    width: calc(100% - 15rem);
+    background: #724ceb;
+    color: white;
+    margin-bottom: 2.5rem;
+}
+
+.page#recovery-words .skip {
+    color: black;
+    font-size: 1.75rem;
+    line-height: 1.5;
+    opacity: 0.5;
+    text-decoration: underline;
+    cursor: pointer;
+    margin-bottom: 2.5rem;
+}
+
+.page-header {
+    padding-top: 5.75rem;
+}
+
+.page-header .progress-indicator {
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.page-header .page-header-back-button {
+    top: 5.5rem;
+}

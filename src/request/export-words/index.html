@@ -20,7 +20,6 @@
     <script defer src="../../lib/AnimationUtils.js"></script>
     <script defer src="../../translations/index.js"></script>
     <script defer src="../../common.js"></script>
-    <script defer src="../../components/BackupRecoveryWords.js"></script>
     <script defer src="../../components/PrivacyWarning.js"></script>
     <script defer src="../../components/PassphraseInput.js"></script>
     <script defer src="../../components/RecoveryWords.js"></script>
@@ -43,7 +42,21 @@
 
     <div id="passphrase-privacy-agent" class="page"></div>
 
-    <div id="recovery-words" class="page"></div>
+    <div id="recovery-words" class="page">
+        <div class="page-header">
+            <a tabindex="0" class="page-header-back-button icon-back-arrow"></a>
+            <h1 data-i18n="create-heading-backup-account">Create a backup</h1>
+        </div>
+
+        <div class="page-body">
+            <p data-i18n="recovery-words-explanation">There really is no password recovery. The following words are a backup of your Key File and will grant you access to your wallet even if your Key File is lost.</p>
+            <p data-i18n="recovery-words-storing">Write those words on a piece of paper and store it at a safe, offline place.</p>
+
+            <div class="recovery-words"></div>
+
+            <button class="continue" data-i18n="continue">Continue</button>
+        </div>
+    </div>
 
     <div id="validate-words" class="page"></div>
 

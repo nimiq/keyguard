@@ -1,4 +1,5 @@
 /* global Nimiq */
+
 class ValidateWords extends Nimiq.Observable {
     /**
      * @param {HTMLElement} [$el]
@@ -24,13 +25,13 @@ class ValidateWords extends Nimiq.Observable {
         this.$el.addEventListener('click', this._onClick.bind(this));
 
         /** @type {HTMLFormElement} */
-        this.$skip = (this.$el.querySelector('.skip'));
+        const $skip = (this.$el.querySelector('.skip a'));
 
         /** @type {HTMLFormElement} */
-        this.$backWords = (this.$el.querySelector('.back-words'));
+        const $backWords = (this.$el.querySelector('.back-to-words a'));
 
-        this.$skip.addEventListener('click', () => this.fire(ValidateWords.Events.SKIPPED));
-        this.$backWords.addEventListener('click', () => this.fire(ValidateWords.Events.BACK));
+        $skip.addEventListener('click', () => this.fire(ValidateWords.Events.SKIP));
+        $backWords.addEventListener('click', () => this.fire(ValidateWords.Events.BACK));
     }
 
     /**
@@ -41,9 +42,8 @@ class ValidateWords extends Nimiq.Observable {
         $el = $el || document.createElement('div');
         $el.classList.add('validate-words');
 
-        $el.innerHTML = `<h1>Validate Recovery Words</h1>
-            <p>Please select the following word from your list:</p>
-            <div class="grow"></div>
+        $el.innerHTML = `
+            <p data-i18n="validate-words-text">Please select the correct word from your list of recovery words.</p>
             <div class="target-index"></div>
             <div class="word-list">
                 <button class="small"></button>
@@ -52,12 +52,9 @@ class ValidateWords extends Nimiq.Observable {
                 <button class="small"></button>
                 <button class="small"></button>
                 <button class="small"></button>
-                <button class="small"></button>
-                <button class="small"></button>
             </div>
-            <div class="grow"></div>
-            <a class="secondary back-words">Back to words</a>
-            <a class="secondary skip">Skip</a>
+            <div class="back-to-words"><a tabindex="0" data-i18n="validate-words-back">Back to words</a></div>
+            <div class="skip"><a tabindex="0" data-i18n="validate-words-skip">Skip validation for now</a></div>
         `;
 
         return $el;
@@ -74,13 +71,14 @@ class ValidateWords extends Nimiq.Observable {
      * @param {Nimiq.Entropy | Uint8Array} entropy
      */
     set entropy(entropy) {
-        this.mnemonic = Nimiq.MnemonicUtils.entropyToMnemonic(entropy, Nimiq.MnemonicUtils.DEFAULT_WORDLIST);
+        const words = Nimiq.MnemonicUtils.entropyToMnemonic(entropy, Nimiq.MnemonicUtils.DEFAULT_WORDLIST);
+        this.setWords(words);
     }
 
     /**
      * @param {string[]} mnemonic
      */
-    set mnemonic(mnemonic) {
+    setWords(mnemonic) {
         if (!mnemonic) return;
         this._mnemonic = mnemonic;
         this.reset();
@@ -123,9 +121,9 @@ class ValidateWords extends Nimiq.Observable {
         this.$el.querySelectorAll('.correct').forEach(button => button.classList.remove('correct'));
         this.$el.querySelectorAll('.wrong').forEach(button => button.classList.remove('wrong'));
         const wordList = this._generateWords(this._requiredWords[round]);
-        this.setWordList(wordList);
+        this._setWordList(wordList);
         const targetIndex = this._requiredWords[round] + 1;
-        this.setTargetIndex(targetIndex);
+        this._setTargetIndex(targetIndex);
         this._targetWord = this._mnemonic[this._requiredWords[round]];
     }
 
@@ -139,8 +137,8 @@ class ValidateWords extends Nimiq.Observable {
 
         words[this._mnemonic[wordIndex]] = wordIndex;
 
-        // Select 7 additional unique words from the mnemonic phrase
-        while (Object.keys(words).length < 8) {
+        // Select 5 additional unique words from the mnemonic phrase
+        while (Object.keys(words).length < 6) {
             const index = Math.floor(Math.random() * 24);
             words[this._mnemonic[index]] = index;
         }
@@ -153,7 +151,7 @@ class ValidateWords extends Nimiq.Observable {
     /**
      * @param {string[]} wordList
      */
-    setWordList(wordList) {
+    _setWordList(wordList) {
         this._wordList = wordList;
         wordList.forEach((word, index) => {
             this.$buttons[index].textContent = word;
@@ -164,7 +162,7 @@ class ValidateWords extends Nimiq.Observable {
     /**
      * @param {number} index
      */
-    setTargetIndex(index) {
+    _setTargetIndex(index) {
         this.$targetIndex.textContent = index.toString();
     }
 
@@ -216,7 +214,7 @@ class ValidateWords extends Nimiq.Observable {
 }
 
 ValidateWords.Events = {
-    SKIPPED: 'skipped',
-    VALIDATED: 'validated',
-    BACK: 'back',
+    SKIP: 'validate-words-skip',
+    VALIDATED: 'validate-words-validated',
+    BACK: 'validate-words-back',
 };

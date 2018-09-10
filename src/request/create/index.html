@@ -6,6 +6,7 @@
     <meta http-equiv="Content-Security-Policy"
           content="default-src 'self' 'unsafe-eval' https://cdn.nimiq.com https://cdn.nimiq-network.com;
           img-src http: https: blob: data:; child-src 'self' blob:; style-src 'self';">
+    <title>Nimiq Keyguard</title>
 
     <script defer src="https://cdn.nimiq-network.com/branches/master/web-offline.js"></script>
     <script defer src="../../../node_modules/@nimiq/rpc/dist/rpc.umd.js"></script>
@@ -25,14 +26,14 @@
     <script defer src="../../components/DownloadKeyfile.js"></script>
     <script defer src="../../components/PrivacyAgent.js"></script>
     <script defer src="../../components/PrivacyWarning.js"></script>
-    <script defer src="../../components/RecoveryWords.js"></script>
     <script defer src="../../components/ValidateWords.js"></script>
     <script defer src="../../components/RecoveryWordsInputField.js"></script>
-    <script defer src="../../components/BackupRecoveryWords.js"></script>
+    <script defer src="../../components/RecoveryWords.js"></script>
     <script defer src="../../components/PassphraseInput.js"></script>
-    <script defer src="../../components/SetPassphrase.js"></script>
+    <script defer src="../../components/PassphraseSetterBox.js"></script>
+    <script defer src="../../components/ProgressIndicator.js"></script>
     <script defer src="../TopLevelApi.js"></script>
-    <script defer src="ChooseIdenticon.js"></script>
+    <script defer src="IdenticonSelector.js"></script>
     <script defer src="Create.js"></script>
     <script defer src="CreateApi.js"></script>
     <script defer src="index.js"></script>
@@ -40,36 +41,135 @@
     <link rel="stylesheet" href="../../nimiq-style.css">
     <link rel="stylesheet" href="../../common.css">
     <link rel="stylesheet" href="../../components/PassphraseInput.css">
+    <link rel="stylesheet" href="../../components/PassphraseBox.css">
+    <link rel="stylesheet" href="../../components/DownloadKeyfile.css">
     <link rel="stylesheet" href="../../components/RecoveryWords.css">
     <link rel="stylesheet" href="../../components/RecoveryWordsInputField.css">
     <link rel="stylesheet" href="../../components/ValidateWords.css">
     <link rel="stylesheet" href="../../components/PrivacyAgent.css">
-    <link rel="stylesheet" href="./ChooseIdenticon.css">
+    <link rel="stylesheet" href="../../components/ProgressIndicator.css">
+    <link rel="stylesheet" href="./IdenticonSelector.css">
+    <link rel="stylesheet" href="./Create.css">
 </head>
 <body>
-<div id="app">
-
-    <div id="choose-identicon" class="page"></div>
-
-    <form id="set-passphrase" class="page"></form>
-
-    <div id="download-keyfile" class="page"></div>
-
-    <div id="privacy-agent" class="page">
-        <h1 data-18n="create-backup-account-heading">Backup your Account</h1>
-        <div class="grow"></div>
-        <div class="agent"></div>
-        <div class="grow"></div>
+    <div class="header-top">
+        <div class="nimiq-app-name">
+            <span class="nimiq-logo"></span>
+        </div>
     </div>
 
-    <div id="recovery-words" class="page"></div>
+    <div id="app">
+        <div class="flex-grow"></div>
 
-    <div id="validate-words" class="page"></div>
+        <div id="choose-identicon" class="page">
+            <div class="page-header">
+                <div class="progress-indicator"></div>
+                <a tabindex="0" class="page-header-back-button icon-back-arrow"></a>
+                <h1 data-i18n="create-heading-choose-identicon">Choose your account avatar</h1>
+            </div>
 
-    <div id="loading" class="page">
-        <div class="loading-animation"></div>
+            <div class="page-body">
+                <div>
+                    <p data-i18n="create-text-select-avatar">Select an avatar for your wallet's default account from the selection below.</p>
+                    <p data-i18n="create-hint-more-accounts">You can add more accounts later.</p>
+                </div>
+                <div class="identicon-selector"></div>
+            </div>
+        </div>
+
+        <div id="set-passphrase" class="page">
+            <div class="page-header">
+                <div class="progress-indicator"></div>
+                <a tabindex="0" class="page-header-back-button icon-back-arrow"></a>
+                <h1 data-i18n="create-heading-keyfile">This is your Key File</h1>
+            </div>
+
+            <div class="page-body">
+                <div class="keyfile-info">
+                    <div class="icon-keyfile"></div>
+                    <div class="keyfile-text">
+                        <p data-i18n="create-text-keyfile-info">Your Key File gives you full access to your wallet. You'll need it everytime you log in.</p>
+                        <p data-i18n="create-hint-keyfile-password">To protect your wallet, first protect it with a password.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-footer">
+                <form class="passphrase-box"></form>
+            </div>
+        </div>
+
+        <div id="download-keyfile" class="page">
+            <div class="page-header">
+                <div class="progress-indicator"></div>
+                <a tabindex="0" class="page-header-back-button icon-back-arrow"></a>
+                <h1 data-i18n="create-heading-keyfile">This is your Key File</h1>
+            </div>
+
+            <div class="page-body">
+                <div class="keyfile-info">
+                    <div class="icon icon-keyfile"></div>
+                    <div class="keyfile-text">
+                        <p data-i18n="create-text-keyfile-info">Your Key File gives you full access to your wallet. You'll need it everytime you log in.</p>
+                        <p data-i18n="create-hint-keyfile-password">To protect your wallet, first protect it with a password.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-footer">
+                <div class="download-keyfile"></div>
+            </div>
+        </div>
+
+        <div id="privacy-agent" class="page">
+            <div class="page-header">
+                <div class="progress-indicator"></div>
+                <a tabindex="0" class="page-header-back-button icon-back-arrow"></a>
+                <h1 data-i18n="create-heading-backup-account">Create a backup</h1>
+            </div>
+
+            <div class="page-body">
+                <div class="privacy-agent"></div>
+            </div>
+        </div>
+
+        <div id="recovery-words" class="page">
+            <div class="page-header">
+                <div class="progress-indicator"></div>
+                <a tabindex="0" class="page-header-back-button icon-back-arrow"></a>
+                <h1 data-i18n="create-heading-backup-account">Create a backup</h1>
+            </div>
+
+            <div class="page-body">
+                <p data-i18n="recovery-words-explanation">There really is no password recovery. The following words are a backup of your Key File and will grant you access to your wallet even if your Key File is lost.</p>
+                <p data-i18n="recovery-words-storing">Write those words on a piece of paper and store it at a safe, offline place.</p>
+
+                <div class="recovery-words"></div>
+
+                <button class="continue" data-i18n="continue">Continue</button>
+                <a class="skip">Skip backup for now</a>
+            </div>
+        </div>
+
+        <div id="validate-words" class="page">
+            <div class="page-header">
+                <div class="progress-indicator"></div>
+                <a tabindex="0" class="page-header-back-button icon-back-arrow"></a>
+                <h1 data-i18n="create-heading-validate-backup">Validate your backup</h1>
+            </div>
+
+            <div class="page-body">
+                <div class="validate-words"></div>
+            </div>
+        </div>
+
+        <a tabindex="0" class="global-close display-none">Back to <span id="app-name"></span></a>
+
+        <div class="flex-grow"></div>
+
+        <div id="loading" class="page">
+            <div class="loading-animation"></div>
+        </div>
     </div>
-
-</div>
 </body>
 </html>

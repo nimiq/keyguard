@@ -1,0 +1,70 @@
+.progress-indicator {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    padding: 0.5rem;
+}
+
+.progress-indicator .indicator {
+    flex-grow: 1;
+    height: 0.5rem;
+    border-radius: 0.25rem;
+    background: #e5e5e5;
+    margin: 0.5rem;
+}
+
+.progress-indicator[data-step="1"] .step-1,
+.progress-indicator[data-step="2"] .step-1,
+.progress-indicator[data-step="3"] .step-1,
+.progress-indicator[data-step="4"] .step-1,
+.progress-indicator[data-step="5"] .step-1,
+.progress-indicator[data-step="6"] .step-1,
+.progress-indicator[data-step="7"] .step-1,
+.progress-indicator[data-step="8"] .step-1,
+.progress-indicator[data-step="9"] .step-1,
+
+.progress-indicator[data-step="2"] .step-2,
+.progress-indicator[data-step="3"] .step-2,
+.progress-indicator[data-step="4"] .step-2,
+.progress-indicator[data-step="5"] .step-2,
+.progress-indicator[data-step="6"] .step-2,
+.progress-indicator[data-step="7"] .step-2,
+.progress-indicator[data-step="8"] .step-2,
+.progress-indicator[data-step="9"] .step-2,
+
+.progress-indicator[data-step="3"] .step-3,
+.progress-indicator[data-step="4"] .step-3,
+.progress-indicator[data-step="5"] .step-3,
+.progress-indicator[data-step="6"] .step-3,
+.progress-indicator[data-step="7"] .step-3,
+.progress-indicator[data-step="8"] .step-3,
+.progress-indicator[data-step="9"] .step-3,
+
+.progress-indicator[data-step="4"] .step-4,
+.progress-indicator[data-step="5"] .step-4,
+.progress-indicator[data-step="6"] .step-4,
+.progress-indicator[data-step="7"] .step-4,
+.progress-indicator[data-step="8"] .step-4,
+.progress-indicator[data-step="9"] .step-4,
+
+.progress-indicator[data-step="5"] .step-5,
+.progress-indicator[data-step="6"] .step-5,
+.progress-indicator[data-step="7"] .step-5,
+.progress-indicator[data-step="8"] .step-5,
+.progress-indicator[data-step="9"] .step-5,
+
+.progress-indicator[data-step="6"] .step-6,
+.progress-indicator[data-step="7"] .step-6,
+.progress-indicator[data-step="8"] .step-6,
+.progress-indicator[data-step="9"] .step-6,
+
+.progress-indicator[data-step="7"] .step-7,
+.progress-indicator[data-step="8"] .step-7,
+.progress-indicator[data-step="9"] .step-7,
+
+.progress-indicator[data-step="8"] .step-8,
+.progress-indicator[data-step="9"] .step-8,
+
+.progress-indicator[data-step="9"] .step-9 {
+    background: #24bdb6;
+}

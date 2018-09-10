@@ -35,6 +35,7 @@
     background: white;
     width: 100vw;
     max-width: 56.25rem; /* 450px */
+    min-height: 63rem; /* 504px */
     border-radius: 1rem;
     box-shadow: 0 1.25rem 2.5rem 0 rgba(0, 0, 0, 0.11);
 }
@@ -46,7 +47,6 @@
 
 .page-header {
     position: relative;
-    height: 11rem;
     box-sizing: border-box;
     padding: 4.25rem;
     border-bottom: solid 1px #f2f2f2;
@@ -70,10 +70,12 @@
     letter-spacing: 0.25rem;
     line-height: 2.5rem;
     font-weight: bold;
+    margin: 0;
 }
 
 .page-body {
     flex-direction: inherit;
+    flex-grow: 1;
 }
 
 .page-footer {
@@ -215,6 +217,73 @@
     background-position: center;
     margin-right: 1rem;
     margin-bottom: -0.125rem;
+}
+
+.flex-grow {
+    flex-grow: 1;
+}
+
+.actionbox {
+    width: 100%;
+    margin: 1rem;
+    padding: 1.25rem;
+    border-radius: 0.5rem;
+    background: #724ceb;
+    color: white;
+}
+
+.actionbox button {
+    color: #724ceb;
+}
+
+.actionbox.red {
+    background: #ca3333;
+    color: white;
+}
+.actionbox.red button {
+    color: #ca3333;
+}
+
+.actionbox.yellow {
+    background: #f5af2d;
+    color: rgba(0, 0, 0, 0.55);
+}
+.actionbox.yellow h2 {
+    color: rgba(0, 0, 0, 0.65);
+}
+.actionbox.yellow button {
+    color: #f5af2d;
+}
+
+.actionbox.green {
+    background: #24bdb6;
+    color: rgba(255, 255, 255, 0.8);
+}
+.actionbox.green h2 {
+    color: white;
+}
+.actionbox.green button {
+    color: #24bdb6;
+}
+
+.actionbox h2 {
+    text-transform: uppercase;
+    font-size: 1.75rem;
+    font-weight: 600;
+    letter-spacing: 0.25rem;
+    line-height: 0.86;
+    margin-top: 1.25rem;
+    margin-bottom: 2rem;
+}
+
+.actionbox p {
+    margin: 0 10rem 3rem;
+    color: inherit;
+}
+
+.actionbox button {
+    width: calc(100% - 11rem);
+    margin-bottom: 1.75rem;
 }
 
 /* make code blocks look like keys on the keyboard */

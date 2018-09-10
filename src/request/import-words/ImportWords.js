@@ -4,7 +4,7 @@
 /* global PrivacyAgent */
 /* global EnterRecoveryWords */
 /* global ChooseKeyType */
-/* global SetPassphrase */
+/* global PassphraseSetterBox */
 
 class ImportWords {
     /**
@@ -29,7 +29,7 @@ class ImportWords {
         const privacyAgent = new PrivacyAgent($privacyAgent);
         const recoveryWords = new EnterRecoveryWords($words);
         const chooseKeyType = new ChooseKeyType($chooseKeyType, request.defaultKeyPath);
-        const setPassphrase = new SetPassphrase($setPassphrase);
+        const setPassphrase = new PassphraseSetterBox($setPassphrase);
 
         // Events
         privacyAgent.on(PrivacyAgent.Events.CONFIRM, () => {
@@ -41,7 +41,7 @@ class ImportWords {
 
         chooseKeyType.on(ChooseKeyType.Events.CHOOSE, this._onKeyTypeChosen.bind(this));
 
-        setPassphrase.on(SetPassphrase.Events.CHOOSE, /** @param {string} passphrase */ async passphrase => {
+        setPassphrase.on(PassphraseSetterBox.Events.SUBMIT, /** @param {string} passphrase */ async passphrase => {
             document.body.classList.add('loading');
             if (this._key) {
                 resolve(await KeyStore.instance.put(this._key, Nimiq.BufferUtils.fromAscii(passphrase)));
