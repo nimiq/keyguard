@@ -2,6 +2,17 @@
 /* global Rpc */
 
 /**
+ * @returns {string}
+ */
+function allowedOrigin() {
+    switch (window.location.origin) {
+    case 'https://keyguard-next.nimiq.com': return 'https://accounts-next.nimiq.com';
+    case 'https://keyguard-next.nimiq-network.com': return 'https://accounts-next.nimiq-network.com';
+    default: return '*';
+    }
+}
+
+/**
  * @param {Newable} RequestApiClass - Class object of the API which is to be exposed via postMessage RPC
  * @param {object} [options]
  */
@@ -31,8 +42,10 @@ async function runKeyguard(RequestApiClass, options) { // eslint-disable-line no
     // Instantiate handler.
     const api = new RequestApiClass();
 
-    // FIXME Set correct allowedOrigin
-    window.rpcServer = new Rpc.RpcServer('*');
+    window.rpcServer = new Rpc.RpcServer(allowedOrigin());
+
+    // TODO: Use options.whitelist when adding onRequest handlers (iframe uses different methods)
     window.rpcServer.onRequest('request', (state, request) => api.request(request));
+
     window.rpcServer.init();
 }
