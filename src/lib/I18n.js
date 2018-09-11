@@ -54,9 +54,8 @@ class I18n { // eslint-disable-line no-unused-vars
         };
 
         translateElements('i18n', (element, translation) => {
-            const doc = this.parser.parseFromString(translation, 'text/html');
-            const noHtml = /** @type {string} */ (doc.body.textContent);
-            const withMarkup = noHtml.replace('[strong]', '<strong>').replace('[/strong]', '</strong>');
+            const sanitized = translation.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            const withMarkup = sanitized.replace(/\[strong]/g, '<strong>').replace(/\[\/strong]/g, '</strong>');
             element.innerHTML = withMarkup;
         });
         translateAttribute('value');
