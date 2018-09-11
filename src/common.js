@@ -31,13 +31,18 @@ async function runKeyguard(RequestApiClass, options) { // eslint-disable-line no
         Nimiq.GenesisConfig.test();
     }
 
-    // Close window if user navigates back to loading screen
+    // If user navigates back to loading screen, skip it
     window.addEventListener('hashchange', () => {
         if (window.location.hash === '') {
-            // FIXME !! this doesn't work for redirects !!
-            window.close();
+            history.back();
         }
     });
+    
+    // Back arrow functionality
+    const $backButtons = (document.querySelectorAll('a.page-header-back-button'));
+    for (const $backButton of $backButtons) {
+        $backButton.addEventListener('click', () => history.back());
+    }
 
     // Instantiate handler.
     const api = new RequestApiClass();
