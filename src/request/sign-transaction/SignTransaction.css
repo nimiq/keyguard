@@ -57,6 +57,10 @@
     font-weight: 300;
 }
 
+.transaction .total .value .nim-symbol {
+    margin-left: 1rem;
+}
+
 .transaction .fee-section {
     display: block;
     text-transform: uppercase;
@@ -80,7 +84,7 @@
 }
 
 .transaction .fee-section:not(.display-none) + .data-section {
-    margin-bottom: -1.625rem;
+    margin-bottom: 3rem;
 }
 
 /*

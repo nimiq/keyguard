@@ -49,8 +49,7 @@ class LayoutStandard extends BaseLayout { // eslint-disable-line no-unused-vars
 
                 <div class="center total">
                     <div class="value">
-                        <span id="value"></span>
-                        <span class="nim-symbol"></span>
+                        <span id="value"></span><span class="nim-symbol"></span>
                     </div>
                 </div>
 

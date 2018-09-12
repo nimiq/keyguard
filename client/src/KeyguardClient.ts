@@ -21,6 +21,7 @@ export class KeyguardClient {
         this._endpoint = endpoint;
         this._defaultBehavior = defaultBehavior || new RequestBehavior();
 
+        // Listen for response
         this._redirectClient = new RedirectRpcClient('', RequestBehavior.getAllowedOrigin(this._endpoint));
         this._redirectClient.onResponse('request', this._onResolve.bind(this), this._onReject.bind(this));
 
