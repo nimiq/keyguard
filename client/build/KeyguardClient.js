@@ -5,6 +5,7 @@ export class KeyguardClient {
     constructor(endpoint = KeyguardClient.DEFAULT_ENDPOINT, defaultBehavior) {
         this._endpoint = endpoint;
         this._defaultBehavior = defaultBehavior || new RequestBehavior();
+        // Listen for response
         this._redirectClient = new RedirectRpcClient('', RequestBehavior.getAllowedOrigin(this._endpoint));
         this._redirectClient.onResponse('request', this._onResolve.bind(this), this._onReject.bind(this));
         this._observable = new Nimiq.Observable();
@@ -61,5 +62,7 @@ export class KeyguardClient {
         this._observable.fire(`${command}-resolve`, result, state);
     }
 }
-KeyguardClient.DEFAULT_ENDPOINT = 'http://localhost:8000/src';
+KeyguardClient.DEFAULT_ENDPOINT = window.location.origin === 'https://accounts.nimiq.com' ? 'https://keyguard-next.nimiq.com'
+    : window.location.origin === 'https://accounts.nimiq-network.com' ? 'https://keyguard-next.nimiq-network.com'
+        : 'http://localhost:8000/src';
 //# sourceMappingURL=KeyguardClient.js.map

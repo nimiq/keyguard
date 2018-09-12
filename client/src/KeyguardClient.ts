@@ -10,7 +10,10 @@ import {
 } from './RequestTypes';
 
 export class KeyguardClient {
-    private static readonly DEFAULT_ENDPOINT = 'http://localhost:8000/src';
+    private static readonly DEFAULT_ENDPOINT =
+        window.location.origin === 'https://accounts.nimiq.com' ? 'https://keyguard-next.nimiq.com'
+        : window.location.origin === 'https://accounts.nimiq-network.com' ? 'https://keyguard-next.nimiq-network.com'
+        : 'http://localhost:8000/src';
 
     private readonly _endpoint: string;
     private _redirectClient: RedirectRpcClient;
