@@ -81,9 +81,6 @@
 .transaction .data-section {
     line-height: 1.3;
     padding: 0 3rem;
-}
-
-.transaction .fee-section:not(.display-none) + .data-section {
     margin-bottom: 3rem;
 }
 
