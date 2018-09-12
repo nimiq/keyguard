@@ -101,7 +101,7 @@
         }
     }
     KeyguardClient.DEFAULT_ENDPOINT = window.location.origin === 'https://accounts.nimiq.com' ? 'https://keyguard-next.nimiq.com'
-        : window.location.origin === 'https://accounts.nimiq-network.com' ? 'https://keyguard-next.nimiq-network.com'
+        : window.location.origin === 'https://accounts.nimiq-testnet.com' ? 'https://keyguard-next.nimiq-testnet.com'
             : 'http://localhost:8000/src';
 
     exports.KeyguardClient = KeyguardClient;
