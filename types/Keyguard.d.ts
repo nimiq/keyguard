@@ -46,9 +46,9 @@ type SignTransactionRequest = {
     value: number
     fee: number
     validityStartHeight: number
-    data: Uint8Array
-    flags: number
-    networkId: number
+    data?: Uint8Array
+    flags?: number
+    networkId?: number
 }
 
 type ParsedSignTransactionRequest = {
