@@ -128,7 +128,7 @@ class ImportFileApi extends TopLevelApi {
         if (key.type === Key.Type.LEGACY) {
             const address = key.deriveAddress('');
             addresses.push({
-                keyPath: '',
+                keyPath: 'm/0\'',
                 address: address.serialize(),
             });
         } else if (key.type === Key.Type.BIP39) {
