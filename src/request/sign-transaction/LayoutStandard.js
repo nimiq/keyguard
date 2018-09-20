@@ -26,7 +26,7 @@ class LayoutStandard extends BaseLayout { // eslint-disable-line no-unused-vars
 
         $el.innerHTML = `
             <div class="page-header">
-                <a tabindex="0" class="page-header-back-button icon-back-arrow"></a>
+                <!-- <a tabindex="0" class="page-header-back-button icon-back-arrow"></a> -->
                 <h1 data-i18n="sign-tx-heading">New Transaction</h1>
             </div>
 
