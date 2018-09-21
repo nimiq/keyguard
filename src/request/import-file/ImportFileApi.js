@@ -196,11 +196,13 @@ class ImportFileApi extends TopLevelApi {
 
     _goToEnterPassphrase() {
         window.location.hash = ImportFileApi.Pages.ENTER_PASSPHRASE;
+        this._passphraseBox.reset();
         this._passphraseBox.focus();
     }
 
     _goToSetPassphrase() {
         window.location.hash = ImportFileApi.Pages.SET_PASSPHRASE;
+        this._passphraseSetterBox.reset();
         this._passphraseSetterBox.focus();
     }
 
