@@ -39,6 +39,7 @@ class IFrameApi { // eslint-disable-line no-unused-vars
             return;
         }
 
+        // FIXME: Requires Nimiq lib to be loaded, which it currently isn't in the iframe
         await KeyStore.instance.migrateAccountsToKeys();
     }
 }
