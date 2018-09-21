@@ -37,14 +37,15 @@ async function runKeyguard(RequestApiClass, options) { // eslint-disable-line no
             history.back();
         }
     });
-    
+
     // Back arrow functionality
-    const $backButtons = (document.querySelectorAll('a.page-header-back-button'));
-    for (const $backButton of $backButtons) {
-        $backButton.addEventListener('click', () => history.back());
-    }
+    document.addEventListener('click', (event) => {
+        if (!event.target || ! /** @type {HTMLElement} */ (event.target).matches('a.page-header-back-button')) return;
+        history.back();
+    });
 
     // Instantiate handler.
+    /** @type {TopLevelApi} */
     const api = new RequestApiClass();
 
     window.rpcServer = new Rpc.RpcServer(allowedOrigin());
