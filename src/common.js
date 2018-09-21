@@ -6,8 +6,8 @@
  */
 function allowedOrigin() {
     switch (window.location.origin) {
-    case 'https://keyguard-next.nimiq.com': return 'https://accounts-next.nimiq.com';
-    case 'https://keyguard-next.nimiq-network.com': return 'https://accounts-next.nimiq-network.com';
+    case 'https://keyguard-next.nimiq.com': return 'https://accounts.nimiq.com';
+    case 'https://keyguard-next.nimiq-testnet.com': return 'https://accounts.nimiq-testnet.com';
     default: return '*';
     }
 }

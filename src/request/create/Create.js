@@ -61,23 +61,23 @@ class Create {
                 this._recoveryWords.setWords(mnemonic);
                 this._validateWords.setWords(mnemonic);
                 window.location.hash = Create.Pages.SET_PASSPHRASE;
+                this._passphraseSetter.reset();
                 this._passphraseSetter.focus();
             },
         );
 
         this._passphraseSetter.on(PassphraseSetterBox.Events.SUBMIT, /** @param {string} passphrase */ passphrase => {
             this._passphrase = passphrase;
-            // TODO Encrypt seed
+            // TODO Generate secret for key file
             this._downloadKeyfile.setSecret(new Uint8Array(0), true);
             const keyfileIcon = /** @type {HTMLElement} */ (document.querySelector('.page#download-keyfile .icon'));
             keyfileIcon.classList.remove('icon-keyfile-insecure');
             keyfileIcon.classList.add('icon-keyfile-secure');
             window.location.hash = Create.Pages.DOWNLOAD_KEYFILE;
-            this._passphraseSetter.reset();
         });
 
         this._passphraseSetter.on(PassphraseSetterBox.Events.SKIP, () => {
-            // TODO Generate seed
+            // TODO Generate secret for key file
             this._downloadKeyfile.setSecret(new Uint8Array(0), false);
             const keyfileIcon = /** @type {HTMLElement} */ (document.querySelector('.page#download-keyfile .icon'));
             keyfileIcon.classList.remove('icon-keyfile-secure');
