@@ -50,8 +50,6 @@ class ImportFileApi extends TopLevelApi {
         const $passphraseBox = (document.querySelector('.passphrase-box'));
         /** @type {HTMLFormElement} */
         const $passphraseSetterBox = (document.querySelector('.passphrase-setter-box'));
-        /** @type {HTMLElement} */
-        const backArrow = (document.querySelector(`#${ImportFileApi.Pages.ENTER_PASSPHRASE} .page-header-back-button`));
 
         // Components
         const fileImport = new FileImport($fileImport);
@@ -61,10 +59,9 @@ class ImportFileApi extends TopLevelApi {
         // Events
         fileImport.on(FileImport.Events.IMPORT, this._onFileImported.bind(this));
         passphraseBox.on(PassphraseBox.Events.SUBMIT, this._onPassphraseEntered.bind(this));
-        passphraseBox.on(PassphraseBox.Events.CANCEL, () => this._goToImportPage());
+        passphraseBox.on(PassphraseBox.Events.CANCEL, () => history.back());
         passphraseSetterBox.on(PassphraseSetterBox.Events.SUBMIT, this._onPassphraseEntered.bind(this));
         passphraseSetterBox.on(PassphraseSetterBox.Events.SKIP, () => this._onPassphraseEntered(null));
-        backArrow.addEventListener('click', () => this._goToImportPage());
 
         return {
             passphraseBox,
@@ -204,11 +201,6 @@ class ImportFileApi extends TopLevelApi {
         window.location.hash = ImportFileApi.Pages.SET_PASSPHRASE;
         this._passphraseSetterBox.reset();
         this._passphraseSetterBox.focus();
-    }
-
-    _goToImportPage() {
-        window.history.back();
-        this._passphraseBox.reset();
     }
 }
 
