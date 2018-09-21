@@ -356,6 +356,7 @@ body {
     background: var(--primary-background);
     box-sizing: border-box;
     -webkit-overflow-scrolling: touch;
+    -webkit-font-smoothing: antialiased;
 }
 
 body .nimiq-dark {

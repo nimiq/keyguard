@@ -74,7 +74,6 @@ class Create {
             keyfileIcon.classList.remove('icon-keyfile-insecure');
             keyfileIcon.classList.add('icon-keyfile-secure');
             window.location.hash = Create.Pages.DOWNLOAD_KEYFILE;
-            this._passphraseSetter.reset();
         });
 
         this._passphraseSetter.on(PassphraseSetterBox.Events.SKIP, () => {
