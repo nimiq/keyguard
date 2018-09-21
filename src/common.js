@@ -31,15 +31,22 @@ async function runKeyguard(RequestApiClass, options) { // eslint-disable-line no
         Nimiq.GenesisConfig.test();
     }
 
-    // Close window if user navigates back to loading screen
+    // If user navigates back to loading screen, skip it
     window.addEventListener('hashchange', () => {
         if (window.location.hash === '') {
-            // FIXME !! this doesn't work for redirects !!
-            window.close();
+            window.history.back();
         }
     });
 
+    // Back arrow functionality
+    document.body.addEventListener('click', event => {
+        // @ts-ignore
+        if (!event.target || !event.target.matches('a.page-header-back-button')) return;
+        window.history.back();
+    });
+
     // Instantiate handler.
+    /** @type {TopLevelApi} */
     const api = new RequestApiClass();
 
     window.rpcServer = new Rpc.RpcServer(allowedOrigin());

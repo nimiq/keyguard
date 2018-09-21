@@ -95,11 +95,7 @@ class BaseLayout {
             PassphraseBox.Events.SUBMIT,
             passphrase => this._onConfirm(request, resolve, reject, passphrase),
         );
-        this._passphraseBox.on(PassphraseBox.Events.CANCEL, () => reject(new Error('Canceled')));
-
-        /** @type {HTMLAnchorElement} */
-        const $backButton = (document.querySelector('.page-header .page-header-back-button'));
-        if ($backButton) $backButton.addEventListener('click', () => reject(new Error('Canceled')));
+        this._passphraseBox.on(PassphraseBox.Events.CANCEL, () => window.history.back());
 
         /** @type {HTMLElement} */
         const $appName = (document.querySelector('#app-name'));
