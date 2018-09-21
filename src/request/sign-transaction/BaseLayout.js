@@ -95,7 +95,7 @@ class BaseLayout {
             PassphraseBox.Events.SUBMIT,
             passphrase => this._onConfirm(request, resolve, reject, passphrase),
         );
-        this._passphraseBox.on(PassphraseBox.Events.CANCEL, () => history.back());
+        this._passphraseBox.on(PassphraseBox.Events.CANCEL, () => window.history.back());
 
         /** @type {HTMLElement} */
         const $appName = (document.querySelector('#app-name'));

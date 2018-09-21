@@ -34,14 +34,15 @@ async function runKeyguard(RequestApiClass, options) { // eslint-disable-line no
     // If user navigates back to loading screen, skip it
     window.addEventListener('hashchange', () => {
         if (window.location.hash === '') {
-            history.back();
+            window.history.back();
         }
     });
 
     // Back arrow functionality
-    document.addEventListener('click', (event) => {
-        if (!event.target || ! /** @type {HTMLElement} */ (event.target).matches('a.page-header-back-button')) return;
-        history.back();
+    document.body.addEventListener('click', event => {
+        // @ts-ignore
+        if (!event.target || !event.target.matches('a.page-header-back-button')) return;
+        window.history.back();
     });
 
     // Instantiate handler.
