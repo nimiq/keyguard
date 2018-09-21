@@ -1,23 +1,38 @@
 export enum KeyguardCommand {
     CREATE = 'create',
     REMOVE = 'remove-key',
-    IMPORT_WORDS = 'import-words',
-    IMPORT_FILE = 'import-file',
+    IMPORT = 'import-file',
     EXPORT_WORDS = 'export-words',
     EXPORT_FILE = 'export-file',
     SIGN_TRANSACTION = 'sign-transaction',
     SIGN_MESSAGE = 'sign-message',
 }
 
+declare namespace Key {
+    type Type = 0 | 1;
+}
+
 export interface CreateRequest {
     appName: string;
-    defaultKeyPath: string;
+    defaultKeyPath?: string;
 }
 
 export interface CreateResult {
     keyId: string;
     keyPath: string;
     address: Uint8Array;
+}
+
+export interface ImportRequest {
+    appName: string;
+    defaultKeyPath: string;
+    requestedKeyPaths: string[];
+}
+
+export interface ImportResult {
+    keyId: string;
+    keyType: Key.Type;
+    addresses: Array<{keyPath: string, address: Uint8Array}>;
 }
 
 export interface SignTransactionRequest {
@@ -64,4 +79,4 @@ export interface SignMessageResult {
     signature: string;
 }
 
-export type RpcResult = SignTransactionResult | SignMessageResult;
+export type RpcResult = CreateResult | ImportResult | SignTransactionResult | SignMessageResult;

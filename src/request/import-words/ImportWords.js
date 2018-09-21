@@ -8,7 +8,7 @@
 
 class ImportWords {
     /**
-     * @param {ImportWordsRequest} request
+     * @param {ImportRequest} request
      * @param {Function} resolve
      */
     constructor(request, resolve) {
@@ -28,7 +28,7 @@ class ImportWords {
         // Components
         const privacyAgent = new PrivacyAgent($privacyAgent);
         const recoveryWords = new EnterRecoveryWords($words);
-        const chooseKeyType = new ChooseKeyType($chooseKeyType, request.defaultKeyPath);
+        const chooseKeyType = new ChooseKeyType($chooseKeyType);
         const setPassphrase = new PassphraseSetterBox($setPassphrase);
 
         // Events

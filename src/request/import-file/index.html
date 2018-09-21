@@ -21,7 +21,8 @@
     <script defer src="../../common.js"></script>
     <script defer src="../../components/FileImport.js"></script>
     <script defer src="../../components/PassphraseInput.js"></script>
-    <script defer src="../../components/PinInput.js"></script>
+    <script defer src="../../components/PassphraseBox.js"></script>
+    <script defer src="../../components/PassphraseSetterBox.js"></script>
     <script defer src="../TopLevelApi.js"></script>
     <script defer src="ImportFileApi.js"></script>
     <script defer src="index.js"></script>
@@ -30,45 +31,81 @@
     <link rel="stylesheet" href="../../common.css">
     <link rel="stylesheet" href="../../components/FileImport.css">
     <link rel="stylesheet" href="../../components/PassphraseInput.css">
-    <link rel="stylesheet" href="../../components/PinInput.css">
+    <link rel="stylesheet" href="../../components/PassphraseBox.css">
+    <link rel="stylesheet" href="./ImportFile.css">
 </head>
 <body>
     <div class="header-top">
         <div class="nimiq-app-name">
-            <span class="nimiq-logo">NIMIQ KEYGUARD</span>
+            <span class="nimiq-logo"></span>
         </div>
     </div>
 
     <div id="app">
+        <div class="flex-grow"></div>
+
         <!-- File import -->
         <div id="file-import" class="page">
-            <h1 data-i18n="import-file-heading">Import Access File</h1>
-            <div class="grow"></div>
-            <div id="file-import-component"></div>
-            <div class="grow"></div>
+            <div class="page-header">
+                <h1 data-i18n="import-heading-log-in">Log in</h1>
+            </div>
+
+            <div class="page-body">
+                <div class="file-import"></div>
+                <p data-i18n="import-file-lost-file">Lost your Key File? You can recover your account with your 24 Recovery Words.</p>
+                <button class="go-to-words" data-i18n="import-file-button-words">Enter Recovery Words</button>
+            </div>
+
+            <div class="page-footer">
+                <a class="create-wallet" data-i18n="import-link-no-wallet">Don't have a wallet yet?</a>
+            </div>
         </div>
 
         <!-- Enter Passphrase -->
         <div id="enter-passphrase" class="page">
-            <h1 data-i18n="import-file-enter-passphrase-heading">Enter your passphrase</h1>
-            <h2 data-i18n="import-file-enter-passphrase-subheading">Please enter your passphrase to unlock your Account Access File.</h2>
-            <div class="grow"></div>
-            <form id="passphrase-component"></form>
+            <div class="page-header">
+                <a tabindex="0" class="page-header-back-button icon-back-arrow"></a>
+                <h1 data-i18n="import-file-heading-unlock">Unlock your Key File</h1>
+            </div>
+
+            <div class="page-body">
+                <div class="icon-keyfile-locked"></div>
+            </div>
+
+            <div class="page-footer">
+                <form class="passphrase-box"></form>
+            </div>
         </div>
 
-        <!-- Enter PIN -->
-        <div id="enter-pin" class="page">
-            <h1 data-i18n="import-file-enter-pin-heading">Enter your PIN</h1>
-            <h2 data-i18n="import-file-enter-pin-subheading">Please enter your PIN to unlock your Account Access File.</h2>
-            <div class="grow"></div>
-            <div id="pin-component"></div>
-            <div class="grow"></div>
+        <!-- Set Passphrase -->
+        <div id="set-passphrase" class="page">
+            <div class="page-header">
+                <a tabindex="0" class="page-header-back-button icon-back-arrow"></a>
+                <h1 data-i18n="import-heading-protect">Protect your wallet</h1>
+            </div>
+
+            <div class="page-body">
+                <div class="keyfile-info">
+                    <div class="icon icon-keyfile"></div>
+                    <div class="keyfile-text">
+                        <p data-i18n="import-file-text-unprotected-keyfile">Your Key File is unprotected.</p>
+                        <p data-i18n="import-text-set-password">You can now set a password to encrypt your wallet on this device.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-footer">
+                <form class="passphrase-setter-box"></form>
+            </div>
         </div>
+
+        <a tabindex="0" class="global-close display-none">Back to <span id="app-name"></span></a>
+
+        <div class="flex-grow"></div>
 
         <!-- Default and loading screen -->
         <div id="loading" class="page">
             <div class="loading-animation"></div>
-            <span data-i18n="loading">Loading...</span>
         </div>
     </div>
 </body>

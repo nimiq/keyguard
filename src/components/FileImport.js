@@ -1,6 +1,7 @@
 /* global Nimiq */
 /* global AnimationUtils */
 /* global QrScanner */
+/* global I18n */
 
 class FileImport extends Nimiq.Observable {
     /**
@@ -14,8 +15,6 @@ class FileImport extends Nimiq.Observable {
         this.$errorMessage = (this.$el.querySelector('.error-message'));
         /** @type {HTMLInputElement} */
         this.$fileInput = (this.$el.querySelector('input'));
-        /** @type {HTMLDivElement} */
-        this.$importIcon = (this.$el.querySelector('.file-import-icon'));
 
         // TODO Re-add the drop target interaction and event listeners?
 
@@ -32,11 +31,13 @@ class FileImport extends Nimiq.Observable {
         $el.classList.add('file-import');
 
         $el.innerHTML = `
+            <h3 data-i18n="file-import-prompt">Drop your Key File here</h3>
+            <span class="click-hint" data-i18n="file-import-click-hint">Or click to select a file.</span>
             <span class="error-message"></span>
-            <div class="file-import-icon"></div>
-            <button>Select file</button>
-            <input type="file" accept="image/*">`;
+            <input type="file" accept="image/*">
+        `;
 
+        I18n.translateDom($el);
         return $el;
     }
 
@@ -63,8 +64,8 @@ class FileImport extends Nimiq.Observable {
     }
 
     _onQrError() {
-        AnimationUtils.animate('shake', this.$importIcon);
-        this.$errorMessage.textContent = 'Couldn\'t read Backup File';
+        AnimationUtils.animate('shake', this.$el);
+        this.$errorMessage.textContent = 'Could not read Key File.';
     }
 
     /**

@@ -4,5 +4,6 @@ node_modules
 coverage/
 .nyc_output/
 instrumented/
+client/build/
 deployment-keyguard
 deployment-keyguard-next

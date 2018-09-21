@@ -32,10 +32,21 @@ const TRANSLATIONS = {
         'create-heading-backup-account': 'Create a backup',
         'create-heading-validate-backup': 'Validate your backup',
 
+        'import-heading-log-in': 'Log in',
+        'import-link-no-wallet': 'Don\'t have a wallet yet?',
+        'import-heading-protect': 'Protect your wallet',
+        'import-text-set-password': 'You can now set a password to encrypt your wallet on this device.',
+
+        'import-file-lost-file': 'Lost your Key File? You can recover your account with your 24 Recovery Words.',
+        'import-file-button-words': 'Enter Recovery Words',
+        'import-file-heading-unlock': 'Unlock your Key File',
+        'import-file-text-unprotected-keyfile': 'Your Key File is unprotected.',
+
+        'file-import-prompt': 'Drop your Key File here',
+        'file-import-click-hint': 'Or click to select a file.',
+
         'enter-recovery-words-heading': 'Import from recovery words',
         'enter-recovery-words-subheading': 'Please enter your 24 recovery words.',
-
-        'import-words-heading': 'Import from recovery words',
 
         'choose-key-type-heading': 'Choose key type',
         'choose-key-type-subheading': 'We couldn\'t determine the type of your key. Please select it below.',
@@ -44,12 +55,6 @@ const TRANSLATIONS = {
         'choose-key-type-legacy-address-info': 'Created before xx/xx/2018',
         'choose-key-type-bip39-address-heading': 'Multiple addresses',
         'choose-key-type-bip39-address-info': 'Created after xx/xx/2018',
-
-        'import-file-heading': 'Import Access File',
-        'import-file-enter-passphrase-heading': 'Enter your passphrase',
-        'import-file-enter-passphrase-subheading': 'Please enter your passphrase to unlock your Account Access File.',
-        'import-file-enter-pin-heading': 'Enter your PIN',
-        'import-file-enter-pin-subheading': 'Please enter your PIN to unlock your Account Access File.',
 
         'sign-tx-heading': 'New Transaction',
         'sign-tx-includes': 'includes',
@@ -121,10 +126,23 @@ const TRANSLATIONS = {
         'create-heading-backup-account': 'Erstelle ein Backup',
         'create-heading-validate-backup': 'Überprüfe dein Backup',
 
+        'import-heading-log-in': 'Einloggen',
+        'import-link-no-wallet': 'Du hast noch keine Wallet?',
+        'import-heading-protect': 'Wallet verschlüsseln',
+        'import-text-set-password': 'Du kannst jetzt ein Passwort eingeben, um deine Wallet auf diesem '
+                                  + 'Gerät zu verschlüsseln.',
+
+        'import-file-lost-file': 'Schlüsseldatei verloren? Du kannst deinen Account mit deinen 24 '
+                               + 'Wiederherstellungswörtern wiederherstellen',
+        'import-file-button-words': 'Wiederherstellungswörter eingeben',
+        'import-file-heading-unlock': 'Entsperre deine Schlüsseldatei',
+        'import-file-text-unprotected-keyfile': 'Deine Schlüsseldatei ist ungeschützt.',
+
+        'file-import-prompt': 'Ziehe deine Schlüsseldatei auf dieses Feld',
+        'file-import-click-hint': 'Oder klicke um eine Datei auszuwählen.',
+
         'enter-recovery-words-heading': 'Mit Wiederherstellungswörtern importieren',
         'enter-recovery-words-subheading': 'Bitte gib deine 24 Wiederherstellungswörter ein.',
-
-        'import-words-heading': 'Mit Wiederherstellungswörtern importieren',
 
         'choose-key-type-heading': 'Schlüsseltyp wählen',
         'choose-key-type-subheading': 'Wir konnten den Typ deines Schlüssels nicht automatisch ermitteln. '
@@ -134,13 +152,6 @@ const TRANSLATIONS = {
         'choose-key-type-legacy-address-info': 'Erstellt vor xx.xx.2018',
         'choose-key-type-bip39-address-heading': 'Mehrere Adressen',
         'choose-key-type-bip39-address-info': 'Erstellt nach xx.xx.2018',
-
-        'import-file-heading': 'Zugangsdatei Import',
-        'import-file-enter-passphrase-heading': 'Gib deine Passphrase ein',
-        'import-file-enter-passphrase-subheading': 'Bitte gib deine Passphrase ein um deine Zugangsdatei zu '
-                                                 + 'entschlüsseln',
-        'import-file-enter-pin-heading': 'Gib deine PIN ein',
-        'import-file-enter-pin-subheading': 'Bitte gib deine PIN ein um deine Zugangsdatei zu entschlüsseln.',
 
         'sign-tx-heading': 'Neue Überweisung',
         'sign-tx-includes': 'inklusive',

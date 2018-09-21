@@ -3,16 +3,19 @@ import {RequestBehavior} from './RequestBehavior';
 import {
     KeyguardCommand,
     CreateRequest,
+    CreateResult,
     SignMessageResult,
     SignTransactionRequest,
     SignTransactionResult,
     SignMessageRequest,
+    ImportRequest,
+    ImportResult,
 } from './RequestTypes';
 
 export class KeyguardClient {
     private static readonly DEFAULT_ENDPOINT =
         window.location.origin === 'https://accounts.nimiq.com' ? 'https://keyguard-next.nimiq.com'
-        : window.location.origin === 'https://accounts.nimiq-network.com' ? 'https://keyguard-next.nimiq-network.com'
+        : window.location.origin === 'https://accounts.nimiq-testnet.com' ? 'https://keyguard-next.nimiq-testnet.com'
         : 'http://localhost:8000/src';
 
     private readonly _endpoint: string;
@@ -40,7 +43,7 @@ export class KeyguardClient {
         this._observable.on(`${command}-reject`, reject);
     }
 
-    public create(request: CreateRequest, requestBehavior = this._defaultBehavior) {
+    public create(request: CreateRequest, requestBehavior = this._defaultBehavior): Promise<CreateResult> {
         return this._request(requestBehavior,  KeyguardCommand.CREATE, [request]);
     }
 
@@ -48,12 +51,8 @@ export class KeyguardClient {
         return this._request(requestBehavior,  KeyguardCommand.REMOVE, [{ keyId }]);
     }
 
-    public importWords(defaultKeyPath: string, requestBehavior = this._defaultBehavior) {
-        return this._request(requestBehavior,  KeyguardCommand.IMPORT_WORDS, [{ defaultKeyPath }]);
-    }
-
-    public importFile(requestBehavior = this._defaultBehavior) {
-        return this._request(requestBehavior,  KeyguardCommand.IMPORT_FILE, []);
+    public import(request: ImportRequest, requestBehavior = this._defaultBehavior): Promise<ImportResult> {
+        return this._request(requestBehavior,  KeyguardCommand.IMPORT, [request]);
     }
 
     public async exportWords(keyId: string, requestBehavior = this._defaultBehavior) {

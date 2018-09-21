@@ -10,6 +10,7 @@ class PassphraseInput extends Nimiq.Observable {
      */
     constructor($el, placeholder = '••••••••', showStrengthIndicator = false) {
         super();
+        this._minLength = PassphraseInput.DEFAULT_MIN_LENGTH;
         this._showStrengthIndicator = showStrengthIndicator;
         this.$el = PassphraseInput._createElement($el);
         this.$inputContainer = /** @type {HTMLElement} */ (this.$el.querySelector('.input-container'));
@@ -101,7 +102,7 @@ class PassphraseInput extends Nimiq.Observable {
     _onInputChanged() {
         const passphraseLength = this.$input.value.length;
         this._updateStrengthIndicator();
-        this.valid = passphraseLength >= PassphraseInput.MIN_LENGTH;
+        this.valid = passphraseLength >= this._minLength;
 
         this.fire(PassphraseInput.Events.VALID, this.valid);
     }
@@ -129,10 +130,17 @@ class PassphraseInput extends Nimiq.Observable {
     get text() {
         return this.$input.value;
     }
+
+    /**
+     * @param {number} [minLength]
+     */
+    setMinLength(minLength) {
+        this._minLength = minLength || PassphraseInput.DEFAULT_MIN_LENGTH;
+    }
 }
 
 PassphraseInput.Events = {
     VALID: 'passphraseinput-valid',
 };
 
-PassphraseInput.MIN_LENGTH = 8;
+PassphraseInput.DEFAULT_MIN_LENGTH = 8;

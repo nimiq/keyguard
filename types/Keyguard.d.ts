@@ -46,9 +46,9 @@ type SignTransactionRequest = {
     value: number
     fee: number
     validityStartHeight: number
-    data: Uint8Array
-    flags: number
-    networkId: number
+    data?: Uint8Array
+    flags?: number
+    networkId?: number
 }
 
 type ParsedSignTransactionRequest = {
@@ -100,8 +100,16 @@ type CreateResult = {
     address: Uint8Array
 }
 
-type ImportWordsRequest = {
-    defaultKeyPath: string
+type ImportRequest = {
+    appName: string;
+    defaultKeyPath: string;
+    requestedKeyPaths: string[];
+}
+
+type ImportResult = {
+    keyId: string;
+    keyType: Key.Type;
+    addresses: {keyPath: string, address: Uint8Array}[];
 }
 
 type RemoveKeyRequest = {
@@ -109,8 +117,7 @@ type RemoveKeyRequest = {
     keyLabel?: string
 }
 
-type KeyguardRequest = CreateRequest | ImportWordsRequest | RemoveKeyRequest | SignTransactionRequest | SignMessageRequest
-
+type KeyguardRequest = CreateRequest | ImportRequest | RemoveKeyRequest | SignTransactionRequest | SignMessageRequest
 
 interface Newable {
     new(...args: any[]): any

@@ -1,10 +1,9 @@
-/* global Nimiq */
 /* global TopLevelApi */
 /* global ImportWords */
 
 class ImportWordsApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
-     * @param {ImportWordsRequest} request
+     * @param {ImportRequest} request
      */
     async onRequest(request) {
         const parsedRequest = ImportWordsApi._parseRequest(request);
@@ -13,8 +12,8 @@ class ImportWordsApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     }
 
     /**
-     * @param {ImportWordsRequest} request
-     * @returns {ImportWordsRequest}
+     * @param {ImportRequest} request
+     * @returns {ImportRequest}
      * @private
      */
     static _parseRequest(request) {
@@ -22,12 +21,8 @@ class ImportWordsApi extends TopLevelApi { // eslint-disable-line no-unused-vars
             throw new Error('Empty request');
         }
 
-        if (typeof request.defaultKeyPath !== 'string' || !request.defaultKeyPath) {
-            throw new Error('defaultKeyPath is required');
-        }
-
-        if (!Nimiq.ExtendedPrivateKey.isValidPath(request.defaultKeyPath)) {
-            throw new Error('Invalid defaultKeyPath');
+        if (typeof request.appName !== 'string' || !request.appName) {
+            throw new Error('appName is required');
         }
 
         return request;
