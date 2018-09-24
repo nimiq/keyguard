@@ -1,10 +1,12 @@
 /* global TopLevelApi */
 /* global FileImport */
+/* global ImportWords */
 /* global PassphraseBox */
 /* global PassphraseSetterBox */
 /* global Nimiq */
 /* global Key */
 /* global KeyStore */
+
 
 class ImportFileApi extends TopLevelApi {
     constructor() {
@@ -50,6 +52,8 @@ class ImportFileApi extends TopLevelApi {
         const $passphraseBox = (document.querySelector('.passphrase-box'));
         /** @type {HTMLFormElement} */
         const $passphraseSetterBox = (document.querySelector('.passphrase-setter-box'));
+        /** @type {HTMLButtonElement} */
+        const $importWordsLink = (document.querySelector('.go-to-words'));
 
         // Components
         const fileImport = new FileImport($fileImport);
@@ -62,12 +66,20 @@ class ImportFileApi extends TopLevelApi {
         passphraseBox.on(PassphraseBox.Events.CANCEL, () => window.history.back());
         passphraseSetterBox.on(PassphraseSetterBox.Events.SUBMIT, this._onPassphraseEntered.bind(this));
         passphraseSetterBox.on(PassphraseSetterBox.Events.SKIP, () => this._onPassphraseEntered(null));
+        $importWordsLink.addEventListener('click', () => {
+            const handler = new ImportWords(
+                /** @type {ImportRequest} */ (this._request),
+                this._onRecoveryWordsComplete.bind(this),
+            );
+            handler.run();
+        });
 
         return {
             passphraseBox,
             passphraseSetterBox,
         };
     }
+
 
     /**
      * Determine key type and forward user to Passphrase input
@@ -182,6 +194,7 @@ class ImportFileApi extends TopLevelApi {
             }
 
             const key = new Key(secret, this._keyType);
+
             await KeyStore.instance.put(key, encryptionKey || undefined);
 
             return key;
@@ -189,6 +202,17 @@ class ImportFileApi extends TopLevelApi {
             this.$loading.style.display = 'none';
             return null;
         }
+    }
+
+    /**
+     * @param { Nimiq.SerialBuffer } entropy
+     * @param { Key.Type } keyType
+     */
+    _onRecoveryWordsComplete(entropy, keyType) {
+        this._passphraseBox.setMinLength();
+        this._keyType = keyType;
+        this._encryptedKey = entropy;
+        this._goToSetPassphrase();
     }
 
     _goToEnterPassphrase() {
@@ -208,4 +232,7 @@ ImportFileApi.Pages = {
     FILE_IMPORT: 'file-import',
     ENTER_PASSPHRASE: 'enter-passphrase',
     SET_PASSPHRASE: 'set-passphrase',
+    PRIVACY_AGENT: 'privacy',
+    ENTER_WORDS: 'words',
+    CHOOSE_KEY_TYPE: 'choose-key-type',
 };

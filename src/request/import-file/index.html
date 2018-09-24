@@ -14,16 +14,26 @@
     <script defer src="../../lib/CookieJar.js"></script>
     <script defer src="../../lib/AccountStore.js"></script>
     <script defer src="../../lib/KeyStore.js"></script>
+    <script defer src="../../lib/AutoComplete.js"></script>
     <script defer src="../../lib/AnimationUtils.js"></script>
     <script defer src="../../lib/QrScanner.js"></script>
     <script defer src="../../lib/I18n.js"></script>
+    <script defer src="../../lib/Iqons.js"></script>
     <script defer src="../../translations/index.js"></script>
     <script defer src="../../common.js"></script>
+    <script defer src="../../components/Identicon.js"></script>
     <script defer src="../../components/FileImport.js"></script>
     <script defer src="../../components/PassphraseInput.js"></script>
     <script defer src="../../components/PassphraseBox.js"></script>
     <script defer src="../../components/PassphraseSetterBox.js"></script>
+    <script defer src="../../components/PrivacyAgent.js"></script>
+    <script defer src="../../components/PrivacyWarning.js"></script>
+    <script defer src="../../components/RecoveryWords.js"></script>
+    <script defer src="../../components/RecoveryWordsInputField.js"></script>
     <script defer src="../TopLevelApi.js"></script>
+    <script defer src="../import-words/ImportWords.js"></script>
+    <script defer src="../import-words/EnterRecoveryWords.js"></script>
+    <script defer src="../import-words/ChooseKeyType.js"></script>
     <script defer src="ImportFileApi.js"></script>
     <script defer src="index.js"></script>
 
@@ -32,6 +42,8 @@
     <link rel="stylesheet" href="../../components/FileImport.css">
     <link rel="stylesheet" href="../../components/PassphraseInput.css">
     <link rel="stylesheet" href="../../components/PassphraseBox.css">
+    <link rel="stylesheet" href="../../components/PrivacyAgent.css">
+    <link rel="stylesheet" href="../../components/RecoveryWords.css">
     <link rel="stylesheet" href="./ImportFile.css">
 </head>
 <body>
@@ -60,6 +72,19 @@
                 <a class="create-wallet" data-i18n="import-link-no-wallet">Don't have a wallet yet?</a>
             </div>
         </div>
+
+        <!-- privacy agent -->
+        <div id="privacy" class="page">
+            <h1 data-i18n="import-heading-log-in">Log in</h1>
+            <div class="grow"></div>
+            <div class="agent"></div>
+        </div>
+
+        <!-- enter recovery words -->
+        <form id="words" class="page"></form>
+
+        <!-- choose key type -->
+        <form id="choose-key-type" class="page"></form>
 
         <!-- Enter Passphrase -->
         <div id="enter-passphrase" class="page">
