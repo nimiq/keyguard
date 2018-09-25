@@ -70,3 +70,12 @@ button.go-to-words {
     margin: 4rem;
     margin-right: 0;
 }
+
+.page#words button:not([disabled]) {
+    background: #724ceb;
+    color: white;
+}
+
+.page#words button {
+    margin: 0 7.5rem 4rem;
+}

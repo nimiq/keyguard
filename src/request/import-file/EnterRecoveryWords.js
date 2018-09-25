@@ -39,12 +39,17 @@ class EnterRecoveryWords extends Nimiq.Observable { // eslint-disable-line no-un
 
         /* eslint-disable max-len */
         $el.innerHTML = `
+            <div class="page-header">
+            <a tabindex="0" class="page-header-back-button icon-back-arrow"></a>
             <h1 data-i18n="enter-recovery-words-heading">Import from recovery words</h1>
-            <h2 data-i18n="enter-recovery-words-subheading">Please enter your 24 recovery words.</h2>
+            </div>
+            <div class="page-body">
             <div class="grow"></div>
+            <p data-i18n="enter-recovery-words-enter-words">Please enter your 24 recovery words.</p>
             <div class="input"></div>
             <div class="grow"></div>
             <button data-i18n="continue" type="submit" disabled>Continue</button>
+            </div>
         `;
         /* eslint-enable max-len */
 
