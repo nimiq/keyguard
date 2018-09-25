@@ -49,7 +49,7 @@ const TRANSLATIONS = {
         'enter-recovery-words-enter-words': 'Please enter your 24 recovery words.',
 
         'choose-key-type-heading': 'Choose key type',
-        'choose-key-type-subheading': 'We couldn\'t determine the type of your key. Please select it below.',
+        'choose-key-type-text': 'We couldn\'t determine the type of your key. Please select it below.',
         'choose-key-type-or': 'or',
         'choose-key-type-legacy-address-heading': 'Single address',
         'choose-key-type-legacy-address-info': 'Created before xx/xx/2018',
@@ -145,7 +145,7 @@ const TRANSLATIONS = {
         'enter-recovery-words-enter-words': 'Bitte gib deine 24 Wiederherstellungswörter ein.',
 
         'choose-key-type-heading': 'Schlüsseltyp wählen',
-        'choose-key-type-subheading': 'Wir konnten den Typ deines Schlüssels nicht automatisch ermitteln. '
+        'choose-key-type-text': 'Wir konnten den Typ deines Schlüssels nicht automatisch ermitteln. '
                                     + 'Bitte wähle ihn unten aus.',
         'choose-key-type-or': 'oder',
         'choose-key-type-legacy-address-heading': 'Einzelne Adresse',

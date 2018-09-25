@@ -1,6 +1,10 @@
 .key-type-form h2.key-type-or {
-    margin: 3rem 0;
+    margin: 0rem 4rem;
     font-weight: 400;
+}
+
+.key-type-option {
+    margin:3rem 4rem;
 }
 
 .key-type-option input {
@@ -14,16 +18,16 @@
 .key-type-option label {
     cursor: pointer;
     border: 1px solid transparent;
-    border-radius: 3.5rem;
+    border-radius: 1rem;
 }
 
 .key-type-option label:hover {
-    background: rgba(255, 255, 255, .1);
+    background: rgba(220, 220, 220, .1);
 }
 
 .key-type-option input:checked + label {
-    border-color: rgba(255, 255, 255, .5);
-    background: rgba(255, 255, 255, .2);
+    border-color: rgba(220, 220, 220, .5);
+    background: rgba(220, 220, 220, .2);
 }
 
 .key-type-option .identicon {

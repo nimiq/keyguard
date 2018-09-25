@@ -54,8 +54,11 @@ class ChooseKeyType extends Nimiq.Observable {
 
         /* eslint-disable max-len */
         $el.innerHTML = `
+            <div class="page-header">
             <h1 data-i18n="choose-key-type-heading">Choose key type</h1>
-            <h2 data-i18n="choose-key-type-subheading">We couldn't determine the type of your key. Please select it below.</h2>
+            </div>
+            <div class="page-body">
+            <p data-i18n="choose-key-type-text">We couldn't determine the type of your key. Please select it below.</p>
             <div class="grow"></div>
             <div class="key-type-option">
                 <input type="radio" name="key-type" id="key-type-legacy" value="0">
@@ -84,6 +87,7 @@ class ChooseKeyType extends Nimiq.Observable {
             </div>
             <div class="grow"></div>
             <button data-i18n="continue" type="submit" disabled>Continue</button>
+            </div>
         `;
         /* eslint-enable max-len */
 

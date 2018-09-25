@@ -71,11 +71,13 @@ button.go-to-words {
     margin-right: 0;
 }
 
+.page#choose-key-type button:not([disabled]),
 .page#words button:not([disabled]) {
     background: #724ceb;
     color: white;
 }
 
+.page#choose-key-type button,
 .page#words button {
     margin: 0 7.5rem 4rem;
 }

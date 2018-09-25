@@ -8,7 +8,7 @@
 /* global KeyStore */
 
 
-class ImportFileApi extends TopLevelApi {
+class ImportApi extends TopLevelApi {
     constructor() {
         super();
 
@@ -115,7 +115,7 @@ class ImportFileApi extends TopLevelApi {
     }
 
     run() {
-        window.location.hash = ImportFileApi.Pages.FILE_IMPORT;
+        window.location.hash = ImportApi.Pages.FILE_IMPORT;
 
         // Async pre-load the crypto worker to reduce wait time at first decrypt attempt
         Nimiq.CryptoWorker.getInstanceAsync();
@@ -216,19 +216,19 @@ class ImportFileApi extends TopLevelApi {
     }
 
     _goToEnterPassphrase() {
-        window.location.hash = ImportFileApi.Pages.ENTER_PASSPHRASE;
+        window.location.hash = ImportApi.Pages.ENTER_PASSPHRASE;
         this._passphraseBox.reset();
         this._passphraseBox.focus();
     }
 
     _goToSetPassphrase() {
-        window.location.hash = ImportFileApi.Pages.SET_PASSPHRASE;
+        window.location.hash = ImportApi.Pages.SET_PASSPHRASE;
         this._passphraseSetterBox.reset();
         this._passphraseSetterBox.focus();
     }
 }
 
-ImportFileApi.Pages = {
+ImportApi.Pages = {
     FILE_IMPORT: 'file-import',
     ENTER_PASSPHRASE: 'enter-passphrase',
     SET_PASSPHRASE: 'set-passphrase',
