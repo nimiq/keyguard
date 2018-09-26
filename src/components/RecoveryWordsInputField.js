@@ -20,6 +20,7 @@ class RecoveryWordsInputField extends Nimiq.Observable {
 
         this.dom = this._createElements();
         this._setupAutocomplete();
+        this._addEvents();
     }
 
     /**
@@ -57,17 +58,19 @@ class RecoveryWordsInputField extends Nimiq.Observable {
         I18n.observer.on(I18n.Events.LANGUAGE_CHANGED, setPlaceholder);
         setPlaceholder();
 
-        input.addEventListener('keydown', this._onKeydown.bind(this));
-        input.addEventListener('keyup', this._onKeyup.bind(this));
-        input.addEventListener('paste', this._onPaste.bind(this));
-        input.addEventListener('blur', this._onBlur.bind(this));
-
         const placeholder = document.createElement('div');
         placeholder.className = 'placeholder';
         placeholder.textContent = (this._index + 1).toString();
         element.appendChild(input);
 
         return { element, input, placeholder };
+    }
+
+    _addEvents() {
+        this.dom.input.addEventListener('keydown', this._onKeydown.bind(this));
+        this.dom.input.addEventListener('keyup', this._onKeyup.bind(this));
+        this.dom.input.addEventListener('paste', this._onPaste.bind(this));
+        this.dom.input.addEventListener('blur', this._onBlur.bind(this));
     }
 
     _setupAutocomplete() {
@@ -78,7 +81,7 @@ class RecoveryWordsInputField extends Nimiq.Observable {
                 const list = Nimiq.MnemonicUtils.DEFAULT_WORDLIST.filter(word => word.startsWith(term));
                 response(list);
             },
-            onSelect: this._focusNext.bind(this),
+            onSelect: this._select.bind(this),
             minChars: 3,
             delay: 0,
         });
@@ -155,6 +158,18 @@ class RecoveryWordsInputField extends Nimiq.Observable {
         }
     }
 
+    /** 
+     * Callback from AutoComplete
+     * @param {Event} e - original Event
+     * @param {string} term - the selected term
+     * @param {Element} item - the item that held the term
+     * */ 
+    _select(e, term, item ) {
+        item.classList.remove('selected');
+        this.value = term;
+        this._focusNext();
+    }
+
     _focusNext() {
         this.fire(RecoveryWordsInputField.Events.FOCUS_NEXT, this._index + 1);
     }
@@ -167,7 +182,7 @@ class RecoveryWordsInputField extends Nimiq.Observable {
 
     _onValueChanged() {
         if (this.value === this._value) return;
-
+        
         if (this.complete) {
             this.complete = false;
             this.dom.element.classList.remove('complete');

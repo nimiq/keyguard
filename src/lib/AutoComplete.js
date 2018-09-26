@@ -144,6 +144,8 @@ class AutoComplete { // eslint-disable-line no-unused-vars
                         that.sc.appendChild(o.renderItem(data[x]));
                     }
                     that.updateSC(0);
+                    if(that.sc.childNodes.length == 1)
+                        that.sc.childNodes[0].className += ' selected';
                 } else that.sc.style.display = 'none';
             };
 
@@ -180,7 +182,7 @@ class AutoComplete { // eslint-disable-line no-unused-vars
                 if (key === 27) {
                     that.value = that.last_val;
                     that.sc.style.display = 'none';
-                } else if (key === 13 || key === 9) {
+                } else if (key === 13 || key === 9 || key === 32) {
                     const sel = that.sc.querySelector('.autocomplete-suggestion.selected');
                     if (sel && that.sc.style.display !== 'none') {
                         o.onSelect(e, sel.getAttribute('data-val'), sel);
