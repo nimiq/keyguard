@@ -158,13 +158,13 @@ class RecoveryWordsInputField extends Nimiq.Observable {
         }
     }
 
-    /** 
+    /**
      * Callback from AutoComplete
      * @param {Event} e - original Event
      * @param {string} term - the selected term
      * @param {Element} item - the item that held the term
-     * */ 
-    _select(e, term, item ) {
+     */
+    _select(e, term, item) {
         item.classList.remove('selected');
         this.value = term;
         this._focusNext();
@@ -182,7 +182,7 @@ class RecoveryWordsInputField extends Nimiq.Observable {
 
     _onValueChanged() {
         if (this.value === this._value) return;
-        
+
         if (this.complete) {
             this.complete = false;
             this.dom.element.classList.remove('complete');

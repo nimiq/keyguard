@@ -144,8 +144,9 @@ class AutoComplete { // eslint-disable-line no-unused-vars
                         that.sc.appendChild(o.renderItem(data[x]));
                     }
                     that.updateSC(0);
-                    if(that.sc.childNodes.length == 1)
+                    if (that.sc.childNodes.length === 1) {
                         that.sc.childNodes[0].className += ' selected';
+                    }
                 } else that.sc.style.display = 'none';
             };
 
