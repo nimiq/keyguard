@@ -1,5 +1,5 @@
 /* global Nimiq */
-/* global Rpc */
+/* global RpcServer */
 
 /**
  * @returns {string}
@@ -49,7 +49,7 @@ async function runKeyguard(RequestApiClass, options) { // eslint-disable-line no
     /** @type {TopLevelApi} */
     const api = new RequestApiClass();
 
-    window.rpcServer = new Rpc.RpcServer(allowedOrigin());
+    window.rpcServer = new RpcServer(allowedOrigin());
 
     // TODO: Use options.whitelist when adding onRequest handlers (iframe uses different methods)
     window.rpcServer.onRequest('request', (state, request) => api.request(request));
