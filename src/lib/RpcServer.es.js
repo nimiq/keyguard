@@ -9,11 +9,6 @@ var ResponseStatus;
 
 /* tslint:disable:no-bitwise */
 class Base64 {
-    // base64 is 4/3 + up to two characters of the original data
-    static byteLength(b64) {
-        const [validLength, placeHoldersLength] = Base64._getLengths(b64);
-        return Base64._byteLength(validLength, placeHoldersLength);
-    }
     static decode(b64) {
         Base64._initRevLookup();
         const [validLength, placeHoldersLength] = Base64._getLengths(b64);
@@ -69,12 +64,6 @@ class Base64 {
                 '=');
         }
         return parts.join('');
-    }
-    static encodeUrl(buffer) {
-        return Base64.encode(buffer).replace(/\//g, '_').replace(/\+/g, '-').replace(/=/g, '.');
-    }
-    static decodeUrl(base64) {
-        return Base64.decode(base64.replace(/_/g, '/').replace(/-/g, '+').replace(/\./g, '='));
     }
     static _initRevLookup() {
         if (Base64._revLookup.length !== 0)
@@ -203,38 +192,6 @@ class UrlRpcEncoder {
             returnURL: params.get('returnURL'),
         };
     }
-    /**
-     * @param {URL|Location} url
-     * @return {{origin:string, data:{id:number, status:string, result:*}}}
-     */
-    static receiveRedirectResponse(url) {
-        // Need referrer for origin check
-        if (!document.referrer)
-            return null;
-        // Parse query
-        const params = new URLSearchParams(url.search);
-        const referrer = new URL(document.referrer);
-        // Ignore messages without a status
-        if (!params.has('status'))
-            return null;
-        // Ignore messages without an ID
-        if (!params.has('id'))
-            return null;
-        // Ignore messages without a result
-        if (!params.has('result'))
-            return null;
-        // Parse result
-        const result = JSONUtils.parse(params.get('result'));
-        const status = params.get('status') === ResponseStatus.OK ? ResponseStatus.OK : ResponseStatus.ERROR;
-        return {
-            origin: referrer.origin,
-            data: {
-                id: parseInt(params.get('id'), 10),
-                status,
-                result,
-            },
-        };
-    }
     static prepareRedirectReply(state, status, result) {
         const params = new URLSearchParams();
         params.set('status', status);
@@ -242,17 +199,6 @@ class UrlRpcEncoder {
         params.set('id', state.id.toString());
         // TODO: what if it already includes a query string
         return `${state.returnURL}?${params.toString()}`;
-    }
-    static prepareRedirectInvocation(targetURL, id, returnURL, command, args) {
-        const params = new URLSearchParams();
-        params.set('id', id.toString());
-        params.set('returnURL', returnURL);
-        params.set('command', command);
-        if (Array.isArray(args)) {
-            params.set('args', JSONUtils.stringify(args));
-        }
-        // TODO: what if it already includes a query string
-        return `${targetURL}?${params.toString()}`;
     }
 }
 
@@ -269,9 +215,6 @@ class State {
     get returnURL() {
         return this._returnURL;
     }
-    get source() {
-        return this._source;
-    }
     static fromJSON(json) {
         const obj = JSON.parse(json);
         return new State(obj);
@@ -281,30 +224,15 @@ class State {
             throw Error('Missing id');
         this._origin = message.origin;
         this._id = message.data.id;
-        this._postMessage = 'source' in message && !('returnURL' in message);
         this._returnURL = 'returnURL' in message ? message.returnURL : null;
         this._data = message.data;
-        this._source = 'source' in message ? message.source : null;
     }
     toJSON() {
         const obj = {
             origin: this._origin,
             data: this._data,
         };
-        if (this._postMessage) {
-            if (this._source === window.opener) {
-                obj.source = 'opener';
-            }
-            else if (this._source === window.parent) {
-                obj.source = 'parent';
-            }
-            else {
-                obj.source = null;
-            }
-        }
-        else {
-            obj.returnURL = this._returnURL;
-        }
+        obj.returnURL = this._returnURL;
         return JSON.stringify(obj);
     }
     reply(status, result) {
@@ -315,35 +243,9 @@ class State {
                 ? { message: result.message, stack: result.stack }
                 : { message: result };
         }
-        if (this._postMessage) {
-            // Send via postMessage (e.g., popup)
-            let target;
-            // If source is given, choose accordingly
-            if (this._source) {
-                if (this._source === 'opener') {
-                    target = window.opener;
-                }
-                else if (this._source === 'parent') {
-                    target = window.parent;
-                }
-                else {
-                    target = this._source;
-                }
-            }
-            else {
-                // Else guess
-                target = window.opener || window.parent;
-            }
-            target.postMessage({
-                status,
-                result,
-                id: this.id,
-            }, this.origin);
-        }
-        else if (this._returnURL) {
-            // Send via top-level navigation
-            window.location.href = UrlRpcEncoder.prepareRedirectReply(this, status, result);
-        }
+
+        // Send via top-level navigation
+        window.location.href = UrlRpcEncoder.prepareRedirectReply(this, status, result);
     }
 }
 
@@ -380,8 +282,8 @@ class RpcServer {
         let state = null;
         try {
             state = new State(message);
-            // Cannot reply to a message that has no source window or return URL
-            if (!('source' in message) && !('returnURL' in message))
+            // Cannot reply to a message that has no return URL
+            if (!('returnURL' in message))
                 return;
             // Ignore messages without a command
             if (!('command' in state.data)) {
@@ -425,5 +327,3 @@ class RpcServer {
         }
     }
 }
-
-export { RpcServer, State, ResponseStatus };
