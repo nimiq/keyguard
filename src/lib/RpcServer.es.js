@@ -1,3 +1,6 @@
+// @ts-nocheck
+/* eslint-disable */
+
 var ResponseStatus;
 (function (ResponseStatus) {
     ResponseStatus["OK"] = "ok";
