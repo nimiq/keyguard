@@ -122,15 +122,9 @@ class AutoComplete { // eslint-disable-line no-unused-vars
             }, that.sc);
 
             that.blurHandler = () => {
-                let suggestionOverlay;
-                try {
-                    suggestionOverlay = document.querySelector('.autocomplete-suggestions:hover');
-                } catch (e) {} // eslint-disable-line no-empty
-                if (!suggestionOverlay) {
-                    that.last_val = that.value;
-                    that.sc.style.display = 'none';
-                    setTimeout(() => { that.sc.style.display = 'none'; }, 350); // hide suggestions on fast input
-                } else if (that !== document.activeElement) setTimeout(() => { that.focus(); }, 20);
+                that.last_val = that.value;
+                that.sc.style.display = 'none';
+                setTimeout(() => { that.sc.style.display = 'none'; }, 350); // hide suggestions on fast input
             };
             that.addEventListener('blur', that.blurHandler);
 
