@@ -25,13 +25,16 @@ class PaymentInfoLine extends Nimiq.Observable { // eslint-disable-line no-unuse
         $el.innerHTML = `
             <div class="description">
                 Payment to
-                <span origin>${domain}</span>
+                <span domain></span>
             </div>
             <div class="amount">
-                <span amount>${formattedAmount}</span>
+                <span amount></span>
                 <span class="nim-symbol"></span>
             </div>
         `;
+
+        /** @type {HTMLElement} */ ($el.querySelector('[domain]')).textContent = domain;
+        /** @type {HTMLElement} */ ($el.querySelector('[amount]')).textContent = formattedAmount;
 
         return $el;
     }
