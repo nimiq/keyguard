@@ -1,6 +1,17 @@
 // @ts-nocheck
 /* eslint-disable */
 
+/**
+ * This file was generated from the @nimiq/rpc package source, with `RpcServer` being the only target.
+ *
+ * HOWTO:
+ * - Remove `export * from './RpcClient';` from @nimiq/rpc/src/main.ts
+ * - Run `yarn build` in the @nimiq/rpc directory
+ * - @nimiq/rpc/dist/rpc.es.js is the wanted module file
+ * - The following changes where made to this file afterwards:
+ *   https://github.com/nimiq/keyguard-next/pull/93/commits/0a9797cbe195f7eda8b66a75927cc11786ea9625
+ */
+
 var ResponseStatus;
 (function (ResponseStatus) {
     ResponseStatus["OK"] = "ok";
