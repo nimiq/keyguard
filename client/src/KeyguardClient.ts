@@ -10,6 +10,7 @@ import {
     SignMessageRequest,
     ImportRequest,
     ImportResult,
+    RemoveKeyRequest,
 } from './RequestTypes';
 
 export class KeyguardClient {
@@ -47,8 +48,8 @@ export class KeyguardClient {
         return this._request(requestBehavior,  KeyguardCommand.CREATE, [request]);
     }
 
-    public remove(keyId: string, requestBehavior = this._defaultBehavior) {
-        return this._request(requestBehavior,  KeyguardCommand.REMOVE, [{ keyId }]);
+    public remove(request: RemoveKeyRequest, requestBehavior = this._defaultBehavior): Promise<boolean> {
+        return this._request(requestBehavior,  KeyguardCommand.REMOVE, [request]);
     }
 
     public import(request: ImportRequest, requestBehavior = this._defaultBehavior): Promise<ImportResult> {

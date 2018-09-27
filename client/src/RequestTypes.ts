@@ -35,6 +35,12 @@ export interface ImportResult {
     addresses: Array<{keyPath: string, address: Uint8Array}>;
 }
 
+export interface RemoveKeyRequest {
+    appName: string;
+    keyId: string;
+    keyLabel?: string;
+}
+
 export interface SignTransactionRequest {
     layout?: 'standard' | 'checkout' | 'cashlink';
     shopOrigin?: string;
@@ -79,4 +85,4 @@ export interface SignMessageResult {
     signature: string;
 }
 
-export type RpcResult = CreateResult | ImportResult | SignTransactionResult | SignMessageResult;
+export type RpcResult = CreateResult | ImportResult | SignTransactionResult | SignMessageResult | boolean;

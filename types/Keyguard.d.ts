@@ -113,6 +113,7 @@ type ImportResult = {
 }
 
 type RemoveKeyRequest = {
+    appName: string;
     keyId: string
     keyLabel?: string
 }
