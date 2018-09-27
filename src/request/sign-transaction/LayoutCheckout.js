@@ -1,6 +1,7 @@
 /* global BaseLayout */
 /* global I18n */
 /* global Nimiq */
+/* global PaymentInfoLine */
 
 class LayoutCheckout extends BaseLayout { // eslint-disable-line no-unused-vars
     /**
@@ -18,19 +19,17 @@ class LayoutCheckout extends BaseLayout { // eslint-disable-line no-unused-vars
         super(request, resolve, reject);
         this.$el = container;
 
-        // Fill payment-info-line
-        const $infoLine = /** @type {HTMLElement} */ (document.querySelector('.payment-info-line'));
-        const $infoLineOrigin = /** @type {HTMLElement} */ (document.getElementById('info-line-origin'));
-        const $infoLineAmount = /** @type {HTMLElement} */ (document.getElementById('info-line-amount'));
-
-        $infoLineOrigin.textContent = LayoutCheckout._originToDomain(request.shopOrigin);
+        // Set up payment-info-line
+        const $paymentInfoLine = /** @type {HTMLElement} */ (document.querySelector('.payment-info-line'));
 
         const transaction = request.transaction;
         const total = transaction.value + transaction.fee;
         const totalNim = Nimiq.Policy.satoshisToCoins(total);
-        $infoLineAmount.textContent = this._formatNumber(totalNim);
-
-        $infoLine.classList.remove('display-none');
+        new PaymentInfoLine( // eslint-disable-line no-new
+            $paymentInfoLine,
+            LayoutCheckout._originToDomain(request.shopOrigin),
+            this._formatNumber(totalNim),
+        );
     }
 
     /**

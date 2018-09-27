@@ -1,0 +1,21 @@
+.payment-info-line {
+    width: 100vw;
+    max-width: 56.25rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    color: white;
+    font-size: 1.5rem;
+    line-height: 1;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15rem;
+}
+
+.payment-info-line .amount {
+    font-weight: bold;
+}
+
+.payment-info-line .nim-symbol::before {
+    opacity: 1;
+}
