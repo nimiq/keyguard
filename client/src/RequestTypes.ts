@@ -23,6 +23,12 @@ export interface CreateResult {
     address: Uint8Array;
 }
 
+export interface RemoveKeyRequest {
+    appName: string;
+    keyId: string;
+    keyLabel?: string;
+}
+
 export interface ImportRequest {
     appName: string;
     defaultKeyPath: string;
@@ -35,8 +41,14 @@ export interface ImportResult {
     addresses: Array<{keyPath: string, address: Uint8Array}>;
 }
 
-export interface RemoveKeyRequest {
+export interface ExportWordsRequest {
     appName: string;
+    keyId: string;
+    keyLabel?: string;
+}
+
+export interface ExportFileRequest {
+    appNAme: string;
     keyId: string;
     keyLabel?: string;
 }

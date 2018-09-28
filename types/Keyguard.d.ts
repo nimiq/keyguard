@@ -71,6 +71,13 @@ type SignTransactionResult = {
 }
 
 type ExportWordsRequest = {
+    appName: string
+    keyId: string
+    keyLabel?: string
+}
+
+type ExportFileRequest = {
+    appName: string
     keyId: string
     keyLabel?: string
 }
@@ -113,11 +120,18 @@ type ImportResult = {
 }
 
 type RemoveKeyRequest = {
+    appName: string
     keyId: string
     keyLabel?: string
 }
 
-type KeyguardRequest = CreateRequest | ImportRequest | RemoveKeyRequest | SignTransactionRequest | SignMessageRequest
+type KeyguardRequest = CreateRequest
+    | ImportRequest
+    | RemoveKeyRequest
+    | SignTransactionRequest
+    | SignMessageRequest
+    | ExportWordsRequest
+    | ExportFileRequest
 
 interface Newable {
     new(...args: any[]): any
