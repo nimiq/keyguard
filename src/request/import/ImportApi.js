@@ -107,7 +107,7 @@ class ImportApi extends TopLevelApi {
             } else {
                 // Passphrase-encoded
                 this._encryptedKey = Nimiq.BufferUtils.fromBase64(encryptedKeyBase64);
-                this._passphraseBox.setMinLength(8);
+                this._passphraseBox.setMinLength(10);
             }
 
             this._goToEnterPassphrase();
@@ -216,14 +216,14 @@ class ImportApi extends TopLevelApi {
     }
 
     _goToEnterPassphrase() {
-        window.location.hash = ImportApi.Pages.ENTER_PASSPHRASE;
         this._passphraseBox.reset();
+        window.location.hash = ImportApi.Pages.ENTER_PASSPHRASE;
         this._passphraseBox.focus();
     }
 
     _goToSetPassphrase() {
-        window.location.hash = ImportApi.Pages.SET_PASSPHRASE;
         this._passphraseSetterBox.reset();
+        window.location.hash = ImportApi.Pages.SET_PASSPHRASE;
         this._passphraseSetterBox.focus();
     }
 }
