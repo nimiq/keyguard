@@ -7,7 +7,6 @@
 /* global Key */
 /* global KeyStore */
 
-
 class ImportApi extends TopLevelApi {
     constructor() {
         super();
