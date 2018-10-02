@@ -146,7 +146,7 @@ const TRANSLATIONS = {
 
         'choose-key-type-heading': 'Schlüsseltyp wählen',
         'choose-key-type-text': 'Wir konnten den Typ deines Schlüssels nicht automatisch ermitteln. '
-                                    + 'Bitte wähle ihn unten aus.',
+                              + 'Bitte wähle ihn unten aus.',
         'choose-key-type-or': 'oder',
         'choose-key-type-legacy-address-heading': 'Einzelne Adresse',
         'choose-key-type-legacy-address-info': 'Erstellt vor xx.xx.2018',

@@ -72,12 +72,54 @@ button.go-to-words {
 }
 
 .page#choose-key-type button:not([disabled]),
-.page#words button:not([disabled]) {
+.page#recovery-words button:not([disabled]) {
     background: #724ceb;
     color: white;
 }
 
 .page#choose-key-type button,
-.page#words button {
+.page#recovery-words button {
     margin: 0 7.5rem 4rem;
+}
+
+#choose-key-type .key-type-or {
+    margin: 0rem 4rem;
+    font-weight: 400;
+}
+
+#choose-key-type .key-type-option {
+    margin: 3rem 4rem;
+}
+
+#choose-key-type .key-type-option input {
+    display: none;
+}
+
+#choose-key-type .key-type-option span {
+    font-size: 1.625rem;
+}
+
+#choose-key-type .key-type-option label {
+    cursor: pointer;
+    border: 1px solid transparent;
+    border-radius: 1rem;
+}
+
+#choose-key-type .key-type-option label:hover {
+    background: rgba(220, 220, 220, .1);
+}
+
+#choose-key-type .key-type-option input:checked + label {
+    border-color: rgba(220, 220, 220, .5);
+    background: rgba(220, 220, 220, .2);
+}
+
+#choose-key-type .key-type-option .identicon {
+    width: 12.5rem;
+    height: 12.5rem;
+    margin: 1rem 2rem;
+}
+
+#choose-key-type .key-type-info {
+    margin-right: 2rem;
 }
