@@ -142,7 +142,7 @@ class Create {
         document.body.classList.add('loading');
         const key = new Key(this._selectedEntropy.serialize());
         // XXX Should we use utf8 encoding here instead?
-        const passphrase = Nimiq.BufferUtils.fromAscii(this._passphrase);
+        const passphrase = this._passphrase.length > 0 ? Nimiq.BufferUtils.fromAscii(this._passphrase) : undefined;
         await KeyStore.instance.put(key, passphrase);
 
         const keyPath = request.defaultKeyPath;

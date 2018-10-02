@@ -93,7 +93,9 @@ class BaseLayout {
 
         this._passphraseBox.on(
             PassphraseBox.Events.SUBMIT,
-            passphrase => this._onConfirm(request, resolve, reject, passphrase),
+            /** @param {string} [passphrase] */ passphrase => {
+                this._onConfirm(request, resolve, reject, passphrase);
+            },
         );
         this._passphraseBox.on(PassphraseBox.Events.CANCEL, () => window.history.back());
 
@@ -110,7 +112,7 @@ class BaseLayout {
      * @param {ParsedSignTransactionRequest} request
      * @param {Function} resolve
      * @param {Function} reject
-     * @param {string} passphrase
+     * @param {string} [passphrase]
      * @returns {Promise<void>}
      * @private
      */
@@ -119,7 +121,7 @@ class BaseLayout {
 
         try {
             // XXX Passphrase encoding
-            const passphraseBuf = Nimiq.BufferUtils.fromAscii(passphrase);
+            const passphraseBuf = passphrase ? Nimiq.BufferUtils.fromAscii(passphrase) : undefined;
             const key = await KeyStore.instance.get(request.keyInfo.id, passphraseBuf);
             if (!key) {
                 reject(new Error('Failed to retrieve key'));
