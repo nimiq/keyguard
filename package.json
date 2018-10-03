@@ -31,6 +31,7 @@
   "homepage": "https://github.com/nimiq/keyguard-next#readme",
   "devDependencies": {
     "@nimiq/core-types": "^1.0.0",
+    "@nimiq/rpc": "^0.0.3",
     "@types/jasmine": "^2.8.8",
     "@types/node": "^10.5.2",
     "browserify": "^14.5.0",
@@ -46,8 +47,5 @@
     "nyc": "^12.0.2",
     "tsc-watch": "^1.0.22",
     "typescript": "^2.9.2"
-  },
-  "dependencies": {
-    "@nimiq/rpc": "^0.0.3"
   }
 }
