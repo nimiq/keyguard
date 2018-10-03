@@ -10,6 +10,9 @@ import {
     SignMessageRequest,
     ImportRequest,
     ImportResult,
+    RemoveKeyRequest,
+    ExportWordsRequest,
+    ExportFileRequest,
 } from './RequestTypes';
 
 export class KeyguardClient {
@@ -47,20 +50,20 @@ export class KeyguardClient {
         return this._request(requestBehavior,  KeyguardCommand.CREATE, [request]);
     }
 
-    public remove(keyId: string, requestBehavior = this._defaultBehavior) {
-        return this._request(requestBehavior,  KeyguardCommand.REMOVE, [{ keyId }]);
+    public remove(request: RemoveKeyRequest, requestBehavior = this._defaultBehavior): Promise<boolean> {
+        return this._request(requestBehavior,  KeyguardCommand.REMOVE, [request]);
     }
 
     public import(request: ImportRequest, requestBehavior = this._defaultBehavior): Promise<ImportResult> {
         return this._request(requestBehavior,  KeyguardCommand.IMPORT, [request]);
     }
 
-    public async exportWords(keyId: string, requestBehavior = this._defaultBehavior) {
-        return this._request(requestBehavior,  KeyguardCommand.EXPORT_WORDS, [{ keyId }]);
+    public async exportWords(request: ExportWordsRequest, requestBehavior = this._defaultBehavior): Promise<boolean> {
+        return this._request(requestBehavior,  KeyguardCommand.EXPORT_WORDS, [request]);
     }
 
-    public async exportFile(keyId: string, requestBehavior = this._defaultBehavior) {
-        return this._request(requestBehavior,  KeyguardCommand.EXPORT_FILE, [{ keyId }]);
+    public async exportFile(request: ExportFileRequest, requestBehavior = this._defaultBehavior): Promise<boolean> {
+        return this._request(requestBehavior,  KeyguardCommand.EXPORT_FILE, [request]);
     }
 
     public async signTransaction(request: SignTransactionRequest,

@@ -23,6 +23,12 @@ export interface CreateResult {
     address: Uint8Array;
 }
 
+export interface RemoveKeyRequest {
+    appName: string;
+    keyId: string;
+    keyLabel?: string;
+}
+
 export interface ImportRequest {
     appName: string;
     defaultKeyPath: string;
@@ -33,6 +39,18 @@ export interface ImportResult {
     keyId: string;
     keyType: Key.Type;
     addresses: Array<{keyPath: string, address: Uint8Array}>;
+}
+
+export interface ExportWordsRequest {
+    appName: string;
+    keyId: string;
+    keyLabel?: string;
+}
+
+export interface ExportFileRequest {
+    appName: string;
+    keyId: string;
+    keyLabel?: string;
 }
 
 export interface SignTransactionRequest {
@@ -79,4 +97,4 @@ export interface SignMessageResult {
     signature: string;
 }
 
-export type RpcResult = CreateResult | ImportResult | SignTransactionResult | SignMessageResult;
+export type RpcResult = CreateResult | ImportResult | SignTransactionResult | SignMessageResult | boolean;
