@@ -122,15 +122,9 @@ class AutoComplete { // eslint-disable-line no-unused-vars
             }, that.sc);
 
             that.blurHandler = () => {
-                let suggestionOverlay;
-                try {
-                    suggestionOverlay = document.querySelector('.autocomplete-suggestions:hover');
-                } catch (e) {} // eslint-disable-line no-empty
-                if (!suggestionOverlay) {
-                    that.last_val = that.value;
-                    that.sc.style.display = 'none';
-                    setTimeout(() => { that.sc.style.display = 'none'; }, 350); // hide suggestions on fast input
-                } else if (that !== document.activeElement) setTimeout(() => { that.focus(); }, 20);
+                that.last_val = that.value;
+                that.sc.style.display = 'none';
+                setTimeout(() => { that.sc.style.display = 'none'; }, 350); // hide suggestions on fast input
             };
             that.addEventListener('blur', that.blurHandler);
 
@@ -144,6 +138,9 @@ class AutoComplete { // eslint-disable-line no-unused-vars
                         that.sc.appendChild(o.renderItem(data[x]));
                     }
                     that.updateSC(0);
+                    if (that.sc.childNodes.length === 1) {
+                        that.sc.childNodes[0].className += ' selected';
+                    }
                 } else that.sc.style.display = 'none';
             };
 
@@ -180,7 +177,7 @@ class AutoComplete { // eslint-disable-line no-unused-vars
                 if (key === 27) {
                     that.value = that.last_val;
                     that.sc.style.display = 'none';
-                } else if (key === 13 || key === 9) {
+                } else if (key === 13 || key === 9 || key === 32) {
                     const sel = that.sc.querySelector('.autocomplete-suggestion.selected');
                     if (sel && that.sc.style.display !== 'none') {
                         o.onSelect(e, sel.getAttribute('data-val'), sel);

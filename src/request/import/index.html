@@ -14,17 +14,25 @@
     <script defer src="../../lib/CookieJar.js"></script>
     <script defer src="../../lib/AccountStore.js"></script>
     <script defer src="../../lib/KeyStore.js"></script>
+    <script defer src="../../lib/AutoComplete.js"></script>
     <script defer src="../../lib/AnimationUtils.js"></script>
     <script defer src="../../lib/QrScanner.js"></script>
     <script defer src="../../lib/I18n.js"></script>
+    <script defer src="../../lib/Iqons.js"></script>
     <script defer src="../../translations/index.js"></script>
     <script defer src="../../common.js"></script>
+    <script defer src="../../components/Identicon.js"></script>
     <script defer src="../../components/FileImport.js"></script>
     <script defer src="../../components/PassphraseInput.js"></script>
     <script defer src="../../components/PassphraseBox.js"></script>
     <script defer src="../../components/PassphraseSetterBox.js"></script>
+    <script defer src="../../components/PrivacyAgent.js"></script>
+    <script defer src="../../components/PrivacyWarning.js"></script>
+    <script defer src="../../components/RecoveryWords.js"></script>
+    <script defer src="../../components/RecoveryWordsInputField.js"></script>
     <script defer src="../TopLevelApi.js"></script>
-    <script defer src="ImportFileApi.js"></script>
+    <script defer src="ImportWords.js"></script>
+    <script defer src="ImportApi.js"></script>
     <script defer src="index.js"></script>
 
     <link rel="stylesheet" href="../../nimiq-style.css">
@@ -32,7 +40,9 @@
     <link rel="stylesheet" href="../../components/FileImport.css">
     <link rel="stylesheet" href="../../components/PassphraseInput.css">
     <link rel="stylesheet" href="../../components/PassphraseBox.css">
-    <link rel="stylesheet" href="./ImportFile.css">
+    <link rel="stylesheet" href="../../components/PrivacyAgent.css">
+    <link rel="stylesheet" href="../../components/RecoveryWords.css">
+    <link rel="stylesheet" href="./Import.css">
 </head>
 <body>
     <div class="header-top">
@@ -60,6 +70,70 @@
                 <a class="create-wallet" data-i18n="import-link-no-wallet">Don't have a wallet yet?</a>
             </div>
         </div>
+
+        <!-- privacy agent -->
+        <div id="privacy" class="page">
+            <div class="page-header">
+                <a tabindex="0" class="page-header-back-button icon-back-arrow"></a>
+                <h1 data-i18n="import-heading-log-in">Log in</h1>
+            </div>
+
+            <div class="page-body">
+                <div class="agent"></div>
+            </div>
+        </div>
+
+        <!-- enter recovery words -->
+        <form id="recovery-words" class="page">
+            <div class="page-header">
+                <a tabindex="0" class="page-header-back-button icon-back-arrow"></a>
+                <h1 data-i18n="import-heading-log-in">Log in</h1>
+            </div>
+
+            <div class="page-body">
+                <p data-i18n="enter-recovery-words-enter-words">Please enter your 24 recovery words.</p>
+                <div class="recovery-words"></div>
+                <button data-i18n="continue" type="submit" disabled>Continue</button>
+            </div>
+        </form>
+
+        <!-- choose key type -->
+        <form id="choose-key-type" class="page">
+            <div class="page-header">
+                <a tabindex="0" class="page-header-back-button icon-back-arrow"></a>
+                <h1 data-i18n="choose-key-type-heading">Choose key type</h1>
+            </div>
+
+            <div class="page-body">
+                <p data-i18n="choose-key-type-text">We couldn't determine the type of your key. Please select it below.</p>
+                <div class="key-type-option">
+                    <input type="radio" name="key-type" id="key-type-legacy" value="0">
+                    <label for="key-type-legacy" class="row">
+                        <div class="identicon-legacy"></div>
+                        <div class="key-type-info">
+                            <strong data-i18n="choose-key-type-legacy-address-heading">Single address</strong><br>
+                            <span data-i18n="choose-key-type-legacy-address-info">Created before xx/xx/2018</span><br>
+                            <br>
+                            <span class="address address-legacy"></span>
+                        </div>
+                    </label>
+                </div>
+                <h2 class="key-type-or" data-i18n="choose-key-type-or">or</h2>
+                <div class="key-type-option">
+                    <input type="radio" name="key-type" id="key-type-bip39" value="1">
+                    <label for="key-type-bip39" class="row">
+                        <div class="identicon-bip39"></div>
+                        <div class="key-type-info">
+                            <strong data-i18n="choose-key-type-bip39-address-heading">Multiple addresses</strong><br>
+                            <span data-i18n="choose-key-type-bip39-address-info">Created after xx/xx/2018</span><br>
+                            <br>
+                            <span class="address address-bip39"></span>
+                        </div>
+                    </label>
+                </div>
+                <button data-i18n="continue" type="submit" disabled>Continue</button>
+            </div>
+        </form>
 
         <!-- Enter Passphrase -->
         <div id="enter-passphrase" class="page">

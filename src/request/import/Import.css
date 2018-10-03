@@ -70,3 +70,61 @@ button.go-to-words {
     margin: 4rem;
     margin-right: 0;
 }
+
+.page#recovery-words .recovery-words {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.page#choose-key-type button:not([disabled]),
+.page#recovery-words button:not([disabled]) {
+    background: #724ceb;
+    color: white;
+}
+
+.page#choose-key-type button,
+.page#recovery-words button {
+    margin: 4rem 7.5rem;
+}
+
+#choose-key-type .key-type-or {
+    margin: 3rem 4rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 1.75rem;
+    line-height: 1.5rem;
+    letter-spacing: 0.25rem;
+    text-align: center;
+}
+
+#choose-key-type .key-type-option {
+    margin: 0 4rem;
+}
+
+#choose-key-type .key-type-option input {
+    display: none;
+}
+
+#choose-key-type .key-type-option span {
+    font-size: 1.625rem;
+}
+
+#choose-key-type .key-type-option label {
+    cursor: pointer;
+    border: 1px solid transparent;
+    border-radius: 1rem;
+    padding: 1rem;
+    align-items: flex-start;
+}
+
+#choose-key-type .key-type-option label:hover,
+#choose-key-type .key-type-option input:checked + label {
+    background: rgba(128, 128, 128, 0.1);
+}
+
+#choose-key-type .key-type-option .identicon {
+    width: 10rem;
+    height: 10rem;
+    margin-right: 2rem;
+    flex-shrink: 0;
+}

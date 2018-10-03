@@ -1,12 +1,13 @@
 /* global TopLevelApi */
 /* global FileImport */
+/* global ImportWords */
 /* global PassphraseBox */
 /* global PassphraseSetterBox */
 /* global Nimiq */
 /* global Key */
 /* global KeyStore */
 
-class ImportFileApi extends TopLevelApi {
+class ImportApi extends TopLevelApi {
     constructor() {
         super();
 
@@ -50,6 +51,8 @@ class ImportFileApi extends TopLevelApi {
         const $passphraseBox = (document.querySelector('.passphrase-box'));
         /** @type {HTMLFormElement} */
         const $passphraseSetterBox = (document.querySelector('.passphrase-setter-box'));
+        /** @type {HTMLButtonElement} */
+        const $importWordsLink = (document.querySelector('.go-to-words'));
 
         // Components
         const fileImport = new FileImport($fileImport);
@@ -62,12 +65,20 @@ class ImportFileApi extends TopLevelApi {
         passphraseBox.on(PassphraseBox.Events.CANCEL, () => window.history.back());
         passphraseSetterBox.on(PassphraseSetterBox.Events.SUBMIT, this._onPassphraseEntered.bind(this));
         passphraseSetterBox.on(PassphraseSetterBox.Events.SKIP, () => this._onPassphraseEntered(null));
+        $importWordsLink.addEventListener('click', () => {
+            const handler = new ImportWords(
+                /** @type {ImportRequest} */ (this._request),
+                this._onRecoveryWordsComplete.bind(this),
+            );
+            handler.run();
+        });
 
         return {
             passphraseBox,
             passphraseSetterBox,
         };
     }
+
 
     /**
      * Determine key type and forward user to Passphrase input
@@ -95,7 +106,7 @@ class ImportFileApi extends TopLevelApi {
             } else {
                 // Passphrase-encoded
                 this._encryptedKey = Nimiq.BufferUtils.fromBase64(encryptedKeyBase64);
-                this._passphraseBox.setMinLength(8);
+                this._passphraseBox.setMinLength(10);
             }
 
             this._goToEnterPassphrase();
@@ -103,7 +114,7 @@ class ImportFileApi extends TopLevelApi {
     }
 
     run() {
-        window.location.hash = ImportFileApi.Pages.FILE_IMPORT;
+        window.location.hash = ImportApi.Pages.FILE_IMPORT;
 
         // Async pre-load the crypto worker to reduce wait time at first decrypt attempt
         Nimiq.CryptoWorker.getInstanceAsync();
@@ -182,6 +193,7 @@ class ImportFileApi extends TopLevelApi {
             }
 
             const key = new Key(secret, this._keyType);
+
             await KeyStore.instance.put(key, encryptionKey || undefined);
 
             return key;
@@ -191,21 +203,35 @@ class ImportFileApi extends TopLevelApi {
         }
     }
 
+    /**
+     * @param { Nimiq.SerialBuffer } entropy
+     * @param { Key.Type } keyType
+     */
+    _onRecoveryWordsComplete(entropy, keyType) {
+        this._passphraseBox.setMinLength();
+        this._keyType = keyType;
+        this._encryptedKey = entropy;
+        this._goToSetPassphrase();
+    }
+
     _goToEnterPassphrase() {
-        window.location.hash = ImportFileApi.Pages.ENTER_PASSPHRASE;
         this._passphraseBox.reset();
+        window.location.hash = ImportApi.Pages.ENTER_PASSPHRASE;
         this._passphraseBox.focus();
     }
 
     _goToSetPassphrase() {
-        window.location.hash = ImportFileApi.Pages.SET_PASSPHRASE;
         this._passphraseSetterBox.reset();
+        window.location.hash = ImportApi.Pages.SET_PASSPHRASE;
         this._passphraseSetterBox.focus();
     }
 }
 
-ImportFileApi.Pages = {
+ImportApi.Pages = {
     FILE_IMPORT: 'file-import',
     ENTER_PASSPHRASE: 'enter-passphrase',
     SET_PASSPHRASE: 'set-passphrase',
+    PRIVACY_AGENT: 'privacy',
+    ENTER_WORDS: 'words',
+    CHOOSE_KEY_TYPE: 'choose-key-type',
 };

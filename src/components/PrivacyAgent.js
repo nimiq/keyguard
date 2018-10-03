@@ -34,7 +34,7 @@ class PrivacyAgent extends Nimiq.Observable { // eslint-disable-line no-unused-v
 
         $el.innerHTML = `
             <div class="privacy-warning"></div>
-            <div class="grow"></div>
+            <div class="flex-grow"></div>
             <button data-i18n="privacy-agent-continue">Continue</button>
         `;
 
