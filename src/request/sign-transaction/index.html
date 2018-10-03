@@ -24,6 +24,7 @@
     <script defer src="../../components/PassphraseInput.js"></script>
     <script defer src="../../components/PassphraseBox.js"></script>
     <script defer src="../../components/Identicon.js"></script>
+    <script defer src="../../components/PaymentInfoLine.js"></script>
     <script defer src="../TopLevelApi.js"></script>
     <script defer src="BaseLayout.js"></script>
     <script defer src="LayoutStandard.js"></script>
@@ -35,6 +36,7 @@
     <link rel="stylesheet" href="../../common.css">
     <link rel="stylesheet" href="../../components/PassphraseInput.css">
     <link rel="stylesheet" href="../../components/PassphraseBox.css">
+    <link rel="stylesheet" href="../../components/PaymentInfoLine.css">
     <link rel="stylesheet" href="SignTransaction.css">
 </head>
 <body>
@@ -48,6 +50,8 @@
         <div class="flex-grow"></div>
 
         <div id="confirm-transaction" class="page">
+            <div class="payment-info-line display-none"></div>
+
             <div id="layout-container"></div>
 
             <div class="page-footer">

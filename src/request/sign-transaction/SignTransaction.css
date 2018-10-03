@@ -90,6 +90,10 @@
 #######################################
 */
 
+.payment-info-line {
+    margin-top: -3rem;
+}
+
 .layout-checkout h1 {
     font-size: 3rem;
     font-weight: 300;
@@ -154,6 +158,7 @@
     font-size: 2rem;
     line-height: 1.3;
     opacity: 0.7;
+    margin-bottom: 0;
 }
 
 .layout-checkout .sender-section {
