@@ -71,6 +71,11 @@ button.go-to-words {
     margin-right: 0;
 }
 
+.page#recovery-words .recovery-words {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
 .page#choose-key-type button:not([disabled]),
 .page#recovery-words button:not([disabled]) {
     background: #724ceb;
@@ -79,16 +84,21 @@ button.go-to-words {
 
 .page#choose-key-type button,
 .page#recovery-words button {
-    margin: 0 7.5rem 4rem;
+    margin: 4rem 7.5rem;
 }
 
 #choose-key-type .key-type-or {
-    margin: 0rem 4rem;
-    font-weight: 400;
+    margin: 3rem 4rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 1.75rem;
+    line-height: 1.5rem;
+    letter-spacing: 0.25rem;
+    text-align: center;
 }
 
 #choose-key-type .key-type-option {
-    margin: 3rem 4rem;
+    margin: 0 4rem;
 }
 
 #choose-key-type .key-type-option input {
@@ -103,23 +113,18 @@ button.go-to-words {
     cursor: pointer;
     border: 1px solid transparent;
     border-radius: 1rem;
+    padding: 1rem;
+    align-items: flex-start;
 }
 
-#choose-key-type .key-type-option label:hover {
-    background: rgba(220, 220, 220, .1);
-}
-
+#choose-key-type .key-type-option label:hover,
 #choose-key-type .key-type-option input:checked + label {
-    border-color: rgba(220, 220, 220, .5);
-    background: rgba(220, 220, 220, .2);
+    background: rgba(128, 128, 128, 0.1);
 }
 
 #choose-key-type .key-type-option .identicon {
-    width: 12.5rem;
-    height: 12.5rem;
-    margin: 1rem 2rem;
-}
-
-#choose-key-type .key-type-info {
+    width: 10rem;
+    height: 10rem;
     margin-right: 2rem;
+    flex-shrink: 0;
 }
