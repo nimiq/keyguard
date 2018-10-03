@@ -8,7 +8,7 @@ class CreateApi extends TopLevelApi { // eslint-disable-line no-unused-vars
      */
     async onRequest(request) {
         const parsedRequest = CreateApi._parseRequest(request);
-        const handler = new Create(parsedRequest, this.resolve.bind(this));
+        const handler = new Create(parsedRequest, this.resolve.bind(this), this.reject.bind(this));
         handler.run();
     }
 

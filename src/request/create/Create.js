@@ -13,8 +13,9 @@ class Create {
     /**
      * @param {CreateRequest} request
      * @param {Function} resolve
+     * @param {Function} reject
      */
-    constructor(request, resolve) {
+    constructor(request, resolve, reject) {
         this._resolve = resolve;
 
         this._passphrase = '';
@@ -121,7 +122,7 @@ class Create {
         /** @type HTMLAnchorElement */
         const $cancelLink = ($appName.parentNode);
         $cancelLink.classList.remove('display-none');
-        $cancelLink.addEventListener('click', () => { throw new Error('CANCEL'); });
+        $cancelLink.addEventListener('click', () => reject(new Error('CANCEL')));
 
         // Set up progress indicators
         /* eslint-disable no-new */

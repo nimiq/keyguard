@@ -35,7 +35,7 @@ class ImportApi extends TopLevelApi {
         /** @type HTMLAnchorElement */
         const $cancelLink = ($appName.parentNode);
         $cancelLink.classList.remove('display-none');
-        $cancelLink.addEventListener('click', () => { throw new Error('CANCEL'); });
+        $cancelLink.addEventListener('click', () => this.reject(new Error('CANCEL')));
 
         this.run();
     }
