@@ -48,7 +48,7 @@ export interface ExportWordsRequest {
 }
 
 export interface ExportFileRequest {
-    appNAme: string;
+    appName: string;
     keyId: string;
     keyLabel?: string;
 }
