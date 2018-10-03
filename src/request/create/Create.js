@@ -121,7 +121,7 @@ class Create {
         /** @type HTMLAnchorElement */
         const $cancelLink = ($appName.parentNode);
         $cancelLink.classList.remove('display-none');
-        $cancelLink.addEventListener('click', () => window.close());
+        $cancelLink.addEventListener('click', () => { throw new Error('CANCEL'); });
 
         // Set up progress indicators
         /* eslint-disable no-new */
