@@ -90,6 +90,18 @@ const TRANSLATIONS = {
         'validate-words-text': 'Please select the correct word from your list of recovery words.',
         'validate-words-back': 'Back to words',
         'validate-words-skip': 'Skip validation for now',
+
+        'remove-key-log-out': 'Log out',
+        'remove-key-intro-text': 'Logging out means removing your Key File from this browser. '
+                               + 'Make sure you have it stored somewhere, or at least have your '
+                               + 'recovery words accessible.',
+        'remove-key-intro-text-red': 'If you have neither of them, there’s no chance to regain '
+                                   + 'access to your account',
+        'remove-key-download-key-file': 'Download Key File',
+        'remove-key-show-recovery-words': 'Show Recovery Words',
+        'remove-key-confirm': 'Log out of your Wallet',
+        'remove-key-recovery-words': 'Recovery Words',
+        'remove-key-back': 'Back to log out',
     },
     de: {
         _language: 'Deutsch',
@@ -188,6 +200,18 @@ const TRANSLATIONS = {
         'validate-words-text': 'Bitte wähle das richtige Wort aus deiner Liste von Wiederherstellungswörtern aus.',
         'validate-words-back': 'Zurück zu den Wörtern',
         'validate-words-skip': 'Überprüfung erstmal überspringen',
+
+        'remove-key-log-out': 'Log out',
+        'remove-key-intro-text': 'Logging out means removing your Key File from this browser. '
+                               + 'Make sure you have it stored somewhere, or at least have your '
+                               + 'recovery words accessible.',
+        'remove-key-intro-text-red': 'If you have neither of them, there’s no chance to regain '
+                                   + 'access to your account',
+        'remove-key-download-key-file': 'Download Key File',
+        'remove-key-show-recovery-words': 'Show Recovery Words',
+        'remove-key-confirm': 'Log out of your Wallet',
+        'remove-key-recovery-words': 'Recovery Words',
+        'remove-key-back': 'Back to log out',
     },
 };
 

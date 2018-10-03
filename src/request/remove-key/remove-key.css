@@ -1,0 +1,58 @@
+.row {
+    display: flex;
+    flex-direction: row;
+    margin-top: 4rem; 
+}
+
+.page-body {
+    background-color: #fafafa;
+    padding: 4rem;
+}
+
+.warning-sign {
+    height: 10rem;
+    width: 10rem;
+    border: 1px solid red;
+    justify-content: flex-end;
+    flex-shrink: 0;
+}
+
+.page#remove-key p {
+    flex-grow: 1;
+}
+
+.page#remove-key p + p {
+    margin-top: 1rem;
+}
+
+.red {
+    color: var(--nimiq-red);
+}
+
+.page#remove-key .page-body button {
+    background: #e5e5e5;
+    padding: 1rem 1.75rem;
+    width: unset;
+    height: unset;
+    font-size: 1.75rem;
+    line-height: 0.86;
+    box-shadow: none;
+    text-transform: none;
+    letter-spacing: 0;
+    color: black;
+    margin: 0 2rem 0 0;
+    align-self: flex-start;
+}
+
+.page#remove-key .page-footer button:not(.submit) {
+    margin: 4rem 7.5rem;
+    background: var(--nimiq-red);
+    color: white;
+}
+
+.page#download-key-file button:not(.submit),
+.page#recovery-words button {
+    margin: 4rem 7.5rem;
+    background: var(--nimiq-purple);
+    color: white;
+}

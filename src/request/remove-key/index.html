@@ -16,43 +16,120 @@
     <script defer src="../../lib/Key.js"></script>
     <script defer src="../../lib/KeyInfo.js"></script>
     <script defer src="../../lib/KeyStore.js"></script>
+    <script defer src="../../lib/AutoComplete.js"></script>
     <script defer src="../../translations/index.js"></script>
     <script defer src="../../common.js"></script>
     <script defer src="../../components/PassphraseInput.js"></script>
+    <script defer src="../../components/PassphraseBox.js"></script>
+    <script defer src="../../components/PrivacyWarning.js"></script>
+    <script defer src="../../components/RecoveryWordsInputField.js"></script>
+    <script defer src="../../components/RecoveryWords.js"></script>
     <script defer src="../TopLevelApi.js"></script>
     <script defer src="RemoveKeyApi.js"></script>
     <script defer src="index.js"></script>
 
     <link rel="stylesheet" href="../../nimiq-style.css">
     <link rel="stylesheet" href="../../common.css">
+    <link rel="stylesheet" href="../../components/PassphraseBox.css">
     <link rel="stylesheet" href="../../components/PassphraseInput.css">
+    <link rel="stylesheet" href="../../components/PrivacyAgent.css">
+    <link rel="stylesheet" href="../../components/RecoveryWordsInputField.css">
+    <link rel="stylesheet" href="../../components/RecoveryWords.css">
+    <link rel="stylesheet" href="./remove-key.css">
 </head>
 <body>
-<div id="app">
-    <!-- removal warning -->
-    <div id="remove-key" class="page">
-        <h1>Key Removal</h1>
-        <div class="grow"></div>
-        <div class="center warning" style="max-width: 75rem; display: block; ">
-            <svg width="144" height="144" viewBox="0 0 24 24" style="margin: 2rem;">
-                <path fill="black" d="M2.2,16.06L3.88,12L2.2,7.94L6.26,6.26L7.94,2.2L12,3.88L16.06,2.2L17.74,6.26L21.8,7.94L20.12,12L21.8,16.06L17.74,17.74L16.06,21.8L12,20.12L7.94,21.8L6.26,17.74L2.2,16.06M13,17V15H11V17H13M13,13V7H11V13H13Z"></path>
-            </svg><br>
-            You are about to remove <strong class="key-label-friendlyid">a key</strong> from this device. To use it again, you will have to reimport the key from a backup.
+    <div class="header-top">
+        <div class="nimiq-app-name">
+            <span class="nimiq-logo"></span>
         </div>
-        <div class="grow"></div>
-        <p>Enter your password to confirm removing the key.</p>
-        <div class="passphrase"></div>
-        <div class="grow"></div>
-        <button class="remove destructive">Remove key</button>
-        <a class="secondary cancel">Cancel</a>
     </div>
 
-    <!-- Default and loading screen -->
-    <div id="loading" class="page">
-        <div class="loading-animation"></div>
-        <span data-i18n="loading">Loading...</span>
-    </div>
+    <div id="app">
 
-</div>
+        <!-- removal warning -->
+        <div id="remove-key" class="page">
+            <div class="page-header">
+                <h1 data-i18n="remove-key-log-out">Log out</h1>
+            </div>
+
+            <div class="page-body">
+                <div class="row">
+                    <p data-i18n="remove-key-intro-text">Logging out means removing your Key File from this browser. Make sure you have it stored somewhere, or at least have your recovery words accessible.</p>
+                    <div class="warning-sign"></div>
+                </div>
+                <p class="red" data-i18n="remove-key-intro-text-red">If you have neither of them, there’s no chance to regain access to your account</p>
+                <div class="row">
+                    <button id="show-download-key-file" data-i18n="remove-key-download-key-file">Downlaod Key File</button>
+                    <button id="show-recovery-words" data-i18n="remove-key-show-recovery-words">Show Recovery Words</button>
+                </div>
+            </div>
+
+            <div class="page-footer">
+                <form class="passphrase-box display-none"></form>
+                <button id="remove-key-confirm" data-i18n="remove-key-confirm">Log out of your Wallet</button>
+            </div>
+        </div>
+
+        <!-- privacy agent -->
+        <div id="privacy" class="page">
+            <div class="page-header">
+                <a tabindex="0" class="page-header-back-button icon-back-arrow"></a>
+                <h1 data-i18n="remove-key-log-out">Log out</h1>
+            </div>
+
+            <div class="page-body">
+                <div class="privacy-warning"></div>
+                <div class="flex-grow"></div>
+            </div>
+
+            <div class="page-footer">
+                <form class="passphrase-box"></form>
+            </div>
+        </div>
+
+        <!-- recovery Words -->
+        <div id="recovery-words" class="page">
+            <div class="page-header">
+                <a tabindex="0" class="page-header-back-button icon-back-arrow"></a>
+                <h1 data-i18n="remove-key-recovery-words">Recovery Words</h1>
+            </div>
+
+            <div class="page-body">
+                <div class="recovery-words"></div>
+            </div>
+
+            <div class="page-footer">
+                <button class="back-to-remove" data-i18n="remove-key-back">Back to log out</button>
+            </div>
+        </div>
+
+        <!-- Download Key File -->
+        <div id="download-key-file" class="page">
+            <div class="page-header">
+                <a tabindex="0" class="page-header-back-button icon-back-arrow"></a>
+                <h1 data-i18n="remove-key-download-key-file">Download Key File</h1>
+            </div>
+
+            <div class="page-body">
+                <div class="download-key-file"></div>
+            </div>
+
+            <div class="page-footer">
+                <form class="passphrase-box"></form>
+                <button class="back-to-remove display-none" data-i18n="remove-key-back">Back to log out</button>
+            </div>
+        </div>
+
+        <a tabindex="0" class="global-close display-none">Back to <span id="app-name"></span></a>
+
+        <div class="flex-grow"></div>
+
+        <!-- Default and loading screen -->
+        <div id="loading" class="page">
+            <div class="loading-animation"></div>
+            <span data-i18n="loading">Loading...</span>
+        </div>
+
+    </div>
 </body>
 </html>

@@ -1,45 +1,142 @@
-/* global Key */
 /* global KeyStore */
 /* global Nimiq */
-/* global PassphraseInput */
 /* global TopLevelApi */
+/* global PrivacyWarning */
+/* global PassphraseBox */
+/* global RecoveryWords */
 class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
      * @param {RemoveKeyRequest} request
      */
     async onRequest(request) {
-        const parsedRequest = await RemoveKeyApi._parseRequest(request);
+        /** @type {RemoveKeyRequest} */
+        this.parsedRequest = await RemoveKeyApi._parseRequest(request);
 
-        const $cancel = /** @type {HTMLElement} */ (document.querySelector('.cancel'));
-        const $remove = /** @type {HTMLButtonElement} */ (document.querySelector('.remove'));
-        $remove.disabled = true;
-        const $passphrase = /** @type {HTMLElement} */ (document.querySelector('.passphrase'));
+        /** @type {HTMLElement} */
+        const $appName = (document.querySelector('#app-name'));
+        $appName.textContent = request.appName;
+        /** @type HTMLAnchorElement */
+        const $cancelLink = ($appName.parentNode);
+        $cancelLink.classList.remove('display-none');
+        $cancelLink.addEventListener('click', () => window.close());
 
-        // Set user friendly key description
-        const $keyLabelFriendlyId = /** @type {HTMLElement} */ (document.querySelector('.key-label-friendlyid'));
-        const userFriendlyId = Key.idToUserFriendlyId(request.keyId);
-        $keyLabelFriendlyId.textContent = request.keyLabel ? `${request.keyLabel} (${userFriendlyId})` : userFriendlyId;
 
-        const passphraseInput = new PassphraseInput($passphrase);
+        /** @type {HTMLElement} */
+        const $removeKey = (document.getElementById(RemoveKeyApi.Pages.REMOVE_KEY));
+        /** @type {HTMLElement} */
+        const $privacy = (document.getElementById(RemoveKeyApi.Pages.PRIVACY_AGENT));
+        /** @type {HTMLElement} */
+        const $showWords = (document.getElementById(RemoveKeyApi.Pages.SHOW_WORDS));
+        /** @type {HTMLElement} */
+        const $downloadKeyFile = (document.getElementById(RemoveKeyApi.Pages.DOWNLOAD_KEY_FILE));
 
-        $cancel.addEventListener('click', () => {
-            document.body.classList.add('loading');
-            this.resolve(false);
+        /** @type {HTMLButtonElement} */
+        const $goToDownloadFile = ($removeKey.querySelector('#show-download-key-file'));
+        /** @type {HTMLButtonElement} */
+        const $goToShowRecoveryWords = ($removeKey.querySelector('#show-recovery-words'));
+        /** @type {HTMLButtonElement} */
+        const $goToRemoveKey = ($removeKey.querySelector('#remove-key-confirm'));
+        /** @type {HTMLFormElement} */
+        const $removeKeyPassphraseBox = ($removeKey.querySelector('.passphrase-box'));
+
+        /** @type {HTMLElement} */
+        const $privacyWarning = ($privacy.querySelector('.privacy-warning'));
+        /** @type {HTMLFormElement} */
+        const $privacyWarningPassphraseBox = ($privacy.querySelector('.passphrase-box'));
+
+        /** @type {HTMLElement} */
+        const $recoveryWords = ($showWords.querySelector('.recovery-words'));
+        /** @type {HTMLButtonElement} */
+        const $recoveryWordsButton = ($showWords.querySelector('button'));
+
+        /** @type {HTMLFormElement} */
+        const $downloadKeyFilePassphraseBox = ($downloadKeyFile.querySelector('.passphrase-box'));
+        /** @type {HTMLButtonElement} */
+        const $downloadFileButton = ($downloadKeyFile.querySelector('button:not(.submit'));
+
+        // eslint-disable-line no-unused-vars
+        const privacyWarning = new PrivacyWarning($privacyWarning);
+        privacyWarning.getElement();
+        // eslint-enable-line no-unused-vars
+        const recoveryWordsPassphraseBox = new PassphraseBox(
+            $privacyWarningPassphraseBox,
+            { buttonI18nTag: 'passphrasebox-continue' },
+        );
+        const recoveryWords = new RecoveryWords($recoveryWords, false);
+
+        const downloadKeyFilePassphraseBox = new PassphraseBox(
+            $downloadKeyFilePassphraseBox,
+            { buttonI18nTag: 'passphrasebox-continue' },
+        );
+        const removeKeyPassphraseBox = new PassphraseBox(
+            $removeKeyPassphraseBox,
+            { buttonI18nTag: 'passphrasebox-continue', bgColor: 'red' },
+        );
+
+        $goToShowRecoveryWords.addEventListener('click', this._goToPrivacyAgent.bind(this));
+        $goToDownloadFile.addEventListener('click', this._goToDownloadFile.bind(this));
+        $goToRemoveKey.addEventListener('click', () => {
+            $goToRemoveKey.classList.add('display-none');
+            $removeKeyPassphraseBox.classList.remove('display-none');
         });
-        $remove.addEventListener('click', async () => {
-            try {
-                const passphrase = Nimiq.BufferUtils.fromAscii(passphraseInput.text);
-                await KeyStore.instance.get(request.keyId, passphrase);
 
-                await KeyStore.instance.remove(parsedRequest.keyId);
-                document.body.classList.add('loading');
-                this.resolve(true);
+        recoveryWordsPassphraseBox.on(PassphraseBox.Events.SUBMIT, async p => {
+            try {
+                const passphraseBuffer = Nimiq.BufferUtils.fromAscii(p);
+                const key = await KeyStore.instance.get(request.keyId, passphraseBuffer);
+                if (!key) {
+                    throw new Error('No key');
+                }
+                let words = [''];
+                switch (key.type) {
+                case Nimiq.MnemonicUtils.MnemonicType.LEGACY:
+                    words = Nimiq.MnemonicUtils.entropyToLegacyMnemonic(key.secret);
+                    break;
+                case Nimiq.MnemonicUtils.MnemonicType.BIP39:
+                    words = Nimiq.MnemonicUtils.entropyToMnemonic(key.secret);
+                    break;
+                default:
+                    throw new Error('Unknown mnemonic type');
+                }
+                recoveryWords.setWords(words);
+                window.location.hash = RemoveKeyApi.Pages.SHOW_WORDS;
             } catch (e) {
-                passphraseInput.onPassphraseIncorrect();
+                recoveryWordsPassphraseBox.onPassphraseIncorrect();
             }
         });
-        passphraseInput.on(PassphraseInput.Events.VALID, /** @param {boolean} isValid */ isValid => {
-            $remove.disabled = !isValid;
+        $recoveryWordsButton.addEventListener('click', this._goToRemoveKey.bind(this));
+
+        downloadKeyFilePassphraseBox.on(PassphraseBox.Events.SUBMIT, async p => {
+            try {
+                const passphraseBuffer = Nimiq.BufferUtils.fromAscii(p);
+                const key = await KeyStore.instance.get(request.keyId, passphraseBuffer);
+                if (!key) {
+                    throw new Error('No key');
+                }
+                // TODO Generate file and wait for download completed
+                $downloadKeyFilePassphraseBox.classList.add('display-none');
+                $downloadFileButton.classList.remove('display-none');
+            } catch (e) {
+                downloadKeyFilePassphraseBox.onPassphraseIncorrect();
+            }
+        });
+        $downloadFileButton.addEventListener('click', this._goToRemoveKey.bind(this));
+
+        removeKeyPassphraseBox.on(PassphraseBox.Events.SUBMIT, async p => {
+            try {
+                const passphraseBuffer = Nimiq.BufferUtils.fromAscii(p);
+                const key = await KeyStore.instance.get(request.keyId, passphraseBuffer);
+                if (!key) {
+                    throw new Error('No key');
+                }
+                if (!this.parsedRequest) throw new Error('No Request');
+                // TODO await KeyStore.instance.remove(this.parsedRequest.keyId);
+                document.body.classList.add('loading');
+                console.log('trying to resolve');
+                this.resolve(true);
+            } catch (e) {
+                downloadKeyFilePassphraseBox.onPassphraseIncorrect();
+            }
         });
         window.location.hash = 'remove-key';
     }
@@ -72,4 +169,23 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
 
         return request;
     }
+
+    _goToPrivacyAgent() {
+        window.location.hash = RemoveKeyApi.Pages.PRIVACY_AGENT;
+    }
+
+    _goToDownloadFile() {
+        window.location.hash = RemoveKeyApi.Pages.DOWNLOAD_KEY_FILE;
+    }
+
+    _goToRemoveKey() {
+        window.location.hash = RemoveKeyApi.Pages.REMOVE_KEY;
+    }
 }
+
+RemoveKeyApi.Pages = {
+    REMOVE_KEY: 'remove-key',
+    PRIVACY_AGENT: 'privacy',
+    SHOW_WORDS: 'recovery-words',
+    DOWNLOAD_KEY_FILE: 'download-key-file',
+};
