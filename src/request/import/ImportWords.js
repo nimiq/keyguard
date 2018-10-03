@@ -58,6 +58,7 @@ class ImportWords {
         recoveryWords.on(RecoveryWords.Events.COMPLETE, () => { $wordsConfirm.disabled = false; });
         recoveryWords.on(RecoveryWords.Events.INCOMPLETE, () => { $wordsConfirm.disabled = true; });
         recoveryWords.on(RecoveryWords.Events.INVALID, () => { $wordsConfirm.disabled = true; });
+        $wordsConfirm.disabled = true;
         $words.addEventListener('submit', event => {
             event.preventDefault();
             if (recoveryWords.mnemonic) {
