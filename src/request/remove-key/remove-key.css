@@ -11,6 +11,9 @@
 .red {
     color: var(--nimiq-red);
 }
+.download-icon {
+    align-self: center;
+}
 
 .page#remove-key p {
     margin-bottom: 2rem;

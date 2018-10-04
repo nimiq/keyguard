@@ -4,6 +4,7 @@
 /* global PrivacyWarning */
 /* global PassphraseBox */
 /* global RecoveryWords */
+/* global DownloadKeyfile */
 class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
      * @param {RemoveKeyRequest} request
@@ -55,22 +56,24 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         // download key file
         /** @type {HTMLFormElement} */
         const $downloadKeyFilePassphraseBox = ($downloadKeyFile.querySelector('.passphrase-box'));
+        /** @type {HTMLFormElement} */
+        const $downloadKeyFileBox = ($downloadKeyFile.querySelector('.download-key-file'));
         /** @type {HTMLButtonElement} */
         const $downloadFileButton = ($downloadKeyFile.querySelector('button:not(.submit'));
 
         // components
-        // eslint-disable-next-line
-        const privacyWarning = new PrivacyWarning($privacyWarning);
-        this.recoveryWordsPassphraseBox = new PassphraseBox(
+        const privacyWarning = new PrivacyWarning($privacyWarning); // eslint-disable-line no-unused-vars
+        this._recoveryWordsPassphraseBox = new PassphraseBox(
             $privacyWarningPassphraseBox,
             { buttonI18nTag: 'passphrasebox-continue' },
         );
-        this.recoveryWords = new RecoveryWords($recoveryWords, false);
-        this.downloadKeyFilePassphraseBox = new PassphraseBox(
+        this._recoveryWords = new RecoveryWords($recoveryWords, false);
+        this._downloadKeyFilePassphraseBox = new PassphraseBox(
             $downloadKeyFilePassphraseBox,
             { buttonI18nTag: 'passphrasebox-continue' },
         );
-        this.removeKeyPassphraseBox = new PassphraseBox(
+        this._downloadKeyfile = new DownloadKeyfile($downloadKeyFileBox);
+        this._removeKeyPassphraseBox = new PassphraseBox(
             $removeKeyPassphraseBox,
             { buttonI18nTag: 'passphrasebox-continue', bgColor: 'red' },
         );
@@ -81,7 +84,7 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         $goToRemoveKey.addEventListener('click', () => {
             $removeKey.classList.toggle('state', true);
         });
-        this.removeKeyPassphraseBox.on(PassphraseBox.Events.SUBMIT, async p => {
+        this._removeKeyPassphraseBox.on(PassphraseBox.Events.SUBMIT, async p => {
             try {
                 const passphraseBuffer = Nimiq.BufferUtils.fromAscii(p);
                 const key = await KeyStore.instance.get(request.keyId, passphraseBuffer);
@@ -98,14 +101,14 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
                 };
                 this.resolve(result);
             } catch (e) {
-                /** @type {PassphraseBox} */(this.downloadKeyFilePassphraseBox).onPassphraseIncorrect();
+                /** @type {PassphraseBox} */(this._removeKeyPassphraseBox).onPassphraseIncorrect();
             }
         });
-        this.removeKeyPassphraseBox.on(PassphraseBox.Events.CANCEL, () => {
+        this._removeKeyPassphraseBox.on(PassphraseBox.Events.CANCEL, () => {
             this._reset();
         });
 
-        this.recoveryWordsPassphraseBox.on(PassphraseBox.Events.SUBMIT, async p => {
+        this._recoveryWordsPassphraseBox.on(PassphraseBox.Events.SUBMIT, async p => {
             try {
                 const passphraseBuffer = Nimiq.BufferUtils.fromAscii(p);
                 const key = await KeyStore.instance.get(request.keyId, passphraseBuffer);
@@ -124,31 +127,31 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
                     throw new Error('Unknown mnemonic type');
                 }
                 this._reset();
-                /** @type {RecoveryWords} */(this.recoveryWords).setWords(words);
+                /** @type {RecoveryWords} */(this._recoveryWords).setWords(words);
                 window.location.hash = RemoveKeyApi.Pages.SHOW_WORDS;
             } catch (e) {
-                /** @type {PassphraseBox} */(this.recoveryWordsPassphraseBox).onPassphraseIncorrect();
+                /** @type {PassphraseBox} */(this._recoveryWordsPassphraseBox).onPassphraseIncorrect();
             }
         });
-        this.recoveryWordsPassphraseBox.on(PassphraseBox.Events.CANCEL, () => this._goToRemoveKey());
+        this._recoveryWordsPassphraseBox.on(PassphraseBox.Events.CANCEL, () => this._goToRemoveKey());
         $recoveryWordsButton.addEventListener('click', this._goToRemoveKey.bind(this));
 
-        this.downloadKeyFilePassphraseBox.on(PassphraseBox.Events.SUBMIT, async p => {
+        this._downloadKeyFilePassphraseBox.on(PassphraseBox.Events.SUBMIT, async p => {
             try {
                 const passphraseBuffer = Nimiq.BufferUtils.fromAscii(p);
                 const key = await KeyStore.instance.get(request.keyId, passphraseBuffer);
                 if (!key) {
                     throw new Error('No key');
                 }
-                // TODO Generate file and wait for download completed
-                $downloadKeyFilePassphraseBox.classList.add('display-none');
-                $downloadFileButton.classList.remove('display-none');
+
+                // TODO Generate secret for key file
+                /** @type {DownloadKeyfile} */ (this._downloadKeyfile).setSecret(new Uint8Array(0), p.length > 0);
                 $downloadKeyFile.classList.toggle('state', true);
             } catch (e) {
-                /** @type {PassphraseBox} */(this.downloadKeyFilePassphraseBox).onPassphraseIncorrect();
+                /** @type {PassphraseBox} */(this._downloadKeyFilePassphraseBox).onPassphraseIncorrect();
             }
         });
-        this.downloadKeyFilePassphraseBox.on(PassphraseBox.Events.CANCEL, () => this._goToRemoveKey());
+        this._downloadKeyFilePassphraseBox.on(PassphraseBox.Events.CANCEL, () => this._goToRemoveKey());
         $downloadFileButton.addEventListener('click', this._goToRemoveKey.bind(this));
 
         window.location.hash = 'remove-key';
@@ -202,10 +205,10 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         document.querySelectorAll('.page').forEach(v => {
             v.classList.toggle('state', false);
         });
-        /** @type {PassphraseBox} */(this.recoveryWordsPassphraseBox).reset();
-        /** @type {PassphraseBox} */(this.downloadKeyFilePassphraseBox).reset();
-        /** @type {PassphraseBox} */(this.removeKeyPassphraseBox).reset();
-        /** @type {RecoveryWords} */(this.recoveryWords).setWords(['']);
+        /** @type {PassphraseBox} */(this._recoveryWordsPassphraseBox).reset();
+        /** @type {PassphraseBox} */(this._downloadKeyFilePassphraseBox).reset();
+        /** @type {PassphraseBox} */(this._removeKeyPassphraseBox).reset();
+        /** @type {RecoveryWords} */(this._recoveryWords).setWords(['']);
     }
 }
 
