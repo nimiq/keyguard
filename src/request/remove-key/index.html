@@ -54,19 +54,36 @@
 
             <div class="page-body">
                 <div class="row">
-                    <p data-i18n="remove-key-intro-text">Logging out means removing your Key File from this browser. Make sure you have it stored somewhere, or at least have your recovery words accessible.</p>
-                    <div class="warning-sign"></div>
+                    <p data-i18n="remove-key-intro-text">Logging out means removing your Key File from this browser. 
+                        Make sure you have it stored somewhere, or at least have your recovery words accessible.
+                    </p>
+                    <div class="warning-sign">
+                        <svg width="75" height="74" viewBox="0 0 75 74" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M39.8365 49.2798C39.8365 50.8448 38.5617 
+                                52.1253 36.991 52.1253C35.4203 52.1253 34.1455 50.8448 34.1455 49.2798V30.6531C34.1455
+                                29.0767 35.4203 27.8076 36.991 27.8076C38.5617 27.8076 39.8365 29.0767 39.8365
+                                30.6531V49.2798ZM36.991 62.4718C35.4203 62.4718 34.1455 61.197 34.1455 59.6263C34.1455
+                                58.0555 35.4203 56.7808 36.991 56.7808C38.5617 56.7808 39.8365 58.0555 39.8365
+                                59.6263C39.8365 61.197 38.5617 62.4718 36.991 62.4718ZM73.3682 69.1074L39.5351
+                                1.44694C38.5676 -0.482313 35.4148 -0.482313 34.4473 1.44694L0.301268 69.7391C-0.13694
+                                70.6212 -0.0971029 71.6683 0.420779 72.5106C0.944352 73.3472 1.86061 73.8537 2.84515
+                                73.8537H71.1373C71.1771 73.8594 71.2227 73.8594 71.2511 73.8537C72.8218 73.8537
+                                74.0966 72.5846 74.0966 71.0082C74.0966 70.2797 73.8235 69.6139 73.3682 69.1074Z" fill="#ca3333"/>
+                        </svg>
+                                
+                    </div>
                 </div>
                 <p class="red" data-i18n="remove-key-intro-text-red">If you have neither of them, there’s no chance to regain access to your account</p>
-                <div class="row">
+                <div class="flex-grow"></div>
+                <div class="row state0">
                     <button id="show-download-key-file" data-i18n="remove-key-download-key-file">Downlaod Key File</button>
                     <button id="show-recovery-words" data-i18n="remove-key-show-recovery-words">Show Recovery Words</button>
                 </div>
             </div>
 
             <div class="page-footer">
-                <form class="passphrase-box display-none"></form>
-                <button id="remove-key-confirm" data-i18n="remove-key-confirm">Log out of your Wallet</button>
+                <form class="passphrase-box state1"></form>
+                <button id="remove-key-confirm" class="state0" data-i18n="remove-key-confirm">Log out of your Wallet</button>
             </div>
         </div>
 
@@ -115,8 +132,8 @@
             </div>
 
             <div class="page-footer">
-                <form class="passphrase-box"></form>
-                <button class="back-to-remove display-none" data-i18n="remove-key-back">Back to log out</button>
+                <form class="passphrase-box state0"></form>
+                <button class="back-to-remove state1" data-i18n="remove-key-back">Back to log out</button>
             </div>
         </div>
 

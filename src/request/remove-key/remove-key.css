@@ -1,7 +1,6 @@
 .row {
     display: flex;
     flex-direction: row;
-    margin-top: 4rem; 
 }
 
 .page-body {
@@ -9,24 +8,16 @@
     padding: 4rem;
 }
 
-.warning-sign {
-    height: 10rem;
-    width: 10rem;
-    border: 1px solid red;
-    justify-content: flex-end;
-    flex-shrink: 0;
+.red {
+    color: var(--nimiq-red);
 }
 
 .page#remove-key p {
-    flex-grow: 1;
+    margin-bottom: 2rem;
 }
 
 .page#remove-key p + p {
     margin-top: 1rem;
-}
-
-.red {
-    color: var(--nimiq-red);
 }
 
 .page#remove-key .page-body button {
@@ -42,6 +33,13 @@
     color: black;
     margin: 0 2rem 0 0;
     align-self: flex-start;
+}
+
+.page.state .state0 {
+    display:none;
+}
+.page:not(.state) .state1 {
+    display:none;
 }
 
 .page#remove-key .page-footer button:not(.submit) {
