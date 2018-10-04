@@ -1,0 +1,38 @@
+.account {
+    flex-direction: row;
+    padding: 1.625rem 4rem;
+}
+
+.account .identicon {
+    margin-right: 2rem;
+    margin-bottom: 0;
+    flex-shrink: 0;
+}
+
+.account-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.account .label {
+    margin-bottom: 0.5rem;
+}
+
+.address {
+    line-height: 2.5rem;
+}
+
+.signer-section {
+    display: flex;
+    flex-direction: column;
+    margin-top: 3rem;
+    padding-bottom: 2rem;
+}
+
+.signer-section .nq-label {
+    margin: 3rem 3rem 2rem 3rem;
+}
+
+.page-footer {
+    padding: 1rem;
+}

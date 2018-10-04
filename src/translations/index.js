@@ -63,6 +63,10 @@ const TRANSLATIONS = {
         'sign-tx-to': 'to',
         'sign-tx-pay-with': 'Pay with',
 
+        'sign-msg-heading': 'Sign Message',
+        'sign-msg-text': 'Please enter your passphrase to sign the following message:',
+        'sign-msg-sign-with': 'Sign with',
+
         'passphrasebox-enter-passphrase': 'Enter your passphrase',
         'passphrasebox-protect-keyfile': 'Protect your keyfile with a password',
         'passphrasebox-repeat-password': 'Repeat your password',
@@ -189,6 +193,10 @@ const TRANSLATIONS = {
         'sign-tx-youre-sending': 'Du sendest',
         'sign-tx-to': 'an',
         'sign-tx-pay-with': 'Zahle mit',
+
+        'sign-msg-heading': 'Nachricht signieren',
+        'sign-msg-text': 'Bitte gib deine Passphrase ein, um die folgende Nachricht zu signieren:',
+        'sign-msg-sign-with': 'Signieren mit',
 
         'passphrasebox-enter-passphrase': 'Gib deine Passphrase ein',
         'passphrasebox-protect-keyfile': 'Sichere dein KeyFile mit einem Passwort',
