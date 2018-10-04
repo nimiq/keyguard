@@ -29,6 +29,10 @@ export interface RemoveKeyRequest {
     keyLabel?: string;
 }
 
+export interface RemoveKeyResult {
+    success: boolean;
+}
+
 export interface ImportRequest {
     appName: string;
     defaultKeyPath: string;
@@ -47,10 +51,18 @@ export interface ExportWordsRequest {
     keyLabel?: string;
 }
 
+export interface ExportWordsResult {
+    success: boolean;
+}
+
 export interface ExportFileRequest {
     appName: string;
     keyId: string;
     keyLabel?: string;
+}
+
+export interface ExportFileResult {
+    success: boolean;
 }
 
 export interface SignTransactionRequest {
@@ -77,24 +89,30 @@ export interface SignTransactionRequest {
 }
 
 export interface SignTransactionResult {
-    kind?: KeyguardCommand.SIGN_TRANSACTION;
     publicKey: Uint8Array;
     signature: Uint8Array;
 }
 
 export interface SignMessageRequest {
+    appName: string;
+
     keyId: string;
     keyPath: string;
-    keyLabel?: string;
 
-    message: string;
+    keyLabel?: string;
+    addressLabel?: string;
+    message: string | Uint8Array;
 }
 
 export interface SignMessageResult {
-    kind?: KeyguardCommand.SIGN_MESSAGE;
-    message: string;
-    publicKey: string;
-    signature: string;
+    publicKey: Uint8Array;
+    signature: Uint8Array;
 }
 
-export type RpcResult = CreateResult | ImportResult | SignTransactionResult | SignMessageResult | boolean;
+export type RpcResult = CreateResult
+    | ImportResult
+    | SignTransactionResult
+    | SignMessageResult
+    | RemoveKeyResult
+    | ExportFileResult
+    | ExportWordsResult;

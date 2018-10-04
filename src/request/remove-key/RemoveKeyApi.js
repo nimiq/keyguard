@@ -20,7 +20,7 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         $cancelLink.classList.remove('display-none');
         $cancelLink.addEventListener('click', () => window.close());
 
-
+        // pages
         /** @type {HTMLElement} */
         const $removeKey = (document.getElementById(RemoveKeyApi.Pages.REMOVE_KEY));
         /** @type {HTMLElement} */
@@ -30,6 +30,7 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         /** @type {HTMLElement} */
         const $downloadKeyFile = (document.getElementById(RemoveKeyApi.Pages.DOWNLOAD_KEY_FILE));
 
+        // remove key
         /** @type {HTMLButtonElement} */
         const $goToDownloadFile = ($removeKey.querySelector('#show-download-key-file'));
         /** @type {HTMLButtonElement} */
@@ -39,31 +40,32 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         /** @type {HTMLFormElement} */
         const $removeKeyPassphraseBox = ($removeKey.querySelector('.passphrase-box'));
 
+        // privacy warning
         /** @type {HTMLElement} */
         const $privacyWarning = ($privacy.querySelector('.privacy-warning'));
         /** @type {HTMLFormElement} */
         const $privacyWarningPassphraseBox = ($privacy.querySelector('.passphrase-box'));
 
+        // recovery words
         /** @type {HTMLElement} */
         const $recoveryWords = ($showWords.querySelector('.recovery-words'));
         /** @type {HTMLButtonElement} */
         const $recoveryWordsButton = ($showWords.querySelector('button'));
 
+        // download key file
         /** @type {HTMLFormElement} */
         const $downloadKeyFilePassphraseBox = ($downloadKeyFile.querySelector('.passphrase-box'));
         /** @type {HTMLButtonElement} */
         const $downloadFileButton = ($downloadKeyFile.querySelector('button:not(.submit'));
 
-        // eslint-disable-line no-unused-vars
+        // components
+        // eslint-disable-next-line
         const privacyWarning = new PrivacyWarning($privacyWarning);
-        privacyWarning.getElement();
-        // eslint-enable-line no-unused-vars
         const recoveryWordsPassphraseBox = new PassphraseBox(
             $privacyWarningPassphraseBox,
             { buttonI18nTag: 'passphrasebox-continue' },
         );
         const recoveryWords = new RecoveryWords($recoveryWords, false);
-
         const downloadKeyFilePassphraseBox = new PassphraseBox(
             $downloadKeyFilePassphraseBox,
             { buttonI18nTag: 'passphrasebox-continue' },
@@ -73,6 +75,7 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
             { buttonI18nTag: 'passphrasebox-continue', bgColor: 'red' },
         );
 
+        // events
         $goToShowRecoveryWords.addEventListener('click', this._goToPrivacyAgent.bind(this));
         $goToDownloadFile.addEventListener('click', this._goToDownloadFile.bind(this));
         $goToRemoveKey.addEventListener('click', () => {
@@ -130,10 +133,14 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
                     throw new Error('No key');
                 }
                 if (!this.parsedRequest) throw new Error('No Request');
-                // TODO await KeyStore.instance.remove(this.parsedRequest.keyId);
+                await KeyStore.instance.remove(this.parsedRequest.keyId);
                 document.body.classList.add('loading');
-                console.log('trying to resolve');
-                this.resolve(true);
+
+                /** @type {RemoveKeyResult} */
+                const result = {
+                    success: true,
+                };
+                this.resolve(result);
             } catch (e) {
                 downloadKeyFilePassphraseBox.onPassphraseIncorrect();
             }
