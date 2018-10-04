@@ -199,7 +199,7 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     }
 
     _reset() {
-        document.querySelectorAll('.page').forEach( (v,k) => {
+        document.querySelectorAll('.page').forEach(v => {
             v.classList.toggle('state', false);
         });
         /** @type {PassphraseBox} */(this.recoveryWordsPassphraseBox).reset();
