@@ -89,24 +89,24 @@ export interface SignTransactionRequest {
 }
 
 export interface SignTransactionResult {
-    kind?: KeyguardCommand.SIGN_TRANSACTION;
     publicKey: Uint8Array;
     signature: Uint8Array;
 }
 
 export interface SignMessageRequest {
+    appName: string;
+
     keyId: string;
     keyPath: string;
-    keyLabel?: string;
 
-    message: string;
+    keyLabel?: string;
+    addressLabel?: string;
+    message: string | Uint8Array;
 }
 
 export interface SignMessageResult {
-    kind?: KeyguardCommand.SIGN_MESSAGE;
-    message: string;
-    publicKey: string;
-    signature: string;
+    publicKey: Uint8Array;
+    signature: Uint8Array;
 }
 
 export type RpcResult = CreateResult

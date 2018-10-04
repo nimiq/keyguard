@@ -90,17 +90,30 @@ type ExportFileResult = {
 }
 
 type SignMessageRequest = {
+    appName: string
+
     keyId: string
     keyPath: string
-    keyLabel?: string
 
-    message: string
+    keyLabel?: string
+    addressLabel?: string
+    message: string | Uint8Array
+}
+
+type ParsedSignMessageRequest = {
+    appName: string
+
+    keyInfo: KeyInfo
+    keyPath: string
+
+    keyLabel?: string
+    addressLabel?: string
+    message: Uint8Array
 }
 
 type SignMessageResult = {
-    message: string
-    publicKey: string
-    signature: string
+    publicKey: Uint8Array
+    signature: Uint8Array
 }
 
 type CreateRequest = {
