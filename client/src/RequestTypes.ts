@@ -29,6 +29,10 @@ export interface RemoveKeyRequest {
     keyLabel?: string;
 }
 
+export interface RemoveKeyResult {
+    success: boolean;
+}
+
 export interface ImportRequest {
     appName: string;
     defaultKeyPath: string;
@@ -47,10 +51,18 @@ export interface ExportWordsRequest {
     keyLabel?: string;
 }
 
+export interface ExportWordsResult {
+    success: boolean;
+}
+
 export interface ExportFileRequest {
     appName: string;
     keyId: string;
     keyLabel?: string;
+}
+
+export interface ExportFileResult {
+    success: boolean;
 }
 
 export interface SignTransactionRequest {
@@ -97,4 +109,10 @@ export interface SignMessageResult {
     signature: string;
 }
 
-export type RpcResult = CreateResult | ImportResult | SignTransactionResult | SignMessageResult | boolean;
+export type RpcResult = CreateResult
+    | ImportResult
+    | SignTransactionResult
+    | SignMessageResult
+    | RemoveKeyResult
+    | ExportFileResult
+    | ExportWordsResult;

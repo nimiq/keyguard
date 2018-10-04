@@ -11,8 +11,11 @@ import {
     ImportRequest,
     ImportResult,
     RemoveKeyRequest,
+    RemoveKeyResult,
     ExportWordsRequest,
+    ExportWordsResult,
     ExportFileRequest,
+    ExportFileResult,
 } from './RequestTypes';
 
 export class KeyguardClient {
@@ -50,7 +53,7 @@ export class KeyguardClient {
         return this._request(requestBehavior,  KeyguardCommand.CREATE, [request]);
     }
 
-    public remove(request: RemoveKeyRequest, requestBehavior = this._defaultBehavior): Promise<boolean> {
+    public remove(request: RemoveKeyRequest, requestBehavior = this._defaultBehavior): Promise<RemoveKeyResult> {
         return this._request(requestBehavior,  KeyguardCommand.REMOVE, [request]);
     }
 
@@ -58,11 +61,13 @@ export class KeyguardClient {
         return this._request(requestBehavior,  KeyguardCommand.IMPORT, [request]);
     }
 
-    public async exportWords(request: ExportWordsRequest, requestBehavior = this._defaultBehavior): Promise<boolean> {
+    public async exportWords(request: ExportWordsRequest, requestBehavior = this._defaultBehavior)
+        : Promise<ExportWordsResult> {
         return this._request(requestBehavior,  KeyguardCommand.EXPORT_WORDS, [request]);
     }
 
-    public async exportFile(request: ExportFileRequest, requestBehavior = this._defaultBehavior): Promise<boolean> {
+    public async exportFile(request: ExportFileRequest, requestBehavior = this._defaultBehavior)
+        : Promise<ExportFileResult> {
         return this._request(requestBehavior,  KeyguardCommand.EXPORT_FILE, [request]);
     }
 

@@ -75,11 +75,18 @@ type ExportWordsRequest = {
     keyId: string
     keyLabel?: string
 }
+type ExportWordsResult = {
+    success: boolean
+}
 
 type ExportFileRequest = {
     appName: string
     keyId: string
     keyLabel?: string
+}
+
+type ExportFileResult = {
+    success: boolean
 }
 
 type SignMessageRequest = {
@@ -123,6 +130,10 @@ type RemoveKeyRequest = {
     appName: string
     keyId: string
     keyLabel?: string
+}
+
+type RemoveKeyResult = {
+    success: boolean
 }
 
 type KeyguardRequest = CreateRequest
