@@ -75,6 +75,9 @@ type ExportWordsRequest = {
     keyId: string
     keyLabel?: string
 }
+type ExportWordsResult = {
+    success: boolean
+}
 
 type ExportFileRequest = {
     appName: string
@@ -82,18 +85,35 @@ type ExportFileRequest = {
     keyLabel?: string
 }
 
+type ExportFileResult = {
+    success: boolean
+}
+
 type SignMessageRequest = {
+    appName: string
+
     keyId: string
     keyPath: string
-    keyLabel?: string
 
-    message: string
+    keyLabel?: string
+    addressLabel?: string
+    message: string | Uint8Array
+}
+
+type ParsedSignMessageRequest = {
+    appName: string
+
+    keyInfo: KeyInfo
+    keyPath: string
+
+    keyLabel?: string
+    addressLabel?: string
+    message: Uint8Array
 }
 
 type SignMessageResult = {
-    message: string
-    publicKey: string
-    signature: string
+    publicKey: Uint8Array
+    signature: Uint8Array
 }
 
 type CreateRequest = {
@@ -123,6 +143,10 @@ type RemoveKeyRequest = {
     appName: string
     keyId: string
     keyLabel?: string
+}
+
+type RemoveKeyResult = {
+    success: boolean
 }
 
 type KeyguardRequest = CreateRequest
