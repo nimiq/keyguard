@@ -1,19 +1,36 @@
 #!/bin/bash 
 
+# cleanup
 rm -rf dist
+
+# create folder structure
 mkdir dist
 mkdir dist/request
 
+# bundle files for each request
 for DIR in src/request/*/ ; do
-    echo $DIR
     REQUEST=$(basename $DIR)
     
+    echo $REQUEST
+    
+    # create directory for request
     mkdir dist/request/$REQUEST
 
-    LIST="$(grep '<script' $DIR/index.html | grep -v -E "http|https" | cut -d\" -f2)"
+    # get all local js files included in request's index.html
+    LIST_JS="$(grep '<script' $DIR/index.html | grep -v -E "http|https" | cut -d\" -f2)"
 
-    for url in $LIST; do
+    # concat them
+    for url in $LIST_JS; do
        cat $DIR/$url >> dist/request/$REQUEST/build.js
     done
+
+     # get all css files included in request's index.html
+    LIST_CSS="$(grep '<link' $DIR/index.html | cut -d\" -f4)"
+
+    # concat them
+    for url in $LIST_CSS; do
+       cat $DIR/$url >> dist/request/$REQUEST/build.css
+    done
+
 done
 
