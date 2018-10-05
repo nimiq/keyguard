@@ -1,0 +1,19 @@
+#!/bin/bash 
+
+rm -rf dist
+mkdir dist
+mkdir dist/request
+
+for DIR in src/request/*/ ; do
+    echo $DIR
+    REQUEST=$(basename $DIR)
+    
+    mkdir dist/request/$REQUEST
+
+    LIST="$(grep '<script' $DIR/index.html | grep -v -E "http|https" | cut -d\" -f2)"
+
+    for url in $LIST; do
+       cat $DIR/$url >> dist/request/$REQUEST/build.js
+    done
+done
+
