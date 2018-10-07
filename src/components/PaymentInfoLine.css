@@ -1,5 +1,5 @@
 .payment-info-line {
-    width: 100vw;
+    width: 100%;
     max-width: 56.25rem;
     display: flex;
     flex-direction: row;

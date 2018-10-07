@@ -33,7 +33,7 @@
     flex-direction: column;
     align-items: center;
     background: white;
-    width: 100vw;
+    width: 100%;
     max-width: 56.25rem; /* 450px */
     min-height: 63rem; /* 504px */
     border-radius: 1rem;
@@ -300,6 +300,7 @@ kbd {
     flex-direction: column;
     justify-content: start;
     align-items: center;
-    width: 98vw;
     min-height: calc(100vh - 11.125rem); /* window hight - header height */
+    padding: 0 1rem;
+    width: 100%;
 }
