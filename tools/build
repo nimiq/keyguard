@@ -1,10 +1,11 @@
 #!/bin/bash
 
-if ! which envsubst > /dev/null 2>&1; then
-  echo "You don't seem to have envsubst yet. Go get it! Using sed as an" \
-    "alternative approach is to slow... :("
-  exit 1
-fi
+# Note: Not sure if we use this. It's not straightforward to install on OSX
+# if ! which envsubst > /dev/null 2>&1; then
+#  echo "You don't seem to have envsubst yet. Go get it! Using sed as an" \
+#    "alternative approach is to slow... :("
+#  exit 1
+# fi
 
 # cleanup
 rm -rf dist
@@ -61,8 +62,10 @@ for DIR in src/request/*/ ; do
       next
     }
     /<script/ {
+      # Replace first script tag with bundle, delete all others
       if (!skip_script) {
         skip_script = 1
+        # Preserve whitespace / intendation. Note: 1 ist first array index in awk
         split($0, space, "<")
         print space[1] "<script defer src=\"/request/'${REQUEST}'/'${JS_BUNDLE}'\"></script>"
       }
@@ -81,6 +84,9 @@ for DIR in src/request/*/ ; do
       next
     }
     { print }
-    ' $DIR/index.html | envsubst "${ENV_TO_REPLACE}" > dist/request/${REQUEST}/index.html
+    ' $DIR/index.html > dist/request/${REQUEST}/index.html
+    
+    # | envsubst "${ENV_TO_REPLACE}"
+    
 
 done
