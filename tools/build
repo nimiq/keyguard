@@ -38,7 +38,7 @@ for DIR in src/request/*/ ; do
        cat $DIR/$url >> dist/request/$REQUEST/build.css
     done
 
-    # replaced scripts and links by bundle in builded index.html
+    # replace scripts and links by bundle in builded index.html
     # and replace CSP strings with ENV variables for configuration
     # XXX: using envsubst as a first suggestion. if it is kept, the one should
     #      make sure to whitelist only known environment variables in there :)
