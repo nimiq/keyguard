@@ -13,6 +13,14 @@ rm -rf dist
 mkdir dist
 mkdir dist/request
 
+# current git commit hash to create unique filenames to
+# overwrite browser cache (inspired by Vue's build output)
+HASH=$(git rev-parse --short=8 HEAD)
+
+# bundle names
+JS_BUNDLE="index.$HASH.js"
+CSS_BUNDLE="index.$HASH.css"
+
 # bundle files for each request
 for DIR in src/request/*/ ; do
     REQUEST=$(basename $DIR)
@@ -27,7 +35,7 @@ for DIR in src/request/*/ ; do
 
     # concat them
     for url in $LIST_JS; do
-       cat $DIR/$url >> dist/request/$REQUEST/build.js
+       cat $DIR/$url >> dist/request/$REQUEST/$JS_BUNDLE
     done
 
     # get all css files included in request's index.html
@@ -35,7 +43,7 @@ for DIR in src/request/*/ ; do
 
     # concat them
     for url in $LIST_CSS; do
-       cat $DIR/$url >> dist/request/$REQUEST/build.css
+       cat $DIR/$url >> dist/request/$REQUEST/$CSS_BUNDLE
     done
 
     # replace scripts and links by bundle in built index.html
@@ -56,7 +64,7 @@ for DIR in src/request/*/ ; do
       if (!skip_script) {
         skip_script = 1
         split($0, space, "<")
-        print space[1] "<script defer src=\"/request/'${REQUEST}'/build.js\"></script>"
+        print space[1] "<script defer src=\"/request/'${REQUEST}'/'${JS_BUNDLE}'\"></script>"
       }
       next
     }
@@ -68,7 +76,7 @@ for DIR in src/request/*/ ; do
       if (!skip_link) {
         skip_link = 1
         split($0, space, "<")
-        print space[1] "<link rel=\"stylesheet\" href=\"/request/'${REQUEST}'/build.css\">"
+        print space[1] "<link rel=\"stylesheet\" href=\"/request/'${REQUEST}'/'${CSS_BUNDLE}'\">"
       }
       next
     }
