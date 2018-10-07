@@ -38,7 +38,7 @@ for DIR in src/request/*/ ; do
        cat $DIR/$url >> dist/request/$REQUEST/build.css
     done
 
-    # replace scripts and links by bundle in builded index.html
+    # replace scripts and links by bundle in built index.html
     # and replace CSP strings with ENV variables for configuration
     # XXX: using envsubst as a first suggestion. if it is kept, the one should
     #      make sure to whitelist only known environment variables in there :)
@@ -56,7 +56,7 @@ for DIR in src/request/*/ ; do
       if (!skip_script) {
         skip_script = 1
         split($0, space, "<")
-        print space[1] "<script defer src=/\"'${REQUEST}'/build.js\"></script>"
+        print space[1] "<script defer src=\"/request/'${REQUEST}'/build.js\"></script>"
       }
       next
     }
@@ -68,7 +68,7 @@ for DIR in src/request/*/ ; do
       if (!skip_link) {
         skip_link = 1
         split($0, space, "<")
-        print space[1] "<link rel="stylesheet" href=/\"'${REQUEST}'/build.css\">"
+        print space[1] "<link rel=\"stylesheet\" href=\"/request/'${REQUEST}'/build.css\">"
       }
       next
     }
