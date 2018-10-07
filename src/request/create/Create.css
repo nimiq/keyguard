@@ -3,7 +3,8 @@
 }
 
 .page .actionbox p {
-    margin: 0 10rem 3rem;
+    margin: 0 2rem 3rem;
+    max-width: 32rem;
 }
 
 .page p + p {
@@ -40,7 +41,7 @@
 }
 
 .page#recovery-words button {
-    width: calc(100% - 15rem);
+    width: calc(100% - 4rem);
     background: #724ceb;
     color: white;
     margin-bottom: 2.5rem;

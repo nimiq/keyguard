@@ -234,6 +234,7 @@
 
 .actionbox button {
     color: #724ceb;
+    margin-bottom: 1.75rem;
 }
 
 .actionbox.red {
@@ -279,11 +280,6 @@
 .actionbox p {
     margin: 0 10rem 3rem;
     color: inherit;
-}
-
-.actionbox button {
-    width: calc(100% - 11rem);
-    margin-bottom: 1.75rem;
 }
 
 /* make code blocks look like keys on the keyboard */
