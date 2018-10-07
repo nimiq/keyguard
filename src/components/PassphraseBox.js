@@ -10,7 +10,7 @@ class PassphraseBox extends Nimiq.Observable {
     constructor($el, options = {}) {
         const defaults = {
             bgColor: 'purple',
-            hideInput: false, // TODO: When a key is not encrypted, no passphrase is required
+            hideInput: false,
             buttonI18nTag: 'passphrasebox-confirm-tx',
         };
 
@@ -21,8 +21,12 @@ class PassphraseBox extends Nimiq.Observable {
 
         this.$el = PassphraseBox._createElement($el, this.options);
 
+        this.$el.classList.toggle('hide-input', this.options.hideInput);
+
         this._passphraseInput = new PassphraseInput(this.$el.querySelector('[passphrase-input]'));
         this._passphraseInput.on(PassphraseInput.Events.VALID, isValid => this._onInputChangeValidity(isValid));
+
+        this._isInputValid = false;
 
         this.$el.addEventListener('submit', event => this._onSubmit(event));
 
@@ -100,6 +104,7 @@ class PassphraseBox extends Nimiq.Observable {
      * @param {boolean} isValid
      */
     _onInputChangeValidity(isValid) {
+        this._isInputValid = isValid;
         this.$el.classList.toggle('input-valid', isValid);
     }
 
@@ -108,7 +113,10 @@ class PassphraseBox extends Nimiq.Observable {
      */
     _onSubmit(event) {
         event.preventDefault();
-        this.fire(PassphraseBox.Events.SUBMIT, this._passphraseInput.text);
+        if (!this.options.hideInput && !this._isInputValid) return;
+
+        const passphrase = !this.options.hideInput ? this._passphraseInput.text : undefined;
+        this.fire(PassphraseBox.Events.SUBMIT, passphrase);
     }
 
     _onCancel() {
