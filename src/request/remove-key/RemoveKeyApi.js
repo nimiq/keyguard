@@ -29,7 +29,7 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         /** @type {HTMLElement} */
         const $showWords = (document.getElementById(RemoveKeyApi.Pages.SHOW_WORDS));
         /** @type {HTMLElement} */
-        const $downloadKeyFile = (document.getElementById(RemoveKeyApi.Pages.DOWNLOAD_KEY_FILE));
+        this.$downloadKeyFile = (document.getElementById(RemoveKeyApi.Pages.DOWNLOAD_KEY_FILE));
 
         // remove key
         /** @type {HTMLButtonElement} */
@@ -55,11 +55,11 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
 
         // download key file
         /** @type {HTMLFormElement} */
-        const $downloadKeyFilePassphraseBox = ($downloadKeyFile.querySelector('.passphrase-box'));
+        const $downloadKeyFilePassphraseBox = (this.$downloadKeyFile.querySelector('.passphrase-box'));
         /** @type {HTMLFormElement} */
-        const $downloadKeyFileBox = ($downloadKeyFile.querySelector('.download-key-file'));
+        const $downloadKeyFileBox = (this.$downloadKeyFile.querySelector('.download-key-file'));
         /** @type {HTMLButtonElement} */
-        const $downloadFileButton = ($downloadKeyFile.querySelector('button:not(.submit'));
+        const $downloadFileButton = (this.$downloadKeyFile.querySelector('button:not(.submit'));
 
         // components
         const privacyWarning = new PrivacyWarning($privacyWarning); // eslint-disable-line no-unused-vars
@@ -75,7 +75,7 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         this._downloadKeyfile = new DownloadKeyfile($downloadKeyFileBox);
         this._removeKeyPassphraseBox = new PassphraseBox(
             $removeKeyPassphraseBox,
-            { buttonI18nTag: 'passphrasebox-continue', bgColor: 'red' },
+            { buttonI18nTag: 'passphrasebox-log-out', bgColor: 'red' },
         );
 
         // events
@@ -83,14 +83,11 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         $goToDownloadFile.addEventListener('click', this._goToDownloadFile.bind(this));
         $goToRemoveKey.addEventListener('click', () => {
             $removeKey.classList.toggle('state', true);
+            /** @type {PassphraseBox} */ (this._removeKeyPassphraseBox).reset();
+            /** @type {PassphraseBox} */ (this._removeKeyPassphraseBox).focus();
         });
         this._removeKeyPassphraseBox.on(PassphraseBox.Events.SUBMIT, async p => {
-            try {
-                const passphraseBuffer = Nimiq.BufferUtils.fromAscii(p);
-                const key = await KeyStore.instance.get(request.keyId, passphraseBuffer);
-                if (!key) {
-                    throw new Error('No key');
-                }
+            if (await this._keyphraseEntered(p, /** @type {PassphraseBox} */ (this._removeKeyPassphraseBox))) {
                 if (!this.parsedRequest) throw new Error('No Request');
                 await KeyStore.instance.remove(this.parsedRequest.keyId);
                 document.body.classList.add('loading');
@@ -100,61 +97,53 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
                     success: true,
                 };
                 this.resolve(result);
-            } catch (e) {
-                /** @type {PassphraseBox} */(this._removeKeyPassphraseBox).onPassphraseIncorrect();
             }
         });
         this._removeKeyPassphraseBox.on(PassphraseBox.Events.CANCEL, () => {
-            this._reset();
+            $removeKey.classList.toggle('state', false);
         });
 
         this._recoveryWordsPassphraseBox.on(PassphraseBox.Events.SUBMIT, async p => {
-            try {
-                const passphraseBuffer = Nimiq.BufferUtils.fromAscii(p);
-                const key = await KeyStore.instance.get(request.keyId, passphraseBuffer);
-                if (!key) {
-                    throw new Error('No key');
-                }
-                let words = [''];
-                switch (key.type) {
-                case Nimiq.MnemonicUtils.MnemonicType.LEGACY:
-                    words = Nimiq.MnemonicUtils.entropyToLegacyMnemonic(key.secret);
-                    break;
-                case Nimiq.MnemonicUtils.MnemonicType.BIP39:
-                    words = Nimiq.MnemonicUtils.entropyToMnemonic(key.secret);
-                    break;
-                default:
-                    throw new Error('Unknown mnemonic type');
-                }
-                this._reset();
-                /** @type {RecoveryWords} */(this._recoveryWords).setWords(words);
+            if (await this._keyphraseEntered(p, /** @type {PassphraseBox} */ (this._recoveryWordsPassphraseBox))) {
                 window.location.hash = RemoveKeyApi.Pages.SHOW_WORDS;
-            } catch (e) {
-                /** @type {PassphraseBox} */(this._recoveryWordsPassphraseBox).onPassphraseIncorrect();
             }
         });
         this._recoveryWordsPassphraseBox.on(PassphraseBox.Events.CANCEL, () => this._goToRemoveKey());
         $recoveryWordsButton.addEventListener('click', this._goToRemoveKey.bind(this));
 
         this._downloadKeyFilePassphraseBox.on(PassphraseBox.Events.SUBMIT, async p => {
-            try {
-                const passphraseBuffer = Nimiq.BufferUtils.fromAscii(p);
-                const key = await KeyStore.instance.get(request.keyId, passphraseBuffer);
-                if (!key) {
-                    throw new Error('No key');
-                }
-
-                // TODO Generate secret for key file
-                /** @type {DownloadKeyfile} */ (this._downloadKeyfile).setSecret(new Uint8Array(0), p.length > 0);
-                $downloadKeyFile.classList.toggle('state', true);
-            } catch (e) {
-                /** @type {PassphraseBox} */(this._downloadKeyFilePassphraseBox).onPassphraseIncorrect();
+            if (await this._keyphraseEntered(p, /** @type {PassphraseBox} */ (this._downloadKeyFilePassphraseBox))) {
+                /** @type {HTMLElement} */ (this.$downloadKeyFile).classList.toggle('state', true);
             }
         });
         this._downloadKeyFilePassphraseBox.on(PassphraseBox.Events.CANCEL, () => this._goToRemoveKey());
         $downloadFileButton.addEventListener('click', this._goToRemoveKey.bind(this));
 
-        window.location.hash = 'remove-key';
+        window.location.hash = RemoveKeyApi.Pages.REMOVE_KEY;
+    }
+
+    /**
+     * @private
+     * @param {string} phrase - entered passphrase
+     * @param {PassphraseBox} box - box the phrase was entered into
+     * @returns {Promise<boolean>}
+     */
+    async _keyphraseEntered(phrase, box) {
+        try {
+            const passphraseBuffer = Nimiq.BufferUtils.fromAscii(phrase);
+            const key = await KeyStore.instance.get(
+                /** @type {RemoveKeyRequest} */ (this.parsedRequest).keyId,
+                passphraseBuffer,
+            );
+            if (!key) {
+                throw new Error('No key');
+            }
+            this._setKey(key, phrase.length > 0); // possibly start timer to reset entered passphrase here.
+            return true;
+        } catch (e) {
+            box.onPassphraseIncorrect();
+            return false;
+        }
     }
 
     /**
@@ -187,28 +176,59 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     }
 
     _goToPrivacyAgent() {
-        window.location.hash = RemoveKeyApi.Pages.PRIVACY_AGENT;
-        this._reset();
+        if (this._getKey() !== null) {
+            window.location.hash = RemoveKeyApi.Pages.SHOW_WORDS;
+        } else {
+            window.location.hash = RemoveKeyApi.Pages.PRIVACY_AGENT;
+            /** @type {PassphraseBox} */ (this._recoveryWordsPassphraseBox).reset();
+            /** @type {PassphraseBox} */ (this._recoveryWordsPassphraseBox).focus();
+        }
     }
 
     _goToDownloadFile() {
         window.location.hash = RemoveKeyApi.Pages.DOWNLOAD_KEY_FILE;
-        this._reset();
+        if (this._getKey() !== null) {
+            /** @type {HTMLElement} */ (this.$downloadKeyFile).classList.add('state');
+        } else {
+            /** @type {PassphraseBox} */ (this._downloadKeyFilePassphraseBox).reset();
+            /** @type {PassphraseBox} */ (this._downloadKeyFilePassphraseBox).focus();
+        }
     }
 
     _goToRemoveKey() {
         window.location.hash = RemoveKeyApi.Pages.REMOVE_KEY;
-        this._reset();
+        /** @type {PassphraseBox} */ (this._removeKeyPassphraseBox).reset();
+        /** @type {PassphraseBox} */ (this._removeKeyPassphraseBox).focus();
     }
 
-    _reset() {
-        document.querySelectorAll('.page').forEach(v => {
-            v.classList.toggle('state', false);
-        });
-        /** @type {PassphraseBox} */(this._recoveryWordsPassphraseBox).reset();
-        /** @type {PassphraseBox} */(this._downloadKeyFilePassphraseBox).reset();
-        /** @type {PassphraseBox} */(this._removeKeyPassphraseBox).reset();
-        /** @type {RecoveryWords} */(this._recoveryWords).setWords(['']);
+    /**
+     * @param {Key | null} key
+     * @param {boolean} isProtected
+     */
+    _setKey(key, isProtected) {
+        this._key = key;
+        /** @type {DownloadKeyfile} */ (this._downloadKeyfile).setSecret(new Uint8Array(0), isProtected); // TODO
+        let words = [''];
+        if (this._key !== null) {
+            switch (this._key.type) {
+            case Nimiq.MnemonicUtils.MnemonicType.LEGACY:
+                words = Nimiq.MnemonicUtils.entropyToLegacyMnemonic(this._key.secret);
+                break;
+            case Nimiq.MnemonicUtils.MnemonicType.BIP39:
+                words = Nimiq.MnemonicUtils.entropyToMnemonic(this._key.secret);
+                break;
+            default:
+                throw new Error('Unknown mnemonic type');
+            }
+        }
+        /** @type {RecoveryWords} */(this._recoveryWords).setWords(words);
+    }
+
+    /**
+     * @returns {Key | null}
+     */
+    _getKey() {
+        return (this._key) ? this._key : null;
     }
 }
 
