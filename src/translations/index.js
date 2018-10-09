@@ -21,6 +21,7 @@ const TRANSLATIONS = {
                                     + 'of your Key File and will grant you access to your wallet even if your '
                                     + 'Key File is lost.',
         'recovery-words-storing': 'Write those words on a piece of paper and store it at a safe, offline place.',
+        'recovery-words-continue-to-words': 'Continue to recovery words',
 
         'create-heading-choose-identicon': 'Choose your account avatar',
         'create-text-select-avatar': 'Select an avatar for your wallet\'s default account from the selection below.',
@@ -90,6 +91,8 @@ const TRANSLATIONS = {
         'validate-words-text': 'Please select the correct word from your list of recovery words.',
         'validate-words-back': 'Back to words',
         'validate-words-skip': 'Skip validation for now',
+
+        'export-file-heading': 'Download Key File',
     },
     de: {
         _language: 'Deutsch',
@@ -115,6 +118,7 @@ const TRANSLATIONS = {
                                     + 'Wallet gewähren, auch wenn deine Schlüsseldatei verloren ist.',
         'recovery-words-storing': 'Schreibe diese Wörter auf ein Stück Papier und verwahre es an einem sicheren, '
                                 + 'analogen Ort.',
+        'recovery-words-continue-to-words': 'Continue to recovery words',
 
         'create-heading-choose-identicon': 'Wähle deinen Konto Avatar',
         'create-text-select-avatar': 'Wähle einen Avatar für den Standard-Account deiner Wallet aus der Auswahl unten.',
@@ -188,6 +192,8 @@ const TRANSLATIONS = {
         'validate-words-text': 'Bitte wähle das richtige Wort aus deiner Liste von Wiederherstellungswörtern aus.',
         'validate-words-back': 'Zurück zu den Wörtern',
         'validate-words-skip': 'Überprüfung erstmal überspringen',
+
+        'export-file-heading': 'Download Key File',
     },
 };
 

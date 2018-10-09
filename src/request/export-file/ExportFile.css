@@ -1,0 +1,22 @@
+.page-body {
+    background-color: #fafafa;
+    padding: 4rem;
+}
+
+.page.state .state0 {
+    display:none;
+}
+
+.page:not(.state) .state1 {
+    display:none;
+}
+
+.page .page-footer button:not(.submit) {
+    margin: 4rem 7.5rem;
+    background: var(--nimiq-purple);
+    color: white;
+}
+
+.download-icon {
+    align-self: center;
+}

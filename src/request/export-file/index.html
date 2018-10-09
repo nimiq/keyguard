@@ -9,7 +9,6 @@
 
     <script defer src="https://cdn.nimiq-network.com/branches/master/web-offline.js"></script>
     <script defer src="../../lib/RpcServer.es.js"></script>
-    <script defer src="../../lib/AutoComplete.js"></script>
     <script defer src="../../lib/Key.js"></script>
     <script defer src="../../lib/KeyInfo.js"></script>
     <script defer src="../../lib/KeyStore.js"></script>
@@ -20,26 +19,20 @@
     <script defer src="../../lib/AnimationUtils.js"></script>
     <script defer src="../../translations/index.js"></script>
     <script defer src="../../common.js"></script>
-    <script defer src="../../components/PrivacyWarning.js"></script>
     <script defer src="../../components/PassphraseInput.js"></script>
     <script defer src="../../components/PassphraseBox.js"></script>
-    <script defer src="../../components/RecoveryWords.js"></script>
-    <script defer src="../../components/RecoveryWordsInputField.js"></script>
-    <script defer src="../../components/ValidateWords.js"></script>
+    <script defer src="../../components/DownloadKeyfile.js"></script>
     <script defer src="../TopLevelApi.js"></script>
-    <script defer src="ExportWords.js"></script>
-    <script defer src="ExportWordsApi.js"></script>
+    <script defer src="ExportFile.js"></script>
+    <script defer src="ExportFileApi.js"></script>
     <script defer src="index.js"></script>
 
     <link rel="stylesheet" href="../../nimiq-style.css">
     <link rel="stylesheet" href="../../common.css">
-    <link rel="stylesheet" href="../../components/RecoveryWords.css">
-    <link rel="stylesheet" href="../../components/RecoveryWordsInputField.css">
-    <link rel="stylesheet" href="../../components/ValidateWords.css">
-    <link rel="stylesheet" href="../../components/PrivacyAgent.css">
     <link rel="stylesheet" href="../../components/PassphraseInput.css">
     <link rel="stylesheet" href="../../components/PassphraseBox.css">
-    <link rel="stylesheet" href="./ExportWords.css">
+    <link rel="stylesheet" href="../../components/DownloadKeyfile.css">
+    <link rel="stylesheet" href="./ExportFile.css">
 </head>
 <body>
     <div class="header-top">
@@ -49,48 +42,37 @@
     </div>
     <div id="app">
 
-        <!-- privacy agent -->
-        <div id="privacy" class="page">
+        <!-- Export File -->
+        <div id="download-key-file" class="page">
             <div class="page-header">
-                <h1 data-i18n="recovery-words-title">Recovery Words</h1>
+                <h1 data-i18n="export-file-heading">Download Key File</h1>
             </div>
 
             <div class="page-body">
-                <div class="privacy-warning"></div>
+                <div class="flex-grow"></div>
+                <div class="download-icon state0">
+                    <svg width="66" height="128" viewBox="0 0 66 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M40.333 25.6665V3.6665L62.333 25.6665H40.333ZM65.4647
+                            22.5353L43.4647 0.535333C43.12 0.194333 42.6543 0 42.1667 0H1.83333C0.825 0 0 0.821333 0 1.83333V86.1667C0
+                            87.1787 0.825 88 1.83333 88H64.1667C65.1787 88 66 87.1787 66 86.1667V23.8333C66 23.3457 65.8057 22.88
+                            65.4647 22.5353Z" fill="#B2B2B2"/>
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M33.4813 34.1939C33.232 33.9354 32.7667 33.9354 32.5173
+                            34.1939C29.36 37.459 19.5907 40.2056 19.4933 40.2331C19.2013 40.3142 19 40.5865 19 40.8973C19 52.6827
+                            20.0147 62.0859 32.768 66.9574C32.844 66.9862 32.9227 67 33 67C33.0787 67 33.156 66.9862 33.232 66.9574C45.9853
+                            62.0859 47 52.6827 47 40.8973C47 40.5865 46.7987 40.3142 46.5067 40.2331C46.4093 40.2056 36.644 37.4604 33.4813
+                            34.1939Z" fill="white"/>
+                        <g opacity="0.3">
+                            <path d="M43 114.861L34.25 123.345V104H31.75V123.345L23 114.861V118.303L33 128L43 118.303V114.861Z" fill="black"/>
+                        </g>
+                    </svg>        
+                </div>
+                <div class="download-key-file state1"></div>
                 <div class="flex-grow"></div>
             </div>
 
             <div class="page-footer">
-                <button class="state1" data-i18n="recovery-words-continue-to-words">Continue to recovery words</button>
                 <form class="passphrase-box state0"></form>
-            </div>
-        </div>
-
-        <!-- recovery Words -->
-        <div id="recovery-words" class="page">
-            <div class="page-header">
-                <a tabindex="0" class="page-header-back-button icon-back-arrow"></a>
-                <h1 data-i18n="recovery-words-title">Recovery Words</h1>
-            </div>
-
-            <div class="page-body">
-                <div class="recovery-words"></div>
-            </div>
-
-            <div class="page-footer">
-                <button class="back-to-remove" data-i18n="privacy-agent-continue">Continue</button>
-            </div>
-        </div>
-
-        <!-- validate words -->
-        <div id="validate-words" class="page">
-            <div class="page-header">
-                <a tabindex="0" class="page-header-back-button icon-back-arrow"></a>
-                <h1 data-i18n="create-heading-validate-backup">Validate your backup</h1>
-            </div>
-
-            <div class="page-body">
-                <div class="validate-words"></div>
+                <button class="back-to-remove state1">Fertig</button>
             </div>
         </div>
 
