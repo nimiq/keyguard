@@ -2,8 +2,10 @@
 /* global CookieJar */
 /* global AccountStore */
 /* global KeyStore */
+/* global Nimiq */
+/* global loadNimiq */
 
-class IFrameApi { // eslint-disable-line no-unused-vars
+class IFrameApi {
     /**
      * @param {boolean} [listFromLegacyStore] - Deprecated, only for database migration
      * @returns {Promise<KeyInfoObject[] | AccountInfo[]>}
@@ -42,4 +44,37 @@ class IFrameApi { // eslint-disable-line no-unused-vars
         // FIXME: Requires Nimiq lib to be loaded, which it currently isn't in the iframe
         await KeyStore.instance.migrateAccountsToKeys();
     }
+
+    /**
+     * @param {string} keyId
+     * @param {string[]} paths
+     * @returns {Promise<Nimiq.SerialBuffer[]>}
+     */
+    async derivePaths(keyId, paths) {
+        const storedEntropy = sessionStorage.getItem(IFrameApi.SESSION_STORAGE_KEY_PREFIX + keyId);
+        if (!storedEntropy) throw new Error('Key not found');
+
+        await loadNimiq();
+
+        const entropy = new Nimiq.Entropy(Nimiq.BufferUtils.fromBase64(storedEntropy));
+        const master = entropy.toExtendedPrivateKey();
+
+        return paths.map(path => master.derivePath(path).toAddress().serialize());
+    }
+
+    /**
+     * @param {string} keyId
+     * @returns {boolean}
+     */
+    releaseKey(keyId) {
+        try {
+            sessionStorage.removeItem(IFrameApi.SESSION_STORAGE_KEY_PREFIX + keyId);
+        } catch (e) {
+            throw e;
+        }
+
+        return true;
+    }
 }
+
+IFrameApi.SESSION_STORAGE_KEY_PREFIX = 'nimiq_key_';

@@ -13,7 +13,21 @@ function allowedOrigin() {
 }
 
 /**
- * @param {Newable} RequestApiClass - Class object of the API which is to be exposed via postMessage RPC
+ * @returns {Promise<void>}
+ */
+async function loadNimiq() {
+    try {
+        // Load web assembly encryption library into browser (if supported)
+        await Nimiq.WasmHelper.doImportBrowser();
+        // Configure to use test net for now
+        Nimiq.GenesisConfig.test();
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+/**
+ * @param {Newable} RequestApiClass - Class object of the API which is to be exposed via RPC
  * @param {object} [options]
  */
 async function runKeyguard(RequestApiClass, options) { // eslint-disable-line no-unused-vars
@@ -25,10 +39,7 @@ async function runKeyguard(RequestApiClass, options) { // eslint-disable-line no
     options = Object.assign(defaultOptions, options);
 
     if (options.loadNimiq) {
-        // Load web assembly encryption library into browser (if supported)
-        await Nimiq.WasmHelper.doImportBrowser();
-        // Configure to use test net for now
-        Nimiq.GenesisConfig.test();
+        await loadNimiq();
     }
 
     // If user navigates back to loading screen, skip it
