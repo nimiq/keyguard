@@ -9,7 +9,7 @@
  * - Run `yarn build` in the @nimiq/rpc directory
  * - @nimiq/rpc/dist/rpc.es.js is the wanted module file
  * - The following changes where made to this file afterwards:
- *   https://github.com/nimiq/keyguard-next/pull/93/commits/0a9797cbe195f7eda8b66a75927cc11786ea9625
+ *   https://github.com/nimiq/keyguard-next/commits/master/src/lib/RpcServer.es.js
  */
 
 var ResponseStatus;
@@ -226,6 +226,9 @@ class State {
     get returnURL() {
         return this._returnURL;
     }
+    get source() {
+        return this._source;
+    }
     static fromJSON(json) {
         const obj = JSON.parse(json);
         return new State(obj);
@@ -235,15 +238,30 @@ class State {
             throw Error('Missing id');
         this._origin = message.origin;
         this._id = message.data.id;
+        this._postMessage = 'source' in message && !('returnURL' in message);
         this._returnURL = 'returnURL' in message ? message.returnURL : null;
         this._data = message.data;
+        this._source = 'source' in message ? message.source : null;
     }
     toJSON() {
         const obj = {
             origin: this._origin,
             data: this._data,
         };
-        obj.returnURL = this._returnURL;
+        if (this._postMessage) {
+            if (this._source === window.opener) {
+                obj.source = 'opener';
+            }
+            else if (this._source === window.parent) {
+                obj.source = 'parent';
+            }
+            else {
+                obj.source = null;
+            }
+        }
+        else {
+            obj.returnURL = this._returnURL;
+        }
         return JSON.stringify(obj);
     }
     reply(status, result) {
@@ -254,9 +272,35 @@ class State {
                 ? { message: result.message, stack: result.stack }
                 : { message: result };
         }
-
-        // Send via top-level navigation
-        window.location.href = UrlRpcEncoder.prepareRedirectReply(this, status, result);
+        if (this._postMessage) {
+            // Send via postMessage (e.g., popup)
+            let target;
+            // If source is given, choose accordingly
+            if (this._source) {
+                if (this._source === 'opener') {
+                    target = window.opener;
+                }
+                else if (this._source === 'parent') {
+                    target = window.parent;
+                }
+                else {
+                    target = this._source;
+                }
+            }
+            else {
+                // Else guess
+                target = window.opener || window.parent;
+            }
+            target.postMessage({
+                status,
+                result,
+                id: this.id,
+            }, this.origin);
+        }
+        else if (this._returnURL) {
+            // Send via top-level navigation
+            window.location.href = UrlRpcEncoder.prepareRedirectReply(this, status, result);
+        }
     }
 }
 
@@ -293,8 +337,8 @@ class RpcServer {
         let state = null;
         try {
             state = new State(message);
-            // Cannot reply to a message that has no return URL
-            if (!('returnURL' in message))
+            // Cannot reply to a message that has no source window or return URL
+            if (!('source' in message) && !('returnURL' in message))
                 return;
             // Ignore messages without a command
             if (!('command' in state.data)) {
