@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "Secure storage for Nimiq private keys.",
   "scripts": {
-    "build": "tools/build",
+    "build": "tools/build.sh",
     "test": "karma start",
     "typecheck": "tsc",
     "lint": "eslint src tools",

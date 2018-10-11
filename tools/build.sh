@@ -11,8 +11,7 @@
 rm -rf dist
 
 # create folder structure
-mkdir dist
-mkdir dist/request
+mkdir -p dist/request
 
 # current git commit hash to create unique filenames to
 # overwrite browser cache (inspired by Vue's build output)
@@ -51,7 +50,7 @@ for DIR in src/request/*/ ; do
     # and replace CSP strings with ENV variables for configuration
     # XXX: using envsubst as a first suggestion. if it is kept, the one should
     #      make sure to whitelist only known environment variables in there :)
-    ENV_TO_REPLACE='' # e.g. '${VAR1} $VAR2'
+    # ENV_TO_REPLACE='' # e.g. '${VAR1} $VAR2'
     awk '
     BEGIN {
       skip_script = 0
@@ -85,8 +84,8 @@ for DIR in src/request/*/ ; do
     }
     { print }
     ' $DIR/index.html > dist/request/${REQUEST}/index.html
-    
+
     # | envsubst "${ENV_TO_REPLACE}"
-    
+
 
 done
