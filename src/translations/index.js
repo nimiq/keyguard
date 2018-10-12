@@ -96,10 +96,10 @@ const TRANSLATIONS = {
                                + 'Make sure you have it stored somewhere, or at least have your '
                                + 'Recovery Words accessible.',
         'remove-key-intro-text-red': 'If you have neither of them, there’s no chance to regain '
-                                   + 'access to your Wallet.',
+                                   + 'access to your wallet.',
         'remove-key-download-key-file': 'Download Key File',
         'remove-key-show-recovery-words': 'Show Recovery Words',
-        'remove-key-confirm': 'Log out of your Wallet',
+        'remove-key-confirm': 'Log out of your wallet',
         'remove-key-recovery-words': 'Recovery Words',
         'remove-key-back': 'Back to logout',
     },
