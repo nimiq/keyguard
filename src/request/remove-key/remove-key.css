@@ -38,10 +38,20 @@
     align-self: flex-start;
 }
 
-.page.state .state0 {
+.page#remove-key.show-passphrase-box .hide-for-passphrase {
+    display:none
+}
+
+.page#remove-key:not(.show-passphrase-box) .passphrase-box {
     display:none;
 }
-.page:not(.state) .state1 {
+
+.page#download-key-file.show-download .hide-for-download {
+    display:none
+}
+
+.page#download-key-file:not(.show-download) .download-key-file,
+.page#download-key-file:not(.show-download) .back-to-remove {
     display:none;
 }
 

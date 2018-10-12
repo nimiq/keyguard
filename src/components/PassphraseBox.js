@@ -48,6 +48,7 @@ class PassphraseBox extends Nimiq.Observable {
             'passphrasebox-log-in': '<button class="submit" data-i18n="passphrasebox-log-in">Log in to your wallet</button>',
             'passphrasebox-log-out': '<button class="submit" data-i18n="passphrasebox-log-out">Confirm logout</button>',
             'passphrasebox-confirm-tx': '<button class="submit" data-i18n="passphrasebox-confirm-tx">Confirm transaction</button>',
+            'passphrasebox-download': '<button class="submit" data-i18n="passphrasebox-download">Download Key File</button>',
         };
         /* eslint-enable max-len */
 

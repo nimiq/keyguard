@@ -70,7 +70,7 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         this._recoveryWords = new RecoveryWords($recoveryWords, false);
         this._downloadKeyFilePassphraseBox = new PassphraseBox(
             $downloadKeyFilePassphraseBox,
-            { buttonI18nTag: 'passphrasebox-continue' },
+            { buttonI18nTag: 'passphrasebox-download' },
         );
         this._downloadKeyfile = new DownloadKeyfile($downloadKeyFileBox);
         this._removeKeyPassphraseBox = new PassphraseBox(
@@ -82,12 +82,12 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         $goToShowRecoveryWords.addEventListener('click', this._goToPrivacyAgent.bind(this));
         $goToDownloadFile.addEventListener('click', this._goToDownloadFile.bind(this));
         $goToRemoveKey.addEventListener('click', () => {
-            $removeKey.classList.toggle('state', true);
+            $removeKey.classList.toggle('show-passphrase-box', true);
             /** @type {PassphraseBox} */ (this._removeKeyPassphraseBox).reset();
             /** @type {PassphraseBox} */ (this._removeKeyPassphraseBox).focus();
         });
         this._removeKeyPassphraseBox.on(PassphraseBox.Events.SUBMIT, async p => {
-            if (await this._keyphraseEntered(p, /** @type {PassphraseBox} */ (this._removeKeyPassphraseBox))) {
+            if (await this._tryRetrieveAndSetKey(p, /** @type {PassphraseBox} */ (this._removeKeyPassphraseBox))) {
                 if (!this.parsedRequest) throw new Error('No Request');
                 await KeyStore.instance.remove(this.parsedRequest.keyId);
                 document.body.classList.add('loading');
@@ -100,11 +100,11 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
             }
         });
         this._removeKeyPassphraseBox.on(PassphraseBox.Events.CANCEL, () => {
-            $removeKey.classList.toggle('state', false);
+            $removeKey.classList.toggle('show-passphrase-box', false);
         });
 
         this._recoveryWordsPassphraseBox.on(PassphraseBox.Events.SUBMIT, async p => {
-            if (await this._keyphraseEntered(p, /** @type {PassphraseBox} */ (this._recoveryWordsPassphraseBox))) {
+            if (await this._tryRetrieveAndSetKey(p, /** @type {PassphraseBox} */ (this._recoveryWordsPassphraseBox))) {
                 window.location.hash = RemoveKeyApi.Pages.SHOW_WORDS;
             }
         });
@@ -112,8 +112,11 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         $recoveryWordsButton.addEventListener('click', this._goToRemoveKey.bind(this));
 
         this._downloadKeyFilePassphraseBox.on(PassphraseBox.Events.SUBMIT, async p => {
-            if (await this._keyphraseEntered(p, /** @type {PassphraseBox} */ (this._downloadKeyFilePassphraseBox))) {
-                /** @type {HTMLElement} */ (this.$downloadKeyFile).classList.toggle('state', true);
+            if (await this._tryRetrieveAndSetKey(
+                p,
+                /** @type {PassphraseBox} */ (this._downloadKeyFilePassphraseBox),
+            )) {
+                /** @type {HTMLElement} */ (this.$downloadKeyFile).classList.toggle('show-download', true);
             }
         });
         this._downloadKeyFilePassphraseBox.on(PassphraseBox.Events.CANCEL, () => this._goToRemoveKey());
@@ -126,9 +129,10 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
      * @private
      * @param {string} phrase - entered passphrase
      * @param {PassphraseBox} box - box the phrase was entered into
-     * @returns {Promise<boolean>}
+     * @returns {Promise<boolean>} - success of key retrieval
      */
-    async _keyphraseEntered(phrase, box) {
+    async _tryRetrieveAndSetKey(phrase, box) {
+        document.body.classList.add('loading');
         try {
             const passphraseBuffer = Nimiq.BufferUtils.fromAscii(phrase);
             const key = await KeyStore.instance.get(
@@ -136,11 +140,15 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
                 passphraseBuffer,
             );
             if (!key) {
-                throw new Error('No key');
+                this.reject(new Error('Failed to retrieve key'));
+                return false;
             }
             this._setKey(key, phrase.length > 0); // possibly start timer to reset entered passphrase here.
+            document.body.classList.remove('loading');
             return true;
         } catch (e) {
+            console.log(e);
+            document.body.classList.remove('loading');
             box.onPassphraseIncorrect();
             return false;
         }
@@ -179,25 +187,26 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         if (this._getKey() !== null) {
             window.location.hash = RemoveKeyApi.Pages.SHOW_WORDS;
         } else {
-            window.location.hash = RemoveKeyApi.Pages.PRIVACY_AGENT;
             /** @type {PassphraseBox} */ (this._recoveryWordsPassphraseBox).reset();
+            window.location.hash = RemoveKeyApi.Pages.PRIVACY_AGENT;
             /** @type {PassphraseBox} */ (this._recoveryWordsPassphraseBox).focus();
         }
     }
 
     _goToDownloadFile() {
-        window.location.hash = RemoveKeyApi.Pages.DOWNLOAD_KEY_FILE;
         if (this._getKey() !== null) {
-            /** @type {HTMLElement} */ (this.$downloadKeyFile).classList.add('state');
+            /** @type {HTMLElement} */ (this.$downloadKeyFile).classList.add('show-download');
+            window.location.hash = RemoveKeyApi.Pages.DOWNLOAD_KEY_FILE;
         } else {
             /** @type {PassphraseBox} */ (this._downloadKeyFilePassphraseBox).reset();
+            window.location.hash = RemoveKeyApi.Pages.DOWNLOAD_KEY_FILE;
             /** @type {PassphraseBox} */ (this._downloadKeyFilePassphraseBox).focus();
         }
     }
 
     _goToRemoveKey() {
-        window.location.hash = RemoveKeyApi.Pages.REMOVE_KEY;
         /** @type {PassphraseBox} */ (this._removeKeyPassphraseBox).reset();
+        window.location.hash = RemoveKeyApi.Pages.REMOVE_KEY;
         /** @type {PassphraseBox} */ (this._removeKeyPassphraseBox).focus();
     }
 
@@ -218,7 +227,7 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
                 words = Nimiq.MnemonicUtils.entropyToMnemonic(this._key.secret);
                 break;
             default:
-                throw new Error('Unknown mnemonic type');
+                this.reject(new Error('Unknown mnemonic type'));
             }
         }
         /** @type {RecoveryWords} */(this._recoveryWords).setWords(words);

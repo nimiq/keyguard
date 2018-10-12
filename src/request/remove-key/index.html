@@ -57,7 +57,7 @@
             <div class="page-body">
                 <div class="row">
                     <p data-i18n="remove-key-intro-text">Logging out means removing your Key File from this browser. 
-                        Make sure you have it stored somewhere, or at least have your recovery words accessible.
+                        Make sure you have it stored somewhere, or at least have your Recovery Words accessible.
                     </p>
                     <div class="warning-sign">
                         <svg width="75" height="74" viewBox="0 0 75 74" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -75,17 +75,17 @@
                                 
                     </div>
                 </div>
-                <p class="red" data-i18n="remove-key-intro-text-red">If you have neither of them, there’s no chance to regain access to your account</p>
+                <p class="red" data-i18n="remove-key-intro-text-red">If you have neither of them, there’s no chance to regain access to your account.</p>
                 <div class="flex-grow"></div>
-                <div class="row state0">
-                    <button id="show-download-key-file" data-i18n="remove-key-download-key-file">Downlaod Key File</button>
+                <div class="row hide-for-passphrase">
+                    <button id="show-download-key-file" data-i18n="remove-key-download-key-file">Download Key File</button>
                     <button id="show-recovery-words" data-i18n="remove-key-show-recovery-words">Show Recovery Words</button>
                 </div>
             </div>
 
             <div class="page-footer">
-                <form class="passphrase-box state1"></form>
-                <button id="remove-key-confirm" class="state0" data-i18n="remove-key-confirm">Log out of your Wallet</button>
+                <form class="passphrase-box"></form>
+                <button id="remove-key-confirm" class="hide-for-passphrase" data-i18n="remove-key-confirm">Log out of your Wallet</button>
             </div>
         </div>
 
@@ -131,7 +131,7 @@
 
             <div class="page-body">
                 <div class="flex-grow"></div>
-                <div class="download-icon state0">
+                <div class="download-icon hide-for-download">
                     <svg width="66" height="128" viewBox="0 0 66 128" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" clip-rule="evenodd" d="M40.333 25.6665V3.6665L62.333 25.6665H40.333ZM65.4647
                             22.5353L43.4647 0.535333C43.12 0.194333 42.6543 0 42.1667 0H1.83333C0.825 0 0 0.821333 0 1.83333V86.1667C0
@@ -147,13 +147,13 @@
                         </g>
                     </svg>        
                 </div>
-                <div class="download-key-file state1"></div>
+                <div class="download-key-file"></div>
                 <div class="flex-grow"></div>
             </div>
 
             <div class="page-footer">
-                <form class="passphrase-box state0"></form>
-                <button class="back-to-remove state1" data-i18n="remove-key-back">Back to log out</button>
+                <form class="passphrase-box hide-for-download"></form>
+                <button class="back-to-remove" data-i18n="remove-key-back">Back to logout</button>
             </div>
         </div>
 
