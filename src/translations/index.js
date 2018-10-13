@@ -202,7 +202,7 @@ const TRANSLATIONS = {
         'validate-words-skip': 'Überprüfung erstmal überspringen',
 
         'remove-key-log-out': 'Log out',
-        'remove-key-intro-text': 'Ausloggen beudeutet deine Schlüsseldatei aus diesem Browser zu entfernen. '
+        'remove-key-intro-text': 'Ausloggen bedeutet deine Schlüsseldatei aus diesem Browser zu entfernen. '
                                + 'Stelle sicher, dass du sie an einem sicheren Ort verwahrt hast, '
                                + 'oder zumindest deine Wiederherstellungswörter für dich zugänglich sind.',
         'remove-key-intro-text-red': 'Falls du zu beiden keinen Zugang hast besteht keine Möglichkeit wieder '
