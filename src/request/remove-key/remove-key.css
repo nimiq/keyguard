@@ -5,7 +5,11 @@
 
 .page-body {
     background-color: #fafafa;
-    padding: 4rem;
+    padding: 3.5rem;
+}
+
+.page#privacy .page-body {
+    padding: 0;
 }
 
 .red {

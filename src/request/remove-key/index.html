@@ -48,6 +48,8 @@
 
     <div id="app">
 
+        <div class="flex-grow"></div>
+
         <!-- removal warning -->
         <div id="remove-key" class="page">
             <div class="page-header">
@@ -56,12 +58,12 @@
 
             <div class="page-body">
                 <div class="row">
-                    <p data-i18n="remove-key-intro-text">Logging out means removing your Key File from this browser. 
+                    <p data-i18n="remove-key-intro-text">Logging out means removing your Key File from this browser.
                         Make sure you have it stored somewhere, or at least have your Recovery Words accessible.
                     </p>
                     <div class="warning-sign">
                         <svg width="75" height="74" viewBox="0 0 75 74" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd" clip-rule="evenodd" d="M39.8365 49.2798C39.8365 50.8448 38.5617 
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M39.8365 49.2798C39.8365 50.8448 38.5617
                                 52.1253 36.991 52.1253C35.4203 52.1253 34.1455 50.8448 34.1455 49.2798V30.6531C34.1455
                                 29.0767 35.4203 27.8076 36.991 27.8076C38.5617 27.8076 39.8365 29.0767 39.8365
                                 30.6531V49.2798ZM36.991 62.4718C35.4203 62.4718 34.1455 61.197 34.1455 59.6263C34.1455
@@ -72,7 +74,7 @@
                                 73.8537H71.1373C71.1771 73.8594 71.2227 73.8594 71.2511 73.8537C72.8218 73.8537
                                 74.0966 72.5846 74.0966 71.0082C74.0966 70.2797 73.8235 69.6139 73.3682 69.1074Z" fill="#ca3333"/>
                         </svg>
-                                
+
                     </div>
                 </div>
                 <p class="red" data-i18n="remove-key-intro-text-red">If you have neither of them, there’s no chance to regain access to your wallet.</p>
@@ -97,7 +99,9 @@
             </div>
 
             <div class="page-body">
-                <div class="privacy-warning"></div>
+                <div class="privacy-agent">
+                    <div class="privacy-warning"></div>
+                </div>
                 <div class="flex-grow"></div>
             </div>
 
@@ -145,7 +149,7 @@
                         <g opacity="0.3">
                             <path d="M43 114.861L34.25 123.345V104H31.75V123.345L23 114.861V118.303L33 128L43 118.303V114.861Z" fill="black"/>
                         </g>
-                    </svg>        
+                    </svg>
                 </div>
                 <div class="download-key-file"></div>
                 <div class="flex-grow"></div>
@@ -164,7 +168,6 @@
         <!-- Default and loading screen -->
         <div id="loading" class="page">
             <div class="loading-animation"></div>
-            <span data-i18n="loading">Loading...</span>
         </div>
 
     </div>
