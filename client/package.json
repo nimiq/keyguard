@@ -3,7 +3,7 @@
   "version": "0.0.16",
   "description": "Nimiq Keyguard client library",
   "main": "dist/KeyguardClient.common.js",
-  "module": "dist/KeyguardClient.umd.js",
+  "module": "dist/KeyguardClient.es.js",
   "types": "types/index.d.ts",
   "scripts": {
     "typecheck": "tsc",
@@ -25,9 +25,11 @@
     "url": "https://github.com/nimiq/keyguard-next/issues"
   },
   "homepage": "https://github.com/nimiq/keyguard-next/client#readme",
+  "dependencies": {
+    "@nimiq/rpc": "^0.0.10"
+  },
   "devDependencies": {
     "@nimiq/core-types": "^1.0.0",
-    "@nimiq/rpc": "^0.0.6",
     "rollup": "^0.64.0",
     "tslint": "^5.11.0",
     "typescript": "^3.0.1"

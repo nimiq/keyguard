@@ -18,5 +18,15 @@ export default [
             globals: { '@nimiq/rpc': 'rpc' }
         },
         external: [ '@nimiq/rpc' ]
+    },
+    {
+        input: 'build/main.js',
+        output: {
+            file: 'dist/KeyguardClient.es.js',
+            format: 'es',
+            name: 'KeyguardClient',
+            globals: { '@nimiq/rpc': 'rpc' }
+        },
+        external: [ '@nimiq/rpc' ]
     }
 ];
