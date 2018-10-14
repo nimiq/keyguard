@@ -57,13 +57,15 @@ async function runKeyguard(RequestApiClass, options) { // eslint-disable-line no
     });
 
     // Instantiate handler.
-    /** @type {TopLevelApi} */
+    /** @type {TopLevelApi | IFrameApi} */
     const api = new RequestApiClass();
 
     window.rpcServer = new RpcServer(allowedOrigin());
 
-    // TODO: Use options.whitelist when adding onRequest handlers (iframe uses different methods)
-    window.rpcServer.onRequest('request', (state, request) => api.request(request));
+    options.whitelist.forEach(/** @param {string} method */ method => {
+        // @ts-ignore (Element implicitly has an 'any' type because type 'TopLevelApi' has no index signature.)
+        window.rpcServer.onRequest(method, api[method].bind(api));
+    });
 
     window.rpcServer.init();
 }

@@ -355,7 +355,7 @@ class RpcServer {
             const requestedMethod = this._responseHandlers.get(state.data.command);
             // Do not include state argument
             if (Math.max(requestedMethod.length - 1, 0) < args.length) {
-                throw new Error(`Too many arguments passed: ${message}`);
+                throw new Error(`Too many arguments passed: ${JSON.stringify(message)}`);
             }
             console.debug('RpcServer ACCEPT', state.data);
             // Call method
