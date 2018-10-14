@@ -12,6 +12,7 @@ rm -rf dist
 
 # create folder structure
 mkdir -p dist/request
+mkdir -p dist/assets
 
 # current git commit hash to create unique filenames to
 # overwrite browser cache (inspired by Vue's build output)
@@ -86,6 +87,7 @@ for DIR in src/request/*/ ; do
     ' $DIR/index.html > dist/request/${REQUEST}/index.html
 
     # | envsubst "${ENV_TO_REPLACE}"
-
-
 done
+
+# copy assets
+cp -r src/assets/* dist/assets/
