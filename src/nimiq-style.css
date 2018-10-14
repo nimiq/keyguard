@@ -162,7 +162,7 @@ button,
     height: 8rem;
     margin: 0 7.5rem;
     border-radius: 4rem;
-    padding: 0 6rem;
+    padding: 0 4rem;
     vertical-align: middle;
     display: table-cell;
     text-align: center;
@@ -175,6 +175,8 @@ button,
     outline: none;
     line-height: 1.25;
     font-family: inherit;
+    width: 100%;
+    max-width: 41rem;
 }
 
 button.destructive {
@@ -501,6 +503,12 @@ html {
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     font-size: 8px;
+}
+
+@media (max-width: 450px) {
+    html {
+        font-size: 7px;
+    }
 }
 
 body {
