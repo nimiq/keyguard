@@ -75,6 +75,7 @@ type ExportWordsRequest = {
     keyId: string
     keyLabel?: string
 }
+
 type ExportWordsResult = {
     success: boolean
 }
@@ -143,6 +144,12 @@ type RemoveKeyRequest = {
     appName: string
     keyId: string
     keyLabel?: string
+}
+
+type ParsedRemoveKeyRequest = {
+    appName: string;
+    keyInfo: KeyInfo;
+    keyLabel?: string;
 }
 
 type RemoveKeyResult = {
