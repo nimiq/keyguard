@@ -61,7 +61,7 @@ export class RedirectRequestBehavior extends RequestBehavior {
 }
 
 export class IFrameRequestBehavior extends RequestBehavior {
-    private static IFRAME_PATH_SUFFIX = '/request/iframe';
+    private static IFRAME_PATH_SUFFIX = '/request/iframe/';
 
     private _iframe: HTMLIFrameElement | null;
     private _client: PostMessageRpcClient | null;
