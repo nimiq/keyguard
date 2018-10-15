@@ -101,6 +101,7 @@ class ExportWords extends Nimiq.Observable {
         $recoveryWordsButton.addEventListener('click', this._goToValidateWords.bind(this));
         this._privacyWarningPassphraseBox.on(PassphraseBox.Events.CANCEL, this._reject.bind(this));
         this._privacyWarningPassphraseBox.on(PassphraseBox.Events.SUBMIT, async phrase => {
+            document.body.classList.add('loading');
             try {
                 const passphrase = Nimiq.BufferUtils.fromAscii(phrase);
                 const key = await KeyStore.instance.get(this._request.keyId, passphrase);
@@ -110,7 +111,10 @@ class ExportWords extends Nimiq.Observable {
                 this.setKey(key, passphrase.length > 0);
                 this.fire(ExportWords.Events.EXPORT_WORDS_KEY_CHANGED, { key, isProtected: passphrase.length > 0 });
                 window.location.hash = ExportWords.Pages.EXPORT_WORDS_SHOW_WORDS;
+                document.body.classList.remove('loading');
             } catch (e) {
+                document.body.classList.remove('loading');
+                console.log(e);
                 /** @type {PassphraseBox} */(this._privacyWarningPassphraseBox).onPassphraseIncorrect();
             }
         });

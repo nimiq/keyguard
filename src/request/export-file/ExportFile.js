@@ -50,8 +50,6 @@ class ExportFile extends Nimiq.Observable {
         const $downloadKeyFilePassphraseBox = ($exportFilePage.querySelector('.passphrase-box'));
         /** @type {HTMLFormElement} */
         const $downloadKeyFile = ($exportFilePage.querySelector('.download-key-file'));
-        /** @type {HTMLButtonElement} */
-         const $downloadFileButton = ($exportFilePage.querySelector('.done'));
 
         this._downloadKeyFilePassphraseBox = new PassphraseBox(
             $downloadKeyFilePassphraseBox,
@@ -62,6 +60,7 @@ class ExportFile extends Nimiq.Observable {
         this._downloadKeyFilePassphraseBox.on(PassphraseBox.Events.CANCEL, this._reject.bind(this));
         // $downloadFileButton.addEventListener('click', this._finish.bind(this));
         this._downloadKeyFilePassphraseBox.on(PassphraseBox.Events.SUBMIT, async phrase => {
+            document.body.classList.add('loading');
             try {
                 const passphrase = Nimiq.BufferUtils.fromAscii(phrase);
                 const key = await KeyStore.instance.get(this._request.keyId, passphrase);
@@ -70,7 +69,9 @@ class ExportFile extends Nimiq.Observable {
                 }
                 this.setKey(key, passphrase.length > 0);
                 this.fire(ExportFile.Events.EXPORT_FILE_KEY_CHANGED, { key, isProtected: passphrase.length > 0 });
+                document.body.classList.remove('loading');
             } catch (e) {
+                document.body.classList.remove('loading');
                 console.log(e);
                 /** @type {PassphraseBox} */(this._downloadKeyFilePassphraseBox).onPassphraseIncorrect();
             }
@@ -98,17 +99,20 @@ class ExportFile extends Nimiq.Observable {
                 <div class="flex-grow"></div>
                 <div class="download-icon hide-for-download">
                     <svg width="66" height="128" viewBox="0 0 66 128" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M40.333 25.6665V3.6665L62.333 25.6665H40.333ZM65.4647
-                            22.5353L43.4647 0.535333C43.12 0.194333 42.6543 0 42.1667 0H1.83333C0.825 0 0 0.821333 0 1.83333V86.1667C0
-                            87.1787 0.825 88 1.83333 88H64.1667C65.1787 88 66 87.1787 66 86.1667V23.8333C66 23.3457 65.8057 22.88
-                            65.4647 22.5353Z" fill="#B2B2B2"/>
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M33.4813 34.1939C33.232 33.9354 32.7667 33.9354 32.5173
-                            34.1939C29.36 37.459 19.5907 40.2056 19.4933 40.2331C19.2013 40.3142 19 40.5865 19 40.8973C19 52.6827
-                            20.0147 62.0859 32.768 66.9574C32.844 66.9862 32.9227 67 33 67C33.0787 67 33.156 66.9862 33.232 66.9574C45.9853
-                            62.0859 47 52.6827 47 40.8973C47 40.5865 46.7987 40.3142 46.5067 40.2331C46.4093 40.2056 36.644 37.4604 33.4813
-                            34.1939Z" fill="white"/>
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M40.333 25.6665V3.6665L62.333
+                            25.6665H40.333ZM65.4647 22.5353L43.4647 0.535333C43.12 0.194333 42.6543 0
+                            42.1667 0H1.83333C0.825 0 0 0.821333 0 1.83333V86.1667C0 87.1787 0.825 88
+                            1.83333 88H64.1667C65.1787 88 66 87.1787 66 86.1667V23.8333C66 23.3457 65.8057
+                            22.88 65.4647 22.5353Z" fill="#B2B2B2"/>
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M33.4813 34.1939C33.232 33.9354
+                            32.7667 33.9354 32.5173 34.1939C29.36 37.459 19.5907 40.2056 19.4933 40.2331C19.2013
+                            40.3142 19 40.5865 19 40.8973C19 52.6827 20.0147 62.0859 32.768 66.9574C32.844
+                            66.9862 32.9227 67 33 67C33.0787 67 33.156 66.9862 33.232 66.9574C45.9853 62.0859
+                            47 52.6827 47 40.8973C47 40.5865 46.7987 40.3142 46.5067 40.2331C46.4093 40.2056
+                            36.644 37.4604 33.4813 34.1939Z" fill="white"/>
                         <g opacity="0.3">
-                            <path d="M43 114.861L34.25 123.345V104H31.75V123.345L23 114.861V118.303L33 128L43 118.303V114.861Z" fill="black"/>
+                            <path d="M43 114.861L34.25 123.345V104H31.75V123.345L23 114.861V118.303L33 128L43
+                                118.303V114.861Z" fill="black"/>
                         </g>
                     </svg>        
                 </div>

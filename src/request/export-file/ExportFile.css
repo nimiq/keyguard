@@ -4,11 +4,11 @@
 }
 
 #download-key-file.page.show-download .hide-for-download {
-    display:none;
+    display: none;
 }
 
 #download-key-file.page:not(.show-download) .download-key-file {
-    display:none;
+    display: none;
 }
 
 #download-key-file.page .page-footer button:not(.submit) {

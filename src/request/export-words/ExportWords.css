@@ -1,14 +1,16 @@
-.page-body {
+#privacy .page-body,
+#recovery-words .page-body,
+#validate-words .page-body {
     background-color: #fafafa;
     padding: 4rem;
 }
 
 #privacy.page.key-active .hide-if-key-active {
-    display:none;
+    display: none;
 }
 
 #privacy.page:not(.key-active) .page-footer button:not(.submit) {
-    display:none;
+    display: none;
 }
 
 #privacy.page .page-footer button:not(.submit),
@@ -16,4 +18,12 @@
     margin: 4rem 7.5rem;
     background: var(--nimiq-purple);
     color: white;
+}
+
+#recovery-words .recovery-words {
+    margin: 0;
+}
+
+#validate-words .validate-words .word-list {
+    margin: 0;
 }
