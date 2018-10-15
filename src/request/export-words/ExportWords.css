@@ -3,15 +3,16 @@
     padding: 4rem;
 }
 
-.page.state .state0 {
+#privacy.page.key-active .hide-if-key-active {
     display:none;
 }
 
-.page:not(.state) .state1 {
+#privacy.page:not(.key-active) .page-footer button:not(.submit) {
     display:none;
 }
 
-.page .page-footer button:not(.submit) {
+#privacy.page .page-footer button:not(.submit),
+#recovery-words.page .page-footer button:not(.submit) {
     margin: 4rem 7.5rem;
     background: var(--nimiq-purple);
     color: white;

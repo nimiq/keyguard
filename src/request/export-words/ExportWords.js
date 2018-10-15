@@ -23,7 +23,9 @@ class ExportWords extends Nimiq.Observable {
     }
 
     run() {
+        /** @type {PassphraseBox} */ (this._privacyWarningPassphraseBox).reset();
         window.location.hash = ExportWords.Pages.EXPORT_WORDS_PRIVACY;
+        /** @type {PassphraseBox} */ (this._privacyWarningPassphraseBox).focus();
     }
 
     /**
@@ -49,7 +51,7 @@ class ExportWords extends Nimiq.Observable {
         /** @type {RecoveryWords} */(this._recoveryWords).setWords(words);
         /** @type {ValidateWords} */(this._validateWords).setWords(words);
         /** @type {HTMLElement} */(document.getElementById(ExportWords.Pages.EXPORT_WORDS_PRIVACY))
-            .classList.toggle('state', this._key !== null);
+            .classList.toggle('key-active', this._key !== null);
     }
 
     _create() {
@@ -103,7 +105,7 @@ class ExportWords extends Nimiq.Observable {
                 const passphrase = Nimiq.BufferUtils.fromAscii(phrase);
                 const key = await KeyStore.instance.get(this._request.keyId, passphrase);
                 if (!key) {
-                    throw new Error('No key');
+                    this._reject(new Error('No key'));
                 }
                 this.setKey(key, passphrase.length > 0);
                 this.fire(ExportWords.Events.EXPORT_WORDS_KEY_CHANGED, { key, isProtected: passphrase.length > 0 });
@@ -148,6 +150,7 @@ class ExportWords extends Nimiq.Observable {
         </div>
 
         <div class="page-footer">
+            <button data-i18n="recovery-words-continue-to-words">Continue to recovery words</button>
             <form class="passphrase-box"></form>
         </div>
         `;
@@ -172,7 +175,7 @@ class ExportWords extends Nimiq.Observable {
         </div>
 
         <div class="page-footer">
-            <button class="back-to-remove" data-i18n="privacy-agent-continue">Continue</button>
+            <button class="to-validate-words" data-i18n="privacy-agent-continue">Continue</button>
         </div>
         `;
         /** @type {HTMLElement} */
