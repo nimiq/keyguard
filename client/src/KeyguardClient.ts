@@ -1,5 +1,5 @@
 import {RedirectRpcClient} from '@nimiq/rpc';
-import {RequestBehavior} from './RequestBehavior';
+import {RequestBehavior, RedirectRequestBehavior, IFrameRequestBehavior} from './RequestBehavior';
 import {
     KeyguardCommand,
     CreateRequest,
@@ -16,6 +16,8 @@ import {
     ExportWordsResult,
     ExportFileRequest,
     ExportFileResult,
+    KeyInfoObject,
+    AccountInfo,
 } from './RequestTypes';
 
 export class KeyguardClient {
@@ -28,10 +30,16 @@ export class KeyguardClient {
     private _redirectClient: RedirectRpcClient;
     private _observable: Nimiq.Observable;
     private _defaultBehavior: RequestBehavior;
+    private _defaultIframeBehavior: RequestBehavior;
 
-    constructor(endpoint = KeyguardClient.DEFAULT_ENDPOINT, defaultBehavior?: RequestBehavior) {
+    constructor(
+        endpoint = KeyguardClient.DEFAULT_ENDPOINT,
+        defaultBehavior?: RequestBehavior,
+        defaultIframeBehavior?: RequestBehavior,
+    ) {
         this._endpoint = endpoint;
-        this._defaultBehavior = defaultBehavior || new RequestBehavior();
+        this._defaultBehavior = defaultBehavior || new RedirectRequestBehavior();
+        this._defaultIframeBehavior = defaultIframeBehavior || new IFrameRequestBehavior();
 
         // Listen for response
         this._redirectClient = new RedirectRpcClient('', RequestBehavior.getAllowedOrigin(this._endpoint));
@@ -48,6 +56,8 @@ export class KeyguardClient {
         this._observable.on(`${command}-resolve`, resolve);
         this._observable.on(`${command}-reject`, reject);
     }
+
+    /* TOP-LEVEL REQUESTS */
 
     public create(request: CreateRequest, requestBehavior = this._defaultBehavior): Promise<CreateResult> {
         return this._request(requestBehavior,  KeyguardCommand.CREATE, [request]);
@@ -79,6 +89,27 @@ export class KeyguardClient {
     public async signMessage(request: SignMessageRequest,
                              requestBehavior = this._defaultBehavior): Promise<SignMessageResult> {
         return this._request(requestBehavior,  KeyguardCommand.SIGN_MESSAGE, [request]);
+    }
+
+    /* IFRAME REQUESTS */
+
+    public async list(listFromLegacyStore?: boolean, requestBehavior = this._defaultIframeBehavior)
+    : Promise<KeyInfoObject[] | AccountInfo[]> {
+        return this._request(requestBehavior, KeyguardCommand.LIST, [listFromLegacyStore]);
+    }
+
+    public async migrateAccountsToKeys(requestBehavior = this._defaultIframeBehavior): Promise<void> {
+        return this._request(requestBehavior, KeyguardCommand.MIGRATE_ACCOUNTS_TO_KEYS, []);
+    }
+
+    public async derivePaths(keyId: string, paths: string[], requestBehavior = this._defaultIframeBehavior)
+    : Promise<Uint8Array[]> {
+        return this._request(requestBehavior, KeyguardCommand.DERIVE_PATHS, [keyId, paths]);
+    }
+
+    public async releaseKey(keyId: string, requestBehavior = this._defaultIframeBehavior)
+    : Promise<true> {
+        return this._request(requestBehavior, KeyguardCommand.RELEASE_KEY, [keyId]);
     }
 
     /* PRIVATE METHODS */
