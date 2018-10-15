@@ -102,9 +102,9 @@ export class KeyguardClient {
         return this._request(requestBehavior, KeyguardCommand.MIGRATE_ACCOUNTS_TO_KEYS, []);
     }
 
-    public async derivePaths(keyId: string, paths: string[], requestBehavior = this._defaultIframeBehavior)
+    public async deriveAddresses(keyId: string, paths: string[], requestBehavior = this._defaultIframeBehavior)
     : Promise<Uint8Array[]> {
-        return this._request(requestBehavior, KeyguardCommand.DERIVE_PATHS, [keyId, paths]);
+        return this._request(requestBehavior, KeyguardCommand.DERIVE_ADDRESSES, [keyId, paths]);
     }
 
     public async releaseKey(keyId: string, requestBehavior = this._defaultIframeBehavior)

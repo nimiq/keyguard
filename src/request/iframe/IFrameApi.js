@@ -53,7 +53,7 @@ class IFrameApi {
      * @param {string[]} paths
      * @returns {Promise<Nimiq.SerialBuffer[]>}
      */
-    async derivePaths(state, keyId, paths) {
+    async deriveAddresses(state, keyId, paths) {
         const storedEntropy = sessionStorage.getItem(IFrameApi.SESSION_STORAGE_KEY_PREFIX + keyId);
         if (!storedEntropy) throw new Error('Key not found');
 
