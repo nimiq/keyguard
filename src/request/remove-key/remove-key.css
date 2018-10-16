@@ -47,6 +47,13 @@
     margin: 0;
 }
 
+.page#privacy:not(.hide-passphrase) .hide-for-passphrase {
+    display: none;
+}
+.page#privacy.hide-passphrase .passphrase-box {
+    display: none;
+}
+
 .page#remove-key.show-passphrase-box .hide-for-passphrase {
     display: none
 }
@@ -70,6 +77,7 @@
     color: white;
 }
 
+.page#privacy button:not(.submit),
 .page#download-key-file button:not(.submit),
 .page#recovery-words button {
     margin: 4rem 7.5rem;
