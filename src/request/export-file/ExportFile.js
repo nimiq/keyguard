@@ -4,7 +4,7 @@
 /* global DownloadKeyfile */
 class ExportFile extends Nimiq.Observable {
     /**
-     * @param {ExportFileRequest} request
+     * @param {ParsedExportFileRequest} request
      * @param {Function} resolve
      * @param {Function} reject
      */
@@ -52,8 +52,10 @@ class ExportFile extends Nimiq.Observable {
         const $downloadKeyFile = ($exportFilePage.querySelector('.download-key-file'));
 
         this._downloadKeyFilePassphraseBox = new PassphraseBox(
-            $downloadKeyFilePassphraseBox,
-            { buttonI18nTag: 'passphrasebox-continue' },
+            $downloadKeyFilePassphraseBox, {
+                buttonI18nTag: 'passphrasebox-download',
+                hideInput: !this._request.keyInfo.encrypted,
+            },
         );
         this._downloadKeyfile = new DownloadKeyfile($downloadKeyFile);
 
@@ -62,13 +64,16 @@ class ExportFile extends Nimiq.Observable {
         this._downloadKeyFilePassphraseBox.on(PassphraseBox.Events.SUBMIT, async phrase => {
             document.body.classList.add('loading');
             try {
-                const passphrase = Nimiq.BufferUtils.fromAscii(phrase);
-                const key = await KeyStore.instance.get(this._request.keyId, passphrase);
+                const passphrase = phrase ? Nimiq.BufferUtils.fromAscii(phrase) : undefined;
+                const key = await KeyStore.instance.get(this._request.keyInfo.id, passphrase);
                 if (!key) {
                     this._reject(new Error('No key'));
                 }
-                this.setKey(key, passphrase.length > 0);
-                this.fire(ExportFile.Events.EXPORT_FILE_KEY_CHANGED, { key, isProtected: passphrase.length > 0 });
+                this.setKey(key, this._request.keyInfo.encrypted);
+                this.fire(ExportFile.Events.EXPORT_FILE_KEY_CHANGED, {
+                    key,
+                    isProtected: this._request.keyInfo.encrypted,
+                });
                 document.body.classList.remove('loading');
             } catch (e) {
                 document.body.classList.remove('loading');
@@ -126,7 +131,7 @@ class ExportFile extends Nimiq.Observable {
         `;
         /** @type {HTMLElement} */
         const $app = (document.getElementById('app'));
-        $app.insertBefore($el, $app.firstChild);
+        $app.insertBefore($el, $app.getElementsByTagName('*')[1]);
         return $el;
     }
 }

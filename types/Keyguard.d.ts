@@ -75,14 +75,27 @@ type ExportWordsRequest = {
     keyId: string
     keyLabel?: string
 }
+
 type ExportWordsResult = {
     success: boolean
+}
+
+type ParsedExportWordsRequest = {
+    appName: string;
+    keyInfo: KeyInfo;
+    keyLabel?: string;
 }
 
 type ExportFileRequest = {
     appName: string
     keyId: string
     keyLabel?: string
+}
+
+type ParsedExportFileRequest = {
+    appName: string;
+    keyInfo: KeyInfo;
+    keyLabel?: string;
 }
 
 type ExportFileResult = {

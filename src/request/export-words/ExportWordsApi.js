@@ -21,7 +21,7 @@ class ExportWordsApi extends TopLevelApi { // eslint-disable-line no-unused-vars
 
     /**
      * @param {ExportWordsRequest} request
-     * @returns {Promise<ExportWordsRequest>}
+     * @returns {Promise<ParsedExportWordsRequest>}
      */
     static async _parseRequest(request) {
         if (!request) {
@@ -44,6 +44,10 @@ class ExportWordsApi extends TopLevelApi { // eslint-disable-line no-unused-vars
             throw new Error('Invalid label');
         }
 
-        return request;
+        return /** @type {ParsedExportWordsRequest} */ {
+            appName: request.appName,
+            keyInfo,
+            keyLabel: request.keyLabel,
+        };
     }
 }

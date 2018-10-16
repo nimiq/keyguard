@@ -21,7 +21,7 @@ class ExportFileApi extends TopLevelApi { // eslint-disable-line no-unused-vars
 
     /**
      * @param {ExportFileRequest} request
-     * @returns {Promise<ExportFileRequest>}
+     * @returns {Promise<ParsedExportFileRequest>}
      */
     static async _parseRequest(request) {
         if (!request) {
@@ -44,6 +44,10 @@ class ExportFileApi extends TopLevelApi { // eslint-disable-line no-unused-vars
             throw new Error('Invalid label');
         }
 
-        return request;
+        return /** @type {ParsedExportFileRequest} */ {
+            appName: request.appName,
+            keyInfo,
+            keyLabel: request.keyLabel,
+        };
     }
 }

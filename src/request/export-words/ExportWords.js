@@ -6,7 +6,7 @@
 /* global KeyStore */
 class ExportWords extends Nimiq.Observable {
     /**
-     * @param {ExportWordsRequest} request
+     * @param {ParsedExportWordsRequest} request
      * @param {Function} resolve
      * @param {Function} reject
      */
@@ -31,9 +31,8 @@ class ExportWords extends Nimiq.Observable {
     /**
      * use this if key was set/unset from elsewhere
      * @param {Key | null} key
-     * @param {boolean} isProtected
      */
-    setKey(key, isProtected) { // eslint-disable-line no-unused-vars
+    setKey(key) {
         this._key = key;
         let words = [''];
         if (this._key !== null) {
@@ -91,8 +90,10 @@ class ExportWords extends Nimiq.Observable {
 
         const privacyWarning = new PrivacyWarning($privacyWarning); // eslint-disable-line no-unused-vars
         this._privacyWarningPassphraseBox = new PassphraseBox(
-            $privacyWarningPassphraseBox,
-            { buttonI18nTag: 'passphrasebox-continue' },
+            $privacyWarningPassphraseBox, {
+                buttonI18nTag: 'passphrasebox-continue',
+                hideInput: !this._request.keyInfo.encrypted,
+            },
         );
         this._recoveryWords = new RecoveryWords($recoveryWords, false);
         this._validateWords = new ValidateWords($validateWords);
@@ -103,13 +104,16 @@ class ExportWords extends Nimiq.Observable {
         this._privacyWarningPassphraseBox.on(PassphraseBox.Events.SUBMIT, async phrase => {
             document.body.classList.add('loading');
             try {
-                const passphrase = Nimiq.BufferUtils.fromAscii(phrase);
-                const key = await KeyStore.instance.get(this._request.keyId, passphrase);
+                const passphrase = phrase ? Nimiq.BufferUtils.fromAscii(phrase) : undefined;
+                const key = await KeyStore.instance.get(this._request.keyInfo.id, passphrase);
                 if (!key) {
                     this._reject(new Error('No key'));
                 }
-                this.setKey(key, passphrase.length > 0);
-                this.fire(ExportWords.Events.EXPORT_WORDS_KEY_CHANGED, { key, isProtected: passphrase.length > 0 });
+                this.setKey(key);
+                this.fire(ExportWords.Events.EXPORT_WORDS_KEY_CHANGED, {
+                    key,
+                    isProtected: this._request.keyInfo.encrypted,
+                });
                 window.location.hash = ExportWords.Pages.EXPORT_WORDS_SHOW_WORDS;
                 document.body.classList.remove('loading');
             } catch (e) {
@@ -149,18 +153,20 @@ class ExportWords extends Nimiq.Observable {
         </div>
 
         <div class="page-body">
-            <div class="privacy-warning"></div>
+            <div class="privacy-agent">
+                <div class="privacy-warning"></div>
+            </div>
             <div class="flex-grow"></div>
         </div>
 
         <div class="page-footer">
             <button data-i18n="recovery-words-continue-to-words">Continue to recovery words</button>
-            <form class="passphrase-box"></form>
+            <form class="passphrase-box hide-if-key-active"></form>
         </div>
         `;
         /** @type {HTMLElement} */
         const $app = (document.getElementById('app'));
-        $app.insertBefore($el, $app.firstChild);
+        $app.insertBefore($el, $app.getElementsByTagName('div')[1]);
         return $el;
     }
 
@@ -179,12 +185,12 @@ class ExportWords extends Nimiq.Observable {
         </div>
 
         <div class="page-footer">
-            <button class="to-validate-words" data-i18n="privacy-agent-continue">Continue</button>
+            <button class="to-validate-words" data-i18n="continue">Continue</button>
         </div>
         `;
         /** @type {HTMLElement} */
         const $app = (document.getElementById('app'));
-        $app.insertBefore($el, $app.firstChild);
+        $app.insertBefore($el, $app.getElementsByTagName('div')[1]);
         return $el;
     }
 
@@ -204,7 +210,7 @@ class ExportWords extends Nimiq.Observable {
         `;
         /** @type {HTMLElement} */
         const $app = (document.getElementById('app'));
-        $app.insertBefore($el, $app.firstChild);
+        $app.insertBefore($el, $app.getElementsByTagName('div')[1]);
         return $el;
     }
 }
