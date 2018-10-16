@@ -25,7 +25,7 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         /** @type {HTMLElement} */
         const $removeKey = (document.getElementById(RemoveKeyApi.Pages.REMOVE_KEY));
         /** @type {HTMLElement} */
-        const $privacy = (document.getElementById(RemoveKeyApi.Pages.PRIVACY_AGENT));
+        this.$privacy = (document.getElementById(RemoveKeyApi.Pages.PRIVACY_AGENT));
         /** @type {HTMLElement} */
         const $showWords = (document.getElementById(RemoveKeyApi.Pages.SHOW_WORDS));
         /** @type {HTMLElement} */
@@ -43,9 +43,11 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
 
         // privacy warning
         /** @type {HTMLElement} */
-        const $privacyWarning = ($privacy.querySelector('.privacy-warning'));
+        const $privacyWarning = (this.$privacy.querySelector('.privacy-warning'));
         /** @type {HTMLFormElement} */
-        const $privacyWarningPassphraseBox = ($privacy.querySelector('.passphrase-box'));
+        const $privacyWarningPassphraseBox = (this.$privacy.querySelector('.passphrase-box'));
+        /** @type {HTMLButtonElement} */
+        const $privacyWarningButton = (this.$privacy.querySelector('button:not(.submit'));
 
         // recovery words
         /** @type {HTMLElement} */
@@ -131,6 +133,9 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         this._downloadKeyFilePassphraseBox.on(PassphraseBox.Events.CANCEL, () => this._goToRemoveKey());
         $downloadFileButton.addEventListener('click', this._goToRemoveKey.bind(this));
 
+        $privacyWarningButton.addEventListener('click', () => {
+            window.location.hash = RemoveKeyApi.Pages.SHOW_WORDS;
+        });
         window.location.hash = RemoveKeyApi.Pages.REMOVE_KEY;
     }
 
@@ -201,7 +206,8 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
 
     _goToPrivacyAgent() {
         if (this._getKey() !== null) {
-            window.location.hash = RemoveKeyApi.Pages.SHOW_WORDS;
+            /** @type {HTMLElement} */ (this.$privacy).classList.add('hide-passphrase');
+            window.location.hash = RemoveKeyApi.Pages.PRIVACY_AGENT;
         } else {
             /** @type {PassphraseBox} */ (this._recoveryWordsPassphraseBox).reset();
             window.location.hash = RemoveKeyApi.Pages.PRIVACY_AGENT;
