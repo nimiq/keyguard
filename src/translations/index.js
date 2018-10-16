@@ -70,7 +70,7 @@ const TRANSLATIONS = {
         'passphrasebox-continue': 'Continue',
         'passphrasebox-log-in': 'Log in to your wallet',
         'passphrasebox-log-out': 'Confirm logout',
-        'passphrasebox-download': 'Download key file',
+        'passphrasebox-download': 'Download Key File',
         'passphrasebox-confirm-tx': 'Confirm transaction',
         'passphrasebox-password-strength-8': 'Great, that\'s a good password!',
         'passphrasebox-password-strength-10': 'Super, that\'s a strong password!',
