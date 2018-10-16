@@ -10,7 +10,7 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
      * @param {RemoveKeyRequest} request
      */
     async onRequest(request) {
-        /** @type {RemoveKeyRequest} */
+        /** @type {ParsedRemoveKeyRequest} */
         this.parsedRequest = await RemoveKeyApi._parseRequest(request);
 
         /** @type {HTMLElement} */
@@ -64,18 +64,27 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         // components
         const privacyWarning = new PrivacyWarning($privacyWarning); // eslint-disable-line no-unused-vars
         this._recoveryWordsPassphraseBox = new PassphraseBox(
-            $privacyWarningPassphraseBox,
-            { buttonI18nTag: 'passphrasebox-continue' },
+            $privacyWarningPassphraseBox, {
+                buttonI18nTag: 'passphrasebox-continue',
+                bgColor: 'purple',
+                hideInput: !this.parsedRequest.keyInfo.encrypted,
+            },
         );
         this._recoveryWords = new RecoveryWords($recoveryWords, false);
         this._downloadKeyFilePassphraseBox = new PassphraseBox(
-            $downloadKeyFilePassphraseBox,
-            { buttonI18nTag: 'passphrasebox-download' },
+            $downloadKeyFilePassphraseBox, {
+                buttonI18nTag: 'passphrasebox-download',
+                bgColor: 'purple',
+                hideInput: !this.parsedRequest.keyInfo.encrypted,
+            },
         );
         this._downloadKeyfile = new DownloadKeyfile($downloadKeyFileBox);
         this._removeKeyPassphraseBox = new PassphraseBox(
-            $removeKeyPassphraseBox,
-            { buttonI18nTag: 'passphrasebox-log-out', bgColor: 'red' },
+            $removeKeyPassphraseBox, {
+                buttonI18nTag: 'passphrasebox-log-out',
+                bgColor: 'red',
+                hideInput: !this.parsedRequest.keyInfo.encrypted,
+            },
         );
 
         // events
@@ -89,7 +98,7 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         this._removeKeyPassphraseBox.on(PassphraseBox.Events.SUBMIT, async p => {
             if (await this._tryRetrieveAndSetKey(p, /** @type {PassphraseBox} */ (this._removeKeyPassphraseBox))) {
                 if (!this.parsedRequest) throw new Error('No Request');
-                await KeyStore.instance.remove(this.parsedRequest.keyId);
+                await KeyStore.instance.remove(this.parsedRequest.keyInfo.id);
                 document.body.classList.add('loading');
 
                 /** @type {RemoveKeyResult} */
@@ -134,16 +143,19 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     async _tryRetrieveAndSetKey(phrase, box) {
         document.body.classList.add('loading');
         try {
-            const passphraseBuffer = Nimiq.BufferUtils.fromAscii(phrase);
+            const passphraseBuffer = phrase ? Nimiq.BufferUtils.fromAscii(phrase) : undefined;
             const key = await KeyStore.instance.get(
-                /** @type {RemoveKeyRequest} */ (this.parsedRequest).keyId,
+                /** @type {ParsedRemoveKeyRequest} */ (this.parsedRequest).keyInfo.id,
                 passphraseBuffer,
             );
             if (!key) {
                 this.reject(new Error('Failed to retrieve key'));
                 return false;
             }
-            this._setKey(key, phrase.length > 0); // possibly start timer to reset entered passphrase here.
+            this._setKey(
+                key,
+                /** @type {ParsedRemoveKeyRequest} */ (this.parsedRequest).keyInfo.encrypted,
+            ); // possibly start timer to reset entered passphrase here.
             document.body.classList.remove('loading');
             return true;
         } catch (e) {
@@ -156,7 +168,7 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
 
     /**
      * @param {RemoveKeyRequest} request
-     * @returns {Promise<RemoveKeyRequest>}
+     * @returns {Promise<ParsedRemoveKeyRequest>}
      * @private
      */
     static async _parseRequest(request) {
@@ -180,7 +192,11 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
             throw new Error('Invalid label');
         }
 
-        return request;
+        return /** @type {ParsedRemoveKeyRequest} */ {
+            appName: request.appName,
+            keyInfo,
+            keyLabel: request.keyLabel,
+        };
     }
 
     _goToPrivacyAgent() {

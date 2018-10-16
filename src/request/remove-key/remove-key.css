@@ -42,21 +42,26 @@
     align-self: flex-start;
 }
 
+.page#recovery-words .recovery-words,
+.page#download-key-file .download-key-file {
+    margin: 0;
+}
+
 .page#remove-key.show-passphrase-box .hide-for-passphrase {
-    display:none
+    display: none
 }
 
 .page#remove-key:not(.show-passphrase-box) .passphrase-box {
-    display:none;
+    display: none;
 }
 
 .page#download-key-file.show-download .hide-for-download {
-    display:none
+    display: none
 }
 
 .page#download-key-file:not(.show-download) .download-key-file,
 .page#download-key-file:not(.show-download) .back-to-remove {
-    display:none;
+    display: none;
 }
 
 .page#remove-key .page-footer button:not(.submit) {
