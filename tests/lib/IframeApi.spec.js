@@ -19,7 +19,7 @@ describe('IframeApi', () => {
     it('can list deprecated accounts from cookies on iOS.', async () => {
         spyOn(BrowserDetection, 'isIos').and.returnValue(true);
 
-        const listedAccounts = await iframeApi.list(true);
+        const listedAccounts = await iframeApi.list(null, true);
 
         expect(CookieJar.eat).toHaveBeenCalledWith(true);
         expect(AccountStore.instance.list).not.toHaveBeenCalled();
@@ -30,7 +30,7 @@ describe('IframeApi', () => {
     it('can list key info from cookies on iOS', async () => {
         spyOn(BrowserDetection, 'isIos').and.returnValue(true);
 
-        const listedKeys = await iframeApi.list();
+        const listedKeys = await iframeApi.list(null);
 
         expect(CookieJar.eat).toHaveBeenCalledWith(undefined);
         expect(AccountStore.instance.list).not.toHaveBeenCalled();
@@ -42,7 +42,7 @@ describe('IframeApi', () => {
         await Dummy.Utils.createDummyAccountStore();
         spyOn(BrowserDetection, 'isIos').and.returnValue(false);
 
-        const listedAccounts = await iframeApi.list(true);
+        const listedAccounts = await iframeApi.list(null, true);
 
         expect(CookieJar.eat).not.toHaveBeenCalled();
         expect(AccountStore.instance.list).toHaveBeenCalled();
@@ -56,7 +56,7 @@ describe('IframeApi', () => {
         await Dummy.Utils.createDummyKeyStore();
         spyOn(BrowserDetection, 'isIos').and.returnValue(false);
 
-        const listedKeyObjects = /** @type {KeyInfoObject[]} */ (await iframeApi.list());
+        const listedKeyObjects = /** @type {KeyInfoObject[]} */ (await iframeApi.list(null));
         const listedKeyInfos = listedKeyObjects.map(kio => KeyInfo.fromObject(kio));
 
         expect(CookieJar.eat).not.toHaveBeenCalled();
@@ -75,7 +75,7 @@ describe('IframeApi', () => {
             cookieSet = true;
         });
 
-        await iframeApi.migrateAccountsToKeys();
+        await iframeApi.migrateAccountsToKeys(null);
 
         expect(cookieSet).toBe(true);
         expect(KeyStore.instance.migrateAccountsToKeys).not.toHaveBeenCalled();
@@ -85,7 +85,7 @@ describe('IframeApi', () => {
         await Dummy.Utils.createDummyAccountStore();
         spyOn(BrowserDetection, 'isIos').and.returnValue(false);
 
-        await iframeApi.migrateAccountsToKeys();
+        await iframeApi.migrateAccountsToKeys(null);
         expect(KeyStore.instance.migrateAccountsToKeys).toHaveBeenCalled();
 
         // check that keys have been copied correctly

@@ -6,6 +6,12 @@ export enum KeyguardCommand {
     EXPORT_FILE = 'export-file',
     SIGN_TRANSACTION = 'sign-transaction',
     SIGN_MESSAGE = 'sign-message',
+
+    // Iframe requests
+    LIST = 'list',
+    MIGRATE_ACCOUNTS_TO_KEYS = 'migrateAccountsToKeys',
+    DERIVE_ADDRESSES = 'deriveAddresses',
+    RELEASE_KEY = 'releaseKey',
 }
 
 declare namespace Key {
@@ -116,3 +122,17 @@ export type RpcResult = CreateResult
     | RemoveKeyResult
     | ExportFileResult
     | ExportWordsResult;
+
+// Deprecated, only used for migrating databases
+export interface AccountInfo {
+    userFriendlyAddress: string;
+    type: string;
+    label: string;
+}
+
+export interface KeyInfoObject {
+    id: string;
+    type: Key.Type;
+    encrypted: boolean;
+    userFriendlyId?: string;
+}

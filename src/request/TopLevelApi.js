@@ -30,15 +30,15 @@
 class TopLevelApi { // eslint-disable-line no-unused-vars
     constructor() {
         if (window.self !== window.top) {
-            // PopupAPI may not run in a frame
+            // TopLevelApi may not run in a frame
             throw new Error('Illegal use');
         }
 
         /** @type {Function} */
-        this._resolve = () => { throw new Error('Method not defined'); };
+        this._resolve = () => { throw new Error('Method this._resolve not defined'); };
 
         /** @type {Function} */
-        this._reject = () => { throw new Error('Method not defined'); };
+        this._reject = () => { throw new Error('Method this._reject not defined'); };
 
         I18n.initialize(window.TRANSLATIONS, 'en');
         I18n.translateDom();
@@ -51,9 +51,10 @@ class TopLevelApi { // eslint-disable-line no-unused-vars
     /**
      * Method to be called by the Keyguard client via RPC
      *
+     * @param {Rpc.State | null} state
      * @param {KeyguardRequest} request
      */
-    async request(request) {
+    async request(state, request) {
         /**
          * Detect migrate signalling set by the iframe
          *

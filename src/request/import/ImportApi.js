@@ -147,6 +147,10 @@ class ImportApi extends TopLevelApi {
                     address: key.deriveAddress(keyPath).serialize(),
                 });
             });
+
+            // Store entropy in SessionStorage so addresses can be derived in the KeyguardIframe
+            const secretString = Nimiq.BufferUtils.toBase64(key.secret);
+            sessionStorage.setItem(ImportApi.SESSION_STORAGE_KEY_PREFIX + key.id, secretString);
         } else {
             throw new Error(`Unkown key type ${key.type}`);
         }
@@ -235,3 +239,5 @@ ImportApi.Pages = {
     ENTER_WORDS: 'words',
     CHOOSE_KEY_TYPE: 'choose-key-type',
 };
+
+ImportApi.SESSION_STORAGE_KEY_PREFIX = 'nimiq_key_';
