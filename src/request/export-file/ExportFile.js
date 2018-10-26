@@ -4,6 +4,9 @@
 /* global DownloadKeyfile */
 class ExportFile extends Nimiq.Observable {
     /**
+     * if a complete page is missing it will be created.
+     * However these pages wil be the default pages which usually don't match the applications requirements.
+     * Refer to the correpsonsing _build(Privcy | RecoveryWords | ValidateWords) to see the general Structure.
      * @param {ParsedExportFileRequest} request
      * @param {Function} resolve
      * @param {Function} reject
@@ -27,7 +30,8 @@ class ExportFile extends Nimiq.Observable {
     }
 
     /**
-     * use this if key was set/unset from elsewhere
+     * used to set the key if already decrypted elsewhere. This will disable the passphrase requirement.
+     * Set to null to reenable passphrase requirement.
      * @param {Key | null} key
      * @param {boolean} isProtected
      */
@@ -60,7 +64,6 @@ class ExportFile extends Nimiq.Observable {
         this._downloadKeyfile = new DownloadKeyfile($downloadKeyFile);
 
         this._downloadKeyFilePassphraseBox.on(PassphraseBox.Events.CANCEL, this._reject.bind(this));
-        // $downloadFileButton.addEventListener('click', this._finish.bind(this));
         this._downloadKeyFilePassphraseBox.on(PassphraseBox.Events.SUBMIT, async phrase => {
             document.body.classList.add('loading');
             try {
@@ -74,12 +77,13 @@ class ExportFile extends Nimiq.Observable {
                     key,
                     isProtected: this._request.keyInfo.encrypted,
                 });
-                document.body.classList.remove('loading');
             } catch (e) {
-                document.body.classList.remove('loading');
-                console.log(e);
+                console.log(e); // TODO: Assume Passphrase was incorrect
                 /** @type {PassphraseBox} */(this._downloadKeyFilePassphraseBox).onPassphraseIncorrect();
             }
+             finally {
+                document.body.classList.remove('loading');
+             }
         });
         this._downloadKeyfile.on(DownloadKeyfile.Events.DOWNLOADED, this._finish.bind(this));
     }
@@ -119,7 +123,7 @@ class ExportFile extends Nimiq.Observable {
                             <path d="M43 114.861L34.25 123.345V104H31.75V123.345L23 114.861V118.303L33 128L43
                                 118.303V114.861Z" fill="black"/>
                         </g>
-                    </svg>        
+                    </svg>
                 </div>
                 <div class="download-key-file"></div>
                 <div class="flex-grow"></div>
@@ -131,7 +135,7 @@ class ExportFile extends Nimiq.Observable {
         `;
         /** @type {HTMLElement} */
         const $app = (document.getElementById('app'));
-        $app.insertBefore($el, $app.getElementsByTagName('*')[1]);
+        $app.insertBefore($el, $app.children[1]);
         return $el;
     }
 }

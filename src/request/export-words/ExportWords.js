@@ -6,6 +6,9 @@
 /* global KeyStore */
 class ExportWords extends Nimiq.Observable {
     /**
+     * if a complete page is missing it will be created.
+     * However these pages wil be the default pages which usually don't match the applications requirements.
+     * Refer to the correpsonsing _build(Privcy | RecoveryWords | ValidateWords) to see the general Structure.
      * @param {ParsedExportWordsRequest} request
      * @param {Function} resolve
      * @param {Function} reject
@@ -29,7 +32,8 @@ class ExportWords extends Nimiq.Observable {
     }
 
     /**
-     * use this if key was set/unset from elsewhere
+     * used to set the key if already decrypted elsewhere. This will disable the passphrase requirement.
+     * Set to null to reenable passphrase requirement.
      * @param {Key | null} key
      */
     setKey(key) {
@@ -44,7 +48,7 @@ class ExportWords extends Nimiq.Observable {
                 words = Nimiq.MnemonicUtils.entropyToMnemonic(this._key.secret);
                 break;
             default:
-                throw new Error('Unknown mnemonic type');
+                this._reject(new Error('Unknown mnemonic type'));
             }
         }
         /** @type {RecoveryWords} */(this._recoveryWords).setWords(words);
@@ -88,7 +92,7 @@ class ExportWords extends Nimiq.Observable {
         /** @type {HTMLElement} */
         const $validateWords = ($validateWordsPage.querySelector('.validate-words'));
 
-        const privacyWarning = new PrivacyWarning($privacyWarning); // eslint-disable-line no-unused-vars
+        new PrivacyWarning($privacyWarning); // eslint-disable-line no-new
         this._privacyWarningPassphraseBox = new PassphraseBox(
             $privacyWarningPassphraseBox, {
                 buttonI18nTag: 'passphrasebox-continue',
@@ -115,11 +119,11 @@ class ExportWords extends Nimiq.Observable {
                     isProtected: this._request.keyInfo.encrypted,
                 });
                 window.location.hash = ExportWords.Pages.EXPORT_WORDS_SHOW_WORDS;
-                document.body.classList.remove('loading');
             } catch (e) {
-                document.body.classList.remove('loading');
-                console.log(e);
+                console.log(e); // TODO: Assume Passphrase was incorrect
                 /** @type {PassphraseBox} */(this._privacyWarningPassphraseBox).onPassphraseIncorrect();
+            } finally {
+                document.body.classList.remove('loading');
             }
         });
         this._validateWords.on(ValidateWords.Events.VALIDATED, this._finish.bind(this));
@@ -166,7 +170,7 @@ class ExportWords extends Nimiq.Observable {
         `;
         /** @type {HTMLElement} */
         const $app = (document.getElementById('app'));
-        $app.insertBefore($el, $app.getElementsByTagName('div')[1]);
+        $app.insertBefore($el, $app.children[1]);
         return $el;
     }
 
@@ -190,7 +194,7 @@ class ExportWords extends Nimiq.Observable {
         `;
         /** @type {HTMLElement} */
         const $app = (document.getElementById('app'));
-        $app.insertBefore($el, $app.getElementsByTagName('div')[1]);
+        $app.insertBefore($el, $app.children[1]);
         return $el;
     }
 
@@ -210,7 +214,7 @@ class ExportWords extends Nimiq.Observable {
         `;
         /** @type {HTMLElement} */
         const $app = (document.getElementById('app'));
-        $app.insertBefore($el, $app.getElementsByTagName('div')[1]);
+        $app.insertBefore($el, $app.children[1]);
         return $el;
     }
 }
