@@ -74,6 +74,28 @@ class ImportWords {
                 this._onKeyTypeChosen(/** @type {Key.Type} */ (this.keyTypeValue), this._entropy);
             }
         });
+
+        // @ts-ignore
+        window.test = () => {
+            const testPassphrase = [
+                'curtain', 'cancel', 'tackle', 'always',
+                'draft', 'fade', 'alarm', 'flip',
+                'earth', 'sketch', 'motor', 'short',
+                'make', 'exact', 'diary', 'broccoli',
+                'frost', 'disorder', 'pave', 'wrestle',
+                'broken', 'mercy', 'crime', 'dismiss',
+            ];
+            // @ts-ignore
+            function putWord(field, word, index) { // eslint-disable-line require-jsdoc-except/require-jsdoc
+                setTimeout(() => {
+                    field.value = word;
+                    field._onBlur();
+                }, index * 50);
+            }
+            recoveryWords.$fields.forEach((field, index) => {
+                putWord(field, testPassphrase[index], index);
+            });
+        };
     }
 
     run() {

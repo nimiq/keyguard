@@ -239,7 +239,7 @@ class Iqons {
     }
 }
 
-Iqons.svgPath = '../../lib/Iqons.min.svg';
+Iqons.svgPath = '../../assets/Iqons.min.svg';
 
 Iqons.CATALOG = {
     face: [

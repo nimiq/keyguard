@@ -82,7 +82,7 @@ function findDependencies(startFile, class2Path, deps) {
     fileDeps.forEach(dep => {
         // CustomError classes
         if (dep.slice(-5) === 'Error') dep = 'errors';
-        if (dep === 'runKeyguard') dep = 'common';
+        if (dep === 'runKeyguard' || dep === 'loadNimiq') dep = 'common';
 
         if (deps.indexOf(dep) > -1) return;
 

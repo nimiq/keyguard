@@ -108,7 +108,6 @@
     position: absolute;
     bottom: 6rem;
     pointer-events: none;
-    width: calc(100% - 15rem);
     margin: 0;
 }
 

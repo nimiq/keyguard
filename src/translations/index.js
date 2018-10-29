@@ -93,6 +93,18 @@ const TRANSLATIONS = {
         'validate-words-skip': 'Skip validation for now',
 
         'export-file-heading': 'Download Key File',
+      
+        'remove-key-log-out': 'Log out',
+        'remove-key-intro-text': 'Logging out means removing your Key File from this browser. '
+                               + 'Make sure you have it stored somewhere, or at least have your '
+                               + 'Recovery Words accessible.',
+        'remove-key-intro-text-red': 'If you have neither of them, there’s no chance to regain '
+                                   + 'access to your wallet.',
+        'remove-key-download-key-file': 'Download Key File',
+        'remove-key-show-recovery-words': 'Show Recovery Words',
+        'remove-key-confirm': 'Log out of your wallet',
+        'remove-key-recovery-words': 'Recovery Words',
+        'remove-key-back': 'Back to logout',
     },
     de: {
         _language: 'Deutsch',
@@ -194,6 +206,18 @@ const TRANSLATIONS = {
         'validate-words-skip': 'Überprüfung erstmal überspringen',
 
         'export-file-heading': 'Schlüsseldatei herunterladen',
+
+        'remove-key-log-out': 'Log out',
+        'remove-key-intro-text': 'Ausloggen bedeutet deine Schlüsseldatei aus diesem Browser zu entfernen. '
+                               + 'Stelle sicher, dass du sie an einem sicheren Ort verwahrt hast, '
+                               + 'oder zumindest deine Wiederherstellungswörter für dich zugänglich sind.',
+        'remove-key-intro-text-red': 'Falls du zu beiden keinen Zugang hast besteht keine Möglichkeit wieder '
+                                   + 'Zugriff auf dein Wallet zu erhalten.',
+        'remove-key-download-key-file': 'Schlüsseldatei herunterladen',
+        'remove-key-show-recovery-words': 'Wiederherstellungswörter anzeigen',
+        'remove-key-confirm': 'Aus deinem Wallet ausloggen',
+        'remove-key-recovery-words': 'Wiederherstellungswörter',
+        'remove-key-back': 'Zurück zum logout',
     },
 };
 

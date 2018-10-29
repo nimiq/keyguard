@@ -2,13 +2,16 @@
 /* global CookieJar */
 /* global AccountStore */
 /* global KeyStore */
+/* global Nimiq */
+/* global loadNimiq */
 
-class IFrameApi { // eslint-disable-line no-unused-vars
+class IFrameApi {
     /**
+     * @param {Rpc.State | null} state
      * @param {boolean} [listFromLegacyStore] - Deprecated, only for database migration
      * @returns {Promise<KeyInfoObject[] | AccountInfo[]>}
      */
-    async list(listFromLegacyStore) {
+    async list(state, listFromLegacyStore) {
         if (BrowserDetection.isIos() || BrowserDetection.isSafari()) {
             return CookieJar.eat(listFromLegacyStore);
         }
@@ -22,10 +25,11 @@ class IFrameApi { // eslint-disable-line no-unused-vars
     }
 
     /**
+     * @param {Rpc.State | null} state
      * @returns {Promise<void>}
      * @deprecated Only for database migration
      */
-    async migrateAccountsToKeys() {
+    async migrateAccountsToKeys(state) { // eslint-disable-line no-unused-vars
         /**
          * IndexedDB is not accessible in iframes on iOS browsers and Safari.
          * Thus when the Keyguard client requests the iframe to migrate the
@@ -42,4 +46,39 @@ class IFrameApi { // eslint-disable-line no-unused-vars
         // FIXME: Requires Nimiq lib to be loaded, which it currently isn't in the iframe
         await KeyStore.instance.migrateAccountsToKeys();
     }
+
+    /**
+     * @param {Rpc.State | null} state
+     * @param {string} keyId
+     * @param {string[]} paths
+     * @returns {Promise<Nimiq.SerialBuffer[]>}
+     */
+    async deriveAddresses(state, keyId, paths) {
+        const storedEntropy = sessionStorage.getItem(IFrameApi.SESSION_STORAGE_KEY_PREFIX + keyId);
+        if (!storedEntropy) throw new Error('Key not found');
+
+        await loadNimiq();
+
+        const entropy = new Nimiq.Entropy(Nimiq.BufferUtils.fromBase64(storedEntropy));
+        const master = entropy.toExtendedPrivateKey();
+
+        return paths.map(path => master.derivePath(path).toAddress().serialize());
+    }
+
+    /**
+     * @param {Rpc.State | null} state
+     * @param {string} keyId
+     * @returns {boolean}
+     */
+    releaseKey(state, keyId) {
+        try {
+            sessionStorage.removeItem(IFrameApi.SESSION_STORAGE_KEY_PREFIX + keyId);
+        } catch (e) {
+            throw e;
+        }
+
+        return true;
+    }
 }
+
+IFrameApi.SESSION_STORAGE_KEY_PREFIX = 'nimiq_key_';

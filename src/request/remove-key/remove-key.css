@@ -1,0 +1,86 @@
+.row {
+    display: flex;
+    flex-direction: row;
+}
+
+.page-body {
+    background-color: #fafafa;
+    padding: 3.5rem;
+}
+
+.page#privacy .page-body {
+    padding: 0;
+}
+
+.red {
+    color: var(--nimiq-red);
+}
+.download-icon {
+    align-self: center;
+}
+
+.page#remove-key p {
+    margin-bottom: 2rem;
+}
+
+.page#remove-key p + p {
+    margin-top: 1rem;
+}
+
+.page#remove-key .page-body button {
+    background: #e5e5e5;
+    padding: 1rem 1.75rem;
+    width: unset;
+    height: unset;
+    font-size: 1.75rem;
+    line-height: 0.86;
+    box-shadow: none;
+    text-transform: none;
+    letter-spacing: 0;
+    color: black;
+    margin: 0 2rem 0 0;
+    align-self: flex-start;
+}
+
+.page#recovery-words .recovery-words,
+.page#download-key-file .download-key-file {
+    margin: 0;
+}
+
+.page#privacy:not(.hide-passphrase) .hide-for-passphrase {
+    display: none;
+}
+.page#privacy.hide-passphrase .passphrase-box {
+    display: none;
+}
+
+.page#remove-key.show-passphrase-box .hide-for-passphrase {
+    display: none
+}
+
+.page#remove-key:not(.show-passphrase-box) .passphrase-box {
+    display: none;
+}
+
+.page#download-key-file.show-download .hide-for-download {
+    display: none
+}
+
+.page#download-key-file:not(.show-download) .download-key-file,
+.page#download-key-file:not(.show-download) .back-to-remove {
+    display: none;
+}
+
+.page#remove-key .page-footer button:not(.submit) {
+    margin: 4rem 7.5rem;
+    background: var(--nimiq-red);
+    color: white;
+}
+
+.page#privacy button:not(.submit),
+.page#download-key-file button:not(.submit),
+.page#recovery-words button {
+    margin: 4rem 7.5rem;
+    background: var(--nimiq-purple);
+    color: white;
+}

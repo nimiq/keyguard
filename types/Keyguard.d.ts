@@ -158,6 +158,12 @@ type RemoveKeyRequest = {
     keyLabel?: string
 }
 
+type ParsedRemoveKeyRequest = {
+    appName: string;
+    keyInfo: KeyInfo;
+    keyLabel?: string;
+}
+
 type RemoveKeyResult = {
     success: boolean
 }
