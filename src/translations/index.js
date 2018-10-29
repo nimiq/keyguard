@@ -21,7 +21,7 @@ const TRANSLATIONS = {
                                     + 'of your Key File and will grant you access to your wallet even if your '
                                     + 'Key File is lost.',
         'recovery-words-storing': 'Write those words on a piece of paper and store it at a safe, offline place.',
-        'recovery-words-continue-to-words': 'Continue to recovery words',
+        'recovery-words-continue-to-words': 'Continue to Recovery Words',
 
         'create-heading-choose-identicon': 'Choose your account avatar',
         'create-text-select-avatar': 'Select an avatar for your wallet\'s default account from the selection below.',
@@ -118,7 +118,7 @@ const TRANSLATIONS = {
                                     + 'Wallet gewähren, auch wenn deine Schlüsseldatei verloren ist.',
         'recovery-words-storing': 'Schreibe diese Wörter auf ein Stück Papier und verwahre es an einem sicheren, '
                                 + 'analogen Ort.',
-        'recovery-words-continue-to-words': 'Continue to recovery words',
+        'recovery-words-continue-to-words': 'Weiter zu den Wiederherstellungswörtern',
 
         'create-heading-choose-identicon': 'Wähle deinen Konto Avatar',
         'create-text-select-avatar': 'Wähle einen Avatar für den Standard-Account deiner Wallet aus der Auswahl unten.',
@@ -170,7 +170,7 @@ const TRANSLATIONS = {
         'passphrasebox-continue': 'Weiter',
         'passphrasebox-log-in': 'In deine Wallet einloggen',
         'passphrasebox-log-out': 'Abmeldung bestätigen',
-        'passphrasebox-download': 'KeyFile herunterladen',
+        'passphrasebox-download': 'Schlüsseldatei herunterladen',
         'passphrasebox-confirm-tx': 'Überweisung bestätigen',
         'passphrasebox-password-strength-8': 'Schön, das ist ein gutes Passwort!',
         'passphrasebox-password-strength-10': 'Super, das ist ein starkes Passwort!',
@@ -193,7 +193,7 @@ const TRANSLATIONS = {
         'validate-words-back': 'Zurück zu den Wörtern',
         'validate-words-skip': 'Überprüfung erstmal überspringen',
 
-        'export-file-heading': 'Download Key File',
+        'export-file-heading': 'Schlüsseldatei herunterladen',
     },
 };
 
