@@ -93,7 +93,7 @@ const TRANSLATIONS = {
         'validate-words-skip': 'Skip validation for now',
 
         'export-file-heading': 'Download Key File',
-      
+
         'remove-key-log-out': 'Log out',
         'remove-key-intro-text': 'Logging out means removing your Key File from this browser. '
                                + 'Make sure you have it stored somewhere, or at least have your '
