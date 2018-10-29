@@ -6,7 +6,7 @@ class ExportFile extends Nimiq.Observable {
     /**
      * if a complete page is missing it will be created.
      * However these pages wil be the default pages which usually don't match the applications requirements.
-     * Refer to the correpsonsing _build(Privcy | RecoveryWords | ValidateWords) to see the general Structure.
+     * Refer to the corresponsing _build(Privcy | RecoveryWords | ValidateWords) to see the general Structure.
      * @param {ParsedExportFileRequest} request
      * @param {Function} resolve
      * @param {Function} reject
@@ -80,10 +80,9 @@ class ExportFile extends Nimiq.Observable {
             } catch (e) {
                 console.log(e); // TODO: Assume Passphrase was incorrect
                 /** @type {PassphraseBox} */(this._downloadKeyFilePassphraseBox).onPassphraseIncorrect();
-            }
-             finally {
+            } finally {
                 document.body.classList.remove('loading');
-             }
+            }
         });
         this._downloadKeyfile.on(DownloadKeyfile.Events.DOWNLOADED, this._finish.bind(this));
     }

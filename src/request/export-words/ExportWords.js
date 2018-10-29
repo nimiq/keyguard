@@ -8,7 +8,7 @@ class ExportWords extends Nimiq.Observable {
     /**
      * if a complete page is missing it will be created.
      * However these pages wil be the default pages which usually don't match the applications requirements.
-     * Refer to the correpsonsing _build(Privcy | RecoveryWords | ValidateWords) to see the general Structure.
+     * Refer to the corresponsing _build(Privcy | RecoveryWords | ValidateWords) to see the general Structure.
      * @param {ParsedExportWordsRequest} request
      * @param {Function} resolve
      * @param {Function} reject
