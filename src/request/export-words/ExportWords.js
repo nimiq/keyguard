@@ -164,7 +164,7 @@ class ExportWords extends Nimiq.Observable {
         </div>
 
         <div class="page-footer">
-            <button data-i18n="recovery-words-continue-to-words">Continue to recovery words</button>
+            <button data-i18n="recovery-words-continue-to-words">Continue to Recovery Words</button>
             <form class="passphrase-box hide-if-key-active"></form>
         </div>
         `;
