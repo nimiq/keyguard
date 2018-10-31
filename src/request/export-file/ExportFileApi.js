@@ -1,9 +1,9 @@
 /* global TopLevelApi */
-/* global ExportWords */
+/* global ExportFile */
 /* global KeyStore */
-class ExportWordsApi extends TopLevelApi { // eslint-disable-line no-unused-vars
+class ExportFileApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
-     * @param {ExportWordsRequest} request
+     * @param {ExportFileRequest} request
      */
     async onRequest(request) {
         /** @type {HTMLElement} */
@@ -14,14 +14,14 @@ class ExportWordsApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         $cancelLink.classList.remove('display-none');
         $cancelLink.addEventListener('click', () => this.reject(new Error('CANCEL')));
 
-        const parsedRequest = await ExportWordsApi._parseRequest(request);
-        const handler = new ExportWords(parsedRequest, this.resolve.bind(this), this.reject.bind(this));
+        const parsedRequest = await ExportFileApi._parseRequest(request);
+        const handler = new ExportFile(parsedRequest, this.resolve.bind(this), this.reject.bind(this));
         handler.run();
     }
 
     /**
-     * @param {ExportWordsRequest} request
-     * @returns {Promise<ParsedExportWordsRequest>}
+     * @param {ExportFileRequest} request
+     * @returns {Promise<ParsedExportFileRequest>}
      */
     static async _parseRequest(request) {
         if (!request) {
@@ -44,7 +44,7 @@ class ExportWordsApi extends TopLevelApi { // eslint-disable-line no-unused-vars
             throw new Error('Invalid label');
         }
 
-        return /** @type {ParsedExportWordsRequest} */ {
+        return /** @type {ParsedExportFileRequest} */ {
             appName: request.appName,
             keyInfo,
             keyLabel: request.keyLabel,

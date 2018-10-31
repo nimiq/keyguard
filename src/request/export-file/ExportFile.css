@@ -1,0 +1,22 @@
+#download-key-file .page-body {
+    background-color: #fafafa;
+    padding: 4rem;
+}
+
+#download-key-file.page.show-download .hide-for-download {
+    display: none;
+}
+
+#download-key-file.page:not(.show-download) .download-key-file {
+    display: none;
+}
+
+#download-key-file.page .page-footer button:not(.submit) {
+    margin: 4rem 7.5rem;
+    background: var(--nimiq-purple);
+    color: white;
+}
+
+#download-key-file .download-icon {
+    align-self: center;
+}
