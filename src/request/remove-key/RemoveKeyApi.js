@@ -19,7 +19,7 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         /** @type HTMLAnchorElement */
         const $cancelLink = ($appName.parentNode);
         $cancelLink.classList.remove('display-none');
-        $cancelLink.addEventListener('click', () => window.close());
+        $cancelLink.addEventListener('click', () => this.reject(new Error('CANCEL')));
 
         // pages
         /** @type {HTMLElement} */
