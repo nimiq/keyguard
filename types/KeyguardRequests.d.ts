@@ -1,6 +1,8 @@
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
 
-type KeyId2KeyInfo<T extends { keyId: string }> = Omit<T, 'keyId'> & { keyInfo: KeyInfo }
+type Transform<T, K extends keyof T, E> = Omit<T, K> & E
+
+type KeyId2KeyInfo<T extends { keyId: string }> = Transform<T, 'keyId', { keyInfo: KeyInfo }>
 
 type TransactionInfo = {
     sender: Uint8Array
@@ -15,10 +17,10 @@ type TransactionInfo = {
     networkId?: number
 } 
 
-type ConstructTransaction<T extends TransactionInfo> = Omit<T,
+type ConstructTransaction<T extends TransactionInfo> = Transform<T,
     'sender' | 'senderType' | 'recipient' | 'recipientType' | 'value' | 'fee' |
-        'validityStartHeight' | 'data' | 'flags' | 'networkId'
-> & { transaction: Nimiq.ExtendedTransaction }
+        'validityStartHeight' | 'data' | 'flags' | 'networkId',
+    { transaction: Nimiq.ExtendedTransaction }>
 
 type SignTransactionRequestLayout = 'standard' | 'checkout' | 'cashlink'
 
