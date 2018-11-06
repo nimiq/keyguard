@@ -2,7 +2,7 @@ type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
 
 type KeyId2KeyInfo<T extends { keyId: string }> = Omit<T, 'keyId'> & { keyInfo: KeyInfo }
 
-type TransactionInfo = {
+interface TransactionInfo {
     sender: Uint8Array
     senderType: Nimiq.Account.Type
     recipient: Uint8Array
@@ -22,7 +22,7 @@ type ConstructTransaction<T extends TransactionInfo> = Omit<T,
 
 type SignTransactionRequestLayout = 'standard' | 'checkout' | 'cashlink'
 
-type SignTransactionRequest = {
+interface SignTransactionRequest extends TransactionInfo {
     layout?: SignTransactionRequestLayout
     shopOrigin?: string
     appName: string
@@ -33,12 +33,12 @@ type SignTransactionRequest = {
 
     senderLabel?: string
     recipientLabel?: string
-} & TransactionInfo
+}
 
 type ParsedSignTransactionRequest = ConstructTransaction<KeyId2KeyInfo<SignTransactionRequest>>
     & { layout: SignTransactionRequestLayout }
 
-type KeyRecord = {
+interface KeyRecord {
     id: string
     type: Key.Type
     encrypted: boolean
