@@ -16,6 +16,8 @@ import {
     ExportWordsResult,
     ExportFileRequest,
     ExportFileResult,
+    DeriveAddressRequest,
+    DeriveAddressResult,
     KeyInfoObject,
     AccountInfo,
 } from './RequestTypes';
@@ -89,6 +91,11 @@ export class KeyguardClient {
     public async signMessage(request: SignMessageRequest,
                              requestBehavior = this._defaultBehavior): Promise<SignMessageResult> {
         return this._request(requestBehavior,  KeyguardCommand.SIGN_MESSAGE, [request]);
+    }
+
+    public async deriveAddress(request: DeriveAddressRequest,
+                               requestBehavior = this._defaultBehavior): Promise<DeriveAddressResult> {
+        return this._request(requestBehavior,  KeyguardCommand.DERIVE_ADDRESS, [request]);
     }
 
     /* IFRAME REQUESTS */

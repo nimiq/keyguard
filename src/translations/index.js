@@ -105,6 +105,12 @@ const TRANSLATIONS = {
         'remove-key-confirm': 'Log out of your wallet',
         'remove-key-recovery-words': 'Recovery Words',
         'remove-key-back': 'Back to logout',
+
+        'derive-address-heading-passphrase': 'Unlock your Wallet',
+        'derive-address-passphrase-text': 'Please enter your password to add an account to your wallet.',
+        'derive-address-heading-choose-identicon': 'Choose your account avatar',
+        'derive-address-text-select-avatar': 'Select an avatar for your new account from the selection below.',
+
     },
     de: {
         _language: 'Deutsch',
@@ -218,6 +224,11 @@ const TRANSLATIONS = {
         'remove-key-confirm': 'Aus deinem Wallet ausloggen',
         'remove-key-recovery-words': 'Wiederherstellungswörter',
         'remove-key-back': 'Zurück zum logout',
+
+        'derive-address-heading-passphrase': 'Entschlüssele dein Wallet',
+        'derive-address-passphrase-text': 'Bitte gib deine Passphrase ein um einen Account deiner Wallet hinzuzufügen.',
+        'derive-address-heading-choose-identicon': 'Wähle deinen Konto Avatar',
+        'derive-address-text-select-avatar': 'Wähle einen Avatar für deinen neuen Account aus der Auswahl unten.',
     },
 };
 
