@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!-- TODO: Don't use nimiq-network.com for releases -->
+    <meta http-equiv="Content-Security-Policy"
+          content="default-src 'self' 'unsafe-eval' https://cdn.nimiq.com https://cdn.nimiq-network.com;
+          img-src http: https: blob: data:; child-src 'self' blob:; style-src 'self';">
+    <title>Nimiq Keyguard</title>
+
+    <script defer src="https://cdn.nimiq-network.com/branches/master/web-offline.js"></script>
+    <script defer src="../../lib/RpcServer.es.js"></script>
+    <script defer src="../../lib/Key.js"></script>
+    <script defer src="../../lib/KeyInfo.js"></script>
+    <script defer src="../../lib/KeyStore.js"></script>
+    <script defer src="../../lib/AccountStore.js"></script>
+    <script defer src="../../lib/Iqons.js"></script>
+    <script defer src="../../lib/BrowserDetection.js"></script>
+    <script defer src="../../lib/I18n.js"></script>
+    <script defer src="../../lib/CookieJar.js"></script>
+    <script defer src="../../lib/AnimationUtils.js"></script>
+    <script defer src="../../translations/index.js"></script>
+    <script defer src="../../common.js"></script>
+    <script defer src="../../components/Identicon.js"></script>
+    <script defer src="../../components/PassphraseInput.js"></script>
+    <script defer src="../../components/PassphraseBox.js"></script>
+    <script defer src="../TopLevelApi.js"></script>
+    <script defer src="DerivedIdenticonSelector.js"></script>
+    <script defer src="DeriveAddress.js"></script>
+    <script defer src="DeriveAddressApi.js"></script>
+    <script defer src="index.js"></script>
+
+    <link rel="stylesheet" href="../../nimiq-style.css">
+    <link rel="stylesheet" href="../../common.css">
+    <link rel="stylesheet" href="../../components/PassphraseInput.css">
+    <link rel="stylesheet" href="../../components/PassphraseBox.css">
+    <link rel="stylesheet" href="./IdenticonSelector.css">
+    <link rel="stylesheet" href="./DeriveAddress.css">
+</head>
+<body>
+    <div class="header-top">
+        <div class="nimiq-app-name">
+            <span class="nimiq-logo"></span>
+        </div>
+    </div>
+
+    <div id="app">
+        <div class="flex-grow"></div>
+
+        <div id="passphrase" class="page">
+            <div class="page-header">
+                <h1 data-i18n="derive-address-heading-passphrase">Unlock your Wallet</h1>
+            </div>
+
+            <div class="page-body">
+                <p data-i18n="derive-address-passphrase-text">Please enter your password to add an account to your wallet.</p>
+            </div>
+
+            <div class="page-footer">
+                <form class="passphrase-box"></form>
+            </div>
+        </div>
+
+        <div id="choose-identicon" class="page">
+            <div class="page-header">
+                <h1 data-i18n="derive-address-heading-choose-identicon">Choose your account avatar</h1>
+            </div>
+
+            <div class="page-body">
+                <div>
+                    <p data-i18n="derive-address-text-select-avatar">Select an avatar for your new account from the selection below.</p>
+                </div>
+                <div class="identicon-selector"></div>
+            </div>
+        </div>
+
+        <a tabindex="0" class="global-close display-none">Back to <span id="app-name"></span></a>
+
+        <div class="flex-grow"></div>
+
+        <div id="loading" class="page">
+            <div class="loading-animation"></div>
+        </div>
+    </div>
+</body>
+</html>

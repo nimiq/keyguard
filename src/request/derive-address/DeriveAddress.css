@@ -1,0 +1,20 @@
+.page p {
+    margin: 4rem;
+}
+
+.page p + p {
+    margin-top: -2.5rem;
+}
+
+.page#choose-identicon .page-body {
+    position: relative;
+}
+
+.page-body, .page-footer {
+    /* TODO: Move this to common.css, but have to adapt sign-transaction stylings */
+    background: #fafafa;
+    align-items: center;
+
+    border-bottom-left-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+}
