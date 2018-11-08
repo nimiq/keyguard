@@ -100,6 +100,7 @@ class DeriveAddress {
     async run() {
         if (this._request.keyInfo.encrypted) {
             window.location.hash = DeriveAddress.Pages.PASSPHRASE;
+            this._passphraseBox.focus();
 
             // Async pre-load the crypto worker to reduce wait time at first decrypt attempt
             Nimiq.CryptoWorker.getInstanceAsync();
