@@ -107,7 +107,7 @@ const TRANSLATIONS = {
         'remove-key-back': 'Back to logout',
 
         'derive-address-heading-passphrase': 'Unlock your Wallet',
-        'derive-address-passphrase-text': 'Please enter your password to add an account to your wallet.',
+        'derive-address-passphrase-text': 'Please enter your passphrase to add another account to your wallet.',
         'derive-address-heading-choose-identicon': 'Choose your account avatar',
         'derive-address-text-select-avatar': 'Select an avatar for your new account from the selection below.',
 

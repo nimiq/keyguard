@@ -6,6 +6,16 @@
     margin-top: -2.5rem;
 }
 
+.passphrase-icon-text {
+    padding: 4rem 6.75rem;
+    display: flex;
+    flex-direction: row;
+}
+
+.passphrase-icon-text p {
+    margin: 2rem 0 0 5rem;
+}
+
 .page#choose-identicon .page-body {
     position: relative;
 }
