@@ -226,7 +226,8 @@ const TRANSLATIONS = {
         'remove-key-back': 'Zurück zum logout',
 
         'derive-address-heading-passphrase': 'Entschlüssele dein Wallet',
-        'derive-address-passphrase-text': 'Bitte gib deine Passphrase ein um deiner Wallet einen weiteren Account hinzuzufügen.',
+        'derive-address-passphrase-text': 'Bitte gib deine Passphrase ein um deiner Wallet einen weiteren Account '
+                                        + 'hinzuzufügen.',
         'derive-address-heading-choose-identicon': 'Wähle deinen Konto-Avatar',
         'derive-address-text-select-avatar': 'Wähle einen Avatar für deinen neuen Account aus der Auswahl unten.',
     },
