@@ -46,8 +46,6 @@ class DeriveAddress {
             DerivedIdenticonSelector.Events.IDENTICON_SELECTED,
             /** @param {{address: Nimiq.Address, keyPath: string}} selectedAddress */
             selectedAddress => {
-                console.log(selectedAddress);
-
                 /** @type {DeriveAddressResult} */
                 const result = {
                     address: selectedAddress.address.serialize(),
@@ -85,7 +83,7 @@ class DeriveAddress {
             return;
         }
 
-        if (!key) return; // Key existance is already checked during request parsing in Api class
+        if (!key) return; // Key existence is already checked during request parsing in DeriveAddressApi class
 
         const masterKey = new Nimiq.Entropy(key.secret).toExtendedPrivateKey();
 

@@ -43,7 +43,7 @@ class DeriveAddressApi extends TopLevelApi { // eslint-disable-line no-unused-va
         }
 
         if (!request.baseKeyPath || !Nimiq.ExtendedPrivateKey.isValidPath(request.baseKeyPath)) {
-            throw new Error('Invalid defaultKeyPath');
+            throw new Error('Invalid baseKeyPath');
         }
 
         if (!request.indicesToDerive || !(request.indicesToDerive instanceof Array)) {
