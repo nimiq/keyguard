@@ -86,7 +86,7 @@ class DerivedIdenticonSelector extends Nimiq.Observable {
         if (!this._masterKey) throw new Error('Master key not set, call init() first');
 
         this._page += 1;
-        if (this._page > 2) this._page = 1;
+        if (this._page > Math.floor(this._pathsToDerive.length / 7)) this._page = 1;
         this.generateIdenticons(this._masterKey, this._pathsToDerive, this._page);
     }
 
