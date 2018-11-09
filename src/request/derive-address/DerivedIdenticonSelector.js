@@ -9,9 +9,6 @@ class DerivedIdenticonSelector extends Nimiq.Observable {
     constructor($el) {
         super();
 
-        this._clearSelection = this._clearSelection.bind(this);
-        this._onSelectionConfirmed = this._onSelectionConfirmed.bind(this);
-
         this.$el = DerivedIdenticonSelector._createElement($el);
 
         /** @type {number} */
@@ -32,8 +29,8 @@ class DerivedIdenticonSelector extends Nimiq.Observable {
         this.$backdrop = /** @type {HTMLElement} */ (this.$el.querySelector('.backdrop'));
 
         this.$generateMoreButton.addEventListener('click', this.nextPage.bind(this));
-        this.$backdrop.addEventListener('click', this._clearSelection);
-        this.$confirmButton.addEventListener('click', this._onSelectionConfirmed);
+        this.$backdrop.addEventListener('click', this._clearSelection.bind(this));
+        this.$confirmButton.addEventListener('click', this._onSelectionConfirmed.bind(this));
     }
 
     /**
