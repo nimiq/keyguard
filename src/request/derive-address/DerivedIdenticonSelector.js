@@ -82,7 +82,9 @@ class DerivedIdenticonSelector extends Nimiq.Observable {
     }
 
     nextPage() {
-        if (!this._masterKey) return;
+        // This check is mainly to make Typescript happy, as "this._masterKey is potentially undefined"
+        if (!this._masterKey) throw new Error('Master key not set, call init() first');
+
         this._page += 1;
         if (this._page > 2) this._page = 1;
         this.generateIdenticons(this._masterKey, this._pathsToDerive, this._page);
