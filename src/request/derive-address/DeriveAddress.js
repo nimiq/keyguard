@@ -86,11 +86,7 @@ class DeriveAddress {
         if (!key) return; // Key existence is already checked during request parsing in DeriveAddressApi class
 
         const masterKey = new Nimiq.Entropy(key.secret).toExtendedPrivateKey();
-
-        const baseKeyPathArray = this._request.baseKeyPath.split('/');
-        const pathsToDerive = this._request.indicesToDerive.map(index => /** @type {string[]} */ ([])
-            .concat(baseKeyPathArray, index)
-            .join('/'));
+        const pathsToDerive = this._request.indicesToDerive.map(index => `${this._request.baseKeyPath}/${index}`);
 
         this._identiconSelector.init(masterKey, pathsToDerive);
     }
