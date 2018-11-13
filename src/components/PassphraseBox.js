@@ -16,7 +16,7 @@ class PassphraseBox extends Nimiq.Observable {
 
         super();
 
-        /** @type {object} */
+        /** @type {{bgColor: string, hideInput: boolean, buttonI18nTag: string}} */
         this.options = Object.assign(defaults, options);
 
         this.$el = PassphraseBox._createElement($el, this.options);
@@ -36,7 +36,7 @@ class PassphraseBox extends Nimiq.Observable {
 
     /**
      * @param {?HTMLFormElement} [$el]
-     * @param {object} options
+     * @param {{bgColor: string, hideInput: boolean, buttonI18nTag: string}} options
      * @returns {HTMLFormElement}
      */
     static _createElement($el, options) {
@@ -47,6 +47,7 @@ class PassphraseBox extends Nimiq.Observable {
         // all possible i18n tags and texts have to be specified here in the below format to
         // enable the validator to find them with its regular expression.
         /* eslint-disable max-len */
+        /** @type {{[i18nTag: string]: string}} */
         const buttonVersions = {
             'passphrasebox-continue': '<button class="submit" data-i18n="passphrasebox-continue">Continue</button>',
             'passphrasebox-log-in': '<button class="submit" data-i18n="passphrasebox-log-in">Log in to your wallet</button>',

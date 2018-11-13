@@ -168,6 +168,27 @@ type RemoveKeyResult = {
     success: boolean
 }
 
+type DeriveAddressRequest = {
+    appName: string
+    keyId: string
+    keyLabel?: string
+    baseKeyPath: string
+    indicesToDerive: string[]
+}
+
+type ParsedDeriveAddressRequest = {
+    appName: string
+    keyInfo: KeyInfo
+    keyLabel?: string
+    baseKeyPath: string
+    indicesToDerive: string[]
+}
+
+type DeriveAddressResult = {
+    keyPath: string
+    address: Uint8Array
+}
+
 type KeyguardRequest = CreateRequest
     | ImportRequest
     | RemoveKeyRequest

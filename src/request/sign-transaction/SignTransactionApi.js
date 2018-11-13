@@ -127,6 +127,7 @@ class SignTransactionApi extends TopLevelApi {
     }
 }
 
+/** @type {{[layout: string]: any, standard: typeof LayoutStandard, checkout: typeof LayoutCheckout}} */
 SignTransactionApi.Layouts = {
     standard: LayoutStandard,
     checkout: LayoutCheckout,

@@ -88,7 +88,8 @@ class Key {
         return `UserFriendly ${id}`;
     }
 }
+
 Key.Type = {
-    LEGACY: /** @type {Key.Type} */ 0,
-    BIP39: /** @type {Key.Type} */ 1,
+    LEGACY: 0,
+    BIP39: 1,
 };

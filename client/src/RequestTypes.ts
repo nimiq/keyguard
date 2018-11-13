@@ -6,6 +6,7 @@ export enum KeyguardCommand {
     EXPORT_FILE = 'export-file',
     SIGN_TRANSACTION = 'sign-transaction',
     SIGN_MESSAGE = 'sign-message',
+    DERIVE_ADDRESS = 'derive-address',
 
     // Iframe requests
     LIST = 'list',
@@ -113,6 +114,19 @@ export interface SignMessageRequest {
 export interface SignMessageResult {
     publicKey: Uint8Array;
     signature: Uint8Array;
+}
+
+export interface DeriveAddressRequest {
+    appName: string;
+    keyId: string;
+    keyLabel?: string;
+    baseKeyPath: string;
+    indicesToDerive: string[];
+}
+
+export interface DeriveAddressResult {
+    keyPath: string;
+    address: Uint8Array;
 }
 
 export type RpcResult = CreateResult
