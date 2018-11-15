@@ -3,7 +3,7 @@
 /* global KeyStore */
 class ExportWordsApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
-     * @param {ExportWordsRequest} request
+     * @param {SimpleRequest} request
      */
     async onRequest(request) {
         /** @type {HTMLElement} */
@@ -20,8 +20,8 @@ class ExportWordsApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     }
 
     /**
-     * @param {ExportWordsRequest} request
-     * @returns {Promise<ParsedExportWordsRequest>}
+     * @param {SimpleRequest} request
+     * @returns {Promise<ParsedSimpleRequest>}
      */
     static async _parseRequest(request) {
         if (!request) {
@@ -44,7 +44,7 @@ class ExportWordsApi extends TopLevelApi { // eslint-disable-line no-unused-vars
             throw new Error('Invalid label');
         }
 
-        return /** @type {ParsedExportWordsRequest} */ {
+        return /** @type {ParsedSimpleRequest} */ {
             appName: request.appName,
             keyInfo,
             keyLabel: request.keyLabel,

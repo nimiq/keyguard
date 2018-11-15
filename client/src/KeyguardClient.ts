@@ -10,14 +10,10 @@ import {
     SignMessageResult,
     ImportRequest,
     ImportResult,
-    RemoveKeyRequest,
-    RemoveKeyResult,
-    ExportWordsRequest,
-    ExportWordsResult,
-    ExportFileRequest,
-    ExportFileResult,
     KeyInfoObject,
     AccountInfo,
+    SimpleRequest,
+    SimpleResult,
 } from './RequestTypes';
 
 export class KeyguardClient {
@@ -63,7 +59,7 @@ export class KeyguardClient {
         return this._request(requestBehavior,  KeyguardCommand.CREATE, [request]);
     }
 
-    public remove(request: RemoveKeyRequest, requestBehavior = this._defaultBehavior): Promise<RemoveKeyResult> {
+    public remove(request: SimpleRequest, requestBehavior = this._defaultBehavior): Promise<SimpleResult> {
         return this._request(requestBehavior,  KeyguardCommand.REMOVE, [request]);
     }
 
@@ -71,14 +67,24 @@ export class KeyguardClient {
         return this._request(requestBehavior,  KeyguardCommand.IMPORT, [request]);
     }
 
-    public async exportWords(request: ExportWordsRequest, requestBehavior = this._defaultBehavior)
-        : Promise<ExportWordsResult> {
+    public async exportWords(request: SimpleRequest, requestBehavior = this._defaultBehavior)
+        : Promise<SimpleResult> {
         return this._request(requestBehavior,  KeyguardCommand.EXPORT_WORDS, [request]);
     }
 
-    public async exportFile(request: ExportFileRequest, requestBehavior = this._defaultBehavior)
-        : Promise<ExportFileResult> {
+    public async exportFile(request: SimpleRequest, requestBehavior = this._defaultBehavior)
+        : Promise<SimpleResult> {
         return this._request(requestBehavior,  KeyguardCommand.EXPORT_FILE, [request]);
+    }
+
+    public async export(request: SimpleRequest, requestBehavior = this._defaultBehavior)
+        : Promise<SimpleResult> {
+        return this._request(requestBehavior,  KeyguardCommand.EXPORT, [request]);
+    }
+
+    public async changePassphrase(request: SimpleRequest, requestBehavior = this._defaultBehavior)
+        : Promise<SimpleResult> {
+        return this._request(requestBehavior,  KeyguardCommand.CHANGE_PASSPHRASE, [request]);
     }
 
     public async signTransaction(request: SignTransactionRequest,

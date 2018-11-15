@@ -4,6 +4,21 @@ type Transform<T, K extends keyof T, E> = Omit<T, K> & E
 
 type KeyId2KeyInfo<T extends { keyId: string }> = Transform<T, 'keyId', { keyInfo: KeyInfo }>
 
+type BasicRequest = {
+    appName: string
+}
+
+type SimpleRequest = BasicRequest & {
+    keyId: string
+    keyLabel?: string
+}
+
+type ParsedSimpleRequest = KeyId2KeyInfo<SimpleRequest>
+
+type SimpleResult = {
+    success: boolean
+}
+
 type TransactionInfo = {
     sender: Uint8Array
     senderType: Nimiq.Account.Type
@@ -15,7 +30,7 @@ type TransactionInfo = {
     data?: Uint8Array
     flags?: number
     networkId?: number
-} 
+}
 
 type ConstructTransaction<T extends TransactionInfo> = Transform<T,
     'sender' | 'senderType' | 'recipient' | 'recipientType' | 'value' | 'fee' |
@@ -24,14 +39,11 @@ type ConstructTransaction<T extends TransactionInfo> = Transform<T,
 
 type SignTransactionRequestLayout = 'standard' | 'checkout' | 'cashlink'
 
-type SignTransactionRequest = TransactionInfo & {
+type SignTransactionRequest = SimpleRequest & TransactionInfo & {
     layout?: SignTransactionRequestLayout
     shopOrigin?: string
-    appName: string
 
-    keyId: string
     keyPath: string
-    keyLabel?: string
 
     senderLabel?: string
     recipientLabel?: string
@@ -75,64 +87,21 @@ type SignTransactionResult = {
     signature: Uint8Array
 }
 
-type ExportWordsRequest = {
-    appName: string
-    keyId: string
-    keyLabel?: string
-}
-
-
-type ExportWordsResult = {
-    success: boolean
-}
-
-type ParsedExportWordsRequest = {
-    appName: string;
-    keyInfo: KeyInfo;
-    keyLabel?: string;
-}
-
-type ExportFileRequest = {
-    appName: string
-    keyId: string
-    keyLabel?: string
-}
-
-type ParsedExportFileRequest = KeyId2KeyInfo<ExportFileRequest>
-
-type ExportFileResult = {
-    success: boolean
-}
-
-type SignMessageRequest = {
-    appName: string
-
-    keyId: string
+type SignMessageRequest = SimpleRequest & {
     keyPath: string
 
-    keyLabel?: string
     addressLabel?: string
     message: string | Uint8Array
 }
 
-type ParsedSignMessageRequest = {
-    appName: string
-
-    keyInfo: KeyInfo
-    keyPath: string
-
-    keyLabel?: string
-    addressLabel?: string
-    message: Uint8Array
-}
+type ParsedSignMessageRequest = Transform<KeyId2KeyInfo<SignMessageRequest>, 'message', { message: Uint8Array}>
 
 type SignMessageResult = {
     publicKey: Uint8Array
     signature: Uint8Array
 }
 
-type CreateRequest = {
-    appName: string;
+type CreateRequest = BasicRequest & {
     defaultKeyPath: string;
 }
 
@@ -142,8 +111,7 @@ type CreateResult = {
     address: Uint8Array
 }
 
-type ImportRequest = {
-    appName: string;
+type ImportRequest = BasicRequest & {
     defaultKeyPath: string;
     requestedKeyPaths: string[];
 }
@@ -154,26 +122,8 @@ type ImportResult = {
     addresses: {keyPath: string, address: Uint8Array}[];
 }
 
-type RemoveKeyRequest = {
-    appName: string
-    keyId: string
-    keyLabel?: string
-}
-
-type ParsedRemoveKeyRequest = {
-    appName: string;
-    keyInfo: KeyInfo;
-    keyLabel?: string;
-}
-
-type RemoveKeyResult = {
-    success: boolean
-}
-
 type KeyguardRequest = CreateRequest
     | ImportRequest
-    | RemoveKeyRequest
+    | SimpleRequest
     | SignTransactionRequest
     | SignMessageRequest
-    | ExportWordsRequest
-    | ExportFileRequest

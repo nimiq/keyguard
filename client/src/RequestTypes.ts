@@ -4,6 +4,8 @@ export enum KeyguardCommand {
     IMPORT = 'import',
     EXPORT_WORDS = 'export-words',
     EXPORT_FILE = 'export-file',
+    EXPORT = 'export',
+    CHANGE_PASSPHRASE = 'change-passphrase',
     SIGN_TRANSACTION = 'sign-transaction',
     SIGN_MESSAGE = 'sign-message',
 
@@ -18,8 +20,19 @@ declare namespace Key {
     type Type = 0 | 1;
 }
 
-export interface CreateRequest {
+interface BasicRequest {
     appName: string;
+}
+export interface SimpleRequest extends BasicRequest {
+    keyId: string;
+    keyLabel?: string;
+}
+
+export interface SimpleResult {
+    success: boolean;
+}
+
+export interface CreateRequest extends BasicRequest {
     defaultKeyPath?: string;
 }
 
@@ -29,18 +42,7 @@ export interface CreateResult {
     address: Uint8Array;
 }
 
-export interface RemoveKeyRequest {
-    appName: string;
-    keyId: string;
-    keyLabel?: string;
-}
-
-export interface RemoveKeyResult {
-    success: boolean;
-}
-
-export interface ImportRequest {
-    appName: string;
+export interface ImportRequest extends BasicRequest {
     defaultKeyPath: string;
     requestedKeyPaths: string[];
 }
@@ -51,34 +53,11 @@ export interface ImportResult {
     addresses: Array<{keyPath: string, address: Uint8Array}>;
 }
 
-export interface ExportWordsRequest {
-    appName: string;
-    keyId: string;
-    keyLabel?: string;
-}
-
-export interface ExportWordsResult {
-    success: boolean;
-}
-
-export interface ExportFileRequest {
-    appName: string;
-    keyId: string;
-    keyLabel?: string;
-}
-
-export interface ExportFileResult {
-    success: boolean;
-}
-
-export interface SignTransactionRequest {
+export interface SignTransactionRequest extends SimpleRequest {
     layout?: 'standard' | 'checkout' | 'cashlink';
     shopOrigin?: string;
-    appName: string;
 
-    keyId: string;
     keyPath: string;
-    keyLabel?: string;
 
     sender: Uint8Array;
     senderType?: Nimiq.Account.Type;
@@ -99,13 +78,9 @@ export interface SignTransactionResult {
     signature: Uint8Array;
 }
 
-export interface SignMessageRequest {
-    appName: string;
-
-    keyId: string;
+export interface SignMessageRequest extends SimpleRequest {
     keyPath: string;
 
-    keyLabel?: string;
     addressLabel?: string;
     message: string | Uint8Array;
 }
@@ -119,9 +94,7 @@ export type RpcResult = CreateResult
     | ImportResult
     | SignTransactionResult
     | SignMessageResult
-    | RemoveKeyResult
-    | ExportFileResult
-    | ExportWordsResult;
+    | SimpleRequest;
 
 // Deprecated, only used for migrating databases
 export interface AccountInfo {
