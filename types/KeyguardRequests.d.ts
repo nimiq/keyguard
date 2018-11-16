@@ -122,8 +122,21 @@ type ImportResult = {
     addresses: {keyPath: string, address: Uint8Array}[];
 }
 
+type DeriveAddressRequest = SimpleRequest & {
+    baseKeyPath: string
+    indicesToDerive: string[]
+}
+
+type ParsedDeriveAddressRequest = KeyId2KeyInfo<DeriveAddressRequest>
+
+type DeriveAddressResult = {
+    keyPath: string
+    address: Uint8Array
+}
+
 type KeyguardRequest = CreateRequest
     | ImportRequest
     | SimpleRequest
     | SignTransactionRequest
+    | DeriveAddressRequest
     | SignMessageRequest

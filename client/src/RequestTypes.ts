@@ -8,6 +8,7 @@ export enum KeyguardCommand {
     CHANGE_PASSPHRASE = 'change-passphrase',
     SIGN_TRANSACTION = 'sign-transaction',
     SIGN_MESSAGE = 'sign-message',
+    DERIVE_ADDRESS = 'derive-address',
 
     // Iframe requests
     LIST = 'list',
@@ -90,10 +91,21 @@ export interface SignMessageResult {
     signature: Uint8Array;
 }
 
+export interface DeriveAddressRequest extends SimpleRequest{
+    baseKeyPath: string;
+    indicesToDerive: string[];
+}
+
+export interface DeriveAddressResult {
+    keyPath: string;
+    address: Uint8Array;
+}
+
 export type RpcResult = CreateResult
     | ImportResult
     | SignTransactionResult
     | SignMessageResult
+    | DeriveAddressResult
     | SimpleRequest;
 
 // Deprecated, only used for migrating databases
