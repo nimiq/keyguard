@@ -53,6 +53,8 @@ class ImportApi extends TopLevelApi {
         const $passphraseSetterBox = (document.querySelector('.passphrase-setter-box'));
         /** @type {HTMLButtonElement} */
         const $importWordsLink = (document.querySelector('.go-to-words'));
+        /** @type {HTMLAnchorElement} */
+        const $createWalletLink = (document.querySelector('.create-wallet'));
 
         // Components
         const fileImport = new FileImport($fileImport);
@@ -72,6 +74,7 @@ class ImportApi extends TopLevelApi {
             );
             handler.run();
         });
+        $createWalletLink.addEventListener('click', () => alert('Sorry, not implemented yet.'));
 
         return {
             passphraseBox,

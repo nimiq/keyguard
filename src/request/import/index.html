@@ -41,6 +41,8 @@
     <script defer src="ImportApi.js"></script>
     <script defer src="index.js"></script>
 
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Muli:400,600,700">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono&text=0123456789ABCDEFGHJKLMNPQRSTUVXY">
     <link rel="stylesheet" href="../../nimiq-style.css">
     <link rel="stylesheet" href="../../common.css">
     <link rel="stylesheet" href="../../components/FileImport.css">
@@ -61,95 +63,93 @@
         <div class="flex-grow"></div>
 
         <!-- File import -->
-        <div id="file-import" class="page">
-            <div class="page-header">
-                <h1 data-i18n="import-heading-log-in">Log in</h1>
+        <div id="file-import" class="page nq-card">
+            <div class="page-header nq-card-header">
+                <h1 data-i18n="import-heading-log-in" class="nq-h1">Log in</h1>
             </div>
 
-            <div class="page-body">
+            <div class="page-body nq-card-body">
                 <div class="file-import"></div>
-                <p data-i18n="import-file-lost-file">Lost your Key File? You can recover your account with your 24 Recovery Words.</p>
-                <button class="go-to-words" data-i18n="import-file-button-words">Enter Recovery Words</button>
+                <p data-i18n="import-file-lost-file" class="nq-text">Lost your Key File? You can recover your account with your 24 Recovery Words.</p>
+                <button class="go-to-words nq-button-s" data-i18n="import-file-button-words">Enter Recovery Words</button>
             </div>
 
-            <div class="page-footer">
-                <a class="create-wallet" data-i18n="import-link-no-wallet">Don't have a wallet yet?</a>
+            <div class="page-footer nq-card-footer">
+                <a class="create-wallet nq-link" data-i18n="import-link-no-wallet">Don't have a wallet yet?</a>
             </div>
         </div>
 
         <!-- privacy agent -->
-        <div id="privacy" class="page">
-            <div class="page-header">
-                <a tabindex="0" class="page-header-back-button icon-back-arrow"></a>
-                <h1 data-i18n="import-heading-log-in">Log in</h1>
+        <div id="privacy" class="page nq-card">
+            <div class="page-header nq-card-header">
+                <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
+                <h1 data-i18n="import-heading-log-in" class="nq-h1">Log in</h1>
             </div>
 
-            <div class="page-body">
+            <div class="page-body nq-card-body">
                 <div class="agent"></div>
             </div>
         </div>
 
         <!-- enter recovery words -->
-        <form id="recovery-words" class="page">
-            <div class="page-header">
-                <a tabindex="0" class="page-header-back-button icon-back-arrow"></a>
-                <h1 data-i18n="import-heading-log-in">Log in</h1>
+        <form id="recovery-words" class="page nq-card">
+            <div class="page-header nq-card-header">
+                <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
+                <h1 data-i18n="import-heading-log-in" class="nq-h1">Log in</h1>
             </div>
 
-            <div class="page-body">
-                <p data-i18n="enter-recovery-words-enter-words">Please enter your 24 recovery words.</p>
+            <div class="page-body nq-card-body">
+                <p data-i18n="enter-recovery-words-enter-words" class="nq-text">Please enter your 24 recovery words.</p>
                 <div class="recovery-words"></div>
-                <button data-i18n="continue" type="submit" disabled>Continue</button>
+                <button data-i18n="continue" type="submit" class="nq-button" disabled>Continue</button>
             </div>
         </form>
 
         <!-- choose key type -->
-        <form id="choose-key-type" class="page">
-            <div class="page-header">
-                <a tabindex="0" class="page-header-back-button icon-back-arrow"></a>
-                <h1 data-i18n="choose-key-type-heading">Choose key type</h1>
+        <form id="choose-key-type" class="page nq-card">
+            <div class="page-header nq-card-header">
+                <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
+                <h1 data-i18n="choose-key-type-heading" class="nq-h1">Choose key type</h1>
             </div>
 
-            <div class="page-body">
-                <p data-i18n="choose-key-type-text">We couldn't determine the type of your key. Please select it below.</p>
+            <div class="page-body nq-card-body">
+                <p data-i18n="choose-key-type-text" class="nq-text">We couldn't determine the type of your key. Please select it below.</p>
                 <div class="key-type-option">
                     <input type="radio" name="key-type" id="key-type-legacy" value="0">
                     <label for="key-type-legacy" class="row">
                         <div class="identicon-legacy"></div>
                         <div class="key-type-info">
                             <strong data-i18n="choose-key-type-legacy-address-heading">Single address</strong><br>
-                            <span data-i18n="choose-key-type-legacy-address-info">Created before xx/xx/2018</span><br>
-                            <br>
+                            <p data-i18n="choose-key-type-legacy-address-info" class="nq-text-s">Created before xx/xx/2018</p>
                             <span class="address address-legacy"></span>
                         </div>
                     </label>
                 </div>
-                <h2 class="key-type-or" data-i18n="choose-key-type-or">or</h2>
+                <div class="key-type-or nq-label" data-i18n="choose-key-type-or">or</div>
                 <div class="key-type-option">
                     <input type="radio" name="key-type" id="key-type-bip39" value="1">
                     <label for="key-type-bip39" class="row">
                         <div class="identicon-bip39"></div>
                         <div class="key-type-info">
                             <strong data-i18n="choose-key-type-bip39-address-heading">Multiple addresses</strong><br>
-                            <span data-i18n="choose-key-type-bip39-address-info">Created after xx/xx/2018</span><br>
-                            <br>
+                            <p data-i18n="choose-key-type-bip39-address-info" class="nq-text-s">Created after xx/xx/2018</p>
                             <span class="address address-bip39"></span>
                         </div>
                     </label>
                 </div>
-                <button data-i18n="continue" type="submit" disabled>Continue</button>
+                <button data-i18n="continue" type="submit" class="nq-button" disabled>Continue</button>
             </div>
         </form>
 
         <!-- Enter Passphrase -->
-        <div id="enter-passphrase" class="page">
-            <div class="page-header">
-                <a tabindex="0" class="page-header-back-button icon-back-arrow"></a>
-                <h1 data-i18n="import-file-heading-unlock">Unlock your Key File</h1>
+        <div id="enter-passphrase" class="page nq-card">
+            <div class="page-header nq-card-header">
+                <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
+                <h1 data-i18n="import-file-heading-unlock" class="nq-h1">Unlock your Key File</h1>
             </div>
 
-            <div class="page-body">
-                <div class="icon-keyfile-locked"></div>
+            <div class="page-body nq-card-body">
+                <div class="nq-icon walletfile-locked"></div>
             </div>
 
             <div class="page-footer">
@@ -158,18 +158,18 @@
         </div>
 
         <!-- Set Passphrase -->
-        <div id="set-passphrase" class="page">
-            <div class="page-header">
-                <a tabindex="0" class="page-header-back-button icon-back-arrow"></a>
-                <h1 data-i18n="import-heading-protect">Protect your wallet</h1>
+        <div id="set-passphrase" class="page nq-card">
+            <div class="page-header nq-card-header">
+                <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
+                <h1 data-i18n="import-heading-protect" class="nq-h1">Protect your wallet</h1>
             </div>
 
-            <div class="page-body">
+            <div class="page-body nq-card-body">
                 <div class="keyfile-info">
-                    <div class="icon icon-keyfile"></div>
+                    <div class="nq-icon walletfile"></div>
                     <div class="keyfile-text">
-                        <p data-i18n="import-file-text-unprotected-keyfile">Your Key File is unprotected.</p>
-                        <p data-i18n="import-text-set-password">You can now set a password to encrypt your wallet on this device.</p>
+                        <p data-i18n="import-file-text-unprotected-keyfile" class="nq-text">Your Key File is unprotected.</p>
+                        <p data-i18n="import-text-set-password" class="nq-text">You can now set a password to encrypt your wallet on this device.</p>
                     </div>
                 </div>
             </div>
@@ -179,7 +179,10 @@
             </div>
         </div>
 
-        <a tabindex="0" class="global-close display-none">Back to <span id="app-name"></span></a>
+        <button class="global-close nq-button-s display-none">
+            <span class="nq-icon arrow-left"></span>
+            Back to <span id="app-name"></span>
+        </button>
 
         <div class="flex-grow"></div>
 
