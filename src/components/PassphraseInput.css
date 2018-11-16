@@ -15,6 +15,7 @@
     border: none !important;
     font-size: 3rem;
     letter-spacing: 1.25rem;
+    width: 100%;
     max-width: unset;
 }
 
@@ -32,11 +33,12 @@
 
 .passphrase-input .eye-button {
     position: absolute;
-    top: 0.5rem;
+    top: 0.25rem;
     left: 0;
-    width: 3.25rem;
-    height: 3.25rem;
+    width: 4rem;
+    height: 4rem;
     background-size: 3rem;
+    cursor: pointer;
 }
 
 .passphrase-input button {

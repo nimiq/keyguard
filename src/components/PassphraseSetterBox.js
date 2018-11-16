@@ -9,7 +9,7 @@ class PassphraseSetterBox extends Nimiq.Observable {
      */
     constructor($el, options = {}) {
         const defaults = {
-            bgColor: 'purple',
+            bgColor: 'light-blue',
         };
 
         super();
@@ -37,7 +37,7 @@ class PassphraseSetterBox extends Nimiq.Observable {
      */
     static _createElement($el, options) {
         $el = $el || document.createElement('form');
-        $el.classList.add('passphrase-box', 'actionbox', 'setter', 'center', options.bgColor);
+        $el.classList.add('passphrase-box', 'actionbox', 'setter', 'center', `nq-bg-${options.bgColor}`);
 
         /* eslint-disable max-len */
         $el.innerHTML = `
@@ -56,6 +56,9 @@ class PassphraseSetterBox extends Nimiq.Observable {
             <button class="submit" data-i18n="passphrasebox-continue">Continue</button>
         `;
         /* eslint-enable max-len */
+
+        /** @type {HTMLButtonElement} */
+        ($el.querySelector('button.submit')).classList.add('nq-button', 'inverse', options.bgColor);
 
         I18n.translateDom($el);
         return $el;

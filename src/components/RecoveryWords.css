@@ -8,7 +8,7 @@
     background-size: 1.75rem;
     background-position: 1.125rem center;
     background-repeat: no-repeat;
-    background-color: black;
+    background-color: var(--nimiq-blue);
     padding-left: 4rem;
     padding-right: 2rem;
     margin-left: auto;
@@ -28,7 +28,7 @@
     line-height: 4rem;
     will-change: transform;
     display: block;
-    margin: 4rem;
+    margin: 4rem 0;
 }
 
 .recovery-words .words-container {
@@ -36,7 +36,7 @@
     padding: 2rem;
     box-sizing: border-box;
     position: relative;
-    background-color: rgba(0, 0, 0, 0.4);
+    background: var(--nimiq-light-blue-bg);
     border: .125rem solid white;
     border-radius: 1rem;
     color: white;
@@ -44,7 +44,7 @@
 }
 
 .recovery-words-input.shake, .recovery-words .shake {
-    border-color: var(--error-color);
+    border-color: var(--nimiq-red);
 }
 
 .recovery-words .words-container .word-section {
@@ -122,8 +122,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    color: var(--secondary-text-color);
-    color: black;
+    color: var(--nimiq-blue);
     border-bottom: .125rem solid rgba(0, 0, 0, 0.1);
 }
 
@@ -131,12 +130,8 @@
     border-bottom: none;
 }
 
-.autocomplete-suggestion b {
-    font-weight: normal;
-    color: var(--primary-color);
-    color: black;
-}
-
 .autocomplete-suggestion.selected {
-    background: #cce5ff;
+    color: white;
+    background: var(--nimiq-light-blue);
+    cursor: pointer;
 }

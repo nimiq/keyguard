@@ -2,7 +2,3 @@
     width: 100%;
     box-sizing: border-box;
 }
-
-.recovery-word-field.shake input {
-    border-bottom: .125rem solid var(--error-color) !important;
-}
