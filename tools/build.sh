@@ -39,8 +39,8 @@ for DIR in src/request/*/ ; do
        cat $DIR/$url >> dist/request/$REQUEST/$JS_BUNDLE
     done
 
-    # get all css files included in request's index.html
-    LIST_CSS="$(grep '<link' $DIR/index.html | cut -d\" -f4)"
+    # get all local css files included in request's index.html
+    LIST_CSS="$(grep '<link' $DIR/index.html | grep -v -E 'http://|https://' | cut -d\" -f4)"
 
     # concat them
     for url in $LIST_CSS; do

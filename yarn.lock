@@ -90,6 +90,11 @@
   version "0.0.3"
   resolved "https://registry.yarnpkg.com/@nimiq/rpc/-/rpc-0.0.3.tgz#8f4f7e3d5ebbbb59a3bc120e37a1ec38b4e62e5a"
 
+"@nimiq/style@^0.3.3":
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/@nimiq/style/-/style-0.3.3.tgz#e4f09e1e20fa36b46daf00761316ebfe5d9d9d5a"
+  integrity sha512-iBxCtSfCQXJFm0D//qvy6auWdkgHDLHIo2FaPPVXKKy/BBcxDiRsDRWB9rAsC2LHHNlRJ4BA1DU70eLHpn9XWw==
+
 "@types/jasmine@^2.8.8":
   version "2.8.8"
   resolved "https://registry.yarnpkg.com/@types/jasmine/-/jasmine-2.8.8.tgz#bf53a7d193ea8b03867a38bfdb4fbb0e0bf066c9"
