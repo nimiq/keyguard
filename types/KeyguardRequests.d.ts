@@ -52,36 +52,6 @@ type SignTransactionRequest = SimpleRequest & TransactionInfo & {
 type ParsedSignTransactionRequest = ConstructTransaction<KeyId2KeyInfo<SignTransactionRequest>>
     & { layout: SignTransactionRequestLayout }
 
-type KeyRecord = {
-    id: string
-    type: Key.Type
-    encrypted: boolean
-    secret: Uint8Array
-}
-
-declare namespace Key {
-    type Type = 0 | 1
-}
-
-// Deprecated, only used for migrating databases
-type AccountInfo = {
-    userFriendlyAddress: string
-    type: string
-    label: string
-}
-
-// Deprecated, only used for migrating databases
-type AccountRecord = AccountInfo & {
-    encryptedKeyPair: Uint8Array
-}
-
-type KeyInfoObject = {
-    id: string
-    type: Key.Type
-    encrypted: boolean
-    userFriendlyId?: string
-}
-
 type SignTransactionResult = {
     publicKey: Uint8Array
     signature: Uint8Array
