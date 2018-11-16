@@ -1,8 +1,16 @@
-type KeyRecord = {
-    id: string
-    type: Key.Type
-    encrypted: boolean
-    secret: Uint8Array
+interface Newable {
+    new(...args: any[]): any
+}
+
+type DOMEvent = Event & {
+    target: Element
+    data: any
+}
+
+interface Window {
+    rpcServer: Rpc.RpcServer
+    KeyStore: any
+    TRANSLATIONS: dict
 }
 
 declare namespace Key {
@@ -28,186 +36,9 @@ type KeyInfoObject = {
     userFriendlyId?: string
 }
 
-type SignTransactionRequest = {
-    layout?: 'standard' | 'checkout' | 'cashlink'
-    shopOrigin?: string
-    appName: string
-
-    keyId: string
-    keyPath: string
-    keyLabel?: string
-
-    sender: Uint8Array
-    senderType: Nimiq.Account.Type
-    senderLabel?: string
-    recipient: Uint8Array
-    recipientType: Nimiq.Account.Type
-    recipientLabel?: string
-    value: number
-    fee: number
-    validityStartHeight: number
-    data?: Uint8Array
-    flags?: number
-    networkId?: number
-}
-
-type ParsedSignTransactionRequest = {
-    layout: 'standard' | 'checkout' | 'cashlink'
-    shopOrigin?: string
-    appName: string
-
-    keyInfo: KeyInfo
-    keyPath: string
-    transaction: Nimiq.ExtendedTransaction
-
-    keyLabel?: string
-    senderLabel?: string
-    recipientLabel?: string
-}
-
-type SignTransactionResult = {
-    publicKey: Uint8Array
-    signature: Uint8Array
-}
-
-type ExportWordsRequest = {
-    appName: string
-    keyId: string
-    keyLabel?: string
-}
-
-type ExportWordsResult = {
-    success: boolean
-}
-
-type ParsedExportWordsRequest = {
-    appName: string;
-    keyInfo: KeyInfo;
-    keyLabel?: string;
-}
-
-type ExportFileRequest = {
-    appName: string
-    keyId: string
-    keyLabel?: string
-}
-
-type ParsedExportFileRequest = {
-    appName: string;
-    keyInfo: KeyInfo;
-    keyLabel?: string;
-}
-
-type ExportFileResult = {
-    success: boolean
-}
-
-type SignMessageRequest = {
-    appName: string
-
-    keyId: string
-    keyPath: string
-
-    keyLabel?: string
-    addressLabel?: string
-    message: string | Uint8Array
-}
-
-type ParsedSignMessageRequest = {
-    appName: string
-
-    keyInfo: KeyInfo
-    keyPath: string
-
-    keyLabel?: string
-    addressLabel?: string
-    message: Uint8Array
-}
-
-type SignMessageResult = {
-    publicKey: Uint8Array
-    signature: Uint8Array
-}
-
-type CreateRequest = {
-    appName: string;
-    defaultKeyPath: string;
-}
-
-type CreateResult = {
-    keyId: string
-    keyPath: string
-    address: Uint8Array
-}
-
-type ImportRequest = {
-    appName: string;
-    defaultKeyPath: string;
-    requestedKeyPaths: string[];
-}
-
-type ImportResult = {
-    keyId: string;
-    keyType: Key.Type;
-    addresses: {keyPath: string, address: Uint8Array}[];
-}
-
-type RemoveKeyRequest = {
-    appName: string
-    keyId: string
-    keyLabel?: string
-}
-
-type ParsedRemoveKeyRequest = {
-    appName: string;
-    keyInfo: KeyInfo;
-    keyLabel?: string;
-}
-
-type RemoveKeyResult = {
-    success: boolean
-}
-
-type DeriveAddressRequest = {
-    appName: string
-    keyId: string
-    keyLabel?: string
-    baseKeyPath: string
-    indicesToDerive: string[]
-}
-
-type ParsedDeriveAddressRequest = {
-    appName: string
-    keyInfo: KeyInfo
-    keyLabel?: string
-    baseKeyPath: string
-    indicesToDerive: string[]
-}
-
-type DeriveAddressResult = {
-    keyPath: string
-    address: Uint8Array
-}
-
-type KeyguardRequest = CreateRequest
-    | ImportRequest
-    | RemoveKeyRequest
-    | SignTransactionRequest
-    | SignMessageRequest
-    | ExportWordsRequest
-    | ExportFileRequest
-
-interface Newable {
-    new(...args: any[]): any
-}
-
-type DOMEvent = Event & {
-    target: Element
-    data: any
-}
-
-interface Window {
-    rpcServer: Rpc.RpcServer
-    KeyStore: any
-    TRANSLATIONS: dict
+type KeyRecord = {
+    id: string
+    type: Key.Type
+    encrypted: boolean
+    secret: Uint8Array
 }
