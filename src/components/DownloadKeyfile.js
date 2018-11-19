@@ -10,9 +10,9 @@ class DownloadKeyfile extends Nimiq.Observable {
 
         this.$el = DownloadKeyfile._createElement($el);
 
-        const $downloadButtons = this.$el.querySelectorAll('.download');
+        this.$downloadButtons = this.$el.querySelectorAll('.download');
 
-        $downloadButtons.forEach(el => el.addEventListener('click', () => this._onDownloadClick()));
+        this.$downloadButtons.forEach(el => el.addEventListener('click', () => this._onDownloadClick()));
     }
 
     /**
@@ -21,17 +21,17 @@ class DownloadKeyfile extends Nimiq.Observable {
      */
     static _createElement($el) {
         $el = $el || document.createElement('div');
-        $el.classList.add('download-keyfile', 'actionbox', 'center');
+        $el.classList.add('download-keyfile', 'actionbox');
 
         /* eslint-disable max-len */
         $el.innerHTML = `
             <h2 class="protected" data-i18n="downloadkeyfile-heading-protected">Your Key File is protected!</h2>
             <h2 class="unprotected" data-i18n="downloadkeyfile-heading-unprotected">Your Key File is not protected!</h2>
 
-            <p data-i18n="downloadkeyfile-safe-place">Store it in a safe place. If you lose it, it cannot be recovered!</p>
+            <p data-i18n="downloadkeyfile-safe-place" class="nq-text">Store it in a safe place. If you lose it, it cannot be recovered!</p>
 
-            <button class="download protected" data-i18n="downloadkeyfile-download">Download Key File</button>
-            <button class="download unprotected" data-i18n="downloadkeyfile-download-anyway">Download anyway</button>
+            <button class="download protected nq-button inverse" data-i18n="downloadkeyfile-download">Download Key File</button>
+            <button class="download unprotected nq-button inverse" data-i18n="downloadkeyfile-download-anyway">Download anyway</button>
         `;
         /* eslint-enable max-len */
 
@@ -46,8 +46,12 @@ class DownloadKeyfile extends Nimiq.Observable {
     setSecret(secret, isProtected) { // eslint-disable-line no-unused-vars
         // TODO Generate file from secret
 
-        this.$el.classList.toggle('green', isProtected);
-        this.$el.classList.toggle('yellow', !isProtected);
+        this.$el.classList.toggle('nq-bg-orange', !isProtected);
+        this.$el.classList.toggle('nq-bg-green', isProtected);
+        this.$downloadButtons.forEach(el => {
+            el.classList.toggle('orange', !isProtected);
+            el.classList.toggle('green', isProtected);
+        });
 
         this.$el.classList.toggle('protected', isProtected);
         this.$el.classList.toggle('unprotected', !isProtected);

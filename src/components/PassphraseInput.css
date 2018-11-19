@@ -28,7 +28,7 @@
 }
 
 .passphrase-input .input-container.shake input {
-    color: var(--error-color);
+    color: var(--nimiq-red);
 }
 
 .passphrase-input .eye-button {
@@ -66,14 +66,14 @@
 }
 
 /* Webkit based browsers */
-.passphrase-input .strength-indicator[value="10"]::-webkit-meter-optimum-value { background: var(--error-color); }
-.passphrase-input .strength-indicator[value="70"]::-webkit-meter-optimum-value { background: var(--warning-color); }
+.passphrase-input .strength-indicator[value="10"]::-webkit-meter-optimum-value { background: var(--nimiq-red); }
+.passphrase-input .strength-indicator[value="70"]::-webkit-meter-optimum-value { background: var(--nimiq-orange); }
 .passphrase-input .strength-indicator[value="100"]::-webkit-meter-optimum-value,
-.passphrase-input .strength-indicator[value="130"]::-webkit-meter-optimum-value { background: var(--success-color); }
+.passphrase-input .strength-indicator[value="130"]::-webkit-meter-optimum-value { background: var(--nimiq-green); }
 
 /* Gecko based browsers */
-.passphrase-input .strength-indicator[value="10"]::-moz-meter-bar { background: var(--error-color); }
-.passphrase-input .strength-indicator[value="70"]::-moz-meter-bar { background: var(--warning-color); }
+.passphrase-input .strength-indicator[value="10"]::-moz-meter-bar { background: var(--nimiq-red); }
+.passphrase-input .strength-indicator[value="70"]::-moz-meter-bar { background: var(--nimiq-orange); }
 .passphrase-input .strength-indicator[value="100"]::-moz-meter-bar,
-.passphrase-input .strength-indicator[value="130"]::-moz-meter-bar { background: var(--success-color); }
+.passphrase-input .strength-indicator[value="130"]::-moz-meter-bar { background: var(--nimiq-green); }
 

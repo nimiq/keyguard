@@ -18,7 +18,7 @@
 
 .title-wrapper {
     position: absolute;
-    top: -1.625rem;
+    top: -2.25rem;
     width: 100%;
     margin-left: -2rem;
 }
@@ -28,19 +28,16 @@
     line-height: 4rem;
     will-change: transform;
     display: block;
-    margin: 4rem 0;
+    margin: 3rem 0;
+    border-radius: 1rem;
 }
 
 .recovery-words .words-container {
     width: 100%;
-    padding: 2rem;
+    padding: 1rem;
     box-sizing: border-box;
     position: relative;
-    background: var(--nimiq-light-blue-bg);
-    border: .125rem solid white;
-    border-radius: 1rem;
-    color: white;
-    height: 31.25rem;
+    height: 30.25rem;
 }
 
 .recovery-words-input.shake, .recovery-words .shake {
@@ -134,4 +131,12 @@
     color: white;
     background: var(--nimiq-light-blue);
     cursor: pointer;
+}
+
+.recovery-words ::selection {
+    background: var(--nimiq-blue); /* WebKit/Blink Browsers */
+}
+
+.recovery-words ::-moz-selection {
+    background: var(--nimiq-blue); /* Gecko Browsers */
 }

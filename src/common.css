@@ -63,8 +63,6 @@
 
 .page-body {
     width: 100%;
-    display: flex;
-    flex-direction: column;
     flex-grow: 1;
 }
 
@@ -202,21 +200,25 @@
     width: 100%;
     padding: 1.25rem;
     border-radius: 0.5rem;
+    text-align: center;
 }
 
 .actionbox h2 {
     text-transform: uppercase;
     font-size: 1.75rem;
-    font-weight: 600;
-    letter-spacing: 0.25rem;
-    line-height: 0.86;
-    margin-top: 1.25rem;
+    font-weight: bold;
+    letter-spacing: 0.107em;
+    line-height: 1.5rem;
+    margin-top: 1rem;
     margin-bottom: 2rem;
 }
 
-.actionbox p {
-    margin: 0 10rem 3rem;
-    color: inherit;
+.actionbox ::selection {
+    background: var(--nimiq-blue); /* WebKit/Blink Browsers */
+}
+
+.actionbox ::-moz-selection {
+    background: var(--nimiq-blue); /* Gecko Browsers */
 }
 
 /* make code blocks look like keys on the keyboard */

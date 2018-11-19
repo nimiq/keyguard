@@ -90,10 +90,10 @@
   version "0.0.3"
   resolved "https://registry.yarnpkg.com/@nimiq/rpc/-/rpc-0.0.3.tgz#8f4f7e3d5ebbbb59a3bc120e37a1ec38b4e62e5a"
 
-"@nimiq/style@^0.3.3":
-  version "0.3.3"
-  resolved "https://registry.yarnpkg.com/@nimiq/style/-/style-0.3.3.tgz#e4f09e1e20fa36b46daf00761316ebfe5d9d9d5a"
-  integrity sha512-iBxCtSfCQXJFm0D//qvy6auWdkgHDLHIo2FaPPVXKKy/BBcxDiRsDRWB9rAsC2LHHNlRJ4BA1DU70eLHpn9XWw==
+"@nimiq/style@^0.3.4":
+  version "0.3.4"
+  resolved "https://registry.yarnpkg.com/@nimiq/style/-/style-0.3.4.tgz#dec68f59ba280830b39b1616653f04411905d14f"
+  integrity sha512-Xvxs/T8JiVTCXRnkuWE1a2b+fiQpdBypVtcQPUx6DJQx/SXSuNzhpszY/qugC2jRE4s5uYE9aU5+2kaxLcu5Jw==
 
 "@types/jasmine@^2.8.8":
   version "2.8.8"

@@ -27,3 +27,7 @@
 .privacy-agent .privacy-warning p {
     margin: 4rem 0;
 }
+
+.privacy-agent button {
+    margin-bottom: 0;
+}
