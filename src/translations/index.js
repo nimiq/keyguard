@@ -111,6 +111,8 @@ const TRANSLATIONS = {
         'derive-address-heading-choose-identicon': 'Choose your account avatar',
         'derive-address-text-select-avatar': 'Select an avatar for your new account from the selection below.',
 
+        'change-passphrase-heading': 'Change your passphrase',
+
     },
     de: {
         _language: 'Deutsch',
@@ -230,6 +232,8 @@ const TRANSLATIONS = {
                                         + 'hinzuzufügen.',
         'derive-address-heading-choose-identicon': 'Wähle deinen Konto-Avatar',
         'derive-address-text-select-avatar': 'Wähle einen Avatar für deinen neuen Account aus der Auswahl unten.',
+
+        'change-passphrase-heading': 'Ändere dein Passwort',
     },
 };
 
