@@ -17,13 +17,12 @@ const TRANSLATIONS = {
         'recovery-words-title': 'Recovery Words',
         'recovery-words-input-label': 'Recovery Words',
         'recovery-words-input-field-placeholder': 'word #',
-        'recovery-words-explanation': 'There really is no password recovery. The following words are a backup '
-                                    + 'of your Key File and will grant you access to your wallet even if your '
-                                    + 'Key File is lost.',
-        'recovery-words-storing': 'Write those words on a piece of paper and store it at a safe, offline place.',
+        'recovery-words-explanation': 'The following words will grant you access to your wallet even if your '
+                                    + 'Wallet File is lost.',
+        'recovery-words-storing': 'Write these words on a piece of paper and store them at a safe, offline place.',
         'recovery-words-continue-to-words': 'Continue to Recovery Words',
 
-        'create-heading-choose-identicon': 'Choose your account avatar',
+        'create-heading-choose-identicon': 'Choose your avatar',
         'create-text-select-avatar': 'Select an avatar for your wallet\'s default account from the selection below.',
         'create-hint-more-accounts': 'You can add more accounts later.',
         'create-heading-keyfile': 'This is your Key File',
