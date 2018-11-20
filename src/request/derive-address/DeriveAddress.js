@@ -33,7 +33,7 @@ class DeriveAddress {
         this._passphraseBox.on(
             PassphraseBox.Events.SUBMIT,
             async /** @param {string|undefined} passphrase */ passphrase => {
-                await this._initIdenticonSelector(passphrase);
+                if (!(await this._initIdenticonSelector(passphrase))) return;
                 window.location.hash = DeriveAddress.Pages.CHOOSE_IDENTICON;
             },
         );
@@ -67,6 +67,7 @@ class DeriveAddress {
 
     /**
      * @param {string} [passphrase]
+     * @returns {Promise<boolean>}
      */
     async _initIdenticonSelector(passphrase) {
         const passphraseBuffer = passphrase && passphrase.length > 0
@@ -80,15 +81,16 @@ class DeriveAddress {
         } catch (e) {
             console.error(e);
             this._passphraseBox.onPassphraseIncorrect();
-            return;
+            return false;
         }
 
-        if (!key) return; // Key existence is already checked during request parsing in DeriveAddressApi class
+        if (!key) return false; // Key existence is already checked during request parsing in DeriveAddressApi class
 
         const masterKey = new Nimiq.Entropy(key.secret).toExtendedPrivateKey();
         const pathsToDerive = this._request.indicesToDerive.map(index => `${this._request.baseKeyPath}/${index}`);
 
         this._identiconSelector.init(masterKey, pathsToDerive);
+        return true;
     }
 
     async run() {
