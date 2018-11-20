@@ -111,6 +111,8 @@ const TRANSLATIONS = {
         'derive-address-heading-choose-identicon': 'Choose your account avatar',
         'derive-address-text-select-avatar': 'Select an avatar for your new account from the selection below.',
 
+        'export-button-words': 'Show Recovery Words',
+        'export-button-file': 'Download Wallet File',
     },
     de: {
         _language: 'Deutsch',
@@ -230,6 +232,9 @@ const TRANSLATIONS = {
                                         + 'hinzuzufügen.',
         'derive-address-heading-choose-identicon': 'Wähle deinen Konto-Avatar',
         'derive-address-text-select-avatar': 'Wähle einen Avatar für deinen neuen Account aus der Auswahl unten.',
+
+        'export-button-words': 'Wiederherstellungswörter anzeigen',
+        'export-button-file': 'Schlüsseldatei herunterladen',
     },
 };
 
