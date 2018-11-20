@@ -141,14 +141,6 @@
     /* opacity: 0.5; */
 }
 
-.container .pad-bottom {
-    padding-bottom: 3.5rem;
-}
-
-.spacing-top-16 {
-    margin-top: 2rem;
-}
-
 .address {
     font-family: "Fira Mono", "Andale Mono", monospace;
     font-size: 1.625rem;
@@ -200,21 +192,12 @@
     background: var(--nimiq-blue); /* Gecko Browsers */
 }
 
-/* make code blocks look like keys on the keyboard */
-kbd {
-    font-family: monospace;
-    font-size: 1.875rem;
-    border: 1px solid white;
-    padding: .25rem .75rem;
-    border-radius: .625rem;
-}
-
 #app {
     display: flex;
     flex-direction: column;
     justify-content: start;
     align-items: center;
-    min-height: calc(100vh - 11.125rem); /* window hight - header height */
+    min-height: calc(100vh - 11.625rem); /* window hight - header height */
     padding: 0 1rem;
     width: 100%;
 }
