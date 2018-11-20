@@ -25,11 +25,14 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         /** @type {HTMLElement} */
         const $removeKey = (document.getElementById(RemoveKeyApi.Pages.REMOVE_KEY));
         /** @type {HTMLElement} */
-        this.$privacy = (document.getElementById(RemoveKeyApi.Pages.PRIVACY_AGENT));
+        const $privacy = (document.getElementById(RemoveKeyApi.Pages.PRIVACY_AGENT));
         /** @type {HTMLElement} */
         const $showWords = (document.getElementById(RemoveKeyApi.Pages.SHOW_WORDS));
         /** @type {HTMLElement} */
-        this.$downloadKeyFile = (document.getElementById(RemoveKeyApi.Pages.DOWNLOAD_KEY_FILE));
+        const $downloadKeyFile = (document.getElementById(RemoveKeyApi.Pages.DOWNLOAD_KEY_FILE));
+
+        this.$privacy = $privacy;
+        this.$downloadKeyFile = $downloadKeyFile;
 
         // remove key
         /** @type {HTMLButtonElement} */
@@ -68,7 +71,6 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         this._recoveryWordsPassphraseBox = new PassphraseBox(
             $privacyWarningPassphraseBox, {
                 buttonI18nTag: 'passphrasebox-continue',
-                bgColor: 'purple',
                 hideInput: !this.parsedRequest.keyInfo.encrypted,
             },
         );
@@ -76,7 +78,6 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         this._downloadKeyFilePassphraseBox = new PassphraseBox(
             $downloadKeyFilePassphraseBox, {
                 buttonI18nTag: 'passphrasebox-download',
-                bgColor: 'purple',
                 hideInput: !this.parsedRequest.keyInfo.encrypted,
             },
         );

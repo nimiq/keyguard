@@ -35,6 +35,8 @@
     <script defer src="RemoveKeyApi.js"></script>
     <script defer src="index.js"></script>
 
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Muli:400,600,700">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono&text=0123456789ABCDEFGHJKLMNPQRSTUVXY">
     <link rel="stylesheet" href="../../nimiq-style.css">
     <link rel="stylesheet" href="../../common.css">
     <link rel="stylesheet" href="../../components/PassphraseBox.css">
@@ -57,54 +59,40 @@
         <div class="flex-grow"></div>
 
         <!-- removal warning -->
-        <div id="remove-key" class="page">
-            <div class="page-header">
-                <h1 data-i18n="remove-key-log-out">Log out</h1>
+        <div id="remove-key" class="page nq-card">
+            <div class="page-header nq-card-header">
+                <h1 data-i18n="remove-key-log-out" class="nq-h1">Log out</h1>
             </div>
 
-            <div class="page-body">
+            <div class="page-body nq-card-body">
                 <div class="row">
-                    <p data-i18n="remove-key-intro-text">Logging out means removing your Key File from this browser.
+                    <p data-i18n="remove-key-intro-text" class="nq-text">Logging out means removing your Wallet File from this browser.
                         Make sure you have it stored somewhere, or at least have your Recovery Words accessible.
                     </p>
-                    <div class="warning-sign">
-                        <svg width="75" height="74" viewBox="0 0 75 74" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd" clip-rule="evenodd" d="M39.8365 49.2798C39.8365 50.8448 38.5617
-                                52.1253 36.991 52.1253C35.4203 52.1253 34.1455 50.8448 34.1455 49.2798V30.6531C34.1455
-                                29.0767 35.4203 27.8076 36.991 27.8076C38.5617 27.8076 39.8365 29.0767 39.8365
-                                30.6531V49.2798ZM36.991 62.4718C35.4203 62.4718 34.1455 61.197 34.1455 59.6263C34.1455
-                                58.0555 35.4203 56.7808 36.991 56.7808C38.5617 56.7808 39.8365 58.0555 39.8365
-                                59.6263C39.8365 61.197 38.5617 62.4718 36.991 62.4718ZM73.3682 69.1074L39.5351
-                                1.44694C38.5676 -0.482313 35.4148 -0.482313 34.4473 1.44694L0.301268 69.7391C-0.13694
-                                70.6212 -0.0971029 71.6683 0.420779 72.5106C0.944352 73.3472 1.86061 73.8537 2.84515
-                                73.8537H71.1373C71.1771 73.8594 71.2227 73.8594 71.2511 73.8537C72.8218 73.8537
-                                74.0966 72.5846 74.0966 71.0082C74.0966 70.2797 73.8235 69.6139 73.3682 69.1074Z" fill="#ca3333"/>
-                        </svg>
-
-                    </div>
+                    <div class="nq-icon warning-sign"></div>
                 </div>
-                <p class="red" data-i18n="remove-key-intro-text-red">If you have neither of them, there’s no chance to regain access to your wallet.</p>
+                <p class="nq-text nq-red" data-i18n="remove-key-intro-text-red">If you have neither of them, there’s no chance to regain access to your wallet.</p>
                 <div class="flex-grow"></div>
                 <div class="row hide-for-passphrase">
-                    <button id="show-download-key-file" data-i18n="remove-key-download-key-file">Download Key File</button>
-                    <button id="show-recovery-words" data-i18n="remove-key-show-recovery-words">Show Recovery Words</button>
+                    <button id="show-download-key-file" data-i18n="remove-key-download-key-file" class="nq-button-s">Download Wallet File</button>
+                    <button id="show-recovery-words" data-i18n="remove-key-show-recovery-words" class="nq-button-s">Show Recovery Words</button>
                 </div>
             </div>
 
-            <div class="page-footer">
+            <div class="page-footer nq-card-footer">
                 <form class="passphrase-box"></form>
-                <button id="remove-key-confirm" class="hide-for-passphrase" data-i18n="remove-key-confirm">Log out of your wallet</button>
+                <button id="remove-key-confirm" class="hide-for-passphrase nq-button red" data-i18n="remove-key-confirm">Log out of your wallet</button>
             </div>
         </div>
 
         <!-- privacy agent -->
-        <div id="privacy" class="page">
-            <div class="page-header">
-                <a tabindex="0" class="page-header-back-button icon-back-arrow"></a>
-                <h1 data-i18n="remove-key-log-out">Log out</h1>
+        <div id="privacy" class="page nq-card">
+            <div class="page-header nq-card-header">
+                <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
+                <h1 data-i18n="remove-key-recovery-words" class="nq-h1">Recovery Words</h1>
             </div>
 
-            <div class="page-body">
+            <div class="page-body nq-card-body">
                 <div class="privacy-agent">
                     <div class="privacy-warning"></div>
                 </div>
@@ -112,63 +100,49 @@
             </div>
 
             <div class="page-footer">
-                <button class="hide-for-passphrase" data-i18n="continue">Continue</button>
+                <button class="hide-for-passphrase nq-button" data-i18n="continue">Continue</button>
                 <form class="passphrase-box"></form>
             </div>
         </div>
 
         <!-- recovery Words -->
-        <div id="recovery-words" class="page">
-            <div class="page-header">
-                <a tabindex="0" class="page-header-back-button icon-back-arrow"></a>
-                <h1 data-i18n="remove-key-recovery-words">Recovery Words</h1>
+        <div id="recovery-words" class="page nq-card">
+            <div class="page-header nq-card-header">
+                <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
+                <h1 data-i18n="remove-key-recovery-words" class="nq-h1">Recovery Words</h1>
             </div>
 
-            <div class="page-body">
+            <div class="page-body nq-card-body">
                 <div class="recovery-words"></div>
             </div>
 
             <div class="page-footer">
-                <button class="back-to-remove" data-i18n="remove-key-back">Back to log out</button>
+                <button class="back-to-remove nq-button" data-i18n="remove-key-back">Back to log out</button>
             </div>
         </div>
 
         <!-- Download Key File -->
-        <div id="download-key-file" class="page">
-            <div class="page-header">
-                <a tabindex="0" class="page-header-back-button icon-back-arrow"></a>
-                <h1 data-i18n="remove-key-download-key-file">Download Key File</h1>
+        <div id="download-key-file" class="page nq-card">
+            <div class="page-header nq-card-header">
+                <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
+                <h1 data-i18n="remove-key-key-file" class="nq-h1">Wallet File</h1>
             </div>
 
-            <div class="page-body">
-                <div class="flex-grow"></div>
-                <div class="download-icon hide-for-download">
-                    <svg width="66" height="128" viewBox="0 0 66 128" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M40.333 25.6665V3.6665L62.333 25.6665H40.333ZM65.4647
-                            22.5353L43.4647 0.535333C43.12 0.194333 42.6543 0 42.1667 0H1.83333C0.825 0 0 0.821333 0 1.83333V86.1667C0
-                            87.1787 0.825 88 1.83333 88H64.1667C65.1787 88 66 87.1787 66 86.1667V23.8333C66 23.3457 65.8057 22.88
-                            65.4647 22.5353Z" fill="#B2B2B2"/>
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M33.4813 34.1939C33.232 33.9354 32.7667 33.9354 32.5173
-                            34.1939C29.36 37.459 19.5907 40.2056 19.4933 40.2331C19.2013 40.3142 19 40.5865 19 40.8973C19 52.6827
-                            20.0147 62.0859 32.768 66.9574C32.844 66.9862 32.9227 67 33 67C33.0787 67 33.156 66.9862 33.232 66.9574C45.9853
-                            62.0859 47 52.6827 47 40.8973C47 40.5865 46.7987 40.3142 46.5067 40.2331C46.4093 40.2056 36.644 37.4604 33.4813
-                            34.1939Z" fill="white"/>
-                        <g opacity="0.3">
-                            <path d="M43 114.861L34.25 123.345V104H31.75V123.345L23 114.861V118.303L33 128L43 118.303V114.861Z" fill="black"/>
-                        </g>
-                    </svg>
-                </div>
+            <div class="page-body nq-card-body">
+                <div class="nq-icon walletfile hide-for-download"></div>
                 <div class="download-key-file"></div>
-                <div class="flex-grow"></div>
             </div>
 
             <div class="page-footer">
                 <form class="passphrase-box hide-for-download"></form>
-                <button class="back-to-remove" data-i18n="remove-key-back">Back to logout</button>
+                <button class="back-to-remove nq-button" data-i18n="remove-key-back">Back to logout</button>
             </div>
         </div>
 
-        <a tabindex="0" class="global-close display-none">Back to <span id="app-name"></span></a>
+        <button class="global-close nq-button-s display-none">
+            <span class="nq-icon arrow-left"></span>
+            Back to <span id="app-name"></span>
+        </button>
 
         <div class="flex-grow"></div>
 
