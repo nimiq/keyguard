@@ -1,7 +1,8 @@
 /* global Nimiq */
 /* global PassphraseBox */
+/* global PassphraseSetterBox */
 /* global KeyStore */
-/* global DownloadKeyfile */
+
 class ChangePassphrase {
     /**
      * if a complete page is missing it will be created.
@@ -52,7 +53,7 @@ class ChangePassphrase {
                 buttonI18nTag: 'passphrasebox-continue',
                 hideInput: !this._request.keyInfo.encrypted,
             },
-        )
+        );
         this._setPassphrasePassphraseBox = new PassphraseSetterBox($sertPassphrasePassphraseBox);
 
         this._enterPassphrasePassphraseBox.on(PassphraseBox.Events.CANCEL, this._reject.bind(this));
@@ -76,12 +77,14 @@ class ChangePassphrase {
             }
         });
 
-        this._setPassphrasePassphraseBox.on(PassphraseSetterBox.Events.SUBMIT, /** @param {string} passphrase */ passphrase => {
-            document.body.classList.add('loading');
-            this._passphrase = passphrase;
-            // TODO Generate secret for key file
-            this._finish();
-        });
+        this._setPassphrasePassphraseBox.on(
+            PassphraseSetterBox.Events.SUBMIT,
+            /** @param {string} passphrase */ passphrase => {
+                document.body.classList.add('loading');
+                this._passphrase = passphrase;
+                this._finish();
+            },
+        );
 
         this._setPassphrasePassphraseBox.on(PassphraseSetterBox.Events.SKIP, () => {
             this._finish();
@@ -112,7 +115,7 @@ class ChangePassphrase {
     }
 
     async _finish() {
-        if(this._key) {
+        if (this._key) {
             const passphrase = this._passphrase.length > 0 ? Nimiq.BufferUtils.fromAscii(this._passphrase) : undefined;
             await KeyStore.instance.put(this._key, passphrase);
 
@@ -122,7 +125,6 @@ class ChangePassphrase {
             this._resolve(result);
         }
         this._reject(new Error('Bypassed Password'));
-
     }
 }
 
