@@ -69,7 +69,7 @@ class Export {
         /** @type {HTMLElement} */
         this._fileButton = ($moreExportOptionsPage.querySelector('.go-to-file'));
         /** @type {HTMLElement} */
-        const $wordsButton = ($keyfilePage.querySelector('.finish-request'));
+        const $wordsButton = ($keyfilePage.querySelector('.go-to-words'));
 
         finishRequestButton.addEventListener('click', () => {
             this._resolve({ success: true });
