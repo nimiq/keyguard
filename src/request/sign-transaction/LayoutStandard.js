@@ -25,43 +25,42 @@ class LayoutStandard extends BaseLayout { // eslint-disable-line no-unused-vars
         $el.classList.add('layout-standard');
 
         $el.innerHTML = `
-            <div class="page-header">
-                <!-- <a tabindex="0" class="page-header-back-button icon-back-arrow"></a> -->
-                <h1 data-i18n="sign-tx-heading">New Transaction</h1>
+            <div class="page-header nq-card-header">
+                <h1 data-i18n="sign-tx-heading" class="nq-h1">New Transaction</h1>
             </div>
 
             <div class="page-body transaction">
-                <div class="center accounts">
-                    <div class="account">
-                        <div class="identicon" id="sender-identicon"></div>
-                        <div class="label display-none" id="sender-label"></div>
-                        <div class="address" id="sender-address"></div>
-                    </div>
+                <div class="nq-card-body">
+                    <div class="center accounts">
+                        <div class="account">
+                            <div class="identicon" id="sender-identicon"></div>
+                            <div class="label" id="sender-label"></div>
+                            <div class="address" id="sender-address"></div>
+                        </div>
 
-                    <i class="arrow icon-forward-chevron"></i>
+                        <i class="arrow nq-icon chevron-right"></i>
 
-                    <div class="account">
-                        <div class="identicon" id="recipient-identicon"></div>
-                        <div class="label display-none" id="recipient-label"></div>
-                        <div class="address" id="recipient-address"></div>
+                        <div class="account">
+                            <div class="identicon" id="recipient-identicon"></div>
+                            <div class="label" id="recipient-label"></div>
+                            <div class="address" id="recipient-address"></div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="center total">
-                    <div class="value">
+                <div class="nq-card-footer">
+                    <div class="total">
                         <span id="value"></span><span class="nim-symbol"></span>
                     </div>
-                </div>
 
-                <div class="center fee-section display-none">
-                    <span data-i18n="sign-tx-includes">includes</span>
-                    <span id="fee"></span>
-                    <span class="nim-symbol"></span>
-                    <span data-i18n="sign-tx-fee">fee</span>
-                </div>
+                    <div class="fee-section nq-text-s display-none">
+                        <span data-i18n="sign-tx-includes">includes</span>
+                        <span id="fee"></span>
+                        <span class="nim-symbol"></span>
+                        <span data-i18n="sign-tx-fee">fee</span>
+                    </div>
 
-                <div class="center data-section display-none">
-                    <div class="data" id="data"></div>
+                    <div class="data-section nq-text display-none" id="data"></div>
                 </div>
             </div>
         `;

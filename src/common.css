@@ -33,10 +33,12 @@
     width: 100%;
     max-width: 56.25rem; /* 450px */
     min-height: 58rem; /* 464px */
-    max-height: 77.5rem; /* 620px */
-    max-height: 81rem; /* 648px, required by identicon selector in signup request */
+    /* max-height: 77.5rem; */ /* 620px */
+    /* max-height: 81rem; */ /* 648px, required by identicon selector in signup request */
     flex-direction: column;
     flex-shrink: 0;
+    margin-top: 0;
+    margin-bottom: 0;
 }
 
 .page-header {
@@ -136,7 +138,7 @@
 
 .nim-symbol::before {
     content: "NIM";
-    opacity: 0.5;
+    /* opacity: 0.5; */
 }
 
 .pad-bottom {
@@ -178,9 +180,14 @@
 
 .address {
     font-family: "Fira Mono", "Andale Mono", monospace;
-    font-size: 1.5rem;
-    line-height: 2.25rem;
+    font-size: 1.625rem;
+    line-height: 2rem;
     word-spacing: -0.2em;
+    opacity: 0.7;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow-x: hidden;
+    max-width: 100%;
 }
 
 .global-close {

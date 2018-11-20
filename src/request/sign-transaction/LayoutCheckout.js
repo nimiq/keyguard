@@ -42,28 +42,27 @@ class LayoutCheckout extends BaseLayout { // eslint-disable-line no-unused-vars
 
         $el.innerHTML = `
             <div class="page-body transaction">
-                <h1>
-                    <span data-i18n="sign-tx-youre-sending">You're sending</span>
-                    <strong id="value"></strong>
-                    <strong class="nim-symbol"></strong>
-                    <span data-i18n="sign-tx-to">to</span>
-                </h1>
+                <div class="transaction-section">
+                    <h1>
+                        <span data-i18n="sign-tx-youre-sending">You're sending</span>
+                        <strong id="value"></strong>
+                        <strong class="nim-symbol"></strong>
+                        <span data-i18n="sign-tx-to">to</span>
+                    </h1>
 
-                <div class="account shop-account">
-                    <div class="identicon-cover"></div>
-                    <div class="identicon" id="recipient-identicon"></div>
-                    <div class="account-text">
-                        <div class="label display-none" id="recipient-label"></div>
-                        <div class="address" id="recipient-address"></div>
+                    <div class="account shop-account">
+                        <div class="identicon" id="recipient-identicon"></div>
+                        <div class="account-text">
+                            <div class="label" id="recipient-label"></div>
+                            <div class="address" id="recipient-address"></div>
+                        </div>
                     </div>
-                </div>
 
-                <div class="center data-section display-none">
-                    <div class="data" id="data"></div>
+                    <div class="data-section nq-text display-none" id="data"></div>
                 </div>
 
                 <div class="sender-section">
-                    <h2 data-i18n="sign-tx-pay-with">Pay with</h2>
+                    <div data-i18n="sign-tx-pay-with" class="nq-label">Pay with</div>
                     <div class="account">
                         <div class="identicon" id="sender-identicon"></div>
                         <div class="account-text">

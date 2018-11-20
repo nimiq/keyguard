@@ -76,6 +76,10 @@ button.go-to-words {
     flex-shrink: 0;
 }
 
+#choose-key-type .key-type-option .address {
+    white-space: unset;
+}
+
 #enter-passphrase .page-footer,
 #set-passphrase .page-footer {
     padding: 1rem;

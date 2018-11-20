@@ -36,6 +36,8 @@
     <script defer src="SignTransactionApi.js"></script>
     <script defer src="index.js"></script>
 
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Muli:400,600,700">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono&text=0123456789ABCDEFGHJKLMNPQRSTUVXY">
     <link rel="stylesheet" href="../../nimiq-style.css">
     <link rel="stylesheet" href="../../common.css">
     <link rel="stylesheet" href="../../components/PassphraseInput.css">
@@ -53,7 +55,7 @@
     <div id="app">
         <div class="flex-grow"></div>
 
-        <div id="confirm-transaction" class="page">
+        <div id="confirm-transaction" class="page nq-card">
             <div class="payment-info-line display-none"></div>
 
             <div id="layout-container"></div>
@@ -63,7 +65,10 @@
             </div>
         </div>
 
-        <a tabindex="0" class="global-close display-none">Back to <span id="app-name"></span></a>
+        <button class="global-close nq-button-s display-none">
+            <span class="nq-icon arrow-left"></span>
+            Back to <span id="app-name"></span>
+        </button>
 
         <div class="flex-grow"></div>
 

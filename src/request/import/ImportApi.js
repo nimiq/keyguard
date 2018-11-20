@@ -64,7 +64,7 @@ class ImportApi extends TopLevelApi {
         // Events
         fileImport.on(FileImport.Events.IMPORT, this._onFileImported.bind(this));
         passphraseBox.on(PassphraseBox.Events.SUBMIT, this._onPassphraseEntered.bind(this));
-        passphraseBox.on(PassphraseBox.Events.CANCEL, () => window.history.back());
+        passphraseBox.on(PassphraseBox.Events.CANCEL, () => window.history.back()); // Go back to import type selection
         passphraseSetterBox.on(PassphraseSetterBox.Events.SUBMIT, this._onPassphraseEntered.bind(this));
         passphraseSetterBox.on(PassphraseSetterBox.Events.SKIP, () => this._onPassphraseEntered(null));
         $importWordsLink.addEventListener('click', () => {

@@ -20,7 +20,7 @@ class PaymentInfoLine extends Nimiq.Observable { // eslint-disable-line no-unuse
      */
     static _createElement($el, domain, formattedAmount) {
         $el = $el || document.createElement('div');
-        $el.classList.add('payment-info-line');
+        $el.classList.add('payment-info-line', 'nq-label');
 
         $el.innerHTML = `
             <div class="description">

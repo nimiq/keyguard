@@ -48,22 +48,16 @@ class BaseLayout {
         // Set recipient data.
         if ($recipientAddress) {
             const recipientAddress = transaction.recipient.toUserFriendlyAddress();
-            if (request.layout === 'checkout') {
-                new Identicon(undefined, $recipientIdenticon); // eslint-disable-line no-new
-            } else {
-                new Identicon(recipientAddress, $recipientIdenticon); // eslint-disable-line no-new
-            }
+            new Identicon(recipientAddress, $recipientIdenticon); // eslint-disable-line no-new
             $recipientAddress.textContent = recipientAddress;
-            if (request.recipientLabel) {
-                $recipientLabel.classList.remove('display-none');
-                $recipientLabel.textContent = request.recipientLabel;
-            }
+            $recipientLabel.textContent = request.recipientLabel || '';
         }
 
         // Set value and fee.
         const total = transaction.value + transaction.fee;
         const totalNim = Nimiq.Policy.satoshisToCoins(total);
 
+        console.log($pageBody, $value);
         $value.textContent = this._formatNumber(totalNim);
 
         if ($fee && transaction.fee > 0) {
@@ -86,7 +80,6 @@ class BaseLayout {
         /** @type {HTMLFormElement} */
         const $passphraseBox = (document.querySelector('#passphrase-box'));
         this._passphraseBox = new PassphraseBox($passphraseBox, {
-            bgColor: 'purple',
             hideInput: !request.keyInfo.encrypted,
             buttonI18nTag: 'passphrasebox-confirm-tx',
         });
@@ -97,7 +90,7 @@ class BaseLayout {
                 this._onConfirm(request, resolve, reject, passphrase);
             },
         );
-        this._passphraseBox.on(PassphraseBox.Events.CANCEL, () => window.history.back());
+        this._passphraseBox.on(PassphraseBox.Events.CANCEL, () => reject(new Error('CANCEL')));
 
         /** @type {HTMLElement} */
         const $appName = (document.querySelector('#app-name'));

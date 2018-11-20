@@ -38,7 +38,7 @@
 
 .passphrase-box.input-valid .passphrase-input,
 .passphrase-box.hide-input .passphrase-input {
-    transform: translate3d(0, -5.5rem, 0);
+    transform: translate3d(0, -6.5rem, 0);
 }
 
 .passphrase-box.hide-input .passphrase-input {
@@ -46,7 +46,7 @@
 }
 
 .passphrase-box .submit {
-    margin-top: -6rem;
+    margin-top: -8rem;
     opacity: 0;
     transition: opacity 150ms;
     pointer-events: none;
