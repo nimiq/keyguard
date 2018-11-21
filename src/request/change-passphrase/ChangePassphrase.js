@@ -5,7 +5,7 @@
 
 class ChangePassphrase {
     /**
-     * if a complete page is missing it will be created.
+     * If a complete page is missing it will be created.
      * However these pages wil be the default pages which usually don't match the applications requirements.
      * Refer to the corresponsing _build() to see the general Structure.
      * @param {ParsedSimpleRequest} request
@@ -24,40 +24,34 @@ class ChangePassphrase {
     }
 
     run() {
-        /** @type {PassphraseBox} */ (this._enterPassphrasePassphraseBox).reset();
+        /** @type {PassphraseBox} */ (this._enterPassphraseBox).reset();
         window.location.hash = ChangePassphrase.Pages.ENTER_PASSPHRASE;
-        /** @type {PassphraseBox} */ (this._enterPassphrasePassphraseBox).focus();
+        /** @type {PassphraseBox} */ (this._enterPassphraseBox).focus();
     }
 
     _create() {
         /** @type {HTMLElement} */
-        const $enterPassphrasePage = (
-            document.getElementById(ChangePassphrase.Pages.ENTER_PASSPHRASE)
-                ? document.getElementById(ChangePassphrase.Pages.ENTER_PASSPHRASE)
-                : this._buildEnterPassphrase()
-        );
+        const $enterPassphrasePage = document.getElementById(ChangePassphrase.Pages.ENTER_PASSPHRASE)
+                                  || this._buildEnterPassphrasePage();
         /** @type {HTMLElement} */
-        const $setPassphrasePage = (
-            document.getElementById(ChangePassphrase.Pages.SET_PASSPHRASE)
-                ? document.getElementById(ChangePassphrase.Pages.SET_PASSPHRASE)
-                : this._buildSetPassphrase()
-        );
+        const $setPassphrasePage = document.getElementById(ChangePassphrase.Pages.SET_PASSPHRASE)
+                                || this._buildSetPassphrasePage();
 
         /** @type {HTMLFormElement} */
-        const $enterPassphrasePassphraseBox = ($enterPassphrasePage.querySelector('.passphrase-box'));
+        const $enterPassphraseBox = ($enterPassphrasePage.querySelector('.passphrase-box'));
         /** @type {HTMLFormElement} */
-        const $sertPassphrasePassphraseBox = ($setPassphrasePage.querySelector('.passphrase-box'));
+        const $setPassphraseeBox = ($setPassphrasePage.querySelector('.passphrase-box'));
 
-        this._enterPassphrasePassphraseBox = new PassphraseBox(
-            $enterPassphrasePassphraseBox, {
+        this._enterPassphraseBox = new PassphraseBox(
+            $enterPassphraseBox, {
                 buttonI18nTag: 'passphrasebox-continue',
                 hideInput: !this._request.keyInfo.encrypted,
             },
         );
-        this._setPassphrasePassphraseBox = new PassphraseSetterBox($sertPassphrasePassphraseBox);
+        this._setPassphraseBox = new PassphraseSetterBox($setPassphraseeBox);
 
-        this._enterPassphrasePassphraseBox.on(PassphraseBox.Events.CANCEL, this._reject.bind(this));
-        this._enterPassphrasePassphraseBox.on(PassphraseBox.Events.SUBMIT, async phrase => {
+        this._enterPassphraseBox.on(PassphraseBox.Events.CANCEL, () => this._reject(new Error('CANCEL')));
+        this._enterPassphraseBox.on(PassphraseBox.Events.SUBMIT, async phrase => {
             document.body.classList.add('loading');
             try {
                 const passphrase = phrase ? Nimiq.BufferUtils.fromAscii(phrase) : undefined;
@@ -66,18 +60,18 @@ class ChangePassphrase {
                     this._reject(new Error('No key'));
                 }
                 this._key = key;
-                /** @type {PassphraseSetterBox} */ (this._setPassphrasePassphraseBox).reset();
+                /** @type {PassphraseSetterBox} */ (this._setPassphraseBox).reset();
                 window.location.hash = ChangePassphrase.Pages.SET_PASSPHRASE;
-                /** @type {PassphraseSetterBox} */ (this._setPassphrasePassphraseBox).focus();
+                /** @type {PassphraseSetterBox} */ (this._setPassphraseBox).focus();
             } catch (e) {
                 console.log(e); // TODO: Assume Passphrase was incorrect
-                /** @type {PassphraseBox} */(this._enterPassphrasePassphraseBox).onPassphraseIncorrect();
+                /** @type {PassphraseBox} */(this._enterPassphraseBox).onPassphraseIncorrect();
             } finally {
                 document.body.classList.remove('loading');
             }
         });
 
-        this._setPassphrasePassphraseBox.on(
+        this._setPassphraseBox.on(
             PassphraseSetterBox.Events.SUBMIT,
             /** @param {string} passphrase */ passphrase => {
                 document.body.classList.add('loading');
@@ -86,12 +80,12 @@ class ChangePassphrase {
             },
         );
 
-        this._setPassphrasePassphraseBox.on(PassphraseSetterBox.Events.SKIP, () => {
+        this._setPassphraseBox.on(PassphraseSetterBox.Events.SKIP, () => {
             this._finish();
         });
     }
 
-    _buildEnterPassphrase() {
+    _buildEnterPassphrasePage() {
         const $el = document.createElement('div');
         $el.id = ChangePassphrase.Pages.ENTER_PASSPHRASE;
         $el.classList.add('page');
@@ -116,7 +110,7 @@ class ChangePassphrase {
         return $el;
     }
 
-    _buildSetPassphrase() {
+    _buildSetPassphrasePage() {
         const $el = document.createElement('div');
         $el.id = ChangePassphrase.Pages.SET_PASSPHRASE;
         $el.classList.add('page');
@@ -143,16 +137,18 @@ class ChangePassphrase {
     }
 
     async _finish() {
-        if (this._key) {
-            const passphrase = this._passphrase.length > 0 ? Nimiq.BufferUtils.fromAscii(this._passphrase) : undefined;
-            await KeyStore.instance.put(this._key, passphrase);
-
-            const result = {
-                success: true,
-            };
-            this._resolve(result);
+        if (!this._key) {
+            this._reject(new Error('Bypassed Password'));
+            return;
         }
-        this._reject(new Error('Bypassed Password'));
+
+        const passphrase = this._passphrase.length > 0 ? Nimiq.BufferUtils.fromAscii(this._passphrase) : undefined;
+        await KeyStore.instance.put(this._key, passphrase);
+
+        const result = {
+            success: true,
+        };
+        this._resolve(result);
     }
 }
 
