@@ -3,7 +3,7 @@
 /* global KeyStore */
 class ExportApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
-     * @param {SimpleRequest} request
+     * @param {KeyguardRequest.SimpleRequest} request
      */
     async onRequest(request) {
         /** @type {HTMLElement} */
@@ -20,8 +20,8 @@ class ExportApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     }
 
     /**
-     * @param {SimpleRequest} request
-     * @returns {Promise<ParsedSimpleRequest>}
+     * @param {KeyguardRequest.SimpleRequest} request
+     * @returns {Promise<KeyguardRequest.ParsedSimpleRequest>}
      */
     static async _parseRequest(request) {
         if (!request) {
