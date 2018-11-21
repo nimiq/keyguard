@@ -23,7 +23,8 @@
   },
   "include": [
     "src/*.ts",
-    "types/Nimiq.d.ts"
+    "types/Nimiq.d.ts",
+    "../types/KeyguardRequests.d.ts"
   ],
   "exclude": [
     "node_modules",

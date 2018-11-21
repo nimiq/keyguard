@@ -4,7 +4,7 @@
 
 class CreateApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
-     * @param {CreateRequest} request
+     * @param {KeyguardRequests.CreateRequest} request
      */
     async onRequest(request) {
         const parsedRequest = CreateApi._parseRequest(request);
@@ -13,8 +13,8 @@ class CreateApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     }
 
     /**
-     * @param {CreateRequest} request
-     * @returns {CreateRequest}
+     * @param {KeyguardRequests.CreateRequest} request
+     * @returns {KeyguardRequests.CreateRequest}
      * @private
      */
     static _parseRequest(request) {

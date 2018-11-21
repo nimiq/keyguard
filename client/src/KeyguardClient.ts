@@ -1,22 +1,6 @@
-import {RedirectRpcClient} from '@nimiq/rpc';
-import {RequestBehavior, RedirectRequestBehavior, IFrameRequestBehavior} from './RequestBehavior';
-import {
-    KeyguardCommand,
-    CreateRequest,
-    CreateResult,
-    SignTransactionRequest,
-    SignTransactionResult,
-    SignMessageRequest,
-    SignMessageResult,
-    ImportRequest,
-    ImportResult,
-    DeriveAddressRequest,
-    DeriveAddressResult,
-    KeyInfoObject,
-    AccountInfo,
-    SimpleRequest,
-    SimpleResult,
-} from './RequestTypes';
+import { RedirectRpcClient } from '@nimiq/rpc';
+import { RequestBehavior, RedirectRequestBehavior, IFrameRequestBehavior } from './RequestBehavior';
+import { KeyguardCommand } from './KeyguardCommand';
 
 export class KeyguardClient {
     private static readonly DEFAULT_ENDPOINT =
@@ -57,57 +41,57 @@ export class KeyguardClient {
 
     /* TOP-LEVEL REQUESTS */
 
-    public create(request: CreateRequest, requestBehavior = this._defaultBehavior): Promise<CreateResult> {
+    public create(request: KeyguardRequests.CreateRequest, requestBehavior = this._defaultBehavior): Promise<KeyguardRequests.CreateResult> {
         return this._request(requestBehavior,  KeyguardCommand.CREATE, [request]);
     }
 
-    public remove(request: SimpleRequest, requestBehavior = this._defaultBehavior): Promise<SimpleResult> {
+    public remove(request: KeyguardRequests.SimpleRequest, requestBehavior = this._defaultBehavior): Promise<KeyguardRequests.SimpleResult> {
         return this._request(requestBehavior,  KeyguardCommand.REMOVE, [request]);
     }
 
-    public import(request: ImportRequest, requestBehavior = this._defaultBehavior): Promise<ImportResult> {
+    public import(request: KeyguardRequests.ImportRequest, requestBehavior = this._defaultBehavior): Promise<KeyguardRequests.ImportResult> {
         return this._request(requestBehavior,  KeyguardCommand.IMPORT, [request]);
     }
 
-    public async exportWords(request: SimpleRequest, requestBehavior = this._defaultBehavior)
-        : Promise<SimpleResult> {
+    public async exportWords(request: KeyguardRequests.SimpleRequest, requestBehavior = this._defaultBehavior)
+        : Promise<KeyguardRequests.SimpleResult> {
         return this._request(requestBehavior,  KeyguardCommand.EXPORT_WORDS, [request]);
     }
 
-    public async exportFile(request: SimpleRequest, requestBehavior = this._defaultBehavior)
-        : Promise<SimpleResult> {
+    public async exportFile(request: KeyguardRequests.SimpleRequest, requestBehavior = this._defaultBehavior)
+        : Promise<KeyguardRequests.SimpleResult> {
         return this._request(requestBehavior,  KeyguardCommand.EXPORT_FILE, [request]);
     }
 
-    public async export(request: SimpleRequest, requestBehavior = this._defaultBehavior)
-        : Promise<SimpleResult> {
+    public async export(request: KeyguardRequests.SimpleRequest, requestBehavior = this._defaultBehavior)
+        : Promise<KeyguardRequests.SimpleResult> {
         return this._request(requestBehavior,  KeyguardCommand.EXPORT, [request]);
     }
 
-    public async changePassphrase(request: SimpleRequest, requestBehavior = this._defaultBehavior)
-        : Promise<SimpleResult> {
+    public async changePassphrase(request: KeyguardRequests.SimpleRequest, requestBehavior = this._defaultBehavior)
+        : Promise<KeyguardRequests.SimpleResult> {
         return this._request(requestBehavior,  KeyguardCommand.CHANGE_PASSPHRASE, [request]);
     }
 
-    public async signTransaction(request: SignTransactionRequest,
-                                 requestBehavior = this._defaultBehavior): Promise<SignTransactionResult> {
+    public async signTransaction(request: KeyguardRequests.SignTransactionRequest,
+                                 requestBehavior = this._defaultBehavior): Promise<KeyguardRequests.SignTransactionResult> {
         return this._request(requestBehavior,  KeyguardCommand.SIGN_TRANSACTION, [request]);
     }
 
-    public async signMessage(request: SignMessageRequest,
-                             requestBehavior = this._defaultBehavior): Promise<SignMessageResult> {
+    public async signMessage(request: KeyguardRequests.SignMessageRequest,
+                             requestBehavior = this._defaultBehavior): Promise<KeyguardRequests.SignMessageResult> {
         return this._request(requestBehavior,  KeyguardCommand.SIGN_MESSAGE, [request]);
     }
 
-    public async deriveAddress(request: DeriveAddressRequest,
-                               requestBehavior = this._defaultBehavior): Promise<DeriveAddressResult> {
+    public async deriveAddress(request: KeyguardRequests.DeriveAddressRequest,
+                               requestBehavior = this._defaultBehavior): Promise<KeyguardRequests.DeriveAddressResult> {
         return this._request(requestBehavior,  KeyguardCommand.DERIVE_ADDRESS, [request]);
     }
 
     /* IFRAME REQUESTS */
 
     public async list(listFromLegacyStore?: boolean, requestBehavior = this._defaultIframeBehavior)
-    : Promise<KeyInfoObject[] | AccountInfo[]> {
+    : Promise<KeyguardRequests.KeyInfoObject[] | KeyguardRequests.KeyInfoObject[]> {
         return this._request(requestBehavior, KeyguardCommand.LIST, [listFromLegacyStore]);
     }
 

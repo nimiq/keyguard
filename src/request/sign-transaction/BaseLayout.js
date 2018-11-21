@@ -5,7 +5,7 @@
 
 class BaseLayout {
     /**
-     * @param {ParsedSignTransactionRequest} request
+     * @param {KeyguardRequests.ParsedSignTransactionRequest} request
      * @param {Function} resolve
      * @param {Function} reject
      */
@@ -109,7 +109,7 @@ class BaseLayout {
     }
 
     /**
-     * @param {ParsedSignTransactionRequest} request
+     * @param {KeyguardRequests.ParsedSignTransactionRequest} request
      * @param {Function} resolve
      * @param {Function} reject
      * @param {string} [passphrase]
