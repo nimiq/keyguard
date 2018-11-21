@@ -112,6 +112,8 @@ const TRANSLATIONS = {
         'derive-address-text-select-avatar': 'Select an avatar for your new account from the selection below.',
 
         'change-passphrase-heading': 'Change your passphrase',
+        'change-paragraph': 'Before entering your new passphrase, you must first unlock your wallet.',
+        'change-set-paragraph': 'Now please enter your new Passphrase and repeat it for confirmation.',
 
     },
     de: {
@@ -234,6 +236,8 @@ const TRANSLATIONS = {
         'derive-address-text-select-avatar': 'Wähle einen Avatar für deinen neuen Account aus der Auswahl unten.',
 
         'change-passphrase-heading': 'Ändere dein Passwort',
+        'change-paragraph': 'Um dein Passwort zu ändern musst du vorher dein Wallet entschlüsseln.',
+        'change-set-paragraph': 'Gib jetzt dein neues Passwort ein und wiederhole es danach um es zu bestätigen.',
     },
 };
 

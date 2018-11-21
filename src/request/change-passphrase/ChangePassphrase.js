@@ -95,7 +95,21 @@ class ChangePassphrase {
         const $el = document.createElement('div');
         $el.id = ChangePassphrase.Pages.ENTER_PASSPHRASE;
         $el.classList.add('page');
+        $el.innerHTML = `
+            <div class="page-header">
+                <h1 data-i18n="change-passphrase-heading">Change your passphrase</h1>
+            </div>
 
+            <div class="page-body">
+                <p data-i18n="change-paragraph">
+                    Before entering your new passphrase, you must first unlock your wallet.
+                </p>
+            </div>
+
+            <div class="page-footer">
+                <form class="passphrase-box"></form>
+            </div>
+        `;
         /** @type {HTMLElement} */
         const $app = (document.getElementById('app'));
         $app.insertBefore($el, $app.children[1]);
@@ -106,8 +120,22 @@ class ChangePassphrase {
         const $el = document.createElement('div');
         $el.id = ChangePassphrase.Pages.SET_PASSPHRASE;
         $el.classList.add('page');
+        $el.innerHTML = `
+            <div class="page-header">
+                <a tabindex="0" class="page-header-back-button icon-back-arrow"></a>
+                <h1 data-i18n="change-passphrase-heading">Change your passphrase</h1>
+            </div>
 
+            <div class="page-body">
+                <p data-i18n="change-set-paragraph">
+                    Now please enter your new Passphrase and repeat it for confirmation.
+                </p>
+            </div>
 
+            <div class="page-footer">
+                <form class="passphrase-box"></form>
+            </div>
+        `;
         /** @type {HTMLElement} */
         const $app = (document.getElementById('app'));
         $app.insertBefore($el, $app.children[1]);
