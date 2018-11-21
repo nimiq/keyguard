@@ -1,5 +1,7 @@
 # keyguard-next
 
+This readme is about setting up own instances of Nimiq Keyguard. For information about using the client please refer to <https://github.com/nimiq/keyguard-next/tree/master/client/README.md>.
+
 ## Development
 Install the dev dependencies:
 ```sh
