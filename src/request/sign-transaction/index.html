@@ -4,13 +4,15 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <!-- TODO: Don't use nimiq-network.com for releases -->
     <meta http-equiv="Content-Security-Policy"
-          content="default-src 'self' 'unsafe-eval' https://cdn.nimiq.com https://cdn.nimiq-network.com;
-          img-src http: https: blob: data:; child-src 'self' blob:; style-src 'self';">
+          content="default-src 'self' 'unsafe-eval' https://cdn.nimiq-testnet.com;
+          img-src http: https: blob: data:;
+          child-src 'self' blob:;
+          style-src 'self' https://fonts.googleapis.com;
+          font-src https://fonts.gstatic.com;">
     <title>Nimiq Keyguard</title>
 
-    <script defer src="https://cdn.nimiq-network.com/branches/master/web-offline.js"></script>
+    <script defer src="https://cdn.nimiq-testnet.com/web-offline.js"></script>
     <script defer src="../../lib/RpcServer.es.js"></script>
     <script defer src="../../lib/CookieJar.js"></script>
     <script defer src="../../lib/BrowserDetection.js"></script>
