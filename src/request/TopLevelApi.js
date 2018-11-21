@@ -52,7 +52,7 @@ class TopLevelApi { // eslint-disable-line no-unused-vars
      * Method to be called by the Keyguard client via RPC
      *
      * @param {Rpc.State | null} state
-     * @param {KeyguardRequests.KeyguardRequest} request
+     * @param {KeyguardRequest.KeyguardRequest} request
      */
     async request(state, request) {
         /**
@@ -75,7 +75,7 @@ class TopLevelApi { // eslint-disable-line no-unused-vars
     /**
      * Overwritten by each request's API class
      *
-     * @param {KeyguardRequests.KeyguardRequest} request
+     * @param {KeyguardRequest.KeyguardRequest} request
      * @abstract
      */
     async onRequest(request) { // eslint-disable-line no-unused-vars

@@ -1,4 +1,4 @@
-declare namespace KeyguardRequests {
+declare namespace KeyguardRequest {
     type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
 
     type Transform<T, K extends keyof T, E> = Omit<T, K> & E

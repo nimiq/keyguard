@@ -23,7 +23,7 @@ class ImportApi extends TopLevelApi {
     }
 
     /**
-     * @param {KeyguardRequests.ImportRequest} request
+     * @param {KeyguardRequest.ImportRequest} request
      */
     async onRequest(request) {
         this._request = request;
@@ -67,7 +67,7 @@ class ImportApi extends TopLevelApi {
         passphraseSetterBox.on(PassphraseSetterBox.Events.SKIP, () => this._onPassphraseEntered(null));
         $importWordsLink.addEventListener('click', () => {
             const handler = new ImportWords(
-                /** @type {KeyguardRequests.ImportRequest} */ (this._request),
+                /** @type {KeyguardRequest.ImportRequest} */ (this._request),
                 this._onRecoveryWordsComplete.bind(this),
             );
             handler.run();
@@ -140,7 +140,7 @@ class ImportApi extends TopLevelApi {
                 address: address.serialize(),
             });
         } else if (key.type === Key.Type.BIP39) {
-            /** @type {KeyguardRequests.ImportRequest} */
+            /** @type {KeyguardRequest.ImportRequest} */
             (this._request).requestedKeyPaths.forEach(keyPath => {
                 addresses.push({
                     keyPath,
@@ -155,7 +155,7 @@ class ImportApi extends TopLevelApi {
             throw new Error(`Unkown key type ${key.type}`);
         }
 
-        /** @type {KeyguardRequests.ImportResult} */
+        /** @type {KeyguardRequest.ImportResult} */
         const result = {
             keyId: key.id,
             keyType: key.type,

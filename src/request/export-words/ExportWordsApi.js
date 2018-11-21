@@ -3,7 +3,7 @@
 /* global KeyStore */
 class ExportWordsApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
-     * @param {KeyguardRequests.SimpleRequest} request
+     * @param {KeyguardRequest.SimpleRequest} request
      */
     async onRequest(request) {
         /** @type {HTMLElement} */
@@ -20,8 +20,8 @@ class ExportWordsApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     }
 
     /**
-     * @param {KeyguardRequests.SimpleRequest} request
-     * @returns {Promise<KeyguardRequests.ParsedSimpleRequest>}
+     * @param {KeyguardRequest.SimpleRequest} request
+     * @returns {Promise<KeyguardRequest.ParsedSimpleRequest>}
      */
     static async _parseRequest(request) {
         if (!request) {

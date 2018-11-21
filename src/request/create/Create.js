@@ -11,7 +11,7 @@
 
 class Create {
     /**
-     * @param {KeyguardRequests.CreateRequest} request
+     * @param {KeyguardRequest.CreateRequest} request
      * @param {Function} resolve
      * @param {Function} reject
      */
@@ -136,7 +136,7 @@ class Create {
     } // constructor
 
     /**
-     * @param {KeyguardRequests.CreateRequest} request
+     * @param {KeyguardRequest.CreateRequest} request
      */
     async finish(request) {
         document.body.classList.add('loading');
@@ -147,7 +147,7 @@ class Create {
 
         const keyPath = request.defaultKeyPath;
 
-        /** @type {KeyguardRequests.CreateResult} */
+        /** @type {KeyguardRequest.CreateResult} */
         const result = {
             keyId: key.id,
             keyPath,

@@ -11,10 +11,10 @@ yarn add --dev @nimiq/keyguard-client
 ````
 
 # Usage:
-Add a new file 'KeyguardRequests.d.ts' to your project folder and make sure it is included in your .tsconfig. That file
+Add a new file 'KeyguardRequest.d.ts' to your project folder and make sure it is included in your .tsconfig. That file
 should contain:
 ````
 // tslint:disable-next-line no-reference
-/// <reference path="./node_modules/@nimiq/keyguard-client/types/KeyguardRequests.d.ts" />
+/// <reference path="./node_modules/@nimiq/keyguard-client/types/KeyguardRequest.d.ts" />
 
 ````

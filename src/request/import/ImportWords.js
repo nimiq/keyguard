@@ -6,7 +6,7 @@
 
 class ImportWords {
     /**
-     * @param {KeyguardRequests.ImportRequest} request
+     * @param {KeyguardRequest.ImportRequest} request
      * @param {Function} resolve
      */
     constructor(request, resolve) {

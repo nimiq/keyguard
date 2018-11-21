@@ -5,7 +5,7 @@
 
 class DeriveAddress {
     /**
-     * @param {KeyguardRequests.ParsedDeriveAddressRequest} request
+     * @param {KeyguardRequest.ParsedDeriveAddressRequest} request
      * @param {Function} resolve
      * @param {Function} reject
      */
@@ -46,7 +46,7 @@ class DeriveAddress {
             DerivedIdenticonSelector.Events.IDENTICON_SELECTED,
             /** @param {{address: Nimiq.Address, keyPath: string}} selectedAddress */
             selectedAddress => {
-                /** @type {KeyguardRequests.DeriveAddressResult} */
+                /** @type {KeyguardRequest.DeriveAddressResult} */
                 const result = {
                     address: selectedAddress.address.serialize(),
                     keyPath: selectedAddress.keyPath,
