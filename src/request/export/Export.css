@@ -1,0 +1,22 @@
+button.go-to-words,
+button.go-to-file {
+    background: #e5e5e5;
+    padding: 1rem 1.75rem;
+    width: unset;
+    height: unset;
+    font-size: 1.75rem;
+    line-height: 0.86;
+    box-shadow: none;
+    text-transform: none;
+    letter-spacing: 0;
+    color: black;
+    margin: 0 4rem;
+    margin-top: 4rem;
+    align-self: center;
+}
+
+#more-export-options .page-footer button {
+    margin: 4rem 7.5rem;
+    background: var(--nimiq-purple);
+    color: white;
+}
