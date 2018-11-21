@@ -95,12 +95,12 @@ class Export {
             </div>
 
             <div class="page-body">
-                    <button class="go-to-words" data-i18n="export-button-words">Show Recorvery Words</button>
+                    <button class="go-to-words" data-i18n="export-button-words">Show Recovery Words</button>
                     <button class="go-to-file" data-i18n="export-button-file">Download Wallet File</button>
             </div>
 
             <div class="page-footer">
-                <button class="finish-request" data-i18n="continue">Continue</button>
+                <button class="finish-request" data-i18n="export-finish">Finish Export</button>
             </div>
         `;
         /** @type {HTMLElement} */
