@@ -35,10 +35,13 @@ class Export {
      * @param { {success:boolean} } result
      */
     _fileSucceeded(result) {
-        if (this.exported.words) this._resolve(result);
-        this.exported.file = result.success;
-        /** @type {HTMLElement} */(this._fileButton).classList.add('display-none');
-        window.location.hash = Export.Pages.MORE_EXPORT_OPTIONS;
+        if (this.exported.words) {
+            this._resolve(result);
+        } else {
+            this.exported.file = result.success;
+            /** @type {HTMLElement} */(this._fileButton).classList.add('display-none');
+            window.location.hash = Export.Pages.MORE_EXPORT_OPTIONS;
+        }
     }
 
     /**
@@ -46,10 +49,13 @@ class Export {
      * @param { {success:boolean} } result
      */
     _wordsSucceeded(result) {
-        if (this.exported.file) this._resolve(result);
-        this.exported.words = result.success;
-        /** @type {HTMLElement} */(this._wordsButton).classList.add('display-none');
-        window.location.hash = Export.Pages.MORE_EXPORT_OPTIONS;
+        if (this.exported.file) {
+            this._resolve(result);
+        } else {
+            this.exported.words = result.success;
+            /** @type {HTMLElement} */(this._wordsButton).classList.add('display-none');
+            window.location.hash = Export.Pages.MORE_EXPORT_OPTIONS;
+        }
     }
 
     _build() {
