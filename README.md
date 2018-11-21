@@ -1,7 +1,14 @@
-# keyguard-next
+# Nimiq Keyguard(-next)
+
+This README is about setting up your own instances of Nimiq Keyguard.
+
+For information about using the client please refer to
+[the Keyguard Client README](https://github.com/nimiq/keyguard-next/tree/master/client/README.md).
 
 ## Development
+
 Install the dev dependencies:
+
 ```sh
 yarn
 ```
@@ -12,19 +19,28 @@ Then you can:
 - run the typechecker with `yarn typecheck`.
 - run the typecheck file watcher with `yarn watch`.
 - run the linter with `yarn lint`.
-- automatically fix basic things like spacing, commas, indentation and quotes with `yarn lintfix`.
-- run `yarn pr` to run all three checks (`typecheck`, `lint`, `test`) as they would for a PR.
+- automatically fix basic things like spacing, commas, indentation and quotes
+  with `yarn lintfix`.
+- run `yarn pr` to run all three checks (`typecheck`, `lint`, `test`) as they
+  would for a PR.
 
 ## Coding Style
+
 - Code style is enforced with ESLint. Run `yarn lint` to see errors.
 - Folder names are in Kebab Case: `sign-transaction`.
 - Class files are named in Pascal Case: `PinInput.js`, `RpcServer.js`.
-- JSDoc @type and @param annotations must have a hyphen between the argument name and description:
+- JSDoc @type and @param annotations must have a hyphen between the argument name
+  and description:
+
+```javascript
+/**
+ * @param {string} address - The address to search for
+ */
 ```
-@param {string} address - The address to search for
-```
+
 - Folder structure:
-```
+
+```text
 - src
     - lib
     - components
@@ -36,7 +52,12 @@ Then you can:
 ## I18n usage
 
 ### Setup
-First, import the `I18n.js` lib in your HTML's head section. Then, setup your dictionary (details see below) and  initialize `I18n` passing your dictionary and the fallback language that should be used if no translation in the current language has been found.
+
+First, import the `I18n.js` lib in your HTML's head section. Then, setup your
+dictionary (details see below) and  initialize `I18n` passing your dictionary
+and the fallback language that should be used if no translation in the current
+language has been found.
+
 ```javascript
 var myDictionary = {
     'en': {
@@ -46,23 +67,32 @@ var myDictionary = {
 
 I18n.initialize(myDictionary, 'en');
 ```
+
 `I18n` will automatically use the language set up in the user's browser.
 
 ### Translate tag content
+
 ```html
 <div data-i18n="my-translation">My content</div>
 ```
-When the I18n gets started, or when the language has been switched, it will look for tags with the `data-i18n` attribute and put in the appropriate translation. `My content` will be replaced.
+
+When the I18n gets started, or when the language has been switched, it will look
+for tags with the `data-i18n` attribute and put in the appropriate translation.
+`My content` will be replaced.
 
 ### Translate placeholders and value
+
 ```html
 <input data-i18n-placeholder="my-placeholder-translation"/>
 <input data-i18n-value="my-value-translation"/>
 ```
+
 Similarily, I18n will translate the texts for value and placeholder.
 
 ### Dictionary
+
 Format:
+
 ```javascript
 {
     "en": {
@@ -75,7 +105,10 @@ Format:
 ```
 
 ### Language picker
-Add `LanguagePicker.js` to your head and then add a language picker widget to your page:
+
+Add `LanguagePicker.js` to your head and then add a language picker widget to your
+page:
+
 ```javascript
     const languagePicker = new LanguagePicker();
     document.body.appendChild(languagePicker.getElement());

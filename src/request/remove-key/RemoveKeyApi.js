@@ -7,10 +7,10 @@
 /* global DownloadKeyfile */
 class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
-     * @param {SimpleRequest} request
+     * @param {KeyguardRequest.SimpleRequest} request
      */
     async onRequest(request) {
-        /** @type {ParsedSimpleRequest} */
+        /** @type {KeyguardRequest.ParsedSimpleRequest} */
         this.parsedRequest = await RemoveKeyApi._parseRequest(request);
 
         /** @type {HTMLElement} */
@@ -103,7 +103,7 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
                 await KeyStore.instance.remove(this.parsedRequest.keyInfo.id);
                 document.body.classList.add('loading');
 
-                /** @type {SimpleResult} */
+                /** @type {KeyguardRequest.SimpleResult} */
                 const result = {
                     success: true,
                 };
@@ -150,7 +150,7 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         try {
             const passphraseBuffer = phrase ? Nimiq.BufferUtils.fromAscii(phrase) : undefined;
             const key = await KeyStore.instance.get(
-                /** @type {ParsedSimpleRequest} */ (this.parsedRequest).keyInfo.id,
+                /** @type {KeyguardRequest.ParsedSimpleRequest} */ (this.parsedRequest).keyInfo.id,
                 passphraseBuffer,
             );
             if (!key) {
@@ -159,7 +159,7 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
             }
             this._setKey(
                 key,
-                /** @type {ParsedSimpleRequest} */ (this.parsedRequest).keyInfo.encrypted,
+                /** @type {KeyguardRequest.ParsedSimpleRequest} */ (this.parsedRequest).keyInfo.encrypted,
             ); // possibly start timer to reset entered passphrase here.
             document.body.classList.remove('loading');
             return true;
@@ -172,8 +172,8 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     }
 
     /**
-     * @param {SimpleRequest} request
-     * @returns {Promise<ParsedSimpleRequest>}
+     * @param {KeyguardRequest.SimpleRequest} request
+     * @returns {Promise<KeyguardRequest.ParsedSimpleRequest>}
      * @private
      */
     static async _parseRequest(request) {

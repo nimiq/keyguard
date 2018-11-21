@@ -1,5 +1,5 @@
 import {RedirectRpcClient, PostMessageRpcClient} from '@nimiq/rpc';
-import {KeyguardCommand} from './RequestTypes';
+import { KeyguardCommand } from './KeyguardCommand';
 
 enum BehaviorType {
     REDIRECT,

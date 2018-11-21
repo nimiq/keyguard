@@ -6,7 +6,7 @@
 class LayoutCheckout extends BaseLayout { // eslint-disable-line no-unused-vars
     /**
      * @param {?HTMLElement} $el
-     * @param {ParsedSignTransactionRequest} request
+     * @param {KeyguardRequest.ParsedSignTransactionRequest} request
      * @param {Function} resolve
      * @param {Function} reject
      */

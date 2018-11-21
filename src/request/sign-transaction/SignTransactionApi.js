@@ -6,7 +6,7 @@
 
 class SignTransactionApi extends TopLevelApi {
     /**
-     * @param {SignTransactionRequest} request
+     * @param {KeyguardRequest.SignTransactionRequest} request
      */
     async onRequest(request) {
         const parsedRequest = await SignTransactionApi._parseRequest(request);
@@ -23,8 +23,8 @@ class SignTransactionApi extends TopLevelApi {
     }
 
     /**
-     * @param {SignTransactionRequest} request
-     * @returns {Promise<ParsedSignTransactionRequest>}
+     * @param {KeyguardRequest.SignTransactionRequest} request
+     * @returns {Promise<KeyguardRequest.ParsedSignTransactionRequest>}
      * @private
      */
     static async _parseRequest(request) {
@@ -99,7 +99,7 @@ class SignTransactionApi extends TopLevelApi {
     }
 
     /**
-     * @param {SignTransactionRequest} request
+     * @param {KeyguardRequest.SignTransactionRequest} request
      * @returns {Nimiq.ExtendedTransaction}
      * @private
      */
