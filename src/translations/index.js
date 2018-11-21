@@ -113,6 +113,7 @@ const TRANSLATIONS = {
 
         'export-button-words': 'Show Recovery Words',
         'export-button-file': 'Download Wallet File',
+        'export-finish': 'Finish Export',
     },
     de: {
         _language: 'Deutsch',
@@ -235,6 +236,7 @@ const TRANSLATIONS = {
 
         'export-button-words': 'Wiederherstellungswörter anzeigen',
         'export-button-file': 'Schlüsseldatei herunterladen',
+        'export-finish': 'Export abschließen',
     },
 };
 
