@@ -90,7 +90,10 @@ class BaseLayout {
                 this._onConfirm(request, resolve, reject, passphrase);
             },
         );
-        this._passphraseBox.on(PassphraseBox.Events.CANCEL, () => reject(new Error('CANCEL')));
+
+        // This cannot be 'CANCEL', because for checkout we need to go back to
+        // the CheckoutOverview in the Accounts Manager
+        this._passphraseBox.on(PassphraseBox.Events.CANCEL, () => window.history.back());
 
         /** @type {HTMLElement} */
         const $appName = (document.querySelector('#app-name'));

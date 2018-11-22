@@ -10,8 +10,8 @@
     align-self: center;
 }
 
-.page#download-key-file .nq-icon.walletfile,
-.page#download-key-file .nq-icon.arrow-down {
+.page#download-key-file .walletfile,
+.page#download-key-file .arrow-down {
     display: block;
     margin: auto;
 }
