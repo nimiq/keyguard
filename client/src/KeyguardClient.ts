@@ -41,15 +41,18 @@ export class KeyguardClient {
 
     /* TOP-LEVEL REQUESTS */
 
-    public create(request: KeyguardRequest.CreateRequest, requestBehavior = this._defaultBehavior): Promise<KeyguardRequest.CreateResult> {
+    public create(request: KeyguardRequest.CreateRequest, requestBehavior = this._defaultBehavior)
+        : Promise<KeyguardRequest.CreateResult> {
         return this._request(requestBehavior,  KeyguardCommand.CREATE, [request]);
     }
 
-    public remove(request: KeyguardRequest.SimpleRequest, requestBehavior = this._defaultBehavior): Promise<KeyguardRequest.SimpleResult> {
+    public remove(request: KeyguardRequest.SimpleRequest, requestBehavior = this._defaultBehavior)
+        : Promise<KeyguardRequest.SimpleResult> {
         return this._request(requestBehavior,  KeyguardCommand.REMOVE, [request]);
     }
 
-    public import(request: KeyguardRequest.ImportRequest, requestBehavior = this._defaultBehavior): Promise<KeyguardRequest.ImportResult> {
+    public import(request: KeyguardRequest.ImportRequest, requestBehavior = this._defaultBehavior)
+        : Promise<KeyguardRequest.ImportResult> {
         return this._request(requestBehavior,  KeyguardCommand.IMPORT, [request]);
     }
 
@@ -74,17 +77,20 @@ export class KeyguardClient {
     }
 
     public async signTransaction(request: KeyguardRequest.SignTransactionRequest,
-                                 requestBehavior = this._defaultBehavior): Promise<KeyguardRequest.SignTransactionResult> {
+                                 requestBehavior = this._defaultBehavior)
+        : Promise<KeyguardRequest.SignTransactionResult> {
         return this._request(requestBehavior,  KeyguardCommand.SIGN_TRANSACTION, [request]);
     }
 
     public async signMessage(request: KeyguardRequest.SignMessageRequest,
-                             requestBehavior = this._defaultBehavior): Promise<KeyguardRequest.SignMessageResult> {
+                             requestBehavior = this._defaultBehavior)
+        : Promise<KeyguardRequest.SignMessageResult> {
         return this._request(requestBehavior,  KeyguardCommand.SIGN_MESSAGE, [request]);
     }
 
     public async deriveAddress(request: KeyguardRequest.DeriveAddressRequest,
-                               requestBehavior = this._defaultBehavior): Promise<KeyguardRequest.DeriveAddressResult> {
+                               requestBehavior = this._defaultBehavior)
+        : Promise<KeyguardRequest.DeriveAddressResult> {
         return this._request(requestBehavior,  KeyguardCommand.DERIVE_ADDRESS, [request]);
     }
 
