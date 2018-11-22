@@ -88,14 +88,14 @@ class ChangePassphrase {
     _buildEnterPassphrasePage() {
         const $el = document.createElement('div');
         $el.id = ChangePassphrase.Pages.ENTER_PASSPHRASE;
-        $el.classList.add('page');
+        $el.classList.add('page', 'nq-card');
         $el.innerHTML = `
-            <div class="page-header">
-                <h1 data-i18n="change-passphrase-heading">Change your passphrase</h1>
+            <div class="page-header nq-card-header">
+                <h1 data-i18n="change-passphrase-heading" class="nq-h1">Change your passphrase</h1>
             </div>
 
-            <div class="page-body">
-                <p data-i18n="change-paragraph">
+            <div class="page-body nq-card-body">
+                <p data-i18n="change-paragraph" class="nq-text">
                     Before entering your new passphrase, you must first unlock your wallet.
                 </p>
             </div>
@@ -113,15 +113,15 @@ class ChangePassphrase {
     _buildSetPassphrasePage() {
         const $el = document.createElement('div');
         $el.id = ChangePassphrase.Pages.SET_PASSPHRASE;
-        $el.classList.add('page');
+        $el.classList.add('page', 'nq-card');
         $el.innerHTML = `
-            <div class="page-header">
-                <a tabindex="0" class="page-header-back-button icon-back-arrow"></a>
-                <h1 data-i18n="change-passphrase-heading">Change your passphrase</h1>
+            <div class="page-header nq-card-header">
+                <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
+                <h1 data-i18n="change-passphrase-heading" class="nq-h1">Change your passphrase</h1>
             </div>
 
-            <div class="page-body">
-                <p data-i18n="change-set-paragraph">
+            <div class="page-body nq-card-body">
+                <p data-i18n="change-set-paragraph" class="nq-text">
                     Now please enter your new Passphrase and repeat it for confirmation.
                 </p>
             </div>
