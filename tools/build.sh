@@ -13,6 +13,7 @@ rm -rf dist
 # create folder structure
 mkdir -p dist/request
 mkdir -p dist/assets
+mkdir -p dist/lib
 
 # current git commit hash to create unique filenames to
 # overwrite browser cache (inspired by Vue's build output)
@@ -90,4 +91,6 @@ for DIR in src/request/*/ ; do
 done
 
 # copy assets
-cp -r src/assets/* dist/assets/
+cp -rv src/assets/* dist/assets/
+cp -v src/lib/QrScannerWorker* dist/lib/
+
