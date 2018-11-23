@@ -88,6 +88,7 @@ class Create {
         });
 
         this._downloadKeyfile.on(DownloadKeyfile.Events.DOWNLOADED, () => {
+            alert('Wallet Files are not yet implemented.');
             window.location.hash = Create.Pages.PRIVACY_AGENT;
         });
 

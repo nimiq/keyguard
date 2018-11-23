@@ -84,7 +84,10 @@ class ExportFile extends Nimiq.Observable {
                 document.body.classList.remove('loading');
             }
         });
-        this._downloadKeyfile.on(DownloadKeyfile.Events.DOWNLOADED, this._finish.bind(this));
+        this._downloadKeyfile.on(DownloadKeyfile.Events.DOWNLOADED, () => {
+            alert('Wallet Files are not yet implemented.');
+            this._finish();
+        });
     }
 
     _finish() {
