@@ -59,6 +59,12 @@
     cursor: pointer;
 }
 
+@media (max-width: 450px) {
+    .page-header-back-button {
+        left: 3.5rem;
+    }
+}
+
 .page-header-back-button::after {
     content: '';
     display: block;

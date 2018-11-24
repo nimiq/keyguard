@@ -58,3 +58,13 @@
 .page-header .page-header-back-button {
     top: 5.5rem;
 }
+
+@media (max-width: 450px) {
+    .page-header {
+        padding-top: 4.5rem;
+    }
+
+    .page-header .page-header-back-button {
+        top: 4.5rem;
+    }
+}
