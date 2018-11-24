@@ -46,6 +46,7 @@ class ChangePassphrase {
             $enterPassphraseBox, {
                 buttonI18nTag: 'passphrasebox-continue',
                 hideInput: !this._request.keyInfo.encrypted,
+                minLength: this._request.keyInfo.hasPin ? 6 : undefined,
             },
         );
         this._setPassphraseBox = new PassphraseSetterBox($setPassphraseeBox);
@@ -58,6 +59,7 @@ class ChangePassphrase {
                 const key = await KeyStore.instance.get(this._request.keyInfo.id, passphrase);
                 if (!key) {
                     this._reject(new Error('No key'));
+                    return;
                 }
                 this._key = key;
                 /** @type {PassphraseSetterBox} */ (this._setPassphraseBox).reset();
@@ -141,6 +143,10 @@ class ChangePassphrase {
             this._reject(new Error('Bypassed Password'));
             return;
         }
+
+        // In this request, the user can only set a new password (min length: 8) or leave a key unencrypted.
+        // In any case, the key is not encrypted with a 6-digit PIN anymore.
+        this._key.hasPin = false;
 
         const passphrase = this._passphrase.length > 0 ? Nimiq.BufferUtils.fromAscii(this._passphrase) : undefined;
         await KeyStore.instance.put(this._key, passphrase);

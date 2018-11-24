@@ -13,6 +13,7 @@ class ImportApi extends TopLevelApi {
 
         this._encryptedKey = new Nimiq.SerialBuffer(0);
         this._keyType = Key.Type.BIP39;
+        this._hasPin = false;
 
         // Start UI
         const dom = this._makeView();
@@ -91,6 +92,7 @@ class ImportApi extends TopLevelApi {
             this._keyType = Key.Type.BIP39;
 
             this._encryptedKey = Nimiq.BufferUtils.fromBase64(encryptedKeyBase64.substr(2));
+            this._hasPin = false;
             this._passphraseBox.setMinLength();
 
             if (this._encryptedKey.length === Nimiq.CryptoUtils.ENCRYPTION_SIZE) this._goToEnterPassphrase();
@@ -102,10 +104,12 @@ class ImportApi extends TopLevelApi {
             if (encryptedKeyBase64.substr(0, 2) === '#2') {
                 // PIN-encoded
                 this._encryptedKey = Nimiq.BufferUtils.fromBase64(encryptedKeyBase64.substr(2));
+                this._hasPin = true;
                 this._passphraseBox.setMinLength(6);
             } else {
                 // Passphrase-encoded
                 this._encryptedKey = Nimiq.BufferUtils.fromBase64(encryptedKeyBase64);
+                this._hasPin = false;
                 this._passphraseBox.setMinLength(10);
             }
 
@@ -199,7 +203,7 @@ class ImportApi extends TopLevelApi {
                 secret = this._encryptedKey;
             }
 
-            const key = new Key(secret, this._keyType);
+            const key = new Key(secret, this._keyType, this._hasPin);
 
             await KeyStore.instance.put(key, encryptionKey || undefined);
 
@@ -216,6 +220,7 @@ class ImportApi extends TopLevelApi {
      * @param { Key.Type } keyType
      */
     _onRecoveryWordsComplete(entropy, keyType) {
+        this._hasPin = false;
         this._passphraseBox.setMinLength();
         this._keyType = keyType;
         this._encryptedKey = entropy;

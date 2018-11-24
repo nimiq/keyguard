@@ -6,14 +6,17 @@ class KeyInfo {
      * @param {string} id
      * @param {Key.Type} type
      * @param {boolean} encrypted
+     * @param {boolean} hasPin
      */
-    constructor(id, type, encrypted) {
+    constructor(id, type, encrypted, hasPin) {
         /** @private */
         this._id = id;
         /** @private */
         this._type = type;
         /** @private */
         this._encrypted = encrypted;
+        /** @private */
+        this._hasPin = hasPin;
     }
 
     /**
@@ -38,6 +41,13 @@ class KeyInfo {
     }
 
     /**
+     * @type {boolean}
+     */
+    get hasPin() {
+        return this._hasPin;
+    }
+
+    /**
      * @type {string}
      */
     get userFriendlyId() {
@@ -52,6 +62,7 @@ class KeyInfo {
             id: this.id,
             type: this.type,
             encrypted: this.encrypted,
+            hasPin: this.hasPin,
             // userFriendlyId: this.userFriendlyId,
         };
     }
@@ -61,6 +72,6 @@ class KeyInfo {
      * @returns {KeyInfo}
      */
     static fromObject(obj) {
-        return new KeyInfo(obj.id, obj.type, obj.encrypted);
+        return new KeyInfo(obj.id, obj.type, obj.encrypted, obj.hasPin);
     }
 }

@@ -97,6 +97,7 @@ class ExportWords extends Nimiq.Observable {
             $privacyWarningPassphraseBox, {
                 buttonI18nTag: 'passphrasebox-continue',
                 hideInput: !this._request.keyInfo.encrypted,
+                minLength: this._request.keyInfo.hasPin ? 6 : undefined,
             },
         );
         this._recoveryWords = new RecoveryWords($recoveryWords, false);

@@ -3,20 +3,22 @@
 /* global PassphraseInput */
 
 class PassphraseBox extends Nimiq.Observable {
+    // eslint-disable-next-line valid-jsdoc
     /**
      * @param {?HTMLFormElement} $el
-     * @param {object} [options]
+     * @param {{bgColor?: string, hideInput?: boolean, buttonI18nTag?: string, minLength?: number}} [options]
      */
     constructor($el, options = {}) {
         const defaults = {
             bgColor: 'purple',
             hideInput: false,
             buttonI18nTag: 'passphrasebox-confirm-tx',
+            minLength: PassphraseInput.DEFAULT_MIN_LENGTH,
         };
 
         super();
 
-        /** @type {{bgColor: string, hideInput: boolean, buttonI18nTag: string}} */
+        /** @type {{bgColor: string, hideInput: boolean, buttonI18nTag: string, minLength: number}} */
         this.options = Object.assign(defaults, options);
 
         this.$el = PassphraseBox._createElement($el, this.options);
@@ -25,6 +27,8 @@ class PassphraseBox extends Nimiq.Observable {
 
         this._passphraseInput = new PassphraseInput(this.$el.querySelector('[passphrase-input]'));
         this._passphraseInput.on(PassphraseInput.Events.VALID, isValid => this._onInputChangeValidity(isValid));
+
+        this.setMinLength(this.options.minLength);
 
         this._isInputValid = false;
 

@@ -17,10 +17,17 @@ declare namespace Key {
     type Type = 0 | 1
 }
 
+type AccountType = string
+
+declare namespace AccountType {
+    type HIGH = 'high'
+    type LOW = 'low'
+}
+
 // Deprecated, only used for migrating databases
 type AccountInfo = {
     userFriendlyAddress: string
-    type: string
+    type: AccountType
     label: string
 }
 
@@ -33,6 +40,7 @@ type KeyInfoObject = {
     id: string
     type: Key.Type
     encrypted: boolean
+    hasPin: boolean
     userFriendlyId?: string
 }
 
@@ -40,5 +48,6 @@ type KeyRecord = {
     id: string
     type: Key.Type
     encrypted: boolean
+    hasPin: boolean
     secret: Uint8Array
 }

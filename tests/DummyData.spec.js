@@ -34,10 +34,12 @@ Dummy.keyInfos = [
         '2ec615522906',
         Key.Type.LEGACY,
         true,
+        false,
     ),
     new KeyInfo(
         'ef553f34a779',
         Key.Type.BIP39,
+        false,
         false,
     ),
 ];
@@ -48,12 +50,14 @@ Dummy.keyRecords = [
         id: Dummy.keyInfos[0].id,
         type: Dummy.keyInfos[0].type,
         encrypted: Dummy.keyInfos[0].encrypted,
+        hasPin: Dummy.keyInfos[0].hasPin,
         secret: Dummy.encryptedKeys[0],
     },
     {
         id: Dummy.keyInfos[1].id,
         type: Dummy.keyInfos[1].type,
         encrypted: Dummy.keyInfos[1].encrypted,
+        hasPin: Dummy.keyInfos[1].hasPin,
         secret: Dummy.keys[1],
     },
 ];
@@ -72,7 +76,7 @@ Dummy.deprecatedAccountRecords = [
     Object.assign({}, Dummy.deprecatedAccountInfos[0], { encryptedKeyPair: Dummy.encryptedKeys[0] }),
 ];
 
-Dummy.keyInfoCookieEncoded = '012ec61552290610ef553f34a779';
+Dummy.keyInfoCookieEncoded = '0102ec615522906100ef553f34a779';
 
 /** @type {string} */
 Dummy.cookie = `k=${Dummy.keyInfoCookieEncoded};accounts=${JSON.stringify(Dummy.deprecatedAccountInfos)};some=thing;`;
