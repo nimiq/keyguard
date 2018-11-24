@@ -9,7 +9,7 @@ class ExportFileApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         /** @type {HTMLElement} */
         const $appName = (document.querySelector('#app-name'));
         $appName.textContent = request.appName;
-        /** @type HTMLAnchorElement */
+        /** @type {HTMLButtonElement} */
         const $cancelLink = ($appName.parentNode);
         $cancelLink.classList.remove('display-none');
         $cancelLink.addEventListener('click', () => this.reject(new Error('CANCEL')));
