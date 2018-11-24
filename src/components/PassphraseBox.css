@@ -6,22 +6,33 @@
     position: absolute;
     right: 1.25rem;
     top: 1.25rem;
-    opacity: 0.5;
+    opacity: 0.8;
     width: 3.25rem;
     height: 3.25rem;
     background-size: 3.75rem;
     z-index: 100;
+    cursor: pointer;
+}
+
+.passphrase-box .cancel::after {
+    content: '';
+    display: block;
+    position: absolute;
+    left: -2rem;
+    top: -2rem;
+    right: -2rem;
+    bottom: -2rem;
 }
 
 .passphrase-box .cancel:hover {
-    opacity: 0.8;
+    opacity: 1;
 }
 
 .passphrase-box .passphrase-input {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-    margin: 2rem 0 4.5rem 0;
+    margin: 5rem 0 4.5rem 0;
     transition: transform 300ms;
 }
 
@@ -35,7 +46,7 @@
 }
 
 .passphrase-box .submit {
-    margin-top: -9rem;
+    margin-top: -8rem;
     opacity: 0;
     transition: opacity 150ms;
     pointer-events: none;
@@ -60,10 +71,8 @@
 /* S E T T E R */
 
 .passphrase-box .password-strength {
-    font-size: 1.5rem;
-    line-height: 1.75rem;
     margin-top: -1.75rem;
-    transform: translate3d(0, -7.25rem, 0);
+    transform: translate3d(0, -6.75rem, 0);
     opacity: 0;
     transition: opacity 150ms;
     pointer-events: none;
@@ -78,8 +87,6 @@
 
 .passphrase-box .password-hint,
 .passphrase-box .password-skip {
-    font-size: 1.75rem;
-    line-height: 1.5;
     transition: opacity 300ms;
 }
 
@@ -100,6 +107,10 @@
     cursor: pointer;
 }
 
+.passphrase-box.setter .submit {
+    margin-top: -9rem;
+}
+
 .passphrase-box .prompt.repeat {
     display: none;
 }
@@ -112,5 +123,9 @@
 }
 
 .passphrase-box.repeat .prompt.repeat {
-    display: initial;
+    display: block;
+}
+
+.passphrase-box.repeat .submit {
+    margin-top: -4.25rem;
 }

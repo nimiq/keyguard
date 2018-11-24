@@ -17,13 +17,12 @@ const TRANSLATIONS = {
         'recovery-words-title': 'Recovery Words',
         'recovery-words-input-label': 'Recovery Words',
         'recovery-words-input-field-placeholder': 'word #',
-        'recovery-words-explanation': 'There really is no password recovery. The following words are a backup '
-                                    + 'of your Key File and will grant you access to your wallet even if your '
-                                    + 'Key File is lost.',
-        'recovery-words-storing': 'Write those words on a piece of paper and store it at a safe, offline place.',
+        'recovery-words-explanation': 'The following words will grant you access to your wallet even if your '
+                                    + 'Wallet File is lost.',
+        'recovery-words-storing': 'Write these words on a piece of paper and store them at a safe, offline place.',
         'recovery-words-continue-to-words': 'Continue to Recovery Words',
 
-        'create-heading-choose-identicon': 'Choose your account avatar',
+        'create-heading-choose-identicon': 'Choose your avatar',
         'create-text-select-avatar': 'Select an avatar for your wallet\'s default account from the selection below.',
         'create-hint-more-accounts': 'You can add more accounts later.',
         'create-heading-keyfile': 'This is your Key File',
@@ -95,12 +94,13 @@ const TRANSLATIONS = {
         'export-file-heading': 'Download Key File',
 
         'remove-key-log-out': 'Log out',
-        'remove-key-intro-text': 'Logging out means removing your Key File from this browser. '
+        'remove-key-intro-text': 'Logging out means removing your Wallet File from this browser. '
                                + 'Make sure you have it stored somewhere, or at least have your '
                                + 'Recovery Words accessible.',
         'remove-key-intro-text-red': 'If you have neither of them, there’s no chance to regain '
                                    + 'access to your wallet.',
-        'remove-key-download-key-file': 'Download Key File',
+        'remove-key-key-file': 'Wallet File',
+        'remove-key-download-key-file': 'Download Wallet File',
         'remove-key-show-recovery-words': 'Show Recovery Words',
         'remove-key-confirm': 'Log out of your wallet',
         'remove-key-recovery-words': 'Recovery Words',
@@ -226,6 +226,7 @@ const TRANSLATIONS = {
                                + 'oder zumindest deine Wiederherstellungswörter für dich zugänglich sind.',
         'remove-key-intro-text-red': 'Falls du zu beiden keinen Zugang hast besteht keine Möglichkeit wieder '
                                    + 'Zugriff auf dein Wallet zu erhalten.',
+        'remove-key-key-file': 'Schlüsseldatei',
         'remove-key-download-key-file': 'Schlüsseldatei herunterladen',
         'remove-key-show-recovery-words': 'Wiederherstellungswörter anzeigen',
         'remove-key-confirm': 'Aus deinem Wallet ausloggen',

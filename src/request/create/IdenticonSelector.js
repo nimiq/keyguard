@@ -50,11 +50,11 @@ class IdenticonSelector extends Nimiq.Observable {
                     <h2 data-i18n="identicon-selector-loading">Mixing colors</h2>
                 </div>
             </div>
-            <button class="generate-more">Generate new</button>
+            <button class="generate-more nq-button-s">Generate new</button>
 
             <div class="backdrop center">
-                <button data-i18n="identicon-selector-button-select">Select</button>
-                <a tabindex="0" class="secondary" data-i18n="identicon-selector-link-back">Back</a>
+                <button class="nq-button inverse" data-i18n="identicon-selector-button-select">Select</button>
+                <a tabindex="0" class="nq-text-s nq-link" data-i18n="identicon-selector-link-back">Back</a>
             </div>`;
 
         I18n.translateDom($el);

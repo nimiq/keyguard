@@ -94,20 +94,20 @@ class Export {
     _buildMoreExportOptions() {
         const $el = document.createElement('div');
         $el.id = Export.Pages.MORE_EXPORT_OPTIONS;
-        $el.classList.add('page');
+        $el.classList.add('page', 'nq-card');
         $el.innerHTML = `
-            <div class="page-header">
-                <a tabindex="0" class="page-header-back-button icon-back-arrow"></a>
-                <h1 data-i18n="create-heading-validate-backup">Validate your backup</h1>
+            <div class="page-header nq-card-header">
+                <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
+                <h1 data-i18n="create-heading-validate-backup" class="nq-h1">Validate your backup</h1>
             </div>
 
-            <div class="page-body">
-                    <button class="go-to-words" data-i18n="export-button-words">Show Recovery Words</button>
-                    <button class="go-to-file" data-i18n="export-button-file">Download Wallet File</button>
+            <div class="page-body nq-card-body">
+                    <button class="go-to-words nq-button-s" data-i18n="export-button-words">Show Recovery Words</button>
+                    <button class="go-to-file nq-button-s" data-i18n="export-button-file">Download Wallet File</button>
             </div>
 
             <div class="page-footer">
-                <button class="finish-request" data-i18n="export-finish">Finish Export</button>
+                <button class="finish-request nq-button" data-i18n="export-finish">Finish Export</button>
             </div>
         `;
         /** @type {HTMLElement} */

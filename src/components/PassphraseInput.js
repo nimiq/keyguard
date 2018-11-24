@@ -45,7 +45,7 @@ class PassphraseInput extends Nimiq.Observable {
         $el.innerHTML = `
             <div class="input-container">
                 <input class="password" type="password" placeholder="Enter Passphrase">
-                <span class="eye-button icon-eye"/>
+                <span class="nq-icon eye eye-button"/>
             </div>
             <div class="strength-indicator-container">
                 <div class="label"><span data-i18n="passphrase-strength">Strength</span>:</div>
@@ -94,8 +94,8 @@ class PassphraseInput extends Nimiq.Observable {
             ? becomeVisible
             : this.$input.getAttribute('type') === 'password';
         this.$input.setAttribute('type', becomeVisible ? 'text' : 'password');
-        this.$eyeButton.classList.toggle('icon-eye-off', becomeVisible);
-        this.$eyeButton.classList.toggle('icon-eye', !becomeVisible);
+        this.$eyeButton.classList.toggle('eye-off', becomeVisible);
+        this.$eyeButton.classList.toggle('eye', !becomeVisible);
         this.$input.focus();
     }
 

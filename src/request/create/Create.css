@@ -1,27 +1,19 @@
-.page p {
-    margin: 4rem;
-}
-
 .page .actionbox p {
-    margin: 0 2rem 3rem;
     max-width: 32rem;
-}
-
-.page p + p {
-    margin-top: -2.5rem;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .page#choose-identicon .page-body {
     position: relative;
 }
 
-.page-body, .page-footer {
-    /* TODO: Move this to common.css, but have to adapt sign-transaction stylings */
-    background: #fafafa;
-    align-items: center;
+.page#choose-identicon .page-body p:last-of-type {
+    margin-bottom: 2rem;
+}
 
-    border-bottom-left-radius: 1rem;
-    border-bottom-right-radius: 1rem;
+.page-footer {
+    padding: 1rem;
 }
 
 .keyfile-info {
@@ -29,36 +21,32 @@
     flex-direction: row;
 }
 
-.icon-keyfile,
-.icon-keyfile-insecure,
-.icon-keyfile-secure {
-    margin: 4rem;
-    margin-right: 0;
+.keyfile-info p:first-child {
+    margin-top: 0;
 }
 
-.recovery-words {
-    margin: 0 4rem 4rem;
+.keyfile-info p:last-child {
+    margin-bottom: 0;
 }
 
-.page#recovery-words button {
-    width: calc(100% - 4rem);
-    background: #724ceb;
-    color: white;
-    margin-bottom: 2.5rem;
+.nq-icon.walletfile {
+    width: 9rem;
+    height: 11.75rem;
+    margin-right: 4rem;
+    flex-shrink: 0;
+}
+
+.page#recovery-words .skip-container {
+    text-align: center;
 }
 
 .page#recovery-words .skip {
-    color: black;
-    font-size: 1.75rem;
-    line-height: 1.5;
-    opacity: 0.5;
-    text-decoration: underline;
+    color: inherit;
     cursor: pointer;
-    margin-bottom: 2.5rem;
 }
 
 .page-header {
-    padding-top: 5.75rem;
+    padding-top: 5.5rem;
 }
 
 .page-header .progress-indicator {

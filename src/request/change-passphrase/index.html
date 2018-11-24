@@ -32,6 +32,10 @@
     <script defer src="ChangePassphraseApi.js"></script>
     <script defer src="index.js"></script>
 
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Muli:400,600,700">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono&text=0123456789ABCDEFGHJKLMNPQRSTUVXY">
+    <link rel="stylesheet" href="../../../node_modules/@nimiq/style/nimiq-style.min.css">
+    <link rel="stylesheet" href="../../../node_modules/@nimiq/style/nimiq-style-icons.min.css">
     <link rel="stylesheet" href="../../nimiq-style.css">
     <link rel="stylesheet" href="../../common.css">
     <link rel="stylesheet" href="../../components/PassphraseInput.css">
@@ -49,15 +53,16 @@
         <div class="flex-grow"></div>
 
         <!-- Enter Passphrase -->
-        <div id="enter-passphrase" class="page">
-            <div class="page-header">
-                <h1 data-i18n="change-passphrase-heading">Change your passphrase</h1>
+        <div id="enter-passphrase" class="page nq-card">
+            <div class="page-header nq-card-header">
+                <h1 data-i18n="change-passphrase-heading" class="nq-h1">Change your passphrase</h1>
             </div>
 
-            <div class="page-body">
-                <p data-i18n="change-paragraph">
+            <div class="page-body nq-card-body">
+                <p data-i18n="change-paragraph" class="nq-text">
                     Before entering your new passphrase, you must first unlock your wallet.
                 </p>
+                <div class="nq-icon walletfile-locked"></div>
             </div>
 
             <div class="page-footer">
@@ -65,14 +70,14 @@
             </div>
         </div>
 
-        <div id="set-passphrase" class="page">
-            <div class="page-header">
-                <a tabindex="0" class="page-header-back-button icon-back-arrow"></a>
-                <h1 data-i18n="change-passphrase-heading">Change your passphrase</h1>
+        <div id="set-passphrase" class="page nq-card">
+            <div class="page-header nq-card-header">
+                <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
+                <h1 data-i18n="change-passphrase-heading" class="nq-h1">Change your passphrase</h1>
             </div>
 
-            <div class="page-body">
-                <p data-i18n="change-set-paragraph">
+            <div class="page-body nq-card-body">
+                <p data-i18n="change-set-paragraph" class="nq-text">
                     Now please enter your new Passphrase and repeat it for confirmation.
                 </p>
             </div>
@@ -82,7 +87,10 @@
             </div>
         </div>
 
-        <a tabindex="0" class="global-close display-none">Back to <span id="app-name"></span></a>
+        <button class="global-close nq-button-s display-none">
+            <span class="nq-icon arrow-left"></span>
+            Back to <span id="app-name"></span>
+        </button>
 
         <div class="flex-grow"></div>
 

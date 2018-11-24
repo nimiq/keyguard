@@ -8,7 +8,7 @@
     background-size: 1.75rem;
     background-position: 1.125rem center;
     background-repeat: no-repeat;
-    background-color: black;
+    background-color: var(--nimiq-blue);
     padding-left: 4rem;
     padding-right: 2rem;
     margin-left: auto;
@@ -18,7 +18,7 @@
 
 .title-wrapper {
     position: absolute;
-    top: -1.625rem;
+    top: -2.25rem;
     width: 100%;
     margin-left: -2rem;
 }
@@ -26,25 +26,21 @@
 .recovery-words {
     text-align: center;
     line-height: 4rem;
-    will-change: transform;
     display: block;
-    margin: 4rem;
+    margin: 3rem 0;
+    border-radius: 1rem;
 }
 
 .recovery-words .words-container {
     width: 100%;
-    padding: 2rem;
+    padding: 1rem;
     box-sizing: border-box;
     position: relative;
-    background-color: rgba(0, 0, 0, 0.4);
-    border: .125rem solid white;
-    border-radius: 1rem;
-    color: white;
-    height: 31.25rem;
+    height: 30.25rem;
 }
 
 .recovery-words-input.shake, .recovery-words .shake {
-    border-color: var(--error-color);
+    border-color: var(--nimiq-red);
 }
 
 .recovery-words .words-container .word-section {
@@ -80,23 +76,6 @@
     display: none;
 }
 
-.recovery-words-input-success {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    opacity: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    pointer-events: none;
-    transform: scale(0.5);
-    transition: transform 0.8s ease, opacity 0.5s ease;
-    will-change: transform, opacity;
-    transition-delay: 300ms;
-}
 /* can not be name-spaced as the AutoComplete lib renders suggestions outside of the components element */
 .autocomplete-suggestions {
     text-align: left;
@@ -122,8 +101,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    color: var(--secondary-text-color);
-    color: black;
+    color: var(--nimiq-blue);
     border-bottom: .125rem solid rgba(0, 0, 0, 0.1);
 }
 
@@ -131,12 +109,16 @@
     border-bottom: none;
 }
 
-.autocomplete-suggestion b {
-    font-weight: normal;
-    color: var(--primary-color);
-    color: black;
+.autocomplete-suggestion.selected {
+    color: white;
+    background: var(--nimiq-light-blue);
+    cursor: pointer;
 }
 
-.autocomplete-suggestion.selected {
-    background: #cce5ff;
+.recovery-words ::selection {
+    background: var(--nimiq-blue); /* WebKit/Blink Browsers */
+}
+
+.recovery-words ::-moz-selection {
+    background: var(--nimiq-blue); /* Gecko Browsers */
 }

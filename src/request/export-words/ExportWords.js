@@ -151,13 +151,13 @@ class ExportWords extends Nimiq.Observable {
     _buildPrivacy() {
         const $el = document.createElement('div');
         $el.id = 'privacy';
-        $el.classList.add('page');
+        $el.classList.add('page', 'nq-card');
         $el.innerHTML = `
-        <div class="page-header">
-            <h1 data-i18n="recovery-words-title">Recovery Words</h1>
+        <div class="page-header nq-card-header">
+            <h1 data-i18n="recovery-words-title" class="nq-h1">Recovery Words</h1>
         </div>
 
-        <div class="page-body">
+        <div class="page-body nq-card-body">
             <div class="privacy-agent">
                 <div class="privacy-warning"></div>
             </div>
@@ -165,7 +165,7 @@ class ExportWords extends Nimiq.Observable {
         </div>
 
         <div class="page-footer">
-            <button data-i18n="recovery-words-continue-to-words">Continue to Recovery Words</button>
+            <button data-i18n="recovery-words-continue-to-words" class="nq-button">Continue to Recovery Words</button>
             <form class="passphrase-box hide-if-key-active"></form>
         </div>
         `;
@@ -178,19 +178,19 @@ class ExportWords extends Nimiq.Observable {
     _buildRecoveryWords() {
         const $el = document.createElement('div');
         $el.id = 'recovery-words';
-        $el.classList.add('page');
+        $el.classList.add('page', 'nq-card');
         $el.innerHTML = `
-        <div class="page-header">
-            <a tabindex="0" class="page-header-back-button icon-back-arrow"></a>
+        <div class="page-header nq-card-header">
+            <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
             <h1 data-i18n="recovery-words-title">Recovery Words</h1>
         </div>
 
-        <div class="page-body">
+        <div class="page-body nq-card-body">
             <div class="recovery-words"></div>
         </div>
 
         <div class="page-footer">
-            <button class="to-validate-words" data-i18n="continue">Continue</button>
+            <button class="to-validate-words nq-button" data-i18n="continue">Continue</button>
         </div>
         `;
         /** @type {HTMLElement} */
@@ -202,14 +202,14 @@ class ExportWords extends Nimiq.Observable {
     _buildValidateWords() {
         const $el = document.createElement('div');
         $el.id = 'validate-words';
-        $el.classList.add('page');
+        $el.classList.add('page', 'nq-card');
         $el.innerHTML = `
-        <div class="page-header">
-            <a tabindex="0" class="page-header-back-button icon-back-arrow"></a>
-            <h1 data-i18n="create-heading-validate-backup">Validate your backup</h1>
+        <div class="page-header nq-card-header">
+            <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
+            <h1 data-i18n="create-heading-validate-backup" class="nq-h1">Validate your backup</h1>
         </div>
 
-        <div class="page-body">
+        <div class="page-body nq-card-body">
             <div class="validate-words"></div>
         </div>
         `;

@@ -25,10 +25,10 @@ class ValidateWords extends Nimiq.Observable {
         this.$el.addEventListener('click', this._onClick.bind(this));
 
         /** @type {HTMLFormElement} */
-        const $skip = (this.$el.querySelector('.skip a'));
+        const $skip = (this.$el.querySelector('.skip'));
 
         /** @type {HTMLFormElement} */
-        const $backWords = (this.$el.querySelector('.back-to-words a'));
+        const $backWords = (this.$el.querySelector('.back-to-words'));
 
         $skip.addEventListener('click', () => this.fire(ValidateWords.Events.SKIP));
         $backWords.addEventListener('click', () => this.fire(ValidateWords.Events.BACK));
@@ -42,20 +42,26 @@ class ValidateWords extends Nimiq.Observable {
         $el = $el || document.createElement('div');
         $el.classList.add('validate-words');
 
+        /* eslint-disable max-len */
         $el.innerHTML = `
-            <p data-i18n="validate-words-text">Please select the correct word from your list of recovery words.</p>
+            <p data-i18n="validate-words-text" class="nq-text">Please select the correct word from your list of recovery words.</p>
             <div class="target-index"></div>
             <div class="word-list">
-                <button class="small"></button>
-                <button class="small"></button>
-                <button class="small"></button>
-                <button class="small"></button>
-                <button class="small"></button>
-                <button class="small"></button>
+                <button class="nq-button"></button>
+                <button class="nq-button"></button>
+                <button class="nq-button"></button>
+                <button class="nq-button"></button>
+                <button class="nq-button"></button>
+                <button class="nq-button"></button>
             </div>
-            <div class="back-to-words"><a tabindex="0" data-i18n="validate-words-back">Back to words</a></div>
-            <div class="skip"><a tabindex="0" data-i18n="validate-words-skip">Skip validation for now</a></div>
+            <div class="back-to-words-container">
+                <a tabindex="0" data-i18n="validate-words-back" class="back-to-words nq-label nq-link">Back to words</a>
+            </div>
+            <div class="skip-container">
+                <a tabindex="0" data-i18n="validate-words-skip" class="skip nq-text-s nq-link">Skip validation for now</a>
+            </div>
         `;
+        /* eslint-enable max-len */
 
         return $el;
     }
@@ -118,8 +124,8 @@ class ValidateWords extends Nimiq.Observable {
      * @private
      */
     _setContent(round) {
-        this.$el.querySelectorAll('.correct').forEach(button => button.classList.remove('correct'));
-        this.$el.querySelectorAll('.wrong').forEach(button => button.classList.remove('wrong'));
+        this.$el.querySelectorAll('.green').forEach(button => button.classList.remove('green'));
+        this.$el.querySelectorAll('.red').forEach(button => button.classList.remove('red'));
         const wordList = this._generateWords(this._requiredWords[round]);
         this._setWordList(wordList);
         const targetIndex = this._requiredWords[round] + 1;
@@ -133,6 +139,7 @@ class ValidateWords extends Nimiq.Observable {
      * @private
      */
     _generateWords(wordIndex) {
+        /** @type {{[word: string]: number}} */
         const words = {};
 
         words[this._mnemonic[wordIndex]] = wordIndex;
@@ -200,8 +207,7 @@ class ValidateWords extends Nimiq.Observable {
      * @private
      */
     static _showAsWrong($button) {
-        $button.classList.add('wrong');
-        // this.animate('shake', $button);
+        $button.classList.add('red');
     }
 
     /**
@@ -209,7 +215,7 @@ class ValidateWords extends Nimiq.Observable {
      * @private
      */
     static _showAsCorrect($button) {
-        $button.classList.add('correct');
+        $button.classList.add('green');
     }
 }
 

@@ -72,8 +72,8 @@ class Create {
             // TODO Generate secret for key file
             this._downloadKeyfile.setSecret(new Uint8Array(0), true);
             const keyfileIcon = /** @type {HTMLElement} */ (document.querySelector('.page#download-keyfile .icon'));
-            keyfileIcon.classList.remove('icon-keyfile-insecure');
-            keyfileIcon.classList.add('icon-keyfile-secure');
+            keyfileIcon.classList.remove('walletfile-unlocked');
+            keyfileIcon.classList.add('walletfile-locked-green');
             window.location.hash = Create.Pages.DOWNLOAD_KEYFILE;
         });
 
@@ -81,13 +81,14 @@ class Create {
             // TODO Generate secret for key file
             this._downloadKeyfile.setSecret(new Uint8Array(0), false);
             const keyfileIcon = /** @type {HTMLElement} */ (document.querySelector('.page#download-keyfile .icon'));
-            keyfileIcon.classList.remove('icon-keyfile-secure');
-            keyfileIcon.classList.add('icon-keyfile-insecure');
+            keyfileIcon.classList.remove('walletfile-locked-green');
+            keyfileIcon.classList.add('walletfile-unlocked');
             window.location.hash = Create.Pages.DOWNLOAD_KEYFILE;
             this._passphraseSetter.reset();
         });
 
         this._downloadKeyfile.on(DownloadKeyfile.Events.DOWNLOADED, () => {
+            alert('Wallet Files are not yet implemented.');
             window.location.hash = Create.Pages.PRIVACY_AGENT;
         });
 
@@ -119,7 +120,7 @@ class Create {
         /** @type {HTMLElement} */
         const $appName = (document.querySelector('#app-name'));
         $appName.textContent = request.appName;
-        /** @type HTMLAnchorElement */
+        /** @type {HTMLButtonElement} */
         const $cancelLink = ($appName.parentNode);
         $cancelLink.classList.remove('display-none');
         $cancelLink.addEventListener('click', () => reject(new Error('CANCEL')));

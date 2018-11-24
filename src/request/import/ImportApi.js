@@ -33,7 +33,7 @@ class ImportApi extends TopLevelApi {
         /** @type {HTMLElement} */
         const $appName = (document.querySelector('#app-name'));
         $appName.textContent = request.appName;
-        /** @type HTMLAnchorElement */
+        /** @type {HTMLButtonElement} */
         const $cancelLink = ($appName.parentNode);
         $cancelLink.classList.remove('display-none');
         $cancelLink.addEventListener('click', () => this.reject(new Error('CANCEL')));
@@ -54,6 +54,8 @@ class ImportApi extends TopLevelApi {
         const $passphraseSetterBox = (document.querySelector('.passphrase-setter-box'));
         /** @type {HTMLButtonElement} */
         const $importWordsLink = (document.querySelector('.go-to-words'));
+        /** @type {HTMLAnchorElement} */
+        const $createWalletLink = (document.querySelector('.create-wallet'));
 
         // Components
         const fileImport = new FileImport($fileImport);
@@ -63,7 +65,7 @@ class ImportApi extends TopLevelApi {
         // Events
         fileImport.on(FileImport.Events.IMPORT, this._onFileImported.bind(this));
         passphraseBox.on(PassphraseBox.Events.SUBMIT, this._onPassphraseEntered.bind(this));
-        passphraseBox.on(PassphraseBox.Events.CANCEL, () => window.history.back());
+        passphraseBox.on(PassphraseBox.Events.CANCEL, () => window.history.back()); // Go back to import type selection
         passphraseSetterBox.on(PassphraseSetterBox.Events.SUBMIT, this._onPassphraseEntered.bind(this));
         passphraseSetterBox.on(PassphraseSetterBox.Events.SKIP, () => this._onPassphraseEntered(null));
         $importWordsLink.addEventListener('click', () => {
@@ -73,6 +75,7 @@ class ImportApi extends TopLevelApi {
             );
             handler.run();
         });
+        $createWalletLink.addEventListener('click', () => alert('Sorry, not implemented yet.'));
 
         return {
             passphraseBox,

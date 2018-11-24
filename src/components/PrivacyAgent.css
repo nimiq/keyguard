@@ -1,39 +1,35 @@
 .privacy-agent {
     width: 100%;
     flex-grow: 1;
-    margin-top: 3rem;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 2rem;
 }
 
 .privacy-agent .privacy-warning .privacy-warning-top {
     display: flex;
     flex-direction: row;
-    margin: 0 2rem;
 }
 
-.privacy-agent .privacy-warning svg {
+.privacy-agent .privacy-warning .nq-icon.privacy-agent {
     width: 9.25rem;
     height: 9.25rem;
     flex-shrink: 0;
+    flex-grow: 0;
 }
 
-.privacy-agent .privacy-warning h1 {
-    color: #ca3333;
-    font-weight: 600;
+.privacy-agent .privacy-warning h2 {
     font-size: 3.75rem;
-    text-align: left;
-    margin-left: 4rem;
+    line-height: 1.2;
+    margin: 0 0 0 4rem;
 }
 
 .privacy-agent .privacy-warning p {
-    margin: 4rem 2rem;
+    margin-top: 4rem;
+    margin-bottom: 0;
 }
 
 .privacy-agent button {
-    margin-bottom: 4rem;
-    background: #724ceb;
-    color: white;
+    margin-top: 4rem;
+    margin-bottom: 0;
 }

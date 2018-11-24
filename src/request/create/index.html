@@ -42,6 +42,10 @@
     <script defer src="CreateApi.js"></script>
     <script defer src="index.js"></script>
 
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Muli:400,600,700">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono&text=0123456789ABCDEFGHJKLMNPQRSTUVXY">
+    <link rel="stylesheet" href="../../../node_modules/@nimiq/style/nimiq-style.min.css">
+    <link rel="stylesheet" href="../../../node_modules/@nimiq/style/nimiq-style-icons.min.css">
     <link rel="stylesheet" href="../../nimiq-style.css">
     <link rel="stylesheet" href="../../common.css">
     <link rel="stylesheet" href="../../components/PassphraseInput.css">
@@ -65,35 +69,33 @@
     <div id="app">
         <div class="flex-grow"></div>
 
-        <div id="choose-identicon" class="page">
-            <div class="page-header">
+        <div id="choose-identicon" class="page nq-card">
+            <div class="page-header nq-card-header">
                 <div class="progress-indicator"></div>
-                <a tabindex="0" class="page-header-back-button icon-back-arrow"></a>
-                <h1 data-i18n="create-heading-choose-identicon">Choose your account avatar</h1>
+                <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
+                <h1 data-i18n="create-heading-choose-identicon" class="nq-h1">Choose your avatar</h1>
             </div>
 
-            <div class="page-body">
-                <div>
-                    <p data-i18n="create-text-select-avatar">Select an avatar for your wallet's default account from the selection below.</p>
-                    <p data-i18n="create-hint-more-accounts">You can add more accounts later.</p>
-                </div>
+            <div class="page-body nq-card-body">
+                <p data-i18n="create-text-select-avatar" class="nq-text">Select an avatar for your wallet's default account from the selection below.</p>
+                <p data-i18n="create-hint-more-accounts" class="nq-text">You can add more accounts later.</p>
                 <div class="identicon-selector"></div>
             </div>
         </div>
 
-        <div id="set-passphrase" class="page">
-            <div class="page-header">
+        <div id="set-passphrase" class="page nq-card">
+            <div class="page-header nq-card-header">
                 <div class="progress-indicator"></div>
-                <a tabindex="0" class="page-header-back-button icon-back-arrow"></a>
-                <h1 data-i18n="create-heading-keyfile">This is your Key File</h1>
+                <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
+                <h1 data-i18n="create-heading-keyfile" class="nq-h1">This is your Key File</h1>
             </div>
 
-            <div class="page-body">
+            <div class="page-body nq-card-body">
                 <div class="keyfile-info">
-                    <div class="icon-keyfile"></div>
+                    <div class="nq-icon walletfile"></div>
                     <div class="keyfile-text">
-                        <p data-i18n="create-text-keyfile-info">Your Key File gives you full access to your wallet. You'll need it everytime you log in.</p>
-                        <p data-i18n="create-hint-keyfile-password">To protect your wallet, first protect it with a password.</p>
+                        <p data-i18n="create-text-keyfile-info" class="nq-text">Your Key File gives you full access to your wallet. You'll need it everytime you log in.</p>
+                        <p data-i18n="create-hint-keyfile-password" class="nq-text">To protect your wallet, first protect it with a password.</p>
                     </div>
                 </div>
             </div>
@@ -103,19 +105,19 @@
             </div>
         </div>
 
-        <div id="download-keyfile" class="page">
-            <div class="page-header">
+        <div id="download-keyfile" class="page nq-card">
+            <div class="page-header nq-card-header">
                 <div class="progress-indicator"></div>
-                <a tabindex="0" class="page-header-back-button icon-back-arrow"></a>
-                <h1 data-i18n="create-heading-keyfile">This is your Key File</h1>
+                <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
+                <h1 data-i18n="create-heading-keyfile" class="nq-h1">This is your Key File</h1>
             </div>
 
-            <div class="page-body">
+            <div class="page-body nq-card-body">
                 <div class="keyfile-info">
-                    <div class="icon icon-keyfile"></div>
+                    <div class="icon nq-icon walletfile"></div>
                     <div class="keyfile-text">
-                        <p data-i18n="create-text-keyfile-info">Your Key File gives you full access to your wallet. You'll need it everytime you log in.</p>
-                        <p data-i18n="create-hint-keyfile-password">To protect your wallet, first protect it with a password.</p>
+                        <p data-i18n="create-text-keyfile-info" class="nq-text">Your Key File gives you full access to your wallet. You'll need it everytime you log in.</p>
+                        <p data-i18n="create-hint-keyfile-password" class="nq-text">To protect your wallet, first protect it with a password.</p>
                     </div>
                 </div>
             </div>
@@ -125,49 +127,54 @@
             </div>
         </div>
 
-        <div id="privacy-agent" class="page">
-            <div class="page-header">
+        <div id="privacy-agent" class="page nq-card">
+            <div class="page-header nq-card-header">
                 <div class="progress-indicator"></div>
-                <a tabindex="0" class="page-header-back-button icon-back-arrow"></a>
-                <h1 data-i18n="create-heading-backup-account">Create a backup</h1>
+                <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
+                <h1 data-i18n="create-heading-backup-account" class="nq-h1">Create a backup</h1>
             </div>
 
-            <div class="page-body">
+            <div class="page-body nq-card-body">
                 <div class="privacy-agent"></div>
             </div>
         </div>
 
-        <div id="recovery-words" class="page">
-            <div class="page-header">
+        <div id="recovery-words" class="page nq-card">
+            <div class="page-header nq-card-header">
                 <div class="progress-indicator"></div>
-                <a tabindex="0" class="page-header-back-button icon-back-arrow"></a>
-                <h1 data-i18n="create-heading-backup-account">Create a backup</h1>
+                <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
+                <h1 data-i18n="create-heading-backup-account" class="nq-h1">Create a backup</h1>
             </div>
 
-            <div class="page-body">
-                <p data-i18n="recovery-words-explanation">There really is no password recovery. The following words are a backup of your Key File and will grant you access to your wallet even if your Key File is lost.</p>
-                <p data-i18n="recovery-words-storing">Write those words on a piece of paper and store it at a safe, offline place.</p>
+            <div class="page-body nq-card-body">
+                <p data-i18n="recovery-words-explanation" class="nq-text">The following words will grant you access to your wallet even if your Wallet File is lost.</p>
+                <p data-i18n="recovery-words-storing" class="nq-text">Write these words on a piece of paper and store them at a safe, offline place.</p>
 
                 <div class="recovery-words"></div>
 
-                <button class="continue" data-i18n="continue">Continue</button>
-                <a class="skip">Skip backup for now</a>
+                <button class="continue nq-button" data-i18n="continue">Continue</button>
+                <div class="skip-container">
+                    <a class="skip nq-text-s nq-link">Skip backup for now</a>
+                </div>
             </div>
         </div>
 
-        <div id="validate-words" class="page">
-            <div class="page-header">
+        <div id="validate-words" class="page nq-card">
+            <div class="page-header nq-card-header">
                 <div class="progress-indicator"></div>
-                <a tabindex="0" class="page-header-back-button icon-back-arrow"></a>
-                <h1 data-i18n="create-heading-validate-backup">Validate your backup</h1>
+                <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
+                <h1 data-i18n="create-heading-validate-backup" class="nq-h1">Validate your backup</h1>
             </div>
 
-            <div class="page-body">
+            <div class="page-body nq-card-body">
                 <div class="validate-words"></div>
             </div>
         </div>
 
-        <a tabindex="0" class="global-close display-none">Back to <span id="app-name"></span></a>
+        <button class="global-close nq-button-s display-none">
+            <span class="nq-icon arrow-left"></span>
+            Back to <span id="app-name"></span>
+        </button>
 
         <div class="flex-grow"></div>
 

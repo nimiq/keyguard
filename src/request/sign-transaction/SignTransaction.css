@@ -10,15 +10,9 @@
 #######################################
 */
 
-.layout-standard {
-    margin-bottom: 4.625; /* + 1rem from .confirm-form = 45px */
-}
-
 .transaction .accounts {
     flex-direction: row;
     align-items: flex-start;
-    background: #fafafa;
-    padding: 3rem 2rem;
 }
 
 .transaction .account {
@@ -36,8 +30,13 @@
 .transaction .account .label {
     font-size: 2.25rem;
     line-height: 2.5rem;
-    font-weight: 500;
+    height: 2.5rem;
+    font-weight: 600;
     margin-bottom: 1.25rem;
+}
+
+.transaction .account > .address {
+    white-space: unset;
 }
 
 .transaction .arrow {
@@ -47,41 +46,40 @@
 }
 
 .transaction .total {
-    margin: 2.5rem 0 2rem 0;
-    flex-direction: column;
+    text-align: center;
 }
 
-.transaction .total .value #value {
-    font-size: 8rem;
-    line-height: 9.5rem;
-    font-weight: 300;
+.transaction .total #value {
+    font-size: 6rem;
+    line-height: 8rem;
 }
 
-.transaction .total .value .nim-symbol {
+.transaction .total .nim-symbol {
     margin-left: 1rem;
 }
 
 .transaction .fee-section {
-    display: block;
-    text-transform: uppercase;
-    font-size: 1.625rem;
-    letter-spacing: 0.1rem;
-    font-weight: 500;
-}
-
-.transaction .fee-section:not(.display-none) {
-    margin-top: -2rem;
-    margin-bottom: 3rem;
-}
-
-.transaction .fee-section span:not(.nim-symbol) {
+    text-align: center;
     opacity: 0.5;
 }
 
 .transaction .data-section {
-    line-height: 1.3;
-    padding: 0 3rem;
-    margin-bottom: 3rem;
+    margin: 2rem 3rem 0;
+    text-align: center;
+}
+
+.layout-standard .nq-card-footer {
+    border-radius: 0;
+}
+
+.page-footer {
+    padding: 1rem;
+}
+
+.layout-standard ~ .page-footer {
+    background: white;
+    border-bottom-left-radius: 1rem;
+    border-bottom-right-radius: 1rem;
 }
 
 /*
@@ -91,46 +89,38 @@
 */
 
 .payment-info-line {
-    margin-top: -3rem;
+    margin-top: -3.5rem;
+}
+
+.transaction-section {
+    background: var(--nimiq-card-header-bg);
+    border-bottom: 1px solid var(--nimiq-card-border-color);
+    padding-bottom: 3rem;
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+    flex-grow: 1;
 }
 
 .layout-checkout h1 {
     font-size: 3rem;
-    font-weight: 300;
-    text-align: left;
-    margin: 4rem 4rem 1rem 4rem;
+    line-height: 3.625rem;
+    letter-spacing: 0.021em;
+    font-weight: normal;
+    padding: 4rem 4rem 1rem 4rem;
+    margin: 0;
 }
 
 .layout-checkout h1 strong {
-    font-weight: 500;
+    font-weight: bold;
 }
 
 .layout-checkout h1 .nim-symbol::before {
     opacity: 1;
 }
 
-.layout-checkout .shop-account {
-    position: relative;
-}
-
-.layout-checkout .shop-account .identicon-cover {
-    position: absolute;
-    left: 41px;
-    top: 22px;
-    width: 5.75rem;
-    height: 5.75rem;
-    border-radius: 1.5rem;
-    background-color: white;
-    /* background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z" fill="%23000"/><path d="M0 0h24v24H0z" fill="none"/></svg>'); */ /* Shopping Cart icon */
-    background-image: url('https://amazon.com/favicon.ico');
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: 4.5rem;
-}
-
 .layout-checkout .account {
     flex-direction: row;
-    padding: 1.625rem 4rem;
+    padding: 1.5rem 4rem;
 }
 
 .layout-checkout .account .identicon {
@@ -142,40 +132,23 @@
 .layout-checkout .account-text {
     display: flex;
     flex-direction: column;
+    width: calc(100% - 10rem);
 }
 
 .layout-checkout .account .label {
     margin-bottom: 0.5rem;
 }
 
-.layout-checkout .address {
-    line-height: 2.5rem;
-}
-
 .layout-checkout .data-section {
-    padding: 1rem 4rem;
+    margin: 1rem 4rem;
     text-align: left;
-    font-size: 2rem;
-    line-height: 1.3;
-    opacity: 0.7;
-    margin-bottom: 0;
 }
 
 .layout-checkout .sender-section {
-    display: flex;
-    flex-direction: column;
-    margin-top: 3rem;
-    padding-bottom: 2rem;
-    background: #fafafa;
-    border-top: solid 1px #f0f0f0;
-    border-bottom: solid 1px #f0f0f0;
+    background: var(--nimiq-card-bg);
+    padding-bottom: 1.5rem;
 }
 
-.layout-checkout .sender-section h2 {
+.layout-checkout .sender-section .nq-label {
     margin: 3rem 3rem 2rem 3rem;
-    text-transform: uppercase;
-    font-size: 1.75rem;
-    line-height: 0.86;
-    letter-spacing: 0.1875rem;
-    font-weight: 400;
 }

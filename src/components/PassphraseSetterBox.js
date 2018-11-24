@@ -9,7 +9,7 @@ class PassphraseSetterBox extends Nimiq.Observable {
      */
     constructor($el, options = {}) {
         const defaults = {
-            bgColor: 'purple',
+            bgColor: 'light-blue',
         };
 
         super();
@@ -37,7 +37,7 @@ class PassphraseSetterBox extends Nimiq.Observable {
      */
     static _createElement($el, options) {
         $el = $el || document.createElement('form');
-        $el.classList.add('passphrase-box', 'actionbox', 'setter', 'center', options.bgColor);
+        $el.classList.add('passphrase-box', 'actionbox', 'setter', `nq-bg-${options.bgColor}`);
 
         /* eslint-disable max-len */
         $el.innerHTML = `
@@ -46,16 +46,19 @@ class PassphraseSetterBox extends Nimiq.Observable {
 
             <div passphrase-input></div>
 
-            <div class="password-strength strength-8"  data-i18n="passphrasebox-password-strength-8" >Great, that's a good password!</div>
-            <div class="password-strength strength-10" data-i18n="passphrasebox-password-strength-10">Super, that's a strong password!</div>
-            <div class="password-strength strength-12" data-i18n="passphrasebox-password-strength-12">Excellent, that's a very strong password!</div>
+            <div class="password-strength strength-8  nq-text-s" data-i18n="passphrasebox-password-strength-8" >Great, that's a good password!</div>
+            <div class="password-strength strength-10 nq-text-s" data-i18n="passphrasebox-password-strength-10">Super, that's a strong password!</div>
+            <div class="password-strength strength-12 nq-text-s" data-i18n="passphrasebox-password-strength-12">Excellent, that's a very strong password!</div>
 
-            <div class="password-hint" data-i18n="passphrasebox-password-hint">Your password should have at least 8 characters.</div>
-            <a tabindex="0" class="password-skip" data-i18n="passphrasebox-password-skip">Skip password protection for now</a>
+            <div class="password-hint nq-text-s" data-i18n="passphrasebox-password-hint">Your password should have at least 8 characters.</div>
+            <a tabindex="0" class="password-skip nq-text-s nq-link" data-i18n="passphrasebox-password-skip">Skip password protection for now</a>
 
             <button class="submit" data-i18n="passphrasebox-continue">Continue</button>
         `;
         /* eslint-enable max-len */
+
+        /** @type {HTMLButtonElement} */
+        ($el.querySelector('button.submit')).classList.add('nq-button', 'inverse', options.bgColor);
 
         I18n.translateDom($el);
         return $el;

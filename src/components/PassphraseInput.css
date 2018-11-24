@@ -15,6 +15,7 @@
     border: none !important;
     font-size: 3rem;
     letter-spacing: 1.25rem;
+    width: 100%;
     max-width: unset;
 }
 
@@ -27,16 +28,17 @@
 }
 
 .passphrase-input .input-container.shake input {
-    color: var(--error-color);
+    color: var(--nimiq-red);
 }
 
 .passphrase-input .eye-button {
     position: absolute;
-    top: 0.5rem;
+    top: 0.25rem;
     left: 0;
-    width: 3.25rem;
-    height: 3.25rem;
+    width: 4rem;
+    height: 4rem;
     background-size: 3rem;
+    cursor: pointer;
 }
 
 .passphrase-input button {
@@ -64,14 +66,14 @@
 }
 
 /* Webkit based browsers */
-.passphrase-input .strength-indicator[value="10"]::-webkit-meter-optimum-value { background: var(--error-color); }
-.passphrase-input .strength-indicator[value="70"]::-webkit-meter-optimum-value { background: var(--warning-color); }
+.passphrase-input .strength-indicator[value="10"]::-webkit-meter-optimum-value { background: var(--nimiq-red); }
+.passphrase-input .strength-indicator[value="70"]::-webkit-meter-optimum-value { background: var(--nimiq-orange); }
 .passphrase-input .strength-indicator[value="100"]::-webkit-meter-optimum-value,
-.passphrase-input .strength-indicator[value="130"]::-webkit-meter-optimum-value { background: var(--success-color); }
+.passphrase-input .strength-indicator[value="130"]::-webkit-meter-optimum-value { background: var(--nimiq-green); }
 
 /* Gecko based browsers */
-.passphrase-input .strength-indicator[value="10"]::-moz-meter-bar { background: var(--error-color); }
-.passphrase-input .strength-indicator[value="70"]::-moz-meter-bar { background: var(--warning-color); }
+.passphrase-input .strength-indicator[value="10"]::-moz-meter-bar { background: var(--nimiq-red); }
+.passphrase-input .strength-indicator[value="70"]::-moz-meter-bar { background: var(--nimiq-orange); }
 .passphrase-input .strength-indicator[value="100"]::-moz-meter-bar,
-.passphrase-input .strength-indicator[value="130"]::-moz-meter-bar { background: var(--success-color); }
+.passphrase-input .strength-indicator[value="130"]::-moz-meter-bar { background: var(--nimiq-green); }
 

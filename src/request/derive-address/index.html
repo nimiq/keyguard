@@ -34,6 +34,10 @@
     <script defer src="DeriveAddressApi.js"></script>
     <script defer src="index.js"></script>
 
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Muli:400,600,700">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono&text=0123456789ABCDEFGHJKLMNPQRSTUVXY">
+    <link rel="stylesheet" href="../../../node_modules/@nimiq/style/nimiq-style.min.css">
+    <link rel="stylesheet" href="../../../node_modules/@nimiq/style/nimiq-style-icons.min.css">
     <link rel="stylesheet" href="../../nimiq-style.css">
     <link rel="stylesheet" href="../../common.css">
     <link rel="stylesheet" href="../../components/PassphraseInput.css">
@@ -51,15 +55,15 @@
     <div id="app">
         <div class="flex-grow"></div>
 
-        <div id="passphrase" class="page">
-            <div class="page-header">
-                <h1 data-i18n="derive-address-heading-passphrase">Unlock your wallet</h1>
+        <div id="passphrase" class="page nq-card">
+            <div class="page-header nq-card-header">
+                <h1 data-i18n="derive-address-heading-passphrase" class="nq-h1">Unlock your wallet</h1>
             </div>
 
-            <div class="page-body">
+            <div class="page-body nq-card-body">
                 <div class="passphrase-icon-text">
-                    <div class="icon-keyfile-locked"></div>
-                    <p data-i18n="derive-address-passphrase-text">Please enter your passphrase to add another account to your wallet.</p>
+                    <div class="nq-icon walletfile-locked"></div>
+                    <p data-i18n="derive-address-passphrase-text" class="nq-text">Please enter your passphrase to add another account to your wallet.</p>
                 </div>
             </div>
 
@@ -68,20 +72,21 @@
             </div>
         </div>
 
-        <div id="choose-identicon" class="page">
-            <div class="page-header">
-                <h1 data-i18n="derive-address-heading-choose-identicon">Choose your account avatar</h1>
+        <div id="choose-identicon" class="page nq-card">
+            <div class="page-header nq-card-header">
+                <h1 data-i18n="derive-address-heading-choose-identicon" class="nq-h1">Choose your account avatar</h1>
             </div>
 
-            <div class="page-body">
-                <div>
-                    <p data-i18n="derive-address-text-select-avatar">Select an avatar for your new account from the selection below.</p>
-                </div>
+            <div class="page-body nq-card-body">
+                <p data-i18n="derive-address-text-select-avatar" class="nq-text">Select an avatar for your new account from the selection below.</p>
                 <div class="identicon-selector"></div>
             </div>
         </div>
 
-        <a tabindex="0" class="global-close display-none">Back to <span id="app-name"></span></a>
+        <button class="global-close nq-button-s display-none">
+            <span class="nq-icon arrow-left"></span>
+            Back to <span id="app-name"></span>
+        </button>
 
         <div class="flex-grow"></div>
 

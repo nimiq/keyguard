@@ -48,16 +48,9 @@ class BaseLayout {
         // Set recipient data.
         if ($recipientAddress) {
             const recipientAddress = transaction.recipient.toUserFriendlyAddress();
-            if (request.layout === 'checkout') {
-                new Identicon(undefined, $recipientIdenticon); // eslint-disable-line no-new
-            } else {
-                new Identicon(recipientAddress, $recipientIdenticon); // eslint-disable-line no-new
-            }
+            new Identicon(recipientAddress, $recipientIdenticon); // eslint-disable-line no-new
             $recipientAddress.textContent = recipientAddress;
-            if (request.recipientLabel) {
-                $recipientLabel.classList.remove('display-none');
-                $recipientLabel.textContent = request.recipientLabel;
-            }
+            $recipientLabel.textContent = request.recipientLabel || '';
         }
 
         // Set value and fee.
@@ -86,7 +79,6 @@ class BaseLayout {
         /** @type {HTMLFormElement} */
         const $passphraseBox = (document.querySelector('#passphrase-box'));
         this._passphraseBox = new PassphraseBox($passphraseBox, {
-            bgColor: 'purple',
             hideInput: !request.keyInfo.encrypted,
             buttonI18nTag: 'passphrasebox-confirm-tx',
             minLength: request.keyInfo.hasPin ? 6 : undefined,
@@ -98,12 +90,16 @@ class BaseLayout {
                 this._onConfirm(request, resolve, reject, passphrase);
             },
         );
+
+        // This event cannot throw a 'CANCEL' error like in other requests,
+        // because for checkout we need to go back to the CheckoutOverview
+        // in the Accounts Manager and not return directly to the caller.
         this._passphraseBox.on(PassphraseBox.Events.CANCEL, () => window.history.back());
 
         /** @type {HTMLElement} */
         const $appName = (document.querySelector('#app-name'));
         $appName.textContent = request.appName;
-        /** @type HTMLAnchorElement */
+        /** @type {HTMLButtonElement} */
         const $cancelLink = ($appName.parentNode);
         $cancelLink.classList.remove('display-none');
         $cancelLink.addEventListener('click', () => reject(new Error('CANCEL')));
