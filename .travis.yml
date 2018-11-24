@@ -20,3 +20,7 @@ script:
   - yarn test
   - yarn checkdeps
   - yarn checklangs
+  - cd client
+  - yarn
+  - yarn lint
+  - yarn build
