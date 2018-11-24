@@ -137,7 +137,6 @@
 
 .nim-symbol::before {
     content: "NIM";
-    /* opacity: 0.5; */
 }
 
 .address {

@@ -26,7 +26,6 @@
 .recovery-words {
     text-align: center;
     line-height: 4rem;
-    will-change: transform;
     display: block;
     margin: 3rem 0;
     border-radius: 1rem;
@@ -77,23 +76,6 @@
     display: none;
 }
 
-.recovery-words-input-success {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    opacity: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    pointer-events: none;
-    transform: scale(0.5);
-    transition: transform 0.8s ease, opacity 0.5s ease;
-    will-change: transform, opacity;
-    transition-delay: 300ms;
-}
 /* can not be name-spaced as the AutoComplete lib renders suggestions outside of the components element */
 .autocomplete-suggestions {
     text-align: left;

@@ -28,7 +28,7 @@ class ValidateWords extends Nimiq.Observable {
         const $skip = (this.$el.querySelector('.skip'));
 
         /** @type {HTMLFormElement} */
-        const $backWords = (this.$el.querySelector('.back-to-words a'));
+        const $backWords = (this.$el.querySelector('.back-to-words'));
 
         $skip.addEventListener('click', () => this.fire(ValidateWords.Events.SKIP));
         $backWords.addEventListener('click', () => this.fire(ValidateWords.Events.BACK));
@@ -54,8 +54,8 @@ class ValidateWords extends Nimiq.Observable {
                 <button class="nq-button"></button>
                 <button class="nq-button"></button>
             </div>
-            <div class="back-to-words">
-                <a tabindex="0" data-i18n="validate-words-back" class="nq-label nq-link">Back to words</a>
+            <div class="back-to-words-container">
+                <a tabindex="0" data-i18n="validate-words-back" class="back-to-words nq-label nq-link">Back to words</a>
             </div>
             <div class="skip-container">
                 <a tabindex="0" data-i18n="validate-words-skip" class="skip nq-text-s nq-link">Skip validation for now</a>
@@ -208,7 +208,6 @@ class ValidateWords extends Nimiq.Observable {
      */
     static _showAsWrong($button) {
         $button.classList.add('red');
-        // this.animate('shake', $button);
     }
 
     /**

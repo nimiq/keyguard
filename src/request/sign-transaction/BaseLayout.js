@@ -57,7 +57,6 @@ class BaseLayout {
         const total = transaction.value + transaction.fee;
         const totalNim = Nimiq.Policy.satoshisToCoins(total);
 
-        console.log($pageBody, $value);
         $value.textContent = this._formatNumber(totalNim);
 
         if ($fee && transaction.fee > 0) {
@@ -91,8 +90,9 @@ class BaseLayout {
             },
         );
 
-        // This cannot be 'CANCEL', because for checkout we need to go back to
-        // the CheckoutOverview in the Accounts Manager
+        // This event cannot throw a 'CANCEL' error like in other requests,
+        // because for checkout we need to go back to the CheckoutOverview
+        // in the Accounts Manager and not return directly to the caller.
         this._passphraseBox.on(PassphraseBox.Events.CANCEL, () => window.history.back());
 
         /** @type {HTMLElement} */

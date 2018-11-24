@@ -41,12 +41,12 @@
     opacity: 0.7;
 }
 
-.validate-words .back-to-words {
+.validate-words .back-to-words-container {
     margin-top: 2rem;
     text-align: center;
 }
 
-.validate-words .back-to-words a {
+.validate-words .back-to-words {
     cursor: pointer;
 }
 

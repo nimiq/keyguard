@@ -31,6 +31,7 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         /** @type {HTMLElement} */
         const $downloadKeyFile = (document.getElementById(RemoveKeyApi.Pages.DOWNLOAD_KEY_FILE));
 
+        // Workaround for the Typescript type checker
         this.$privacy = $privacy;
         this.$downloadKeyFile = $downloadKeyFile;
 
