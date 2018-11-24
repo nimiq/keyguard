@@ -59,6 +59,7 @@ class ExportFile extends Nimiq.Observable {
             $downloadKeyFilePassphraseBox, {
                 buttonI18nTag: 'passphrasebox-download',
                 hideInput: !this._request.keyInfo.encrypted,
+                minLength: this._request.keyInfo.hasPin ? 6 : undefined,
             },
         );
         this._downloadKeyfile = new DownloadKeyfile($downloadKeyFile);

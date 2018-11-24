@@ -89,6 +89,7 @@ class BaseLayout {
             bgColor: 'purple',
             hideInput: !request.keyInfo.encrypted,
             buttonI18nTag: 'passphrasebox-confirm-tx',
+            minLength: request.keyInfo.hasPin ? 6 : undefined,
         });
 
         this._passphraseBox.on(

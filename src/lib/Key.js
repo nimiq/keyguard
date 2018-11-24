@@ -4,10 +4,13 @@ class Key {
     /**
      * @param {Uint8Array} secret
      * @param {Key.Type} [type]
+     * @param {boolean} [hasPin]
      */
-    constructor(secret, type = Key.Type.BIP39) {
+    constructor(secret, type = Key.Type.BIP39, hasPin = false) {
         this._secret = secret;
         this._type = type;
+        /** @type {boolean} */
+        this._hasPin = !!hasPin;
     }
 
     /**
@@ -60,6 +63,17 @@ class Key {
      */
     get type() {
         return this._type;
+    }
+
+    /**
+     * @type {boolean}
+     */
+    get hasPin() {
+        return this._hasPin;
+    }
+
+    set hasPin(hasPin) {
+        this._hasPin = !!hasPin;
     }
 
     /**

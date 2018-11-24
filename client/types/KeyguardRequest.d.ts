@@ -11,6 +11,7 @@ declare namespace KeyguardRequest {
         id: string;
         type: Key.Type;
         encrypted: boolean;
+        hasPin: boolean;
         userFriendlyId?: string;
     }
 

@@ -70,6 +70,7 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
                 buttonI18nTag: 'passphrasebox-continue',
                 bgColor: 'purple',
                 hideInput: !this.parsedRequest.keyInfo.encrypted,
+                minLength: this.parsedRequest.keyInfo.hasPin ? 6 : undefined,
             },
         );
         this._recoveryWords = new RecoveryWords($recoveryWords, false);
@@ -78,6 +79,7 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
                 buttonI18nTag: 'passphrasebox-download',
                 bgColor: 'purple',
                 hideInput: !this.parsedRequest.keyInfo.encrypted,
+                minLength: this.parsedRequest.keyInfo.hasPin ? 6 : undefined,
             },
         );
         this._downloadKeyfile = new DownloadKeyfile($downloadKeyFileBox);
@@ -86,6 +88,7 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
                 buttonI18nTag: 'passphrasebox-log-out',
                 bgColor: 'red',
                 hideInput: !this.parsedRequest.keyInfo.encrypted,
+                minLength: this.parsedRequest.keyInfo.hasPin ? 6 : undefined,
             },
         );
 
