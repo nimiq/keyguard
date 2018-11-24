@@ -32,8 +32,14 @@
     width: 100%;
     max-width: 56.25rem; /* 450px */
     min-height: 58rem; /* 464px */
+    /**
+     * A max-height of 77.5rem is what is set in the Accounts Manager,
+     * but some pages in the Keyguard are higher (like the Identicon
+     * Selector in the create request, thus leading to an ugly scroll
+     * bar there. If in the future we revisit the designs of the long
+     * pages, this can be re-enabled.
+     */
     /* max-height: 77.5rem; */ /* 620px */
-    /* max-height: 81rem; */ /* 648px, required by identicon selector in signup request */
     flex-direction: column;
     flex-shrink: 0;
     margin-top: 0;
