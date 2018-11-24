@@ -54,7 +54,11 @@ class SignMessage {
             PassphraseBox.Events.SUBMIT,
             passphrase => this._onConfirm(request, resolve, reject, passphrase),
         );
-        this._passphraseBox.on(PassphraseBox.Events.CANCEL, () => reject(new Error('CANCEL')));
+
+        // This event cannot throw a 'CANCEL' error like in other requests,
+        // because for sign-message we need to go back to the SignMessageOverview
+        // in the Accounts Manager and not return directly to the caller.
+        this._passphraseBox.on(PassphraseBox.Events.CANCEL, () => window.history.back());
 
         /** @type {HTMLElement} */
         const $appName = (document.querySelector('#app-name'));
