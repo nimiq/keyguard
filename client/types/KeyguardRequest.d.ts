@@ -75,6 +75,7 @@ declare namespace KeyguardRequest {
     type SignMessageRequest = SimpleRequest & {
         keyPath: string
         message: Uint8Array
+        accountLabel?: string
     }
 
     type ParsedSignMessageRequest = KeyId2KeyInfo<SignMessageRequest>

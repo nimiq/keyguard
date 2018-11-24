@@ -57,8 +57,9 @@ class SignMessageApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         // Parse message.
         const message = SignMessageApi._parseMessage(request.message);
 
-        // Validate label.
-        if (request.keyLabel !== undefined && (typeof request.keyLabel !== 'string' || request.keyLabel.length > 64)) {
+        // Validate labels.
+        const labels = [request.keyLabel, request.accountLabel];
+        if (labels.some(label => label !== undefined && (typeof label !== 'string' || label.length > 64))) {
             throw new Error('Invalid label');
         }
 
@@ -67,6 +68,7 @@ class SignMessageApi extends TopLevelApi { // eslint-disable-line no-unused-vars
             keyInfo,
             keyPath: request.keyPath,
             keyLabel: request.keyLabel,
+            accountLabel: request.accountLabel,
             message,
         };
     }
