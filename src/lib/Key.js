@@ -41,6 +41,44 @@ class Key {
 
     /**
      * @param {string} path
+     * @param {Uint8Array} message - A utf-8 byte array (max 255 bytes)
+     * @returns {Nimiq.Signature}
+     */
+    signMessage(path, message) {
+        /**
+         * Adding a prefix to the message makes the calculated signature recognisable as
+         * a Nimiq specific signature. This prevents misuse where a malicious request can
+         * sign arbitrary data (e.g. a transaction) and use the signature to impersonate
+         * the victim. (https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sign)
+         */
+        const prefix = 'Nimiq Signed Message:\n';
+        const prefixBytes = new Nimiq.SerialBuffer(Nimiq.BufferUtils.fromAscii(prefix));
+        const prefixLength = prefixBytes.length;
+
+        const msgBytes = new Nimiq.SerialBuffer(message);
+        const msgLength = msgBytes.length;
+
+        if (msgLength > 255) {
+            throw new Error('Message must not exceed 255 bytes');
+        }
+
+        const bufLength = 1 // prefixBytes length value
+            + prefixLength
+            + 1 // msgBytes length value
+            + msgLength;
+
+        // Construct buffer
+        const buf = new Nimiq.SerialBuffer(bufLength);
+        buf.writeUint8(prefixLength);
+        buf.write(prefixBytes);
+        buf.writeUint8(msgLength);
+        buf.write(msgBytes);
+
+        return this.sign(path, buf);
+    }
+
+    /**
+     * @param {string} path
      * @returns {Nimiq.PrivateKey}
      * @private
      */
