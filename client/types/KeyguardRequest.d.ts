@@ -32,6 +32,11 @@ declare namespace KeyguardRequest {
         success: boolean
     }
 
+    type SignatureResult = {
+        publicKey: Uint8Array
+        signature: Uint8Array
+    }
+
     type TransactionInfo = {
         sender: Uint8Array
         senderType: Nimiq.Account.Type
@@ -65,24 +70,16 @@ declare namespace KeyguardRequest {
     type ParsedSignTransactionRequest = ConstructTransaction<KeyId2KeyInfo<SignTransactionRequest>>
         & { layout: SignTransactionRequestLayout }
 
-    type SignTransactionResult = {
-        publicKey: Uint8Array
-        signature: Uint8Array
-    }
+    type SignTransactionResult = SignatureResult;
 
     type SignMessageRequest = SimpleRequest & {
         keyPath: string
-
-        addressLabel?: string
-        message: string | Uint8Array
+        message: Uint8Array
     }
 
-    type ParsedSignMessageRequest = Transform<KeyId2KeyInfo<SignMessageRequest>, 'message', { message: Uint8Array }>
+    type ParsedSignMessageRequest = KeyId2KeyInfo<SignMessageRequest>
 
-    type SignMessageResult = {
-        publicKey: Uint8Array
-        signature: Uint8Array
-    }
+    type SignMessageResult = SignatureResult
 
     type CreateRequest = BasicRequest & {
         defaultKeyPath: string;
