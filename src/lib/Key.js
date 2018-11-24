@@ -41,7 +41,7 @@ class Key {
 
     /**
      * @param {string} path
-     * @param {Uint8Array} message - A utf-8 byte array (max 255 bytes)
+     * @param {Uint8Array} message - A byte array (max 255 bytes)
      * @returns {Nimiq.Signature}
      */
     signMessage(path, message) {
@@ -62,9 +62,9 @@ class Key {
             throw new Error('Message must not exceed 255 bytes');
         }
 
-        const bufLength = 1 // prefixBytes length value
+        const bufLength = 1 // prefixBytes length
             + prefixLength
-            + 1 // msgBytes length value
+            + 1 // msgBytes length
             + msgLength;
 
         // Construct buffer

@@ -1,8 +1,9 @@
 /* global Nimiq */
 /* global KeyStore */
-// /* global Identicon */
+/* global Identicon */
 /* global PassphraseBox */
 /* global Utf8Tools */
+/* global KeyStore */
 
 class SignMessage {
     /**
@@ -12,27 +13,26 @@ class SignMessage {
      * @param {Function} reject
      */
     constructor($page, request, resolve, reject) {
-        // /** @type {HTMLDivElement} */
-        // const $signerIdenticon = ($page.querySelector('#signer-identicon'));
+        /** @type {HTMLDivElement} */
+        const $signerIdenticon = ($page.querySelector('#signer-identicon'));
 
-        // /** @type {HTMLDivElement} */
-        // const $signerLabel = ($page.querySelector('#signer-label'));
+        /** @type {HTMLDivElement} */
+        const $signerLabel = ($page.querySelector('#signer-label'));
 
-        // /** @type {HTMLDivElement} */
-        // const $signerAddress = ($page.querySelector('#signer-address'));
+        /** @type {HTMLDivElement} */
+        const $signerAddress = ($page.querySelector('#signer-address'));
 
         /** @type {HTMLInputElement} */
         const $message = ($page.querySelector('#message'));
 
-        // // Set signing account.
-        // const signer = KeyStore.instance.get()
-        // const signerAddress = transaction.sender.toUserFriendlyAddress();
-        // new Identicon(signerAddress, $signerIdenticon); // eslint-disable-line no-new
-        // $signerAddress.textContent = signerAddress;
-        // if (request.signerLabel) {
-        //     $signerLabel.classList.remove('display-none');
-        //     $signerLabel.textContent = request.signerLabel;
-        // }
+        // Set signing account.
+        const signerAddress = request.signer.toUserFriendlyAddress();
+        new Identicon(signerAddress, $signerIdenticon); // eslint-disable-line no-new
+        $signerAddress.textContent = signerAddress;
+        if (request.signerLabel) {
+            $signerLabel.textContent = request.signerLabel;
+            $signerLabel.classList.remove('display-none');
+        }
 
         // Set message.
         if (Utf8Tools.isValidUtf8(request.message)) {
@@ -69,29 +69,20 @@ class SignMessage {
      * @param {KeyguardRequest.ParsedSignMessageRequest} request
      * @param {Function} resolve
      * @param {Function} reject
-     * @param {string} passphrase
+     * @param {string} [passphrase]
      * @returns {Promise<void>}
      * @private
      */
     async _onConfirm(request, resolve, reject, passphrase) {
         document.body.classList.add('loading');
 
-        try {
-            // XXX Passphrase encoding
-            const passphraseBuf = Nimiq.BufferUtils.fromAscii(passphrase);
-            const key = await KeyStore.instance.get(request.keyInfo.id, passphraseBuf);
-            if (!key) {
-                reject(new Error('Failed to retrieve key'));
-                return;
-            }
+        // XXX Passphrase encoding
+        const passphraseBuf = passphrase ? Nimiq.BufferUtils.fromAscii(passphrase) : undefined;
 
-            const publicKey = key.derivePublicKey(request.keyPath);
-            const signature = key.signMessage(request.keyPath, request.message);
-            const result = /** @type {SignMessageResult} */ {
-                publicKey: publicKey.serialize(),
-                signature: signature.serialize(),
-            };
-            resolve(result);
+        /** @type {Key | null} */
+        let key = null;
+        try {
+            key = await KeyStore.instance.get(request.keyInfo.id, passphraseBuf);
         } catch (e) {
             console.error(e);
             document.body.classList.remove('loading');
@@ -99,6 +90,27 @@ class SignMessage {
             // Assume the passphrase was wrong
             this._passphraseBox.onPassphraseIncorrect();
         }
+
+        if (!key) {
+            reject(new Error('Failed to retrieve key'));
+            return;
+        }
+
+        const publicKey = key.derivePublicKey(request.keyPath);
+
+        // Validate that derived address is the same as the request's 'signer' address
+        const derivedAddress = publicKey.toAddress();
+        if (!derivedAddress.equals(request.signer)) {
+            reject(new Error('Provided keyPath does not refer to provided signer address'));
+        }
+
+        const signature = key.signMessage(request.keyPath, request.message);
+
+        const result = /** @type {SignMessageResult} */ {
+            publicKey: publicKey.serialize(),
+            signature: signature.serialize(),
+        };
+        resolve(result);
     }
 
     run() {

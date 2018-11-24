@@ -62,11 +62,17 @@ class SignMessageApi extends TopLevelApi { // eslint-disable-line no-unused-vars
             throw new Error('Invalid keyPath');
         }
 
-        // Parse message.
+        // Parse and validate message.
         const message = SignMessageApi._parseMessage(request.message);
+        if (message.length > 255) {
+            throw new Error('Message must not exceed 255 bytes');
+        }
+
+        // Validate signer address
+        const address = new Nimiq.Address(request.signer);
 
         // Validate labels.
-        const labels = [request.keyLabel, request.accountLabel];
+        const labels = [request.keyLabel, request.signerLabel];
         if (labels.some(label => label !== undefined && (typeof label !== 'string' || label.length > 64))) {
             throw new Error('Invalid label');
         }
@@ -76,7 +82,8 @@ class SignMessageApi extends TopLevelApi { // eslint-disable-line no-unused-vars
             keyInfo,
             keyPath: request.keyPath,
             keyLabel: request.keyLabel,
-            accountLabel: request.accountLabel,
+            signer: address,
+            signerLabel: request.signerLabel,
             message,
         };
     }
