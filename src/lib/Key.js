@@ -9,8 +9,7 @@ class Key {
     constructor(secret, type = Key.Type.BIP39, hasPin = false) {
         this._secret = secret;
         this._type = type;
-        /** @type {boolean} */
-        this._hasPin = !!hasPin;
+        this._hasPin = hasPin;
     }
 
     /**
@@ -73,7 +72,8 @@ class Key {
     }
 
     set hasPin(hasPin) {
-        this._hasPin = !!hasPin;
+        /** @type {boolean} */ // Annotation required for Typescript
+        this._hasPin = hasPin;
     }
 
     /**
