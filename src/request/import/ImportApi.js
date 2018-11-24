@@ -187,6 +187,9 @@ class ImportApi extends TopLevelApi {
             }
 
             if (this._encryptedKey.length === Nimiq.CryptoUtils.ENCRYPTION_SIZE) {
+                // Make sure read position is at 0 even after a wrong passphrase
+                this._encryptedKey.reset();
+
                 secret = await Nimiq.CryptoUtils.decryptOtpKdf(
                     this._encryptedKey,
                     /** @type {Uint8Array} */ (encryptionKey),
@@ -202,6 +205,7 @@ class ImportApi extends TopLevelApi {
 
             return key;
         } catch (e) {
+            console.error(e);
             this.$loading.style.display = 'none';
             return null;
         }
