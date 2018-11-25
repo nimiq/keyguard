@@ -108,12 +108,13 @@ class SignMessage {
             reject(new Error('Provided keyPath does not refer to provided signer address'));
         }
 
-        const signature = key.signMessage(request.keyPath, request.message);
+        const signingResult = key.signMessage(request.keyPath, request.message);
 
-        const result = /** @type {SignMessageResult} */ {
+        const result = /** @type {KeyguardRequest.SignMessageResult} */ ({
             publicKey: publicKey.serialize(),
-            signature: signature.serialize(),
-        };
+            signature: signingResult.signature.serialize(),
+            data: signingResult.data,
+        });
         resolve(result);
     }
 

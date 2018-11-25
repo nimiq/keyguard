@@ -42,19 +42,9 @@ class Key {
     /**
      * @param {string} path
      * @param {Uint8Array} message - A byte array (max 255 bytes)
-     * @returns {Nimiq.Signature}
+     * @returns {{signature: Nimiq.Signature, data: Uint8Array}}
      */
     signMessage(path, message) {
-        /**
-         * Adding a prefix to the message makes the calculated signature recognisable as
-         * a Nimiq specific signature. This prevents misuse where a malicious request can
-         * sign arbitrary data (e.g. a transaction) and use the signature to impersonate
-         * the victim. (https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sign)
-         */
-        const prefix = 'Nimiq Signed Message:\n';
-        const prefixBytes = new Nimiq.SerialBuffer(Nimiq.BufferUtils.fromAscii(prefix));
-        const prefixLength = prefixBytes.length;
-
         const msgBytes = new Nimiq.SerialBuffer(message);
         const msgLength = msgBytes.length;
 
@@ -62,19 +52,27 @@ class Key {
             throw new Error('Message must not exceed 255 bytes');
         }
 
-        const bufLength = 1 // prefixBytes length
-            + prefixLength
+        /**
+         * Adding a prefix to the message makes the calculated signature recognisable as
+         * a Nimiq specific signature. This prevents misuse where a malicious request can
+         * sign arbitrary data (e.g. a transaction) and use the signature to impersonate
+         * the victim. (https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sign)
+         */
+        const dataLength = 1 // prefixBytes length
+            + Key.MSG_PREFIX_LENGTH
             + 1 // msgBytes length
             + msgLength;
 
         // Construct buffer
-        const buf = new Nimiq.SerialBuffer(bufLength);
-        buf.writeUint8(prefixLength);
-        buf.write(prefixBytes);
-        buf.writeUint8(msgLength);
-        buf.write(msgBytes);
+        const data = new Nimiq.SerialBuffer(dataLength);
+        data.writeUint8(Key.MSG_PREFIX_LENGTH);
+        data.write(Key.MSG_PREFIX);
+        data.writeUint8(msgLength);
+        data.write(msgBytes);
 
-        return this.sign(path, buf);
+        const signature = this.sign(path, data);
+
+        return { signature, data };
     }
 
     /**
@@ -145,3 +143,6 @@ Key.Type = {
     LEGACY: 0,
     BIP39: 1,
 };
+
+Key.MSG_PREFIX = new Nimiq.SerialBuffer(Nimiq.BufferUtils.fromAscii('Nimiq Signed Message:\n'));
+Key.MSG_PREFIX_LENGTH = Key.MSG_PREFIX.length;
