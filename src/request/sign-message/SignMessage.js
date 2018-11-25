@@ -93,6 +93,7 @@ class SignMessage {
 
             // Assume the passphrase was wrong
             this._passphraseBox.onPassphraseIncorrect();
+            return;
         }
 
         if (!key) {
@@ -106,8 +107,11 @@ class SignMessage {
         const derivedAddress = publicKey.toAddress();
         if (!derivedAddress.equals(request.signer)) {
             reject(new Error('Provided keyPath does not refer to provided signer address'));
+            return;
         }
 
+        // Buffer length has already been validated during request parsing in SignMessageApi,
+        // thus key.signMessage cannot throw a length error.
         const signingResult = key.signMessage(request.keyPath, request.message);
 
         const result = /** @type {KeyguardRequest.SignMessageResult} */ ({

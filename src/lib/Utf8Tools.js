@@ -78,9 +78,6 @@ class Utf8Tools { // eslint-disable-line no-unused-vars
     }
 
     /**
-     * Limit values from
-     *
-     *
      * @param {Uint8Array} bytes
      * @returns {boolean}
      */
