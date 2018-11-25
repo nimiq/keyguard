@@ -81,7 +81,9 @@ declare namespace KeyguardRequest {
 
     type ParsedSignMessageRequest = Transform<KeyId2KeyInfo<SignMessageRequest>, 'signer', { signer: Nimiq.Address }>
 
-    type SignMessageResult = SignatureResult
+    type SignMessageResult = SignatureResult & {
+        data: Uint8Array
+    }
 
     type CreateRequest = BasicRequest & {
         defaultKeyPath: string;
