@@ -99,11 +99,12 @@ class BaseLayout {
 
         /** @type {HTMLElement} */
         const $appName = (document.querySelector('#app-name'));
-        $appName.textContent = request.appName;
         /** @type {HTMLSpanElement} */
         const $cancelLinkText = ($appName.parentNode);
         if (request.layout === 'checkout') {
             $cancelLinkText.textContent = I18n.translatePhrase('sign-tx-cancel-payment');
+        } else {
+            $appName.textContent = request.appName;
         }
         /** @type {HTMLButtonElement} */
         const $cancelLink = ($cancelLinkText.parentNode);
