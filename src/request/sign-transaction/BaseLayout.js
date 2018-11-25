@@ -2,6 +2,7 @@
 /* global KeyStore */
 /* global Identicon */
 /* global PassphraseBox */
+/* global I18n */
 
 class BaseLayout {
     /**
@@ -98,9 +99,15 @@ class BaseLayout {
 
         /** @type {HTMLElement} */
         const $appName = (document.querySelector('#app-name'));
-        $appName.textContent = request.appName;
+        /** @type {HTMLSpanElement} */
+        const $cancelLinkText = ($appName.parentNode);
+        if (request.layout === 'checkout') {
+            $cancelLinkText.textContent = I18n.translatePhrase('sign-tx-cancel-payment');
+        } else {
+            $appName.textContent = request.appName;
+        }
         /** @type {HTMLButtonElement} */
-        const $cancelLink = ($appName.parentNode);
+        const $cancelLink = ($cancelLinkText.parentNode);
         $cancelLink.classList.remove('display-none');
         $cancelLink.addEventListener('click', () => reject(new Error('CANCEL')));
     }

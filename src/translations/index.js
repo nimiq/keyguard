@@ -62,6 +62,7 @@ const TRANSLATIONS = {
         'sign-tx-youre-sending': 'You\'re sending',
         'sign-tx-to': 'to',
         'sign-tx-pay-with': 'Pay with',
+        'sign-tx-cancel-payment': 'Cancel payment',
 
         'passphrasebox-enter-passphrase': 'Enter your passphrase',
         'passphrasebox-protect-keyfile': 'Protect your keyfile with a password',
@@ -188,6 +189,7 @@ const TRANSLATIONS = {
         'sign-tx-youre-sending': 'Du sendest',
         'sign-tx-to': 'an',
         'sign-tx-pay-with': 'Zahle mit',
+        'sign-tx-cancel-payment': 'Zahlung abbrechen',
 
         'passphrasebox-enter-passphrase': 'Gib deine Passphrase ein',
         'passphrasebox-protect-keyfile': 'Sichere dein KeyFile mit einem Passwort',
