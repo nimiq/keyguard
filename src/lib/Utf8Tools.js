@@ -1,7 +1,15 @@
-/* eslint-disable no-bitwise, no-plusplus, eqeqeq, no-mixed-operators */
+/* eslint-disable no-bitwise, no-plusplus, eqeqeq, no-mixed-operators, brace-style */
+
 /**
- * Functions taken from https://github.com/google/closure-library/blob/master/closure/goog/crypt/crypt.js
+ * Sources:
+ *
+ * Conversion functions taken from
+ * https://github.com/google/closure-library/blob/master/closure/goog/crypt/crypt.js
+ *
+ * UTF-8 validitiy limit values from
+ * https://lemire.me/blog/2018/05/09/how-quickly-can-you-check-that-a-string-is-valid-unicode-utf-8/
  */
+
 class Utf8Tools { // eslint-disable-line no-unused-vars
     /**
      * @param {string} str
@@ -67,5 +75,102 @@ class Utf8Tools { // eslint-disable-line no-unused-vars
             }
         }
         return out.join('');
+    }
+
+    /**
+     * @param {Uint8Array} bytes
+     * @returns {boolean}
+     */
+    static isValidUtf8(bytes) {
+        let i = 0;
+
+        while (i < bytes.length) {
+            const first = bytes[i]; // The byte
+
+            if (first <= 0x7F) ++i; // Is valid single-byte (ASCII)
+
+            else if (first >= 0xC2 && first <= 0xDF) { // Possible two-byte
+                const second = bytes[++i];
+
+                if (second >= 0x80 && second <= 0xBF) ++i; // Is valid two-byte
+                else break;
+            }
+
+            else if (first === 0xE0) { // Possible three-byte
+                const second = bytes[++i];
+                const third = bytes[++i];
+
+                if (second >= 0xA0 && second <= 0xBF
+                 && third >= 0x80 && third <= 0xBF) ++i; // Is valid three-byte
+                else break;
+            }
+
+            else if (first >= 0xE1 && first <= 0xEC) { // Possible three-byte
+                const second = bytes[++i];
+                const third = bytes[++i];
+
+                if (second >= 0x80 && second <= 0xBF
+                 && third >= 0x80 && third <= 0xBF) ++i; // Is valid three-byte
+                else break;
+            }
+
+            else if (first === 0xED) { // Possible three-byte
+                const second = bytes[++i];
+                const third = bytes[++i];
+
+                if (second >= 0x80 && second <= 0x9F
+                 && third >= 0x80 && third <= 0xBF) ++i; // Is valid three-byte
+                else break;
+            }
+
+            else if (first >= 0xEE && first <= 0xEF) { // Possible three-byte
+                const second = bytes[++i];
+                const third = bytes[++i];
+
+                if (second >= 0x80 && second <= 0xBF
+                 && third >= 0x80 && third <= 0xBF) ++i; // Is valid three-byte
+                else break;
+            }
+
+            else if (first === 0xF0) { // Possible four-byte
+                const second = bytes[++i];
+                const third = bytes[++i];
+                const fourth = bytes[++i];
+
+                if (second >= 0x90 && second <= 0xBF
+                 && third >= 0x80 && third <= 0xBF
+                 && fourth >= 0x80 && fourth <= 0xBF) ++i; // Is valid four-byte
+                else break;
+            }
+
+            else if (first >= 0xF1 && first <= 0xF3) { // Possible four-byte
+                const second = bytes[++i];
+                const third = bytes[++i];
+                const fourth = bytes[++i];
+
+                if (second >= 0x80 && second <= 0xBF
+                 && third >= 0x80 && third <= 0xBF
+                 && fourth >= 0x80 && fourth <= 0xBF) ++i; // Is valid four-byte
+                else break;
+            }
+
+            else if (first === 0xF4) { // Possible four-byte
+                const second = bytes[++i];
+                const third = bytes[++i];
+                const fourth = bytes[++i];
+
+                if (second >= 0x80 && second <= 0x8F
+                 && third >= 0x80 && third <= 0xBF
+                 && fourth >= 0x80 && fourth <= 0xBF) ++i; // Is valid four-byte
+                else break;
+            }
+
+            else break;
+        }
+
+        // If the whole array was walked successfully, then the last check also increased the counter
+        // and the index i is equal to the length of the array.
+        // If the while loop was broken early, i is smaller and the array is not valid UTF-8.
+        return i === bytes.length;
     }
 }

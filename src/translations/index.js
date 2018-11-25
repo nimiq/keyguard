@@ -64,6 +64,10 @@ const TRANSLATIONS = {
         'sign-tx-pay-with': 'Pay with',
         'sign-tx-cancel-payment': 'Cancel payment',
 
+        'sign-msg-heading': 'Sign Message',
+        'sign-msg-text': 'Please enter your passphrase to sign the following message:',
+        'sign-msg-sign-with': 'Sign with',
+
         'passphrasebox-enter-passphrase': 'Enter your passphrase',
         'passphrasebox-protect-keyfile': 'Protect your keyfile with a password',
         'passphrasebox-repeat-password': 'Repeat your password',
@@ -72,6 +76,7 @@ const TRANSLATIONS = {
         'passphrasebox-log-out': 'Confirm logout',
         'passphrasebox-download': 'Download Key File',
         'passphrasebox-confirm-tx': 'Confirm transaction',
+        'passphrasebox-sign-msg': 'Sign message',
         'passphrasebox-password-strength-8': 'Great, that\'s a good password!',
         'passphrasebox-password-strength-10': 'Super, that\'s a strong password!',
         'passphrasebox-password-strength-12': 'Excellent, that\'s a very strong password!',
@@ -191,6 +196,10 @@ const TRANSLATIONS = {
         'sign-tx-pay-with': 'Zahle mit',
         'sign-tx-cancel-payment': 'Zahlung abbrechen',
 
+        'sign-msg-heading': 'Nachricht signieren',
+        'sign-msg-text': 'Bitte gib deine Passphrase ein, um die folgende Nachricht zu signieren:',
+        'sign-msg-sign-with': 'Signieren mit',
+
         'passphrasebox-enter-passphrase': 'Gib deine Passphrase ein',
         'passphrasebox-protect-keyfile': 'Sichere dein KeyFile mit einem Passwort',
         'passphrasebox-repeat-password': 'Wiederhole dein Passwort',
@@ -199,6 +208,7 @@ const TRANSLATIONS = {
         'passphrasebox-log-out': 'Abmeldung bestätigen',
         'passphrasebox-download': 'Schlüsseldatei herunterladen',
         'passphrasebox-confirm-tx': 'Überweisung bestätigen',
+        'passphrasebox-sign-msg': 'Nachricht signieren',
         'passphrasebox-password-strength-8': 'Schön, das ist ein gutes Passwort!',
         'passphrasebox-password-strength-10': 'Super, das ist ein starkes Passwort!',
         'passphrasebox-password-strength-12': 'Exzellent, das ist ein sehr starkes Passwort!',
