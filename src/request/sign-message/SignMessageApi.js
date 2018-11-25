@@ -28,6 +28,14 @@ class SignMessageApi extends TopLevelApi { // eslint-disable-line no-unused-vars
             this.reject.bind(this),
         );
 
+        /** @type {HTMLElement} */
+        const $appName = (document.querySelector('#app-name'));
+        $appName.textContent = request.appName;
+        /** @type {HTMLButtonElement} */
+        const $cancelLink = ($appName.parentNode);
+        $cancelLink.classList.remove('display-none');
+        $cancelLink.addEventListener('click', () => this.reject(new Error('CANCEL')));
+
         handler.run();
     }
 
