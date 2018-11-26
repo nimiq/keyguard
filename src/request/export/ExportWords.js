@@ -128,10 +128,6 @@ class ExportWords extends Nimiq.Observable {
             .classList.toggle('key-active', this._key !== null);
     }
 
-    _create() {
-
-    }
-
     _goToValidateWords() {
         this._validateWords.reset();
         window.location.hash = ExportWords.Pages.EXPORT_WORDS_VALIDATE_WORDS;
@@ -150,7 +146,7 @@ class ExportWords extends Nimiq.Observable {
 
     _buildPrivacy() {
         const $el = document.createElement('div');
-        $el.id = 'privacy';
+        $el.id = ExportWords.Pages.EXPORT_WORDS_PRIVACY;
         $el.classList.add('page', 'nq-card');
         $el.innerHTML = `
         <div class="page-header nq-card-header">
@@ -177,12 +173,12 @@ class ExportWords extends Nimiq.Observable {
 
     _buildRecoveryWords() {
         const $el = document.createElement('div');
-        $el.id = 'recovery-words';
+        $el.id = ExportWords.Pages.EXPORT_WORDS_SHOW_WORDS;
         $el.classList.add('page', 'nq-card');
         $el.innerHTML = `
         <div class="page-header nq-card-header">
             <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
-            <h1 data-i18n="recovery-words-title">Recovery Words</h1>
+            <h1 data-i18n="recovery-words-title" class="nq-h1">Recovery Words</h1>
         </div>
 
         <div class="page-body nq-card-body">
@@ -201,7 +197,7 @@ class ExportWords extends Nimiq.Observable {
 
     _buildValidateWords() {
         const $el = document.createElement('div');
-        $el.id = 'validate-words';
+        $el.id = ExportWords.Pages.EXPORT_WORDS_VALIDATE_WORDS;
         $el.classList.add('page', 'nq-card');
         $el.innerHTML = `
         <div class="page-header nq-card-header">
