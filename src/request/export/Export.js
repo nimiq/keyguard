@@ -24,7 +24,35 @@ class Export {
         this._exportWordsHandler = new ExportWords(request, this._wordsSucceeded.bind(this), this._reject.bind(this));
         this._exportFileHandler = new ExportFile(request, this._fileSucceeded.bind(this), this._reject.bind(this));
 
-        this._build();
+        /** @type {HTMLElement} */
+        const $moreExportOptionsPage = (
+            document.getElementById(Export.Pages.MORE_EXPORT_OPTIONS)
+                ? document.getElementById(Export.Pages.MORE_EXPORT_OPTIONS)
+                : this._buildMoreExportOptions()
+        );
+        /** @type {HTMLElement} */
+        const $keyfilePage = (document.getElementById('download-key-file'));
+
+        /** @type {HTMLElement} */
+        const finishRequestButton = ($moreExportOptionsPage.querySelector('.finish-request'));
+        /** @type {HTMLElement} */
+        this._wordsButton = ($moreExportOptionsPage.querySelector('.go-to-words'));
+        /** @type {HTMLElement} */
+        this._fileButton = ($moreExportOptionsPage.querySelector('.go-to-file'));
+        /** @type {HTMLElement} */
+        const $wordsButton = ($keyfilePage.querySelector('.go-to-words'));
+
+        finishRequestButton.addEventListener('click', () => {
+            this._resolve({ success: true });
+        });
+        $wordsButton.addEventListener('click', () => this._exportWordsHandler.run());
+        this._wordsButton.addEventListener('click', () => this._exportWordsHandler.run());
+        this._fileButton.addEventListener('click', () => this._exportFileHandler.run());
+
+        this._exportFileHandler.on(ExportFile.Events.EXPORT_FILE_KEY_CHANGED,
+            e => this._exportWordsHandler.setKey(e.key));
+        this._exportWordsHandler.on(ExportWords.Events.EXPORT_WORDS_KEY_CHANGED,
+            e => this._exportFileHandler.setKey(e.key, e.isProtected));
     }
 
     run() {
@@ -59,38 +87,6 @@ class Export {
         }
     }
 
-    _build() {
-        /** @type {HTMLElement} */
-        const $moreExportOptionsPage = (
-            document.getElementById(Export.Pages.MORE_EXPORT_OPTIONS)
-                ? document.getElementById(Export.Pages.MORE_EXPORT_OPTIONS)
-                : this._buildMoreExportOptions()
-        );
-        /** @type {HTMLElement} */
-        const $keyfilePage = (document.getElementById('download-key-file'));
-
-        /** @type {HTMLElement} */
-        const finishRequestButton = ($moreExportOptionsPage.querySelector('.finish-request'));
-        /** @type {HTMLElement} */
-        this._wordsButton = ($moreExportOptionsPage.querySelector('.go-to-words'));
-        /** @type {HTMLElement} */
-        this._fileButton = ($moreExportOptionsPage.querySelector('.go-to-file'));
-        /** @type {HTMLElement} */
-        const $wordsButton = ($keyfilePage.querySelector('.go-to-words'));
-
-        finishRequestButton.addEventListener('click', () => {
-            this._resolve({ success: true });
-        });
-        $wordsButton.addEventListener('click', () => this._exportWordsHandler.run());
-        this._wordsButton.addEventListener('click', () => this._exportWordsHandler.run());
-        this._fileButton.addEventListener('click', () => this._exportFileHandler.run());
-
-        this._exportFileHandler.on(ExportFile.Events.EXPORT_FILE_KEY_CHANGED,
-            e => this._exportWordsHandler.setKey(e.key));
-        this._exportWordsHandler.on(ExportWords.Events.EXPORT_WORDS_KEY_CHANGED,
-            e => this._exportFileHandler.setKey(e.key, e.isProtected));
-    }
-
     _buildMoreExportOptions() {
         const $el = document.createElement('div');
         $el.id = Export.Pages.MORE_EXPORT_OPTIONS;
@@ -98,7 +94,7 @@ class Export {
         $el.innerHTML = `
             <div class="page-header nq-card-header">
                 <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
-                <h1 data-i18n="create-heading-validate-backup" class="nq-h1">Validate your backup</h1>
+                <h1 data-i18n="export-more-options-heading" class="nq-h1">More export options</h1>
             </div>
 
             <div class="page-body nq-card-body">

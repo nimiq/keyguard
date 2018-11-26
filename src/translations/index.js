@@ -101,6 +101,7 @@ const TRANSLATIONS = {
         'export-button-words': 'Show Recovery Words',
         'export-button-file': 'Download Wallet File',
         'export-finish': 'Finish Export',
+        'export-more-options-heading': 'More export options',
 
         'remove-key-log-out': 'Log out',
         'remove-key-intro-text': 'Logging out means removing your Wallet File from this browser. '
@@ -233,6 +234,7 @@ const TRANSLATIONS = {
         'export-button-words': 'Wiederherstellungswörter anzeigen',
         'export-button-file': 'Schlüsseldatei herunterladen',
         'export-finish': 'Export abschließen',
+        'export-more-options-heading': 'Zusätzliche Export Optionen',
 
         'remove-key-log-out': 'Log out',
         'remove-key-intro-text': 'Ausloggen bedeutet deine Schlüsseldatei aus diesem Browser zu entfernen. '

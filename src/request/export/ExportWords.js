@@ -22,42 +22,6 @@ class ExportWords extends Nimiq.Observable {
         /** @type {Key | null} */
         this._key = null;
 
-        this._create();
-    }
-
-    run() {
-        /** @type {PassphraseBox} */ (this._privacyWarningPassphraseBox).reset();
-        window.location.hash = ExportWords.Pages.EXPORT_WORDS_PRIVACY;
-        /** @type {PassphraseBox} */ (this._privacyWarningPassphraseBox).focus();
-    }
-
-    /**
-     * used to set the key if already decrypted elsewhere. This will disable the passphrase requirement.
-     * Set to null to reenable passphrase requirement.
-     * @param {Key | null} key
-     */
-    setKey(key) {
-        this._key = key;
-        let words = [''];
-        if (this._key !== null) {
-            switch (this._key.type) {
-            case Nimiq.MnemonicUtils.MnemonicType.LEGACY:
-                words = Nimiq.MnemonicUtils.entropyToLegacyMnemonic(this._key.secret);
-                break;
-            case Nimiq.MnemonicUtils.MnemonicType.BIP39:
-                words = Nimiq.MnemonicUtils.entropyToMnemonic(this._key.secret);
-                break;
-            default:
-                this._reject(new Error('Unknown mnemonic type'));
-            }
-        }
-        /** @type {RecoveryWords} */(this._recoveryWords).setWords(words);
-        /** @type {ValidateWords} */(this._validateWords).setWords(words);
-        /** @type {HTMLElement} */(document.getElementById(ExportWords.Pages.EXPORT_WORDS_PRIVACY))
-            .classList.toggle('key-active', this._key !== null);
-    }
-
-    _create() {
         /** @type {HTMLElement} */
         const $privacyPage = (
             document.getElementById(ExportWords.Pages.EXPORT_WORDS_PRIVACY)
@@ -122,7 +86,7 @@ class ExportWords extends Nimiq.Observable {
                 window.location.hash = ExportWords.Pages.EXPORT_WORDS_SHOW_WORDS;
             } catch (e) {
                 console.log(e); // TODO: Assume Passphrase was incorrect
-                /** @type {PassphraseBox} */(this._privacyWarningPassphraseBox).onPassphraseIncorrect();
+                this._privacyWarningPassphraseBox.onPassphraseIncorrect();
             } finally {
                 document.body.classList.remove('loading');
             }
@@ -132,8 +96,44 @@ class ExportWords extends Nimiq.Observable {
         this._validateWords.on(ValidateWords.Events.SKIP, this._finish.bind(this));
     }
 
+    run() {
+        this._privacyWarningPassphraseBox.reset();
+        window.location.hash = ExportWords.Pages.EXPORT_WORDS_PRIVACY;
+        this._privacyWarningPassphraseBox.focus();
+    }
+
+    /**
+     * used to set the key if already decrypted elsewhere. This will disable the passphrase requirement.
+     * Set to null to reenable passphrase requirement.
+     * @param {Key | null} key
+     */
+    setKey(key) {
+        this._key = key;
+        let words = [''];
+        if (this._key !== null) {
+            switch (this._key.type) {
+            case Nimiq.MnemonicUtils.MnemonicType.LEGACY:
+                words = Nimiq.MnemonicUtils.entropyToLegacyMnemonic(this._key.secret);
+                break;
+            case Nimiq.MnemonicUtils.MnemonicType.BIP39:
+                words = Nimiq.MnemonicUtils.entropyToMnemonic(this._key.secret);
+                break;
+            default:
+                this._reject(new Error('Unknown mnemonic type'));
+            }
+        }
+        this._recoveryWords.setWords(words);
+        this._validateWords.setWords(words);
+        /** @type {HTMLElement} */(document.getElementById(ExportWords.Pages.EXPORT_WORDS_PRIVACY))
+            .classList.toggle('key-active', this._key !== null);
+    }
+
+    _create() {
+
+    }
+
     _goToValidateWords() {
-        /** @type {ValidateWords} */(this._validateWords).reset();
+        this._validateWords.reset();
         window.location.hash = ExportWords.Pages.EXPORT_WORDS_VALIDATE_WORDS;
     }
 

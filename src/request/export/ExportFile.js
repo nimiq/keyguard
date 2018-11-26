@@ -20,29 +20,6 @@ class ExportFile extends Nimiq.Observable {
         /** @type {Key | null} */
         this._key = null;
 
-        this._create();
-    }
-
-    run() {
-        /** @type {PassphraseBox} */ (this._downloadKeyFilePassphraseBox).reset();
-        window.location.hash = ExportFile.Pages.EXPORT_FILE;
-        /** @type {PassphraseBox} */ (this._downloadKeyFilePassphraseBox).focus();
-    }
-
-    /**
-     * used to set the key if already decrypted elsewhere. This will disable the passphrase requirement.
-     * Set to null to reenable passphrase requirement.
-     * @param {Key | null} key
-     * @param {boolean} isProtected
-     */
-    setKey(key, isProtected) {
-        this._key = key;
-        /** @type {DownloadKeyfile} */(this._downloadKeyfile).setSecret(new Uint8Array(0), isProtected); // TODO
-        /** @type {HTMLElement} */(document.getElementById(ExportFile.Pages.EXPORT_FILE))
-            .classList.toggle('show-download', this._key !== null);
-    }
-
-    _create() {
         /** @type {HTMLElement} */
         const $exportFilePage = (
             document.getElementById(ExportFile.Pages.EXPORT_FILE)
@@ -80,7 +57,7 @@ class ExportFile extends Nimiq.Observable {
                 });
             } catch (e) {
                 console.log(e); // TODO: Assume Passphrase was incorrect
-                /** @type {PassphraseBox} */(this._downloadKeyFilePassphraseBox).onPassphraseIncorrect();
+                (this._downloadKeyFilePassphraseBox).onPassphraseIncorrect();
             } finally {
                 document.body.classList.remove('loading');
             }
@@ -89,6 +66,25 @@ class ExportFile extends Nimiq.Observable {
             alert('Wallet Files are not yet implemented.');
             this._finish();
         });
+    }
+
+    run() {
+        this._downloadKeyFilePassphraseBox.reset();
+        window.location.hash = ExportFile.Pages.EXPORT_FILE;
+        this._downloadKeyFilePassphraseBox.focus();
+    }
+
+    /**
+     * used to set the key if already decrypted elsewhere. This will disable the passphrase requirement.
+     * Set to null to reenable passphrase requirement.
+     * @param {Key | null} key
+     * @param {boolean} isProtected
+     */
+    setKey(key, isProtected) {
+        this._key = key;
+        this._downloadKeyfile.setSecret(new Uint8Array(0), isProtected); // TODO
+        /** @type {HTMLElement} */(document.getElementById(ExportFile.Pages.EXPORT_FILE))
+            .classList.toggle('show-download', this._key !== null);
     }
 
     _finish() {
@@ -100,7 +96,7 @@ class ExportFile extends Nimiq.Observable {
 
     _buildExportFile() {
         const $el = document.createElement('div');
-        $el.id = 'privacy';
+        $el.id = ExportFile.Pages.EXPORT_FILE;
         $el.classList.add('page', 'nq-card');
         $el.innerHTML = `
             <div class="page-header nq-card-header">
@@ -114,6 +110,9 @@ class ExportFile extends Nimiq.Observable {
                     <div class="nq-icon arrow-down"></div>
                 </div>
                 <div class="download-key-file"></div>
+                <button class="go-to-words hide-for-download nq-button-s" data-i18n="export-button-words">
+                    Show Recovery Words
+                </button>
                 <div class="flex-grow"></div>
             </div>
 
