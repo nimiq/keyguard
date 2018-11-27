@@ -11,7 +11,7 @@ class ExportWords extends Nimiq.Observable {
      * Refer to the corresponsing _build(Privcy | RecoveryWords | ValidateWords) to see the general Structure.
      * @param {KeyguardRequest.ParsedSimpleRequest} request
      * @param {Function} resolve
-     * @param {Function} reject
+     * @param {Function} reject - 'keyId not found','Unknown mnemonic type','Unsupported type','Rounds out-of-bounds'
      */
     constructor(request, resolve, reject) {
         super();
@@ -70,27 +70,7 @@ class ExportWords extends Nimiq.Observable {
 
         $privacyWarningButton.addEventListener('click', this._goToShowWords.bind(this));
         $recoveryWordsButton.addEventListener('click', this._goToValidateWords.bind(this));
-        this._privacyWarningPassphraseBox.on(PassphraseBox.Events.SUBMIT, async phrase => {
-            document.body.classList.add('loading');
-            try {
-                const passphrase = phrase ? Nimiq.BufferUtils.fromAscii(phrase) : undefined;
-                const key = await KeyStore.instance.get(this._request.keyInfo.id, passphrase);
-                if (!key) {
-                    this._reject(new Error('No key'));
-                }
-                this.setKey(key);
-                this.fire(ExportWords.Events.EXPORT_WORDS_KEY_CHANGED, {
-                    key,
-                    isProtected: this._request.keyInfo.encrypted,
-                });
-                window.location.hash = ExportWords.Pages.EXPORT_WORDS_SHOW_WORDS;
-            } catch (e) {
-                console.log(e); // TODO: Assume Passphrase was incorrect
-                this._privacyWarningPassphraseBox.onPassphraseIncorrect();
-            } finally {
-                document.body.classList.remove('loading');
-            }
-        });
+        this._privacyWarningPassphraseBox.on(PassphraseBox.Events.SUBMIT, this._passphraseSubmitted.bind(this));
         this._validateWords.on(ValidateWords.Events.VALIDATED, this._finish.bind(this));
         this._validateWords.on(ValidateWords.Events.BACK, this._goToShowWords.bind(this));
         this._validateWords.on(ValidateWords.Events.SKIP, this._finish.bind(this));
@@ -100,6 +80,33 @@ class ExportWords extends Nimiq.Observable {
         this._privacyWarningPassphraseBox.reset();
         window.location.hash = ExportWords.Pages.EXPORT_WORDS_PRIVACY;
         this._privacyWarningPassphraseBox.focus();
+    }
+
+    /**
+     * @param {string} phrase
+     */
+    async _passphraseSubmitted(phrase) {
+        document.body.classList.add('loading');
+        try {
+            const passphraseBuffer = phrase ? Nimiq.BufferUtils.fromAscii(phrase) : undefined;
+            const key = await KeyStore.instance.get(this._request.keyInfo.id, passphraseBuffer);
+            if (!key) {
+                this._reject(new Error('keyId not found'));
+            }
+            await KeyStore.instance.remove(this._request.keyInfo.id);
+
+            this.setKey(key);
+            this.fire(ExportWords.Events.EXPORT_WORDS_KEY_CHANGED, {
+                key,
+                isProtected: this._request.keyInfo.encrypted,
+            });
+            window.location.hash = ExportWords.Pages.EXPORT_WORDS_SHOW_WORDS;
+        } catch (e) {
+            if (e.message === 'Invalid key') this._privacyWarningPassphraseBox.onPassphraseIncorrect();
+            else this._reject(e);
+        } finally {
+            document.body.classList.remove('loading');
+        }
     }
 
     /**

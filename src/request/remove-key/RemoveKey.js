@@ -7,17 +7,18 @@ class RemoveKey {
     /**
      * if a complete page is missing it will be created.
      * However these pages wil be the default pages which usually don't match the applications requirements.
-     * Refer to the corresponsing _buildMoreExportOptions as well as
-     * the Build functions of ExportWords and Export File to see the general Structure.
+     * Refer to the corresponsing _buildRemoveKey as well as
+     * the Build functions of ExportWords and ExportFile to see the general Structure.
      * @param {KeyguardRequest.ParsedSimpleRequest} request
      * @param {Function} resolve
-     * @param {Function} reject
+     * @param {Function} reject - 'keyId not found','Unknown mnemonic type','Unsupported type','Rounds out-of-bounds'
      */
     constructor(request, resolve, reject) {
         this._resolve = resolve;
         this._request = request;
         this._reject = reject;
 
+        // reject cases are actual errors so will be reject cases for the entire request.
         this._exportWordsHandler = new ExportWords(request, this.run.bind(this), this._reject.bind(this));
         this._exportFileHandler = new ExportFile(request, this.run.bind(this), this._reject.bind(this));
 
@@ -56,28 +57,7 @@ class RemoveKey {
             this._removeKeyPassphraseBox.reset();
             this._removeKeyPassphraseBox.focus();
         });
-        this._removeKeyPassphraseBox.on(PassphraseBox.Events.SUBMIT, async phrase => {
-            document.body.classList.add('loading');
-            try {
-                const passphraseBuffer = phrase ? Nimiq.BufferUtils.fromAscii(phrase) : undefined;
-                const key = await KeyStore.instance.get(this._request.keyInfo.id, passphraseBuffer);
-                if (!key) {
-                    this._reject(new Error('keyId not found'));
-                }
-                await KeyStore.instance.remove(this._request.keyInfo.id);
-
-                /** @type {KeyguardRequest.SimpleResult} */
-                const result = {
-                    success: true,
-                };
-                this._resolve(result);
-            } catch (e) {
-                console.log(e);
-                this._removeKeyPassphraseBox.onPassphraseIncorrect();
-            } finally {
-                document.body.classList.remove('loading');
-            }
-        });
+        this._removeKeyPassphraseBox.on(PassphraseBox.Events.SUBMIT, this._passphraseSubmitted.bind(this));
         this._removeKeyPassphraseBox.on(PassphraseBox.Events.CANCEL, () => {
             $removeKey.classList.toggle('show-passphrase-box', false);
         });
@@ -92,6 +72,32 @@ class RemoveKey {
         this._removeKeyPassphraseBox.reset();
         window.location.hash = RemoveKey.Pages.REMOVE_KEY;
         this._removeKeyPassphraseBox.focus();
+    }
+
+    /**
+     * @param {string} phrase
+     */
+    async _passphraseSubmitted(phrase) {
+        document.body.classList.add('loading');
+        try {
+            const passphraseBuffer = phrase ? Nimiq.BufferUtils.fromAscii(phrase) : undefined;
+            const key = await KeyStore.instance.get(this._request.keyInfo.id, passphraseBuffer);
+            if (!key) {
+                this._reject(new Error('keyId not found'));
+            }
+            await KeyStore.instance.remove(this._request.keyInfo.id);
+
+            /** @type {KeyguardRequest.SimpleResult} */
+            const result = {
+                success: true,
+            };
+            this._resolve(result);
+        } catch (e) {
+            if (e.message === 'Invalid key') this._removeKeyPassphraseBox.onPassphraseIncorrect();
+            else this._reject(e);
+        } finally {
+            document.body.classList.remove('loading');
+        }
     }
 
     _buildRemoveKey() {

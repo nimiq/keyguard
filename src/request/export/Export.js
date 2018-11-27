@@ -6,10 +6,10 @@ class Export {
      * if a complete page is missing it will be created.
      * However these pages wil be the default pages which usually don't match the applications requirements.
      * Refer to the corresponsing _buildMoreExportOptions as well as
-     * the Build functions of ExportWords and Export File to see the general Structure.
+     * the Build functions of ExportWords and ExportFile to see the general Structure.
      * @param {KeyguardRequest.ParsedSimpleRequest} request
      * @param {Function} resolve
-     * @param {Function} reject
+     * @param {Function} reject - 'keyId not found','Unknown mnemonic type','Unsupported type','Rounds out-of-bounds'
      */
     constructor(request, resolve, reject) {
         this._resolve = resolve;

@@ -9,7 +9,7 @@ class ExportFile extends Nimiq.Observable {
      * Refer to the corresponsing _build(Privcy | RecoveryWords | ValidateWords) to see the general Structure.
      * @param {KeyguardRequest.ParsedSimpleRequest} request
      * @param {Function} resolve
-     * @param {Function} reject
+     * @param {Function} reject - 'keyId not found','Unsupported type','Rounds out-of-bounds'
      */
     constructor(request, resolve, reject) {
         super();
@@ -42,26 +42,7 @@ class ExportFile extends Nimiq.Observable {
         );
         this._downloadKeyfile = new DownloadKeyfile($downloadKeyFile);
 
-        this._downloadKeyFilePassphraseBox.on(PassphraseBox.Events.SUBMIT, async phrase => {
-            document.body.classList.add('loading');
-            try {
-                const passphrase = phrase ? Nimiq.BufferUtils.fromAscii(phrase) : undefined;
-                const key = await KeyStore.instance.get(this._request.keyInfo.id, passphrase);
-                if (!key) {
-                    this._reject(new Error('keyId not found'));
-                }
-                this.setKey(key, this._request.keyInfo.encrypted);
-                this.fire(ExportFile.Events.EXPORT_FILE_KEY_CHANGED, {
-                    key,
-                    isProtected: this._request.keyInfo.encrypted,
-                });
-            } catch (e) {
-                console.log(e); // TODO: Assume Passphrase was incorrect
-                this._downloadKeyFilePassphraseBox.onPassphraseIncorrect();
-            } finally {
-                document.body.classList.remove('loading');
-            }
-        });
+        this._downloadKeyFilePassphraseBox.on(PassphraseBox.Events.SUBMIT, this._passphraseSubmitted.bind(this));
         this._downloadKeyfile.on(DownloadKeyfile.Events.DOWNLOADED, () => {
             alert('Wallet Files are not yet implemented.');
             this._finish();
@@ -72,6 +53,32 @@ class ExportFile extends Nimiq.Observable {
         this._downloadKeyFilePassphraseBox.reset();
         window.location.hash = ExportFile.Pages.EXPORT_FILE;
         this._downloadKeyFilePassphraseBox.focus();
+    }
+
+    /**
+     * @param {string} phrase
+     */
+    async _passphraseSubmitted(phrase) {
+        document.body.classList.add('loading');
+        try {
+            const passphraseBuffer = phrase ? Nimiq.BufferUtils.fromAscii(phrase) : undefined;
+            const key = await KeyStore.instance.get(this._request.keyInfo.id, passphraseBuffer);
+            if (!key) {
+                this._reject(new Error('keyId not found'));
+            }
+            await KeyStore.instance.remove(this._request.keyInfo.id);
+
+            this.setKey(key, this._request.keyInfo.encrypted);
+            this.fire(ExportFile.Events.EXPORT_FILE_KEY_CHANGED, {
+                key,
+                isProtected: this._request.keyInfo.encrypted,
+            });
+        } catch (e) {
+            if (e.message === 'Invalid key') this._downloadKeyFilePassphraseBox.onPassphraseIncorrect();
+            else this._reject(e);
+        } finally {
+            document.body.classList.remove('loading');
+        }
     }
 
     /**
