@@ -34,20 +34,20 @@ class Export {
         const $keyfilePage = (document.getElementById('download-key-file'));
 
         /** @type {HTMLElement} */
-        const finishRequestButton = ($moreExportOptionsPage.querySelector('.finish-request'));
+        const $finishRequestButton = ($moreExportOptionsPage.querySelector('.finish-request'));
         /** @type {HTMLElement} */
-        this._wordsButton = ($moreExportOptionsPage.querySelector('.go-to-words'));
+        this.$wordsButton = ($moreExportOptionsPage.querySelector('.go-to-words'));
         /** @type {HTMLElement} */
-        this._fileButton = ($moreExportOptionsPage.querySelector('.go-to-file'));
+        this.$fileButton = ($moreExportOptionsPage.querySelector('.go-to-file'));
         /** @type {HTMLElement} */
         const $wordsButton = ($keyfilePage.querySelector('.go-to-words'));
 
-        finishRequestButton.addEventListener('click', () => {
+        $finishRequestButton.addEventListener('click', () => {
             this._resolve({ success: true });
         });
         $wordsButton.addEventListener('click', () => this._exportWordsHandler.run());
-        this._wordsButton.addEventListener('click', () => this._exportWordsHandler.run());
-        this._fileButton.addEventListener('click', () => this._exportFileHandler.run());
+        this.$wordsButton.addEventListener('click', () => this._exportWordsHandler.run());
+        this.$fileButton.addEventListener('click', () => this._exportFileHandler.run());
 
         this._exportFileHandler.on(ExportFile.Events.EXPORT_FILE_KEY_CHANGED,
             e => this._exportWordsHandler.setKey(e.key));
@@ -68,7 +68,7 @@ class Export {
             this._resolve(result);
         } else {
             this.exported.file = result.success;
-            /** @type {HTMLElement} */(this._fileButton).classList.add('display-none');
+            /** @type {HTMLElement} */(this.$fileButton).classList.add('display-none');
             window.location.hash = Export.Pages.MORE_EXPORT_OPTIONS;
         }
     }
@@ -82,7 +82,7 @@ class Export {
             this._resolve(result);
         } else {
             this.exported.words = result.success;
-            /** @type {HTMLElement} */(this._wordsButton).classList.add('display-none');
+            /** @type {HTMLElement} */(this.$wordsButton).classList.add('display-none');
             window.location.hash = Export.Pages.MORE_EXPORT_OPTIONS;
         }
     }
