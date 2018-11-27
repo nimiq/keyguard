@@ -62,6 +62,7 @@ class ExportWords extends Nimiq.Observable {
                 buttonI18nTag: 'passphrasebox-continue',
                 hideInput: !this._request.keyInfo.encrypted,
                 minLength: this._request.keyInfo.hasPin ? 6 : undefined,
+                hideCancel: true,
             },
         );
         this._recoveryWords = new RecoveryWords($recoveryWords, false);
@@ -69,7 +70,6 @@ class ExportWords extends Nimiq.Observable {
 
         $privacyWarningButton.addEventListener('click', this._goToShowWords.bind(this));
         $recoveryWordsButton.addEventListener('click', this._goToValidateWords.bind(this));
-        this._privacyWarningPassphraseBox.on(PassphraseBox.Events.CANCEL, this._reject.bind(this));
         this._privacyWarningPassphraseBox.on(PassphraseBox.Events.SUBMIT, async phrase => {
             document.body.classList.add('loading');
             try {
@@ -150,6 +150,7 @@ class ExportWords extends Nimiq.Observable {
         $el.classList.add('page', 'nq-card');
         $el.innerHTML = `
         <div class="page-header nq-card-header">
+            <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
             <h1 data-i18n="recovery-words-title" class="nq-h1">Recovery Words</h1>
         </div>
 

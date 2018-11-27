@@ -68,6 +68,10 @@
     opacity: 0;
 }
 
+.passphrase-box.hide-cancel .cancel {
+    display:none;
+}
+
 /* S E T T E R */
 
 .passphrase-box .password-strength {

@@ -37,18 +37,18 @@ class ExportFile extends Nimiq.Observable {
                 buttonI18nTag: 'passphrasebox-download',
                 hideInput: !this._request.keyInfo.encrypted,
                 minLength: this._request.keyInfo.hasPin ? 6 : undefined,
+                hideCancel: true,
             },
         );
         this._downloadKeyfile = new DownloadKeyfile($downloadKeyFile);
 
-        this._downloadKeyFilePassphraseBox.on(PassphraseBox.Events.CANCEL, this._reject.bind(this));
         this._downloadKeyFilePassphraseBox.on(PassphraseBox.Events.SUBMIT, async phrase => {
             document.body.classList.add('loading');
             try {
                 const passphrase = phrase ? Nimiq.BufferUtils.fromAscii(phrase) : undefined;
                 const key = await KeyStore.instance.get(this._request.keyInfo.id, passphrase);
                 if (!key) {
-                    this._reject(new Error('No key'));
+                    this._reject(new Error('keyId not found'));
                 }
                 this.setKey(key, this._request.keyInfo.encrypted);
                 this.fire(ExportFile.Events.EXPORT_FILE_KEY_CHANGED, {
@@ -57,7 +57,7 @@ class ExportFile extends Nimiq.Observable {
                 });
             } catch (e) {
                 console.log(e); // TODO: Assume Passphrase was incorrect
-                (this._downloadKeyFilePassphraseBox).onPassphraseIncorrect();
+                this._downloadKeyFilePassphraseBox.onPassphraseIncorrect();
             } finally {
                 document.body.classList.remove('loading');
             }

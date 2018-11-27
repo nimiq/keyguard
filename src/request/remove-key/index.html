@@ -30,8 +30,12 @@
     <script defer src="../../components/PrivacyWarning.js"></script>
     <script defer src="../../components/RecoveryWordsInputField.js"></script>
     <script defer src="../../components/RecoveryWords.js"></script>
+    <script defer src="../../components/ValidateWords.js"></script>
     <script defer src="../../components/DownloadKeyfile.js"></script>
     <script defer src="../TopLevelApi.js"></script>
+    <script defer src="../export/ExportFile.js"></script>
+    <script defer src="../export/ExportWords.js"></script>
+    <script defer src="RemoveKey.js"></script>
     <script defer src="RemoveKeyApi.js"></script>
     <script defer src="index.js"></script>
 
@@ -46,7 +50,9 @@
     <link rel="stylesheet" href="../../components/PrivacyAgent.css">
     <link rel="stylesheet" href="../../components/RecoveryWordsInputField.css">
     <link rel="stylesheet" href="../../components/RecoveryWords.css">
+    <link rel="stylesheet" href="../../components/ValidateWords.css">
     <link rel="stylesheet" href="../../components/DownloadKeyfile.css">
+    <link rel="stylesheet" href="../export/Export.css">
     <link rel="stylesheet" href="./remove-key.css">
 </head>
 <body>
@@ -87,57 +93,25 @@
             </div>
         </div>
 
-        <!-- privacy agent -->
-        <div id="privacy" class="page nq-card">
+        <!-- export file without export words link -->
+        <div class="page nq-card" id="download-key-file">
             <div class="page-header nq-card-header">
                 <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
-                <h1 data-i18n="remove-key-recovery-words" class="nq-h1">Recovery Words</h1>
+                <h1 data-i18n="export-file-heading" class="nq-h1">Download Key File</h1>
             </div>
 
             <div class="page-body nq-card-body">
-                <div class="privacy-agent">
-                    <div class="privacy-warning"></div>
+                <div class="flex-grow"></div>
+                <div class="download-icon hide-for-download">
+                    <div class="nq-icon walletfile"></div>
+                    <div class="nq-icon arrow-down"></div>
                 </div>
+                <div class="download-key-file"></div>
                 <div class="flex-grow"></div>
             </div>
 
-            <div class="page-footer">
-                <button class="hide-for-passphrase nq-button" data-i18n="continue">Continue</button>
+            <div class="page-footer hide-for-download">
                 <form class="passphrase-box"></form>
-            </div>
-        </div>
-
-        <!-- recovery Words -->
-        <div id="recovery-words" class="page nq-card">
-            <div class="page-header nq-card-header">
-                <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
-                <h1 data-i18n="remove-key-recovery-words" class="nq-h1">Recovery Words</h1>
-            </div>
-
-            <div class="page-body nq-card-body">
-                <div class="recovery-words"></div>
-            </div>
-
-            <div class="page-footer">
-                <button class="back-to-remove nq-button" data-i18n="remove-key-back">Back to log out</button>
-            </div>
-        </div>
-
-        <!-- Download Key File -->
-        <div id="download-key-file" class="page nq-card">
-            <div class="page-header nq-card-header">
-                <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
-                <h1 data-i18n="remove-key-key-file" class="nq-h1">Wallet File</h1>
-            </div>
-
-            <div class="page-body nq-card-body">
-                <div class="nq-icon walletfile hide-for-download"></div>
-                <div class="download-key-file"></div>
-            </div>
-
-            <div class="page-footer">
-                <form class="passphrase-box hide-for-download"></form>
-                <button class="back-to-remove nq-button" data-i18n="remove-key-back">Back to logout</button>
             </div>
         </div>
 
