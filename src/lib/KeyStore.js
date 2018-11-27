@@ -91,10 +91,9 @@ class KeyStore {
      */
     async _get(id) {
         const db = await this.connect();
-        const request = db.transaction([KeyStore.DB_KEY_STORE_NAME])
-            .objectStore(KeyStore.DB_KEY_STORE_NAME)
-            .get(id);
-        return KeyStore._requestToPromise(request);
+        const transaction = db.transaction([KeyStore.DB_KEY_STORE_NAME]);
+        const request = transaction.objectStore(KeyStore.DB_KEY_STORE_NAME).get(id);
+        return KeyStore._requestToPromise(request, transaction);
     }
 
     /**
@@ -124,10 +123,9 @@ class KeyStore {
      */
     async _put(keyRecord) {
         const db = await this.connect();
-        const request = db.transaction([KeyStore.DB_KEY_STORE_NAME], 'readwrite')
-            .objectStore(KeyStore.DB_KEY_STORE_NAME)
-            .put(keyRecord);
-        return KeyStore._requestToPromise(request);
+        const transaction = db.transaction([KeyStore.DB_KEY_STORE_NAME], 'readwrite');
+        const request = transaction.objectStore(KeyStore.DB_KEY_STORE_NAME).put(keyRecord);
+        return KeyStore._requestToPromise(request, transaction);
     }
 
     /**
@@ -136,10 +134,9 @@ class KeyStore {
      */
     async remove(id) {
         const db = await this.connect();
-        const request = db.transaction([KeyStore.DB_KEY_STORE_NAME], 'readwrite')
-            .objectStore(KeyStore.DB_KEY_STORE_NAME)
-            .delete(id);
-        return KeyStore._requestToPromise(request);
+        const transaction = db.transaction([KeyStore.DB_KEY_STORE_NAME], 'readwrite');
+        const request = transaction.objectStore(KeyStore.DB_KEY_STORE_NAME).delete(id);
+        return KeyStore._requestToPromise(request, transaction);
     }
 
     /**
@@ -207,14 +204,24 @@ class KeyStore {
 
     /**
      * @param {IDBRequest} request
+     * @param {IDBTransaction} transaction
      * @returns {Promise<*>}
      * @private
      */
-    static _requestToPromise(request) {
-        return new Promise((resolve, reject) => {
-            request.onsuccess = () => resolve(request.result);
-            request.onerror = () => reject(request.error);
-        });
+    static async _requestToPromise(request, transaction) {
+        const done = await Promise.all([
+            new Promise((resolve, reject) => {
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            }),
+            new Promise((resolve, reject) => {
+                transaction.oncomplete = () => resolve();
+                transaction.onabort = () => reject(transaction.error);
+                transaction.onerror = () => reject(transaction.error);
+            }),
+        ]);
+
+        return (done instanceof Error) ? done : done[0];
     }
 
     /**
