@@ -95,7 +95,47 @@ class RemoveKey {
     }
 
     _buildRemoveKey() {
+        const $el = document.createElement('div');
+        $el.id = RemoveKey.Pages.REMOVE_KEY;
+        $el.classList.add('page', 'nq-card');
+        $el.innerHTML = `
+        <div class="page-header nq-card-header">
+            <h1 data-i18n="remove-key-log-out" class="nq-h1">Log out</h1>
+        </div>
 
+        <div class="page-body nq-card-body">
+            <div class="row">
+                <p data-i18n="remove-key-intro-text" class="nq-text">
+                    Logging out means removing your Wallet File from this browser.
+                    Make sure you have it stored somewhere, or at least have your Recovery Words accessible.
+                </p>
+                <div class="nq-icon warning-sign"></div>
+            </div>
+            <p class="nq-text nq-red" data-i18n="remove-key-intro-text-red">
+                If you have neither of them, there’s no chance to regain access to your wallet.
+            </p>
+            <div class="flex-grow"></div>
+            <div class="row hide-for-passphrase">
+                <button id="show-download-key-file" data-i18n="remove-key-download-key-file" class="nq-button-s">
+                    Download Wallet File
+                </button>
+                <button id="show-recovery-words" data-i18n="remove-key-show-recovery-words" class="nq-button-s">
+                    Show Recovery Words
+                </button>
+            </div>
+        </div>
+
+        <div class="page-footer nq-card-footer">
+            <form class="passphrase-box"></form>
+            <button id="remove-key-confirm" class="hide-for-passphrase nq-button red" data-i18n="remove-key-confirm">
+                Log out of your wallet
+            </button>
+        </div>
+        `;
+        /** @type {HTMLElement} */
+        const $app = (document.getElementById('app'));
+        $app.insertBefore($el, $app.children[1]);
+        return $el;
     }
 }
 
