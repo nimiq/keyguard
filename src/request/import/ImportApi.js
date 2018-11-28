@@ -75,7 +75,7 @@ class ImportApi extends TopLevelApi {
             );
             handler.run();
         });
-        $createWalletLink.addEventListener('click', () => this.reject(new Error('GO_CREATE')));
+        $createWalletLink.addEventListener('click', () => this.reject(new Error('GOTO_CREATE')));
 
         return {
             passphraseBox,
