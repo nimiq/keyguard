@@ -84,11 +84,12 @@ class SignMessage {
                 document.body.classList.remove('loading');
                 this._passphraseBox.onPassphraseIncorrect();
                 return;
-            } else reject(e);
+            }
+            reject(e);
         }
 
         if (!key) {
-            reject(new Error('Failed to retrieve key'));
+            reject(new Error('keyId not found'));
             return;
         }
 
