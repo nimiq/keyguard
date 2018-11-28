@@ -78,7 +78,7 @@ class PassphraseBox extends Nimiq.Observable {
         ($el.querySelector('button.submit')).classList.add('nq-button', options.bgColor);
         if (!options.hideInput) {
             /** @type {HTMLButtonElement} */
-            ($el.querySelector('button.submit')).classList.add('inverse', options.bgColor);
+            ($el.querySelector('button.submit')).classList.add('inverse');
         }
 
         I18n.translateDom($el);

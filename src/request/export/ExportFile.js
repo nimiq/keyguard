@@ -66,18 +66,19 @@ class ExportFile extends Nimiq.Observable {
             if (!key) {
                 this._reject(new Error('keyId not found'));
             }
-            await KeyStore.instance.remove(this._request.keyInfo.id);
 
             this.setKey(key, this._request.keyInfo.encrypted);
             this.fire(ExportFile.Events.EXPORT_FILE_KEY_CHANGED, {
                 key,
                 isProtected: this._request.keyInfo.encrypted,
             });
-        } catch (e) {
-            if (e.message === 'Invalid key') this._downloadKeyFilePassphraseBox.onPassphraseIncorrect();
-            else this._reject(e);
-        } finally {
             document.body.classList.remove('loading');
+        } catch (e) {
+            if (e.message === 'Invalid key') {
+                document.body.classList.remove('loading');
+                this._downloadKeyFilePassphraseBox.onPassphraseIncorrect();
+            }
+            else this._reject(e);
         }
     }
 

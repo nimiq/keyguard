@@ -35,19 +35,19 @@ button.go-to-file {
     margin-top: 1rem;
 }
 
-#privacy.page.key-active .hide-if-key-active {
+.page#privacy.key-active .hide-if-key-active {
     display: none;
 }
 
-#privacy.page:not(.key-active) .page-footer button:not(.submit) {
+.page#privacy:not(.key-active) .page-footer button:not(.submit) {
     display: none;
 }
 
-#recovery-words .recovery-words {
+.page#recovery-words .recovery-words {
     margin: 0;
 }
 
-#validate-words .validate-words .word-list {
+.page#validate-words .validate-words .word-list {
     margin: 0;
 }
 

@@ -93,10 +93,11 @@ class RemoveKey {
             };
             this._resolve(result);
         } catch (e) {
-            if (e.message === 'Invalid key') this._removeKeyPassphraseBox.onPassphraseIncorrect();
+            if (e.message === 'Invalid key') {
+                document.body.classList.remove('loading');
+                this._removeKeyPassphraseBox.onPassphraseIncorrect();
+            }
             else this._reject(e);
-        } finally {
-            document.body.classList.remove('loading');
         }
     }
 

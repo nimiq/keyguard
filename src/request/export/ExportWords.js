@@ -93,7 +93,6 @@ class ExportWords extends Nimiq.Observable {
             if (!key) {
                 this._reject(new Error('keyId not found'));
             }
-            await KeyStore.instance.remove(this._request.keyInfo.id);
 
             this.setKey(key);
             this.fire(ExportWords.Events.EXPORT_WORDS_KEY_CHANGED, {
@@ -101,11 +100,13 @@ class ExportWords extends Nimiq.Observable {
                 isProtected: this._request.keyInfo.encrypted,
             });
             window.location.hash = ExportWords.Pages.EXPORT_WORDS_SHOW_WORDS;
-        } catch (e) {
-            if (e.message === 'Invalid key') this._privacyWarningPassphraseBox.onPassphraseIncorrect();
-            else this._reject(e);
-        } finally {
             document.body.classList.remove('loading');
+        } catch (e) {
+            if (e.message === 'Invalid key') {
+                document.body.classList.remove('loading');
+                this._privacyWarningPassphraseBox.onPassphraseIncorrect();
+            }
+            else this._reject(e);
         }
     }
 
