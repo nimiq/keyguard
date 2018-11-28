@@ -10,7 +10,7 @@ class ChangePassphrase {
      * Refer to the corresponsing _build() to see the general Structure.
      * @param {KeyguardRequest.ParsedSimpleRequest} request
      * @param {Function} resolve
-     * @param {Function} reject- 'keyId not found','Unsupported type','Rounds out-of-bounds'
+     * @param {Function} reject - 'keyId not found','Unsupported type','Rounds out-of-bounds'
      */
     constructor(request, resolve, reject) {
         this._resolve = resolve;
