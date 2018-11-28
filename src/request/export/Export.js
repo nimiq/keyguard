@@ -40,12 +40,12 @@ class Export {
         /** @type {HTMLElement} */
         this.$fileButton = ($moreExportOptionsPage.querySelector('.go-to-file'));
         /** @type {HTMLElement} */
-        const $wordsButton = ($keyfilePage.querySelector('.go-to-words'));
+        const $wordsButtonOnFilePage = ($keyfilePage.querySelector('.go-to-words'));
 
         $finishRequestButton.addEventListener('click', () => {
             this._resolve({ success: true });
         });
-        $wordsButton.addEventListener('click', () => this._exportWordsHandler.run());
+        $wordsButtonOnFilePage.addEventListener('click', () => this._exportWordsHandler.run());
         this.$wordsButton.addEventListener('click', () => this._exportWordsHandler.run());
         this.$fileButton.addEventListener('click', () => this._exportFileHandler.run());
 
