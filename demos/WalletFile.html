@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy"
+          content="default-src 'self' 'unsafe-eval' 'unsafe-inline' https://cdn.nimiq-testnet.com;
+          img-src http: https: blob: data:;
+          child-src 'self' blob:;
+          style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+          font-src https://fonts.gstatic.com;">
+    <title>Wallet File | Nimiq Keyguard</title>
+
+    <script src="https://cdn.nimiq-testnet.com/web-offline.js"></script>
+    <script src="../src/lib/Iqons.js"></script>
+    <script src="../src/lib/QrEncoder.js"></script>
+    <script src="../src/lib/WalletFile.js"></script>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Muli:400,600,700">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono&text=0123456789ABCDEFGHJKLMNPQRSTUVXY">
+    <link rel="stylesheet" href="../node_modules/@nimiq/style/nimiq-style.min.css">
+    <link rel="stylesheet" href="../node_modules/@nimiq/style/nimiq-style-icons.min.css">
+    <link rel="stylesheet" href="../src/nimiq-style.css">
+    <link rel="stylesheet" href="../src/common.css">
+
+    <style>
+        .walletfile {
+            margin: 40px auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="walletfile">
+        <p class="nq-label">Loading CryptoWorker...</p>
+    </div>
+    <script>
+        (async () => {
+            console.warn("This demo needs to be run from localhost.");
+
+            try {
+                // Load web assembly encryption library into browser (if supported)
+                await Nimiq.WasmHelper.doImportBrowser();
+            } catch (e) {
+                alert(e.message);
+            }
+
+            const entropy = Nimiq.Entropy.generate();
+            const masterKey = entropy.toExtendedPrivateKey();
+            const extPrivKey = masterKey.derivePath(`m/44'/242'/0'/0'`);
+            const address = extPrivKey.toAddress();
+            const userFriendlyAddress = address.toUserFriendlyAddress();
+
+            self.NIMIQ_IQONS_SVG_PATH = '/src/assets/Iqons.min.svg';
+
+            const walletFile = new WalletFile(userFriendlyAddress, entropy.toBase64());
+            const dataUrl = await walletFile.toDataUrl();
+
+            const img = document.createElement('img');
+            img.src = dataUrl;
+            document.querySelector('#walletfile').textContent = '';
+            document.querySelector('#walletfile').appendChild(img);
+        })();
+    </script>
+</body>
+</html>

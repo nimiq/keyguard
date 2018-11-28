@@ -55,6 +55,18 @@ class Iqons {
         return `data:image/svg+xml;base64,${btoa(this.placeholder(color, strokeWidth))}`;
     }
 
+    /**
+     * @param {string} text
+     * @returns {Promise<HTMLImageElement>}
+     */
+    static async image(text) {
+        const dataUrl = await this.toDataUrl(text);
+        const image = await this._loadImage(dataUrl);
+        image.style.width = '100%';
+        image.style.height = '100%';
+        return image;
+    }
+
     /* Private API */
 
     /**
@@ -139,6 +151,18 @@ class Iqons {
         const selector = `#${part}_${this._assetIndex(index, part)}`;
         const $part = assets.querySelector(selector);
         return ($part && $part.innerHTML) || '';
+    }
+
+    /**
+     * @param {string} dataUrl
+     * @returns {Promise<HTMLImageElement>}
+     */
+    static _loadImage(dataUrl) {
+        return new Promise(resolve => {
+            const img = document.createElement('img');
+            img.addEventListener('load', () => resolve(img), { once: true });
+            img.src = dataUrl;
+        });
     }
 
     /**

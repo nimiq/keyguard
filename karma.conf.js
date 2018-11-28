@@ -16,7 +16,8 @@ module.exports = function (/** @type {any} */ config) {
         files: [
             'https://cdn.nimiq-testnet.com/web-offline.js',
             'src/**/*js',
-            'tests/**/*.spec.js'
+            'tests/**/*.spec.js',
+            { 'pattern': 'src/assets/Iqons.min.svg', 'watched': false, 'included': false, 'served': true },
         ],
 
 
