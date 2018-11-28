@@ -10,7 +10,7 @@ class ChangePassphrase {
      * Refer to the corresponsing _build() to see the general Structure.
      * @param {KeyguardRequest.ParsedSimpleRequest} request
      * @param {Function} resolve
-     * @param {Function} reject
+     * @param {Function} reject- 'keyId not found','Unsupported type','Rounds out-of-bounds'
      */
     constructor(request, resolve, reject) {
         this._resolve = resolve;
@@ -20,16 +20,6 @@ class ChangePassphrase {
         this._key = null;
         this._passphrase = '';
 
-        this._create();
-    }
-
-    run() {
-        /** @type {PassphraseBox} */ (this._enterPassphraseBox).reset();
-        window.location.hash = ChangePassphrase.Pages.ENTER_PASSPHRASE;
-        /** @type {PassphraseBox} */ (this._enterPassphraseBox).focus();
-    }
-
-    _create() {
         /** @type {HTMLElement} */
         const $enterPassphrasePage = document.getElementById(ChangePassphrase.Pages.ENTER_PASSPHRASE)
                                   || this._buildEnterPassphrasePage();
@@ -47,11 +37,10 @@ class ChangePassphrase {
                 buttonI18nTag: 'passphrasebox-continue',
                 hideInput: !this._request.keyInfo.encrypted,
                 minLength: this._request.keyInfo.hasPin ? 6 : undefined,
+                hideCancel: true,
             },
         );
         this._setPassphraseBox = new PassphraseSetterBox($setPassphraseeBox);
-
-        this._enterPassphraseBox.on(PassphraseBox.Events.CANCEL, () => this._reject(new Error('CANCEL')));
         this._enterPassphraseBox.on(PassphraseBox.Events.SUBMIT, async phrase => {
             document.body.classList.add('loading');
             try {
@@ -62,14 +51,15 @@ class ChangePassphrase {
                     return;
                 }
                 this._key = key;
-                /** @type {PassphraseSetterBox} */ (this._setPassphraseBox).reset();
+                this._setPassphraseBox.reset();
                 window.location.hash = ChangePassphrase.Pages.SET_PASSPHRASE;
-                /** @type {PassphraseSetterBox} */ (this._setPassphraseBox).focus();
-            } catch (e) {
-                console.log(e); // TODO: Assume Passphrase was incorrect
-                /** @type {PassphraseBox} */(this._enterPassphraseBox).onPassphraseIncorrect();
-            } finally {
+                this._setPassphraseBox.focus();
                 document.body.classList.remove('loading');
+            } catch (e) {
+                if (e.message === 'Invalid key') {
+                    document.body.classList.remove('loading');
+                    this._enterPassphraseBox.onPassphraseIncorrect();
+                } else this._reject(e);
             }
         });
 
@@ -85,6 +75,12 @@ class ChangePassphrase {
         this._setPassphraseBox.on(PassphraseSetterBox.Events.SKIP, () => {
             this._finish();
         });
+    }
+
+    run() {
+        this._enterPassphraseBox.reset();
+        window.location.hash = ChangePassphrase.Pages.ENTER_PASSPHRASE;
+        this._enterPassphraseBox.focus();
     }
 
     _buildEnterPassphrasePage() {
