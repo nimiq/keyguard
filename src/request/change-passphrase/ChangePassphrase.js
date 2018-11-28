@@ -82,7 +82,6 @@ class ChangePassphrase {
      */
     async _finish(phrase) {
         document.body.classList.add('loading');
-        console.log(phrase);
         if (!this._key) {
             this._reject(new Error('Bypassed Password'));
             return;

@@ -80,12 +80,11 @@ class SignMessage {
         try {
             key = await KeyStore.instance.get(request.keyInfo.id, passphraseBuf);
         } catch (e) {
-            console.error(e);
-            document.body.classList.remove('loading');
-
-            // Assume the passphrase was wrong
-            this._passphraseBox.onPassphraseIncorrect();
-            return;
+            if (e.message === 'Invalid key') {
+                document.body.classList.remove('loading');
+                this._passphraseBox.onPassphraseIncorrect();
+                return;
+            } else reject(e);
         }
 
         if (!key) {
