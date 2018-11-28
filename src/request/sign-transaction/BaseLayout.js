@@ -140,11 +140,10 @@ class BaseLayout {
             };
             resolve(result);
         } catch (e) {
-            console.error(e);
-            document.body.classList.remove('loading');
-
-            // Assume the passphrase was wrong
-            this._passphraseBox.onPassphraseIncorrect();
+            if (e.message === 'Invalid key') {
+                document.body.classList.remove('loading');
+                this._passphraseBox.onPassphraseIncorrect();
+            } else reject(e);
         }
     }
 
