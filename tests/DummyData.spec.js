@@ -107,7 +107,7 @@ Dummy.Utils = {
      * @param {IDBDatabase} db
      * @param {string} objectStoreName
      * @param {object} entry
-     * @returns {Promise<void>}
+     * @returns {Promise<any>}
      */
     addEntryToDatabase: (db, objectStoreName, entry) => {
         return new Promise((resolve, reject) => {

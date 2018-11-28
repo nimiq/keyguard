@@ -175,7 +175,7 @@ class Iqons {
         this._assetPromise = new Promise(async (resolve, reject) => {
             try {
                 // @ts-ignore
-                const response = await fetch(self.NIMIQ_IQONS_SVG_PATH || Iqons.SVG_PATH);
+                const response = await fetch(window.NIMIQ_IQONS_SVG_PATH || Iqons.SVG_PATH);
                 const assetsText = await response.text();
                 const parser = new DOMParser();
                 const assets = parser.parseFromString(assetsText, 'image/svg+xml');

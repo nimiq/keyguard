@@ -336,7 +336,7 @@ QrEncoder.vendor_qrcode = (function () {
         //---------------------------------------------------------------------
 
         /**
-         * @typedef {{addData(data: string): void, isDark(row: number, col: number): boolean, getModuleCount(): number, make(): void}} QrCode
+         * @typedef {{addData(data: string): void, isDark(row: number, col: number): boolean|null, getModuleCount(): number, make(): void}} QrCode
          * @param {number} typeNumber 1 to 40
          * @param {string} errorCorrectLevel 'L','M','Q','H'
          */
@@ -349,6 +349,7 @@ QrEncoder.vendor_qrcode = (function () {
             let _moduleCount = 0;
             let _dataCache = /** @type {any} */ (null);
             const _dataList = /** @type {any} */ ([]);
+            /** @type {QrCode} */
             const _this = {};
             /** @param {boolean} test @param {number} maskPattern */
             const makeImpl = function (test, maskPattern) {
