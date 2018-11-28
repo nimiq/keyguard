@@ -105,8 +105,7 @@ class ExportWords extends Nimiq.Observable {
             if (e.message === 'Invalid key') {
                 document.body.classList.remove('loading');
                 this._privacyWarningPassphraseBox.onPassphraseIncorrect();
-            }
-            else this._reject(e);
+            } else this._reject(e);
         }
     }
 

@@ -96,8 +96,7 @@ class RemoveKey {
             if (e.message === 'Invalid key') {
                 document.body.classList.remove('loading');
                 this._removeKeyPassphraseBox.onPassphraseIncorrect();
-            }
-            else this._reject(e);
+            } else this._reject(e);
         }
     }
 
