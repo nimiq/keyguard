@@ -79,9 +79,11 @@ class DeriveAddress {
         try {
             key = await KeyStore.instance.get(this._request.keyInfo.id, passphraseBuffer);
         } catch (e) {
-            console.error(e);
-            this._passphraseBox.onPassphraseIncorrect();
-            return false;
+            if (e.message === 'Invalid key') {
+                document.body.classList.remove('loading');
+                this._passphraseBox.onPassphraseIncorrect();
+                return false;
+            } else this._reject(e);
         }
 
         if (!key) return false; // Key existence is already checked during request parsing in DeriveAddressApi class
