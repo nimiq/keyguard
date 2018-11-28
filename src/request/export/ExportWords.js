@@ -23,24 +23,15 @@ class ExportWords extends Nimiq.Observable {
         this._key = null;
 
         /** @type {HTMLElement} */
-        const $privacyPage = (
-            document.getElementById(ExportWords.Pages.EXPORT_WORDS_PRIVACY)
-                ? document.getElementById(ExportWords.Pages.EXPORT_WORDS_PRIVACY)
-                : this._buildPrivacy()
-        );
+        const $privacyPage = document.getElementById(ExportWords.Pages.EXPORT_WORDS_PRIVACY)
+                          || this._buildPrivacy();
 
         /** @type {HTMLElement} */
-        const $recoveryWordsPage = (
-            document.getElementById(ExportWords.Pages.EXPORT_WORDS_SHOW_WORDS)
-                ? document.getElementById(ExportWords.Pages.EXPORT_WORDS_SHOW_WORDS)
-                : this._buildRecoveryWords()
-        );
+        const $recoveryWordsPage = document.getElementById(ExportWords.Pages.EXPORT_WORDS_SHOW_WORDS)
+                                || this._buildRecoveryWords();
         /** @type {HTMLElement} */
-        const $validateWordsPage = (
-            document.getElementById(ExportWords.Pages.EXPORT_WORDS_VALIDATE_WORDS)
-                ? document.getElementById(ExportWords.Pages.EXPORT_WORDS_VALIDATE_WORDS)
-                : this._buildValidateWords()
-        );
+        const $validateWordsPage = document.getElementById(ExportWords.Pages.EXPORT_WORDS_VALIDATE_WORDS)
+                                || this._buildValidateWords();
 
         /** @type {HTMLElement} */
         const $privacyWarning = ($privacyPage.querySelector('.privacy-warning'));

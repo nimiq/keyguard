@@ -25,11 +25,8 @@ class Export {
         this._exportFileHandler = new ExportFile(request, this._fileSucceeded.bind(this), this._reject.bind(this));
 
         /** @type {HTMLElement} */
-        const $moreExportOptionsPage = (
-            document.getElementById(Export.Pages.MORE_EXPORT_OPTIONS)
-                ? document.getElementById(Export.Pages.MORE_EXPORT_OPTIONS)
-                : this._buildMoreExportOptions()
-        );
+        const $moreExportOptionsPage = document.getElementById(Export.Pages.MORE_EXPORT_OPTIONS)
+                                    || this._buildMoreExportOptions();
         /** @type {HTMLElement} */
         const $keyfilePage = (document.getElementById('download-key-file'));
 

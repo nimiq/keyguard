@@ -23,11 +23,8 @@ class RemoveKey {
         this._exportFileHandler = new ExportFile(request, this.run.bind(this), this._reject.bind(this));
 
         /** @type {HTMLElement} */
-        const $removeKey = (
-            document.getElementById(RemoveKey.Pages.REMOVE_KEY)
-                ? document.getElementById(RemoveKey.Pages.REMOVE_KEY)
-                : this._buildRemoveKey()
-        );
+        const $removeKey = document.getElementById(RemoveKey.Pages.REMOVE_KEY)
+                        || this._buildRemoveKey();
 
         // remove key
         /** @type {HTMLButtonElement} */

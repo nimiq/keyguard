@@ -21,11 +21,8 @@ class ExportFile extends Nimiq.Observable {
         this._key = null;
 
         /** @type {HTMLElement} */
-        const $exportFilePage = (
-            document.getElementById(ExportFile.Pages.EXPORT_FILE)
-                ? document.getElementById(ExportFile.Pages.EXPORT_FILE)
-                : this._buildExportFile()
-        );
+        const $exportFilePage = document.getElementById(ExportFile.Pages.EXPORT_FILE)
+                             || this._buildExportFile();
 
         /** @type {HTMLFormElement} */
         const $downloadKeyFilePassphraseBox = ($exportFilePage.querySelector('.passphrase-box'));
