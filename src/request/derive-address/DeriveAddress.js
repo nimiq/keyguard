@@ -83,7 +83,8 @@ class DeriveAddress {
                 document.body.classList.remove('loading');
                 this._passphraseBox.onPassphraseIncorrect();
                 return false;
-            } else this._reject(e);
+            }
+            this._reject(e);
         }
 
         if (!key) return false; // Key existence is already checked during request parsing in DeriveAddressApi class
