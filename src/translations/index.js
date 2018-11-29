@@ -98,6 +98,10 @@ const TRANSLATIONS = {
         'validate-words-skip': 'Skip validation for now',
 
         'export-file-heading': 'Download Key File',
+        'export-button-words': 'Show Recovery Words',
+        'export-button-file': 'Download Wallet File',
+        'export-finish': 'Finish Export',
+        'export-more-options-heading': 'More export options',
 
         'remove-key-log-out': 'Log out',
         'remove-key-intro-text': 'Logging out means removing your Wallet File from this browser. '
@@ -120,10 +124,6 @@ const TRANSLATIONS = {
         'change-passphrase-heading': 'Change your passphrase',
         'change-paragraph': 'Before entering your new passphrase, you must first unlock your wallet.',
         'change-set-paragraph': 'Now please enter your new Passphrase and repeat it for confirmation.',
-
-        'export-button-words': 'Show Recovery Words',
-        'export-button-file': 'Download Wallet File',
-        'export-finish': 'Finish Export',
     },
     de: {
         _language: 'Deutsch',
@@ -231,6 +231,10 @@ const TRANSLATIONS = {
         'validate-words-skip': 'Überprüfung erstmal überspringen',
 
         'export-file-heading': 'Schlüsseldatei herunterladen',
+        'export-button-words': 'Wiederherstellungswörter anzeigen',
+        'export-button-file': 'Schlüsseldatei herunterladen',
+        'export-finish': 'Export abschließen',
+        'export-more-options-heading': 'Zusätzliche Export Optionen',
 
         'remove-key-log-out': 'Log out',
         'remove-key-intro-text': 'Ausloggen bedeutet deine Schlüsseldatei aus diesem Browser zu entfernen. '
@@ -254,10 +258,6 @@ const TRANSLATIONS = {
         'change-passphrase-heading': 'Ändere dein Passwort',
         'change-paragraph': 'Um dein Passwort zu ändern musst du vorher dein Wallet entschlüsseln.',
         'change-set-paragraph': 'Gib jetzt dein neues Passwort ein und wiederhole es danach um es zu bestätigen.',
-
-        'export-button-words': 'Wiederherstellungswörter anzeigen',
-        'export-button-file': 'Schlüsseldatei herunterladen',
-        'export-finish': 'Export abschließen',
     },
 };
 

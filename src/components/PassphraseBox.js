@@ -3,10 +3,9 @@
 /* global PassphraseInput */
 
 class PassphraseBox extends Nimiq.Observable {
-    // eslint-disable-next-line valid-jsdoc
-    /**
-     * @param {?HTMLFormElement} $el
-     * @param {{bgColor?: string, hideInput?: boolean, buttonI18nTag?: string, minLength?: number}} [options]
+    // eslint-disable-next-line valid-jsdoc, max-len
+    /** @param {{bgColor?: string, hideInput?: boolean, buttonI18nTag?: string, minLength?: number, hideCancel?: boolean}} [options]
+     *  @param {?HTMLFormElement} $el
      */
     constructor($el, options = {}) {
         const defaults = {
@@ -14,16 +13,19 @@ class PassphraseBox extends Nimiq.Observable {
             hideInput: false,
             buttonI18nTag: 'passphrasebox-confirm-tx',
             minLength: PassphraseInput.DEFAULT_MIN_LENGTH,
+            hideCancel: false,
         };
 
         super();
 
-        /** @type {{bgColor: string, hideInput: boolean, buttonI18nTag: string, minLength: number}} */
+        // eslint-disable-next-line max-len
+        /** @type {{bgColor: string, hideInput: boolean, buttonI18nTag: string, minLength: number, hideCancel: boolean}} */
         this.options = Object.assign(defaults, options);
 
         this.$el = PassphraseBox._createElement($el, this.options);
 
         this.$el.classList.toggle('hide-input', this.options.hideInput);
+        this.$el.classList.toggle('hide-cancel', this.options.hideCancel);
 
         this._passphraseInput = new PassphraseInput(this.$el.querySelector('[passphrase-input]'));
         this._passphraseInput.on(PassphraseInput.Events.VALID, isValid => this._onInputChangeValidity(isValid));
@@ -45,7 +47,8 @@ class PassphraseBox extends Nimiq.Observable {
      */
     static _createElement($el, options) {
         $el = $el || document.createElement('form');
-        $el.classList.add('passphrase-box', 'actionbox', `nq-bg-${options.bgColor}`);
+        $el.classList.add('passphrase-box', 'actionbox');
+        if (!options.hideInput) $el.classList.add(`nq-bg-${options.bgColor}`);
 
         // To enable i18n validation with the dynamic nature of the passphrase box's contents,
         // all possible i18n tags and texts have to be specified here in the below format to
@@ -72,7 +75,11 @@ class PassphraseBox extends Nimiq.Observable {
         `;
 
         /** @type {HTMLButtonElement} */
-        ($el.querySelector('button.submit')).classList.add('nq-button', 'inverse', options.bgColor);
+        ($el.querySelector('button.submit')).classList.add('nq-button', options.bgColor);
+        if (!options.hideInput) {
+            /** @type {HTMLButtonElement} */
+            ($el.querySelector('button.submit')).classList.add('inverse');
+        }
 
         I18n.translateDom($el);
         return $el;
