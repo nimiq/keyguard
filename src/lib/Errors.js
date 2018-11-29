@@ -47,7 +47,7 @@ Errors.Reject = class extends Error {
 };
 
 Errors.ToCreate = class extends Error {
-    /** @param {string} message - will be ignored and set to 'REJECT' */
+    /** @param {string} message - will be ignored and set to 'GOTO_CREATE' */
     constructor(message = '') { // eslint-disable-line no-unused-vars
         super('GOTO_CREATE');
         this.name = Errors.Types.KEYGUARD;
