@@ -269,7 +269,7 @@ class State {
         if (status === ResponseStatus.ERROR) {
             // serialize error objects
             result = typeof result === 'object'
-                ? { message: result.message, stack: result.stack }
+                ? { message: result.message, stack: result.stack, name: result.name }
                 : { message: result };
         }
         if (this._postMessage) {

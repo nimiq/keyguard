@@ -2,17 +2,15 @@
 /* global DerivedIdenticonSelector */
 /* global PassphraseBox */
 /* global KeyStore */
-
+/* global Errors */
 class DeriveAddress {
     /**
      * @param {KeyguardRequest.ParsedDeriveAddressRequest} request
      * @param {Function} resolve
-     * @param {Function} reject
      */
-    constructor(request, resolve, reject) {
+    constructor(request, resolve) {
         this._request = request;
         this._resolve = resolve;
-        this._reject = reject;
 
         /** @type {HTMLFormElement} */
         const $passphraseBox = (document.querySelector('.passphrase-box'));
@@ -25,6 +23,7 @@ class DeriveAddress {
         this._passphraseBox = new PassphraseBox($passphraseBox, {
             hideInput: !request.keyInfo.encrypted,
             buttonI18nTag: 'passphrasebox-continue',
+            hideCancel: true,
         });
         this._identiconSelector = new DerivedIdenticonSelector($identiconSelector);
 
@@ -37,10 +36,6 @@ class DeriveAddress {
                 window.location.hash = DeriveAddress.Pages.CHOOSE_IDENTICON;
             },
         );
-
-        this._passphraseBox.on(PassphraseBox.Events.CANCEL, () => {
-            this._reject(new Error('CANCEL'));
-        });
 
         this._identiconSelector.on(
             DerivedIdenticonSelector.Events.IDENTICON_SELECTED,
@@ -55,14 +50,6 @@ class DeriveAddress {
                 this._resolve(result);
             },
         );
-
-        /** @type {HTMLElement} */
-        const $appName = (document.querySelector('#app-name'));
-        $appName.textContent = request.appName;
-        /** @type {HTMLButtonElement} */
-        const $cancelLink = ($appName.parentNode);
-        $cancelLink.classList.remove('display-none');
-        $cancelLink.addEventListener('click', () => reject(new Error('CANCEL')));
     } // constructor
 
     /**
@@ -84,11 +71,12 @@ class DeriveAddress {
                 this._passphraseBox.onPassphraseIncorrect();
                 return false;
             }
-            this._reject(e);
+            throw new Errors.Core(e.message);
         }
 
-        if (!key) return false; // Key existence is already checked during request parsing in DeriveAddressApi class
-
+        if (!key) {
+            throw new Errors.Keyguard('keyId not found');
+        }
         const masterKey = new Nimiq.Entropy(key.secret).toExtendedPrivateKey();
         const pathsToDerive = this._request.indicesToDerive.map(index => `${this._request.baseKeyPath}/${index}`);
 

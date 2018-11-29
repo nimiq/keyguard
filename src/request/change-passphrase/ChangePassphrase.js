@@ -2,7 +2,7 @@
 /* global PassphraseBox */
 /* global PassphraseSetterBox */
 /* global KeyStore */
-
+/* global Errors */
 class ChangePassphrase {
     /**
      * If a complete page is missing it will be created.
@@ -10,12 +10,10 @@ class ChangePassphrase {
      * Refer to the corresponsing _build() to see the general Structure.
      * @param {KeyguardRequest.ParsedSimpleRequest} request
      * @param {Function} resolve
-     * @param {Function} reject - 'keyId not found','Unsupported type','Rounds out-of-bounds'
      */
-    constructor(request, resolve, reject) {
+    constructor(request, resolve) {
         this._resolve = resolve;
         this._request = request;
-        this._reject = reject;
         /** @type {Key | null} */
         this._key = null;
         this._passphrase = '';
@@ -37,7 +35,7 @@ class ChangePassphrase {
                 buttonI18nTag: 'passphrasebox-continue',
                 hideInput: !this._request.keyInfo.encrypted,
                 minLength: this._request.keyInfo.hasPin ? 6 : undefined,
-                // hideCancel: true,
+                hideCancel: true,
             },
         );
         this._setPassphraseBox = new PassphraseSetterBox($setPassphraseeBox);
@@ -57,24 +55,27 @@ class ChangePassphrase {
      */
     async _passphraseSubmitted(phrase) {
         document.body.classList.add('loading');
+        const passphrase = phrase ? Nimiq.BufferUtils.fromAscii(phrase) : undefined;
+        /** @type {Key?} */
+        let key = null;
         try {
-            const passphrase = phrase ? Nimiq.BufferUtils.fromAscii(phrase) : undefined;
-            const key = await KeyStore.instance.get(this._request.keyInfo.id, passphrase);
-            if (!key) {
-                this._reject(new Error('No key'));
-                return;
-            }
-            this._key = key;
-            this._setPassphraseBox.reset();
-            window.location.hash = ChangePassphrase.Pages.SET_PASSPHRASE;
-            this._setPassphraseBox.focus();
-            document.body.classList.remove('loading');
+            key = await KeyStore.instance.get(this._request.keyInfo.id, passphrase);
         } catch (e) {
             if (e.message === 'Invalid key') {
                 document.body.classList.remove('loading');
                 this._enterPassphraseBox.onPassphraseIncorrect();
-            } else this._reject(e);
+                return;
+            }
+            throw new Errors.Core(e.message);
         }
+        if (!key) {
+            throw new Errors.Keyguard('keyId not found');
+        }
+        this._key = key;
+        this._setPassphraseBox.reset();
+        window.location.hash = ChangePassphrase.Pages.SET_PASSPHRASE;
+        this._setPassphraseBox.focus();
+        document.body.classList.remove('loading');
     }
 
     /**
@@ -83,15 +84,15 @@ class ChangePassphrase {
     async _finish(phrase) {
         document.body.classList.add('loading');
         if (!this._key) {
-            this._reject(new Error('Bypassed Password'));
-            return;
+            throw new Errors.Keyguard('Bypassed Password');
         }
 
         // In this request, the user can only set a new password (min length: 8) or leave a key unencrypted.
         // In any case, the key is not encrypted with a 6-digit PIN anymore.
         this._key.hasPin = false;
 
-        const passphrase = phrase.length > 0 ? Nimiq.BufferUtils.fromAscii(phrase) : undefined;
+        const passphrase = phrase && phrase.length > 7 ? Nimiq.BufferUtils.fromAscii(phrase) : undefined;
+
         await KeyStore.instance.put(this._key, passphrase);
 
         const result = {

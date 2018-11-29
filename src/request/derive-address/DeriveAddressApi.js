@@ -3,15 +3,26 @@
 /* global Key */
 /* global KeyStore */
 /* global Nimiq */
-
+/* global Errors */
 class DeriveAddressApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
      * @param {KeyguardRequest.DeriveAddressRequest} request
      */
     async onRequest(request) {
-        const parsedRequest = await DeriveAddressApi._parseRequest(request);
-        const handler = new DeriveAddress(parsedRequest, this.resolve.bind(this), this.reject.bind(this));
-        handler.run();
+        /** @type {HTMLElement} */
+        const $appName = (document.querySelector('#app-name'));
+        $appName.textContent = request.appName;
+        /** @type {HTMLButtonElement} */
+        const $cancelLink = ($appName.parentNode);
+        $cancelLink.classList.remove('display-none');
+        $cancelLink.addEventListener('click', () => this.reject(new Errors.Cancel()));
+        try {
+            const parsedRequest = await DeriveAddressApi._parseRequest(request);
+            const handler = new DeriveAddress(parsedRequest, this.resolve.bind(this));
+            handler.run();
+        } catch (e) {
+            this.reject(e);
+        }
     }
 
     /**
@@ -21,33 +32,33 @@ class DeriveAddressApi extends TopLevelApi { // eslint-disable-line no-unused-va
      */
     static async _parseRequest(request) {
         if (!request) {
-            throw new Error('Empty request');
+            throw new Errors.InvalidRequest('Empty request');
         }
 
         if (!request.appName || typeof request.appName !== 'string') {
-            throw new Error('appName is required');
+            throw new Errors.InvalidRequest('appName is required');
         }
 
         if (!request.keyId || typeof request.keyId !== 'string') {
-            throw new Error('keyId is required');
+            throw new Errors.InvalidRequest('keyId is required');
         }
 
         // Check that key exists.
         const keyInfo = await KeyStore.instance.getInfo(request.keyId);
         if (!keyInfo) {
-            throw new Error('Unknown keyId');
+            throw new Errors.InvalidRequest('Unknown keyId');
         }
 
         if (keyInfo.type === Key.Type.LEGACY) {
-            throw new Error('Cannot derive addresses for single-account wallets');
+            throw new Errors.InvalidRequest('Cannot derive addresses for single-account wallets');
         }
 
         if (!request.baseKeyPath || !Nimiq.ExtendedPrivateKey.isValidPath(request.baseKeyPath)) {
-            throw new Error('Invalid baseKeyPath');
+            throw new Errors.InvalidRequest('Invalid baseKeyPath');
         }
 
         if (!request.indicesToDerive || !(request.indicesToDerive instanceof Array)) {
-            throw new Error('Invalid indicesToDerive');
+            throw new Errors.InvalidRequest('Invalid indicesToDerive');
         }
 
         return {

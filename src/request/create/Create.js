@@ -8,14 +8,12 @@
 /* global Key */
 /* global KeyStore */
 /* global ProgressIndicator */
-
 class Create {
     /**
      * @param {KeyguardRequest.CreateRequest} request
      * @param {Function} resolve
-     * @param {Function} reject
      */
-    constructor(request, resolve, reject) {
+    constructor(request, resolve) {
         this._resolve = resolve;
 
         this._passphrase = '';
@@ -116,14 +114,6 @@ class Create {
         this._validateWords.on(ValidateWords.Events.SKIP, () => {
             this.finish(request);
         });
-
-        /** @type {HTMLElement} */
-        const $appName = (document.querySelector('#app-name'));
-        $appName.textContent = request.appName;
-        /** @type {HTMLButtonElement} */
-        const $cancelLink = ($appName.parentNode);
-        $cancelLink.classList.remove('display-none');
-        $cancelLink.addEventListener('click', () => reject(new Error('CANCEL')));
 
         // Set up progress indicators
         /* eslint-disable no-new */
