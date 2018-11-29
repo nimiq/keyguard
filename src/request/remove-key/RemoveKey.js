@@ -19,8 +19,8 @@ class RemoveKey {
         this._reject = reject;
 
         // reject cases are actual errors so will be reject cases for the entire request.
-        this._exportWordsHandler = new ExportWords(request, this.run.bind(this), this._reject.bind(this));
-        this._exportFileHandler = new ExportFile(request, this.run.bind(this), this._reject.bind(this));
+        this._exportWordsHandler = new ExportWords(request, this.run.bind(this));
+        this._exportFileHandler = new ExportFile(request, this.run.bind(this));
 
         /** @type {HTMLElement} */
         const $removeKey = document.getElementById(RemoveKey.Pages.REMOVE_KEY)

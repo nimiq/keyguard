@@ -2,6 +2,7 @@
 /* global PassphraseBox */
 /* global KeyStore */
 /* global DownloadKeyfile */
+/* global Errors */
 class ExportFile extends Nimiq.Observable {
     /**
      * if a complete page is missing it will be created.
@@ -9,14 +10,12 @@ class ExportFile extends Nimiq.Observable {
      * Refer to the corresponsing _build(Privcy | RecoveryWords | ValidateWords) to see the general Structure.
      * @param {KeyguardRequest.ParsedSimpleRequest} request
      * @param {Function} resolve
-     * @param {Function} reject - 'keyId not found','Unsupported type','Rounds out-of-bounds'
      */
-    constructor(request, resolve, reject) {
+    constructor(request, resolve) {
         super();
 
         this._resolve = resolve;
         this._request = request;
-        this._reject = reject;
         /** @type {Key | null} */
         this._key = null;
 
@@ -57,25 +56,29 @@ class ExportFile extends Nimiq.Observable {
      */
     async _passphraseSubmitted(phrase) {
         document.body.classList.add('loading');
+        const passphraseBuffer = phrase ? Nimiq.BufferUtils.fromAscii(phrase) : undefined;
+        /** @type {Key?} */
+        let key = null;
         try {
-            const passphraseBuffer = phrase ? Nimiq.BufferUtils.fromAscii(phrase) : undefined;
-            const key = await KeyStore.instance.get(this._request.keyInfo.id, passphraseBuffer);
-            if (!key) {
-                this._reject(new Error('keyId not found'));
-            }
-
-            this.setKey(key, this._request.keyInfo.encrypted);
-            this.fire(ExportFile.Events.EXPORT_FILE_KEY_CHANGED, {
-                key,
-                isProtected: this._request.keyInfo.encrypted,
-            });
-            document.body.classList.remove('loading');
+            key = await KeyStore.instance.get(this._request.keyInfo.id, passphraseBuffer);
         } catch (e) {
             if (e.message === 'Invalid key') {
                 document.body.classList.remove('loading');
                 this._downloadKeyFilePassphraseBox.onPassphraseIncorrect();
-            } else this._reject(e);
+                return;
+            }
+            throw new Errors.Core(e.message);
         }
+        if (!key) {
+            throw new Errors.Keyguard('keyId not found');
+        }
+
+        this.setKey(key, this._request.keyInfo.encrypted);
+        this.fire(ExportFile.Events.EXPORT_FILE_KEY_CHANGED, {
+            key,
+            isProtected: this._request.keyInfo.encrypted,
+        });
+        document.body.classList.remove('loading');
     }
 
     /**
