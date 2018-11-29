@@ -56,16 +56,6 @@ export class KeyguardClient {
         return this._request(requestBehavior,  KeyguardCommand.IMPORT, [request]);
     }
 
-    public async exportWords(request: KeyguardRequest.SimpleRequest, requestBehavior = this._defaultBehavior)
-        : Promise<KeyguardRequest.SimpleResult> {
-        return this._request(requestBehavior,  KeyguardCommand.EXPORT_WORDS, [request]);
-    }
-
-    public async exportFile(request: KeyguardRequest.SimpleRequest, requestBehavior = this._defaultBehavior)
-        : Promise<KeyguardRequest.SimpleResult> {
-        return this._request(requestBehavior,  KeyguardCommand.EXPORT_FILE, [request]);
-    }
-
     public async export(request: KeyguardRequest.SimpleRequest, requestBehavior = this._defaultBehavior)
         : Promise<KeyguardRequest.SimpleResult> {
         return this._request(requestBehavior,  KeyguardCommand.EXPORT, [request]);

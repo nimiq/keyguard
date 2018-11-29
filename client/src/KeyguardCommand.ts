@@ -2,8 +2,6 @@ export enum KeyguardCommand {
     CREATE = 'create',
     REMOVE = 'remove-key',
     IMPORT = 'import',
-    EXPORT_WORDS = 'export-words',
-    EXPORT_FILE = 'export-file',
     EXPORT = 'export',
     CHANGE_PASSPHRASE = 'change-passphrase',
     SIGN_TRANSACTION = 'sign-transaction',
