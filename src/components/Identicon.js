@@ -35,7 +35,7 @@ class Identicon { // eslint-disable-line no-unused-vars
      */
     static _createElement($el) {
         const $element = $el || document.createElement('div');
-        const imageElement = document.createElement('img');
+        const imageElement = new Image();
         $element.classList.add('identicon');
         while ($element.firstChild) { $element.removeChild($element.firstChild); }
         $element.appendChild(imageElement);

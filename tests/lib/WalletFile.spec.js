@@ -34,7 +34,7 @@ describe('WalletFile', () => {
         const dataUrl = await walletFile.toDataUrl();
 
         const $img = await new Promise(resolve => {
-            const _$img = document.createElement('img');
+            const _$img = new Image();
             _$img.onload = () => resolve(_$img);
             _$img.src = dataUrl;
         });

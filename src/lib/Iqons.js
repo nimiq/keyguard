@@ -159,7 +159,7 @@ class Iqons {
      */
     static _loadImage(dataUrl) {
         return new Promise(resolve => {
-            const img = document.createElement('img');
+            const img = new Image();
             img.addEventListener('load', () => resolve(img), { once: true });
             img.src = dataUrl;
         });
