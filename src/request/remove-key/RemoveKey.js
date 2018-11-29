@@ -3,6 +3,7 @@
 /* global PassphraseBox */
 /* global Nimiq */
 /* global KeyStore */
+/* global Errors */
 class RemoveKey {
     /**
      * if a complete page is missing it will be created.
@@ -11,12 +12,10 @@ class RemoveKey {
      * the Build functions of ExportWords and ExportFile to see the general Structure.
      * @param {KeyguardRequest.ParsedSimpleRequest} request
      * @param {Function} resolve
-     * @param {Function} reject - 'keyId not found','Unknown mnemonic type','Unsupported type','Rounds out-of-bounds'
      */
-    constructor(request, resolve, reject) {
+    constructor(request, resolve) {
         this._resolve = resolve;
         this._request = request;
-        this._reject = reject;
 
         // reject cases are actual errors so will be reject cases for the entire request.
         this._exportWordsHandler = new ExportWords(request, this.run.bind(this));
@@ -76,25 +75,29 @@ class RemoveKey {
      */
     async _passphraseSubmitted(phrase) {
         document.body.classList.add('loading');
+        const passphraseBuffer = phrase ? Nimiq.BufferUtils.fromAscii(phrase) : undefined;
+        /** @type {Key?} */
+        let key = null;
         try {
-            const passphraseBuffer = phrase ? Nimiq.BufferUtils.fromAscii(phrase) : undefined;
-            const key = await KeyStore.instance.get(this._request.keyInfo.id, passphraseBuffer);
-            if (!key) {
-                this._reject(new Error('keyId not found'));
-            }
-            await KeyStore.instance.remove(this._request.keyInfo.id);
-
-            /** @type {KeyguardRequest.SimpleResult} */
-            const result = {
-                success: true,
-            };
-            this._resolve(result);
+            key = await KeyStore.instance.get(this._request.keyInfo.id, passphraseBuffer);
         } catch (e) {
             if (e.message === 'Invalid key') {
                 document.body.classList.remove('loading');
                 this._removeKeyPassphraseBox.onPassphraseIncorrect();
-            } else this._reject(e);
+                return;
+            }
+            throw new Errors.Core(e.message);
         }
+        if (!key) {
+            throw new Errors.Keyguard('keyId not found');
+        }
+        await KeyStore.instance.remove(this._request.keyInfo.id);
+
+        /** @type {KeyguardRequest.SimpleResult} */
+        const result = {
+            success: true,
+        };
+        this._resolve(result);
     }
 
     _buildRemoveKey() {
