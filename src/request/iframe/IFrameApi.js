@@ -9,15 +9,26 @@ class IFrameApi {
     /**
      * @param {Rpc.State | null} state
      * @param {boolean} [listFromLegacyStore] - Deprecated, only for database migration
-     * @returns {Promise<KeyInfoObject[] | AccountInfo[]>}
+     * @returns {Promise<KeyInfoObject[]>}
      */
     async list(state, listFromLegacyStore) {
-        if (BrowserDetection.isIOS() || BrowserDetection.isSafari()) {
-            return CookieJar.eat(listFromLegacyStore);
-        }
-
         if (listFromLegacyStore) {
-            return AccountStore.instance.list();
+            /** @type {AccountInfo[]} */
+            let accounts = [];
+            if (BrowserDetection.isIOS() || BrowserDetection.isSafari()) {
+                accounts = /** @type {AccountInfo[]} */ (CookieJar.eat(true));
+            }
+
+            if (listFromLegacyStore) {
+                accounts = await AccountStore.instance.list();
+            }
+
+            if (accounts.length === 0) return [];
+
+            // Convert to KeyInfoObjects
+            await loadNimiq();
+
+            return KeyStore.accounts2Keys(accounts, true);
         }
 
         const keyInfos = await KeyStore.instance.list();

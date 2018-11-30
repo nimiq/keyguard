@@ -177,23 +177,11 @@ class KeyStore {
      * @deprecated Only for database migration
      */
     async migrateAccountsToKeys() {
-        const keys = await AccountStore.instance.dangerousListPlain();
-        keys.forEach(async key => {
-            const address = Nimiq.Address.fromUserFriendlyAddress(key.userFriendlyAddress);
-            const legacyKeyId = Nimiq.BufferUtils.toHex(Nimiq.Hash.blake2b(address.serialize()).subarray(0, 6));
+        const accounts = await AccountStore.instance.dangerousListPlain();
+        const keysRecords = /** @type {KeyRecord[]} */ (KeyStore.accounts2Keys(accounts));
+        await Promise.all(keysRecords.map(keyRecord => this._put(keyRecord)));
 
-            const keyRecord = /** @type {KeyRecord} */ {
-                id: legacyKeyId,
-                type: Key.Type.LEGACY,
-                encrypted: true,
-                hasPin: key.type === 'low',
-                secret: key.encryptedKeyPair,
-            };
-
-            await this._put(keyRecord);
-        });
-
-        // FIXME Uncomment after/for testing (and also adapt KeyStoreIndexeddb.spec.js)
+        // FIXME Uncomment after/for testing (and also adapt KeyStore.spec.js)
         // await AccountStore.instance.drop();
 
         if (BrowserDetection.isIOS() || BrowserDetection.isSafari()) {
@@ -203,6 +191,43 @@ class KeyStore {
             // Delete accounts cookie
             document.cookie = 'accounts=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
         }
+    }
+
+    /**
+     * @param {AccountInfo[] & {encryptedKeyPair?: Uint8Array}} accounts
+     * @param {boolean} [withAccount]
+     * @returns {KeyInfoObject[]|KeyRecord[]}
+     */
+    static accounts2Keys(accounts, withAccount) {
+        return accounts.map(account => {
+            const address = Nimiq.Address.fromUserFriendlyAddress(account.userFriendlyAddress);
+            const legacyKeyId = Nimiq.BufferUtils.toHex(Nimiq.Hash.blake2b(address.serialize()).subarray(0, 6));
+
+            /** @type {KeyInfoObject} */
+            const keyObject = {
+                id: legacyKeyId,
+                type: Key.Type.LEGACY,
+                encrypted: true,
+                hasPin: account.type === 'low',
+            };
+
+            if (withAccount) {
+                keyObject.legacyAccount = {
+                    label: account.label,
+                    address: address.serialize(),
+                };
+            }
+
+            if (/** @type {AccountRecord} */ (account).encryptedKeyPair) {
+                /** @type {KeyRecord} */
+                const keyRecord = Object.assign(keyObject, {
+                    secret: /** @type {AccountRecord} */ (account).encryptedKeyPair,
+                });
+                return keyRecord;
+            }
+
+            return keyObject;
+        });
     }
 
     /**
