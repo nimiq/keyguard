@@ -111,7 +111,7 @@ class TopLevelApi { // eslint-disable-line no-unused-vars
      * @deprecated Only for database migration
      * @returns {boolean}
      */
-    _hasMigrateFlag() {
+    static _hasMigrateFlag() {
         const match = document.cookie.match(new RegExp('migrate=([^;]+)'));
         return !!match && match[1] === '1';
     }
