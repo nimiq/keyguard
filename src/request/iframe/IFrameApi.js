@@ -43,7 +43,9 @@ class IFrameApi {
             return;
         }
 
-        // FIXME: Requires Nimiq lib to be loaded, which it currently isn't in the iframe
+        // Requires Nimiq lib to be loaded, to derive keyIds from legacy accounts' user-friendly addresses
+        await loadNimiq();
+
         await KeyStore.instance.migrateAccountsToKeys();
     }
 
