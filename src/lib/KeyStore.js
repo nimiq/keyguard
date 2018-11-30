@@ -196,7 +196,7 @@ class KeyStore {
         // FIXME Uncomment after/for testing (and also adapt KeyStoreIndexeddb.spec.js)
         // await AccountStore.instance.drop();
 
-        if (BrowserDetection.isIos() || BrowserDetection.isSafari()) {
+        if (BrowserDetection.isIOS() || BrowserDetection.isSafari()) {
             // Delete migrate cookie
             document.cookie = 'migrate=0; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 

@@ -60,7 +60,7 @@ class TopLevelApi { // eslint-disable-line no-unused-vars
          *
          * @deprecated Only for database migration
          */
-        if ((BrowserDetection.isIos() || BrowserDetection.isSafari()) && this._hasMigrateFlag()) {
+        if ((BrowserDetection.isIOS() || BrowserDetection.isSafari()) && TopLevelApi._hasMigrateFlag()) {
             await KeyStore.instance.migrateAccountsToKeys();
         }
 
@@ -90,7 +90,7 @@ class TopLevelApi { // eslint-disable-line no-unused-vars
      */
     async resolve(result) {
         // Keys might have changed, so update cookie for iOS and Safari users
-        if (BrowserDetection.isIos() || BrowserDetection.isSafari()) {
+        if (BrowserDetection.isIOS() || BrowserDetection.isSafari()) {
             const keys = await KeyStore.instance.list();
             CookieJar.fill(keys);
         }

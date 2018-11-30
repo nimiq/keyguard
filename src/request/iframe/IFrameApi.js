@@ -12,7 +12,7 @@ class IFrameApi {
      * @returns {Promise<KeyInfoObject[] | AccountInfo[]>}
      */
     async list(state, listFromLegacyStore) {
-        if (BrowserDetection.isIos() || BrowserDetection.isSafari()) {
+        if (BrowserDetection.isIOS() || BrowserDetection.isSafari()) {
             return CookieJar.eat(listFromLegacyStore);
         }
 
@@ -37,7 +37,7 @@ class IFrameApi {
          * the migration the next time it is opened. Thus this signalling cookie.
          * The cookie is then detected in the TopLevelApi.request() method.
          */
-        if (BrowserDetection.isIos() || BrowserDetection.isSafari()) {
+        if (BrowserDetection.isIOS() || BrowserDetection.isSafari()) {
             // Set migrate flag cookie
             document.cookie = 'migrate=1;max-age=31536000';
             return;

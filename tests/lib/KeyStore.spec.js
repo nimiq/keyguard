@@ -108,7 +108,7 @@ describe('KeyStore', () => {
             Dummy.Utils.deleteDummyKeyStore(),
             Dummy.Utils.createDummyAccountStore(),
         ]);
-        spyOn(BrowserDetection, 'isIos').and.returnValue(false);
+        spyOn(BrowserDetection, 'isIOS').and.returnValue(false);
 
         let cookieSet = false;
         spyOnProperty(document, 'cookie', 'set').and.callFake(() => {
@@ -130,7 +130,7 @@ describe('KeyStore', () => {
             Dummy.Utils.deleteDummyKeyStore(),
             Dummy.Utils.createDummyAccountStore(),
         ]);
-        spyOn(BrowserDetection, 'isIos').and.returnValue(true);
+        spyOn(BrowserDetection, 'isIOS').and.returnValue(true);
 
         let migrationCookieDeleted = false,
             accountsCookieDeleted = false;
