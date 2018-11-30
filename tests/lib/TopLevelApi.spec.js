@@ -2,9 +2,7 @@
 
 describe("TopLevelApi", function () {
 
-    fit("can detect migration cookie", function () {
-        console.log("Existing cookies:", document.cookie);
-
+    it("can detect migration cookie", function () {
         expect(TopLevelApi._hasMigrateFlag()).toBe(false);
 
         // Set migrate cookie

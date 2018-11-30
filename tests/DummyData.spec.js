@@ -98,7 +98,7 @@ Dummy.Utils = {
             const request = db.transaction([objectStoreName], 'readwrite')
                 .objectStore(objectStoreName)
                 .put(entry);
-            request.onsuccess = () => resolve(request.result);
+            request.onsuccess = () => resolve();
             request.onerror = () => reject(request.error);
         });
     },

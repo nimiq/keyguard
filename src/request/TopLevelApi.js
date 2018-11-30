@@ -42,10 +42,6 @@ class TopLevelApi { // eslint-disable-line no-unused-vars
 
         I18n.initialize(window.TRANSLATIONS, 'en');
         I18n.translateDom();
-
-        window.addEventListener('beforeunload', () => {
-            this.reject(new Error('Keyguard popup closed'));
-        });
     }
 
     /**

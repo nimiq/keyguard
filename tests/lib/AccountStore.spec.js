@@ -12,6 +12,8 @@ describe('AccountStore', () => {
 
     it('can open and close a connection', async () => {
         const db = await AccountStore.instance.connect();
+        expect(db).not.toBe(null);
+        if (!db) return;
         expect(db.constructor).toBe(IDBDatabase);
         expect(AccountStore.instance._dbPromise).toBeTruthy();
         expect(db.name).toBe(Dummy.DUMMY_ACCOUNT_DATABASE_NAME);
