@@ -52,6 +52,11 @@ class DeriveAddress {
                 this._resolve(result);
             },
         );
+
+        this,this._identiconSelector.on(
+            DerivedIdenticonSelector.Events.MASTER_KEY_NOT_SET,
+            this._reject.bind(this)
+        );
     } // constructor
 
     /**

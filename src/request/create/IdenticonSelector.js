@@ -134,7 +134,10 @@ class IdenticonSelector extends Nimiq.Observable {
      * @private
      */
     _onSelectionConfirmed() {
-        if (!this._selectedAddress) throw new Errors.Keyguard('Invalid state');
+        if (!this._selectedAddress) { // something went wrong
+            this._clearSelection(); // clear current selection
+            return this.generateIdenticons(); // and gerate new identicons
+        }
         this.fire(IdenticonSelector.Events.IDENTICON_SELECTED, this._volatileEntropies[this._selectedAddress]);
     }
 
