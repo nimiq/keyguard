@@ -1,11 +1,10 @@
-/* global Nimiq */
+/* global loadNimiq */
 /* global AccountStore */
 /* global Key */
 /* global KeyInfo */
 /* global KeyStore */
 beforeAll(async () => {
-    Nimiq.GenesisConfig.test();
-    await Nimiq.WasmHelper.doImportBrowser();
+    await loadNimiq();
 });
 
 const Dummy = {};

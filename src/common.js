@@ -1,29 +1,25 @@
 /* global Nimiq */
 /* global RpcServer */
 
-/**
- * @returns {string}
- */
-function allowedOrigin() {
-    switch (window.location.origin) {
-    case 'https://keyguard-next.nimiq.com': return 'https://accounts.nimiq.com';
-    case 'https://keyguard-next.nimiq-testnet.com': return 'https://accounts.nimiq-testnet.com';
-    default: return '*';
-    }
-}
+/** @type {Promise<void>?} */
+let __nimiqLoaded = null;
 
 /**
+ * Singleton that resolves to a promise
+ *
  * @returns {Promise<void>}
  */
 async function loadNimiq() {
-    try {
+    // eslint-disable-next-line no-return-assign
+    return __nimiqLoaded || (__nimiqLoaded = new Promise(async resolve => {
         // Load web assembly encryption library into browser (if supported)
         await Nimiq.WasmHelper.doImportBrowser();
+
         // Configure to use test net for now
         Nimiq.GenesisConfig.test();
-    } catch (e) {
-        console.error(e);
-    }
+
+        resolve();
+    }));
 }
 
 /**
@@ -59,6 +55,17 @@ async function runKeyguard(RequestApiClass, options) { // eslint-disable-line no
     // Instantiate handler.
     /** @type {TopLevelApi | IFrameApi} */
     const api = new RequestApiClass();
+
+    /**
+     * @returns {string}
+     */
+    function allowedOrigin() {
+        switch (window.location.origin) {
+        case 'https://keyguard-next.nimiq.com': return 'https://accounts.nimiq.com';
+        case 'https://keyguard-next.nimiq-testnet.com': return 'https://accounts.nimiq-testnet.com';
+        default: return '*';
+        }
+    }
 
     window.rpcServer = new RpcServer(allowedOrigin());
 
