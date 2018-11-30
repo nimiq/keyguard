@@ -2,8 +2,7 @@
 /* global KeyStore */
 /* global Identicon */
 /* global PassphraseBox */
-/* global I18n */
-
+/* global Errors */
 class BaseLayout {
     /**
      * @param {KeyguardRequest.ParsedSignTransactionRequest} request
@@ -96,20 +95,6 @@ class BaseLayout {
         // because for checkout we need to go back to the CheckoutOverview
         // in the Accounts Manager and not return directly to the caller.
         this._passphraseBox.on(PassphraseBox.Events.CANCEL, () => window.history.back());
-
-        /** @type {HTMLElement} */
-        const $appName = (document.querySelector('#app-name'));
-        /** @type {HTMLSpanElement} */
-        const $cancelLinkText = ($appName.parentNode);
-        if (request.layout === 'checkout') {
-            $cancelLinkText.textContent = I18n.translatePhrase('sign-tx-cancel-payment');
-        } else {
-            $appName.textContent = request.appName;
-        }
-        /** @type {HTMLButtonElement} */
-        const $cancelLink = ($cancelLinkText.parentNode);
-        $cancelLink.classList.remove('display-none');
-        $cancelLink.addEventListener('click', () => reject(new Error('CANCEL')));
     }
 
     /**
@@ -122,29 +107,32 @@ class BaseLayout {
      */
     async _onConfirm(request, resolve, reject, passphrase) {
         document.body.classList.add('loading');
-
+        // XXX Passphrase encoding
+        const passphraseBuf = passphrase ? Nimiq.BufferUtils.fromAscii(passphrase) : undefined;
+        /** @type {Key?} */
+        let key = null;
         try {
-            // XXX Passphrase encoding
-            const passphraseBuf = passphrase ? Nimiq.BufferUtils.fromAscii(passphrase) : undefined;
-            const key = await KeyStore.instance.get(request.keyInfo.id, passphraseBuf);
-            if (!key) {
-                reject(new Error('Failed to retrieve key'));
-                return;
-            }
-
-            const publicKey = key.derivePublicKey(request.keyPath);
-            const signature = key.sign(request.keyPath, request.transaction.serializeContent());
-            const result = /** @type {SignTransactionResult} */ {
-                publicKey: publicKey.serialize(),
-                signature: signature.serialize(),
-            };
-            resolve(result);
+            key = await KeyStore.instance.get(request.keyInfo.id, passphraseBuf);
         } catch (e) {
             if (e.message === 'Invalid key') {
                 document.body.classList.remove('loading');
                 this._passphraseBox.onPassphraseIncorrect();
-            } else reject(e);
+                return;
+            }
+            reject(new Errors.Keyguard(e.message));
         }
+        if (!key) {
+            reject(new Errors.Keyguard('Failed to retrieve key'));
+            return;
+        }
+
+        const publicKey = key.derivePublicKey(request.keyPath);
+        const signature = key.sign(request.keyPath, request.transaction.serializeContent());
+        const result = /** @type {SignTransactionResult} */ {
+            publicKey: publicKey.serialize(),
+            signature: signature.serialize(),
+        };
+        resolve(result);
     }
 
     run() {

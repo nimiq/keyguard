@@ -96,6 +96,6 @@ class SignMessageApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     static _parseMessage(message) {
         if (message instanceof Uint8Array) return message;
         if (typeof message === 'string') return Utf8Tools.stringToUtf8ByteArray(message);
-        throw new Errors.Keyguard('Type of message must be a String or Uint8Array');
+        throw new Errors.InvalidRequest('Type of message must be a String or Uint8Array');
     }
 }
