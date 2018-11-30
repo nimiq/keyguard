@@ -87,7 +87,7 @@ export class KeyguardClient {
     /* IFRAME REQUESTS */
 
     public async list(listFromLegacyStore?: boolean, requestBehavior = this._defaultIframeBehavior)
-    : Promise<KeyguardRequest.KeyInfoObject[] | KeyguardRequest.KeyInfoObject[]> {
+    : Promise<KeyguardRequest.KeyInfoObject[]> {
         return this._request(requestBehavior, KeyguardCommand.LIST, [listFromLegacyStore]);
     }
 

@@ -41,7 +41,7 @@ type KeyInfoObject = {
     type: Key.Type
     encrypted: boolean
     hasPin: boolean
-    userFriendlyId?: string
+    legacyAccount?: { label: string, address: Uint8Array };
 }
 
 type KeyRecord = {
