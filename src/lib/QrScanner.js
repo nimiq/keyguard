@@ -70,6 +70,7 @@ class QrScanner {
     _getCameraStream(facingMode, exact = false) {
         const constraintsToTry = [{
             width: { min: 1024 },
+            facingMode: undefined,
         }, {
             width: { min: 768 },
         }, {}];

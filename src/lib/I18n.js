@@ -135,7 +135,7 @@ class I18n { // eslint-disable-line no-unused-vars
             /** @type {string} */
             this._language = languageToUse;
 
-            if (({ interactive: 1, complete: 1 })[document.readyState]) {
+            if (['interactive', 'complete'].indexOf(document.readyState) > -1) {
                 this.translateDom();
             } else {
                 document.addEventListener('DOMContentLoaded', () => {

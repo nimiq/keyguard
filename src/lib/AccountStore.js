@@ -25,12 +25,12 @@ class AccountStore {
     constructor(dbName = AccountStore.ACCOUNT_DATABASE) {
         this._dbName = dbName;
         this._dropped = false;
-        /** @type {Promise<IDBDatabase>|null} */
+        /** @type {Promise<IDBDatabase|null>|null} */
         this._dbPromise = null;
     }
 
     /**
-     * @returns {Promise.<IDBDatabase>}
+     * @returns {Promise.<IDBDatabase|null>}
      * @private
      */
     async connect() {
@@ -47,7 +47,7 @@ class AccountStore {
             request.onupgradeneeded = () => {
                 // account database doesn't exist
                 this._dropped = true;
-                request.transaction.abort();
+                request.transaction && request.transaction.abort();
                 resolve(null);
             };
         });
@@ -71,8 +71,6 @@ class AccountStore {
                 if (cursor) {
                     const key = cursor.value;
 
-                    // Because: To use Key.getPublicInfo(), we would need to create Key
-                    // instances out of the key object that we receive from the DB.
                     /** @type {AccountInfo} */
                     const accountInfo = {
                         userFriendlyAddress: key.userFriendlyAddress,
