@@ -221,7 +221,13 @@ class KeyStore {
             }),
         ]);
 
-        return (done instanceof Error) ? done : done[0];
+        // In case of rejection of any one of the above promises,
+        // the 'await' keyword makes sure that the error is thrown
+        // and this async function is itself rejected.
+
+        // Promise.all returns an array of resolved promises, but we are only
+        // interested in the request.result, which is the first item.
+        return done[0];
     }
 
     /**
