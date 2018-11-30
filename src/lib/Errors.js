@@ -6,6 +6,11 @@ Errors.Types = {
     KEYGUARD: 'Keyguard', // these are used for internal keyguard Errors.
 };
 
+Errors.Messages = {
+    GOTO_CREATE: 'GOTO_CREATE',
+    CANCEL: 'CANCEL',
+}
+
 Errors.InvalidRequest = class extends Error {
     /** @param { string } message */
     constructor(message = '') {
@@ -31,25 +36,17 @@ Errors.Keyguard = class extends Error {
 };
 
 Errors.Cancel = class extends Error {
-    /** @param {string} message - will be ignored and set to 'CANCEL' */
+    /** @param {string} message - will be ignored and set to Errors.Messages.CANCEL */
     constructor(message = '') { // eslint-disable-line no-unused-vars
-        super('CANCEL');
+        super(Errors.Messages.CANCEL);
         this.name = Errors.Types.KEYGUARD;
     }
 };
 
-Errors.Reject = class extends Error {
-    /** @param {string} message - will be ignored and set to 'REJECT' */
+Errors.GoToCreate = class extends Error {
+    /** @param {string} message - will be ignored and set to Errors.Messages.GOTO_CREATE */
     constructor(message = '') { // eslint-disable-line no-unused-vars
-        super('REJECT');
-        this.name = Errors.Types.KEYGUARD;
-    }
-};
-
-Errors.ToCreate = class extends Error {
-    /** @param {string} message - will be ignored and set to 'GOTO_CREATE' */
-    constructor(message = '') { // eslint-disable-line no-unused-vars
-        super('GOTO_CREATE');
+        super(Errors.Messages.GOTO_CREATE);
         this.name = Errors.Types.KEYGUARD;
     }
 };
