@@ -168,7 +168,8 @@ class DerivedIdenticonSelector extends Nimiq.Observable {
     _onSelectionConfirmed() {
         if (!this._selectedAddress) { // something went wrong
             this._clearSelection(); // clear current selection and
-            return this.nextPage(); // switch pages
+            this.nextPage(); // switch pages
+            return;
         }
         this.fire(DerivedIdenticonSelector.Events.IDENTICON_SELECTED, this._derivedAddresses[this._selectedAddress]);
     }

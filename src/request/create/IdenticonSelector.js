@@ -1,7 +1,7 @@
 /* global Nimiq */
 /* global I18n */
 /* global Identicon */
-/* global Errors */
+
 class IdenticonSelector extends Nimiq.Observable {
     /**
      * @param {HTMLElement} [$el]
@@ -136,7 +136,8 @@ class IdenticonSelector extends Nimiq.Observable {
     _onSelectionConfirmed() {
         if (!this._selectedAddress) { // something went wrong
             this._clearSelection(); // clear current selection
-            return this.generateIdenticons(); // and gerate new identicons
+            this.generateIdenticons(); // and gerate new identicons
+            return;
         }
         this.fire(IdenticonSelector.Events.IDENTICON_SELECTED, this._volatileEntropies[this._selectedAddress]);
     }
