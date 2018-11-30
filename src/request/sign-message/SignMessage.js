@@ -4,7 +4,7 @@
 /* global PassphraseBox */
 /* global Utf8Tools */
 /* global KeyStore */
-
+/* global Errors */
 class SignMessage {
     /**
      * @param {HTMLDivElement} $page
@@ -85,11 +85,11 @@ class SignMessage {
                 this._passphraseBox.onPassphraseIncorrect();
                 return;
             }
-            reject(e);
+            reject(new Errors.Keyguard(e.message));
         }
 
         if (!key) {
-            reject(new Error('keyId not found'));
+            reject(new Errors.Keyguard('keyId not found'));
             return;
         }
 
@@ -98,7 +98,7 @@ class SignMessage {
         // Validate that derived address is the same as the request's 'signer' address
         const derivedAddress = publicKey.toAddress();
         if (!derivedAddress.equals(request.signer)) {
-            reject(new Error('Provided keyPath does not refer to provided signer address'));
+            reject(new Errors.Keyguard('Provided keyPath does not refer to provided signer address'));
             return;
         }
 

@@ -3,21 +3,13 @@
 /* global TopLevelApi */
 /* global SignMessage */
 /* global Utf8Tools */
-
+/* global Errors */
 class SignMessageApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
      * @param {KeyguardRequest.SignMessageRequest} request
      */
     async onRequest(request) {
-        /** @type {KeyguardRequest.ParsedSignMessageRequest} */
-        let parsedRequest;
-        try {
-            parsedRequest = await SignMessageApi._parseRequest(request);
-        } catch (e) {
-            this.reject(e);
-            return;
-        }
-
+        const parsedRequest = await SignMessageApi._parseRequest(request);
         /** @type {HTMLDivElement} */
         const $page = (document.getElementById(SignMessage.Pages.AUTHORIZE));
 
@@ -34,7 +26,7 @@ class SignMessageApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         /** @type {HTMLButtonElement} */
         const $cancelLink = ($appName.parentNode);
         $cancelLink.classList.remove('display-none');
-        $cancelLink.addEventListener('click', () => this.reject(new Error('CANCEL')));
+        $cancelLink.addEventListener('click', () => this.reject(new Errors.Cancel()));
 
         handler.run();
     }
@@ -46,34 +38,34 @@ class SignMessageApi extends TopLevelApi { // eslint-disable-line no-unused-vars
      */
     static async _parseRequest(request) {
         if (!request) {
-            throw new Error('Empty request');
+            throw new Errors.InvalidRequest('Empty request');
         }
 
         // Check that keyId is given.
         if (!request.keyId || typeof request.keyId !== 'string') {
-            throw new Error('keyId is required');
+            throw new Errors.InvalidRequest('keyId is required');
         }
 
         // Check that key exists.
         const keyInfo = await KeyStore.instance.getInfo(request.keyId);
         if (!keyInfo) {
-            throw new Error('Unknown keyId');
+            throw new Errors.InvalidRequest('Unknown keyId');
         }
 
         // Check that keyPath is given.
         if (!request.keyPath || typeof request.keyPath !== 'string') {
-            throw new Error('keyPath is required');
+            throw new Errors.InvalidRequest('keyPath is required');
         }
 
         // Check that keyPath is valid.
         if (!Nimiq.ExtendedPrivateKey.isValidPath(request.keyPath)) {
-            throw new Error('Invalid keyPath');
+            throw new Errors.InvalidRequest('Invalid keyPath');
         }
 
         // Parse and validate message.
         const message = SignMessageApi._parseMessage(request.message);
         if (message.length > 255) {
-            throw new Error('Message must not exceed 255 bytes');
+            throw new Errors.InvalidRequest('Message must not exceed 255 bytes');
         }
 
         // Validate signer address
@@ -82,7 +74,7 @@ class SignMessageApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         // Validate labels.
         const labels = [request.keyLabel, request.signerLabel];
         if (labels.some(label => label !== undefined && (typeof label !== 'string' || label.length > 64))) {
-            throw new Error('Invalid label');
+            throw new Errors.InvalidRequest('Invalid label');
         }
 
         return /** @type {ParsedSignMessageRequest} */ {
@@ -104,6 +96,6 @@ class SignMessageApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     static _parseMessage(message) {
         if (message instanceof Uint8Array) return message;
         if (typeof message === 'string') return Utf8Tools.stringToUtf8ByteArray(message);
-        throw new Error('Type of message must be a String or Uint8Array');
+        throw new Errors.Keyguard('Type of message must be a String or Uint8Array');
     }
 }
