@@ -32,14 +32,13 @@ export class RedirectRequestBehavior extends RequestBehavior {
         return `${endpoint}/request/${command}/`;
     }
 
-    private readonly _targetUrl: string;
+    private readonly _returnUrl: string;
     private readonly _localState: any;
 
-    constructor(targetUrl?: string, localState?: any) {
+    constructor(returnUrl?: string, localState?: any) {
         super(BehaviorType.REDIRECT);
         const location = window.location;
-        this._targetUrl = targetUrl
-            || `${location.protocol}//${location.hostname}:${location.port}${location.pathname}`;
+        this._returnUrl = returnUrl || `${location.origin}${location.pathname}`;
         this._localState = localState || {};
 
         // Reject local state with reserved property.
@@ -56,7 +55,7 @@ export class RedirectRequestBehavior extends RequestBehavior {
         await client.init();
 
         const state = Object.assign({ __command: command }, this._localState);
-        client.callAndSaveLocalState(this._targetUrl, state, 'request', ...args);
+        client.callAndSaveLocalState(this._returnUrl, state, 'request', ...args);
     }
 }
 
