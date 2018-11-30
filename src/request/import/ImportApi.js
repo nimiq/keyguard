@@ -6,7 +6,7 @@
 /* global Nimiq */
 /* global Key */
 /* global KeyStore */
-
+/* global Errors */
 class ImportApi extends TopLevelApi {
     constructor() {
         super();
@@ -36,7 +36,7 @@ class ImportApi extends TopLevelApi {
         /** @type {HTMLButtonElement} */
         const $cancelLink = ($appName.parentNode);
         $cancelLink.classList.remove('display-none');
-        $cancelLink.addEventListener('click', () => this.reject(new Error('CANCEL')));
+        $cancelLink.addEventListener('click', () => this.reject(new Errors.Cancel()));
 
         this.run();
     }
@@ -72,10 +72,11 @@ class ImportApi extends TopLevelApi {
             const handler = new ImportWords(
                 /** @type {KeyguardRequest.ImportRequest} */ (this._request),
                 this._onRecoveryWordsComplete.bind(this),
+                this._reject.bind(this),
             );
             handler.run();
         });
-        $createWalletLink.addEventListener('click', () => this.reject(new Error('GOTO_CREATE')));
+        $createWalletLink.addEventListener('click', () => this.reject(new Errors.GoToCreate()));
 
         return {
             passphraseBox,
@@ -86,7 +87,7 @@ class ImportApi extends TopLevelApi {
 
     /**
      * Determine key type and forward user to Passphrase input
-     *
+
      * @param {string} encryptedKeyBase64 - Encrypted KeyPair in base64 format
      */
     _onFileImported(encryptedKeyBase64) {
@@ -159,7 +160,7 @@ class ImportApi extends TopLevelApi {
             const secretString = Nimiq.BufferUtils.toBase64(key.secret);
             sessionStorage.setItem(ImportApi.SESSION_STORAGE_KEY_PREFIX + key.id, secretString);
         } else {
-            throw new Error(`Unkown key type ${key.type}`);
+            this.reject(new Errors.Keyguard(`Unkown key type ${key.type}`));
         }
 
         /** @type {KeyguardRequest.ImportResult} */

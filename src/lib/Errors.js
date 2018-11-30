@@ -9,7 +9,7 @@ Errors.Types = {
 Errors.Messages = {
     GOTO_CREATE: 'GOTO_CREATE',
     CANCEL: 'CANCEL',
-}
+};
 
 Errors.InvalidRequest = class extends Error {
     /** @param { string } message */
