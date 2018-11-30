@@ -14,13 +14,10 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         const $cancelLink = ($appName.parentNode);
         $cancelLink.classList.remove('display-none');
         $cancelLink.addEventListener('click', () => this.reject(new Errors.Cancel()));
-        try {
-            const parsedRequest = await RemoveKeyApi._parseRequest(request);
-            const removeKeyHandler = new RemoveKey(parsedRequest, this.resolve.bind(this));
-            removeKeyHandler.run();
-        } catch (e) {
-            this.reject(e);
-        }
+
+        const parsedRequest = await RemoveKeyApi._parseRequest(request);
+        const removeKeyHandler = new RemoveKey(parsedRequest, this.resolve.bind(this), this.reject.bind(this));
+        removeKeyHandler.run();
     }
 
     /**

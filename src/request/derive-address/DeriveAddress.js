@@ -7,10 +7,12 @@ class DeriveAddress {
     /**
      * @param {KeyguardRequest.ParsedDeriveAddressRequest} request
      * @param {Function} resolve
+     * @param {Function} reject
      */
-    constructor(request, resolve) {
+    constructor(request, resolve, reject) {
         this._request = request;
         this._resolve = resolve;
+        this._reject = reject;
 
         /** @type {HTMLFormElement} */
         const $passphraseBox = (document.querySelector('.passphrase-box'));
@@ -71,11 +73,12 @@ class DeriveAddress {
                 this._passphraseBox.onPassphraseIncorrect();
                 return false;
             }
-            throw new Errors.Core(e.message);
+            this._reject(new Errors.Core(e.message));
         }
 
         if (!key) {
-            throw new Errors.Keyguard('keyId not found');
+            this._reject(new Errors.Keyguard('keyId not found'));
+            return false;
         }
         const masterKey = new Nimiq.Entropy(key.secret).toExtendedPrivateKey();
         const pathsToDerive = this._request.indicesToDerive.map(index => `${this._request.baseKeyPath}/${index}`);

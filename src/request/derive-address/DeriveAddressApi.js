@@ -16,13 +16,10 @@ class DeriveAddressApi extends TopLevelApi { // eslint-disable-line no-unused-va
         const $cancelLink = ($appName.parentNode);
         $cancelLink.classList.remove('display-none');
         $cancelLink.addEventListener('click', () => this.reject(new Errors.Cancel()));
-        try {
-            const parsedRequest = await DeriveAddressApi._parseRequest(request);
-            const handler = new DeriveAddress(parsedRequest, this.resolve.bind(this));
-            handler.run();
-        } catch (e) {
-            this.reject(e);
-        }
+
+        const parsedRequest = await DeriveAddressApi._parseRequest(request);
+        const handler = new DeriveAddress(parsedRequest, this.resolve.bind(this), this.reject.bind(this));
+        handler.run();
     }
 
     /**

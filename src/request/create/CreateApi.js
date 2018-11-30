@@ -14,13 +14,9 @@ class CreateApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         const $cancelLink = ($appName.parentNode);
         $cancelLink.classList.remove('display-none');
         $cancelLink.addEventListener('click', () => this.reject(new Errors.Cancel()));
-        try {
-            const parsedRequest = CreateApi._parseRequest(request);
-            const handler = new Create(parsedRequest, this.resolve.bind(this));
-            handler.run();
-        } catch (e) {
-            this.reject(e);
-        }
+        const parsedRequest = CreateApi._parseRequest(request);
+        const handler = new Create(parsedRequest, this.resolve.bind(this), this.reject.bind(this));
+        handler.run();
     }
 
     /**

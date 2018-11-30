@@ -14,13 +14,10 @@ class ExportApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         const $cancelLink = ($appName.parentNode);
         $cancelLink.classList.remove('display-none');
         $cancelLink.addEventListener('click', () => this.reject(new Errors.Cancel()));
-        try {
-            const parsedRequest = await ExportApi._parseRequest(request);
-            const exportHandler = new Export(parsedRequest, this.resolve.bind(this));
-            exportHandler.run();
-        } catch (e) {
-            this.reject(e);
-        }
+
+        const parsedRequest = await ExportApi._parseRequest(request);
+        const exportHandler = new Export(parsedRequest, this.resolve.bind(this), this.reject.bind(this));
+        exportHandler.run();
     }
 
     /**

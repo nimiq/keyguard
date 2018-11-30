@@ -10,12 +10,14 @@ class ExportFile extends Nimiq.Observable {
      * Refer to the corresponsing _build(Privcy | RecoveryWords | ValidateWords) to see the general Structure.
      * @param {KeyguardRequest.ParsedSimpleRequest} request
      * @param {Function} resolve
+     * @param {Function} reject
      */
-    constructor(request, resolve) {
+    constructor(request, resolve, reject) {
         super();
 
         this._resolve = resolve;
         this._request = request;
+        this._reject = reject;
         /** @type {Key | null} */
         this._key = null;
 
@@ -67,10 +69,10 @@ class ExportFile extends Nimiq.Observable {
                 this._downloadKeyFilePassphraseBox.onPassphraseIncorrect();
                 return;
             }
-            throw new Errors.Core(e.message);
+            this._reject(new Errors.Core(e.message));
         }
         if (!key) {
-            throw new Errors.Keyguard('keyId not found');
+            this._reject(new Errors.Keyguard('keyId not found'));
         }
 
         this.setKey(key, this._request.keyInfo.encrypted);

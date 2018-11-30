@@ -14,13 +14,10 @@ class ChangePassphraseApi extends TopLevelApi { // eslint-disable-line no-unused
         const $cancelLink = ($appName.parentNode);
         $cancelLink.classList.remove('display-none');
         $cancelLink.addEventListener('click', () => this.reject(new Errors.Cancel()));
-        try {
-            const parsedRequest = await ChangePassphraseApi._parseRequest(request);
-            const handler = new ChangePassphrase(parsedRequest, this.resolve.bind(this));
-            handler.run();
-        } catch (e) {
-            this.reject(e);
-        }
+
+        const parsedRequest = await ChangePassphraseApi._parseRequest(request);
+        const handler = new ChangePassphrase(parsedRequest, this.resolve.bind(this), this.reject.bind(this));
+        handler.run();
     }
 
     /**

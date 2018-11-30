@@ -9,18 +9,20 @@ class Export {
      * the Build functions of ExportWords and ExportFile to see the general Structure.
      * @param {KeyguardRequest.ParsedSimpleRequest} request
      * @param {Function} resolve
+     * @param {Function} reject
      */
-    constructor(request, resolve) {
+    constructor(request, resolve, reject) {
         this._resolve = resolve;
         this._request = request;
+        this._reject = reject;
 
         this.exported = {
             words: false,
             file: false,
         };
 
-        this._exportWordsHandler = new ExportWords(request, this._wordsSucceeded.bind(this));
-        this._exportFileHandler = new ExportFile(request, this._fileSucceeded.bind(this));
+        this._exportWordsHandler = new ExportWords(request, this._wordsSucceeded.bind(this), this._reject.bind(this));
+        this._exportFileHandler = new ExportFile(request, this._fileSucceeded.bind(this), this._reject.bind(this));
 
         /** @type {HTMLElement} */
         const $moreExportOptionsPage = document.getElementById(Export.Pages.MORE_EXPORT_OPTIONS)

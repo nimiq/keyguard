@@ -12,14 +12,16 @@ class RemoveKey {
      * the Build functions of ExportWords and ExportFile to see the general Structure.
      * @param {KeyguardRequest.ParsedSimpleRequest} request
      * @param {Function} resolve
+     * @param {Function} reject
      */
-    constructor(request, resolve) {
+    constructor(request, resolve, reject) {
         this._resolve = resolve;
         this._request = request;
+        this._reject = reject;
 
         // reject cases are actual errors so will be reject cases for the entire request.
-        this._exportWordsHandler = new ExportWords(request, this.run.bind(this));
-        this._exportFileHandler = new ExportFile(request, this.run.bind(this));
+        this._exportWordsHandler = new ExportWords(request, this.run.bind(this), this._reject.bind(this));
+        this._exportFileHandler = new ExportFile(request, this.run.bind(this), this._reject.bind(this));
 
         /** @type {HTMLElement} */
         const $removeKey = document.getElementById(RemoveKey.Pages.REMOVE_KEY)
@@ -86,10 +88,10 @@ class RemoveKey {
                 this._removeKeyPassphraseBox.onPassphraseIncorrect();
                 return;
             }
-            throw new Errors.Core(e.message);
+            this._reject(new Errors.Core(e.message));
         }
         if (!key) {
-            throw new Errors.Keyguard('keyId not found');
+            this._reject(new Errors.Keyguard('keyId not found'));
         }
         await KeyStore.instance.remove(this._request.keyInfo.id);
 

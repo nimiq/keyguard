@@ -12,9 +12,11 @@ class Create {
     /**
      * @param {KeyguardRequest.CreateRequest} request
      * @param {Function} resolve
+     * @param {Function} reject
      */
-    constructor(request, resolve) {
+    constructor(request, resolve, reject) {
         this._resolve = resolve;
+        this._reject = reject;
 
         this._passphrase = '';
 

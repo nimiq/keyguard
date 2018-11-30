@@ -10,10 +10,13 @@ class ChangePassphrase {
      * Refer to the corresponsing _build() to see the general Structure.
      * @param {KeyguardRequest.ParsedSimpleRequest} request
      * @param {Function} resolve
+     * @param {Function} reject
      */
-    constructor(request, resolve) {
+    constructor(request, resolve, reject) {
         this._resolve = resolve;
         this._request = request;
+        this._reject = reject;
+
         /** @type {Key | null} */
         this._key = null;
         this._passphrase = '';
@@ -66,10 +69,10 @@ class ChangePassphrase {
                 this._enterPassphraseBox.onPassphraseIncorrect();
                 return;
             }
-            throw new Errors.Core(e.message);
+            this._reject(new Errors.Core(e.message));
         }
         if (!key) {
-            throw new Errors.Keyguard('keyId not found');
+            this._reject(new Errors.Keyguard('keyId not found'));
         }
         this._key = key;
         this._setPassphraseBox.reset();
@@ -84,7 +87,8 @@ class ChangePassphrase {
     async _finish(phrase) {
         document.body.classList.add('loading');
         if (!this._key) {
-            throw new Errors.Keyguard('Bypassed Password');
+            this._reject(new Errors.Keyguard('Bypassed Password'));
+            return;
         }
 
         // In this request, the user can only set a new password (min length: 8) or leave a key unencrypted.
