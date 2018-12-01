@@ -43,6 +43,22 @@ Dummy.keyInfos = [
     ),
 ];
 
+/** @type {KeyInfoObject[]} */
+Dummy.keyInfoObjects = [
+    {
+        id: '2ec615522906',
+        type: Key.Type.LEGACY,
+        encrypted: true,
+        hasPin: false,
+    },
+    {
+        id: 'ef553f34a779',
+        type: Key.Type.BIP39,
+        encrypted: false,
+        hasPin: false,
+    },
+];
+
 /** @type {KeyRecord[]} */
 Dummy.keyRecords = [
     {

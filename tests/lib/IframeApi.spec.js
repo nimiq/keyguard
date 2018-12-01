@@ -32,10 +32,10 @@ describe('IframeApi', () => {
 
         const listedKeys = await iframeApi.list(null);
 
-        expect(CookieJar.eat).toHaveBeenCalledWith(undefined);
+        expect(CookieJar.eat).toHaveBeenCalledWith();
         expect(AccountStore.instance.list).not.toHaveBeenCalled();
         expect(KeyStore.instance.list).not.toHaveBeenCalled();
-        expect(listedKeys).toEqual(Dummy.keyInfos);
+        expect(listedKeys).toEqual(Dummy.keyInfoObjects);
     });
 
     it('can list deprecated accounts from AccountStore on non-iOS', async () => {

@@ -104,9 +104,9 @@ class IFrameApi {
     async _getAccounts() {
         if (BrowserDetection.isIOS() || BrowserDetection.isSafari()) {
             return /** @type {AccountInfo[]} */ (CookieJar.eat(true));
-        } else {
-            return await AccountStore.instance.list();
         }
+
+        return AccountStore.instance.list();
     }
 
     /**
@@ -115,9 +115,9 @@ class IFrameApi {
     async _getKeys() {
         if (BrowserDetection.isIOS() || BrowserDetection.isSafari()) {
             return /** @type {KeyInfo[]} */ (CookieJar.eat());
-        } else {
-            return await KeyStore.instance.list();
         }
+
+        return KeyStore.instance.list();
     }
 }
 
