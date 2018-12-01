@@ -5,7 +5,7 @@
 let __nimiqLoaded = null;
 
 /**
- * Singleton that resolves to a promise
+ * Singleton promise
  *
  * @returns {Promise<void>}
  */
