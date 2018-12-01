@@ -10,6 +10,7 @@ export enum KeyguardCommand {
 
     // Iframe requests
     LIST = 'list',
+    HAS_KEYS = 'hasKeys',
     MIGRATE_ACCOUNTS_TO_KEYS = 'migrateAccountsToKeys',
     DERIVE_ADDRESSES = 'deriveAddresses',
     RELEASE_KEY = 'releaseKey',

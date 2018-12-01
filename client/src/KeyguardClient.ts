@@ -91,6 +91,10 @@ export class KeyguardClient {
         return this._request(requestBehavior, KeyguardCommand.LIST, [fromLegacyStore]);
     }
 
+    public async hasKeys(inLegacyStore?: boolean, requestBehavior = this._defaultIframeBehavior): Promise<boolean> {
+        return this._request(requestBehavior, KeyguardCommand.HAS_KEYS, [inLegacyStore]);
+    }
+
     public async migrateAccountsToKeys(requestBehavior = this._defaultIframeBehavior): Promise<void> {
         return this._request(requestBehavior, KeyguardCommand.MIGRATE_ACCOUNTS_TO_KEYS, []);
     }

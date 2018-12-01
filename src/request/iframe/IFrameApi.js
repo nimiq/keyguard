@@ -13,14 +13,7 @@ class IFrameApi {
      */
     async list(state, fromLegacyStore) {
         if (fromLegacyStore) {
-            /** @type {AccountInfo[]} */
-            let accounts = [];
-            if (BrowserDetection.isIOS() || BrowserDetection.isSafari()) {
-                accounts = /** @type {AccountInfo[]} */ (CookieJar.eat(true));
-            } else {
-                accounts = await AccountStore.instance.list();
-            }
-
+            const accounts = await this._getAccounts();
             if (accounts.length === 0) return [];
 
             // Convert to KeyInfoObjects
@@ -28,15 +21,23 @@ class IFrameApi {
             return KeyStore.accounts2Keys(accounts, true);
         }
 
-        /** @type {KeyInfo[]} */
-        let keyInfos;
-        if (BrowserDetection.isIOS() || BrowserDetection.isSafari()) {
-            keyInfos = /** @type {KeyInfo[]} */ (CookieJar.eat());
-        } else {
-            keyInfos = await KeyStore.instance.list();
+        const keyInfos = await this._getKeys();
+        return keyInfos.map(ki => ki.toObject());
+    }
+
+    /**
+     * @param {Rpc.State | null} state
+     * @param {boolean} [inLegacyStore] - Deprecated, only for database migration
+     * @returns {Promise<boolean>}
+     */
+    async hasKeys(state, inLegacyStore) {
+        if (inLegacyStore) {
+            const accounts = await this._getAccounts();
+            return accounts.length > 0;
         }
 
-        return keyInfos.map(ki => ki.toObject());
+        const keyInfos = await this._getKeys();
+        return keyInfos.length > 0;
     }
 
     /**
@@ -95,6 +96,28 @@ class IFrameApi {
         }
 
         return true;
+    }
+
+    /**
+     * @returns {Promise<AccountInfo[]>}
+     */
+    async _getAccounts() {
+        if (BrowserDetection.isIOS() || BrowserDetection.isSafari()) {
+            return /** @type {AccountInfo[]} */ (CookieJar.eat(true));
+        } else {
+            return await AccountStore.instance.list();
+        }
+    }
+
+    /**
+     * @returns {Promise<KeyInfo[]>}
+     */
+    async _getKeys() {
+        if (BrowserDetection.isIOS() || BrowserDetection.isSafari()) {
+            return /** @type {KeyInfo[]} */ (CookieJar.eat());
+        } else {
+            return await KeyStore.instance.list();
+        }
     }
 }
 
