@@ -86,9 +86,9 @@ export class KeyguardClient {
 
     /* IFRAME REQUESTS */
 
-    public async list(listFromLegacyStore?: boolean, requestBehavior = this._defaultIframeBehavior)
+    public async list(fromLegacyStore?: boolean, requestBehavior = this._defaultIframeBehavior)
     : Promise<KeyguardRequest.KeyInfoObject[]> {
-        return this._request(requestBehavior, KeyguardCommand.LIST, [listFromLegacyStore]);
+        return this._request(requestBehavior, KeyguardCommand.LIST, [fromLegacyStore]);
     }
 
     public async migrateAccountsToKeys(requestBehavior = this._defaultIframeBehavior): Promise<void> {

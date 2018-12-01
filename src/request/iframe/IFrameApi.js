@@ -8,11 +8,11 @@
 class IFrameApi {
     /**
      * @param {Rpc.State | null} state
-     * @param {boolean} [listFromLegacyStore] - Deprecated, only for database migration
+     * @param {boolean} [fromLegacyStore] - Deprecated, only for database migration
      * @returns {Promise<KeyInfoObject[]>}
      */
-    async list(state, listFromLegacyStore) {
-        if (listFromLegacyStore) {
+    async list(state, fromLegacyStore) {
+        if (fromLegacyStore) {
             /** @type {AccountInfo[]} */
             let accounts = [];
             if (BrowserDetection.isIOS() || BrowserDetection.isSafari()) {
@@ -25,7 +25,6 @@ class IFrameApi {
 
             // Convert to KeyInfoObjects
             await loadNimiq();
-
             return KeyStore.accounts2Keys(accounts, true);
         }
 

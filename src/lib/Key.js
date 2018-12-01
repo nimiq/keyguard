@@ -2,6 +2,14 @@
 
 class Key {
     /**
+     * @param {Uint8Array} input
+     * @returns {string}
+     */
+    static deriveId(input) {
+        return Nimiq.BufferUtils.toHex(Nimiq.Hash.blake2b(input).subarray(0, 6));
+    }
+
+    /**
      * @param {Uint8Array} secret
      * @param {Key.Type} [type]
      * @param {boolean} [hasPin]
@@ -119,7 +127,7 @@ class Key {
         const input = this._type === Key.Type.LEGACY
             ? Nimiq.PublicKey.derive(new Nimiq.PrivateKey(this._secret)).toAddress().serialize()
             : this._secret;
-        return Nimiq.BufferUtils.toHex(Nimiq.Hash.blake2b(input).subarray(0, 6));
+        return Key.deriveId(input);
     }
 }
 

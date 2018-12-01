@@ -202,7 +202,7 @@ class KeyStore {
     static accounts2Keys(accounts, withAccount) {
         return accounts.map(account => {
             const address = Nimiq.Address.fromUserFriendlyAddress(account.userFriendlyAddress);
-            const legacyKeyId = Nimiq.BufferUtils.toHex(Nimiq.Hash.blake2b(address.serialize()).subarray(0, 6));
+            const legacyKeyId = Key.deriveId(address.serialize());
 
             /** @type {KeyInfoObject} */
             const keyObject = {
