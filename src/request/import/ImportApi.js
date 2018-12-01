@@ -59,7 +59,13 @@ class ImportApi extends TopLevelApi {
 
         // Components
         const fileImport = new FileImport($fileImport);
-        const passphraseBox = new PassphraseBox($passphraseBox, { buttonI18nTag: 'passphrasebox-log-in' });
+        const passphraseBox = new PassphraseBox(
+            $passphraseBox,
+            {
+                buttonI18nTag: 'passphrasebox-log-in',
+                hideCancel: true,
+            }
+        );
         const passphraseSetterBox = new PassphraseSetterBox($passphraseSetterBox);
 
         // Events
