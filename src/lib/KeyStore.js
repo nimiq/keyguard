@@ -193,8 +193,9 @@ class KeyStore {
         }
     }
 
+    // eslint-disable-next-line valid-jsdoc
     /**
-     * @param {AccountInfo[] & {encryptedKeyPair?: Uint8Array}} accounts
+     * @param {(AccountInfo & {encryptedKeyPair?: Uint8Array})[]} accounts
      * @param {boolean} [withAccount]
      * @returns {KeyInfoObject[]|KeyRecord[]}
      */
