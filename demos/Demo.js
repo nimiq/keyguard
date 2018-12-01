@@ -1,33 +1,54 @@
 class Demo {
     static serve() {
         const server = new Rpc.RpcServer('*');
-        server.onRequest('setUpKey',
-            (state, keyPassphrase) => Demo.setUpKey(keyPassphrase).then(() => 'setUpKey'));
-        server.onRequest('tearDownKey',
-            () => Demo.tearDownKey().then(() => 'tearDownKey'));
+        server.onRequest('setUpLegacyAccounts',
+            (state) => Demo.setUpLegacyAccounts().then(() => 'setUpLegacyAccounts done'));
         server.onRequest('list', () => Demo.list());
         server.init();
     }
 
-    static async setUpKey(keyPassphrase) {
-        const entropy = new Nimiq.Entropy(Nimiq.BufferUtils.fromHex(Demo.ENTROPY));
-
-        const secret = entropy.serialize();
-        const key = new Key(secret, Key.Type.BIP39);
-        const passphrase = keyPassphrase ? Nimiq.BufferUtils.fromAscii(keyPassphrase) : undefined;
-        await KeyStore.instance.put(key, passphrase);
+    static async setUpLegacyAccounts() {
+        await this._createDummyAccountStore();
     }
 
-    static async tearDownKey() {
-        const entropy = new Nimiq.Entropy(Nimiq.BufferUtils.fromHex(Demo.ENTROPY));
+    static async _createDummyAccountStore() {
+        // create database
+        const db = await new Promise((resolve, reject) => {
+            const request = window.indexedDB.open(AccountStore.ACCOUNT_DATABASE, AccountStore.VERSION);
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+            request.onupgradeneeded = () => {
+                const _db = request.result;
+                _db.createObjectStore(AccountStore.ACCOUNT_DATABASE, { keyPath: 'userFriendlyAddress' });
+            };
+        });
 
-        const secret = entropy.serialize();
-        const key = new Key(secret, Key.Type.BIP39);
-        await KeyStore.instance.remove(key.id);
+        // add account to database
+        /**
+         * @type {AccountRecord}
+         */
+        const deprecatedAccountRecord = {
+            userFriendlyAddress: 'NQ71 CT4K 7R9R EHSB 7HY9 TSTP XNRQ L2RK 8U4U',
+            type: 'high',
+            label: 'Dummy Account 1',
+            encryptedKeyPair: Uint8Array.from([0x01, 0x08, 0x18, 0xb1, 0x0b, 0x3e, 0x07, 0x2d, 0x4e, 0x52, 0x39, 0x3e, 0x80, 0x22, 0x17, 0x4d, 0x7d, 0x0a, 0x2d, 0x07, 0x87, 0x8d, 0xf0, 0x9f, 0xc5, 0x31, 0x2a, 0x6b, 0x0e, 0xb6, 0xc7, 0x45, 0xb3, 0xcc, 0x45, 0x11, 0x2c, 0xef, 0xcb, 0xe5, 0x91, 0xf8, 0x26, 0xbd, 0xbf, 0x03, 0x19, 0x7f, 0x4e, 0x8c, 0x66, 0xc9, 0x33, 0xe5]),
+        }
+        await this._addEntryToDatabase(db, AccountStore.ACCOUNT_DATABASE, deprecatedAccountRecord);
+
+        db.close();
+    }
+
+    static async _addEntryToDatabase(db, objectStoreName, entry) {
+        return new Promise((resolve, reject) => {
+            const request = db.transaction([objectStoreName], 'readwrite')
+                .objectStore(objectStoreName)
+                .put(entry);
+            request.onsuccess = () => resolve();
+            request.onerror = () => reject(request.error);
+        });
     }
 
     static async list() {
         return (await KeyStore.instance.list()).map(ki => ki.toObject());
     }
 }
-Demo.ENTROPY = 'abb107d2c9adafed0b2ff41c0cfbe4ad4352b11362c5ca83bb4fc7faa7d4cf69';

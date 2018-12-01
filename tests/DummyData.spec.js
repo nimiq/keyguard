@@ -46,35 +46,23 @@ Dummy.keyInfos = [
 /** @type {KeyInfoObject[]} */
 Dummy.keyInfoObjects = [
     {
-        id: '2ec615522906',
-        type: Key.Type.LEGACY,
-        encrypted: true,
-        hasPin: false,
-    },
-    {
-        id: 'ef553f34a779',
-        type: Key.Type.BIP39,
-        encrypted: false,
-        hasPin: false,
-    },
-];
-
-/** @type {KeyRecord[]} */
-Dummy.keyRecords = [
-    {
         id: Dummy.keyInfos[0].id,
         type: Dummy.keyInfos[0].type,
         encrypted: Dummy.keyInfos[0].encrypted,
         hasPin: Dummy.keyInfos[0].hasPin,
-        secret: Dummy.encryptedKeys[0],
     },
     {
         id: Dummy.keyInfos[1].id,
         type: Dummy.keyInfos[1].type,
         encrypted: Dummy.keyInfos[1].encrypted,
         hasPin: Dummy.keyInfos[1].hasPin,
-        secret: Dummy.keys[1],
     },
+];
+
+/** @type {KeyRecord[]} */
+Dummy.keyRecords = [
+    Object.assign({}, Dummy.keyInfoObjects[0], { secret: Dummy.encryptedKeys[0] }),
+    Object.assign({}, Dummy.keyInfoObjects[1], { secret: Dummy.keys[1] }),
 ];
 
 /** @type {AccountInfo[]} */
