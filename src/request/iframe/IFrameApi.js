@@ -42,7 +42,7 @@ class IFrameApi {
 
     /**
      * @param {Rpc.State | null} state
-     * @returns {Promise<void>}
+     * @returns {Promise<boolean>}
      * @deprecated Only for database migration
      */
     async migrateAccountsToKeys(state) { // eslint-disable-line no-unused-vars
@@ -56,13 +56,14 @@ class IFrameApi {
         if (BrowserDetection.isIOS() || BrowserDetection.isSafari()) {
             // Set migrate flag cookie
             document.cookie = 'migrate=1;max-age=31536000';
-            return;
+            return true;
         }
 
         // Requires Nimiq lib to be loaded, to derive keyIds from legacy accounts' user-friendly addresses
         await loadNimiq();
 
         await KeyStore.instance.migrateAccountsToKeys();
+        return true;
     }
 
     /**
