@@ -75,6 +75,18 @@ Dummy.deprecatedAccountRecords = [
     Object.assign({}, Dummy.deprecatedAccountInfos[0], { encryptedKeyPair: Dummy.encryptedKeys[0] }),
 ];
 
+/** @type {KeyInfoObject[]} */
+Dummy.deprecatedAccount2KeyInfoObject = [{
+    id: '2ec615522906',
+    type: Key.Type.LEGACY,
+    encrypted: true,
+    hasPin: false,
+    legacyAccount: {
+        label: Dummy.deprecatedAccountInfos[0].label,
+        address: Nimiq.Address.fromUserFriendlyAddress(Dummy.deprecatedAccountInfos[0].userFriendlyAddress).serialize(),
+    },
+}];
+
 Dummy.keyInfoCookieEncoded = '0102ec615522906100ef553f34a779';
 
 /** @type {string} */

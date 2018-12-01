@@ -24,7 +24,7 @@ describe('IframeApi', () => {
         expect(CookieJar.eat).toHaveBeenCalledWith(true);
         expect(AccountStore.instance.list).not.toHaveBeenCalled();
         expect(KeyStore.instance.list).not.toHaveBeenCalled();
-        expect(listedAccounts).toEqual(Dummy.deprecatedAccountInfos);
+        expect(listedAccounts).toEqual(Dummy.deprecatedAccount2KeyInfoObject);
     });
 
     it('can list key info from cookies on iOS', async () => {
@@ -47,7 +47,7 @@ describe('IframeApi', () => {
         expect(CookieJar.eat).not.toHaveBeenCalled();
         expect(AccountStore.instance.list).toHaveBeenCalled();
         expect(KeyStore.instance.list).not.toHaveBeenCalled();
-        expect(listedAccounts).toEqual(Dummy.deprecatedAccountInfos);
+        expect(listedAccounts).toEqual(Dummy.deprecatedAccount2KeyInfoObject);
 
         await Dummy.Utils.deleteDummyAccountStore();
     });

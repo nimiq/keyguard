@@ -40,9 +40,12 @@ describe('KeyStore', () => {
         expect(key1.id).toEqual(Dummy.keyInfos[0].id);
         expect(key1.type).toEqual(Dummy.keyInfos[0].type);
         expect(key1.secret).toEqual(Dummy.keys[0]);
+        expect(key1.hasPin).toEqual(Dummy.keyInfos[0].hasPin);
+
         expect(key2.id).toEqual(Dummy.keyInfos[1].id);
         expect(key2.type).toEqual(Dummy.keyInfos[1].type);
         expect(key2.secret).toEqual(Dummy.keys[1]);
+        expect(key2.hasPin).toEqual(Dummy.keyInfos[1].hasPin);
     });
 
     it('can list keys', async () => {

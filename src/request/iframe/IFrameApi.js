@@ -17,9 +17,7 @@ class IFrameApi {
             let accounts = [];
             if (BrowserDetection.isIOS() || BrowserDetection.isSafari()) {
                 accounts = /** @type {AccountInfo[]} */ (CookieJar.eat(true));
-            }
-
-            if (listFromLegacyStore) {
+            } else {
                 accounts = await AccountStore.instance.list();
             }
 
@@ -31,7 +29,14 @@ class IFrameApi {
             return KeyStore.accounts2Keys(accounts, true);
         }
 
-        const keyInfos = await KeyStore.instance.list();
+        /** @type {KeyInfo[]} */
+        let keyInfos;
+        if (BrowserDetection.isIOS() || BrowserDetection.isSafari()) {
+            keyInfos = /** @type {KeyInfo[]} */ (CookieJar.eat());
+        } else {
+            keyInfos = await KeyStore.instance.list();
+        }
+
         return keyInfos.map(ki => ki.toObject());
     }
 
