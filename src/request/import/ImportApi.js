@@ -64,7 +64,7 @@ class ImportApi extends TopLevelApi {
             {
                 buttonI18nTag: 'passphrasebox-log-in',
                 hideCancel: true,
-            }
+            },
         );
         const passphraseSetterBox = new PassphraseSetterBox($passphraseSetterBox);
 

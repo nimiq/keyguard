@@ -2,6 +2,7 @@
 /* global KeyStore */
 /* global CookieJar */
 /* global I18n */
+/* global Errors */
 
 /**
  * A common parent class for pop-up requests.
@@ -67,6 +68,19 @@ class TopLevelApi { // eslint-disable-line no-unused-vars
         return new Promise((resolve, reject) => {
             this._resolve = resolve;
             this._reject = reject;
+
+            window.addEventListener('unhandledrejection', event => {
+                const error = /** @type {PromiseRejectionEvent} */(event).reason;
+                error.name = error.name === 'Error' ? Errors.Types.UNCLASSIFIED : error.name;
+                this.reject(error);
+                return false;
+            });
+
+            window.addEventListener('error', event => {
+                event.error.name = event.error.name === 'Error' ? Errors.Types.UNCLASSIFIED : event.error.name;
+                this.reject(event.error);
+                return false;
+            });
 
             this.onRequest(request).catch(reject);
         });
