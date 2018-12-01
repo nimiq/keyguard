@@ -1,5 +1,3 @@
-/* global Key */
-
 // eslint-disable-next-line no-unused-vars
 class KeyInfo {
     /**
@@ -48,13 +46,6 @@ class KeyInfo {
     }
 
     /**
-     * @type {string}
-     */
-    get userFriendlyId() {
-        return Key.idToUserFriendlyId(this._id);
-    }
-
-    /**
      * @returns {KeyInfoObject}
      */
     toObject() {
@@ -63,7 +54,6 @@ class KeyInfo {
             type: this.type,
             encrypted: this.encrypted,
             hasPin: this.hasPin,
-            // userFriendlyId: this.userFriendlyId,
         };
     }
 

@@ -39,11 +39,9 @@ describe('KeyStore', () => {
         if (!key1 || !key2) throw new Error();
         expect(key1.id).toEqual(Dummy.keyInfos[0].id);
         expect(key1.type).toEqual(Dummy.keyInfos[0].type);
-        expect(key1.userFriendlyId).toEqual(Dummy.keyInfos[0].userFriendlyId);
         expect(key1.secret).toEqual(Dummy.keys[0]);
         expect(key2.id).toEqual(Dummy.keyInfos[1].id);
         expect(key2.type).toEqual(Dummy.keyInfos[1].type);
-        expect(key2.userFriendlyId).toEqual(Dummy.keyInfos[1].userFriendlyId);
         expect(key2.secret).toEqual(Dummy.keys[1]);
     });
 

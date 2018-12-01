@@ -121,22 +121,6 @@ class Key {
             : this._secret;
         return Nimiq.BufferUtils.toHex(Nimiq.Hash.blake2b(input).subarray(0, 6));
     }
-
-    /**
-     * @type {string}
-     */
-    get userFriendlyId() {
-        return Key.idToUserFriendlyId(this.id);
-    }
-
-    /**
-     * @param {string} id
-     * @returns {string}
-     */
-    static idToUserFriendlyId(id) {
-        // Stub
-        return `UserFriendly ${id}`;
-    }
 }
 
 Key.Type = {
