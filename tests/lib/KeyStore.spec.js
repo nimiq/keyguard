@@ -103,7 +103,7 @@ describe('KeyStore', () => {
         expect(Nimiq.BufferUtils.equals(key2.secret, Dummy.keys[1])).toBe(true);
     });
 
-    it('can migrate accounts from deprecated AccountStore on non-iOS', async () => {
+    it('can migrate accounts', async () => {
         // clear key store and fill account store
         await Promise.all([
             Dummy.Utils.deleteDummyKeyStore(),
@@ -122,10 +122,12 @@ describe('KeyStore', () => {
         const key1 = await KeyStore.instance._get(Dummy.keyInfos[0].id);
         expect(key1).toEqual(Dummy.keyRecords[0]);
 
+        // TODO: Expect Accounts DB to be deleted
+
         await Dummy.Utils.deleteDummyAccountStore();
     });
 
-    it('can migrate accounts from deprecated AccountStore and deletes the cookie on iOS', async () => {
+    it('can migrate accounts on iOS', async () => {
         // clear key store and fill account store
         await Promise.all([
             Dummy.Utils.deleteDummyKeyStore(),
@@ -151,6 +153,10 @@ describe('KeyStore', () => {
         const key1 = await KeyStore.instance._get(Dummy.keyInfos[0].id);
         expect(key1).toEqual(Dummy.keyRecords[0]);
 
+        // TODO: Expect Accounts DB to not be deleted
+
         await Dummy.Utils.deleteDummyAccountStore();
     });
+
+    // TODO: can migrate accounts on iOS when migration cookie is set
 });

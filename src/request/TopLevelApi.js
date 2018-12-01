@@ -52,7 +52,7 @@ class TopLevelApi { // eslint-disable-line no-unused-vars
      */
     async request(state, request) {
         /**
-         * Detect migrate signalling set by the iframe
+         * Detect migration cookie set by the iframe
          *
          * @deprecated Only for database migration
          */
