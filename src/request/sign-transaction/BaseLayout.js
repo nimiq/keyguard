@@ -120,10 +120,10 @@ class BaseLayout {
                 this._passphraseBox.onPassphraseIncorrect();
                 return;
             }
-            reject(new Errors.Keyguard(e.message));
+            reject(new Errors.Core(e.message));
         }
         if (!key) {
-            reject(new Errors.Keyguard('Failed to retrieve key'));
+            reject(new Errors.KeyIdNotFound());
             return;
         }
 

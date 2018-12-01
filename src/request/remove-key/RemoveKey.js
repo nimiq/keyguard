@@ -91,7 +91,7 @@ class RemoveKey {
             this._reject(new Errors.Core(e.message));
         }
         if (!key) {
-            this._reject(new Errors.Keyguard('keyId not found'));
+            this._reject(new Errors.KeyIdNotFound());
         }
         await KeyStore.instance.remove(this._request.keyInfo.id);
 

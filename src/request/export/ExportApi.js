@@ -37,7 +37,7 @@ class ExportApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         // Check that key exists.
         const keyInfo = await KeyStore.instance.getInfo(request.keyId);
         if (!keyInfo) {
-            throw new Errors.InvalidRequest('Unknown keyId');
+            throw new Errors.KeyIdNotFound();
         }
 
         // Validate labels.

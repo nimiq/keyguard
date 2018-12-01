@@ -82,7 +82,7 @@ class DeriveAddress {
         }
 
         if (!key) {
-            this._reject(new Errors.Keyguard('keyId not found'));
+            this._reject(new Errors.KeyIdNotFound());
             return false;
         }
         const masterKey = new Nimiq.Entropy(key.secret).toExtendedPrivateKey();

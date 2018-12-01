@@ -60,7 +60,7 @@ class SignTransactionApi extends TopLevelApi {
         // Check that key exists.
         const keyInfo = await KeyStore.instance.getInfo(request.keyId);
         if (!keyInfo) {
-            throw new Errors.InvalidRequest('Unknown keyId');
+            throw new Errors.KeyIdNotFound();
         }
 
         // Check that keyPath is given.

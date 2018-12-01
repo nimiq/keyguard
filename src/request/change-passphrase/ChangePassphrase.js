@@ -72,7 +72,7 @@ class ChangePassphrase {
             this._reject(new Errors.Core(e.message));
         }
         if (!key) {
-            this._reject(new Errors.Keyguard('keyId not found'));
+            this._reject(new Errors.KeyIdNotFound());
         }
         this._key = key;
         this._setPassphraseBox.reset();

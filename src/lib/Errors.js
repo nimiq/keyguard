@@ -10,6 +10,7 @@ Errors.Types = {
 Errors.Messages = {
     GOTO_CREATE: 'GOTO_CREATE',
     CANCEL: 'CANCEL',
+    KEY_ID_NOT_FOUND: 'keyId not found',
 };
 
 Errors.InvalidRequest = class extends Error {
@@ -32,6 +33,14 @@ Errors.Keyguard = class extends Error {
     /** @param {string} message */
     constructor(message = '') {
         super(message);
+        this.name = Errors.Types.KEYGUARD;
+    }
+};
+
+Errors.KeyIdNotFound = class extends Error {
+    /** @param {string} message - will be ignored and set to Errors.Messages.KEY_ID_NOT_FOUND */
+    constructor(message = '') { // eslint-disable-line no-unused-vars
+        super(Errors.Messages.KEY_ID_NOT_FOUND);
         this.name = Errors.Types.KEYGUARD;
     }
 };

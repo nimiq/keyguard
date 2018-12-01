@@ -85,11 +85,11 @@ class SignMessage {
                 this._passphraseBox.onPassphraseIncorrect();
                 return;
             }
-            reject(new Errors.Keyguard(e.message));
+            reject(new Errors.Core(e.message));
         }
 
         if (!key) {
-            reject(new Errors.Keyguard('keyId not found'));
+            reject(new Errors.KeyIdNotFound());
             return;
         }
 
