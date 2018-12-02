@@ -13,6 +13,6 @@ export enum KeyguardErrorMessages {
     KEY_ID_NOT_FOUND = 'keyId not found',
 }*/
 
-import '../../src/lib/Errors.js';
+import '../../src/lib/ErrorConstants.js';
 
-export const Errors = window.errorContainer.Errors!; // tslint:disable-line variable-name
+export const Errors = window.errorContainer.ErrorConstants!; // tslint:disable-line variable-name

@@ -3,5 +3,7 @@ declare type KeyguardErrors=  {
 }
 
 declare interface Window {
-    errorContainer: any
+    errorContainer: {
+        ErrorConstants: any
+    }
 }
