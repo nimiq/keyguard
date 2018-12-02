@@ -124,4 +124,8 @@ declare namespace KeyguardRequest {
         | SignTransactionRequest
         | DeriveAddressRequest
         | SignMessageRequest
+
+    type KeyguardErrors = {
+        Types: {}
+    }
 }
