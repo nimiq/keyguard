@@ -15,4 +15,4 @@ export enum KeyguardErrorMessages {
 
 import '../../src/lib/Errors.js';
 
-export const KeyguardErrorTypes = errorContainer.Errors!.Types;
+export const Errors = errorContainer.Errors!;
