@@ -177,6 +177,7 @@ class KeyStore {
         const keys = await AccountStore.instance.dangerousListPlain();
         keys.forEach(async key => {
             const address = Nimiq.Address.fromUserFriendlyAddress(key.userFriendlyAddress);
+
             const legacyKeyId = Nimiq.BufferUtils.toHex(Nimiq.Hash.blake2b(address.serialize()).subarray(0, 6));
 
             const keyRecord = /** @type {KeyRecord} */ {
