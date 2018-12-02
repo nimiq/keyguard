@@ -1,23 +1,12 @@
+/* global ErrorConstants */
+
 class Errors { }
-
-Errors.Types = {
-    INVALID_REQUEST: 'InvalidRequest', // these are used for request parsing errors.
-    CORE: 'Core', // these are coming from core
-    KEYGUARD: 'Keyguard', // these are used for internal keyguard Errors.
-    UNCLASSIFIED: 'Unclassified',
-};
-
-Errors.Messages = {
-    GOTO_CREATE: 'GOTO_CREATE',
-    CANCEL: 'CANCEL',
-    KEY_ID_NOT_FOUND: 'keyId not found',
-};
 
 Errors.InvalidRequest = class extends Error {
     /** @param { string } message */
     constructor(message = '') {
         super(message);
-        this.name = Errors.Types.INVALID_REQUEST;
+        this.name = ErrorConstants.Types.INVALID_REQUEST;
     }
 };
 
@@ -25,7 +14,7 @@ Errors.Core = class extends Error {
     /** @param {string} message */
     constructor(message = '') {
         super(message);
-        this.name = Errors.Types.CORE;
+        this.name = ErrorConstants.Types.CORE;
     }
 };
 
@@ -33,48 +22,30 @@ Errors.Keyguard = class extends Error {
     /** @param {string} message */
     constructor(message = '') {
         super(message);
-        this.name = Errors.Types.KEYGUARD;
+        this.name = ErrorConstants.Types.KEYGUARD;
     }
 };
 
 Errors.KeyIdNotFound = class extends Error {
-    /** @param {string} message - will be ignored and set to Errors.Messages.KEY_ID_NOT_FOUND */
+    /** @param {string} message - will be ignored and set to ErrorConstants.Messages.KEY_ID_NOT_FOUND */
     constructor(message = '') { // eslint-disable-line no-unused-vars
-        super(Errors.Messages.KEY_ID_NOT_FOUND);
-        this.name = Errors.Types.KEYGUARD;
+        super(ErrorConstants.Messages.KEY_ID_NOT_FOUND);
+        this.name = ErrorConstants.Types.KEYGUARD;
     }
 };
 
 Errors.Cancel = class extends Error {
-    /** @param {string} message - will be ignored and set to Errors.Messages.CANCEL */
+    /** @param {string} message - will be ignored and set to ErrorConstants.Messages.CANCEL */
     constructor(message = '') { // eslint-disable-line no-unused-vars
-        super(Errors.Messages.CANCEL);
-        this.name = Errors.Types.KEYGUARD;
+        super(ErrorConstants.Messages.CANCEL);
+        this.name = ErrorConstants.Types.KEYGUARD;
     }
 };
 
 Errors.GoToCreate = class extends Error {
-    /** @param {string} message - will be ignored and set to Errors.Messages.GOTO_CREATE */
+    /** @param {string} message - will be ignored and set to ErrorConstants.Messages.GOTO_CREATE */
     constructor(message = '') { // eslint-disable-line no-unused-vars
-        super(Errors.Messages.GOTO_CREATE);
-        this.name = Errors.Types.KEYGUARD;
+        super(ErrorConstants.Messages.GOTO_CREATE);
+        this.name = ErrorConstants.Types.KEYGUARD;
     }
 };
-
-// export constants to client via side effects
-window.errorContainer = {
-    Errors: { // eslint-disable-line no-undef
-        Types: Errors.Types,
-        Messages: Errors.Messages,
-    },
-};
-
-try {
-    // @ts-ignore
-    if (errorContainer) { // eslint-disable-line no-undef
-        // @ts-ignore
-
-    }
-} catch (e) {
-    // do nothing
-}
