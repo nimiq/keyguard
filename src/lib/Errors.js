@@ -60,3 +60,9 @@ Errors.GoToCreate = class extends Error {
         this.name = Errors.Types.KEYGUARD;
     }
 };
+
+// @ts-ignore
+if (errorContainer) {
+    // @ts-ignore
+    errorContainer.Errors = Errors
+}

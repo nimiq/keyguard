@@ -91,10 +91,9 @@ class KeyStore {
      */
     async _get(id) {
         const db = await this.connect();
-        const request = db.transaction([KeyStore.DB_KEY_STORE_NAME])
-            .objectStore(KeyStore.DB_KEY_STORE_NAME)
-            .get(id);
-        return KeyStore._requestToPromise(request);
+        const transaction = db.transaction([KeyStore.DB_KEY_STORE_NAME]);
+        const request = transaction.objectStore(KeyStore.DB_KEY_STORE_NAME).get(id);
+        return KeyStore._requestToPromise(request, transaction);
     }
 
     /**
@@ -124,10 +123,9 @@ class KeyStore {
      */
     async _put(keyRecord) {
         const db = await this.connect();
-        const request = db.transaction([KeyStore.DB_KEY_STORE_NAME], 'readwrite')
-            .objectStore(KeyStore.DB_KEY_STORE_NAME)
-            .put(keyRecord);
-        return KeyStore._requestToPromise(request);
+        const transaction = db.transaction([KeyStore.DB_KEY_STORE_NAME], 'readwrite');
+        const request = transaction.objectStore(KeyStore.DB_KEY_STORE_NAME).put(keyRecord);
+        return KeyStore._requestToPromise(request, transaction);
     }
 
     /**
@@ -136,10 +134,9 @@ class KeyStore {
      */
     async remove(id) {
         const db = await this.connect();
-        const request = db.transaction([KeyStore.DB_KEY_STORE_NAME], 'readwrite')
-            .objectStore(KeyStore.DB_KEY_STORE_NAME)
-            .delete(id);
-        return KeyStore._requestToPromise(request);
+        const transaction = db.transaction([KeyStore.DB_KEY_STORE_NAME], 'readwrite');
+        const request = transaction.objectStore(KeyStore.DB_KEY_STORE_NAME).delete(id);
+        return KeyStore._requestToPromise(request, transaction);
     }
 
     /**
@@ -180,6 +177,7 @@ class KeyStore {
         const keys = await AccountStore.instance.dangerousListPlain();
         keys.forEach(async key => {
             const address = Nimiq.Address.fromUserFriendlyAddress(key.userFriendlyAddress);
+
             const legacyKeyId = Nimiq.BufferUtils.toHex(Nimiq.Hash.blake2b(address.serialize()).subarray(0, 6));
 
             const keyRecord = /** @type {KeyRecord} */ {
@@ -207,14 +205,30 @@ class KeyStore {
 
     /**
      * @param {IDBRequest} request
+     * @param {IDBTransaction} transaction
      * @returns {Promise<*>}
      * @private
      */
-    static _requestToPromise(request) {
-        return new Promise((resolve, reject) => {
-            request.onsuccess = () => resolve(request.result);
-            request.onerror = () => reject(request.error);
-        });
+    static async _requestToPromise(request, transaction) {
+        const done = await Promise.all([
+            new Promise((resolve, reject) => {
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            }),
+            new Promise((resolve, reject) => {
+                transaction.oncomplete = () => resolve();
+                transaction.onabort = () => reject(transaction.error);
+                transaction.onerror = () => reject(transaction.error);
+            }),
+        ]);
+
+        // In case of rejection of any one of the above promises,
+        // the 'await' keyword makes sure that the error is thrown
+        // and this async function is itself rejected.
+
+        // Promise.all returns an array of resolved promises, but we are only
+        // interested in the request.result, which is the first item.
+        return done[0];
     }
 
     /**
