@@ -60,11 +60,16 @@ Errors.GoToCreate = class extends Error {
         this.name = Errors.Types.KEYGUARD;
     }
 };
+
+// export constants to client via side effects
 try {
     // @ts-ignore
     if (errorContainer) { // eslint-disable-line no-undef
         // @ts-ignore
-        errorContainer.Errors = Errors; // eslint-disable-line no-undef
+        errorContainer.Errors = { // eslint-disable-line no-undef
+            Types: Errors.Types,
+            Messages: Errors.Messages,
+        };
     }
 } catch (e) {
     // do nothing
