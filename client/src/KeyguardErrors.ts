@@ -15,4 +15,4 @@ export enum KeyguardErrorMessages {
 
 import '../../src/lib/Errors.js';
 
-export const Errors = errorContainer.Errors!;
+export const Errors = errorContainer.Errors!; // tslint:disable-line variable-name

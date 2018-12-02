@@ -60,9 +60,12 @@ Errors.GoToCreate = class extends Error {
         this.name = Errors.Types.KEYGUARD;
     }
 };
-
-// @ts-ignore
-if (errorContainer) {
+try {
     // @ts-ignore
-    errorContainer.Errors = Errors
+    if (errorContainer) { // eslint-disable-line no-undef
+        // @ts-ignore
+        errorContainer.Errors = Errors; // eslint-disable-line no-undef
+    }
+} catch (e) {
+    // do nothing
 }
