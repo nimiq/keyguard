@@ -62,14 +62,18 @@ Errors.GoToCreate = class extends Error {
 };
 
 // export constants to client via side effects
+window.errorContainer = {
+    Errors: { // eslint-disable-line no-undef
+        Types: Errors.Types,
+        Messages: Errors.Messages,
+    },
+};
+
 try {
     // @ts-ignore
     if (errorContainer) { // eslint-disable-line no-undef
         // @ts-ignore
-        errorContainer.Errors = { // eslint-disable-line no-undef
-            Types: Errors.Types,
-            Messages: Errors.Messages,
-        };
+
     }
 } catch (e) {
     // do nothing

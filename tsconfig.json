@@ -58,6 +58,7 @@
     "types/Nimiq.d.ts",
     "types/Keyguard.d.ts",
     "client/types/KeyguardRequest.d.ts",
+    "client/types/KeyguardErrors.d.ts",
     "types/RpcServer.d.ts",
     "src/**/*.js",
     "tests/**/*.js"

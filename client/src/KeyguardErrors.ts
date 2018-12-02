@@ -1,4 +1,4 @@
-const errorContainer: { Errors?: KeyguardRequest.KeyguardErrors } = { };
+// const errorContainer: { Errors?: KeyguardRequest.KeyguardErrors } = { };
 
 /*export enum KeyguardErrorTypes {
     INVALID_REQUEST = 'InvalidRequest', // these are used for request parsing errors.
@@ -15,4 +15,4 @@ export enum KeyguardErrorMessages {
 
 import '../../src/lib/Errors.js';
 
-export const Errors = errorContainer.Errors!; // tslint:disable-line variable-name
+export const Errors = window.errorContainer.Errors!; // tslint:disable-line variable-name
