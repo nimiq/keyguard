@@ -6,7 +6,7 @@ export class KeyguardClient {
     private static readonly DEFAULT_ENDPOINT =
         window.location.origin === 'https://accounts.nimiq.com' ? 'https://keyguard-next.nimiq.com'
         : window.location.origin === 'https://accounts.nimiq-testnet.com' ? 'https://keyguard-next.nimiq-testnet.com'
-        : 'http://localhost:8000/src';
+        : `${location.protocol}//${location.hostname}:8000/src`;
 
     private readonly _endpoint: string;
     private _redirectClient: RedirectRpcClient;
