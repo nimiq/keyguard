@@ -26,26 +26,20 @@ Errors.Keyguard = class extends Error {
     }
 };
 
-Errors.KeyIdNotFound = class extends Error {
-    /** @param {string} message - will be ignored and set to ErrorConstants.Messages.KEY_ID_NOT_FOUND */
-    constructor(message = '') { // eslint-disable-line no-unused-vars
+Errors.KeyIdNotFound = class extends Errors.Keyguard {
+    constructor() {
         super(ErrorConstants.Messages.KEY_ID_NOT_FOUND);
-        this.name = ErrorConstants.Types.KEYGUARD;
     }
 };
 
-Errors.Cancel = class extends Error {
-    /** @param {string} message - will be ignored and set to ErrorConstants.Messages.CANCEL */
-    constructor(message = '') { // eslint-disable-line no-unused-vars
+Errors.Cancel = class extends Errors.Keyguard {
+    constructor() {
         super(ErrorConstants.Messages.CANCEL);
-        this.name = ErrorConstants.Types.KEYGUARD;
     }
 };
 
-Errors.GoToCreate = class extends Error {
-    /** @param {string} message - will be ignored and set to ErrorConstants.Messages.GOTO_CREATE */
-    constructor(message = '') { // eslint-disable-line no-unused-vars
+Errors.GoToCreate = class extends Errors.Keyguard {
+    constructor() {
         super(ErrorConstants.Messages.GOTO_CREATE);
-        this.name = ErrorConstants.Types.KEYGUARD;
     }
 };
