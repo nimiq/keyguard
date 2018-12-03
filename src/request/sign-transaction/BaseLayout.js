@@ -82,7 +82,6 @@ class BaseLayout {
             hideInput: !request.keyInfo.encrypted,
             buttonI18nTag: 'passphrasebox-confirm-tx',
             minLength: request.keyInfo.hasPin ? 6 : undefined,
-            hideCancel: true,
         });
 
         this._passphraseBox.on(
