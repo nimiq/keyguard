@@ -1,6 +1,7 @@
 /* global Nimiq */
 /* global I18n */
 /* global PassphraseInput */
+/* global AnimationUtils */
 
 class PassphraseSetterBox extends Nimiq.Observable {
     /**
@@ -89,6 +90,7 @@ class PassphraseSetterBox extends Nimiq.Observable {
 
         this.$el.classList.remove('repeat');
     }
+
     /**
      * @returns {Promise<void>}
      */

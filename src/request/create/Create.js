@@ -1,6 +1,7 @@
 /* global Nimiq */
 /* global IdenticonSelector */
 /* global PassphraseSetterBox */
+/* global PassphraseInput */
 /* global DownloadKeyfile */
 /* global PrivacyAgent */
 /* global RecoveryWords */

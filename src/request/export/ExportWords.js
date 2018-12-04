@@ -92,9 +92,11 @@ class ExportWords extends Nimiq.Observable {
                 return;
             }
             this._reject(new Errors.CoreError(e.message));
+            return;
         }
         if (!key) {
             this._reject(new Errors.KeyNotFoundError());
+            return;
         }
 
         this.setKey(key);
@@ -124,6 +126,7 @@ class ExportWords extends Nimiq.Observable {
                 break;
             default:
                 this._reject(new Errors.KeyguardError('Unknown mnemonic type'));
+                return;
             }
         }
         this._recoveryWords.setWords(words);

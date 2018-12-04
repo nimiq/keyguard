@@ -1,6 +1,7 @@
 /* global Nimiq */
 /* global PassphraseBox */
 /* global PassphraseSetterBox */
+/* global PassphraseInput */
 /* global KeyStore */
 /* global Errors */
 

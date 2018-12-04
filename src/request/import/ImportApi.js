@@ -3,6 +3,7 @@
 /* global ImportWords */
 /* global PassphraseBox */
 /* global PassphraseSetterBox */
+/* global PassphraseInput */
 /* global Nimiq */
 /* global Key */
 /* global KeyStore */
@@ -94,7 +95,6 @@ class ImportApi extends TopLevelApi {
 
     /**
      * Determine key type and forward user to Passphrase input
-
      * @param {string} encryptedKeyBase64 - Encrypted KeyPair in base64 format
      */
     _onFileImported(encryptedKeyBase64) {
