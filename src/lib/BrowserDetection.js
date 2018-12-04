@@ -17,7 +17,7 @@ class BrowserDetection { // eslint-disable-line no-unused-vars
     /**
      * @returns {boolean}
      */
-    static isIos() {
+    static isIOS() {
         // @ts-ignore (MSStream is not on window)
         return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     }
@@ -25,8 +25,8 @@ class BrowserDetection { // eslint-disable-line no-unused-vars
     /**
      * @returns {number[]}
      */
-    static iosVersion() {
-        if (BrowserDetection.isIos()) {
+    static iOSVersion() {
+        if (BrowserDetection.isIOS()) {
             const v = (navigator.appVersion).match(/OS (\d+)_(\d+)_?(\d+)?/);
             if (v) {
                 return [parseInt(v[1], 10), parseInt(v[2], 10), parseInt(v[3] || '0', 10)];
@@ -39,8 +39,8 @@ class BrowserDetection { // eslint-disable-line no-unused-vars
     /**
      * @returns {boolean}
      */
-    static isBadIos() {
-        const version = this.iosVersion();
+    static isBadIOS() {
+        const version = this.iOSVersion();
         return version[0] < 11 || (version[0] === 11 && version[1] === 2); // Only 11.2 has the WASM bug
     }
 }

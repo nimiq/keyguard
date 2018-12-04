@@ -17,46 +17,46 @@ describe('IframeApi', () => {
     });
 
     it('can list deprecated accounts from cookies on iOS.', async () => {
-        spyOn(BrowserDetection, 'isIos').and.returnValue(true);
+        spyOn(BrowserDetection, 'isIOS').and.returnValue(true);
 
-        const listedAccounts = await iframeApi.list(null, true);
+        const listedAccounts = await iframeApi.listLegacyAccounts(null);
 
         expect(CookieJar.eat).toHaveBeenCalledWith(true);
         expect(AccountStore.instance.list).not.toHaveBeenCalled();
         expect(KeyStore.instance.list).not.toHaveBeenCalled();
-        expect(listedAccounts).toEqual(Dummy.deprecatedAccountInfos);
+        expect(listedAccounts).toEqual(Dummy.deprecatedAccount2KeyInfoObject);
     });
 
     it('can list key info from cookies on iOS', async () => {
-        spyOn(BrowserDetection, 'isIos').and.returnValue(true);
+        spyOn(BrowserDetection, 'isIOS').and.returnValue(true);
 
         const listedKeys = await iframeApi.list(null);
 
-        expect(CookieJar.eat).toHaveBeenCalledWith(undefined);
+        expect(CookieJar.eat).toHaveBeenCalledWith();
         expect(AccountStore.instance.list).not.toHaveBeenCalled();
         expect(KeyStore.instance.list).not.toHaveBeenCalled();
-        expect(listedKeys).toEqual(Dummy.keyInfos);
+        expect(listedKeys).toEqual(Dummy.keyInfoObjects);
     });
 
     it('can list deprecated accounts from AccountStore on non-iOS', async () => {
         await Dummy.Utils.createDummyAccountStore();
-        spyOn(BrowserDetection, 'isIos').and.returnValue(false);
+        spyOn(BrowserDetection, 'isIOS').and.returnValue(false);
 
-        const listedAccounts = await iframeApi.list(null, true);
+        const listedAccounts = await iframeApi.listLegacyAccounts(null);
 
         expect(CookieJar.eat).not.toHaveBeenCalled();
         expect(AccountStore.instance.list).toHaveBeenCalled();
         expect(KeyStore.instance.list).not.toHaveBeenCalled();
-        expect(listedAccounts).toEqual(Dummy.deprecatedAccountInfos);
+        expect(listedAccounts).toEqual(Dummy.deprecatedAccount2KeyInfoObject);
 
         await Dummy.Utils.deleteDummyAccountStore();
     });
 
     it('can list key info from KeyStore on non-iOS', async () => {
         await Dummy.Utils.createDummyKeyStore();
-        spyOn(BrowserDetection, 'isIos').and.returnValue(false);
+        spyOn(BrowserDetection, 'isIOS').and.returnValue(false);
 
-        const listedKeyObjects = /** @type {KeyInfoObject[]} */ (await iframeApi.list(null));
+        const listedKeyObjects = /** @type {KeyguardRequest.KeyInfoObject[]} */ (await iframeApi.list(null));
         const listedKeyInfos = listedKeyObjects.map(kio => KeyInfo.fromObject(kio));
 
         expect(CookieJar.eat).not.toHaveBeenCalled();
@@ -69,7 +69,7 @@ describe('IframeApi', () => {
 
     it('can migrate by setting the migration flag on iOS', async () => {
         let cookieSet = false;
-        spyOn(BrowserDetection, 'isIos').and.returnValue(true);
+        spyOn(BrowserDetection, 'isIOS').and.returnValue(true);
         spyOnProperty(document, 'cookie', 'set').and.callFake((/** @type {string} */ cookie) => {
             expect(cookie.startsWith('migrate=1;')).toBe(true);
             cookieSet = true;
@@ -83,7 +83,7 @@ describe('IframeApi', () => {
 
     it('can migrate by copying keys from deprecated accounts on non-iOS', async () => {
         await Dummy.Utils.createDummyAccountStore();
-        spyOn(BrowserDetection, 'isIos').and.returnValue(false);
+        spyOn(BrowserDetection, 'isIOS').and.returnValue(false);
 
         await iframeApi.migrateAccountsToKeys(null);
         expect(KeyStore.instance.migrateAccountsToKeys).toHaveBeenCalled();

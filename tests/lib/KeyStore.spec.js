@@ -39,12 +39,13 @@ describe('KeyStore', () => {
         if (!key1 || !key2) throw new Error();
         expect(key1.id).toEqual(Dummy.keyInfos[0].id);
         expect(key1.type).toEqual(Dummy.keyInfos[0].type);
-        expect(key1.userFriendlyId).toEqual(Dummy.keyInfos[0].userFriendlyId);
         expect(key1.secret).toEqual(Dummy.keys[0]);
+        expect(key1.hasPin).toEqual(Dummy.keyInfos[0].hasPin);
+
         expect(key2.id).toEqual(Dummy.keyInfos[1].id);
         expect(key2.type).toEqual(Dummy.keyInfos[1].type);
-        expect(key2.userFriendlyId).toEqual(Dummy.keyInfos[1].userFriendlyId);
         expect(key2.secret).toEqual(Dummy.keys[1]);
+        expect(key2.hasPin).toEqual(Dummy.keyInfos[1].hasPin);
     });
 
     it('can list keys', async () => {
@@ -102,13 +103,13 @@ describe('KeyStore', () => {
         expect(Nimiq.BufferUtils.equals(key2.secret, Dummy.keys[1])).toBe(true);
     });
 
-    it('can migrate accounts from deprecated AccountStore on non-iOS', async () => {
+    it('can migrate accounts', async () => {
         // clear key store and fill account store
         await Promise.all([
             Dummy.Utils.deleteDummyKeyStore(),
             Dummy.Utils.createDummyAccountStore(),
         ]);
-        spyOn(BrowserDetection, 'isIos').and.returnValue(false);
+        spyOn(BrowserDetection, 'isIOS').and.returnValue(false);
 
         let cookieSet = false;
         spyOnProperty(document, 'cookie', 'set').and.callFake(() => {
@@ -121,16 +122,18 @@ describe('KeyStore', () => {
         const key1 = await KeyStore.instance._get(Dummy.keyInfos[0].id);
         expect(key1).toEqual(Dummy.keyRecords[0]);
 
+        // TODO: Expect Accounts DB to be deleted
+
         await Dummy.Utils.deleteDummyAccountStore();
     });
 
-    it('can migrate accounts from deprecated AccountStore and deletes the cookie on iOS', async () => {
+    it('can migrate accounts on iOS', async () => {
         // clear key store and fill account store
         await Promise.all([
             Dummy.Utils.deleteDummyKeyStore(),
             Dummy.Utils.createDummyAccountStore(),
         ]);
-        spyOn(BrowserDetection, 'isIos').and.returnValue(true);
+        spyOn(BrowserDetection, 'isIOS').and.returnValue(true);
 
         let migrationCookieDeleted = false,
             accountsCookieDeleted = false;
@@ -150,6 +153,10 @@ describe('KeyStore', () => {
         const key1 = await KeyStore.instance._get(Dummy.keyInfos[0].id);
         expect(key1).toEqual(Dummy.keyRecords[0]);
 
+        // TODO: Expect Accounts DB to not be deleted
+
         await Dummy.Utils.deleteDummyAccountStore();
     });
+
+    // TODO: can migrate accounts on iOS when migration cookie is set
 });

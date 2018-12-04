@@ -86,13 +86,14 @@ export class KeyguardClient {
 
     /* IFRAME REQUESTS */
 
-    public async list(listFromLegacyStore?: boolean, requestBehavior = this._defaultIframeBehavior)
-    : Promise<KeyguardRequest.KeyInfoObject[] | KeyguardRequest.KeyInfoObject[]> {
-        return this._request(requestBehavior, KeyguardCommand.LIST, [listFromLegacyStore]);
+    public async list(requestBehavior = this._defaultIframeBehavior)
+    : Promise<KeyguardRequest.KeyInfoObject[]> {
+        return this._request(requestBehavior, KeyguardCommand.LIST, []);
     }
 
-    public async migrateAccountsToKeys(requestBehavior = this._defaultIframeBehavior): Promise<void> {
-        return this._request(requestBehavior, KeyguardCommand.MIGRATE_ACCOUNTS_TO_KEYS, []);
+    public async hasKeys(requestBehavior = this._defaultIframeBehavior)
+    : Promise<boolean> {
+        return this._request(requestBehavior, KeyguardCommand.HAS_KEYS, []);
     }
 
     public async deriveAddresses(keyId: string, paths: string[], requestBehavior = this._defaultIframeBehavior)
@@ -103,6 +104,21 @@ export class KeyguardClient {
     public async releaseKey(keyId: string, requestBehavior = this._defaultIframeBehavior)
     : Promise<true> {
         return this._request(requestBehavior, KeyguardCommand.RELEASE_KEY, [keyId]);
+    }
+
+    public async listLegacyAccounts(requestBehavior = this._defaultIframeBehavior)
+    : Promise<KeyguardRequest.LegacyKeyInfoObject[]> {
+        return this._request(requestBehavior, KeyguardCommand.LIST_LEGACY_ACCOUNTS, []);
+    }
+
+    public async hasLegacyAccounts(requestBehavior = this._defaultIframeBehavior)
+    : Promise<boolean> {
+        return this._request(requestBehavior, KeyguardCommand.HAS_LEGACY_ACCOUNTS, []);
+    }
+
+    public async migrateAccountsToKeys(requestBehavior = this._defaultIframeBehavior)
+    : Promise<boolean> {
+        return this._request(requestBehavior, KeyguardCommand.MIGRATE_ACCOUNTS_TO_KEYS, []);
     }
 
     /* PRIVATE METHODS */

@@ -174,32 +174,63 @@ class KeyStore {
      * @deprecated Only for database migration
      */
     async migrateAccountsToKeys() {
-        const keys = await AccountStore.instance.dangerousListPlain();
-        keys.forEach(async key => {
-            const address = Nimiq.Address.fromUserFriendlyAddress(key.userFriendlyAddress);
-            const legacyKeyId = Nimiq.BufferUtils.toHex(Nimiq.Hash.blake2b(address.serialize()).subarray(0, 6));
+        const accounts = await AccountStore.instance.dangerousListPlain();
+        const keysRecords = /** @type {KeyRecord[]} */ (KeyStore.accounts2Keys(accounts));
+        await Promise.all(keysRecords.map(keyRecord => this._put(keyRecord)));
 
-            const keyRecord = /** @type {KeyRecord} */ {
-                id: legacyKeyId,
-                type: Key.Type.LEGACY,
-                encrypted: true,
-                hasPin: key.type === 'low',
-                secret: key.encryptedKeyPair,
-            };
-
-            await this._put(keyRecord);
-        });
-
-        // FIXME Uncomment after/for testing (and also adapt KeyStoreIndexeddb.spec.js)
+        // FIXME Uncomment after/for testing (and also adapt KeyStore.spec.js)
         // await AccountStore.instance.drop();
 
-        if (BrowserDetection.isIos() || BrowserDetection.isSafari()) {
+        if (BrowserDetection.isIOS() || BrowserDetection.isSafari()) {
             // Delete migrate cookie
             document.cookie = 'migrate=0; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 
             // Delete accounts cookie
             document.cookie = 'accounts=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
         }
+    }
+
+    // eslint-disable-next-line valid-jsdoc
+    /**
+     * @param {(AccountInfo|AccountRecord)[]} accounts
+     * @param {boolean} [withAccount]
+     * @returns {KeyguardRequest.KeyInfoObject[]|KeyguardRequest.LegacyKeyInfoObject[]|KeyRecord[]}
+     */
+    static accounts2Keys(accounts, withAccount) {
+        return accounts.map(account => {
+            const address = Nimiq.Address.fromUserFriendlyAddress(account.userFriendlyAddress);
+            const legacyKeyId = Key.deriveId(address.serialize());
+
+            /** @type {KeyguardRequest.KeyInfoObject} */
+            const keyObject = {
+                id: legacyKeyId,
+                type: Key.Type.LEGACY,
+                encrypted: true,
+                hasPin: account.type === 'low',
+            };
+
+            if (withAccount) {
+                /** @type {KeyguardRequest.LegacyKeyInfoObject} */
+                const legacyKeyObject = Object.assign({}, keyObject, {
+                    legacyAccount: {
+                        label: account.label,
+                        address: address.serialize(),
+                    },
+                });
+
+                return legacyKeyObject;
+            }
+
+            if (/** @type {AccountRecord} */ (account).encryptedKeyPair) {
+                /** @type {KeyRecord} */
+                const keyRecord = Object.assign({}, keyObject, {
+                    secret: /** @type {AccountRecord} */ (account).encryptedKeyPair,
+                });
+                return keyRecord;
+            }
+
+            return keyObject;
+        });
     }
 
     /**

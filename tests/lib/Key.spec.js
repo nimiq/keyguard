@@ -12,6 +12,7 @@ describe('Key', () => {
 
         const signature2 = key.sign('m/0\'', data);
         expect(signature2.verify(pubkey, data)).toBe(true);
+
         expect(signature1).toEqual(signature2);
     });
 
@@ -26,6 +27,7 @@ describe('Key', () => {
         const pubkey2 = key.derivePublicKey('m/0\'');
         const signature2 = key.sign('m/0\'', data);
         expect(signature2.verify(pubkey2, data)).toBe(true);
+
         expect(signature1).not.toEqual(signature2);
     });
 

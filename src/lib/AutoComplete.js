@@ -70,8 +70,8 @@ class AutoComplete { // eslint-disable-line no-unused-vars
 
             that.updateSC = /** @param {boolean} resize @param {Element} next */ (resize, next) => {
                 const rect = that.getBoundingClientRect();
-                const scrollX = window.pageXOffset || document.documentElement.scrollLeft;
-                const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+                const scrollX = window.pageXOffset || (document.documentElement && document.documentElement.scrollLeft);
+                const scrollY = window.pageYOffset || (document.documentElement && document.documentElement.scrollTop);
                 that.sc.style.left = `${Math.round(rect.left + scrollX + o.offsetLeft)}px`;
                 that.sc.style.top = `${Math.round(rect.bottom + scrollY + o.offsetTop)}px`;
                 that.sc.style.width = `${Math.round(rect.right - rect.left)}px`; // outerWidth

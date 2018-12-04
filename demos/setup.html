@@ -4,18 +4,18 @@
     <meta charset="UTF-8">
     <title>Demo SetUp</title>
     <script src="https://cdn.nimiq-network.com/branches/master/web.js"></script>
-    <script src="../src/lib/Key.js"></script>
     <script src="../src/lib/KeyInfo.js"></script>
     <script src="../src/lib/KeyStore.js"></script>
+    <script src="../src/lib/AccountStore.js"></script>
     <script src="../node_modules/@nimiq/rpc/dist/rpc.umd.js"></script>
     <script src="Demo.js"></script>
 </head>
 <body>
 <script>
-    (async () => {
-        await Nimiq.WasmHelper.doImportBrowser();
-        Nimiq.GenesisConfig.test();
-    })();
+    // (async () => {
+    //     await Nimiq.WasmHelper.doImportBrowser();
+    //     Nimiq.GenesisConfig.test();
+    // })();
 
     Demo.serve();
 </script>

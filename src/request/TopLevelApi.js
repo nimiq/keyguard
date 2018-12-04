@@ -43,25 +43,21 @@ class TopLevelApi { // eslint-disable-line no-unused-vars
 
         I18n.initialize(window.TRANSLATIONS, 'en');
         I18n.translateDom();
-
-        window.addEventListener('beforeunload', () => {
-            this.reject(new Error('Keyguard popup closed'));
-        });
     }
 
     /**
      * Method to be called by the Keyguard client via RPC
      *
-     * @param {Rpc.State | null} state
+     * @param {Rpc.State?} state
      * @param {KeyguardRequest.KeyguardRequest} request
      */
     async request(state, request) {
         /**
-         * Detect migrate signalling set by the iframe
+         * Detect migration cookie set by the iframe
          *
          * @deprecated Only for database migration
          */
-        if ((BrowserDetection.isIos() || BrowserDetection.isSafari()) && this._hasMigrateFlag()) {
+        if ((BrowserDetection.isIOS() || BrowserDetection.isSafari()) && TopLevelApi._hasMigrateFlag()) {
             await KeyStore.instance.migrateAccountsToKeys();
         }
 
@@ -105,7 +101,7 @@ class TopLevelApi { // eslint-disable-line no-unused-vars
      */
     async resolve(result) {
         // Keys might have changed, so update cookie for iOS and Safari users
-        if (BrowserDetection.isIos() || BrowserDetection.isSafari()) {
+        if (BrowserDetection.isIOS() || BrowserDetection.isSafari()) {
             const keys = await KeyStore.instance.list();
             CookieJar.fill(keys);
         }
@@ -126,7 +122,7 @@ class TopLevelApi { // eslint-disable-line no-unused-vars
      * @deprecated Only for database migration
      * @returns {boolean}
      */
-    _hasMigrateFlag() {
+    static _hasMigrateFlag() {
         const match = document.cookie.match(new RegExp('migrate=([^;]+)'));
         return !!match && match[1] === '1';
     }

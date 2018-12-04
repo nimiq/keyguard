@@ -1,11 +1,10 @@
-/* global Nimiq */
+/* global loadNimiq */
 /* global AccountStore */
 /* global Key */
 /* global KeyInfo */
 /* global KeyStore */
 beforeAll(async () => {
-    Nimiq.GenesisConfig.test();
-    await Nimiq.WasmHelper.doImportBrowser();
+    await loadNimiq();
 });
 
 const Dummy = {};
@@ -44,22 +43,26 @@ Dummy.keyInfos = [
     ),
 ];
 
-/** @type {KeyRecord[]} */
-Dummy.keyRecords = [
+/** @type {KeyguardRequest.KeyInfoObject[]} */
+Dummy.keyInfoObjects = [
     {
         id: Dummy.keyInfos[0].id,
         type: Dummy.keyInfos[0].type,
         encrypted: Dummy.keyInfos[0].encrypted,
         hasPin: Dummy.keyInfos[0].hasPin,
-        secret: Dummy.encryptedKeys[0],
     },
     {
         id: Dummy.keyInfos[1].id,
         type: Dummy.keyInfos[1].type,
         encrypted: Dummy.keyInfos[1].encrypted,
         hasPin: Dummy.keyInfos[1].hasPin,
-        secret: Dummy.keys[1],
     },
+];
+
+/** @type {KeyRecord[]} */
+Dummy.keyRecords = [
+    Object.assign({}, Dummy.keyInfoObjects[0], { secret: Dummy.encryptedKeys[0] }),
+    Object.assign({}, Dummy.keyInfoObjects[1], { secret: Dummy.keys[1] }),
 ];
 
 /** @type {AccountInfo[]} */
@@ -75,6 +78,18 @@ Dummy.deprecatedAccountInfos = [
 Dummy.deprecatedAccountRecords = [
     Object.assign({}, Dummy.deprecatedAccountInfos[0], { encryptedKeyPair: Dummy.encryptedKeys[0] }),
 ];
+
+/** @type {KeyguardRequest.LegacyKeyInfoObject[]} */
+Dummy.deprecatedAccount2KeyInfoObject = [{
+    id: '2ec615522906',
+    type: Key.Type.LEGACY,
+    encrypted: true,
+    hasPin: false,
+    legacyAccount: {
+        label: Dummy.deprecatedAccountInfos[0].label,
+        address: Nimiq.Address.fromUserFriendlyAddress(Dummy.deprecatedAccountInfos[0].userFriendlyAddress).serialize(),
+    },
+}];
 
 Dummy.keyInfoCookieEncoded = '0102ec615522906100ef553f34a779';
 
@@ -98,7 +113,7 @@ Dummy.Utils = {
             const request = db.transaction([objectStoreName], 'readwrite')
                 .objectStore(objectStoreName)
                 .put(entry);
-            request.onsuccess = () => resolve(request.result);
+            request.onsuccess = () => resolve();
             request.onerror = () => reject(request.error);
         });
     },

@@ -36,14 +36,6 @@ type AccountRecord = AccountInfo & {
     encryptedKeyPair: Uint8Array
 }
 
-type KeyInfoObject = {
-    id: string
-    type: Key.Type
-    encrypted: boolean
-    hasPin: boolean
-    userFriendlyId?: string
-}
-
 type KeyRecord = {
     id: string
     type: Key.Type
