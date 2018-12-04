@@ -8,6 +8,7 @@
 /* global Key */
 /* global KeyStore */
 /* global Errors */
+/* global Utf8Tools */
 
 class ImportApi extends TopLevelApi {
     constructor() {
@@ -202,8 +203,7 @@ class ImportApi extends TopLevelApi {
             let encryptionKey = null;
 
             if (passphrase !== null) {
-                // TODO Support for UTF-8 passwords
-                encryptionKey = Nimiq.BufferUtils.fromAscii(passphrase);
+                encryptionKey = Utf8Tools.stringToUtf8ByteArray(passphrase);
             }
 
             if (this._encryptedKey.length === Nimiq.CryptoUtils.ENCRYPTION_SIZE) {

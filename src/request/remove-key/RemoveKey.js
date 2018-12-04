@@ -1,9 +1,9 @@
 /* global ExportWords */
 /* global ExportFile */
 /* global PassphraseBox */
-/* global Nimiq */
 /* global KeyStore */
 /* global Errors */
+/* global Utf8Tools */
 
 class RemoveKey {
     /**
@@ -78,7 +78,7 @@ class RemoveKey {
      */
     async _passphraseSubmitted(phrase) {
         document.body.classList.add('loading');
-        const passphraseBuffer = phrase ? Nimiq.BufferUtils.fromAscii(phrase) : undefined;
+        const passphraseBuffer = phrase ? Utf8Tools.stringToUtf8ByteArray(phrase) : undefined;
         /** @type {Key?} */
         let key = null;
         try {

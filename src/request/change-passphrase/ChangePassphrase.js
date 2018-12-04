@@ -1,9 +1,9 @@
-/* global Nimiq */
 /* global PassphraseBox */
 /* global PassphraseSetterBox */
 /* global PassphraseInput */
 /* global KeyStore */
 /* global Errors */
+/* global Utf8Tools */
 
 class ChangePassphrase {
     /**
@@ -60,7 +60,7 @@ class ChangePassphrase {
      */
     async _passphraseSubmitted(phrase) {
         document.body.classList.add('loading');
-        const passphrase = phrase ? Nimiq.BufferUtils.fromAscii(phrase) : undefined;
+        const passphrase = phrase ? Utf8Tools.stringToUtf8ByteArray(phrase) : undefined;
         /** @type {Key?} */
         let key = null;
         try {
@@ -104,7 +104,7 @@ class ChangePassphrase {
         // In any case, the key is not encrypted with a 6-digit PIN anymore.
         this._key.hasPin = false;
 
-        const passphrase = phrase ? Nimiq.BufferUtils.fromAscii(phrase) : undefined;
+        const passphrase = phrase ? Utf8Tools.stringToUtf8ByteArray(phrase) : undefined;
 
         await KeyStore.instance.put(this._key, passphrase);
 

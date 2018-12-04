@@ -3,6 +3,7 @@
 /* global PassphraseBox */
 /* global KeyStore */
 /* global Errors */
+/* global Utf8Tools */
 
 class DeriveAddress {
     /**
@@ -66,7 +67,7 @@ class DeriveAddress {
      */
     async _initIdenticonSelector(passphrase) {
         const passphraseBuffer = passphrase && passphrase.length > 0
-            ? Nimiq.BufferUtils.fromAscii(passphrase)
+            ? Utf8Tools.stringToUtf8ByteArray(passphrase)
             : undefined;
 
         /** @type {Key|null} */
