@@ -9,6 +9,7 @@
 /* global KeyStore */
 /* global ProgressIndicator */
 /* global Utf8Tools */
+/* global TopLevelApi */
 
 class Create {
     /**
@@ -134,7 +135,7 @@ class Create {
      * @param {KeyguardRequest.CreateRequest} request
      */
     async finish(request) {
-        document.body.classList.add('loading');
+        TopLevelApi.setLoading();
         const key = new Key(this._selectedEntropy.serialize());
         const passphrase = this._passphrase.length > 0 ? Utf8Tools.stringToUtf8ByteArray(this._passphrase) : undefined;
         await KeyStore.instance.put(key, passphrase);

@@ -3,6 +3,7 @@
 /* global KeyStore */
 /* global Errors */
 /* global Utf8Tools */
+/* global TopLevelApi */
 
 class ChangePassphrase {
     /**
@@ -58,7 +59,7 @@ class ChangePassphrase {
      * @param {string} phrase
      */
     async _passphraseSubmitted(phrase) {
-        document.body.classList.add('loading');
+        TopLevelApi.setLoading();
         const passphrase = phrase ? Utf8Tools.stringToUtf8ByteArray(phrase) : undefined;
         /** @type {Key?} */
         let key = null;
@@ -66,7 +67,7 @@ class ChangePassphrase {
             key = await KeyStore.instance.get(this._request.keyInfo.id, passphrase);
         } catch (e) {
             if (e.message === 'Invalid key') {
-                document.body.classList.remove('loading');
+                TopLevelApi.removeLoading();
                 this._enterPassphraseBox.onPassphraseIncorrect();
                 return;
             }
@@ -81,14 +82,14 @@ class ChangePassphrase {
         this._setPassphraseBox.reset();
         window.location.hash = ChangePassphrase.Pages.SET_PASSPHRASE;
         this._setPassphraseBox.focus();
-        document.body.classList.remove('loading');
+        TopLevelApi.removeLoading();
     }
 
     /**
      * @param {string} phrase
      */
     async _finish(phrase) {
-        document.body.classList.add('loading');
+        TopLevelApi.setLoading();
         if (!this._key) {
             this._reject(new Errors.KeyguardError('Bypassed Password'));
             return;

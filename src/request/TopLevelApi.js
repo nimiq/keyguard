@@ -118,9 +118,18 @@ class TopLevelApi { // eslint-disable-line no-unused-vars
         this._reject(error);
     }
 
+    static setLoading() {
+        document.body.classList.add('loading');
+    }
+
+    static removeLoading() {
+        document.body.classList.remove('loading');
+    }
+
     /**
      * @deprecated Only for database migration
      * @returns {boolean}
+     * @private
      */
     static _hasMigrateFlag() {
         const match = document.cookie.match(new RegExp('migrate=([^;]+)'));
