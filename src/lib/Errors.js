@@ -28,7 +28,7 @@ Errors.Keyguard = class extends Error {
 
 Errors.KeyIdNotFound = class extends Errors.Keyguard {
     constructor() {
-        super(ErrorConstants.Messages.KEY_ID_NOT_FOUND);
+        super(ErrorConstants.Messages.KEY_NOT_FOUND);
     }
 };
 

@@ -14,9 +14,9 @@ const ErrorConstants = {
         // specifically used to trigger a redirect to create after returning to caller
         GOTO_CREATE: 'GOTO_CREATE',
         // used to signal a user initiated cancelation of the request
-        CANCEL: 'CANCEL',
+        CANCEL: 'CANCELED',
         // used to signal that a given keyId no longer exist in KG, to be treated by caller.
-        KEY_ID_NOT_FOUND: 'keyId not found',
+        KEY_NOT_FOUND: 'keyId not found',
     },
 };
 
