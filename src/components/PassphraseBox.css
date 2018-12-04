@@ -94,6 +94,10 @@
     transition: opacity 300ms;
 }
 
+.passphrase-box .password-hint.shake{
+    color: var(--nimiq-red);
+}
+
 .passphrase-box.input-valid .password-hint,
 .passphrase-box.input-valid .password-skip {
     opacity: 0;

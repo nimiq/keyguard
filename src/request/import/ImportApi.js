@@ -144,6 +144,11 @@ class ImportApi extends TopLevelApi {
             this._passphraseBox.onPassphraseIncorrect();
             return;
         }
+        if (passphrase && passphrase.length < PassphraseInput.DEFAULT_MIN_LENGTH) {
+            this._passphraseSetterBox.onPassphraseTooShort();
+            this.$loading.style.display = 'none';
+            return;
+        }
 
         /** @type {{keyPath: string, address: Uint8Array}[]} */
         const addresses = [];

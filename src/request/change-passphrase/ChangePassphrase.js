@@ -93,12 +93,17 @@ class ChangePassphrase {
             this._reject(new Errors.KeyguardError('Bypassed Password'));
             return;
         }
+        if (phrase && phrase.length < PassphraseInput.DEFAULT_MIN_LENGTH) {
+            this._setPassphraseBox.onPassphraseTooShort();
+            document.body.classList.remove('loading');
+            return;
+        }
 
         // In this request, the user can only set a new password (min length: 8) or leave a key unencrypted.
         // In any case, the key is not encrypted with a 6-digit PIN anymore.
         this._key.hasPin = false;
 
-        const passphrase = phrase && phrase.length > 7 ? Nimiq.BufferUtils.fromAscii(phrase) : undefined;
+        const passphrase = phrase ? Nimiq.BufferUtils.fromAscii(phrase) : undefined;
 
         await KeyStore.instance.put(this._key, passphrase);
 
