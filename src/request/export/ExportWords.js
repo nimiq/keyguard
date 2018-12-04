@@ -25,14 +25,14 @@ class ExportWords extends Nimiq.Observable {
         this._key = null;
 
         /** @type {HTMLElement} */
-        const $privacyPage = document.getElementById(ExportWords.Pages.EXPORT_WORDS_PRIVACY)
+        const $privacyPage = document.getElementById(ExportWords.Pages.PRIVACY)
                           || this._buildPrivacy();
 
         /** @type {HTMLElement} */
-        const $recoveryWordsPage = document.getElementById(ExportWords.Pages.EXPORT_WORDS_SHOW_WORDS)
+        const $recoveryWordsPage = document.getElementById(ExportWords.Pages.SHOW_WORDS)
                                 || this._buildRecoveryWords();
         /** @type {HTMLElement} */
-        const $validateWordsPage = document.getElementById(ExportWords.Pages.EXPORT_WORDS_VALIDATE_WORDS)
+        const $validateWordsPage = document.getElementById(ExportWords.Pages.VALIDATE_WORDS)
                                 || this._buildValidateWords();
 
         /** @type {HTMLElement} */
@@ -71,7 +71,7 @@ class ExportWords extends Nimiq.Observable {
 
     run() {
         this._privacyWarningPassphraseBox.reset();
-        window.location.hash = ExportWords.Pages.EXPORT_WORDS_PRIVACY;
+        window.location.hash = ExportWords.Pages.PRIVACY;
         this._privacyWarningPassphraseBox.focus();
     }
 
@@ -100,11 +100,11 @@ class ExportWords extends Nimiq.Observable {
         }
 
         this.setKey(key);
-        this.fire(ExportWords.Events.EXPORT_WORDS_KEY_CHANGED, {
+        this.fire(ExportWords.Events.KEY_CHANGED, {
             key,
             isProtected: this._request.keyInfo.encrypted,
         });
-        window.location.hash = ExportWords.Pages.EXPORT_WORDS_SHOW_WORDS;
+        window.location.hash = ExportWords.Pages.SHOW_WORDS;
         document.body.classList.remove('loading');
     }
 
@@ -131,17 +131,17 @@ class ExportWords extends Nimiq.Observable {
         }
         this._recoveryWords.setWords(words);
         this._validateWords.setWords(words);
-        /** @type {HTMLElement} */(document.getElementById(ExportWords.Pages.EXPORT_WORDS_PRIVACY))
+        /** @type {HTMLElement} */(document.getElementById(ExportWords.Pages.PRIVACY))
             .classList.toggle('key-active', this._key !== null);
     }
 
     _goToValidateWords() {
         this._validateWords.reset();
-        window.location.hash = ExportWords.Pages.EXPORT_WORDS_VALIDATE_WORDS;
+        window.location.hash = ExportWords.Pages.VALIDATE_WORDS;
     }
 
     _goToShowWords() {
-        window.location.hash = ExportWords.Pages.EXPORT_WORDS_SHOW_WORDS;
+        window.location.hash = ExportWords.Pages.SHOW_WORDS;
     }
 
     _finish() {
@@ -153,7 +153,7 @@ class ExportWords extends Nimiq.Observable {
 
     _buildPrivacy() {
         const $el = document.createElement('div');
-        $el.id = ExportWords.Pages.EXPORT_WORDS_PRIVACY;
+        $el.id = ExportWords.Pages.PRIVACY;
         $el.classList.add('page', 'nq-card');
         $el.innerHTML = `
         <div class="page-header nq-card-header">
@@ -181,7 +181,7 @@ class ExportWords extends Nimiq.Observable {
 
     _buildRecoveryWords() {
         const $el = document.createElement('div');
-        $el.id = ExportWords.Pages.EXPORT_WORDS_SHOW_WORDS;
+        $el.id = ExportWords.Pages.SHOW_WORDS;
         $el.classList.add('page', 'nq-card');
         $el.innerHTML = `
         <div class="page-header nq-card-header">
@@ -205,7 +205,7 @@ class ExportWords extends Nimiq.Observable {
 
     _buildValidateWords() {
         const $el = document.createElement('div');
-        $el.id = ExportWords.Pages.EXPORT_WORDS_VALIDATE_WORDS;
+        $el.id = ExportWords.Pages.VALIDATE_WORDS;
         $el.classList.add('page', 'nq-card');
         $el.innerHTML = `
         <div class="page-header nq-card-header">
@@ -225,11 +225,11 @@ class ExportWords extends Nimiq.Observable {
 }
 
 ExportWords.Pages = {
-    EXPORT_WORDS_PRIVACY: 'privacy',
-    EXPORT_WORDS_SHOW_WORDS: 'recovery-words',
-    EXPORT_WORDS_VALIDATE_WORDS: 'validate-words',
+    PRIVACY: 'privacy',
+    SHOW_WORDS: 'recovery-words',
+    VALIDATE_WORDS: 'validate-words',
 };
 
 ExportWords.Events = {
-    EXPORT_WORDS_KEY_CHANGED: 'export_words_key_changed',
+    KEY_CHANGED: 'key_changed',
 };

@@ -79,7 +79,7 @@ class ExportFile extends Nimiq.Observable {
         }
 
         this.setKey(key, this._request.keyInfo.encrypted);
-        this.fire(ExportFile.Events.EXPORT_FILE_KEY_CHANGED, {
+        this.fire(ExportFile.Events.KEY_CHANGED, {
             key,
             isProtected: this._request.keyInfo.encrypted,
         });
@@ -144,5 +144,5 @@ ExportFile.Pages = {
 };
 
 ExportFile.Events = {
-    EXPORT_FILE_KEY_CHANGED: 'export_file_key_changed',
+    KEY_CHANGED: 'key_changed',
 };
