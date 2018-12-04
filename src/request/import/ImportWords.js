@@ -3,14 +3,17 @@
 /* global PrivacyAgent */
 /* global RecoveryWords */
 /* global Identicon */
+/* global Errors */
 
 class ImportWords {
     /**
      * @param {KeyguardRequest.ImportRequest} request
      * @param {Function} resolve
+     * @param {Function} reject
      */
-    constructor(request, resolve) {
+    constructor(request, resolve, reject) {
         this._resolve = resolve;
+        this._reject = reject;
         this._defaultKeyPath = request.defaultKeyPath;
 
         // Pages
@@ -130,7 +133,7 @@ class ImportWords {
             break;
         }
         default:
-            throw new Error('Invalid mnemonic type');
+            this._reject(new Errors.KeyguardError('Invalid mnemonic type'));
         }
     }
 

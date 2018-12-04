@@ -9,7 +9,7 @@ class Export {
      * the Build functions of ExportWords and ExportFile to see the general Structure.
      * @param {KeyguardRequest.ParsedSimpleRequest} request
      * @param {Function} resolve
-     * @param {Function} reject - 'keyId not found','Unknown mnemonic type','Unsupported type','Rounds out-of-bounds'
+     * @param {Function} reject
      */
     constructor(request, resolve, reject) {
         this._resolve = resolve;
@@ -46,9 +46,9 @@ class Export {
         this.$wordsButton.addEventListener('click', () => this._exportWordsHandler.run());
         this.$fileButton.addEventListener('click', () => this._exportFileHandler.run());
 
-        this._exportFileHandler.on(ExportFile.Events.EXPORT_FILE_KEY_CHANGED,
+        this._exportFileHandler.on(ExportFile.Events.KEY_CHANGED,
             e => this._exportWordsHandler.setKey(e.key));
-        this._exportWordsHandler.on(ExportWords.Events.EXPORT_WORDS_KEY_CHANGED,
+        this._exportWordsHandler.on(ExportWords.Events.KEY_CHANGED,
             e => this._exportFileHandler.setKey(e.key, e.isProtected));
     }
 

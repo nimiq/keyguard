@@ -3,6 +3,8 @@
 /* global PassphraseBox */
 /* global Nimiq */
 /* global KeyStore */
+/* global Errors */
+
 class RemoveKey {
     /**
      * if a complete page is missing it will be created.
@@ -11,7 +13,7 @@ class RemoveKey {
      * the Build functions of ExportWords and ExportFile to see the general Structure.
      * @param {KeyguardRequest.ParsedSimpleRequest} request
      * @param {Function} resolve
-     * @param {Function} reject - 'keyId not found','Unknown mnemonic type','Unsupported type','Rounds out-of-bounds'
+     * @param {Function} reject
      */
     constructor(request, resolve, reject) {
         this._resolve = resolve;
@@ -59,9 +61,9 @@ class RemoveKey {
             $removeKey.classList.toggle('show-passphrase-box', false);
         });
 
-        this._exportFileHandler.on(ExportFile.Events.EXPORT_FILE_KEY_CHANGED,
+        this._exportFileHandler.on(ExportFile.Events.KEY_CHANGED,
             e => this._exportWordsHandler.setKey(e.key));
-        this._exportWordsHandler.on(ExportWords.Events.EXPORT_WORDS_KEY_CHANGED,
+        this._exportWordsHandler.on(ExportWords.Events.KEY_CHANGED,
             e => this._exportFileHandler.setKey(e.key, e.isProtected));
     }
 
@@ -76,25 +78,31 @@ class RemoveKey {
      */
     async _passphraseSubmitted(phrase) {
         document.body.classList.add('loading');
+        const passphraseBuffer = phrase ? Nimiq.BufferUtils.fromAscii(phrase) : undefined;
+        /** @type {Key?} */
+        let key = null;
         try {
-            const passphraseBuffer = phrase ? Nimiq.BufferUtils.fromAscii(phrase) : undefined;
-            const key = await KeyStore.instance.get(this._request.keyInfo.id, passphraseBuffer);
-            if (!key) {
-                this._reject(new Error('keyId not found'));
-            }
-            await KeyStore.instance.remove(this._request.keyInfo.id);
-
-            /** @type {KeyguardRequest.SimpleResult} */
-            const result = {
-                success: true,
-            };
-            this._resolve(result);
+            key = await KeyStore.instance.get(this._request.keyInfo.id, passphraseBuffer);
         } catch (e) {
             if (e.message === 'Invalid key') {
                 document.body.classList.remove('loading');
                 this._removeKeyPassphraseBox.onPassphraseIncorrect();
-            } else this._reject(e);
+                return;
+            }
+            this._reject(new Errors.CoreError(e.message));
+            return;
         }
+        if (!key) {
+            this._reject(new Errors.KeyNotFoundError());
+            return;
+        }
+        await KeyStore.instance.remove(this._request.keyInfo.id);
+
+        /** @type {KeyguardRequest.SimpleResult} */
+        const result = {
+            success: true,
+        };
+        this._resolve(result);
     }
 
     _buildRemoveKey() {

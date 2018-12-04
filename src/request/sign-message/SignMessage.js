@@ -4,6 +4,7 @@
 /* global PassphraseBox */
 /* global Utf8Tools */
 /* global KeyStore */
+/* global Errors */
 
 class SignMessage {
     /**
@@ -80,16 +81,17 @@ class SignMessage {
         try {
             key = await KeyStore.instance.get(request.keyInfo.id, passphraseBuf);
         } catch (e) {
-            console.error(e);
-            document.body.classList.remove('loading');
-
-            // Assume the passphrase was wrong
-            this._passphraseBox.onPassphraseIncorrect();
+            if (e.message === 'Invalid key') {
+                document.body.classList.remove('loading');
+                this._passphraseBox.onPassphraseIncorrect();
+                return;
+            }
+            reject(new Errors.CoreError(e.message));
             return;
         }
 
         if (!key) {
-            reject(new Error('Failed to retrieve key'));
+            reject(new Errors.KeyNotFoundError());
             return;
         }
 
@@ -98,7 +100,7 @@ class SignMessage {
         // Validate that derived address is the same as the request's 'signer' address
         const derivedAddress = publicKey.toAddress();
         if (!derivedAddress.equals(request.signer)) {
-            reject(new Error('Provided keyPath does not refer to provided signer address'));
+            reject(new Errors.KeyguardError('Provided keyPath does not refer to provided signer address'));
             return;
         }
 

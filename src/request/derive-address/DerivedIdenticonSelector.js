@@ -1,6 +1,7 @@
 /* global Nimiq */
 /* global I18n */
 /* global Identicon */
+/* global Errors */
 
 class DerivedIdenticonSelector extends Nimiq.Observable {
     /**
@@ -83,7 +84,13 @@ class DerivedIdenticonSelector extends Nimiq.Observable {
 
     nextPage() {
         // This check is mainly to make Typescript happy, as "this._masterKey is potentially undefined"
-        if (!this._masterKey) throw new Error('Master key not set, call init() first');
+        if (!this._masterKey) {
+            this.fire(
+                DerivedIdenticonSelector.Events.MASTER_KEY_NOT_SET,
+                new Errors.KeyguardError('Master key not set, call init() first'),
+            );
+            return;
+        }
 
         this._page += 1;
         if (this._page > Math.floor(this._pathsToDerive.length / 7)) this._page = 1;
@@ -160,7 +167,12 @@ class DerivedIdenticonSelector extends Nimiq.Observable {
      * @private
      */
     _onSelectionConfirmed() {
-        if (!this._selectedAddress) throw new Error('Invalid state');
+        if (!this._selectedAddress) { // something went wrong
+            this._clearSelection(); // clear current selection and
+            this.nextPage(); // switch pages
+            // TODO ADD: in case it does happen, signal to user instead of silently resolving it.
+            return;
+        }
         this.fire(DerivedIdenticonSelector.Events.IDENTICON_SELECTED, this._derivedAddresses[this._selectedAddress]);
     }
 
@@ -176,4 +188,5 @@ class DerivedIdenticonSelector extends Nimiq.Observable {
 
 DerivedIdenticonSelector.Events = {
     IDENTICON_SELECTED: 'identicon-selected',
+    MASTER_KEY_NOT_SET: 'master-key-not-set',
 };

@@ -1,6 +1,7 @@
 /* global TopLevelApi */
 /* global Create */
 /* global Nimiq */
+/* global Errors */
 
 class CreateApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
@@ -9,6 +10,15 @@ class CreateApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     async onRequest(request) {
         const parsedRequest = CreateApi._parseRequest(request);
         const handler = new Create(parsedRequest, this.resolve.bind(this), this.reject.bind(this));
+
+        /** @type {HTMLElement} */
+        const $appName = (document.querySelector('#app-name'));
+        $appName.textContent = request.appName;
+        /** @type {HTMLButtonElement} */
+        const $cancelLink = ($appName.parentNode);
+        $cancelLink.classList.remove('display-none');
+        $cancelLink.addEventListener('click', () => this.reject(new Errors.RequestCanceled()));
+
         handler.run();
     }
 
@@ -19,15 +29,15 @@ class CreateApi extends TopLevelApi { // eslint-disable-line no-unused-vars
      */
     static _parseRequest(request) {
         if (!request) {
-            throw new Error('Empty request');
+            throw new Errors.InvalidRequestError('Empty request');
         }
 
-        if (typeof request.appName !== 'string' || !request.appName) {
-            throw new Error('appName is required');
+        if (!request.appName || typeof request.appName !== 'string') {
+            throw new Errors.InvalidRequestError('appName is required');
         }
 
         if (!request.defaultKeyPath || !Nimiq.ExtendedPrivateKey.isValidPath(request.defaultKeyPath)) {
-            throw new Error('Invalid defaultKeyPath');
+            throw new Errors.InvalidRequestError('Invalid defaultKeyPath');
         }
 
         return request;

@@ -1,7 +1,9 @@
 /* global Nimiq */
 /* global PassphraseBox */
 /* global PassphraseSetterBox */
+/* global PassphraseInput */
 /* global KeyStore */
+/* global Errors */
 
 class ChangePassphrase {
     /**
@@ -16,20 +18,11 @@ class ChangePassphrase {
         this._resolve = resolve;
         this._request = request;
         this._reject = reject;
+
         /** @type {Key | null} */
         this._key = null;
         this._passphrase = '';
 
-        this._create();
-    }
-
-    run() {
-        /** @type {PassphraseBox} */ (this._enterPassphraseBox).reset();
-        window.location.hash = ChangePassphrase.Pages.ENTER_PASSPHRASE;
-        /** @type {PassphraseBox} */ (this._enterPassphraseBox).focus();
-    }
-
-    _create() {
         /** @type {HTMLElement} */
         const $enterPassphrasePage = document.getElementById(ChangePassphrase.Pages.ENTER_PASSPHRASE)
                                   || this._buildEnterPassphrasePage();
@@ -47,44 +40,78 @@ class ChangePassphrase {
                 buttonI18nTag: 'passphrasebox-continue',
                 hideInput: !this._request.keyInfo.encrypted,
                 minLength: this._request.keyInfo.hasPin ? 6 : undefined,
+                hideCancel: true,
             },
         );
         this._setPassphraseBox = new PassphraseSetterBox($setPassphraseeBox);
+        this._enterPassphraseBox.on(PassphraseBox.Events.SUBMIT, this._passphraseSubmitted.bind(this));
+        this._setPassphraseBox.on(PassphraseSetterBox.Events.SUBMIT, this._finish.bind(this));
+        this._setPassphraseBox.on(PassphraseSetterBox.Events.SKIP, this._finish.bind(this));
+    }
 
-        this._enterPassphraseBox.on(PassphraseBox.Events.CANCEL, () => this._reject(new Error('CANCEL')));
-        this._enterPassphraseBox.on(PassphraseBox.Events.SUBMIT, async phrase => {
-            document.body.classList.add('loading');
-            try {
-                const passphrase = phrase ? Nimiq.BufferUtils.fromAscii(phrase) : undefined;
-                const key = await KeyStore.instance.get(this._request.keyInfo.id, passphrase);
-                if (!key) {
-                    this._reject(new Error('No key'));
-                    return;
-                }
-                this._key = key;
-                /** @type {PassphraseSetterBox} */ (this._setPassphraseBox).reset();
-                window.location.hash = ChangePassphrase.Pages.SET_PASSPHRASE;
-                /** @type {PassphraseSetterBox} */ (this._setPassphraseBox).focus();
-            } catch (e) {
-                console.log(e); // TODO: Assume Passphrase was incorrect
-                /** @type {PassphraseBox} */(this._enterPassphraseBox).onPassphraseIncorrect();
-            } finally {
+    run() {
+        this._enterPassphraseBox.reset();
+        window.location.hash = ChangePassphrase.Pages.ENTER_PASSPHRASE;
+        this._enterPassphraseBox.focus();
+    }
+
+    /**
+     * @param {string} phrase
+     */
+    async _passphraseSubmitted(phrase) {
+        document.body.classList.add('loading');
+        const passphrase = phrase ? Nimiq.BufferUtils.fromAscii(phrase) : undefined;
+        /** @type {Key?} */
+        let key = null;
+        try {
+            key = await KeyStore.instance.get(this._request.keyInfo.id, passphrase);
+        } catch (e) {
+            if (e.message === 'Invalid key') {
                 document.body.classList.remove('loading');
+                this._enterPassphraseBox.onPassphraseIncorrect();
+                return;
             }
-        });
+            this._reject(new Errors.CoreError(e.message));
+            return;
+        }
+        if (!key) {
+            this._reject(new Errors.KeyNotFoundError());
+            return;
+        }
+        this._key = key;
+        this._setPassphraseBox.reset();
+        window.location.hash = ChangePassphrase.Pages.SET_PASSPHRASE;
+        this._setPassphraseBox.focus();
+        document.body.classList.remove('loading');
+    }
 
-        this._setPassphraseBox.on(
-            PassphraseSetterBox.Events.SUBMIT,
-            /** @param {string} passphrase */ passphrase => {
-                document.body.classList.add('loading');
-                this._passphrase = passphrase;
-                this._finish();
-            },
-        );
+    /**
+     * @param {string} phrase
+     */
+    async _finish(phrase) {
+        document.body.classList.add('loading');
+        if (!this._key) {
+            this._reject(new Errors.KeyguardError('Bypassed Password'));
+            return;
+        }
+        if (phrase && phrase.length < PassphraseInput.DEFAULT_MIN_LENGTH) {
+            this._setPassphraseBox.onPassphraseTooShort();
+            document.body.classList.remove('loading');
+            return;
+        }
 
-        this._setPassphraseBox.on(PassphraseSetterBox.Events.SKIP, () => {
-            this._finish();
-        });
+        // In this request, the user can only set a new password (min length: 8) or leave a key unencrypted.
+        // In any case, the key is not encrypted with a 6-digit PIN anymore.
+        this._key.hasPin = false;
+
+        const passphrase = phrase ? Nimiq.BufferUtils.fromAscii(phrase) : undefined;
+
+        await KeyStore.instance.put(this._key, passphrase);
+
+        const result = {
+            success: true,
+        };
+        this._resolve(result);
     }
 
     _buildEnterPassphrasePage() {
@@ -136,25 +163,6 @@ class ChangePassphrase {
         const $app = (document.getElementById('app'));
         $app.insertBefore($el, $app.children[1]);
         return $el;
-    }
-
-    async _finish() {
-        if (!this._key) {
-            this._reject(new Error('Bypassed Password'));
-            return;
-        }
-
-        // In this request, the user can only set a new password (min length: 8) or leave a key unencrypted.
-        // In any case, the key is not encrypted with a 6-digit PIN anymore.
-        this._key.hasPin = false;
-
-        const passphrase = this._passphrase.length > 0 ? Nimiq.BufferUtils.fromAscii(this._passphrase) : undefined;
-        await KeyStore.instance.put(this._key, passphrase);
-
-        const result = {
-            success: true,
-        };
-        this._resolve(result);
     }
 }
 

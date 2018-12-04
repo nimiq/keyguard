@@ -1,6 +1,7 @@
 /* global Nimiq */
 /* global IdenticonSelector */
 /* global PassphraseSetterBox */
+/* global PassphraseInput */
 /* global DownloadKeyfile */
 /* global PrivacyAgent */
 /* global RecoveryWords */
@@ -17,6 +18,7 @@ class Create {
      */
     constructor(request, resolve, reject) {
         this._resolve = resolve;
+        this._reject = reject;
 
         this._passphrase = '';
 
@@ -68,6 +70,11 @@ class Create {
         );
 
         this._passphraseSetter.on(PassphraseSetterBox.Events.SUBMIT, /** @param {string} passphrase */ passphrase => {
+            if (passphrase && passphrase.length < PassphraseInput.DEFAULT_MIN_LENGTH) {
+                this._passphraseSetter.onPassphraseTooShort();
+                document.body.classList.remove('loading');
+                return;
+            }
             this._passphrase = passphrase;
             // TODO Generate secret for key file
             this._downloadKeyfile.setSecret(new Uint8Array(0), true);
@@ -116,14 +123,6 @@ class Create {
         this._validateWords.on(ValidateWords.Events.SKIP, () => {
             this.finish(request);
         });
-
-        /** @type {HTMLElement} */
-        const $appName = (document.querySelector('#app-name'));
-        $appName.textContent = request.appName;
-        /** @type {HTMLButtonElement} */
-        const $cancelLink = ($appName.parentNode);
-        $cancelLink.classList.remove('display-none');
-        $cancelLink.addEventListener('click', () => reject(new Error('CANCEL')));
 
         // Set up progress indicators
         /* eslint-disable no-new */

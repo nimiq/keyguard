@@ -4,6 +4,8 @@
 /* global PassphraseBox */
 /* global ValidateWords */
 /* global KeyStore */
+/* global Errors */
+
 class ExportWords extends Nimiq.Observable {
     /**
      * if a complete page is missing it will be created.
@@ -11,7 +13,7 @@ class ExportWords extends Nimiq.Observable {
      * Refer to the corresponsing _build(Privcy | RecoveryWords | ValidateWords) to see the general Structure.
      * @param {KeyguardRequest.ParsedSimpleRequest} request
      * @param {Function} resolve
-     * @param {Function} reject - 'keyId not found','Unknown mnemonic type','Unsupported type','Rounds out-of-bounds'
+     * @param {Function} reject
      */
     constructor(request, resolve, reject) {
         super();
@@ -23,14 +25,14 @@ class ExportWords extends Nimiq.Observable {
         this._key = null;
 
         /** @type {HTMLElement} */
-        const $privacyPage = document.getElementById(ExportWords.Pages.EXPORT_WORDS_PRIVACY)
+        const $privacyPage = document.getElementById(ExportWords.Pages.PRIVACY)
                           || this._buildPrivacy();
 
         /** @type {HTMLElement} */
-        const $recoveryWordsPage = document.getElementById(ExportWords.Pages.EXPORT_WORDS_SHOW_WORDS)
+        const $recoveryWordsPage = document.getElementById(ExportWords.Pages.SHOW_WORDS)
                                 || this._buildRecoveryWords();
         /** @type {HTMLElement} */
-        const $validateWordsPage = document.getElementById(ExportWords.Pages.EXPORT_WORDS_VALIDATE_WORDS)
+        const $validateWordsPage = document.getElementById(ExportWords.Pages.VALIDATE_WORDS)
                                 || this._buildValidateWords();
 
         /** @type {HTMLElement} */
@@ -69,7 +71,7 @@ class ExportWords extends Nimiq.Observable {
 
     run() {
         this._privacyWarningPassphraseBox.reset();
-        window.location.hash = ExportWords.Pages.EXPORT_WORDS_PRIVACY;
+        window.location.hash = ExportWords.Pages.PRIVACY;
         this._privacyWarningPassphraseBox.focus();
     }
 
@@ -78,26 +80,32 @@ class ExportWords extends Nimiq.Observable {
      */
     async _passphraseSubmitted(phrase) {
         document.body.classList.add('loading');
+        const passphraseBuffer = phrase ? Nimiq.BufferUtils.fromAscii(phrase) : undefined;
+        /** @type {Key?} */
+        let key = null;
         try {
-            const passphraseBuffer = phrase ? Nimiq.BufferUtils.fromAscii(phrase) : undefined;
-            const key = await KeyStore.instance.get(this._request.keyInfo.id, passphraseBuffer);
-            if (!key) {
-                this._reject(new Error('keyId not found'));
-            }
-
-            this.setKey(key);
-            this.fire(ExportWords.Events.EXPORT_WORDS_KEY_CHANGED, {
-                key,
-                isProtected: this._request.keyInfo.encrypted,
-            });
-            window.location.hash = ExportWords.Pages.EXPORT_WORDS_SHOW_WORDS;
-            document.body.classList.remove('loading');
+            key = await KeyStore.instance.get(this._request.keyInfo.id, passphraseBuffer);
         } catch (e) {
             if (e.message === 'Invalid key') {
                 document.body.classList.remove('loading');
                 this._privacyWarningPassphraseBox.onPassphraseIncorrect();
-            } else this._reject(e);
+                return;
+            }
+            this._reject(new Errors.CoreError(e.message));
+            return;
         }
+        if (!key) {
+            this._reject(new Errors.KeyNotFoundError());
+            return;
+        }
+
+        this.setKey(key);
+        this.fire(ExportWords.Events.KEY_CHANGED, {
+            key,
+            isProtected: this._request.keyInfo.encrypted,
+        });
+        window.location.hash = ExportWords.Pages.SHOW_WORDS;
+        document.body.classList.remove('loading');
     }
 
     /**
@@ -117,22 +125,23 @@ class ExportWords extends Nimiq.Observable {
                 words = Nimiq.MnemonicUtils.entropyToMnemonic(this._key.secret);
                 break;
             default:
-                this._reject(new Error('Unknown mnemonic type'));
+                this._reject(new Errors.KeyguardError('Unknown mnemonic type'));
+                return;
             }
         }
         this._recoveryWords.setWords(words);
         this._validateWords.setWords(words);
-        /** @type {HTMLElement} */(document.getElementById(ExportWords.Pages.EXPORT_WORDS_PRIVACY))
+        /** @type {HTMLElement} */(document.getElementById(ExportWords.Pages.PRIVACY))
             .classList.toggle('key-active', this._key !== null);
     }
 
     _goToValidateWords() {
         this._validateWords.reset();
-        window.location.hash = ExportWords.Pages.EXPORT_WORDS_VALIDATE_WORDS;
+        window.location.hash = ExportWords.Pages.VALIDATE_WORDS;
     }
 
     _goToShowWords() {
-        window.location.hash = ExportWords.Pages.EXPORT_WORDS_SHOW_WORDS;
+        window.location.hash = ExportWords.Pages.SHOW_WORDS;
     }
 
     _finish() {
@@ -144,7 +153,7 @@ class ExportWords extends Nimiq.Observable {
 
     _buildPrivacy() {
         const $el = document.createElement('div');
-        $el.id = ExportWords.Pages.EXPORT_WORDS_PRIVACY;
+        $el.id = ExportWords.Pages.PRIVACY;
         $el.classList.add('page', 'nq-card');
         $el.innerHTML = `
         <div class="page-header nq-card-header">
@@ -172,7 +181,7 @@ class ExportWords extends Nimiq.Observable {
 
     _buildRecoveryWords() {
         const $el = document.createElement('div');
-        $el.id = ExportWords.Pages.EXPORT_WORDS_SHOW_WORDS;
+        $el.id = ExportWords.Pages.SHOW_WORDS;
         $el.classList.add('page', 'nq-card');
         $el.innerHTML = `
         <div class="page-header nq-card-header">
@@ -196,7 +205,7 @@ class ExportWords extends Nimiq.Observable {
 
     _buildValidateWords() {
         const $el = document.createElement('div');
-        $el.id = ExportWords.Pages.EXPORT_WORDS_VALIDATE_WORDS;
+        $el.id = ExportWords.Pages.VALIDATE_WORDS;
         $el.classList.add('page', 'nq-card');
         $el.innerHTML = `
         <div class="page-header nq-card-header">
@@ -216,11 +225,11 @@ class ExportWords extends Nimiq.Observable {
 }
 
 ExportWords.Pages = {
-    EXPORT_WORDS_PRIVACY: 'privacy',
-    EXPORT_WORDS_SHOW_WORDS: 'recovery-words',
-    EXPORT_WORDS_VALIDATE_WORDS: 'validate-words',
+    PRIVACY: 'privacy',
+    SHOW_WORDS: 'recovery-words',
+    VALIDATE_WORDS: 'validate-words',
 };
 
 ExportWords.Events = {
-    EXPORT_WORDS_KEY_CHANGED: 'export_words_key_changed',
+    KEY_CHANGED: 'key-changed',
 };
