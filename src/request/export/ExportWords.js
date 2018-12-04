@@ -231,5 +231,5 @@ ExportWords.Pages = {
 };
 
 ExportWords.Events = {
-    KEY_CHANGED: 'key_changed',
+    KEY_CHANGED: 'key-changed',
 };
