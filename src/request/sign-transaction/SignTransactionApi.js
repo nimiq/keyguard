@@ -5,11 +5,22 @@
 /* global LayoutStandard */
 /* global LayoutCheckout */
 /* global Errors */
+
 class SignTransactionApi extends TopLevelApi {
     /**
      * @param {KeyguardRequest.SignTransactionRequest} request
      */
     async onRequest(request) {
+        const parsedRequest = await SignTransactionApi._parseRequest(request);
+        const $layoutContainer = document.getElementById('layout-container');
+
+        const handler = new SignTransactionApi.Layouts[parsedRequest.layout](
+            $layoutContainer,
+            parsedRequest,
+            this.resolve.bind(this),
+            this.reject.bind(this),
+        );
+
         /** @type {HTMLElement} */
         const $appName = (document.querySelector('#app-name'));
         /** @type {HTMLSpanElement} */
@@ -22,17 +33,7 @@ class SignTransactionApi extends TopLevelApi {
         /** @type {HTMLButtonElement} */
         const $cancelLink = ($cancelLinkText.parentNode);
         $cancelLink.classList.remove('display-none');
-        $cancelLink.addEventListener('click', () => this.reject(new Errors.Cancel()));
-
-        const parsedRequest = await SignTransactionApi._parseRequest(request);
-        const $layoutContainer = document.getElementById('layout-container');
-
-        const handler = new SignTransactionApi.Layouts[parsedRequest.layout](
-            $layoutContainer,
-            parsedRequest,
-            this.resolve.bind(this),
-            this.reject.bind(this),
-        );
+        $cancelLink.addEventListener('click', () => this.reject(new Errors.RequestCanceled()));
 
         handler.run();
     }
@@ -44,33 +45,33 @@ class SignTransactionApi extends TopLevelApi {
      */
     static async _parseRequest(request) {
         if (!request) {
-            throw new Errors.InvalidRequest('Empty request');
+            throw new Errors.InvalidRequestError('Empty request');
         }
 
         // Check that the layout is valid
         if (request.layout && !SignTransactionApi.Layouts[request.layout]) {
-            throw new Errors.InvalidRequest('Invalid selected layout');
+            throw new Errors.InvalidRequestError('Invalid selected layout');
         }
 
         // Check that keyId is given.
         if (!request.keyId || typeof request.keyId !== 'string') {
-            throw new Errors.InvalidRequest('keyId is required');
+            throw new Errors.InvalidRequestError('keyId is required');
         }
 
         // Check that key exists.
         const keyInfo = await KeyStore.instance.getInfo(request.keyId);
         if (!keyInfo) {
-            throw new Errors.KeyIdNotFound();
+            throw new Errors.KeyNotFoundError();
         }
 
         // Check that keyPath is given.
         if (!request.keyPath || typeof request.keyPath !== 'string') {
-            throw new Errors.InvalidRequest('keyPath is required');
+            throw new Errors.InvalidRequestError('keyPath is required');
         }
 
         // Check that keyPath is valid.
         if (!Nimiq.ExtendedPrivateKey.isValidPath(request.keyPath)) {
-            throw new Errors.InvalidRequest('Invalid keyPath');
+            throw new Errors.InvalidRequestError('Invalid keyPath');
         }
 
         // Parse transaction.
@@ -78,24 +79,24 @@ class SignTransactionApi extends TopLevelApi {
 
         // Check that the transaction is for the correct network.
         if (transaction.networkId !== Nimiq.GenesisConfig.NETWORK_ID) {
-            throw new Errors.InvalidRequest('Transaction is not valid in this network');
+            throw new Errors.InvalidRequestError('Transaction is not valid in this network');
         }
 
         // Check that sender != recipient.
         if (transaction.recipient.equals(transaction.sender)) {
-            throw new Errors.InvalidRequest('Sender and recipient must not match');
+            throw new Errors.InvalidRequestError('Sender and recipient must not match');
         }
 
         // Check sender / recipient account type.
         const accountTypes = new Set([Nimiq.Account.Type.BASIC, Nimiq.Account.Type.VESTING, Nimiq.Account.Type.HTLC]);
         if (!accountTypes.has(transaction.senderType) || !accountTypes.has(transaction.recipientType)) {
-            throw new Errors.InvalidRequest('Invalid sender type');
+            throw new Errors.InvalidRequestError('Invalid sender type');
         }
 
         // Validate labels.
         const labels = [request.keyLabel, request.senderLabel, request.recipientLabel];
         if (labels.some(label => label !== undefined && (typeof label !== 'string' || label.length > 64))) {
-            throw new Errors.InvalidRequest('Invalid label');
+            throw new Errors.InvalidRequestError('Invalid label');
         }
 
         return /** @type {ParsedSignTransactionRequest} */ {

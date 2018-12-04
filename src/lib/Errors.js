@@ -2,7 +2,7 @@
 
 class Errors { }
 
-Errors.InvalidRequest = class extends Error {
+Errors.InvalidRequestError = class extends Error {
     /** @param { string } message */
     constructor(message = '') {
         super(message);
@@ -10,7 +10,7 @@ Errors.InvalidRequest = class extends Error {
     }
 };
 
-Errors.Core = class extends Error {
+Errors.CoreError = class extends Error {
     /** @param {string} message */
     constructor(message = '') {
         super(message);
@@ -18,7 +18,7 @@ Errors.Core = class extends Error {
     }
 };
 
-Errors.Keyguard = class extends Error {
+Errors.KeyguardError = class extends Error {
     /** @param {string} message */
     constructor(message = '') {
         super(message);
@@ -26,19 +26,19 @@ Errors.Keyguard = class extends Error {
     }
 };
 
-Errors.KeyIdNotFound = class extends Errors.Keyguard {
+Errors.KeyNotFoundError = class extends Errors.KeyguardError {
     constructor() {
         super(ErrorConstants.Messages.KEY_NOT_FOUND);
     }
 };
 
-Errors.Cancel = class extends Errors.Keyguard {
+Errors.RequestCanceled = class extends Errors.KeyguardError {
     constructor() {
-        super(ErrorConstants.Messages.CANCEL);
+        super(ErrorConstants.Messages.CANCELED);
     }
 };
 
-Errors.GoToCreate = class extends Errors.Keyguard {
+Errors.GoToCreate = class extends Errors.KeyguardError {
     constructor() {
         super(ErrorConstants.Messages.GOTO_CREATE);
     }

@@ -3,6 +3,7 @@
 /* global PassphraseBox */
 /* global KeyStore */
 /* global Errors */
+
 class DeriveAddress {
     /**
      * @param {KeyguardRequest.ParsedDeriveAddressRequest} request
@@ -78,11 +79,12 @@ class DeriveAddress {
                 this._passphraseBox.onPassphraseIncorrect();
                 return false;
             }
-            this._reject(new Errors.Core(e.message));
+            this._reject(new Errors.CoreError(e.message));
+            return false;
         }
 
         if (!key) {
-            this._reject(new Errors.KeyIdNotFound());
+            this._reject(new Errors.KeyNotFoundError());
             return false;
         }
         const masterKey = new Nimiq.Entropy(key.secret).toExtendedPrivateKey();

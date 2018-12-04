@@ -7,6 +7,7 @@
 /* global Key */
 /* global KeyStore */
 /* global Errors */
+
 class ImportApi extends TopLevelApi {
     constructor() {
         super();
@@ -36,7 +37,7 @@ class ImportApi extends TopLevelApi {
         /** @type {HTMLButtonElement} */
         const $cancelLink = ($appName.parentNode);
         $cancelLink.classList.remove('display-none');
-        $cancelLink.addEventListener('click', () => this.reject(new Errors.Cancel()));
+        $cancelLink.addEventListener('click', () => this.reject(new Errors.RequestCanceled()));
 
         this.run();
     }
@@ -166,7 +167,7 @@ class ImportApi extends TopLevelApi {
             const secretString = Nimiq.BufferUtils.toBase64(key.secret);
             sessionStorage.setItem(ImportApi.SESSION_STORAGE_KEY_PREFIX + key.id, secretString);
         } else {
-            this.reject(new Errors.Keyguard(`Unkown key type ${key.type}`));
+            this.reject(new Errors.KeyguardError(`Unkown key type ${key.type}`));
         }
 
         /** @type {KeyguardRequest.ImportResult} */

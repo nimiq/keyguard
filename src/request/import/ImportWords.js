@@ -4,6 +4,7 @@
 /* global RecoveryWords */
 /* global Identicon */
 /* global Errors */
+
 class ImportWords {
     /**
      * @param {KeyguardRequest.ImportRequest} request
@@ -132,7 +133,7 @@ class ImportWords {
             break;
         }
         default:
-            this._reject(new Errors.Keyguard('Invalid mnemonic type'));
+            this._reject(new Errors.KeyguardError('Invalid mnemonic type'));
         }
     }
 

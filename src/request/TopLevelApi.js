@@ -77,8 +77,9 @@ class TopLevelApi { // eslint-disable-line no-unused-vars
             });
 
             window.addEventListener('error', event => {
-                event.error.name = event.error.name === 'Error' ? ErrorConstants.Types.UNCLASSIFIED : event.error.name;
-                this.reject(event.error);
+                const error = event.error;
+                error.name = event.error.name === 'Error' ? ErrorConstants.Types.UNCLASSIFIED : error.name;
+                this.reject(error);
                 return false;
             });
 

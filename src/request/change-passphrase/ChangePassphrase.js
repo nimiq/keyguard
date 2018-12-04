@@ -3,6 +3,7 @@
 /* global PassphraseSetterBox */
 /* global KeyStore */
 /* global Errors */
+
 class ChangePassphrase {
     /**
      * If a complete page is missing it will be created.
@@ -69,10 +70,12 @@ class ChangePassphrase {
                 this._enterPassphraseBox.onPassphraseIncorrect();
                 return;
             }
-            this._reject(new Errors.Core(e.message));
+            this._reject(new Errors.CoreError(e.message));
+            return;
         }
         if (!key) {
-            this._reject(new Errors.KeyIdNotFound());
+            this._reject(new Errors.KeyNotFoundError());
+            return;
         }
         this._key = key;
         this._setPassphraseBox.reset();
@@ -87,7 +90,7 @@ class ChangePassphrase {
     async _finish(phrase) {
         document.body.classList.add('loading');
         if (!this._key) {
-            this._reject(new Errors.Keyguard('Bypassed Password'));
+            this._reject(new Errors.KeyguardError('Bypassed Password'));
             return;
         }
 

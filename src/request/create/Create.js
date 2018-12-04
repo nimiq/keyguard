@@ -8,6 +8,7 @@
 /* global Key */
 /* global KeyStore */
 /* global ProgressIndicator */
+
 class Create {
     /**
      * @param {KeyguardRequest.CreateRequest} request

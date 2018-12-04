@@ -5,6 +5,7 @@
 /* global ValidateWords */
 /* global KeyStore */
 /* global Errors */
+
 class ExportWords extends Nimiq.Observable {
     /**
      * if a complete page is missing it will be created.
@@ -90,10 +91,10 @@ class ExportWords extends Nimiq.Observable {
                 this._privacyWarningPassphraseBox.onPassphraseIncorrect();
                 return;
             }
-            this._reject(new Errors.Core(e.message));
+            this._reject(new Errors.CoreError(e.message));
         }
         if (!key) {
-            this._reject(new Errors.KeyIdNotFound());
+            this._reject(new Errors.KeyNotFoundError());
         }
 
         this.setKey(key);
@@ -122,7 +123,7 @@ class ExportWords extends Nimiq.Observable {
                 words = Nimiq.MnemonicUtils.entropyToMnemonic(this._key.secret);
                 break;
             default:
-                this._reject(new Errors.Keyguard('Unknown mnemonic type'));
+                this._reject(new Errors.KeyguardError('Unknown mnemonic type'));
             }
         }
         this._recoveryWords.setWords(words);

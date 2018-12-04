@@ -2,6 +2,7 @@
 /* global I18n */
 /* global Identicon */
 /* global Errors */
+
 class DerivedIdenticonSelector extends Nimiq.Observable {
     /**
      * @param {HTMLElement} [$el]
@@ -86,7 +87,7 @@ class DerivedIdenticonSelector extends Nimiq.Observable {
         if (!this._masterKey) {
             this.fire(
                 DerivedIdenticonSelector.Events.MASTER_KEY_NOT_SET,
-                new Errors.Keyguard('Master key not set, call init() first'),
+                new Errors.KeyguardError('Master key not set, call init() first'),
             );
             return;
         }
@@ -169,6 +170,7 @@ class DerivedIdenticonSelector extends Nimiq.Observable {
         if (!this._selectedAddress) { // something went wrong
             this._clearSelection(); // clear current selection and
             this.nextPage(); // switch pages
+            // TODO ADD: in case it does happen, signal to user instead of silently resolving it.
             return;
         }
         this.fire(DerivedIdenticonSelector.Events.IDENTICON_SELECTED, this._derivedAddresses[this._selectedAddress]);

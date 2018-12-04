@@ -3,6 +3,7 @@
 /* global Identicon */
 /* global PassphraseBox */
 /* global Errors */
+
 class BaseLayout {
     /**
      * @param {KeyguardRequest.ParsedSignTransactionRequest} request
@@ -119,10 +120,11 @@ class BaseLayout {
                 this._passphraseBox.onPassphraseIncorrect();
                 return;
             }
-            reject(new Errors.Core(e.message));
+            reject(new Errors.CoreError(e.message));
+            return;
         }
         if (!key) {
-            reject(new Errors.KeyIdNotFound());
+            reject(new Errors.KeyNotFoundError());
             return;
         }
 

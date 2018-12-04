@@ -137,6 +137,7 @@ class IdenticonSelector extends Nimiq.Observable {
         if (!this._selectedAddress) { // something went wrong
             this._clearSelection(); // clear current selection
             this.generateIdenticons(); // and gerate new identicons
+            // TODO Add: in case it does happen, signal to user instead of silently resolving it.
             return;
         }
         this.fire(IdenticonSelector.Events.IDENTICON_SELECTED, this._volatileEntropies[this._selectedAddress]);

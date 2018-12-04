@@ -5,6 +5,7 @@
 /* global Utf8Tools */
 /* global KeyStore */
 /* global Errors */
+
 class SignMessage {
     /**
      * @param {HTMLDivElement} $page
@@ -85,11 +86,12 @@ class SignMessage {
                 this._passphraseBox.onPassphraseIncorrect();
                 return;
             }
-            reject(new Errors.Core(e.message));
+            reject(new Errors.CoreError(e.message));
+            return;
         }
 
         if (!key) {
-            reject(new Errors.KeyIdNotFound());
+            reject(new Errors.KeyNotFoundError());
             return;
         }
 
@@ -98,7 +100,7 @@ class SignMessage {
         // Validate that derived address is the same as the request's 'signer' address
         const derivedAddress = publicKey.toAddress();
         if (!derivedAddress.equals(request.signer)) {
-            reject(new Errors.Keyguard('Provided keyPath does not refer to provided signer address'));
+            reject(new Errors.KeyguardError('Provided keyPath does not refer to provided signer address'));
             return;
         }
 

@@ -4,6 +4,7 @@
 /* global Nimiq */
 /* global KeyStore */
 /* global Errors */
+
 class RemoveKey {
     /**
      * if a complete page is missing it will be created.
@@ -88,10 +89,12 @@ class RemoveKey {
                 this._removeKeyPassphraseBox.onPassphraseIncorrect();
                 return;
             }
-            this._reject(new Errors.Core(e.message));
+            this._reject(new Errors.CoreError(e.message));
+            return;
         }
         if (!key) {
-            this._reject(new Errors.KeyIdNotFound());
+            this._reject(new Errors.KeyNotFoundError());
+            return;
         }
         await KeyStore.instance.remove(this._request.keyInfo.id);
 
