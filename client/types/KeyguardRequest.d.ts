@@ -148,7 +148,7 @@ declare namespace KeyguardRequest {
 }
 
 declare interface Window {
-    errorContainer: {
+    __keyguardErrorContainer: {
         ErrorConstants: KeyguardRequest.KeyguardError,
     },
 }

@@ -21,6 +21,6 @@ const ErrorConstants = {
 };
 
 // 'export' to client via side effects
-window.errorContainer = {
+window.__keyguardErrorContainer = {
     ErrorConstants,
 };
