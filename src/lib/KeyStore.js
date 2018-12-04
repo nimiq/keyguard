@@ -195,16 +195,16 @@ class KeyStore {
 
     // eslint-disable-next-line valid-jsdoc
     /**
-     * @param {(AccountInfo & {encryptedKeyPair?: Uint8Array})[]} accounts
+     * @param {(AccountInfo|AccountRecord)[]} accounts
      * @param {boolean} [withAccount]
-     * @returns {KeyInfoObject[]|KeyRecord[]}
+     * @returns {KeyguardRequest.KeyInfoObject[]|KeyguardRequest.LegacyKeyInfoObject[]|KeyRecord[]}
      */
     static accounts2Keys(accounts, withAccount) {
         return accounts.map(account => {
             const address = Nimiq.Address.fromUserFriendlyAddress(account.userFriendlyAddress);
             const legacyKeyId = Key.deriveId(address.serialize());
 
-            /** @type {KeyInfoObject} */
+            /** @type {KeyguardRequest.KeyInfoObject} */
             const keyObject = {
                 id: legacyKeyId,
                 type: Key.Type.LEGACY,
@@ -213,15 +213,20 @@ class KeyStore {
             };
 
             if (withAccount) {
-                keyObject.legacyAccount = {
-                    label: account.label,
-                    address: address.serialize(),
-                };
+                /** @type {KeyguardRequest.LegacyKeyInfoObject} */
+                const legacyKeyObject = Object.assign({}, keyObject, {
+                    legacyAccount: {
+                        label: account.label,
+                        address: address.serialize(),
+                    },
+                });
+
+                return legacyKeyObject;
             }
 
             if (/** @type {AccountRecord} */ (account).encryptedKeyPair) {
                 /** @type {KeyRecord} */
-                const keyRecord = Object.assign(keyObject, {
+                const keyRecord = Object.assign({}, keyObject, {
                     secret: /** @type {AccountRecord} */ (account).encryptedKeyPair,
                 });
                 return keyRecord;

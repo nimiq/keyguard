@@ -43,7 +43,7 @@ Dummy.keyInfos = [
     ),
 ];
 
-/** @type {KeyInfoObject[]} */
+/** @type {KeyguardRequest.KeyInfoObject[]} */
 Dummy.keyInfoObjects = [
     {
         id: Dummy.keyInfos[0].id,
@@ -79,7 +79,7 @@ Dummy.deprecatedAccountRecords = [
     Object.assign({}, Dummy.deprecatedAccountInfos[0], { encryptedKeyPair: Dummy.encryptedKeys[0] }),
 ];
 
-/** @type {KeyInfoObject[]} */
+/** @type {KeyguardRequest.LegacyKeyInfoObject[]} */
 Dummy.deprecatedAccount2KeyInfoObject = [{
     id: '2ec615522906',
     type: Key.Type.LEGACY,

@@ -46,7 +46,7 @@ class KeyInfo {
     }
 
     /**
-     * @returns {KeyInfoObject}
+     * @returns {KeyguardRequest.KeyInfoObject}
      */
     toObject() {
         return {
@@ -58,7 +58,7 @@ class KeyInfo {
     }
 
     /**
-     * @param {KeyInfoObject} obj
+     * @param {KeyguardRequest.KeyInfoObject} obj
      * @returns {KeyInfo}
      */
     static fromObject(obj) {

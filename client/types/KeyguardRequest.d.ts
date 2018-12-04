@@ -12,7 +12,10 @@ declare namespace KeyguardRequest {
         type: Key.Type;
         encrypted: boolean;
         hasPin: boolean;
-        legacyAccount?: { label: string, address: Uint8Array };
+    }
+
+    type LegacyKeyInfoObject = KeyInfoObject & {
+        legacyAccount: { label: string, address: Uint8Array };
     }
 
     type KeyId2KeyInfo<T extends { keyId: string }> = Transform<T, 'keyId', { keyInfo: KeyInfoObject }>

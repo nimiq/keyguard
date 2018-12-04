@@ -56,7 +56,7 @@ describe('IframeApi', () => {
         await Dummy.Utils.createDummyKeyStore();
         spyOn(BrowserDetection, 'isIOS').and.returnValue(false);
 
-        const listedKeyObjects = /** @type {KeyInfoObject[]} */ (await iframeApi.list(null));
+        const listedKeyObjects = /** @type {KeyguardRequest.KeyInfoObject[]} */ (await iframeApi.list(null));
         const listedKeyInfos = listedKeyObjects.map(kio => KeyInfo.fromObject(kio));
 
         expect(CookieJar.eat).not.toHaveBeenCalled();

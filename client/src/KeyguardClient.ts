@@ -107,7 +107,7 @@ export class KeyguardClient {
     }
 
     public async listLegacyAccounts(requestBehavior = this._defaultIframeBehavior)
-    : Promise<KeyguardRequest.KeyInfoObject[]> {
+    : Promise<KeyguardRequest.LegacyKeyInfoObject[]> {
         return this._request(requestBehavior, KeyguardCommand.LIST_LEGACY_ACCOUNTS, []);
     }
 

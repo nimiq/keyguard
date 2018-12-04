@@ -10,7 +10,7 @@
 class IFrameApi {
     /**
      * @param {Rpc.State?} state
-     * @returns {Promise<KeyInfoObject[]>}
+     * @returns {Promise<KeyguardRequest.KeyInfoObject[]>}
      */
     async list(state) {
         const keyInfos = await this._getKeys();
@@ -61,7 +61,7 @@ class IFrameApi {
 
     /**
      * @param {Rpc.State?} state
-     * @returns {Promise<KeyInfoObject[]>}
+     * @returns {Promise<KeyguardRequest.LegacyKeyInfoObject[]>}
      * @deprecated
      */
     async listLegacyAccounts(state) {
@@ -70,7 +70,7 @@ class IFrameApi {
 
         // Convert to KeyInfoObjects
         await loadNimiq();
-        return KeyStore.accounts2Keys(accounts, true);
+        return /** @type {KeyguardRequest.LegacyKeyInfoObject[]} */ (KeyStore.accounts2Keys(accounts, true));
     }
 
     /**
