@@ -86,17 +86,14 @@ export class KeyguardClient {
 
     /* IFRAME REQUESTS */
 
-    public async list(fromLegacyStore?: boolean, requestBehavior = this._defaultIframeBehavior)
+    public async list(requestBehavior = this._defaultIframeBehavior)
     : Promise<KeyguardRequest.KeyInfoObject[]> {
-        return this._request(requestBehavior, KeyguardCommand.LIST, [fromLegacyStore]);
+        return this._request(requestBehavior, KeyguardCommand.LIST, []);
     }
 
-    public async hasKeys(inLegacyStore?: boolean, requestBehavior = this._defaultIframeBehavior): Promise<boolean> {
-        return this._request(requestBehavior, KeyguardCommand.HAS_KEYS, [inLegacyStore]);
-    }
-
-    public async migrateAccountsToKeys(requestBehavior = this._defaultIframeBehavior): Promise<void> {
-        return this._request(requestBehavior, KeyguardCommand.MIGRATE_ACCOUNTS_TO_KEYS, []);
+    public async hasKeys(requestBehavior = this._defaultIframeBehavior)
+    : Promise<boolean> {
+        return this._request(requestBehavior, KeyguardCommand.HAS_KEYS, []);
     }
 
     public async deriveAddresses(keyId: string, paths: string[], requestBehavior = this._defaultIframeBehavior)
@@ -107,6 +104,21 @@ export class KeyguardClient {
     public async releaseKey(keyId: string, requestBehavior = this._defaultIframeBehavior)
     : Promise<true> {
         return this._request(requestBehavior, KeyguardCommand.RELEASE_KEY, [keyId]);
+    }
+
+    public async listLegacyAccounts(requestBehavior = this._defaultIframeBehavior)
+    : Promise<KeyguardRequest.KeyInfoObject[]> {
+        return this._request(requestBehavior, KeyguardCommand.LIST_LEGACY_ACCOUNTS, []);
+    }
+
+    public async hasLegacyAccounts(requestBehavior = this._defaultIframeBehavior)
+    : Promise<boolean> {
+        return this._request(requestBehavior, KeyguardCommand.HAS_LEGACY_ACCOUNTS, []);
+    }
+
+    public async migrateAccountsToKeys(requestBehavior = this._defaultIframeBehavior)
+    : Promise<boolean> {
+        return this._request(requestBehavior, KeyguardCommand.MIGRATE_ACCOUNTS_TO_KEYS, []);
     }
 
     /* PRIVATE METHODS */

@@ -25,12 +25,12 @@ class AccountStore {
     constructor(dbName = AccountStore.ACCOUNT_DATABASE) {
         this._dbName = dbName;
         this._dropped = false;
-        /** @type {Promise<IDBDatabase|null>|null} */
+        /** @type {Promise<IDBDatabase?>|?} */
         this._dbPromise = null;
     }
 
     /**
-     * @returns {Promise.<IDBDatabase|null>}
+     * @returns {Promise<IDBDatabase?>}
      * @private
      */
     async connect() {

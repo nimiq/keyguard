@@ -19,7 +19,7 @@ describe('IframeApi', () => {
     it('can list deprecated accounts from cookies on iOS.', async () => {
         spyOn(BrowserDetection, 'isIOS').and.returnValue(true);
 
-        const listedAccounts = await iframeApi.list(null, true);
+        const listedAccounts = await iframeApi.listLegacyAccounts(null);
 
         expect(CookieJar.eat).toHaveBeenCalledWith(true);
         expect(AccountStore.instance.list).not.toHaveBeenCalled();
@@ -42,7 +42,7 @@ describe('IframeApi', () => {
         await Dummy.Utils.createDummyAccountStore();
         spyOn(BrowserDetection, 'isIOS').and.returnValue(false);
 
-        const listedAccounts = await iframeApi.list(null, true);
+        const listedAccounts = await iframeApi.listLegacyAccounts(null);
 
         expect(CookieJar.eat).not.toHaveBeenCalled();
         expect(AccountStore.instance.list).toHaveBeenCalled();

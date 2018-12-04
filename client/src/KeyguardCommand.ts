@@ -11,7 +11,11 @@ export enum KeyguardCommand {
     // Iframe requests
     LIST = 'list',
     HAS_KEYS = 'hasKeys',
-    MIGRATE_ACCOUNTS_TO_KEYS = 'migrateAccountsToKeys',
     DERIVE_ADDRESSES = 'deriveAddresses',
     RELEASE_KEY = 'releaseKey',
+
+    // Deprecated iframe requests
+    LIST_LEGACY_ACCOUNTS = 'listLegacyAccounts',
+    HAS_LEGACY_ACCOUNTS = 'hasLegacyAccounts',
+    MIGRATE_ACCOUNTS_TO_KEYS = 'migrateAccountsToKeys',
 }

@@ -1,5 +1,6 @@
 /* global Dummy */
 /* global CookieJar */
+
 describe('CookieJar', () => {
     it('can encode keys', () => {
         expect(CookieJar._encodeCookie(Dummy.keyInfos)).toBe(Dummy.keyInfoCookieEncoded);
