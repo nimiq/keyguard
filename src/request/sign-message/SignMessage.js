@@ -73,8 +73,7 @@ class SignMessage {
     async _onConfirm(request, resolve, reject, passphrase) {
         document.body.classList.add('loading');
 
-        // XXX Passphrase encoding
-        const passphraseBuf = passphrase ? Nimiq.BufferUtils.fromAscii(passphrase) : undefined;
+        const passphraseBuf = passphrase ? Utf8Tools.stringToUtf8ByteArray(passphrase) : undefined;
 
         /** @type {Key | null} */
         let key = null;

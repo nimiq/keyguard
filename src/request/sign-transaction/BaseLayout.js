@@ -3,6 +3,7 @@
 /* global Identicon */
 /* global PassphraseBox */
 /* global Errors */
+/* global Utf8Tools */
 
 class BaseLayout {
     /**
@@ -108,8 +109,7 @@ class BaseLayout {
      */
     async _onConfirm(request, resolve, reject, passphrase) {
         document.body.classList.add('loading');
-        // XXX Passphrase encoding
-        const passphraseBuf = passphrase ? Nimiq.BufferUtils.fromAscii(passphrase) : undefined;
+        const passphraseBuf = passphrase ? Utf8Tools.stringToUtf8ByteArray(passphrase) : undefined;
         /** @type {Key?} */
         let key = null;
         try {

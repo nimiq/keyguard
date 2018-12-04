@@ -5,6 +5,7 @@
 /* global ValidateWords */
 /* global KeyStore */
 /* global Errors */
+/* global Utf8Tools */
 
 class ExportWords extends Nimiq.Observable {
     /**
@@ -80,7 +81,7 @@ class ExportWords extends Nimiq.Observable {
      */
     async _passphraseSubmitted(phrase) {
         document.body.classList.add('loading');
-        const passphraseBuffer = phrase ? Nimiq.BufferUtils.fromAscii(phrase) : undefined;
+        const passphraseBuffer = phrase ? Utf8Tools.stringToUtf8ByteArray(phrase) : undefined;
         /** @type {Key?} */
         let key = null;
         try {

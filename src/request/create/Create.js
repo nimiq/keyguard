@@ -9,6 +9,7 @@
 /* global Key */
 /* global KeyStore */
 /* global ProgressIndicator */
+/* global Utf8Tools */
 
 class Create {
     /**
@@ -141,8 +142,7 @@ class Create {
     async finish(request) {
         document.body.classList.add('loading');
         const key = new Key(this._selectedEntropy.serialize());
-        // XXX Should we use utf8 encoding here instead?
-        const passphrase = this._passphrase.length > 0 ? Nimiq.BufferUtils.fromAscii(this._passphrase) : undefined;
+        const passphrase = this._passphrase.length > 0 ? Utf8Tools.stringToUtf8ByteArray(this._passphrase) : undefined;
         await KeyStore.instance.put(key, passphrase);
 
         const keyPath = request.defaultKeyPath;

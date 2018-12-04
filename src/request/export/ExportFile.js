@@ -3,6 +3,7 @@
 /* global KeyStore */
 /* global DownloadKeyfile */
 /* global Errors */
+/* global Utf8Tools */
 
 class ExportFile extends Nimiq.Observable {
     /**
@@ -59,7 +60,7 @@ class ExportFile extends Nimiq.Observable {
      */
     async _passphraseSubmitted(phrase) {
         document.body.classList.add('loading');
-        const passphraseBuffer = phrase ? Nimiq.BufferUtils.fromAscii(phrase) : undefined;
+        const passphraseBuffer = phrase ? Utf8Tools.stringToUtf8ByteArray(phrase) : undefined;
         /** @type {Key?} */
         let key = null;
         try {
