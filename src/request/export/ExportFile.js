@@ -144,5 +144,5 @@ ExportFile.Pages = {
 };
 
 ExportFile.Events = {
-    KEY_CHANGED: 'key_changed',
+    KEY_CHANGED: 'key-changed',
 };
