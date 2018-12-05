@@ -14,7 +14,7 @@ module.exports = function (/** @type {any} */ config) {
 
         // list of files / patterns to load in the browser
         files: [
-            'https://cdn.nimiq-network.com/branches/master/web.js',
+            'https://cdn.nimiq-testnet.com/web-offline.js',
             'src/**/*js',
             'tests/**/*.spec.js'
         ],
@@ -56,18 +56,9 @@ module.exports = function (/** @type {any} */ config) {
         autoWatch: true,
 
 
-        // On travis in sudo:false mode (which is much faster to start) we have to run chrome without sandbox
-        customLaunchers: {
-            ChromeHeadlessNoSandbox: {
-                base: 'ChromeHeadless',
-                flags: ['--no-sandbox']
-            }
-        },
-
-
         // start these browsers
         // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-        browsers: process.env.TRAVIS? ['ChromeHeadlessNoSandbox'] : ['ChromeHeadless'],
+        browsers: ['ChromeHeadless'],
 
 
         // Continuous Integration mode
