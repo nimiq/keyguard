@@ -1,7 +1,6 @@
 /* global Nimiq */
 /* global IdenticonSelector */
 /* global PassphraseSetterBox */
-/* global PassphraseInput */
 /* global DownloadKeyfile */
 /* global PrivacyAgent */
 /* global RecoveryWords */
@@ -71,11 +70,6 @@ class Create {
         );
 
         this._passphraseSetter.on(PassphraseSetterBox.Events.SUBMIT, /** @param {string} passphrase */ passphrase => {
-            if (passphrase && passphrase.length < PassphraseInput.DEFAULT_MIN_LENGTH) {
-                this._passphraseSetter.onPassphraseTooShort();
-                document.body.classList.remove('loading');
-                return;
-            }
             this._passphrase = passphrase;
             // TODO Generate secret for key file
             this._downloadKeyfile.setSecret(new Uint8Array(0), true);
