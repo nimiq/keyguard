@@ -58,18 +58,18 @@ module.exports = function (/** @type {any} */ config) {
         customLaunchers: {
             Chrome_Travis_CI: {
                 base: 'Chrome',
-                flags: ['--no-sandbox']
+                flags: ['--disable-gpu']
             },
             Chrome_Headless_Travis_CI: {
                 base: 'ChromeHeadless',
-                flags: ['--no-sandbox']
+                flags: ['--disable-gpu']
             },
         },
 
 
         // start these browsers
         // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-        browsers: process.env.TRAVIS ? ['Chrome_Travis_CI', 'Chrome_Headless_Travis_CI', 'FirefoxHeadless'] : ['Chrome', 'FirefoxHeadless'],
+        browsers: process.env.TRAVIS ? ['FirefoxHeadless', 'Chrome_Travis_CI', 'Chrome_Headless_Travis_CI'] : ['Chrome', 'FirefoxHeadless'],
 
 
         // Continuous Integration mode
