@@ -21,8 +21,6 @@ class ImportApi extends TopLevelApi {
         const dom = this._makeView();
         this._passphraseBox = dom.passphraseBox;
         this._passphraseSetterBox = dom.passphraseSetterBox;
-
-        this.$loading = /** @type {HTMLDivElement} */ (document.querySelector('#loading'));
     }
 
     /**
@@ -186,7 +184,7 @@ class ImportApi extends TopLevelApi {
      * @returns {Promise<?Key>}
      */
     async _decryptAndStoreKey(passphrase) {
-        this.$loading.style.display = 'flex';
+        TopLevelApi.setLoading();
         try {
             // Separating the processing of the encryptionKey (password) and the secret (key) is necessary
             // to cover these scenarios:
@@ -221,7 +219,7 @@ class ImportApi extends TopLevelApi {
             return key;
         } catch (e) {
             console.error(e);
-            this.$loading.style.display = 'none';
+            TopLevelApi.removeLoading();
             return null;
         }
     }
