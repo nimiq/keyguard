@@ -8,7 +8,7 @@ cache:
   - node_modules
 
 addons:
-  chrome: stable
+  chrome: beta
   firefox: latest
 
 script:
