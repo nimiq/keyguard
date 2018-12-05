@@ -78,7 +78,7 @@ class RemoveKey {
      * @param {string} phrase
      */
     async _passphraseSubmitted(phrase) {
-        TopLevelApi.setLoading();
+        TopLevelApi.setLoading(true);
         const passphraseBuffer = phrase ? Utf8Tools.stringToUtf8ByteArray(phrase) : undefined;
         /** @type {Key?} */
         let key = null;
@@ -86,7 +86,7 @@ class RemoveKey {
             key = await KeyStore.instance.get(this._request.keyInfo.id, passphraseBuffer);
         } catch (e) {
             if (e.message === 'Invalid key') {
-                TopLevelApi.removeLoading();
+                TopLevelApi.setLoading(false);
                 this._removeKeyPassphraseBox.onPassphraseIncorrect();
                 return;
             }

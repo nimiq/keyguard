@@ -184,7 +184,7 @@ class ImportApi extends TopLevelApi {
      * @returns {Promise<?Key>}
      */
     async _decryptAndStoreKey(passphrase) {
-        TopLevelApi.setLoading();
+        TopLevelApi.setLoading(true);
         try {
             // Separating the processing of the encryptionKey (password) and the secret (key) is necessary
             // to cover these scenarios:
@@ -219,7 +219,7 @@ class ImportApi extends TopLevelApi {
             return key;
         } catch (e) {
             console.error(e);
-            TopLevelApi.removeLoading();
+            TopLevelApi.setLoading(false);
             return null;
         }
     }

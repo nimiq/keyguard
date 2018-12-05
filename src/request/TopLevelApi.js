@@ -118,12 +118,11 @@ class TopLevelApi { // eslint-disable-line no-unused-vars
         this._reject(error);
     }
 
-    static setLoading() {
-        document.body.classList.add('loading');
-    }
-
-    static removeLoading() {
-        document.body.classList.remove('loading');
+    /**
+     * @param {boolean} showLoading
+     */
+    static setLoading(showLoading) {
+        document.body.classList.toggle('loading', showLoading);
     }
 
     /**

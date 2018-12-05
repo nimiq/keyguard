@@ -67,7 +67,7 @@ class DeriveAddress {
      * @returns {Promise<boolean>}
      */
     async _onPassphraseEntered(passphrase) {
-        TopLevelApi.setLoading();
+        TopLevelApi.setLoading(true);
         const passphraseBuffer = passphrase && passphrase.length > 0
             ? Utf8Tools.stringToUtf8ByteArray(passphrase)
             : undefined;
@@ -78,7 +78,7 @@ class DeriveAddress {
             key = await KeyStore.instance.get(this._request.keyInfo.id, passphraseBuffer);
         } catch (e) {
             if (e.message === 'Invalid key') {
-                TopLevelApi.removeLoading();
+                TopLevelApi.setLoading(false);
                 this._passphraseBox.onPassphraseIncorrect();
                 return false;
             }
@@ -94,7 +94,7 @@ class DeriveAddress {
         const pathsToDerive = this._request.indicesToDerive.map(index => `${this._request.baseKeyPath}/${index}`);
 
         this._identiconSelector.init(masterKey, pathsToDerive);
-        TopLevelApi.removeLoading();
+        TopLevelApi.setLoading(false);
         return true;
     }
 

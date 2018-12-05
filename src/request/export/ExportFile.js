@@ -60,7 +60,7 @@ class ExportFile extends Nimiq.Observable {
      * @param {string} phrase
      */
     async _passphraseSubmitted(phrase) {
-        TopLevelApi.setLoading();
+        TopLevelApi.setLoading(true);
         const passphraseBuffer = phrase ? Utf8Tools.stringToUtf8ByteArray(phrase) : undefined;
         /** @type {Key?} */
         let key = null;
@@ -68,7 +68,7 @@ class ExportFile extends Nimiq.Observable {
             key = await KeyStore.instance.get(this._request.keyInfo.id, passphraseBuffer);
         } catch (e) {
             if (e.message === 'Invalid key') {
-                TopLevelApi.removeLoading();
+                TopLevelApi.setLoading(false);
                 this._downloadKeyFilePassphraseBox.onPassphraseIncorrect();
                 return;
             }
@@ -85,7 +85,7 @@ class ExportFile extends Nimiq.Observable {
             key,
             isProtected: this._request.keyInfo.encrypted,
         });
-        TopLevelApi.removeLoading();
+        TopLevelApi.setLoading(false);
     }
 
     /**
