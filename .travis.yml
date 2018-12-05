@@ -8,11 +8,8 @@ cache:
   - node_modules
 
 addons:
-  chrome: stable
-
-before_install:
-  - export DISPLAY=:99.0
-  - CHROME_BIN=/usr/bin/google-chrome-stable
+  chrome: beta
+  firefox: latest
 
 script:
   - yarn typecheck
