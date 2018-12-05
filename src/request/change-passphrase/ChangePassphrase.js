@@ -1,6 +1,5 @@
 /* global PassphraseBox */
 /* global PassphraseSetterBox */
-/* global PassphraseInput */
 /* global KeyStore */
 /* global Errors */
 /* global Utf8Tools */
@@ -92,11 +91,6 @@ class ChangePassphrase {
         document.body.classList.add('loading');
         if (!this._key) {
             this._reject(new Errors.KeyguardError('Bypassed Password'));
-            return;
-        }
-        if (phrase && phrase.length < PassphraseInput.DEFAULT_MIN_LENGTH) {
-            this._setPassphraseBox.onPassphraseTooShort();
-            document.body.classList.remove('loading');
             return;
         }
 

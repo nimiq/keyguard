@@ -3,7 +3,6 @@
 /* global ImportWords */
 /* global PassphraseBox */
 /* global PassphraseSetterBox */
-/* global PassphraseInput */
 /* global Nimiq */
 /* global Key */
 /* global KeyStore */
@@ -145,11 +144,6 @@ class ImportApi extends TopLevelApi {
             this._passphraseBox.onPassphraseIncorrect();
             return;
         }
-        if (passphrase && passphrase.length < PassphraseInput.DEFAULT_MIN_LENGTH) {
-            this._passphraseSetterBox.onPassphraseTooShort();
-            this.$loading.style.display = 'none';
-            return;
-        }
 
         /** @type {{keyPath: string, address: Uint8Array}[]} */
         const addresses = [];
@@ -174,6 +168,7 @@ class ImportApi extends TopLevelApi {
             sessionStorage.setItem(ImportApi.SESSION_STORAGE_KEY_PREFIX + key.id, secretString);
         } else {
             this.reject(new Errors.KeyguardError(`Unkown key type ${key.type}`));
+            return;
         }
 
         /** @type {KeyguardRequest.ImportResult} */
