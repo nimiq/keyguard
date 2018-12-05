@@ -3,6 +3,7 @@
 /* global Key */
 /* global KeyInfo */
 /* global KeyStore */
+
 beforeAll(async () => {
     await loadNimiq();
 });
