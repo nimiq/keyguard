@@ -5,6 +5,7 @@
 /* global Utf8Tools */
 /* global KeyStore */
 /* global Errors */
+/* global TopLevelApi */
 
 class SignMessage {
     /**
@@ -71,7 +72,7 @@ class SignMessage {
      * @private
      */
     async _onConfirm(request, resolve, reject, passphrase) {
-        document.body.classList.add('loading');
+        TopLevelApi.setLoading(true);
 
         const passphraseBuf = passphrase ? Utf8Tools.stringToUtf8ByteArray(passphrase) : undefined;
 
@@ -81,7 +82,7 @@ class SignMessage {
             key = await KeyStore.instance.get(request.keyInfo.id, passphraseBuf);
         } catch (e) {
             if (e.message === 'Invalid key') {
-                document.body.classList.remove('loading');
+                TopLevelApi.setLoading(false);
                 this._passphraseBox.onPassphraseIncorrect();
                 return;
             }

@@ -4,6 +4,7 @@
 /* global PassphraseBox */
 /* global Errors */
 /* global Utf8Tools */
+/* global TopLevelApi */
 
 class BaseLayout {
     /**
@@ -108,7 +109,7 @@ class BaseLayout {
      * @private
      */
     async _onConfirm(request, resolve, reject, passphrase) {
-        document.body.classList.add('loading');
+        TopLevelApi.setLoading(true);
         const passphraseBuf = passphrase ? Utf8Tools.stringToUtf8ByteArray(passphrase) : undefined;
         /** @type {Key?} */
         let key = null;
@@ -116,7 +117,7 @@ class BaseLayout {
             key = await KeyStore.instance.get(request.keyInfo.id, passphraseBuf);
         } catch (e) {
             if (e.message === 'Invalid key') {
-                document.body.classList.remove('loading');
+                TopLevelApi.setLoading(false);
                 this._passphraseBox.onPassphraseIncorrect();
                 return;
             }

@@ -4,6 +4,7 @@
 /* global KeyStore */
 /* global Errors */
 /* global Utf8Tools */
+/* global TopLevelApi */
 
 class DeriveAddress {
     /**
@@ -36,7 +37,7 @@ class DeriveAddress {
         this._passphraseBox.on(
             PassphraseBox.Events.SUBMIT,
             async /** @param {string|undefined} passphrase */ passphrase => {
-                if (!(await this._initIdenticonSelector(passphrase))) return;
+                if (!(await this._onPassphraseEntered(passphrase))) return;
                 window.location.hash = DeriveAddress.Pages.CHOOSE_IDENTICON;
             },
         );
@@ -65,7 +66,8 @@ class DeriveAddress {
      * @param {string} [passphrase]
      * @returns {Promise<boolean>}
      */
-    async _initIdenticonSelector(passphrase) {
+    async _onPassphraseEntered(passphrase) {
+        TopLevelApi.setLoading(true);
         const passphraseBuffer = passphrase && passphrase.length > 0
             ? Utf8Tools.stringToUtf8ByteArray(passphrase)
             : undefined;
@@ -76,7 +78,7 @@ class DeriveAddress {
             key = await KeyStore.instance.get(this._request.keyInfo.id, passphraseBuffer);
         } catch (e) {
             if (e.message === 'Invalid key') {
-                document.body.classList.remove('loading');
+                TopLevelApi.setLoading(false);
                 this._passphraseBox.onPassphraseIncorrect();
                 return false;
             }
@@ -92,6 +94,7 @@ class DeriveAddress {
         const pathsToDerive = this._request.indicesToDerive.map(index => `${this._request.baseKeyPath}/${index}`);
 
         this._identiconSelector.init(masterKey, pathsToDerive);
+        TopLevelApi.setLoading(false);
         return true;
     }
 
@@ -103,7 +106,7 @@ class DeriveAddress {
             // Async pre-load the crypto worker to reduce wait time at first decrypt attempt
             Nimiq.CryptoWorker.getInstanceAsync();
         } else {
-            await this._initIdenticonSelector();
+            await this._onPassphraseEntered();
             window.location.hash = DeriveAddress.Pages.CHOOSE_IDENTICON;
         }
     }

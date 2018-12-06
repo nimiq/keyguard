@@ -6,6 +6,7 @@
 /* global KeyStore */
 /* global Errors */
 /* global Utf8Tools */
+/* global TopLevelApi */
 
 class ExportWords extends Nimiq.Observable {
     /**
@@ -80,7 +81,7 @@ class ExportWords extends Nimiq.Observable {
      * @param {string} phrase
      */
     async _passphraseSubmitted(phrase) {
-        document.body.classList.add('loading');
+        TopLevelApi.setLoading(true);
         const passphraseBuffer = phrase ? Utf8Tools.stringToUtf8ByteArray(phrase) : undefined;
         /** @type {Key?} */
         let key = null;
@@ -88,7 +89,7 @@ class ExportWords extends Nimiq.Observable {
             key = await KeyStore.instance.get(this._request.keyInfo.id, passphraseBuffer);
         } catch (e) {
             if (e.message === 'Invalid key') {
-                document.body.classList.remove('loading');
+                TopLevelApi.setLoading(false);
                 this._privacyWarningPassphraseBox.onPassphraseIncorrect();
                 return;
             }
@@ -106,7 +107,7 @@ class ExportWords extends Nimiq.Observable {
             isProtected: this._request.keyInfo.encrypted,
         });
         window.location.hash = ExportWords.Pages.SHOW_WORDS;
-        document.body.classList.remove('loading');
+        TopLevelApi.setLoading(false);
     }
 
     /**
