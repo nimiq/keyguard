@@ -1,5 +1,6 @@
 /* global Nimiq */
 /* global KeyStore */
+/* global Key */
 /* global Errors */
 
 class RequestParser { // eslint-disable-line no-unused-vars
@@ -32,12 +33,26 @@ class RequestParser { // eslint-disable-line no-unused-vars
             }
             return parsedRequest;
         }
+
         // all other requests are at least SimpleRequests, so they need to have a valid keyId and a keyLabel
         parsedRequest.keyLabel = RequestParser._parseLabel(request.keyLabel);
         parsedRequest.keyInfo = await RequestParser._parseKeyId(request.keyId);
         if (requestType === 'SimpleRequest') {
             return parsedRequest;
         }
+
+        // DeriveAddressRequest must not be requested for a legacy key.
+        // It needs to have baseKeyPath tp be a valid path and
+        // indicesToDerive to be an array of Strings of the form 1'|2'|3'|...
+        if (requestType === 'DeriveAddressRequest') {
+            if (parsedRequest.keyInfo.type === Key.Type.LEGACY) {
+                throw new Errors.InvalidRequestError('Cannot derive addresses for single-account wallets');
+            }
+            parsedRequest.baseKeyPath = RequestParser._parsePath(request.baseKeyPath, 'baseKeyPath');
+            parsedRequest.indicesToDerive = RequestParser._parseIndicesArray(request.indicesToDerive);
+            return parsedRequest;
+        }
+
         return parsedRequest;
     }
 
@@ -124,5 +139,29 @@ class RequestParser { // eslint-disable-line no-unused-vars
             throw new Errors.KeyNotFoundError();
         }
         return keyInfo;
+    }
+
+    /**
+     *
+     * @param {any} indicesArray
+     * @returns {string[]}
+     * @private
+     */
+    static _parseIndicesArray(indicesArray) {
+        if (!indicesArray || indicesArray.constructor !== Array) {
+            throw new Errors.InvalidRequestError('indicesToDerive is required');
+        }
+        indicesArray.forEach((/** @type {any} */index) => { // eslint-disable-line arrow-parens
+            if (typeof index !== 'string') {
+                throw new Errors.InvalidRequestError('Each index of indicesToDerive must be a string.');
+            }
+            if (!index.endsWith("'")) {
+                throw new Errors.InvalidRequestError('Each index of IndicesToDerive must end with a \'.');
+            }
+            if (`${(parseInt(index.substr(0, index.length - 1), 10))}'` !== index) {
+                throw new Errors.InvalidRequestError('Each index of indicesToDerive must start with a number.');
+            }
+        });
+        return indicesArray;
     }
 }
