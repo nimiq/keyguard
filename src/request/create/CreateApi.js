@@ -1,14 +1,14 @@
 /* global TopLevelApi */
 /* global Create */
-/* global Nimiq */
 /* global Errors */
+/* global RequestParser */
 
 class CreateApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
      * @param {KeyguardRequest.CreateRequest} request
      */
     async onRequest(request) {
-        const parsedRequest = CreateApi._parseRequest(request);
+        const parsedRequest = await RequestParser.parse(request, 'CreateRequest');
         const handler = new Create(parsedRequest, this.resolve.bind(this), this.reject.bind(this));
 
         /** @type {HTMLElement} */
@@ -20,26 +20,5 @@ class CreateApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         $cancelLink.addEventListener('click', () => this.reject(new Errors.RequestCanceled()));
 
         handler.run();
-    }
-
-    /**
-     * @param {KeyguardRequest.CreateRequest} request
-     * @returns {KeyguardRequest.CreateRequest}
-     * @private
-     */
-    static _parseRequest(request) {
-        if (!request) {
-            throw new Errors.InvalidRequestError('Empty request');
-        }
-
-        if (!request.appName || typeof request.appName !== 'string') {
-            throw new Errors.InvalidRequestError('appName is required');
-        }
-
-        if (!request.defaultKeyPath || !Nimiq.ExtendedPrivateKey.isValidPath(request.defaultKeyPath)) {
-            throw new Errors.InvalidRequestError('Invalid defaultKeyPath');
-        }
-
-        return request;
     }
 }

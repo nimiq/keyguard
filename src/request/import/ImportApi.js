@@ -8,6 +8,7 @@
 /* global KeyStore */
 /* global Errors */
 /* global Utf8Tools */
+/* global RequestParser */
 
 class ImportApi extends TopLevelApi {
     constructor() {
@@ -27,7 +28,7 @@ class ImportApi extends TopLevelApi {
      * @param {KeyguardRequest.ImportRequest} request
      */
     async onRequest(request) {
-        this._request = request;
+        this._request = await RequestParser.parse(request, 'ImportRequest');
 
         // Global cancel link
         /** @type {HTMLElement} */
