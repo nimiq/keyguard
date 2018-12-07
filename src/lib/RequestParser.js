@@ -5,12 +5,12 @@
 
 class RequestParser { // eslint-disable-line no-unused-vars
     /**
-     *
-     * @param {any} request
-     * @param {string} requestType
+     * @param {any} request - Unparsed request object.
+     * @param {string} requestType - The type of the inoput request against which must be verified.
+     * @param {Function} parseLayout - function to invoke in case a request requires different layouts
      * @returns {Promise<any>}
      */
-    static async parse(request, requestType) {
+    static async parse(request, requestType, parseLayout = /** @param {any} x */x => x) {
         // make sure request is not undefined
         if (!request) {
             throw new Errors.InvalidRequestError('Empty request');
@@ -53,6 +53,22 @@ class RequestParser { // eslint-disable-line no-unused-vars
             return parsedRequest;
         }
 
+        // SignMessageRequest and SignTransactionRequest both needs to have a valid keyPath
+        if (requestType === 'SignTransactionRequest' || requestType === 'SignMessageRequest') {
+            parsedRequest.keyPath = RequestParser._parsePath(request.keyPath, 'keyPath');
+            if (requestType === 'SignTransactionRequest') {
+                parsedRequest.senderLabel = RequestParser._parseLabel(request.senderLabel);
+                parsedRequest.recipientLabel = RequestParser._parseLabel(request.recipientLabel);
+                parsedRequest.transaction = RequestParser._parseTransaction(request);
+                parsedRequest.layout = parseLayout(request.layout);
+                if (parsedRequest.layout === 'checkout') {
+                    parsedRequest.shopOrigin = request.shopOrigin; // TODO verify
+                } else {
+                    parsedRequest.shopOrigin = undefined;
+                }
+                return parsedRequest;
+            }
+        }
         return parsedRequest;
     }
 
@@ -163,5 +179,50 @@ class RequestParser { // eslint-disable-line no-unused-vars
             }
         });
         return indicesArray;
+    }
+
+    /**
+     * @param {KeyguardRequest.SignTransactionRequest} request
+     * @returns {Nimiq.ExtendedTransaction}
+     * @private
+     */
+    static _parseTransaction(request) {
+        const accountTypes = new Set([Nimiq.Account.Type.BASIC, Nimiq.Account.Type.VESTING, Nimiq.Account.Type.HTLC]);
+
+        const sender = new Nimiq.Address(request.sender); // TODO verify
+        const recipient = new Nimiq.Address(request.recipient); // TODO verify
+        if (sender.equals(recipient)) {
+            throw new Errors.InvalidRequestError('Sender and recipient must not match');
+        }
+
+        const senderType = request.senderType || Nimiq.Account.Type.BASIC;
+        if (!accountTypes.has(senderType)) {
+            throw new Errors.InvalidRequestError('Invalid sender type');
+        }
+        const recipientType = request.recipientType || Nimiq.Account.Type.BASIC;
+        if (!accountTypes.has(recipientType)) {
+            throw new Errors.InvalidRequestError('Invalid sender type');
+        }
+
+        const flags = request.flags || Nimiq.Transaction.Flag.NONE; // TODO verify
+        const data = request.data || new Uint8Array(0); // TODO verify
+
+        const networkId = request.networkId || Nimiq.GenesisConfig.NETWORK_ID;
+        if (networkId !== Nimiq.GenesisConfig.NETWORK_ID) {
+            throw new Errors.InvalidRequestError('Transaction is not valid in the specified network.');
+        }
+        return new Nimiq.ExtendedTransaction(
+            sender,
+            senderType,
+            recipient,
+            recipientType,
+            request.value,
+            request.fee,
+            request.validityStartHeight,
+            flags,
+            data,
+            new Uint8Array(0), // proof
+            networkId,
+        );
     }
 }
