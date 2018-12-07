@@ -2,21 +2,17 @@
  * TypeScript port of @nimiq/core/src/main/generic/utils/Observable.js
  */
 export default class Observable {
-    static get WILDCARD(): string {
+    public static get WILDCARD(): string {
         return '*';
     }
 
-    private _listeners: Map<string, Function[]>;
+    protected _listeners: Map<string, Array<() => void>>;
 
     constructor() {
         this._listeners = new Map();
     }
 
-    _offAll() {
-        this._listeners.clear();
-    }
-
-    on(type: string, callback: Function): number {
+    public on(type: string, callback: () => void): number {
         if (!this._listeners.has(type)) {
             this._listeners.set(type, [callback]);
             return 0;
@@ -25,12 +21,12 @@ export default class Observable {
         }
     }
 
-    off(type: string, id: number) {
+    public off(type: string, id: number) {
         if (!this._listeners.has(type) || !this._listeners.get(type)![id]) return;
         delete this._listeners.get(type)![id];
     }
 
-    fire(type: string, ...args: any[]): Promise<any[]> | null {
+    public fire(type: string, ...args: any[]): Promise<any[]> | null {
         const promises = [];
         // Notify listeners for this event type.
         if (this._listeners.has(type)) {
@@ -64,7 +60,7 @@ export default class Observable {
         return null;
     }
 
-    bubble(observable: Observable, ...types: string[]) {
+    public bubble(observable: Observable, ...types: string[]) {
         for (const type of types) {
             let callback;
             if (type === Observable.WILDCARD) {
@@ -78,5 +74,9 @@ export default class Observable {
             }
             observable.on(type, callback.bind(this));
         }
+    }
+
+    protected _offAll() {
+        this._listeners.clear();
     }
 }
