@@ -2,6 +2,7 @@
 /* global KeyStore */
 /* global Key */
 /* global Errors */
+/* global Utf8Tools */
 
 class RequestParser { // eslint-disable-line no-unused-vars
     /**
@@ -68,8 +69,18 @@ class RequestParser { // eslint-disable-line no-unused-vars
                 }
                 return parsedRequest;
             }
+            if (requestType === 'SignMessageRequest') {
+                parsedRequest.message = RequestParser._parseMessage(request.message);
+                parsedRequest.signerLabel = RequestParser._parseLabel(request.signerLabel);
+                try {
+                    parsedRequest.signer = new Nimiq.Address(request.signer);
+                } catch (error) {
+                    throw new Errors.InvalidRequestError(`Signer must be a valid Nimiq Address (${error.message})`);
+                }
+                return parsedRequest;
+            }
         }
-        return parsedRequest;
+        throw new Errors.KeyguardError('Not a valid RequestType.');
     }
 
     /**
@@ -188,9 +199,19 @@ class RequestParser { // eslint-disable-line no-unused-vars
      */
     static _parseTransaction(request) {
         const accountTypes = new Set([Nimiq.Account.Type.BASIC, Nimiq.Account.Type.VESTING, Nimiq.Account.Type.HTLC]);
+        let sender;
+        let recipient;
+        try {
+            sender = new Nimiq.Address(request.sender);
+        } catch (error) {
+            throw new Errors.InvalidRequestError(`sender must be a valid Nimiq Address (${error.message})`);
+        }
+        try {
+            recipient = new Nimiq.Address(request.recipient);
+        } catch (error) {
+            throw new Errors.InvalidRequestError(`recipient must be a valid Nimiq Address (${error.message})`);
+        }
 
-        const sender = new Nimiq.Address(request.sender); // TODO verify
-        const recipient = new Nimiq.Address(request.recipient); // TODO verify
         if (sender.equals(recipient)) {
             throw new Errors.InvalidRequestError('Sender and recipient must not match');
         }
@@ -224,5 +245,16 @@ class RequestParser { // eslint-disable-line no-unused-vars
             new Uint8Array(0), // proof
             networkId,
         );
+    }
+
+    /**
+     * @param {any} message
+     * @returns {Uint8Array}
+     * @private
+     */
+    static _parseMessage(message) {
+        if (message instanceof Uint8Array) return message;
+        if (typeof message === 'string') return Utf8Tools.stringToUtf8ByteArray(message);
+        throw new Errors.InvalidRequestError('Type of message must be a String or Uint8Array');
     }
 }
