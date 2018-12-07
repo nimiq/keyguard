@@ -6,6 +6,7 @@
 /* global KeyStore */
 /* global Nimiq */
 /* global loadNimiq */
+/* global Errors */
 
 class IFrameApi {
     /**
@@ -34,7 +35,7 @@ class IFrameApi {
      */
     async deriveAddresses(state, keyId, paths) {
         const storedEntropy = sessionStorage.getItem(IFrameApi.SESSION_STORAGE_KEY_PREFIX + keyId);
-        if (!storedEntropy) throw new Error('Key not found');
+        if (!storedEntropy) throw new Errors.KeyNotFoundError();
 
         await loadNimiq();
 
@@ -50,12 +51,7 @@ class IFrameApi {
      * @returns {boolean}
      */
     releaseKey(state, keyId) {
-        try {
-            sessionStorage.removeItem(IFrameApi.SESSION_STORAGE_KEY_PREFIX + keyId);
-        } catch (e) {
-            throw e;
-        }
-
+        sessionStorage.removeItem(IFrameApi.SESSION_STORAGE_KEY_PREFIX + keyId);
         return true;
     }
 
