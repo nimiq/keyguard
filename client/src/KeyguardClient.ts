@@ -1,6 +1,7 @@
 import { RedirectRpcClient } from '@nimiq/rpc';
 import { RequestBehavior, RedirectRequestBehavior, IFrameRequestBehavior } from './RequestBehavior';
 import { KeyguardCommand } from './KeyguardCommand';
+import Observable from './Observable';
 
 export class KeyguardClient {
     private static readonly DEFAULT_ENDPOINT =
@@ -10,7 +11,7 @@ export class KeyguardClient {
 
     private readonly _endpoint: string;
     private _redirectClient: RedirectRpcClient;
-    private _observable: Nimiq.Observable;
+    private _observable: Observable;
     private _defaultBehavior: RequestBehavior;
     private _defaultIframeBehavior: RequestBehavior;
 
@@ -27,7 +28,7 @@ export class KeyguardClient {
         this._redirectClient = new RedirectRpcClient('', RequestBehavior.getAllowedOrigin(this._endpoint));
         this._redirectClient.onResponse('request', this._onResolve.bind(this), this._onReject.bind(this));
 
-        this._observable = new Nimiq.Observable();
+        this._observable = new Observable();
     }
 
     public init() {
