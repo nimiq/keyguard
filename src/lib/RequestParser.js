@@ -1,6 +1,5 @@
 /* global Nimiq */
 /* global KeyStore */
-/* global Key */
 /* global Errors */
 /* global Utf8Tools */
 
@@ -189,6 +188,4 @@ class RequestParser { // eslint-disable-line no-unused-vars
         }
         return parsedUrl.origin;
     }
-
-
 }

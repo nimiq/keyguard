@@ -3,6 +3,7 @@
 /* global CookieJar */
 /* global I18n */
 /* global ErrorConstants */
+/* global RequestParser */
 
 /**
  * A common parent class for pop-up requests.

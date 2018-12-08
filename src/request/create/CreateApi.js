@@ -1,7 +1,6 @@
 /* global TopLevelApi */
 /* global Create */
 /* global Errors */
-/* global RequestParser */
 
 class CreateApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
@@ -28,13 +27,13 @@ class CreateApi extends TopLevelApi { // eslint-disable-line no-unused-vars
      * @returns {KeyguardRequest.CreateRequest}
      */
     parseRequest(request) {
-        if(!request) {
-            throw new Errors.InvalidRequestError('request is required')
+        if (!request) {
+            throw new Errors.InvalidRequestError('request is required');
         }
 
         const parsedRequest = {};
         parsedRequest.appName = this.parseAppName(request.appName);
-        parsedRequest.defaultKeyPath = this.parsePath(request.defaultKeyPath, "defaultKeyPath");
+        parsedRequest.defaultKeyPath = this.parsePath(request.defaultKeyPath, 'defaultKeyPath');
 
         return parsedRequest;
     }

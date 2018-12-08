@@ -1,7 +1,7 @@
 /* global TopLevelApi */
 /* global DeriveAddress */
-/* global RequestParser */
 /* global Errors */
+/* global Key */
 
 class DeriveAddressApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
@@ -28,8 +28,8 @@ class DeriveAddressApi extends TopLevelApi { // eslint-disable-line no-unused-va
      * @returns {Promise<KeyguardRequest.ParsedDeriveAddressRequest>}
      */
     async parseRequest(request) {
-        if(!request) {
-            throw new Errors.InvalidRequestError('request is required')
+        if (!request) {
+            throw new Errors.InvalidRequestError('request is required');
         }
 
         const parsedRequest = {};

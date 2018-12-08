@@ -8,7 +8,6 @@
 /* global KeyStore */
 /* global Errors */
 /* global Utf8Tools */
-/* global RequestParser */
 
 class ImportApi extends TopLevelApi {
     constructor() {
@@ -255,13 +254,13 @@ class ImportApi extends TopLevelApi {
      * @returns {KeyguardRequest.ImportRequest}
      */
     parseRequest(request) {
-        if(!request) {
-            throw new Errors.InvalidRequestError('request is required')
+        if (!request) {
+            throw new Errors.InvalidRequestError('request is required');
         }
 
         const parsedRequest = {};
         parsedRequest.appName = this.parseAppName(request.appName);
-        parsedRequest.defaultKeyPath = this.parsePath(request.defaultKeyPath, "defaultKeyPath");
+        parsedRequest.defaultKeyPath = this.parsePath(request.defaultKeyPath, 'defaultKeyPath');
         parsedRequest.requestedKeyPaths = this.parsePathsArray(request.requestedKeyPaths, ' requestKeyPaths');
 
         return parsedRequest;

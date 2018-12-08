@@ -1,7 +1,7 @@
-/* global RequestParser */
 /* global TopLevelApi */
 /* global SignMessage */
 /* global Errors */
+/* global Nimiq */
 
 class SignMessageApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
@@ -36,8 +36,8 @@ class SignMessageApi extends TopLevelApi { // eslint-disable-line no-unused-vars
      * @returns {Promise<KeyguardRequest.ParsedSignMessageRequest>}
      */
     async parseRequest(request) {
-        if(!request) {
-            throw new Errors.InvalidRequestError('request is required')
+        if (!request) {
+            throw new Errors.InvalidRequestError('request is required');
         }
 
         const parsedRequest = {};

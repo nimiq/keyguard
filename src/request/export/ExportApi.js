@@ -1,6 +1,5 @@
 /* global TopLevelApi */
 /* global Export */
-/* global RequestParser */
 /* global Errors */
 
 class ExportApi extends TopLevelApi { // eslint-disable-line no-unused-vars
@@ -28,8 +27,8 @@ class ExportApi extends TopLevelApi { // eslint-disable-line no-unused-vars
      * @returns {Promise<KeyguardRequest.ParsedSimpleRequest>}
      */
     async parseRequest(request) {
-        if(!request) {
-            throw new Errors.InvalidRequestError('request is required')
+        if (!request) {
+            throw new Errors.InvalidRequestError('request is required');
         }
 
         const parsedRequest = {};

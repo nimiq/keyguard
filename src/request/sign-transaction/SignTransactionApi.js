@@ -1,4 +1,3 @@
-/* global RequestParser */
 /* global I18n */
 /* global TopLevelApi */
 /* global LayoutStandard */
@@ -55,8 +54,8 @@ class SignTransactionApi extends TopLevelApi {
      * @returns {Promise<KeyguardRequest.ParsedSignTransactionRequest>}
      */
     async parseRequest(request) {
-        if(!request) {
-            throw new Errors.InvalidRequestError('request is required')
+        if (!request) {
+            throw new Errors.InvalidRequestError('request is required');
         }
 
         const parsedRequest = {};
