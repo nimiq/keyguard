@@ -43,6 +43,10 @@ class RequestParser { // eslint-disable-line no-unused-vars
         if (!paths || paths.constructor !== Array) {
             throw new Errors.InvalidRequestError(`${name} is required`);
         }
+        if (paths.length === 0) {
+            throw new Errors.InvalidRequestError(`${name} must not be empty`);
+        }
+
         /** @type {string[]} */
         const requestedKeyPaths = [];
         paths.forEach((/** @type {any} */path) => { // eslint-disable-line arrow-parens
@@ -61,10 +65,13 @@ class RequestParser { // eslint-disable-line no-unused-vars
      */
     parseLabel(label) {
         if (!label) {
-            return '';
+            return undefined;
         }
         if (typeof label !== 'string') {
             throw new Errors.InvalidRequestError('Label must be of type string');
+        }
+        if(label.length === 0) {
+            return undefined;
         }
         return label;
     }
@@ -77,7 +84,10 @@ class RequestParser { // eslint-disable-line no-unused-vars
         if (!keyId) {
             throw new Errors.InvalidRequestError('keyId is required');
         }
-        const keyInfo = await KeyStore.instance.getInfo(keyId);
+        if(typeof keyId !== 'string') {
+            throw new Errors.InvalidRequestError('keyId must be of type string');
+        }
+        const keyInfo= await KeyStore.instance.getInfo(keyId);
         if (!keyInfo) {
             throw new Errors.KeyNotFoundError();
         }
@@ -92,6 +102,9 @@ class RequestParser { // eslint-disable-line no-unused-vars
     parseIndicesArray(indicesArray) {
         if (!indicesArray || indicesArray.constructor !== Array) {
             throw new Errors.InvalidRequestError('indicesToDerive is required');
+        }
+        if(indicesArray.length === 0) {
+            throw new Errors.InvalidRequestError('Indice array must not be empty');
         }
         indicesArray.forEach((/** @type {any} */index) => { // eslint-disable-line arrow-parens
             if (typeof index !== 'string') {
@@ -108,35 +121,35 @@ class RequestParser { // eslint-disable-line no-unused-vars
     }
 
     /**
-     * @param {KeyguardRequest.SignTransactionRequest} request
+     * @param {any} request
      * @returns {Nimiq.ExtendedTransaction}
      */
     parseTransaction(request) {
         const accountTypes = new Set([Nimiq.Account.Type.BASIC, Nimiq.Account.Type.VESTING, Nimiq.Account.Type.HTLC]);
         let sender;
-        let recipient;
         try {
             sender = new Nimiq.Address(request.sender);
         } catch (error) {
             throw new Errors.InvalidRequestError(`sender must be a valid Nimiq Address (${error.message})`);
         }
+        const senderType = request.senderType || Nimiq.Account.Type.BASIC;
+        if (!accountTypes.has(senderType)) {
+            throw new Errors.InvalidRequestError('Invalid sender type');
+        }
+
+        let recipient;
         try {
             recipient = new Nimiq.Address(request.recipient);
         } catch (error) {
             throw new Errors.InvalidRequestError(`recipient must be a valid Nimiq Address (${error.message})`);
         }
-
-        if (sender.equals(recipient)) {
-            throw new Errors.InvalidRequestError('Sender and recipient must not match');
-        }
-
-        const senderType = request.senderType || Nimiq.Account.Type.BASIC;
-        if (!accountTypes.has(senderType)) {
-            throw new Errors.InvalidRequestError('Invalid sender type');
-        }
         const recipientType = request.recipientType || Nimiq.Account.Type.BASIC;
         if (!accountTypes.has(recipientType)) {
             throw new Errors.InvalidRequestError('Invalid sender type');
+        }
+
+        if (sender.equals(recipient)) {
+            throw new Errors.InvalidRequestError('Sender and recipient must not match');
         }
 
         const flags = request.flags || Nimiq.Transaction.Flag.NONE; // TODO verify
