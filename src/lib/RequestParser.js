@@ -6,89 +6,10 @@
 
 class RequestParser { // eslint-disable-line no-unused-vars
     /**
-     * @param {any} request - Unparsed request object.
-     * @param {string} requestType - The type of the inoput request against which must be verified.
-     * @param {Function} parseLayout - function to invoke in case a request requires different layouts
-     * @returns {Promise<any>}
-     */
-    static async parse(request, requestType, parseLayout = /** @param {any} x */x => x) {
-        // make sure request is not undefined
-        if (!request) {
-            throw new Errors.InvalidRequestError('Empty request');
-        }
-        const parsedRequest = {};
-
-        // every request needs to have an appName: string
-        parsedRequest.appName = RequestParser._parseAppName(request.appName);
-
-        // Create-/ImportRequest additionally needs to have a valid defaultKeyPath
-        if (requestType === 'CreateRequest' || requestType === 'ImportRequest') {
-            parsedRequest.defaultKeyPath = RequestParser._parsePath(request.defaultKeyPath, 'defaultKeyPath');
-            if (requestType === 'ImportRequest') {
-                // ImportRequest also needs to have an array of valid keys as requestedKeyPaths
-                parsedRequest.requestedKeyPaths = RequestParser._parsePathsArray(
-                    request.requestedKeyPaths,
-                    'requestedKeyPaths',
-                );
-                return parsedRequest;
-            }
-            return parsedRequest;
-        }
-
-        // all other requests are at least SimpleRequests, so they need to have a valid keyId and a keyLabel
-        parsedRequest.keyLabel = RequestParser._parseLabel(request.keyLabel);
-        parsedRequest.keyInfo = await RequestParser._parseKeyId(request.keyId);
-        if (requestType === 'SimpleRequest') {
-            return parsedRequest;
-        }
-
-        // DeriveAddressRequest must not be requested for a legacy key.
-        // It needs to have baseKeyPath tp be a valid path and
-        // indicesToDerive to be an array of Strings of the form 1'|2'|3'|...
-        if (requestType === 'DeriveAddressRequest') {
-            if (parsedRequest.keyInfo.type === Key.Type.LEGACY) {
-                throw new Errors.InvalidRequestError('Cannot derive addresses for single-account wallets');
-            }
-            parsedRequest.baseKeyPath = RequestParser._parsePath(request.baseKeyPath, 'baseKeyPath');
-            parsedRequest.indicesToDerive = RequestParser._parseIndicesArray(request.indicesToDerive);
-            return parsedRequest;
-        }
-
-        // SignMessageRequest and SignTransactionRequest both needs to have a valid keyPath
-        if (requestType === 'SignTransactionRequest' || requestType === 'SignMessageRequest') {
-            parsedRequest.keyPath = RequestParser._parsePath(request.keyPath, 'keyPath');
-            if (requestType === 'SignTransactionRequest') {
-                parsedRequest.senderLabel = RequestParser._parseLabel(request.senderLabel);
-                parsedRequest.recipientLabel = RequestParser._parseLabel(request.recipientLabel);
-                parsedRequest.transaction = RequestParser._parseTransaction(request);
-                parsedRequest.layout = parseLayout(request.layout);
-                if (parsedRequest.layout === 'checkout') {
-                    parsedRequest.shopOrigin = request.shopOrigin; // TODO verify
-                } else {
-                    parsedRequest.shopOrigin = undefined;
-                }
-                return parsedRequest;
-            }
-            if (requestType === 'SignMessageRequest') {
-                parsedRequest.message = RequestParser._parseMessage(request.message);
-                parsedRequest.signerLabel = RequestParser._parseLabel(request.signerLabel);
-                try {
-                    parsedRequest.signer = new Nimiq.Address(request.signer);
-                } catch (error) {
-                    throw new Errors.InvalidRequestError(`Signer must be a valid Nimiq Address (${error.message})`);
-                }
-                return parsedRequest;
-            }
-        }
-        throw new Errors.KeyguardError('Not a valid RequestType.');
-    }
-
-    /**
      * @param {any} appName
      * @returns {string}
-     * @private
      */
-    static _parseAppName(appName) {
+    parseAppName(appName) {
         if (!appName || typeof appName !== 'string') {
             throw new Errors.InvalidRequestError('appName is required');
         }
@@ -99,9 +20,8 @@ class RequestParser { // eslint-disable-line no-unused-vars
      * @param {any} path
      * @param {string} name
      * @returns {string}
-     * @private
      */
-    static _parsePath(path, name) {
+    parsePath(path, name) {
         if (!path) {
             throw new Errors.InvalidRequestError(`${name} is required`);
         }
@@ -119,9 +39,8 @@ class RequestParser { // eslint-disable-line no-unused-vars
      * @param {any} paths
      * @param {string} name
      * @returns {string[]}
-     * @private
      */
-    static _parsePathsArray(paths, name) {
+    parsePathsArray(paths, name) {
         if (!paths || paths.constructor !== Array) {
             throw new Errors.InvalidRequestError(`${name} is required`);
         }
@@ -131,7 +50,7 @@ class RequestParser { // eslint-disable-line no-unused-vars
             if (typeof path !== 'string') {
                 throw new Errors.InvalidRequestError(`${name}: path must be of type string`);
             }
-            requestedKeyPaths.push(RequestParser._parsePath(path, name));
+            requestedKeyPaths.push(this.parsePath(path, name));
         });
         return requestedKeyPaths;
     }
@@ -139,10 +58,9 @@ class RequestParser { // eslint-disable-line no-unused-vars
     /**
      * null or string with less than 63 bytes
      * @param {any} label
-     * @returns {string?}
-     * @private
+     * @returns {string | undefined}
      */
-    static _parseLabel(label) {
+    parseLabel(label) {
         if (!label) {
             return '';
         }
@@ -155,9 +73,8 @@ class RequestParser { // eslint-disable-line no-unused-vars
     /**
      * @param {any} keyId
      * @returns {Promise<KeyInfo>}
-     * @private
      */
-    static async _parseKeyId(keyId) {
+    async parseKeyId(keyId) {
         if (!keyId) {
             throw new Errors.InvalidRequestError('keyId is required');
         }
@@ -172,9 +89,8 @@ class RequestParser { // eslint-disable-line no-unused-vars
      *
      * @param {any} indicesArray
      * @returns {string[]}
-     * @private
      */
-    static _parseIndicesArray(indicesArray) {
+    parseIndicesArray(indicesArray) {
         if (!indicesArray || indicesArray.constructor !== Array) {
             throw new Errors.InvalidRequestError('indicesToDerive is required');
         }
@@ -195,9 +111,8 @@ class RequestParser { // eslint-disable-line no-unused-vars
     /**
      * @param {KeyguardRequest.SignTransactionRequest} request
      * @returns {Nimiq.ExtendedTransaction}
-     * @private
      */
-    static _parseTransaction(request) {
+    parseTransaction(request) {
         const accountTypes = new Set([Nimiq.Account.Type.BASIC, Nimiq.Account.Type.VESTING, Nimiq.Account.Type.HTLC]);
         let sender;
         let recipient;
@@ -250,11 +165,30 @@ class RequestParser { // eslint-disable-line no-unused-vars
     /**
      * @param {any} message
      * @returns {Uint8Array}
-     * @private
      */
-    static _parseMessage(message) {
+    parseMessage(message) {
         if (message instanceof Uint8Array) return message;
         if (typeof message === 'string') return Utf8Tools.stringToUtf8ByteArray(message);
         throw new Errors.InvalidRequestError('Type of message must be a String or Uint8Array');
     }
+
+    /**
+     * @param {any} url
+     * @returns {string}
+     */
+    parseShopOrigin(url) {
+        if (!url || typeof url !== 'string') {
+            throw new Errors.InvalidRequestError('url must be of type string');
+        }
+        /** @type {URL?} */
+        let parsedUrl;
+        try {
+            parsedUrl = new URL(url);
+        } catch (error) {
+            throw new Errors.InvalidRequestError(`Invalid url: ${error.message}`);
+        }
+        return parsedUrl.origin;
+    }
+
+
 }

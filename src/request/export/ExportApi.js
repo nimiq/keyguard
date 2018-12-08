@@ -8,7 +8,7 @@ class ExportApi extends TopLevelApi { // eslint-disable-line no-unused-vars
      * @param {KeyguardRequest.SimpleRequest} request
      */
     async onRequest(request) {
-        const parsedRequest = await RequestParser.parse(request, 'SimpleRequest');
+        const parsedRequest = await this.parseRequest(request);
         const exportHandler = new Export(parsedRequest, this.resolve.bind(this), this.reject.bind(this));
 
         /** @type {HTMLElement} */
@@ -20,5 +20,23 @@ class ExportApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         $cancelLink.addEventListener('click', () => this.reject(new Errors.RequestCanceled()));
 
         exportHandler.run();
+    }
+
+    /**
+     *
+     * @param {KeyguardRequest.SimpleRequest} request
+     * @returns {Promise<KeyguardRequest.ParsedSimpleRequest>}
+     */
+    async parseRequest(request) {
+        if(!request) {
+            throw new Errors.InvalidRequestError('request is required')
+        }
+
+        const parsedRequest = {};
+        parsedRequest.appName = this.parseAppName(request.appName);
+        parsedRequest.keyInfo = await this.parseKeyId(request.keyId);
+        parsedRequest.keyLabel = this.parseLabel(request.keyLabel);
+
+        return parsedRequest;
     }
 }

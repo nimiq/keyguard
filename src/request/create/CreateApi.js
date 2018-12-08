@@ -8,7 +8,7 @@ class CreateApi extends TopLevelApi { // eslint-disable-line no-unused-vars
      * @param {KeyguardRequest.CreateRequest} request
      */
     async onRequest(request) {
-        const parsedRequest = await RequestParser.parse(request, 'CreateRequest');
+        const parsedRequest = this.parseRequest(request);
         const handler = new Create(parsedRequest, this.resolve.bind(this), this.reject.bind(this));
 
         /** @type {HTMLElement} */
@@ -20,5 +20,22 @@ class CreateApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         $cancelLink.addEventListener('click', () => this.reject(new Errors.RequestCanceled()));
 
         handler.run();
+    }
+
+    /**
+     *
+     * @param {KeyguardRequest.CreateRequest} request
+     * @returns {KeyguardRequest.CreateRequest}
+     */
+    parseRequest(request) {
+        if(!request) {
+            throw new Errors.InvalidRequestError('request is required')
+        }
+
+        const parsedRequest = {};
+        parsedRequest.appName = this.parseAppName(request.appName);
+        parsedRequest.defaultKeyPath = this.parsePath(request.defaultKeyPath, "defaultKeyPath");
+
+        return parsedRequest;
     }
 }

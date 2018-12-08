@@ -28,7 +28,7 @@ class ImportApi extends TopLevelApi {
      * @param {KeyguardRequest.ImportRequest} request
      */
     async onRequest(request) {
-        this._request = await RequestParser.parse(request, 'ImportRequest');
+        this._request = this.parseRequest(request);
 
         // Global cancel link
         /** @type {HTMLElement} */
@@ -247,6 +247,24 @@ class ImportApi extends TopLevelApi {
         this._passphraseSetterBox.reset();
         window.location.hash = ImportApi.Pages.SET_PASSPHRASE;
         this._passphraseSetterBox.focus();
+    }
+
+    /**
+     *
+     * @param {KeyguardRequest.ImportRequest} request
+     * @returns {KeyguardRequest.ImportRequest}
+     */
+    parseRequest(request) {
+        if(!request) {
+            throw new Errors.InvalidRequestError('request is required')
+        }
+
+        const parsedRequest = {};
+        parsedRequest.appName = this.parseAppName(request.appName);
+        parsedRequest.defaultKeyPath = this.parsePath(request.defaultKeyPath, "defaultKeyPath");
+        parsedRequest.requestedKeyPaths = this.parsePathsArray(request.requestedKeyPaths, ' requestKeyPaths');
+
+        return parsedRequest;
     }
 }
 
