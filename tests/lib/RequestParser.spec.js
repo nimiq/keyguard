@@ -4,6 +4,9 @@
 /* global Errors */
 
 describe('RequestParser', () => {
+    beforeAll(() => Dummy.Utils.createDummyKeyStore());
+    afterAll(() => Dummy.Utils.deleteDummyKeyStore());
+
     it('can parse appName', () => {
         const requestParser = new RequestParser();
 
@@ -49,7 +52,6 @@ describe('RequestParser', () => {
     });
 
     it('can parse keyId to keyInfo', async () => {
-        Dummy.Utils.createDummyKeyStore();
         const requestParser = new RequestParser();
         let error;
 
@@ -88,8 +90,6 @@ describe('RequestParser', () => {
             true,
             false,
         ));
-
-        Dummy.Utils.deleteDummyKeyStore();
     });
 
     it('can parse indicesArrays', () => {
