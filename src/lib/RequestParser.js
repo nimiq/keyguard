@@ -17,7 +17,7 @@ class RequestParser { // eslint-disable-line no-unused-vars
 
     /**
      * @param {any} path
-     * @param {string} name
+     * @param {string} name -  name of the property, used in error case only
      * @returns {string}
      */
     parsePath(path, name) {
@@ -36,7 +36,7 @@ class RequestParser { // eslint-disable-line no-unused-vars
 
     /**
      * @param {any} paths
-     * @param {string} name
+     * @param {string} name - name of the property, used in error case only
      * @returns {string[]}
      */
     parsePathsArray(paths, name) {
@@ -70,7 +70,7 @@ class RequestParser { // eslint-disable-line no-unused-vars
         if (typeof label !== 'string') {
             throw new Errors.InvalidRequestError('Label must be of type string');
         }
-        if(label.length === 0) {
+        if (label.length === 0) {
             return undefined;
         }
         return label;
@@ -84,10 +84,10 @@ class RequestParser { // eslint-disable-line no-unused-vars
         if (!keyId) {
             throw new Errors.InvalidRequestError('keyId is required');
         }
-        if(typeof keyId !== 'string') {
+        if (typeof keyId !== 'string') {
             throw new Errors.InvalidRequestError('keyId must be of type string');
         }
-        const keyInfo= await KeyStore.instance.getInfo(keyId);
+        const keyInfo = await KeyStore.instance.getInfo(keyId);
         if (!keyInfo) {
             throw new Errors.KeyNotFoundError();
         }
@@ -103,7 +103,7 @@ class RequestParser { // eslint-disable-line no-unused-vars
         if (!indicesArray || indicesArray.constructor !== Array) {
             throw new Errors.InvalidRequestError('indicesToDerive is required');
         }
-        if(indicesArray.length === 0) {
+        if (indicesArray.length === 0) {
             throw new Errors.InvalidRequestError('Indice array must not be empty');
         }
         indicesArray.forEach((/** @type {any} */index) => { // eslint-disable-line arrow-parens
@@ -152,8 +152,8 @@ class RequestParser { // eslint-disable-line no-unused-vars
             throw new Errors.InvalidRequestError('Sender and recipient must not match');
         }
 
-        const flags = request.flags || Nimiq.Transaction.Flag.NONE; // TODO verify
-        const data = request.data || new Uint8Array(0); // TODO verify
+        const flags = request.flags || Nimiq.Transaction.Flag.NONE; // TODO verify?
+        const data = request.data || new Uint8Array(0); // TODO verify?
 
         const networkId = request.networkId || Nimiq.GenesisConfig.NETWORK_ID;
         if (networkId !== Nimiq.GenesisConfig.NETWORK_ID) {
