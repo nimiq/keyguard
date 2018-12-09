@@ -98,7 +98,7 @@ class SignTransactionApi extends TopLevelApi {
         if (labels.some(label => label !== undefined && (typeof label !== 'string' || label.length > 64))) {
             throw new Errors.InvalidRequestError('Invalid label');
         }
-        let shopLogoUrl = new URL('http://nimiq.com/path/index.php');
+        let shopLogoUrl;
         if (request.shopLogoUrl) {
             shopLogoUrl = new URL(request.shopLogoUrl);
             if (shopLogoUrl.origin !== request.shopOrigin) {

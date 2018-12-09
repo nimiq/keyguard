@@ -71,7 +71,7 @@ declare namespace KeyguardRequest {
         recipientLabel?: string
     }
 
-    type ParsedSignTransactionRequest = ConstructTransaction<Transform<KeyId2KeyInfo<SignTransactionRequest>, 'shopLogoUrl',{ shopLogoUrl: URL }>>
+    type ParsedSignTransactionRequest = ConstructTransaction<Transform<KeyId2KeyInfo<SignTransactionRequest>, 'shopLogoUrl',{ shopLogoUrl?: URL }>>
         & { layout: SignTransactionRequestLayout }
 
     type SignTransactionResult = SignatureResult;
