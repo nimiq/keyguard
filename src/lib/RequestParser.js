@@ -10,9 +10,9 @@ class RequestParser { // eslint-disable-line no-unused-vars
      */
     parseAppName(appName) {
         if (!appName || typeof appName !== 'string') {
-            throw new Errors.InvalidRequestError('appName is required');
+            throw new Errors.InvalidRequestError('appName must be a string');
         }
-        return appName;
+        return appName.substring(0, 24);
     }
 
     /**
@@ -21,14 +21,10 @@ class RequestParser { // eslint-disable-line no-unused-vars
      * @returns {string}
      */
     parsePath(path, name) {
-        if (!path) {
-            throw new Errors.InvalidRequestError(`${name} is required`);
+        if (!path || typeof path !== 'string') {
+            throw new Errors.InvalidRequestError(`${name} must be a string`);
         }
-        try {
-            if (!path || !Nimiq.ExtendedPrivateKey.isValidPath(path)) {
-                throw new Error(); // will be caught
-            }
-        } catch (error) {
+        if (!Nimiq.ExtendedPrivateKey.isValidPath(path)) {
             throw new Errors.InvalidRequestError(`${name}: Invalid path`);
         }
         return path;
@@ -40,20 +36,20 @@ class RequestParser { // eslint-disable-line no-unused-vars
      * @returns {string[]}
      */
     parsePathsArray(paths, name) {
-        if (!paths || paths.constructor !== Array) {
-            throw new Errors.InvalidRequestError(`${name} is required`);
+        if (!paths || !Array.isArray(paths)) {
+            throw new Errors.InvalidRequestError(`${name} must be an array`);
         }
         if (paths.length === 0) {
             throw new Errors.InvalidRequestError(`${name} must not be empty`);
         }
-        /** @type {string[]} */
-        const requestedKeyPaths = [];
-        paths.forEach((/** @type {any} */path) => { // eslint-disable-line arrow-parens
-            if (typeof path !== 'string') {
-                throw new Errors.InvalidRequestError(`${name}: path must be of type string`);
-            }
-            requestedKeyPaths.push(this.parsePath(path, name));
-        });
+        const requestedKeyPaths = paths.map(
+            /**
+             * @param {any} path
+             * @param {number} index
+             * @returns {string}
+             */
+            (path, index) => this.parsePath(path, `${name}[${index}]`),
+        );
         return requestedKeyPaths;
     }
 
@@ -66,7 +62,7 @@ class RequestParser { // eslint-disable-line no-unused-vars
             return undefined;
         }
         if (typeof label !== 'string') {
-            throw new Errors.InvalidRequestError('Label must be of type string');
+            throw new Errors.InvalidRequestError('Label must be a string');
         }
         if (label.length === 0) {
             return undefined;
@@ -79,11 +75,8 @@ class RequestParser { // eslint-disable-line no-unused-vars
      * @returns {Promise<KeyInfo>}
      */
     async parseKeyId(keyId) {
-        if (!keyId) {
-            throw new Errors.InvalidRequestError('keyId is required');
-        }
-        if (typeof keyId !== 'string') {
-            throw new Errors.InvalidRequestError('keyId must be of type string');
+        if (!keyId || typeof keyId !== 'string') {
+            throw new Errors.InvalidRequestError('keyId must be a string');
         }
         const keyInfo = await KeyStore.instance.getInfo(keyId);
         if (!keyInfo) {
@@ -97,51 +90,53 @@ class RequestParser { // eslint-disable-line no-unused-vars
      * @returns {string[]}
      */
     parseIndicesArray(indicesArray) {
-        if (!indicesArray || indicesArray.constructor !== Array) {
-            throw new Errors.InvalidRequestError('indicesToDerive is required');
+        if (!indicesArray || !Array.isArray(indicesArray)) {
+            throw new Errors.InvalidRequestError('indicesToDerive must be an array');
         }
         if (indicesArray.length === 0) {
-            throw new Errors.InvalidRequestError('Indice array must not be empty');
+            throw new Errors.InvalidRequestError('indicesToDerive must not be empty');
         }
-        indicesArray.forEach((/** @type {any} */index) => { // eslint-disable-line arrow-parens
+        indicesArray.forEach(/** @param {any} index */index => {
             if (typeof index !== 'string') {
-                throw new Errors.InvalidRequestError('Each index of indicesToDerive must be a string.');
+                throw new Errors.InvalidRequestError('indicesToDerive must consist of strings');
             }
-            if (!index.endsWith("'")) {
-                throw new Errors.InvalidRequestError('Each index of IndicesToDerive must end with a \'.');
-            }
-            if (`${(parseInt(index.substr(0, index.length - 1), 10))}'` !== index) {
-                throw new Errors.InvalidRequestError('Each index of indicesToDerive must start with a number.');
+            if (!Nimiq.ExtendedPrivateKey.isValidPath(`m/${index}`)) {
+                throw new Errors.InvalidRequestError(
+                    'indicesToDerive strings must start with a number and end with a \'',
+                );
             }
         });
         return indicesArray;
     }
 
     /**
-     * @param {any} request
+     * @param {any} object
      * @returns {Nimiq.ExtendedTransaction}
      */
-    parseTransaction(request) {
+    parseTransaction(object) {
         const accountTypes = new Set([Nimiq.Account.Type.BASIC, Nimiq.Account.Type.VESTING, Nimiq.Account.Type.HTLC]);
+        if (!object || typeof object !== 'object' || object === null) {
+            throw new Errors.InvalidRequestError('Request must be an object');
+        }
 
         let sender;
         try {
-            sender = new Nimiq.Address(request.sender);
+            sender = new Nimiq.Address(object.sender);
         } catch (error) {
             throw new Errors.InvalidRequestError(`sender must be a valid Nimiq Address (${error.message})`);
         }
-        const senderType = request.senderType || Nimiq.Account.Type.BASIC;
+        const senderType = object.senderType || Nimiq.Account.Type.BASIC;
         if (!accountTypes.has(senderType)) {
             throw new Errors.InvalidRequestError('Invalid sender type');
         }
 
         let recipient;
         try {
-            recipient = new Nimiq.Address(request.recipient);
+            recipient = new Nimiq.Address(object.recipient);
         } catch (error) {
             throw new Errors.InvalidRequestError(`recipient must be a valid Nimiq Address (${error.message})`);
         }
-        const recipientType = request.recipientType || Nimiq.Account.Type.BASIC;
+        const recipientType = object.recipientType || Nimiq.Account.Type.BASIC;
         if (!accountTypes.has(recipientType)) {
             throw new Errors.InvalidRequestError('Invalid sender type');
         }
@@ -150,25 +145,18 @@ class RequestParser { // eslint-disable-line no-unused-vars
             throw new Errors.InvalidRequestError('Sender and recipient must not match');
         }
 
-        const flags = request.flags || Nimiq.Transaction.Flag.NONE; // TODO verify?
-        const data = request.data || new Uint8Array(0); // TODO verify?
-
-        const networkId = request.networkId || Nimiq.GenesisConfig.NETWORK_ID;
-        if (networkId !== Nimiq.GenesisConfig.NETWORK_ID) {
-            throw new Errors.InvalidRequestError('Transaction is not valid in the specified network.');
-        }
+        const flags = object.flags || Nimiq.Transaction.Flag.NONE;
+        const data = object.data || new Uint8Array(0);
         return new Nimiq.ExtendedTransaction(
             sender,
             senderType,
             recipient,
             recipientType,
-            request.value,
-            request.fee,
-            request.validityStartHeight,
+            object.value,
+            object.fee,
+            object.validityStartHeight,
             flags,
             data,
-            new Uint8Array(0), // proof
-            networkId,
         );
     }
 
@@ -177,9 +165,12 @@ class RequestParser { // eslint-disable-line no-unused-vars
      * @returns {Uint8Array}
      */
     parseMessage(message) {
-        if (message instanceof Uint8Array) return message;
-        if (typeof message === 'string') return Utf8Tools.stringToUtf8ByteArray(message);
-        throw new Errors.InvalidRequestError('Type of message must be a String or Uint8Array');
+        if (typeof message === 'string') message = Utf8Tools.stringToUtf8ByteArray(message);
+        if (!(message instanceof Uint8Array)) {
+            throw new Errors.InvalidRequestError('message must be a String or Uint8Array');
+        }
+        if (message.length < 255) return message;
+        throw new Errors.InvalidRequestError('message must not exceed 255 characters');
     }
 
     /**
@@ -190,13 +181,11 @@ class RequestParser { // eslint-disable-line no-unused-vars
         if (!url || typeof url !== 'string') {
             throw new Errors.InvalidRequestError('shopOrigin must be of type string');
         }
-        /** @type {URL?} */
-        let parsedUrl;
         try {
-            parsedUrl = new URL(url);
+            const parsedUrl = new URL(url);
+            return parsedUrl.origin;
         } catch (error) {
             throw new Errors.InvalidRequestError(`Invalid url: ${error.message}`);
         }
-        return parsedUrl.origin;
     }
 }
