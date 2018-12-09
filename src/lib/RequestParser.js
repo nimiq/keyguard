@@ -46,7 +46,6 @@ class RequestParser { // eslint-disable-line no-unused-vars
         if (paths.length === 0) {
             throw new Errors.InvalidRequestError(`${name} must not be empty`);
         }
-
         /** @type {string[]} */
         const requestedKeyPaths = [];
         paths.forEach((/** @type {any} */path) => { // eslint-disable-line arrow-parens
@@ -59,7 +58,6 @@ class RequestParser { // eslint-disable-line no-unused-vars
     }
 
     /**
-     * null or string with less than 63 bytes
      * @param {any} label
      * @returns {string | undefined}
      */
@@ -95,7 +93,6 @@ class RequestParser { // eslint-disable-line no-unused-vars
     }
 
     /**
-     *
      * @param {any} indicesArray
      * @returns {string[]}
      */
@@ -126,6 +123,7 @@ class RequestParser { // eslint-disable-line no-unused-vars
      */
     parseTransaction(request) {
         const accountTypes = new Set([Nimiq.Account.Type.BASIC, Nimiq.Account.Type.VESTING, Nimiq.Account.Type.HTLC]);
+
         let sender;
         try {
             sender = new Nimiq.Address(request.sender);
@@ -190,7 +188,7 @@ class RequestParser { // eslint-disable-line no-unused-vars
      */
     parseShopOrigin(url) {
         if (!url || typeof url !== 'string') {
-            throw new Errors.InvalidRequestError('url must be of type string');
+            throw new Errors.InvalidRequestError('shopOrigin must be of type string');
         }
         /** @type {URL?} */
         let parsedUrl;
