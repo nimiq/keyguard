@@ -1,7 +1,6 @@
 /* global TopLevelApi */
 /* global SignMessage */
 /* global Errors */
-/* global Nimiq */
 
 class SignMessageApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
@@ -31,7 +30,6 @@ class SignMessageApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     }
 
     /**
-     *
      * @param {KeyguardRequest.SignMessageRequest} request
      * @returns {Promise<KeyguardRequest.ParsedSignMessageRequest>}
      */
@@ -47,11 +45,7 @@ class SignMessageApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         parsedRequest.keyPath = this.parsePath(request.keyPath, 'keyPath');
         parsedRequest.message = this.parseMessage(request.message);
         parsedRequest.signerLabel = this.parseLabel(request.signerLabel);
-        try {
-            parsedRequest.signer = new Nimiq.Address(request.signer);
-        } catch (error) {
-            throw new Errors.InvalidRequestError(`Signer must be a valid Nimiq Address (${error.message})`);
-        }
+        parsedRequest.signer = this.parseAddress(request.signer);
 
         return parsedRequest;
     }

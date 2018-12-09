@@ -119,23 +119,13 @@ class RequestParser { // eslint-disable-line no-unused-vars
             throw new Errors.InvalidRequestError('Request must be an object');
         }
 
-        let sender;
-        try {
-            sender = new Nimiq.Address(object.sender);
-        } catch (error) {
-            throw new Errors.InvalidRequestError(`sender must be a valid Nimiq Address (${error.message})`);
-        }
+        const sender = this.parseAddress(object.sender);
         const senderType = object.senderType || Nimiq.Account.Type.BASIC;
         if (!accountTypes.has(senderType)) {
             throw new Errors.InvalidRequestError('Invalid sender type');
         }
 
-        let recipient;
-        try {
-            recipient = new Nimiq.Address(object.recipient);
-        } catch (error) {
-            throw new Errors.InvalidRequestError(`recipient must be a valid Nimiq Address (${error.message})`);
-        }
+        const recipient = this.parseAddress(object.recipient);
         const recipientType = object.recipientType || Nimiq.Account.Type.BASIC;
         if (!accountTypes.has(recipientType)) {
             throw new Errors.InvalidRequestError('Invalid sender type');
@@ -158,6 +148,19 @@ class RequestParser { // eslint-disable-line no-unused-vars
             flags,
             data,
         );
+    }
+
+    /**
+     * @param {any} address
+     * @returns {Nimiq.Address}
+     */
+    parseAddress(address) {
+        try {
+            const nqAddress = new Nimiq.Address(address);
+            return nqAddress;
+        } catch (error) {
+            throw new Errors.InvalidRequestError(`recipient must be a valid Nimiq Address (${error.message})`);
+        }
     }
 
     /**

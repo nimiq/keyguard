@@ -42,14 +42,16 @@ class SignTransactionApi extends TopLevelApi {
      * @returns {any}
      */
     parseLayout(layout) {
-        if (layout && !SignTransactionApi.Layouts[layout]) {
+        if (!layout) {
+            return SignTransactionApi.Layouts.standard;
+        }
+        if (!SignTransactionApi.Layouts[layout]) {
             throw new Errors.InvalidRequestError('Invalid selected layout');
         }
         return layout;
     }
 
     /**
-     *
      * @param {KeyguardRequest.SignTransactionRequest} request
      * @returns {Promise<KeyguardRequest.ParsedSignTransactionRequest>}
      */

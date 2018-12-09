@@ -249,7 +249,6 @@ class ImportApi extends TopLevelApi {
     }
 
     /**
-     *
      * @param {KeyguardRequest.ImportRequest} request
      * @returns {KeyguardRequest.ImportRequest}
      */

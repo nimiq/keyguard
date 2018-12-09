@@ -22,7 +22,6 @@ class CreateApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     }
 
     /**
-     *
      * @param {KeyguardRequest.CreateRequest} request
      * @returns {KeyguardRequest.CreateRequest}
      */

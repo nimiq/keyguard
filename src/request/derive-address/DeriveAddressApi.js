@@ -1,7 +1,7 @@
 /* global TopLevelApi */
 /* global DeriveAddress */
-/* global Errors */
 /* global Key */
+/* global Errors */
 
 class DeriveAddressApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
@@ -23,7 +23,6 @@ class DeriveAddressApi extends TopLevelApi { // eslint-disable-line no-unused-va
     }
 
     /**
-     *
      * @param {KeyguardRequest.DeriveAddressRequest} request
      * @returns {Promise<KeyguardRequest.ParsedDeriveAddressRequest>}
      */

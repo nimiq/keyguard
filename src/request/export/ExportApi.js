@@ -22,7 +22,6 @@ class ExportApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     }
 
     /**
-     *
      * @param {KeyguardRequest.SimpleRequest} request
      * @returns {Promise<KeyguardRequest.ParsedSimpleRequest>}
      */
