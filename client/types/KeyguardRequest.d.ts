@@ -63,6 +63,7 @@ declare namespace KeyguardRequest {
     type SignTransactionRequest = SimpleRequest & TransactionInfo & {
         layout?: SignTransactionRequestLayout
         shopOrigin?: string
+        shopLogoUrl?: string
 
         keyPath: string
 
@@ -70,7 +71,7 @@ declare namespace KeyguardRequest {
         recipientLabel?: string
     }
 
-    type ParsedSignTransactionRequest = ConstructTransaction<KeyId2KeyInfo<SignTransactionRequest>>
+    type ParsedSignTransactionRequest = ConstructTransaction<Transform<KeyId2KeyInfo<SignTransactionRequest>, 'shopLogoUrl',{ shopLogoUrl: URL }>>
         & { layout: SignTransactionRequestLayout }
 
     type SignTransactionResult = SignatureResult;

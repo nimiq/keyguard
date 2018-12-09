@@ -98,10 +98,18 @@ class SignTransactionApi extends TopLevelApi {
         if (labels.some(label => label !== undefined && (typeof label !== 'string' || label.length > 64))) {
             throw new Errors.InvalidRequestError('Invalid label');
         }
+        let shopLogoUrl = new URL('http://nimiq.com/path/index.php');
+        if (request.shopLogoUrl) {
+            shopLogoUrl = new URL(request.shopLogoUrl);
+            if (shopLogoUrl.origin !== request.shopOrigin) {
+                throw new Errors.InvalidRequestError(`shopLogoUrl must have origin ${request.shopOrigin}`);
+            }
+        }
 
         return /** @type {ParsedSignTransactionRequest} */ {
             layout: request.layout || 'standard',
             shopOrigin: request.shopOrigin,
+            shopLogoUrl,
             appName: request.appName,
 
             keyInfo,
