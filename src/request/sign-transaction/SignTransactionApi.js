@@ -117,6 +117,7 @@ class SignTransactionApi extends TopLevelApi {
 
             keyLabel: request.keyLabel,
             senderLabel: request.senderLabel,
+            accountBalance: request.accountBalance || -1,
             recipientLabel: request.recipientLabel,
         };
     }
