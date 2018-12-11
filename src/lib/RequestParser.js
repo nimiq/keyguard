@@ -119,13 +119,13 @@ class RequestParser { // eslint-disable-line no-unused-vars
             throw new Errors.InvalidRequestError('Request must be an object');
         }
 
-        const sender = this.parseAddress(object.sender);
+        const sender = this.parseAddress(object.sender, 'sender');
         const senderType = object.senderType || Nimiq.Account.Type.BASIC;
         if (!accountTypes.has(senderType)) {
             throw new Errors.InvalidRequestError('Invalid sender type');
         }
 
-        const recipient = this.parseAddress(object.recipient);
+        const recipient = this.parseAddress(object.recipient, 'recipient');
         const recipientType = object.recipientType || Nimiq.Account.Type.BASIC;
         if (!accountTypes.has(recipientType)) {
             throw new Errors.InvalidRequestError('Invalid sender type');
@@ -152,14 +152,15 @@ class RequestParser { // eslint-disable-line no-unused-vars
 
     /**
      * @param {any} address
+     * @param {string} name
      * @returns {Nimiq.Address}
      */
-    parseAddress(address) {
+    parseAddress(address, name) {
         try {
             const nqAddress = new Nimiq.Address(address);
             return nqAddress;
         } catch (error) {
-            throw new Errors.InvalidRequestError(`recipient must be a valid Nimiq Address (${error.message})`);
+            throw new Errors.InvalidRequestError(`${name} must be a valid Nimiq Address (${error.message})`);
         }
     }
 
@@ -173,7 +174,7 @@ class RequestParser { // eslint-disable-line no-unused-vars
             throw new Errors.InvalidRequestError('message must be a String or Uint8Array');
         }
         if (message.length < 255) return message;
-        throw new Errors.InvalidRequestError('message must not exceed 255 characters');
+        throw new Errors.InvalidRequestError('message must not exceed 255 bytes');
     }
 
     /**
