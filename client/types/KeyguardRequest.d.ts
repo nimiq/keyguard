@@ -68,6 +68,8 @@ declare namespace KeyguardRequest {
         keyPath: string
 
         senderLabel?: string
+        accountBalance?: number
+        walletLabel?: string
         recipientLabel?: string
     }
 
