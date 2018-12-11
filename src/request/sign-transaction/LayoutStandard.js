@@ -28,22 +28,27 @@ class LayoutStandard extends BaseLayout { // eslint-disable-line no-unused-vars
             $shopLogo.src = request.shopLogoUrl.href;
             $recipientIdenticon.classList.add('clip');
             $recipientIdenticon.appendChild($shopLogo);
+            $shopLogo.addEventListener('error', () => {
+                $shopLogo.remove();
+                $recipientIdenticon.classList.remove('clip');
+                // eslint-disable-next-line no-new
+                new Identicon(request.transaction.recipient.toUserFriendlyAddress(), $recipientIdenticon);
+            });
         } else {
             // eslint-disable-next-line no-new
             new Identicon(request.transaction.recipient.toUserFriendlyAddress(), $recipientIdenticon);
         }
 
-        /** @type {HTMLElement} */
-        const $recipientAddress = ($recipient.querySelector('.address'));
+        const $recipientAddresses = ($recipient.querySelectorAll('.address > .chunk'));
         /** @type {string[]} */
         const recipientAddressChunks = (
             request.transaction.recipient
                 .toUserFriendlyAddress()
                 .replace(/[+ ]/g, '').match(/.{4}/g)
         );
-        for (let x = 0; x < 9; x++) {
-            $recipientAddress.children[x].textContent = recipientAddressChunks[x];
-        }
+        $recipientAddresses.forEach(($element, x) => {
+            $element.textContent = recipientAddressChunks[x];
+        });
 
         /** @type {HTMLElement} */
         const $recipientLabel = ($recipient.querySelector('.label'));
@@ -86,9 +91,15 @@ class LayoutStandard extends BaseLayout { // eslint-disable-line no-unused-vars
                                     <div class="wallet-label"></div>
                                 </div>
                                 <div class="address">
-                                    <span class="chunk"></span><span class="chunk"></span><span class="chunk"></span>
-                                    <span class="chunk"></span><span class="chunk"></span><span class="chunk"></span>
-                                    <span class="chunk"></span><span class="chunk"></span><span class="chunk"></span>
+                                    <span class="chunk"></span><span class="space">&nbsp;</span>
+                                    <span class="chunk"></span><span class="space">&nbsp;</span>
+                                    <span class="chunk"></span><span class="space">&nbsp;</span>
+                                    <span class="chunk"></span><span class="space">&nbsp;</span>
+                                    <span class="chunk"></span><span class="space">&nbsp;</span>
+                                    <span class="chunk"></span><span class="space">&nbsp;</span>
+                                    <span class="chunk"></span><span class="space">&nbsp;</span>
+                                    <span class="chunk"></span><span class="space">&nbsp;</span>
+                                    <span class="chunk"></span><span class="space">&nbsp;</span>
                                 </div>
                             </a>
 
@@ -101,9 +112,15 @@ class LayoutStandard extends BaseLayout { // eslint-disable-line no-unused-vars
                                     <div class="wallet-label"></div>
                                 </div>
                                 <div class="address">
-                                    <span class="chunk"></span><span class="chunk"></span><span class="chunk"></span>
-                                    <span class="chunk"></span><span class="chunk"></span><span class="chunk"></span>
-                                    <span class="chunk"></span><span class="chunk"></span><span class="chunk"></span>
+                                    <span class="chunk"></span><span class="space">&nbsp;</span>
+                                    <span class="chunk"></span><span class="space">&nbsp;</span>
+                                    <span class="chunk"></span><span class="space">&nbsp;</span>
+                                    <span class="chunk"></span><span class="space">&nbsp;</span>
+                                    <span class="chunk"></span><span class="space">&nbsp;</span>
+                                    <span class="chunk"></span><span class="space">&nbsp;</span>
+                                    <span class="chunk"></span><span class="space">&nbsp;</span>
+                                    <span class="chunk"></span><span class="space">&nbsp;</span>
+                                    <span class="chunk"></span><span class="space">&nbsp;</span>
                                 </div>
                             </a>
 

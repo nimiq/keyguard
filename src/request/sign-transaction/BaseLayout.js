@@ -27,17 +27,16 @@ class BaseLayout {
         // eslint-disable-next-line no-new
         new Identicon(transaction.sender.toUserFriendlyAddress(), $senderIdenticon);
 
-        /** @type {HTMLElement} */
-        const $senderAddress = ($sender.querySelector('.address'));
+        const $senderAddresses = ($sender.querySelectorAll('.address > .chunk'));
         /** @type {string[]} */
         const senderAddressChunks = (
             transaction.sender
                 .toUserFriendlyAddress()
                 .replace(/[+ ]/g, '').match(/.{4}/g)
         );
-        for (let x = 0; x < 9; x++) {
-            $senderAddress.children[x].textContent = senderAddressChunks[x];
-        }
+        $senderAddresses.forEach(($el, x) => {
+            $el.textContent = senderAddressChunks[x];
+        });
         if (request.senderLabel) {
             /** @type {HTMLElement} */
             const $senderLabel = ($sender.querySelector('.label'));
@@ -101,7 +100,7 @@ class BaseLayout {
         /** @type {HTMLElement} */
         this.$accountDetails = (this.$el.querySelector('#account-details'));
         const $accounts = this.$el.querySelectorAll('.account');
-        $accounts.forEach($item => $item.addEventListener('click', () => this._openDetails($item)));
+        $accounts.forEach($item => $item.addEventListener('click', event => this._openDetails($item, event)));
         /** @type {HTMLButtonElement} */
         this.$closeDetails = (this.$accountDetails.querySelector('#close-details'));
         this.$closeDetails.addEventListener('click', this._closeDetails.bind(this));
@@ -109,10 +108,10 @@ class BaseLayout {
 
     /**
      * @param {Element} $el
+     * @param {Event} event
      */
-    _openDetails($el) {
-        console.log('open');
-
+    _openDetails($el, event) {
+        event.preventDefault();
         /** @type {HTMLElement} */
         (this.$accountDetails.querySelector('#details')).innerHTML = $el.innerHTML;
         this.$el.classList.add('open');

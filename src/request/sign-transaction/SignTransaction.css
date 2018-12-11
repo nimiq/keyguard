@@ -1,5 +1,3 @@
-
-
 /*
 #######################################
 #### S T A N D A R D   L A Y O U T ####
@@ -34,14 +32,15 @@
     left: 0;
     height: 100%;
     width: 100%;
-    background-color: rgba(255,255,255, 0.9);
+    border-radius: 1rem;
+    background-color: rgba(255,255,255, 0.75);
     z-index: -1;
     opacity: 0;
-    padding: 14rem 4rem 4rem 4rem;
+    padding: 13rem 4rem 4rem 4rem;
     display: flex;
     flex-direction: column;
     align-items: center;
-    transition: opacity 0.3s, z-index 0.3s;
+    transition: opacity .6s, z-index .6s;
 }
 
 #account-details #details {
@@ -50,21 +49,33 @@
     align-items: center;
 }
 
-#layout-container > #effect-container {
-    transition: filter 0.3s;
+#layout-container > #effect-container > * {
+    transition: filter .6s, opacity .6s;
     -webkit-filter: blur(0px);
     -moz-filter: blur(0px);
     -o-filter: blur(0px);
     -ms-filter: blur(0px);
     filter: blur(0px);
+    opacity:1;
 }
 
-#layout-container.open > #effect-container {
+#layout-container.open > #effect-container > .page-header,
+#layout-container.open > #effect-container > .page-body {
     -webkit-filter: blur(20px);
     -moz-filter: blur(20px);
     -o-filter: blur(20px);
     -ms-filter: blur(20px);
     filter: blur(20px);
+    opacity:0.5;
+}
+
+#layout-container.open > #effect-container > .page-footer {
+    -webkit-filter: blur(35px);
+    -moz-filter: blur(35px);
+    -o-filter: blur(35px);
+    -ms-filter: blur(35px);
+    filter: blur(35px);
+    opacity: 0.5;
 }
 
 #layout-container.open > #account-details {
@@ -180,7 +191,6 @@
 .transaction > :first-child:after {
     content:' ';
     display:flex;
-    margin: 0rem -2rem;
     height:0px;
     border-top: 1px solid #1F2348;
     opacity: 0.1;
@@ -193,37 +203,32 @@
     flex-grow: 1;
     align-items: center;
     text-decoration: none;
-    color: var(--nimiq-dark-blue);
-}
-
-.transaction .account:hover {
+    margin: .5rem 0;
     cursor: pointer;
+    color: var(--nimiq-dark-blue);
 }
 
 .transaction .account .identicon {
     width: 10rem;
     height: 10rem;
-    margin: 0.5rem 0rem 2rem 0rem;
-    transition: width 0.25s, height 0.25s, margin 0.25s;
+    transition: transform 0.25s;
 }
 
 .transaction .account:focus .identicon,
 .transaction .account:hover .identicon {
-    width: 11rem;
-    height: 11rem;
-    margin: 0rem -0.5rem 1.5rem -0.5rem;
+    transform: scale(1.1);
 }
 
 .transaction .account .label {
     font-size: 2rem;
     line-height: 2.5rem;
     height: 2.5rem;
-    margin-bottom: 1.25rem;
+    margin: 1.25rem 0;
 }
 
 .transaction .arrow {
     background-image: url('data:image/svg+xml,<svg width="23" height="18" viewBox="0 0 23 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13.9995 1.99902L20.999 9.00049L13.9995 16" stroke="#0582CA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="18.999" y1="9" x2="0.999023" y2="9" stroke="#0582CA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>');
-    margin: 4rem 1rem;
+    margin-top: 4rem;
     height: 2.25rem;
     width: 3rem;
 }
@@ -248,7 +253,7 @@
 }
 
 .transaction .data-section {
-    margin: 1rem 3rem 0;
+    margin: 0.5rem 3rem 0;
     font-size: 2rem;
     color: var(--nimiq-dark-blue);
     text-align: center;
