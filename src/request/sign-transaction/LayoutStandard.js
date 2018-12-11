@@ -1,5 +1,6 @@
 /* global BaseLayout */
 /* global I18n */
+/* global Identicon */
 
 class LayoutStandard extends BaseLayout { // eslint-disable-line no-unused-vars
     /**

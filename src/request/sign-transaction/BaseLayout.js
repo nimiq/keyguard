@@ -95,7 +95,7 @@ class BaseLayout {
         // in the Accounts Manager and not return directly to the caller.
         this._passphraseBox.on(PassphraseBox.Events.CANCEL, () => window.history.back());
 
-        /** @type {HTMLDivElement} */
+        /** @type {HTMLElement} */
         this.$el = (document.getElementById('layout-container'));
 
         /** @type {HTMLElement} */
