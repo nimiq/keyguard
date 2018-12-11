@@ -57,6 +57,7 @@
     left: 4.5rem;
     top: 4.5rem;
     cursor: pointer;
+    opacity: 0.3;
 }
 
 @media (max-width: 450px) {

@@ -3,7 +3,6 @@
 /* global I18n */
 /* global TopLevelApi */
 /* global LayoutStandard */
-/* global LayoutCheckout */
 /* global Errors */
 
 class SignTransactionApi extends TopLevelApi {
@@ -151,9 +150,9 @@ class SignTransactionApi extends TopLevelApi {
     }
 }
 
-/** @type {{[layout: string]: any, standard: typeof LayoutStandard, checkout: typeof LayoutCheckout}} */
+/** @type {{[layout: string]: any, standard: typeof LayoutStandard, checkout: typeof LayoutStandard}} */
 SignTransactionApi.Layouts = {
     standard: LayoutStandard,
-    checkout: LayoutCheckout,
+    checkout: LayoutStandard,
     // 'cashlink': LayoutCashlink,
 };

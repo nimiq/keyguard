@@ -16,20 +16,67 @@ class BaseLayout {
         /** @type {HTMLDivElement} */
         const $pageBody = (document.querySelector('#confirm-transaction .transaction'));
 
-        /** @type {HTMLDivElement} */
-        const $senderIdenticon = ($pageBody.querySelector('#sender-identicon'));
-        /** @type {HTMLDivElement} */
-        const $recipientIdenticon = ($pageBody.querySelector('#recipient-identicon'));
+        const transaction = request.transaction;
 
         /** @type {HTMLDivElement} */
-        const $senderLabel = ($pageBody.querySelector('#sender-label'));
+        const $sender = ($pageBody.querySelector('.sender'));
         /** @type {HTMLDivElement} */
-        const $recipientLabel = ($pageBody.querySelector('#recipient-label'));
+        const $recipient = ($pageBody.querySelector('.recipient'));
 
+        // sender
         /** @type {HTMLDivElement} */
-        const $senderAddress = ($pageBody.querySelector('#sender-address'));
+        const $senderIdenticon = ($sender.querySelector('.identicon'));
+        // eslint-disable-next-line no-new
+        new Identicon(transaction.sender.toUserFriendlyAddress(), $senderIdenticon);
+
+        /** @type {HTMLElement} */
+        const $senderAddress = ($sender.querySelector('.address'));
+        /** @type {string[]} */
+        const senderAddressChunks = (
+            transaction.sender
+                .toUserFriendlyAddress()
+                .replace(/[+ ]/g, '').match(/.{4}/g)
+        );
+        for (let x = 0; x < 9; x++) {
+            $senderAddress.children[x].textContent = senderAddressChunks[x];
+        }
+        if (request.senderLabel) {
+            /** @type {HTMLElement} */
+            const $senderLabel = ($sender.querySelector('.label'));
+            $senderLabel.textContent = request.senderLabel;
+        }
+
+        // recipient
         /** @type {HTMLDivElement} */
-        const $recipientAddress = ($pageBody.querySelector('#recipient-address'));
+        const $recipientIdenticon = ($recipient.querySelector('.identicon'));
+        if (request.shopLogoUrl) {
+            const $shopIcon = document.createElement('img');
+            $shopIcon.src = request.shopLogoUrl.href;
+            $recipientIdenticon.appendChild($shopIcon);
+        } else {
+            // eslint-disable-next-line no-new
+            new Identicon(transaction.recipient.toUserFriendlyAddress(), $recipientIdenticon);
+        }
+
+        /** @type {HTMLElement} */
+        const $recipientAddress = ($recipient.querySelector('.address'));
+        /** @type {string[]} */
+        const recipientAddressChunks = (
+            transaction.recipient
+                .toUserFriendlyAddress()
+                .replace(/[+ ]/g, '').match(/.{4}/g)
+        );
+        for (let x = 0; x < 9; x++) {
+            $recipientAddress.children[x].textContent = recipientAddressChunks[x];
+        }
+
+        /** @type {HTMLElement} */
+        const $recipientLabel = ($recipient.querySelector('.label'));
+        if (request.shopOrigin) {
+            $recipientLabel.textContent = this._originToDomain(request.shopOrigin);
+        } else if (request.recipientLabel) {
+            $recipientLabel.textContent = request.recipientLabel;
+        }
 
         /** @type {HTMLDivElement} */
         const $value = ($pageBody.querySelector('#value'));
@@ -39,22 +86,7 @@ class BaseLayout {
         const $data = ($pageBody.querySelector('#data'));
 
         // Set sender data.
-        const transaction = request.transaction;
-        const senderAddress = transaction.sender.toUserFriendlyAddress();
-        new Identicon(senderAddress, $senderIdenticon); // eslint-disable-line no-new
-        $senderAddress.textContent = senderAddress;
-        if (request.senderLabel) {
-            $senderLabel.classList.remove('display-none');
-            $senderLabel.textContent = request.senderLabel;
-        }
 
-        // Set recipient data.
-        if ($recipientAddress) {
-            const recipientAddress = transaction.recipient.toUserFriendlyAddress();
-            new Identicon(recipientAddress, $recipientIdenticon); // eslint-disable-line no-new
-            $recipientAddress.textContent = recipientAddress;
-            $recipientLabel.textContent = request.recipientLabel || '';
-        }
 
         // Set value and fee.
         const total = transaction.value + transaction.fee;
@@ -85,6 +117,7 @@ class BaseLayout {
             hideInput: !request.keyInfo.encrypted,
             buttonI18nTag: 'passphrasebox-confirm-tx',
             minLength: request.keyInfo.hasPin ? 6 : undefined,
+            hideCancel: true,
         });
 
         this._passphraseBox.on(
@@ -166,6 +199,15 @@ class BaseLayout {
         // Add thin spaces (U+202F) every 3 digits. Stop at the decimal separator if there is one.
         const regexp = minDecimals > 0 ? /(\d)(?=(\d{3})+\.)/g : /(\d)(?=(\d{3})+$)/g;
         return result.replace(regexp, '$1\u202F');
+    }
+
+    /**
+     * @param {string} [origin]
+     * @returns {string}
+     */
+    _originToDomain(origin) {
+        if (!origin) return '---';
+        return origin.split('://')[1] || '---';
     }
 }
 
