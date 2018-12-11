@@ -51,30 +51,6 @@ class LayoutStandard extends BaseLayout { // eslint-disable-line no-unused-vars
         } else if (request.recipientLabel) {
             $recipientLabel.textContent = request.recipientLabel;
         }
-
-        /** @type {HTMLElement} */
-        this.$accountDetails = (this.$el.querySelector('#account-details'));
-        const $accounts = this.$el.querySelectorAll('.account');
-        $accounts.forEach($item => $item.addEventListener('click', () => this._openDetails($item)));
-        /** @type {HTMLButtonElement} */
-        this.$closeDetails = (this.$accountDetails.querySelector('#close-details'));
-        this.$closeDetails.addEventListener('click', this._closeDetails.bind(this));
-    }
-
-    /**
-     * @param {Element} $el
-     */
-    _openDetails($el) {
-        console.log('open');
-
-        /** @type {HTMLElement} */
-        (this.$accountDetails.querySelector('#details')).innerHTML = $el.innerHTML;
-        this.$el.classList.add('open');
-    }
-
-    _closeDetails() {
-        console.log('close');
-        this.$el.classList.remove('open');
     }
 
     /**
