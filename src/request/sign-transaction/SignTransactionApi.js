@@ -1,5 +1,3 @@
-/* global Nimiq */
-/* global KeyStore */
 /* global I18n */
 /* global TopLevelApi */
 /* global LayoutStandard */
@@ -11,7 +9,7 @@ class SignTransactionApi extends TopLevelApi {
      * @param {KeyguardRequest.SignTransactionRequest} request
      */
     async onRequest(request) {
-        const parsedRequest = await SignTransactionApi._parseRequest(request);
+        const parsedRequest = await this.parseRequest(request);
         const $layoutContainer = document.getElementById('layout-container');
 
         const handler = new SignTransactionApi.Layouts[parsedRequest.layout](
@@ -39,107 +37,45 @@ class SignTransactionApi extends TopLevelApi {
     }
 
     /**
-     * @param {KeyguardRequest.SignTransactionRequest} request
-     * @returns {Promise<KeyguardRequest.ParsedSignTransactionRequest>}
-     * @private
+     * Checks that the given layout is valid
+     * @param {any} layout
+     * @returns {any}
      */
-    static async _parseRequest(request) {
-        if (!request) {
-            throw new Errors.InvalidRequestError('Empty request');
+    parseLayout(layout) {
+        if (!layout) {
+            return SignTransactionApi.Layouts.standard;
         }
-
-        // Check that the layout is valid
-        if (request.layout && !SignTransactionApi.Layouts[request.layout]) {
+        if (!SignTransactionApi.Layouts[layout]) {
             throw new Errors.InvalidRequestError('Invalid selected layout');
         }
-
-        // Check that keyId is given.
-        if (!request.keyId || typeof request.keyId !== 'string') {
-            throw new Errors.InvalidRequestError('keyId is required');
-        }
-
-        // Check that key exists.
-        const keyInfo = await KeyStore.instance.getInfo(request.keyId);
-        if (!keyInfo) {
-            throw new Errors.KeyNotFoundError();
-        }
-
-        // Check that keyPath is given.
-        if (!request.keyPath || typeof request.keyPath !== 'string') {
-            throw new Errors.InvalidRequestError('keyPath is required');
-        }
-
-        // Check that keyPath is valid.
-        if (!Nimiq.ExtendedPrivateKey.isValidPath(request.keyPath)) {
-            throw new Errors.InvalidRequestError('Invalid keyPath');
-        }
-
-        // Parse transaction.
-        const transaction = SignTransactionApi._parseTransaction(request);
-
-        // Check that the transaction is for the correct network.
-        if (transaction.networkId !== Nimiq.GenesisConfig.NETWORK_ID) {
-            throw new Errors.InvalidRequestError('Transaction is not valid in this network');
-        }
-
-        // Check that sender != recipient.
-        if (transaction.recipient.equals(transaction.sender)) {
-            throw new Errors.InvalidRequestError('Sender and recipient must not match');
-        }
-
-        // Check sender / recipient account type.
-        const accountTypes = new Set([Nimiq.Account.Type.BASIC, Nimiq.Account.Type.VESTING, Nimiq.Account.Type.HTLC]);
-        if (!accountTypes.has(transaction.senderType) || !accountTypes.has(transaction.recipientType)) {
-            throw new Errors.InvalidRequestError('Invalid sender type');
-        }
-
-        // Validate labels.
-        const labels = [request.keyLabel, request.senderLabel, request.recipientLabel];
-        if (labels.some(label => label !== undefined && (typeof label !== 'string' || label.length > 64))) {
-            throw new Errors.InvalidRequestError('Invalid label');
-        }
-
-        return /** @type {ParsedSignTransactionRequest} */ {
-            layout: request.layout || 'standard',
-            shopOrigin: request.shopOrigin,
-            appName: request.appName,
-
-            keyInfo,
-            keyPath: request.keyPath,
-            transaction,
-
-            keyLabel: request.keyLabel,
-            senderLabel: request.senderLabel,
-            recipientLabel: request.recipientLabel,
-        };
+        return layout;
     }
 
     /**
      * @param {KeyguardRequest.SignTransactionRequest} request
-     * @returns {Nimiq.ExtendedTransaction}
-     * @private
+     * @returns {Promise<KeyguardRequest.ParsedSignTransactionRequest>}
      */
-    static _parseTransaction(request) {
-        const sender = new Nimiq.Address(request.sender);
-        const senderType = request.senderType || Nimiq.Account.Type.BASIC;
-        const recipient = new Nimiq.Address(request.recipient);
-        const recipientType = request.recipientType || Nimiq.Account.Type.BASIC;
-        const flags = request.flags || Nimiq.Transaction.Flag.NONE;
-        const data = request.data || new Uint8Array(0);
-        const networkId = request.networkId || Nimiq.GenesisConfig.NETWORK_ID;
-        return new Nimiq.ExtendedTransaction(
-            sender,
-            senderType,
-            recipient,
-            recipientType,
-            request.value,
-            request.fee,
-            request.validityStartHeight,
-            flags,
-            data,
-            new Uint8Array(0), // proof
-            networkId,
-        );
+    async parseRequest(request) {
+        if (!request) {
+            throw new Errors.InvalidRequestError('request is required');
+        }
+
+        const parsedRequest = {};
+        parsedRequest.appName = this.parseAppName(request.appName);
+        parsedRequest.keyInfo = await this.parseKeyId(request.keyId);
+        parsedRequest.keyLabel = this.parseLabel(request.keyLabel);
+        parsedRequest.keyPath = this.parsePath(request.keyPath, 'keyPath');
+        parsedRequest.senderLabel = this.parseLabel(request.senderLabel);
+        parsedRequest.recipientLabel = this.parseLabel(request.recipientLabel);
+        parsedRequest.transaction = this.parseTransaction(request);
+        parsedRequest.layout = this.parseLayout(request.layout);
+        if (parsedRequest.layout === 'checkout') {
+            parsedRequest.shopOrigin = this.parseShopOrigin(request.shopOrigin);
+        } else {
+            parsedRequest.shopOrigin = undefined;
+        }
+
+        return parsedRequest;
     }
 }
 

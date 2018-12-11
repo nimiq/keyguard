@@ -1,6 +1,5 @@
 /* global TopLevelApi */
 /* global Create */
-/* global Nimiq */
 /* global Errors */
 
 class CreateApi extends TopLevelApi { // eslint-disable-line no-unused-vars
@@ -8,7 +7,7 @@ class CreateApi extends TopLevelApi { // eslint-disable-line no-unused-vars
      * @param {KeyguardRequest.CreateRequest} request
      */
     async onRequest(request) {
-        const parsedRequest = CreateApi._parseRequest(request);
+        const parsedRequest = this.parseRequest(request);
         const handler = new Create(parsedRequest, this.resolve.bind(this), this.reject.bind(this));
 
         /** @type {HTMLElement} */
@@ -25,21 +24,16 @@ class CreateApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
      * @param {KeyguardRequest.CreateRequest} request
      * @returns {KeyguardRequest.CreateRequest}
-     * @private
      */
-    static _parseRequest(request) {
+    parseRequest(request) {
         if (!request) {
-            throw new Errors.InvalidRequestError('Empty request');
+            throw new Errors.InvalidRequestError('request is required');
         }
 
-        if (!request.appName || typeof request.appName !== 'string') {
-            throw new Errors.InvalidRequestError('appName is required');
-        }
+        const parsedRequest = {};
+        parsedRequest.appName = this.parseAppName(request.appName);
+        parsedRequest.defaultKeyPath = this.parsePath(request.defaultKeyPath, 'defaultKeyPath');
 
-        if (!request.defaultKeyPath || !Nimiq.ExtendedPrivateKey.isValidPath(request.defaultKeyPath)) {
-            throw new Errors.InvalidRequestError('Invalid defaultKeyPath');
-        }
-
-        return request;
+        return parsedRequest;
     }
 }

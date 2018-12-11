@@ -1,8 +1,6 @@
 /* global TopLevelApi */
 /* global DeriveAddress */
 /* global Key */
-/* global KeyStore */
-/* global Nimiq */
 /* global Errors */
 
 class DeriveAddressApi extends TopLevelApi { // eslint-disable-line no-unused-vars
@@ -10,7 +8,7 @@ class DeriveAddressApi extends TopLevelApi { // eslint-disable-line no-unused-va
      * @param {KeyguardRequest.DeriveAddressRequest} request
      */
     async onRequest(request) {
-        const parsedRequest = await DeriveAddressApi._parseRequest(request);
+        const parsedRequest = await this.parseRequest(request);
         const handler = new DeriveAddress(parsedRequest, this.resolve.bind(this), this.reject.bind(this));
 
         /** @type {HTMLElement} */
@@ -27,45 +25,22 @@ class DeriveAddressApi extends TopLevelApi { // eslint-disable-line no-unused-va
     /**
      * @param {KeyguardRequest.DeriveAddressRequest} request
      * @returns {Promise<KeyguardRequest.ParsedDeriveAddressRequest>}
-     * @private
      */
-    static async _parseRequest(request) {
+    async parseRequest(request) {
         if (!request) {
-            throw new Errors.InvalidRequestError('Empty request');
+            throw new Errors.InvalidRequestError('request is required');
         }
 
-        if (!request.appName || typeof request.appName !== 'string') {
-            throw new Errors.InvalidRequestError('appName is required');
-        }
-
-        if (!request.keyId || typeof request.keyId !== 'string') {
-            throw new Errors.InvalidRequestError('keyId is required');
-        }
-
-        // Check that key exists.
-        const keyInfo = await KeyStore.instance.getInfo(request.keyId);
-        if (!keyInfo) {
-            throw new Errors.KeyNotFoundError();
-        }
-
-        if (keyInfo.type === Key.Type.LEGACY) {
+        const parsedRequest = {};
+        parsedRequest.appName = this.parseAppName(request.appName);
+        parsedRequest.keyInfo = await this.parseKeyId(request.keyId);
+        if (parsedRequest.keyInfo.type === Key.Type.LEGACY) {
             throw new Errors.InvalidRequestError('Cannot derive addresses for single-account wallets');
         }
+        parsedRequest.keyLabel = this.parseLabel(request.keyLabel);
+        parsedRequest.baseKeyPath = this.parsePath(request.baseKeyPath, 'baseKeyPath');
+        parsedRequest.indicesToDerive = this.parseIndicesArray(request.indicesToDerive);
 
-        if (!request.baseKeyPath || !Nimiq.ExtendedPrivateKey.isValidPath(request.baseKeyPath)) {
-            throw new Errors.InvalidRequestError('Invalid baseKeyPath');
-        }
-
-        if (!request.indicesToDerive || !(request.indicesToDerive instanceof Array)) {
-            throw new Errors.InvalidRequestError('Invalid indicesToDerive');
-        }
-
-        return {
-            appName: request.appName,
-            keyInfo,
-            keyLabel: request.keyLabel,
-            baseKeyPath: request.baseKeyPath,
-            indicesToDerive: request.indicesToDerive,
-        };
+        return parsedRequest;
     }
 }

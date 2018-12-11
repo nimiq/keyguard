@@ -3,6 +3,7 @@
 /* global CookieJar */
 /* global I18n */
 /* global ErrorConstants */
+/* global RequestParser */
 
 /**
  * A common parent class for pop-up requests.
@@ -28,8 +29,9 @@
  *  runKeyguard(SignTransactionApi);
  * ```
  */
-class TopLevelApi { // eslint-disable-line no-unused-vars
+class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
     constructor() {
+        super();
         if (window.self !== window.top) {
             // TopLevelApi may not run in a frame
             throw new Error('Illegal use');
