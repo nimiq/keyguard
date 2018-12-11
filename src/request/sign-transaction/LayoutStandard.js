@@ -17,6 +17,41 @@ class LayoutStandard extends BaseLayout { // eslint-disable-line no-unused-vars
         super(request, resolve, reject);
         this.$el = container;
 
+        // recipient
+        /** @type {HTMLDivElement} */
+        const $recipient = (this.$el.querySelector('.recipient'));
+        /** @type {HTMLDivElement} */
+        const $recipientIdenticon = ($recipient.querySelector('.identicon'));
+        if (request.shopLogoUrl) {
+            const $shopLogo = document.createElement('img');
+            $shopLogo.src = request.shopLogoUrl.href;
+            $recipientIdenticon.classList.add('clip');
+            $recipientIdenticon.appendChild($shopLogo);
+        } else {
+            // eslint-disable-next-line no-new
+            new Identicon(request.transaction.recipient.toUserFriendlyAddress(), $recipientIdenticon);
+        }
+
+        /** @type {HTMLElement} */
+        const $recipientAddress = ($recipient.querySelector('.address'));
+        /** @type {string[]} */
+        const recipientAddressChunks = (
+            request.transaction.recipient
+                .toUserFriendlyAddress()
+                .replace(/[+ ]/g, '').match(/.{4}/g)
+        );
+        for (let x = 0; x < 9; x++) {
+            $recipientAddress.children[x].textContent = recipientAddressChunks[x];
+        }
+
+        /** @type {HTMLElement} */
+        const $recipientLabel = ($recipient.querySelector('.label'));
+        if (request.shopOrigin) {
+            $recipientLabel.textContent = this._originToDomain(request.shopOrigin);
+        } else if (request.recipientLabel) {
+            $recipientLabel.textContent = request.recipientLabel;
+        }
+
         /** @type {HTMLElement} */
         this.$accountDetails = (this.$el.querySelector('#account-details'));
         const $accounts = this.$el.querySelectorAll('.account');
@@ -51,7 +86,6 @@ class LayoutStandard extends BaseLayout { // eslint-disable-line no-unused-vars
         $el.classList.add('layout-standard');
 
         $el.innerHTML = `
-
             <div id="account-details">
                 <button id="close-details"></button>
                 <div id="details"></div>

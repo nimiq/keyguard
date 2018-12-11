@@ -20,8 +20,6 @@ class BaseLayout {
 
         /** @type {HTMLDivElement} */
         const $sender = ($pageBody.querySelector('.sender'));
-        /** @type {HTMLDivElement} */
-        const $recipient = ($pageBody.querySelector('.recipient'));
 
         // sender
         /** @type {HTMLDivElement} */
@@ -46,47 +44,12 @@ class BaseLayout {
             $senderLabel.textContent = request.senderLabel;
         }
 
-        // recipient
-        /** @type {HTMLDivElement} */
-        const $recipientIdenticon = ($recipient.querySelector('.identicon'));
-        if (request.shopLogoUrl) {
-            const $shopIcon = document.createElement('img');
-            $shopIcon.src = request.shopLogoUrl.href;
-            $recipientIdenticon.appendChild($shopIcon);
-        } else {
-            // eslint-disable-next-line no-new
-            new Identicon(transaction.recipient.toUserFriendlyAddress(), $recipientIdenticon);
-        }
-
-        /** @type {HTMLElement} */
-        const $recipientAddress = ($recipient.querySelector('.address'));
-        /** @type {string[]} */
-        const recipientAddressChunks = (
-            transaction.recipient
-                .toUserFriendlyAddress()
-                .replace(/[+ ]/g, '').match(/.{4}/g)
-        );
-        for (let x = 0; x < 9; x++) {
-            $recipientAddress.children[x].textContent = recipientAddressChunks[x];
-        }
-
-        /** @type {HTMLElement} */
-        const $recipientLabel = ($recipient.querySelector('.label'));
-        if (request.shopOrigin) {
-            $recipientLabel.textContent = this._originToDomain(request.shopOrigin);
-        } else if (request.recipientLabel) {
-            $recipientLabel.textContent = request.recipientLabel;
-        }
-
         /** @type {HTMLDivElement} */
         const $value = ($pageBody.querySelector('#value'));
         /** @type {HTMLDivElement} */
         const $fee = ($pageBody.querySelector('#fee'));
         /** @type {HTMLDivElement} */
         const $data = ($pageBody.querySelector('#data'));
-
-        // Set sender data.
-
 
         // Set value and fee.
         const total = transaction.value + transaction.fee;
