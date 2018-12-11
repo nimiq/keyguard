@@ -19,10 +19,11 @@
 }
 #layout-container .nq-card-footer {
     border: 0;
-    padding-top: 3rem;
+    padding: 3rem 4rem;
 }
 #layout-container .nq-card-body {
-    padding-bottom: 0;
+    padding: 0 4rem;
+
 }
 
 
@@ -145,7 +146,7 @@
 .transaction .accounts {
     flex-direction: row;
     align-items: flex-start;
-    padding-bottom: 5.5rem;
+    padding-bottom: 4rem;
     justify-content: space-between;
 }
 
@@ -168,6 +169,8 @@
     flex-direction: column;
     flex-grow: 1;
     align-items: center;
+    text-decoration: none;
+    color: var(--nimiq-dark-blue);
 }
 
 .transaction .account:hover {
@@ -177,31 +180,27 @@
 .transaction .account .identicon {
     width: 10rem;
     height: 10rem;
-    margin: 0rem 0rem 2rem 0rem;
+    margin: 0.5rem 0rem 2rem 0rem;
     transition: width 0.25s, height 0.25s, margin 0.25s;
 }
 
+.transaction .account:focus .identicon,
 .transaction .account:hover .identicon {
-    width: 12rem;
-    height: 12rem;
-    margin: -1rem -1rem 1rem -1rem;
+    width: 11rem;
+    height: 11rem;
+    margin: 0rem -0.5rem 1.5rem -0.5rem;
 }
 
 .transaction .account .label {
-    font-size: 2.25rem;
+    font-size: 2rem;
     line-height: 2.5rem;
     height: 2.5rem;
-    font-weight: 600;
     margin-bottom: 1.25rem;
-}
-
-.transaction .account > .address {
-    white-space: unset;
 }
 
 .transaction .arrow {
     background-image: url('data:image/svg+xml,<svg width="23" height="18" viewBox="0 0 23 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13.9995 1.99902L20.999 9.00049L13.9995 16" stroke="#0582CA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="18.999" y1="9" x2="0.999023" y2="9" stroke="#0582CA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>');
-    margin: 3rem 1rem;
+    margin: 4rem 1rem;
     height: 2.25rem;
     width: 3rem;
 }
@@ -212,12 +211,12 @@
 }
 
 .transaction .total #value {
-    font-size: 6rem;
-    line-height: 8rem;
+    font-size: 5rem;
 }
 
 .transaction .total .nim-symbol {
     margin-left: 1rem;
+    font-weight: 800;
 }
 
 .transaction .fee-section {
@@ -226,19 +225,14 @@
 }
 
 .transaction .data-section {
-    margin: 2rem 3rem 0;
+    margin: 1rem 3rem 0;
+    font-size: 2rem;
+    color: var(--nimiq-dark-blue);
     text-align: center;
 }
 
-.layout-standard .nq-card-footer {
-    border-radius: 0;
-}
-
 .page-footer {
-    padding: 1rem;
-}
-
-.layout-standard ~ .page-footer {
+    padding: 0.75rem;
     background: white;
     border-bottom-left-radius: 1rem;
     border-bottom-right-radius: 1rem;

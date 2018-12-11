@@ -68,7 +68,7 @@ class LayoutStandard extends BaseLayout { // eslint-disable-line no-unused-vars
                     <div class="nq-card-body">
                         <div class="center accounts">
 
-                            <div class="account sender">
+                            <a class="account sender" href="javascript:void(0);">
                                 <div class="identicon"></div>
                                 <div class="labels">
                                     <div class="label"></div>
@@ -79,11 +79,11 @@ class LayoutStandard extends BaseLayout { // eslint-disable-line no-unused-vars
                                     <span class="chunk"></span><span class="chunk"></span><span class="chunk"></span>
                                     <span class="chunk"></span><span class="chunk"></span><span class="chunk"></span>
                                 </div>
-                            </div>
+                            </a>
 
                             <i class="arrow nq-icon chevron-right"></i>
 
-                            <div class="account recipient">
+                            <a class="account recipient" href="javascript:void(0);">
                                 <div class="identicon"></div>
                                 <div class="labels">
                                     <div class="label"></div>
@@ -94,7 +94,7 @@ class LayoutStandard extends BaseLayout { // eslint-disable-line no-unused-vars
                                     <span class="chunk"></span><span class="chunk"></span><span class="chunk"></span>
                                     <span class="chunk"></span><span class="chunk"></span><span class="chunk"></span>
                                 </div>
-                            </div>
+                            </a>
 
                         </div>
                     </div>
@@ -111,7 +111,7 @@ class LayoutStandard extends BaseLayout { // eslint-disable-line no-unused-vars
                             <span data-i18n="sign-tx-fee">fee</span>
                         </div>
 
-                        <div class="data-section nq-text display-none" id="data"></div>
+                        <div class="data-section display-none" id="data"></div>
                     </div>
                 </div>
 
