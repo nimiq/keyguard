@@ -88,7 +88,10 @@ class LayoutStandard extends BaseLayout { // eslint-disable-line no-unused-vars
                                 <div class="identicon"></div>
                                 <div class="labels">
                                     <div class="label"></div>
-                                    <div class="wallet-label"></div>
+                                    <div class="wallet-label nq-label"></div>
+                                </div>
+                                <div class="total">
+                                    <span class="balance"></span><span class="nim-symbol"></span>
                                 </div>
                                 <div class="address">
                                     <span class="chunk"></span><span class="space">&nbsp;</span>
@@ -109,7 +112,6 @@ class LayoutStandard extends BaseLayout { // eslint-disable-line no-unused-vars
                                 <div class="identicon"></div>
                                 <div class="labels">
                                     <div class="label"></div>
-                                    <div class="wallet-label"></div>
                                 </div>
                                 <div class="address">
                                     <span class="chunk"></span><span class="space">&nbsp;</span>

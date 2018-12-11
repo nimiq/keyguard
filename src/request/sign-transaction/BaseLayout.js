@@ -42,6 +42,16 @@ class BaseLayout {
             const $senderLabel = ($sender.querySelector('.label'));
             $senderLabel.textContent = request.senderLabel;
         }
+        if (request.keyLabel) {
+            /** @type {HTMLElement} */
+            const $walletLabel = ($sender.querySelector('.wallet-label'));
+            $walletLabel.textContent = request.keyLabel;
+        }
+        if (request.accountBalance) {
+            /** @type {HTMLElement} */
+            const $balance = ($sender.querySelector('.balance'));
+            $balance.textContent = Nimiq.Policy.satoshisToCoins(request.accountBalance).toString();
+        }
 
         /** @type {HTMLDivElement} */
         const $value = ($pageBody.querySelector('#value'));
