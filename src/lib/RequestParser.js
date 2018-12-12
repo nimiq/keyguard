@@ -192,6 +192,7 @@ class RequestParser { // eslint-disable-line no-unused-vars
             throw new Errors.InvalidRequestError(`Invalid url: ${error.message}`);
         }
     }
+
     /**
      * @param {any} url
      * @returns {URL}
