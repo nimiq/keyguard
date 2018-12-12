@@ -10,6 +10,7 @@ class SignTransactionApi extends TopLevelApi {
      * @param {KeyguardRequest.SignTransactionRequest} request
      */
     async onRequest(request) {
+        TopLevelApi.setLoading(true);
         const parsedRequest = await SignTransactionApi._parseRequest(request);
         const $layoutContainer = document.getElementById('layout-container');
 
@@ -35,6 +36,7 @@ class SignTransactionApi extends TopLevelApi {
         $cancelLink.addEventListener('click', () => this.reject(new Errors.RequestCanceled()));
 
         handler.run();
+        TopLevelApi.setLoading(false);
     }
 
     /**

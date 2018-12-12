@@ -41,16 +41,20 @@ class BaseLayout {
             /** @type {HTMLElement} */
             const $senderLabel = ($sender.querySelector('.label'));
             $senderLabel.textContent = request.senderLabel;
+            $senderLabel.classList.remove('display-none');
         }
         if (request.keyLabel) {
             /** @type {HTMLElement} */
             const $walletLabel = ($sender.querySelector('.wallet-label'));
             $walletLabel.textContent = request.keyLabel;
+            $walletLabel.classList.remove('display-none');
         }
         if (request.accountBalance) {
             /** @type {HTMLElement} */
             const $balance = ($sender.querySelector('.balance'));
             $balance.textContent = Nimiq.Policy.satoshisToCoins(request.accountBalance).toString();
+            /** @type {HTMLElement} */
+            ($balance.parentElement).classList.remove('display-none');
         }
 
         /** @type {HTMLDivElement} */
@@ -114,6 +118,9 @@ class BaseLayout {
         /** @type {HTMLButtonElement} */
         this.$closeDetails = (this.$accountDetails.querySelector('#close-details'));
         this.$closeDetails.addEventListener('click', this._closeDetails.bind(this));
+        /** @type {HTMLElement} */
+        this.$background = (this.$el.querySelector('#background'));
+        this.$background.addEventListener('click', this._closeDetails.bind(this));
     }
 
     /**
@@ -128,7 +135,6 @@ class BaseLayout {
     }
 
     _closeDetails() {
-        console.log('close');
         this.$el.classList.remove('open');
     }
 

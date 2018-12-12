@@ -157,6 +157,8 @@
 }
 
 .global-close {
+    position: relative;
+    z-index: 3;
     margin-top: 8rem;
     margin-bottom: 5rem;
 }

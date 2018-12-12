@@ -54,8 +54,10 @@ class LayoutStandard extends BaseLayout { // eslint-disable-line no-unused-vars
         const $recipientLabel = ($recipient.querySelector('.label'));
         if (request.shopOrigin) {
             $recipientLabel.textContent = this._originToDomain(request.shopOrigin);
+            $recipientLabel.classList.remove('display-none');
         } else if (request.recipientLabel) {
             $recipientLabel.textContent = request.recipientLabel;
+            $recipientLabel.classList.remove('display-none');
         }
     }
 
@@ -70,9 +72,11 @@ class LayoutStandard extends BaseLayout { // eslint-disable-line no-unused-vars
         $el.innerHTML = `
             <div id="account-details">
                 <button id="close-details"></button>
+                <div class="flex-grow"></div>
                 <div id="details"></div>
                 <div class="flex-grow"></div>
             </div>
+            <div id="background"></div>
             <div id="effect-container">
                 <div class="page-header nq-card-header">
                     <a tabindex="0" class="page-header-back-button nq-icon arrow-left hide-standard"></a>
@@ -86,11 +90,9 @@ class LayoutStandard extends BaseLayout { // eslint-disable-line no-unused-vars
 
                             <a class="account sender" href="javascript:void(0);">
                                 <div class="identicon"></div>
-                                <div class="labels">
-                                    <div class="label"></div>
-                                    <div class="wallet-label nq-label"></div>
-                                </div>
-                                <div class="total">
+                                <div class="label display-none"></div>
+                                <div class="wallet-label nq-label display-none"></div>
+                                <div class="total display-none">
                                     <span class="balance"></span><span class="nim-symbol"></span>
                                 </div>
                                 <div class="address">
@@ -110,9 +112,7 @@ class LayoutStandard extends BaseLayout { // eslint-disable-line no-unused-vars
 
                             <a class="account recipient" href="javascript:void(0);">
                                 <div class="identicon"></div>
-                                <div class="labels">
-                                    <div class="label"></div>
-                                </div>
+                                <div class="label display-none"></div>
                                 <div class="address">
                                     <span class="chunk"></span><span class="space">&nbsp;</span>
                                     <span class="chunk"></span><span class="space">&nbsp;</span>
