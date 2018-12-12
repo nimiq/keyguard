@@ -11,17 +11,24 @@ class BaseLayout {
      * @param {KeyguardRequest.ParsedSignTransactionRequest} request
      * @param {Function} resolve
      * @param {Function} reject
+     * @param {HTMLElement} $recipient
      */
-    constructor(request, resolve, reject) {
-        /** @type {HTMLDivElement} */
-        const $pageBody = (document.querySelector('#confirm-transaction .transaction'));
+    constructor(request, resolve, reject, $recipient) {
+        /** @type {HTMLElement} */
+        this.$el = (document.getElementById('layout-container'));
+        this.$el.classList.add(request.layout);
+
+        /** @type {HTMLElement} */
+        const $recipientNode = (this.$el.querySelector('.account.recipient'));
+        /** @type {HTMLElement} */
+        ($recipientNode.parentElement).replaceChild($recipient, $recipientNode);
 
         const transaction = request.transaction;
 
-        /** @type {HTMLDivElement} */
-        const $sender = ($pageBody.querySelector('.sender'));
-
         // sender
+        /** @type {HTMLDivElement} */
+        const $sender = (this.$el.querySelector('.sender'));
+
         /** @type {HTMLDivElement} */
         const $senderIdenticon = ($sender.querySelector('.identicon'));
         // eslint-disable-next-line no-new
@@ -37,32 +44,35 @@ class BaseLayout {
         $senderAddresses.forEach(($el, x) => {
             $el.textContent = senderAddressChunks[x];
         });
+
         if (request.senderLabel) {
             /** @type {HTMLElement} */
             const $senderLabel = ($sender.querySelector('.label'));
             $senderLabel.textContent = request.senderLabel;
             $senderLabel.classList.remove('display-none');
         }
+
         if (request.keyLabel) {
             /** @type {HTMLElement} */
             const $walletLabel = ($sender.querySelector('.wallet-label'));
             $walletLabel.textContent = request.keyLabel;
             $walletLabel.classList.remove('display-none');
         }
+
         if (request.accountBalance) {
             /** @type {HTMLElement} */
             const $balance = ($sender.querySelector('.balance'));
-            $balance.textContent = Nimiq.Policy.satoshisToCoins(request.accountBalance).toString();
+            $balance.textContent = this._formatNumber(Nimiq.Policy.satoshisToCoins(request.accountBalance));
             /** @type {HTMLElement} */
             ($balance.parentElement).classList.remove('display-none');
         }
 
         /** @type {HTMLDivElement} */
-        const $value = ($pageBody.querySelector('#value'));
+        const $value = (this.$el.querySelector('#value'));
         /** @type {HTMLDivElement} */
-        const $fee = ($pageBody.querySelector('#fee'));
+        const $fee = (this.$el.querySelector('#fee'));
         /** @type {HTMLDivElement} */
-        const $data = ($pageBody.querySelector('#data'));
+        const $data = (this.$el.querySelector('#data'));
 
         // Set value and fee.
         const total = transaction.value + transaction.fee;
@@ -73,7 +83,7 @@ class BaseLayout {
         if ($fee && transaction.fee > 0) {
             $fee.textContent = Nimiq.Policy.satoshisToCoins(transaction.fee).toString();
             /** @type {HTMLDivElement} */
-            const $feeSection = ($pageBody.querySelector('.fee-section'));
+            const $feeSection = (this.$el.querySelector('.fee-section'));
             $feeSection.classList.remove('display-none');
         }
 
@@ -82,7 +92,7 @@ class BaseLayout {
             // FIXME Detect and use proper encoding.
             $data.textContent = Nimiq.BufferUtils.toAscii(transaction.data);
             /** @type {HTMLDivElement} */
-            const $dataSection = ($pageBody.querySelector('.data-section'));
+            const $dataSection = (this.$el.querySelector('.data-section'));
             $dataSection.classList.remove('display-none');
         }
 
@@ -107,9 +117,6 @@ class BaseLayout {
         // because for checkout we need to go back to the CheckoutOverview
         // in the Accounts Manager and not return directly to the caller.
         this._passphraseBox.on(PassphraseBox.Events.CANCEL, () => window.history.back());
-
-        /** @type {HTMLElement} */
-        this.$el = (document.getElementById('layout-container'));
 
         /** @type {HTMLElement} */
         this.$accountDetails = (this.$el.querySelector('#account-details'));
@@ -183,6 +190,8 @@ class BaseLayout {
 
         // Async pre-load the crypto worker to reduce wait time at first decrypt attempt
         Nimiq.CryptoWorker.getInstanceAsync();
+        /** @type {HTMLElement} */
+        (this.$el.parentElement).classList.remove('display-none');
     }
 
     /**
@@ -204,15 +213,6 @@ class BaseLayout {
         // Add thin spaces (U+202F) every 3 digits. Stop at the decimal separator if there is one.
         const regexp = minDecimals > 0 ? /(\d)(?=(\d{3})+\.)/g : /(\d)(?=(\d{3})+$)/g;
         return result.replace(regexp, '$1\u202F');
-    }
-
-    /**
-     * @param {string} [origin]
-     * @returns {string}
-     */
-    _originToDomain(origin) {
-        if (!origin) return '---';
-        return origin.split('://')[1] || '---';
     }
 }
 

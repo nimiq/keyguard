@@ -189,7 +189,7 @@ const TRANSLATIONS = {
         'choose-key-type-bip39-address-heading': 'Mehrere Adressen',
         'choose-key-type-bip39-address-info': 'Erstellt nach xx.xx.2018',
 
-        'sign-tx-heading-tx': 'Überweiseung bestätigen',
+        'sign-tx-heading-tx': 'Überweisung bestätigen',
         'sign-tx-heading-checkout': 'Zahlung bestätigen',
         'sign-tx-includes': 'inklusive',
         'sign-tx-fee': 'Gebühr',

@@ -1,26 +1,18 @@
 /* global BaseLayout */
-/* global I18n */
 /* global Identicon */
 
 class LayoutStandard extends BaseLayout { // eslint-disable-line no-unused-vars
     /**
-     * @param {?HTMLElement} $el
      * @param {KeyguardRequest.ParsedSignTransactionRequest} request
      * @param {Function} resolve
      * @param {Function} reject
      */
-    constructor($el, request, resolve, reject) {
+    constructor(request, resolve, reject) {
         // `this` can only be accessed after `super` has been called,
         // but `super` requires the HTML to already exist.
-        const container = LayoutStandard._createElement($el);
-        const $elList = (container.querySelectorAll(`.hide-${request.layout}`));
-        $elList.forEach($item => $item.classList.add('display-none'));
-        super(request, resolve, reject);
-        this.$el = container;
+        const $recipient = LayoutStandard._createRecipient();
 
-        // recipient
-        /** @type {HTMLDivElement} */
-        const $recipient = (this.$el.querySelector('.recipient'));
+        // set recipient data
         /** @type {HTMLDivElement} */
         const $recipientIdenticon = ($recipient.querySelector('.identicon'));
         if (request.shopLogoUrl) {
@@ -53,111 +45,44 @@ class LayoutStandard extends BaseLayout { // eslint-disable-line no-unused-vars
         /** @type {HTMLElement} */
         const $recipientLabel = ($recipient.querySelector('.label'));
         if (request.shopOrigin) {
-            $recipientLabel.textContent = this._originToDomain(request.shopOrigin);
+            $recipientLabel.textContent = LayoutStandard._originToDomain(request.shopOrigin);
             $recipientLabel.classList.remove('display-none');
         } else if (request.recipientLabel) {
             $recipientLabel.textContent = request.recipientLabel;
             $recipientLabel.classList.remove('display-none');
         }
+
+        super(request, resolve, reject, $recipient);
     }
 
     /**
-     * @param {?HTMLElement} [$el]
-     * @returns {HTMLElement}
+     * @param {string} [origin]
+     * @returns {string}
      */
-    static _createElement($el) {
-        $el = $el || document.createElement('div');
-        $el.classList.add('layout-standard');
+    static _originToDomain(origin) {
+        if (!origin) return '---';
+        return origin.split('://')[1] || '---';
+    }
 
-        $el.innerHTML = `
-            <div id="account-details">
-                <button id="close-details"></button>
-                <div class="flex-grow"></div>
-                <div id="details"></div>
-                <div class="flex-grow"></div>
-            </div>
-            <div id="background"></div>
-            <div id="effect-container">
-                <div class="page-header nq-card-header">
-                    <a tabindex="0" class="page-header-back-button nq-icon arrow-left hide-standard"></a>
-                    <h1 data-i18n="sign-tx-heading-checkout" class="nq-h1 hide-standard">Verify Payment</h1>
-                    <h1 data-i18n="sign-tx-heading-tx" class="nq-h1 hide-checkout">Confirm Transaction</h1>
-                </div>
-
-                <div class="page-body transaction">
-                    <div class="nq-card-body">
-                        <div class="center accounts">
-
-                            <a class="account sender" href="javascript:void(0);">
-                                <div class="identicon"></div>
-                                <div class="label display-none"></div>
-                                <div class="wallet-label nq-label display-none"></div>
-                                <div class="total display-none">
-                                    <span class="balance"></span><span class="nim-symbol"></span>
-                                </div>
-                                <div class="address">
-                                    <span class="chunk"></span><span class="space">&nbsp;</span>
-                                    <span class="chunk"></span><span class="space">&nbsp;</span>
-                                    <span class="chunk"></span><span class="space">&nbsp;</span>
-                                    <span class="chunk"></span><span class="space">&nbsp;</span>
-                                    <span class="chunk"></span><span class="space">&nbsp;</span>
-                                    <span class="chunk"></span><span class="space">&nbsp;</span>
-                                    <span class="chunk"></span><span class="space">&nbsp;</span>
-                                    <span class="chunk"></span><span class="space">&nbsp;</span>
-                                    <span class="chunk"></span><span class="space">&nbsp;</span>
-                                </div>
-                            </a>
-
-                            <i class="arrow nq-icon chevron-right"></i>
-
-                            <a class="account recipient" href="javascript:void(0);">
-                                <div class="identicon"></div>
-                                <div class="label display-none"></div>
-                                <div class="address">
-                                    <span class="chunk"></span><span class="space">&nbsp;</span>
-                                    <span class="chunk"></span><span class="space">&nbsp;</span>
-                                    <span class="chunk"></span><span class="space">&nbsp;</span>
-                                    <span class="chunk"></span><span class="space">&nbsp;</span>
-                                    <span class="chunk"></span><span class="space">&nbsp;</span>
-                                    <span class="chunk"></span><span class="space">&nbsp;</span>
-                                    <span class="chunk"></span><span class="space">&nbsp;</span>
-                                    <span class="chunk"></span><span class="space">&nbsp;</span>
-                                    <span class="chunk"></span><span class="space">&nbsp;</span>
-                                </div>
-                            </a>
-
-                        </div>
-                    </div>
-
-                    <div class="nq-card-footer">
-                        <div class="total">
-                            <span id="value"></span><span class="nim-symbol"></span>
-                        </div>
-
-                        <div class="fee-section nq-text-s display-none">
-                            <span data-i18n="sign-tx-includes">includes</span>
-                            <span id="fee"></span>
-                            <span class="nim-symbol"></span>
-                            <span data-i18n="sign-tx-fee">fee</span>
-                        </div>
-
-                        <div class="data-section display-none" id="data"></div>
-                    </div>
-                </div>
-
-                <div class="page-footer">
-                    <form id="passphrase-box"></form>
-                </div>
+    static _createRecipient() {
+        const $recipient = document.createElement('a');
+        $recipient.classList.add('account', 'recipient');
+        $recipient.href = '#';
+        $recipient.innerHTML = `
+            <div class="identicon"></div>
+            <div class="label display-none"></div>
+            <div class="address">
+                <span class="chunk"></span><span class="space">&nbsp;</span>
+                <span class="chunk"></span><span class="space">&nbsp;</span>
+                <span class="chunk"></span><span class="space">&nbsp;</span>
+                <span class="chunk"></span><span class="space">&nbsp;</span>
+                <span class="chunk"></span><span class="space">&nbsp;</span>
+                <span class="chunk"></span><span class="space">&nbsp;</span>
+                <span class="chunk"></span><span class="space">&nbsp;</span>
+                <span class="chunk"></span><span class="space">&nbsp;</span>
+                <span class="chunk"></span><span class="space">&nbsp;</span>
             </div>
         `;
-
-        I18n.translateDom($el);
-        return $el;
+        return $recipient;
     }
 }
-/** @type {{[layout: string]: string}} */
-LayoutStandard.Element = {
-    identicon: 'identicon',
-    address: 'address',
-    label: 'label',
-};

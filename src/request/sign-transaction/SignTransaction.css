@@ -1,9 +1,14 @@
 #confirm-transaction {
-    position:relative;
+    position: relative;
 }
 
 #layout-container {
     overflow: hidden;
+}
+
+#layout-container.standard .hide-standard,
+#layout-container.checkout .hide-checkout {
+    display: none;
 }
 
 #layout-container .nq-card-header {
@@ -24,7 +29,7 @@
 }
 
 
-#account-details {
+#layout-container > #account-details {
     position: absolute;
     overflow: hidden;
     top: 0;
@@ -42,10 +47,9 @@
     transition: opacity .6s, z-index .6s;
 }
 
-#account-details #details {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+#layout-container.open > #account-details {
+    z-index: 59;
+    opacity: 1;
 }
 
 #layout-container > #effect-container > * {
@@ -55,16 +59,7 @@
     -o-filter: blur(0px);
     -ms-filter: blur(0px);
     filter: blur(0px);
-    opacity:1;
-}
-
-#layout-container > #background {
-    z-index: -3;
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
+    opacity: 1;
 }
 
 #layout-container.open > #effect-container > .page-header,
@@ -74,7 +69,7 @@
     -o-filter: blur(20px);
     -ms-filter: blur(20px);
     filter: blur(20px);
-    opacity:0.5;
+    opacity: 0.5;
 }
 
 #layout-container.open > #effect-container > .page-footer {
@@ -86,13 +81,17 @@
     opacity: 0.5;
 }
 
-#layout-container.open > #account-details {
-    z-index: 59;
-    opacity: 1;
+#layout-container > #background {
+    z-index: -3;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
 }
 
 #layout-container.open > #background {
-    z-index:2;
+    z-index: 2;
 }
 
 #account-details #close-details {
@@ -109,10 +108,10 @@
 #account-details #close-details:after {
     content: ' ';
     position: absolute;
-    left:-2rem;
-    right:-2rem;
-    top:-2rem;
-    bottom:-2rem;
+    left: -2rem;
+    right: -2rem;
+    top: -2rem;
+    bottom: -2rem;
     cursor: pointer;
 }
 
@@ -121,6 +120,11 @@
     opacity: 0.25;
 }
 
+#account-details #details {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 
 #account-details .identicon {
     width: 18rem;
@@ -128,7 +132,7 @@
 }
 
 .identicon.clip {
-    position:relative;
+    position: relative;
 }
 .identicon.clip > img {
     clip-path: url(#nimiq-rounded-hexagon);
@@ -154,7 +158,7 @@
     font-size: 3rem;
     font-weight: 600;
     line-height: 1;
-    margin-top:3rem;
+    margin-top: 3rem;
 }
 
 #account-details .total {
@@ -172,7 +176,6 @@
     font-weight: 800;
 }
 
-
 #account-details .label + .wallet-label {
     margin-top: 1.5rem;
 }
@@ -188,6 +191,7 @@
     justify-content: space-between;
     font-size: 3rem;
 }
+
 .chunk {
     margin: calc(0.875 * var(--nimiq-size, 8px)) 0;
     line-height: 1.11;
@@ -197,6 +201,7 @@
     box-sizing: border-box;
     text-transform: uppercase;
 }
+
 .space {
     font-size: 0;
 }
@@ -214,19 +219,18 @@
 
 .transaction .account .total,
 .transaction .account .address {
-    display:none;
+    display: none;
 }
 
 .transaction > :first-child:after {
-    content:' ';
-    display:flex;
-    height:0px;
+    content: ' ';
+    display: flex;
+    height: 0px;
     border-top: 1px solid #1F2348;
     opacity: 0.1;
 }
 
 .transaction .account {
-    width:50%;
     display: flex;
     flex-direction: column;
     flex-grow: 1;
@@ -255,7 +259,6 @@
     margin: 1.25rem 0;
 }
 
-
 .transaction .wallet-label {
     font-size: 1.25rem;
     font-weight: 600;
@@ -269,9 +272,9 @@
     background-image: url('data:image/svg+xml,<svg width="23" height="18" viewBox="0 0 23 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13.9995 1.99902L20.999 9.00049L13.9995 16" stroke="#0582CA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="18.999" y1="9" x2="0.999023" y2="9" stroke="#0582CA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>');
     margin-top: 4rem;
     height: 2.25rem;
+    flex-grow: 0;
     width: 3rem;
 }
-
 
 .transaction .total {
     text-align: center;

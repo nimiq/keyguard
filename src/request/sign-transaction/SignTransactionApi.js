@@ -12,10 +12,8 @@ class SignTransactionApi extends TopLevelApi {
     async onRequest(request) {
         TopLevelApi.setLoading(true);
         const parsedRequest = await SignTransactionApi._parseRequest(request);
-        const $layoutContainer = document.getElementById('layout-container');
 
         const handler = new SignTransactionApi.Layouts[parsedRequest.layout](
-            $layoutContainer,
             parsedRequest,
             this.resolve.bind(this),
             this.reject.bind(this),
@@ -157,5 +155,5 @@ class SignTransactionApi extends TopLevelApi {
 SignTransactionApi.Layouts = {
     standard: LayoutStandard,
     checkout: LayoutStandard,
-    // 'cashlink': LayoutCashlink,
+    // cashlink: LayoutCashlink,
 };
