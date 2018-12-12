@@ -7,10 +7,10 @@
   resolved "https://registry.yarnpkg.com/@nimiq/core-types/-/core-types-1.0.0.tgz#a675cf2c151d9146e79934035e999bbd08a59d42"
   integrity sha512-OUDYAsEjuCmZewMZz8otPE6GMtvfxqbwtsa6oQ5okzRRQqNXkKTkR1/wM+DY1RcyiF141Fd9J7TnU4sJwzH94w==
 
-"@nimiq/rpc@^0.0.10":
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/@nimiq/rpc/-/rpc-0.0.10.tgz#e8d9f7a31fcebe4080d086c8617c1b6115a9b728"
-  integrity sha512-3SdW86kMhASPDuKeFVL2jETxBs4oM0KZHJJ4gvg1KW1ASbu7fG9faCLnqWaKtv5FN5jAg8n6iWPTxZvy74gS5g==
+"@nimiq/rpc@^0.1.0-beta.3":
+  version "0.1.0-beta.3"
+  resolved "https://registry.yarnpkg.com/@nimiq/rpc/-/rpc-0.1.0-beta.3.tgz#7af632bc76e6a2d8d045bb5e25ca948f657651ab"
+  integrity sha512-jcZy8EmYbbfViXJNXxX2BxZplJx1NXqNoOPZTWVBzg6QU9sN/y4iR6d+yDs6WEplMONh10VyDb2FVVTowYPKXA==
 
 "@types/estree@0.0.39":
   version "0.0.39"
