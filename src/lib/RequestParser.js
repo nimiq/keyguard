@@ -215,8 +215,8 @@ class RequestParser { // eslint-disable-line no-unused-vars
      * @returns {number | undefined}
      */
     parseNumber(value) {
-        if(!value) return undefined;
-        if(typeof value !== 'number') return undefined;
+        if (!value) return undefined;
+        if (typeof value !== 'number') return undefined;
         return value;
     }
 }
