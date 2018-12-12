@@ -89,8 +89,7 @@ class BaseLayout {
 
         // Set transaction extra data.
         if ($data && transaction.data.byteLength > 0) {
-            // FIXME Detect and use proper encoding.
-            $data.textContent = Nimiq.BufferUtils.toAscii(transaction.data);
+            $data.textContent = Utf8Tools.utf8ByteArrayToString(transaction.data);
             /** @type {HTMLDivElement} */
             const $dataSection = (this.$el.querySelector('.data-section'));
             $dataSection.classList.remove('display-none');
@@ -113,21 +112,16 @@ class BaseLayout {
             },
         );
 
-        // This event cannot throw a 'CANCEL' error like in other requests,
-        // because for checkout we need to go back to the CheckoutOverview
-        // in the Accounts Manager and not return directly to the caller.
-        this._passphraseBox.on(PassphraseBox.Events.CANCEL, () => window.history.back());
-
         /** @type {HTMLElement} */
         this.$accountDetails = (this.$el.querySelector('#account-details'));
         const $accounts = this.$el.querySelectorAll('.account');
         $accounts.forEach($item => $item.addEventListener('click', event => this._openDetails($item, event)));
         /** @type {HTMLButtonElement} */
-        this.$closeDetails = (this.$accountDetails.querySelector('#close-details'));
-        this.$closeDetails.addEventListener('click', this._closeDetails.bind(this));
+        const $closeDetails = (this.$accountDetails.querySelector('#close-details'));
+        $closeDetails.addEventListener('click', this._closeDetails.bind(this));
         /** @type {HTMLElement} */
-        this.$background = (this.$el.querySelector('#background'));
-        this.$background.addEventListener('click', this._closeDetails.bind(this));
+        const $background = (this.$el.querySelector('#background-overlay'));
+        $background.addEventListener('click', this._closeDetails.bind(this));
     }
 
     /**
