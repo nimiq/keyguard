@@ -50,12 +50,11 @@ declare namespace KeyguardRequest {
         recipientType?: Nimiq.Account.Type
         data?: Uint8Array
         flags?: number
-        networkId?: number
     }
 
     type ConstructTransaction<T extends TransactionInfo> = Transform<T,
         'sender' | 'senderType' | 'recipient' | 'recipientType' | 'value' | 'fee' |
-        'validityStartHeight' | 'data' | 'flags' | 'networkId',
+        'validityStartHeight' | 'data' | 'flags',
         { transaction: Nimiq.ExtendedTransaction }>
 
     type SignTransactionRequestLayout = 'standard' | 'checkout' | 'cashlink'

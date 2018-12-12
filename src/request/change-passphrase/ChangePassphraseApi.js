@@ -1,7 +1,6 @@
 /* global Nimiq */
 /* global TopLevelApi */
 /* global ChangePassphrase */
-/* global KeyStore */
 /* global Errors */
 
 class ChangePassphraseApi extends TopLevelApi { // eslint-disable-line no-unused-vars
@@ -9,7 +8,7 @@ class ChangePassphraseApi extends TopLevelApi { // eslint-disable-line no-unused
      * @param {KeyguardRequest.SimpleRequest} request
      */
     async onRequest(request) {
-        const parsedRequest = await ChangePassphraseApi._parseRequest(request);
+        const parsedRequest = await this.parseRequest(request);
         const handler = new ChangePassphrase(parsedRequest, this.resolve.bind(this), this.reject.bind(this));
 
         /** @type {HTMLElement} */
@@ -29,38 +28,17 @@ class ChangePassphraseApi extends TopLevelApi { // eslint-disable-line no-unused
     /**
      * @param {KeyguardRequest.SimpleRequest} request
      * @returns {Promise<KeyguardRequest.ParsedSimpleRequest>}
-     * @private
      */
-    static async _parseRequest(request) {
+    async parseRequest(request) {
         if (!request) {
-            throw new Errors.InvalidRequestError('Request can not be empty');
+            throw new Errors.InvalidRequestError('request is required');
         }
 
-        // Check that keyId is given.
-        if (!request.keyId || typeof request.keyId !== 'string') {
-            throw new Errors.InvalidRequestError('keyId is required');
-        }
+        const parsedRequest = {};
+        parsedRequest.appName = this.parseAppName(request.appName);
+        parsedRequest.keyInfo = await this.parseKeyId(request.keyId);
+        parsedRequest.keyLabel = this.parseLabel(request.keyLabel);
 
-        // Check that appName is given
-        if (!request.appName || typeof request.appName !== 'string') {
-            throw new Errors.InvalidRequestError('appName is required');
-        }
-
-        // Check that key exists.
-        const keyInfo = await KeyStore.instance.getInfo(request.keyId);
-        if (!keyInfo) {
-            throw new Errors.KeyNotFoundError();
-        }
-
-        // Validate labels.
-        if (request.keyLabel !== undefined && (typeof request.keyLabel !== 'string' || request.keyLabel.length > 64)) {
-            throw new Errors.InvalidRequestError('Invalid keyLabel');
-        }
-
-        return /** @type {ParsedSimpleRequest} */ {
-            appName: request.appName,
-            keyInfo,
-            keyLabel: request.keyLabel,
-        };
+        return parsedRequest;
     }
 }
