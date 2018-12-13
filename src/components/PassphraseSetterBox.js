@@ -38,7 +38,7 @@ class PassphraseSetterBox extends Nimiq.Observable {
      */
     static _createElement($el, options) {
         $el = $el || document.createElement('form');
-        $el.classList.add('passphrase-box', 'actionbox', 'setter', `nq-bg-${options.bgColor}`);
+        $el.classList.add('passphrase-box', 'actionbox', 'setter', `nq-${options.bgColor}-bg`);
 
         /* eslint-disable max-len */
         $el.innerHTML = `
@@ -52,7 +52,7 @@ class PassphraseSetterBox extends Nimiq.Observable {
             <div class="password-strength strength-12 nq-text-s" data-i18n="passphrasebox-password-strength-12">Excellent, that's a very strong password!</div>
 
             <div class="password-hint nq-text-s" data-i18n="passphrasebox-password-hint">Your password should have at least 8 characters.</div>
-            <a tabindex="0" class="password-skip nq-text-s nq-link" data-i18n="passphrasebox-password-skip">Skip password protection for now</a>
+            <a tabindex="0" class="password-skip nq-text-s" data-i18n="passphrasebox-password-skip">Skip password protection for now</a>
 
             <button class="submit" data-i18n="passphrasebox-continue">Continue</button>
         `;
@@ -124,10 +124,12 @@ class PassphraseSetterBox extends Nimiq.Observable {
             this._password = this._passphraseInput.text;
             this._passphraseInput.reset();
             this.$el.classList.add('repeat');
+            this.fire(PassphraseSetterBox.Events.ENTERED);
             return;
         }
         if (this._password !== this._passphraseInput.text) {
             this.reset(true);
+            this.fire(PassphraseSetterBox.Events.NOT_EQUAL);
             return;
         }
         this.fire(PassphraseSetterBox.Events.SUBMIT, this._password);
@@ -141,5 +143,7 @@ class PassphraseSetterBox extends Nimiq.Observable {
 
 PassphraseSetterBox.Events = {
     SUBMIT: 'passphrasebox-submit',
+    ENTERED: 'passphrasebox-entered',
+    NOT_EQUAL: 'passphrasebox-not-equal',
     SKIP: 'passphrasebox-skip',
 };

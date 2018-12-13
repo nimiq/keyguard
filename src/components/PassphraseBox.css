@@ -75,7 +75,7 @@
 /* S E T T E R */
 
 .passphrase-box .password-strength {
-    margin-top: -1.75rem;
+    margin-top: -2.75rem;
     transform: translate3d(0, -6.75rem, 0);
     opacity: 0;
     transition: opacity 150ms;

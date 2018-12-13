@@ -8,6 +8,7 @@
     height: 14.25rem;
     position: absolute;
     will-change: transform;
+    transition: transform 0.3s;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
@@ -38,7 +39,8 @@
     transition: transform 500ms;
 }
 
-.identicon-selector .wrapper:hover {
+.identicon-selector .wrapper:hover,
+.identicon-selector .wrapper:focus {
     cursor: pointer;
 }
 
@@ -52,13 +54,27 @@
     position: relative;
 }
 
-.identicon-selector .wrapper:nth-child(1) { transform: translate(  0.0rem, -14.25rem); }
-.identicon-selector .wrapper:nth-child(2) { transform: translate(-12.5rem,  -7.25rem); }
-.identicon-selector .wrapper:nth-child(3) { transform: translate( 12.5rem,  -7.25rem); }
-.identicon-selector .wrapper:nth-child(4) { transform: translate(  0.0rem,   0.00rem); }
-.identicon-selector .wrapper:nth-child(5) { transform: translate(-12.5rem,   7.25rem); }
-.identicon-selector .wrapper:nth-child(6) { transform: translate( 12.5rem,   7.25rem); }
-.identicon-selector .wrapper:nth-child(7) { transform: translate(  0.0rem,  14.25rem); }
+.identicon-selector .wrapper:nth-child(1) { transform: translate(  0.0rem, -14.25rem) scale(1); }
+.identicon-selector .wrapper:nth-child(1):focus,
+.identicon-selector .wrapper:nth-child(1):hover { transform: translate(  0.0rem, -14.25rem) scale(1.1); }
+.identicon-selector .wrapper:nth-child(2) { transform: translate(-12.5rem,  -7.25rem) scale(1); }
+.identicon-selector .wrapper:nth-child(2):focus,
+.identicon-selector .wrapper:nth-child(2):hover { transform: translate(-12.5rem,  -7.25rem) scale(1.1); }
+.identicon-selector .wrapper:nth-child(3) { transform: translate( 12.5rem,  -7.25rem) scale(1); }
+.identicon-selector .wrapper:nth-child(3):focus,
+.identicon-selector .wrapper:nth-child(3):hover { transform: translate( 12.5rem,  -7.25rem) scale(1.1); }
+.identicon-selector .wrapper:nth-child(4) { transform: translate(  0.0rem,   0.00rem) scale(1); }
+.identicon-selector .wrapper:nth-child(4):focus,
+.identicon-selector .wrapper:nth-child(4):hover { transform: translate(  0.0rem,   0.00rem) scale(1.1); }
+.identicon-selector .wrapper:nth-child(5) { transform: translate(-12.5rem,   7.25rem) scale(1); }
+.identicon-selector .wrapper:nth-child(5):focus,
+.identicon-selector .wrapper:nth-child(5):hover { transform: translate(-12.5rem,   7.25rem) scale(1.1); }
+.identicon-selector .wrapper:nth-child(6) { transform: translate( 12.5rem,   7.25rem) scale(1); }
+.identicon-selector .wrapper:nth-child(6):focus,
+.identicon-selector .wrapper:nth-child(6):hover { transform: translate( 12.5rem,   7.25rem) scale(1.1); }
+.identicon-selector .wrapper:nth-child(7) { transform: translate(  0.0rem,  14.25rem) scale(1); }
+.identicon-selector .wrapper:nth-child(7):focus,
+.identicon-selector .wrapper:nth-child(7):hover { transform: translate(  0.0rem,  14.25rem) scale(1.1); }
 
 .identicon-selector .wrapper:nth-child(1) .identicon { animation-delay: 100ms; }
 .identicon-selector .wrapper:nth-child(2) .identicon { animation-delay: 150ms; }
@@ -67,71 +83,3 @@
 .identicon-selector .wrapper:nth-child(5) .identicon { animation-delay: 250ms; }
 .identicon-selector .wrapper:nth-child(6) .identicon { animation-delay: 250ms; }
 .identicon-selector .wrapper:nth-child(7) .identicon { animation-delay: 300ms; }
-
-
-.identicon-selector .generate-more {
-    margin-top: 3rem;
-}
-
-.identicon-selector .backdrop {
-    position: absolute;
-    top: 0;
-    left: 0;
-    background: rgba(0, 0, 0, 0.85);
-    z-index: 1;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 500ms;
-    will-change: opacity;
-    box-sizing: border-box;
-    height: 100%;
-    width: 100%;
-    display: flex;
-    flex-flow: column;
-    border-bottom-left-radius: 1rem;
-    border-bottom-right-radius: 1rem;
-}
-
-.identicon-selector .backdrop button {
-    opacity: 0;
-    position: absolute;
-    bottom: 6rem;
-    pointer-events: none;
-    margin: 0;
-}
-
-.identicon-selector .backdrop .nq-link {
-    color: white;
-    position: absolute;
-    margin-bottom: 2rem;
-    bottom: 0;
-    cursor: pointer;
-}
-
-.identicon-selector.selected .backdrop,
-.identicon-selector.selected .backdrop button {
-    opacity: 1;
-    pointer-events: all;
-}
-
-.identicon-selector .wrapper.selected,
-.identicon-selector .wrapper.returning {
-    z-index: 3;
-    transition: transform 500ms;
-    transition-delay: 0s !important;
-}
-
-.identicon-selector .wrapper.selected {
-    transform: translateY(-5rem);
-    width: 100%;
-    pointer-events: none;
-}
-
-.identicon-selector .wrapper.selected img {
-    transform: scale(1.5);
-}
-
-.identicon-selector .wrapper.selected .address {
-    visibility: visible;
-    transform: scale(1.1);
-}

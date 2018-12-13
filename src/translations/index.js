@@ -22,7 +22,7 @@ const TRANSLATIONS = {
         'recovery-words-storing': 'Write these words on a piece of paper and store them at a safe, offline place.',
         'recovery-words-continue-to-words': 'Continue to Recovery Words',
 
-        'create-heading-choose-identicon': 'Choose your avatar',
+        'create-heading-choose-identicon': 'Choose an avatar',
         'create-text-select-avatar': 'Select an avatar for your wallet\'s default account from the selection below.',
         'create-hint-more-accounts': 'You can add more accounts later.',
         'create-heading-keyfile': 'This is your Key File',
