@@ -25,6 +25,10 @@
     <link rel="stylesheet" href="../src/common.css">
 
     <style>
+        body {
+            background: #CCCCCC;
+        }
+
         .walletfile {
             margin: 40px auto;
         }
@@ -53,7 +57,7 @@
 
             self.NIMIQ_IQONS_SVG_PATH = '/src/assets/Iqons.min.svg';
 
-            const walletFile = new WalletFile(userFriendlyAddress, entropy.toBase64());
+            const walletFile = new WalletFile(entropy.toBase64(), Math.floor(Math.random() * 6));
             const dataUrl = await walletFile.toDataUrl();
 
             const img = new Image();

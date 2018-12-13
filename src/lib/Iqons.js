@@ -169,6 +169,7 @@ class Iqons {
      * @returns {Promise<Document>}
      */
     static async _getAssets() {
+        // eslint-disable-next-line no-return-assign
         return this._assetsPromise || (this._assetsPromise = fetch(window.NIMIQ_IQONS_SVG_PATH || Iqons.SVG_PATH)
             .then(response => response.text())
             .then(assetsText => {
@@ -176,6 +177,16 @@ class Iqons {
                 return parser.parseFromString(assetsText, 'image/svg+xml');
             })
         );
+    }
+
+    /**
+     * @returns {boolean}
+     */
+    static hasAssets() {
+        if (!this._assetsPromise) return false;
+        let hasReturned = false;
+        this._assetsPromise.then(() => { hasReturned = true; });
+        return hasReturned;
     }
 
     /** @type {string[]} */
