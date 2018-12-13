@@ -169,29 +169,13 @@ class Iqons {
      * @returns {Promise<Document>}
      */
     static async _getAssets() {
-        if (this._assetPromise) return this._assetPromise;
-
-        // /** @type {Promise<Document>} */
-        this._assetPromise = new Promise(async (resolve, reject) => {
-            try {
-                // @ts-ignore
-                const response = await fetch(window.NIMIQ_IQONS_SVG_PATH || Iqons.SVG_PATH);
-                const assetsText = await response.text();
+        return this._assetsPromise || (this._assetsPromise = fetch(window.NIMIQ_IQONS_SVG_PATH || Iqons.SVG_PATH)
+            .then(response => response.text())
+            .then(assetsText => {
                 const parser = new DOMParser();
-                const assets = parser.parseFromString(assetsText, 'image/svg+xml');
-                this._assets = assets;
-                resolve(assets);
-            } catch (e) {
-                console.error(e);
-                reject(e);
-            }
-        });
-
-        return this._assetPromise;
-    }
-
-    static get hasAssets() {
-        return !!this._assets;
+                return parser.parseFromString(assetsText, 'image/svg+xml');
+            })
+        );
     }
 
     /** @type {string[]} */
