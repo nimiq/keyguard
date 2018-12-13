@@ -84,7 +84,7 @@ class PassphraseInput extends Nimiq.Observable {
     }
 
     async onPassphraseIncorrect() {
-        await AnimationUtils.animate('shake', this.$inputContainer);
+        await AnimationUtils.animate('shake', this.$input);
         this.reset();
     }
 

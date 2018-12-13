@@ -48,7 +48,7 @@
     height: 6rem;
     position: absolute;
     transform: translate(0.2rem, 3.5rem) scale(1.15);
-    animation: pop-in-13 0.8s cubic-bezier(1,1.84,.51,1);
+    animation: pop-in-13 0.8s cubic-bezier(.99,1.54,.49,1.15);
     xanimation-delay: 500ms;
 
 }
@@ -56,7 +56,7 @@
 @keyframes pop-in-13 {
     0% { transform: translate(-0.5rem, 2.5rem) scale(0); }
     50% { transform: translate(-0.5rem, 2.5rem) scale(0); }
-    100% { transform: transform: translate(0.2rem, 3.5rem) scale(1.15); }
+    100% { transform: translate(0.2rem, 3.5rem) scale(1.15); }
 }
 
 .wallet-identifier .blank {

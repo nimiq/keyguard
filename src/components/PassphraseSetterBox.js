@@ -42,17 +42,15 @@ class PassphraseSetterBox extends Nimiq.Observable {
 
         /* eslint-disable max-len */
         $el.innerHTML = `
-            <h2 class="prompt protect" data-i18n="passphrasebox-protect-keyfile">Protect your keyfile with a password</h2>
-            <h2 class="prompt repeat" data-i18n="passphrasebox-repeat-password">Repeat your password</h2>
-
-            <div passphrase-input></div>
-
+            <div class="password-strength strength-0  nq-text-s" data-i18n="passphrasebox-password-strength-0" >Enter at least 8 characters</div>
             <div class="password-strength strength-8  nq-text-s" data-i18n="passphrasebox-password-strength-8" >Great, that's a good password!</div>
             <div class="password-strength strength-10 nq-text-s" data-i18n="passphrasebox-password-strength-10">Super, that's a strong password!</div>
             <div class="password-strength strength-12 nq-text-s" data-i18n="passphrasebox-password-strength-12">Excellent, that's a very strong password!</div>
+            <div class="repeat-password nq-text-s" data-i18n="passphrasebox-repeat-password">Repeat your password</div>
 
-            <div class="password-hint nq-text-s" data-i18n="passphrasebox-password-hint">Your password should have at least 8 characters.</div>
-            <a tabindex="0" class="password-skip nq-text-s" data-i18n="passphrasebox-password-skip">Skip password protection for now</a>
+            <div passphrase-input></div>
+
+            <a tabindex="0" class="password-skip nq-text-s"><span data-i18n="passphrasebox-password-skip">Skip for now</span> <i class="nq-icon chevron-right"></i></a>
 
             <button class="submit" data-i18n="passphrasebox-continue">Continue</button>
         `;
@@ -95,7 +93,7 @@ class PassphraseSetterBox extends Nimiq.Observable {
      * @returns {Promise<void>}
      */
     async onPassphraseTooShort() {
-        const $hint = /** @type {HTMLElement} */(this.$el.querySelector('.password-hint'));
+        const $hint = /** @type {HTMLElement} */(this.$el.querySelector('.password-strength'));
         await AnimationUtils.animate('shake', $hint);
     }
 
@@ -106,7 +104,8 @@ class PassphraseSetterBox extends Nimiq.Observable {
         this.$el.classList.toggle('input-valid', isValid);
 
         const length = this._passphraseInput.text.length;
-        this.$el.classList.toggle('strength-8', length < 10);
+        this.$el.classList.toggle('strength-0', length < 8);
+        this.$el.classList.toggle('strength-8', length >= 8 && length < 10);
         this.$el.classList.toggle('strength-10', length >= 10 && length < 12);
         this.$el.classList.toggle('strength-12', length >= 12);
     }
