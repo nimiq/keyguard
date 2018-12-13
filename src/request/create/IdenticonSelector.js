@@ -77,8 +77,10 @@ class IdenticonSelector extends Nimiq.Observable {
         this.$identicons.textContent = '';
 
         Object.keys(entropies).forEach(address => {
-            const $wrapper = document.createElement('div');
+            const $wrapper = document.createElement('a');
             $wrapper.classList.add('wrapper');
+            $wrapper.setAttribute('tabindex', '0');
+            $wrapper.setAttribute('href', '#');
 
             const identicon = new Identicon(address);
             const $identicon = identicon.getElement();
@@ -90,7 +92,7 @@ class IdenticonSelector extends Nimiq.Observable {
             $wrapper.appendChild($identicon);
             $wrapper.appendChild($address);
 
-            $wrapper.addEventListener('click', () => this._onSelectionConfirmed(address));
+            $wrapper.addEventListener('click', (e) => this._onSelectionConfirmed(address, e));
 
             this.$identicons.appendChild($wrapper);
         });
@@ -100,9 +102,11 @@ class IdenticonSelector extends Nimiq.Observable {
 
     /**
      * @param {string} selectedAddress
+     * @param {Event} e
      * @private
      */
-    _onSelectionConfirmed(selectedAddress) {
+    _onSelectionConfirmed(selectedAddress, e) {
+        e.preventDefault();
         if (!selectedAddress) { // something went wrong
             this.generateIdenticons(); // and gerate new identicons
             // TODO Add: in case it does happen, signal to user instead of silently resolving it.
