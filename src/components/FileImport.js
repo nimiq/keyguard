@@ -2,7 +2,7 @@
 /* global AnimationUtils */
 /* global QrScanner */
 /* global I18n */
-/* global WalletFile */
+/* global LoginFile */
 
 class FileImport extends Nimiq.Observable {
     /**
@@ -73,8 +73,7 @@ class FileImport extends Nimiq.Observable {
      * @param {File} file
      */
     async _readFile(file) {
-        const qrPosition = WalletFile.calculateQrPosition();
-
+        const qrPosition = LoginFile.calculateQrPosition();
         try {
             const decoded = await QrScanner.scanImage(file, qrPosition, null, null, false, true);
             this.fire(FileImport.Events.IMPORT, decoded);

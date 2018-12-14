@@ -1,18 +1,18 @@
 /* global QrEncoder */
 
-class WalletFile {
+class LoginFile {
     /**
      * @param {string} encodedPrivKey
      * @param {number} [color]
      */
     constructor(encodedPrivKey, color = 0) {
-        this._width = WalletFile.WIDTH;
-        this._height = WalletFile.HEIGHT;
+        this._width = LoginFile.WIDTH;
+        this._height = LoginFile.HEIGHT;
         const $canvas = document.createElement('canvas');
         $canvas.width = this._width;
         $canvas.height = this._height;
         this.$canvas = $canvas;
-        this._config = WalletFile.CONFIG[color];
+        this._config = LoginFile.CONFIG[color];
         if (!this._config) throw new Error(`Invalid color index: ${color}`);
         /** @type {CanvasRenderingContext2D} */
         this._ctx = ($canvas.getContext('2d'));
@@ -23,10 +23,10 @@ class WalletFile {
         return {
             x: 69,
             y: 287,
-            size: WalletFile.QR_SIZE,
-            padding: WalletFile.QR_PADDING,
-            width: WalletFile.QR_BOX_SIZE,
-            height: WalletFile.QR_BOX_SIZE,
+            size: LoginFile.QR_SIZE,
+            padding: LoginFile.QR_PADDING,
+            width: LoginFile.QR_BOX_SIZE,
+            height: LoginFile.QR_BOX_SIZE,
         };
     }
 
@@ -85,13 +85,13 @@ class WalletFile {
 
     _setFont() {
         const ctx = this._ctx;
-        ctx.font = `600 14px ${WalletFile.FONT_FAMILY}`;
+        ctx.font = `600 14px ${LoginFile.FONT_FAMILY}`;
         ctx.textAlign = 'center';
     }
 
     _drawDateText() {
         const ctx = this._ctx;
-        const x = WalletFile.WIDTH / 2;
+        const x = LoginFile.WIDTH / 2;
         const y = 97;
         const date = new Date();
         const datestring = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
@@ -101,8 +101,8 @@ class WalletFile {
 
     _drawWarningText() {
         const ctx = this._ctx;
-        const x = WalletFile.WIDTH / 2;
-        const y = WalletFile.HEIGHT - 32;
+        const x = LoginFile.WIDTH / 2;
+        const y = LoginFile.HEIGHT - 32;
         ctx.fillStyle = 'white';
         ctx.fillText('Do not share this file.', x, y);
     }
@@ -113,8 +113,8 @@ class WalletFile {
     _drawQrCode(encodedPrivKey) {
         // FIXME: Remove QRCode background, when QRScanner supports inverting images
         this._ctx.fillStyle = 'white';
-        const qrPosition = WalletFile.calculateQrPosition();
-        this._roundRect(qrPosition.x, qrPosition.y, WalletFile.QR_BOX_SIZE, WalletFile.QR_BOX_SIZE, WalletFile.RADIUS, true);
+        const qrPosition = LoginFile.calculateQrPosition();
+        this._roundRect(qrPosition.x, qrPosition.y, LoginFile.QR_BOX_SIZE, LoginFile.QR_BOX_SIZE, LoginFile.RADIUS, true);
 
         const $el = document.createElement('div');
         const $canvas = QrEncoder.render({
@@ -128,7 +128,7 @@ class WalletFile {
         if (!$canvas) throw new Error('Cannot draw QR code');
         $el.appendChild($canvas);
 
-        // const qrPosition = WalletFile.calculateQrPosition();
+        // const qrPosition = LoginFile.calculateQrPosition();
         const padding = qrPosition.padding;
 
         this._ctx.drawImage($canvas,
@@ -142,17 +142,17 @@ class WalletFile {
         const ctx = this._ctx;
 
         ctx.fillStyle = 'white';
-        this._roundRect(0, 0, this._width, this._height, WalletFile.OUTER_RADIUS, true);
+        this._roundRect(0, 0, this._width, this._height, LoginFile.OUTER_RADIUS, true);
 
         const gradient = ctx.createRadialGradient(
-            this._width - WalletFile.BORDER_WIDTH,
-            this._height - WalletFile.BORDER_WIDTH,
+            this._width - LoginFile.BORDER_WIDTH,
+            this._height - LoginFile.BORDER_WIDTH,
             0,
-            this._width - WalletFile.BORDER_WIDTH,
-            this._height - WalletFile.BORDER_WIDTH,
+            this._width - LoginFile.BORDER_WIDTH,
+            this._height - LoginFile.BORDER_WIDTH,
             Math.sqrt(
-                Math.pow(this._width - 2 * WalletFile.BORDER_WIDTH, 2)
-              + Math.pow(this._height - 2 * WalletFile.BORDER_WIDTH, 2)
+                Math.pow(this._width - 2 * LoginFile.BORDER_WIDTH, 2)
+              + Math.pow(this._height - 2 * LoginFile.BORDER_WIDTH, 2)
             ),
         );
         // const gradient = ctx.createLinearGradient(this._width, this._height, 0, 0);
@@ -160,11 +160,11 @@ class WalletFile {
         gradient.addColorStop(1, this._config.color);
         ctx.fillStyle = gradient;
         this._roundRect(
-            WalletFile.BORDER_WIDTH,
-            WalletFile.BORDER_WIDTH,
-            this._width - WalletFile.BORDER_WIDTH * 2,
-            this._height - WalletFile.BORDER_WIDTH * 2,
-            WalletFile.RADIUS,
+            LoginFile.BORDER_WIDTH,
+            LoginFile.BORDER_WIDTH,
+            this._width - LoginFile.BORDER_WIDTH * 2,
+            this._height - LoginFile.BORDER_WIDTH * 2,
+            LoginFile.RADIUS,
             true, false, true,
         );
     }
@@ -245,7 +245,7 @@ class WalletFile {
 }
 
 // Order determined by Iqons.backgroundColors
-WalletFile.CONFIG = [
+LoginFile.CONFIG = [
     { name: 'orange', color: '#FC8702', corner: '#FD6216', opacityLines: .25, opacityWallet: .45 },
     { name: 'red', color: '#D94432', corner: '#CC3047', opacityLines: .25, opacityWallet: .4 },
     { name: 'yellow', color: '#E9B213', corner: '#EC991C', opacityLines: .25, opacityWallet: .5 },
@@ -257,12 +257,12 @@ WalletFile.CONFIG = [
     // { name: 'light-green', color: '#', corner: '#', opacityLines: .2, opacityWallet: .3 },
     { name: 'brown', color: '#795548', corner: '#724147', opacityLines: .1, opacityWallet: .2 },
 ];
-WalletFile.WIDTH = 315;
-WalletFile.HEIGHT = 530;
-WalletFile.OUTER_RADIUS = 12;
-WalletFile.RADIUS = 8;
-WalletFile.QR_SIZE = 165;
-WalletFile.QR_PADDING = 6;
-WalletFile.QR_BOX_SIZE = WalletFile.QR_SIZE + 2 * WalletFile.QR_PADDING;
-WalletFile.BORDER_WIDTH = 6;
-WalletFile.FONT_FAMILY = '\'Muli\', system-ui, sans-serif';
+LoginFile.WIDTH = 315;
+LoginFile.HEIGHT = 530;
+LoginFile.OUTER_RADIUS = 12;
+LoginFile.RADIUS = 8;
+LoginFile.QR_SIZE = 165;
+LoginFile.QR_PADDING = 6;
+LoginFile.QR_BOX_SIZE = LoginFile.QR_SIZE + 2 * LoginFile.QR_PADDING;
+LoginFile.BORDER_WIDTH = 6;
+LoginFile.FONT_FAMILY = '\'Muli\', system-ui, sans-serif';
