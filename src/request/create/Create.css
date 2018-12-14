@@ -47,15 +47,15 @@
     width: 7rem;
     height: 6rem;
     position: absolute;
-    transform: translate(0.2rem, 3.5rem) scale(1.15);
+    transform: translate(0.2rem, 3.5rem) scale(0);
     animation: pop-in-13 0.8s cubic-bezier(.99,1.54,.49,1.15);
-    xanimation-delay: 500ms;
+    animation-delay: 500ms;
+    animation-fill-mode: both;
 
 }
 
 @keyframes pop-in-13 {
     0% { transform: translate(-0.5rem, 2.5rem) scale(0); }
-    50% { transform: translate(-0.5rem, 2.5rem) scale(0); }
     100% { transform: translate(0.2rem, 3.5rem) scale(1.15); }
 }
 
