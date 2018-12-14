@@ -99,6 +99,7 @@
     height: 5rem;
     opacity: 0.16;
     border: 0rem;
+    background-color: transparent;
     background-image: url('data:image/svg+xml,<svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M9.80761 9.80762C14.8761 4.7391 23.1239 4.7391 28.1924 9.80762C33.2609 14.8761 33.2609 23.1239 28.1924 28.1924C23.1239 33.2609 14.8761 33.2609 9.80761 28.1924C4.73909 23.1239 4.73909 14.8761 9.80761 9.80762ZM19 17.5858L22.5355 14.0503L23.9497 15.4645L20.4142 19L23.9497 22.5355L22.5355 23.9498L19 20.4142L15.4645 23.9498L14.0503 22.5355L17.5858 19L14.0503 15.4645L15.4645 14.0503L19 17.5858Z" fill="%23101531"/></svg>');
     background-size: cover;
 }
