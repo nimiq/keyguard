@@ -17,7 +17,7 @@ class Create {
         this._resolve = resolve;
         this._reject = reject;
 
-        this._passphrase = '';
+        this._password = '';
 
         /** @type {HTMLDivElement} */
         this.$identiconSelector = (document.querySelector('.identicon-selector'));
