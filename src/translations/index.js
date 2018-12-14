@@ -5,8 +5,8 @@ const TRANSLATIONS = {
         continue: 'Continue',
 
         'passphrase-strength': 'Strength',
-        'passphrase-placeholder': 'Enter passphrase',
-        'passphrase-repeat-placeholder': 'Repeat passphrase',
+        'passphrase-placeholder': 'Enter password',
+        'passphrase-repeat-placeholder': 'Repeat password',
 
         'privacy-warning-heading': 'Are you being watched?',
         'privacy-warning-text': 'Now is the perfect time to assess your surroundings. '
@@ -64,7 +64,7 @@ const TRANSLATIONS = {
         'sign-msg-text': 'Please enter your passphrase to sign the following message:',
         'sign-msg-sign-with': 'Sign with',
 
-        'passphrasebox-enter-passphrase': 'Enter your passphrase',
+        'passphrasebox-enter-passphrase': 'Enter your password',
         'passphrasebox-protect-keyfile': 'Protect your keyfile with a password',
         'passphrasebox-repeat-password': 'Repeat your password',
         'passphrasebox-continue': 'Continue',
@@ -128,8 +128,8 @@ const TRANSLATIONS = {
         continue: 'Weiter',
 
         'passphrase-strength': 'Stärke',
-        'passphrase-placeholder': 'Passphrase eingeben',
-        'passphrase-repeat-placeholder': 'Passphrase wiederholen',
+        'passphrase-placeholder': 'Passwort eingeben',
+        'passphrase-repeat-placeholder': 'Passwort wiederholen',
 
         'privacy-warning-heading': 'Wirst du beobachtet?',
         'privacy-warning-text': 'Jetzt ist eine gute Zeit um sich umzuschauen. Gibt es Fenster in der Nähe? '
@@ -193,7 +193,7 @@ const TRANSLATIONS = {
         'sign-msg-text': 'Bitte gib deine Passphrase ein, um die folgende Nachricht zu signieren:',
         'sign-msg-sign-with': 'Signieren mit',
 
-        'passphrasebox-enter-passphrase': 'Gib deine Passphrase ein',
+        'passphrasebox-enter-passphrase': 'Gib dein Passwort ein',
         'passphrasebox-protect-keyfile': 'Sichere dein KeyFile mit einem Passwort',
         'passphrasebox-repeat-password': 'Wiederhole dein Passwort',
         'passphrasebox-continue': 'Weiter',

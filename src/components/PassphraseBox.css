@@ -31,12 +31,18 @@
 
 .passphrase-box .passphrase-input {
     margin: 5rem 0 4.5rem 0;
-    transition: margin 300ms;
+}
+.passphrase-box .passphrase-input + .submit {
+    margin-top: -6.375rem; /* -8 from button + 1.625 from missing skip button */
 }
 
-.passphrase-box.input-valid .passphrase-input,
-.passphrase-box.hide-input .passphrase-input {
-    margin: 1.5rem 0 8rem 0;
+.passphrase-box .passphrase-input .input-wrapper {
+    transition: transform 300ms;
+}
+
+.passphrase-box.input-valid .passphrase-input .input-wrapper,
+.passphrase-box.hide-input .passphrase-input .input-wrapper {
+    transform: translate(0, -3.5rem);
 }
 
 .passphrase-box.hide-input .passphrase-input {
@@ -62,10 +68,16 @@
     display:none;
 }
 
+.passphrase-box .prompt {
+    margin-top: -2.75rem;
+    line-height: 1;
+    pointer-events: none;
+}
+
 /* S E T T E R */
 .passphrase-box .repeat-password,
 .passphrase-box .password-strength {
-    margin-top: -2.625rem;
+    margin-top: -2.75rem;
     line-height: 1;
     opacity: 0;
     transition: opacity 150ms;

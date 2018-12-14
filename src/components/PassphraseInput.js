@@ -44,7 +44,9 @@ class PassphraseInput extends Nimiq.Observable {
         /* eslint-disable max-len */
         $el.innerHTML = `
             <div class="input-container">
-                <input class="password" type="password" placeholder="Enter Passphrase">
+                <div class="input-wrapper">
+                    <input class="password" type="password" placeholder="Enter password">
+                </div>
                 <span class="nq-icon eye eye-button"/>
             </div>
             <div class="strength-indicator-container">
