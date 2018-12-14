@@ -92,7 +92,7 @@ class IdenticonSelector extends Nimiq.Observable {
             $wrapper.appendChild($identicon);
             $wrapper.appendChild($address);
 
-            $wrapper.addEventListener('click', (e) => this._onSelectionConfirmed(address, e));
+            $wrapper.addEventListener('click', e => this._onSelectionConfirmed(address, e));
 
             this.$identicons.appendChild($wrapper);
         });
