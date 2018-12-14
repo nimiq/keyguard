@@ -20,9 +20,9 @@
 
 .header-top .nimiq-logo::after {
     content: 'NIMIQ';
-    font-size: 2.125rem;
+    font-size: 2.5rem;
     line-height: 3.625rem;
-    font-weight: 600;
+    font-weight: bold;
     letter-spacing: 0.077em;
     vertical-align: top;
 }
