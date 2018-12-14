@@ -281,7 +281,7 @@ class Iqons {
 }
 
 // @ts-ignore
-Iqons.SVG_PATH = '/assets/Iqons.min.svg';
+Iqons.SVG_PATH = '../../assets/Iqons.min.svg';
 
 Iqons.CATALOG = {
     face: [
