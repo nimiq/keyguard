@@ -69,7 +69,7 @@ class PassphraseBox extends Nimiq.Observable {
 
         $el.innerHTML = `
             <a class="cancel nq-icon cancel-circle-white"></a>
-            <div class="prompt nq-text-s" data-i18n="passphrasebox-enter-passphrase">Enter your passphrase</div>
+            <div class="prompt nq-text-s" data-i18n="passphrasebox-enter-passphrase">Enter your password</div>
             <div passphrase-input></div>
             ${buttonVersions[options.buttonI18nTag]}
         `;
