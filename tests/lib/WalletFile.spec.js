@@ -1,6 +1,7 @@
 /* global Nimiq */
 /* global Dummy */
 /* global WalletFile */
+/* global QrScanner */
 
 describe('WalletFile', () => {
 
@@ -22,7 +23,7 @@ describe('WalletFile', () => {
         self.NIMIQ_IQONS_SVG_PATH = '/base/src/assets/Iqons.min.svg';
 
         const serializedKey = entropy.toBase64();
-        const walletFile = new WalletFile(serializedKey);
+        const walletFile = new WalletFile(serializedKey, 2);
         const dataUrl = await walletFile.toDataUrl();
 
         const $img = await new Promise(resolve => {

@@ -49,15 +49,21 @@
                 alert(e.message);
             }
 
-            const entropy = Nimiq.Entropy.generate();
-            const masterKey = entropy.toExtendedPrivateKey();
-            const extPrivKey = masterKey.derivePath(`m/44'/242'/0'/0'`);
-            const address = extPrivKey.toAddress();
-            const userFriendlyAddress = address.toUserFriendlyAddress();
 
             self.NIMIQ_IQONS_SVG_PATH = '/src/assets/Iqons.min.svg';
 
-            const walletFile = new WalletFile(entropy.toBase64(), Math.floor(Math.random() * 6));
+            const entropy = Nimiq.Entropy.generate();
+            const encryptedKey = new Nimiq.SerialBuffer(56);
+            encryptedKey.writeUint8(1); // Version
+            encryptedKey.writeUint8(6); // KDF rounds log2
+            encryptedKey.write(new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16])); // Salt
+            encryptedKey.writeUint32(242); // Purpose ID
+            entropy.serialize(encryptedKey); // Secret (usually encrypted)
+            encryptedKey.writeUint16(0); // Checksum
+            console.log(encryptedKey);
+            const encryptedString = Nimiq.BufferUtils.toBase64(encryptedKey);
+            console.log(encryptedString);
+            const walletFile = new WalletFile(encryptedString, Math.floor(Math.random() * 9));
             const dataUrl = await walletFile.toDataUrl();
 
             const img = new Image();
