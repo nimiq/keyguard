@@ -15,7 +15,7 @@
     <script src="https://cdn.nimiq-testnet.com/web-offline.js"></script>
     <script src="../src/lib/Iqons.js"></script>
     <script src="../src/lib/QrEncoder.js"></script>
-    <script src="../src/lib/WalletFile.js"></script>
+    <script src="../src/lib/LoginFile.js"></script>
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Muli:400,600,700">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono&text=0123456789ABCDEFGHJKLMNPQRSTUVXY">
@@ -29,13 +29,13 @@
             background: #CCCCCC;
         }
 
-        .walletfile {
+        .login-file {
             margin: 40px auto;
         }
     </style>
 </head>
 <body>
-    <div id="walletfile">
+    <div id="login-file">
         <p class="nq-label">Loading CryptoWorker...</p>
     </div>
     <script>
@@ -63,13 +63,13 @@
             console.log(encryptedKey);
             const encryptedString = Nimiq.BufferUtils.toBase64(encryptedKey);
             console.log(encryptedString);
-            const walletFile = new WalletFile(encryptedString, Math.floor(Math.random() * 9));
-            const dataUrl = await walletFile.toDataUrl();
+            const loginFile = new LoginFile(encryptedString, Math.floor(Math.random() * 9));
+            const dataUrl = await loginFile.toDataUrl();
 
             const img = new Image();
             img.src = dataUrl;
-            document.querySelector('#walletfile').textContent = '';
-            document.querySelector('#walletfile').appendChild(img);
+            document.querySelector('#login-file').textContent = '';
+            document.querySelector('#login-file').appendChild(img);
         })();
     </script>
 </body>
