@@ -112,24 +112,13 @@ class LoginFile {
      * @param {string} encodedPrivKey
      */
     _drawQrCode(encodedPrivKey) {
-        // FIXME: Remove QRCode background, when QRScanner supports inverting images
-        this._ctx.fillStyle = 'white';
-        const qrPosition = LoginFile.calculateQrPosition();
-        this._roundRect(
-            qrPosition.x,
-            qrPosition.y,
-            LoginFile.QR_BOX_SIZE,
-            LoginFile.QR_BOX_SIZE,
-            LoginFile.RADIUS, true,
-        );
-
         const $el = document.createElement('div');
         /* eslint-disable no-multi-spaces */
         const $canvas = QrEncoder.render({
             text: encodedPrivKey,
-            radius: 0.7,                // We encode 56 bytes. To keep within a smaller QR base size, we need to reduce
-            ecLevel: 'M',               // the error-correction level to M. Thus we reduce the radius from .8 to .7
-            fill: this._config.corner,  // to reduce scanning issues.
+            radius: 0.7,    // We encode 56 bytes. To keep within a smaller QR base size, we need to reduce
+            ecLevel: 'M',   // the error-correction level to M. Thus we reduce the radius from .8 to .7
+            fill: 'white',  // to reduce scanning issues.
             background: 'transparent',
             size: Math.min(240, (window.innerWidth - 64)),
         });
@@ -137,7 +126,7 @@ class LoginFile {
         if (!$canvas) throw new Error('Cannot draw QR code');
         $el.appendChild($canvas);
 
-        // const qrPosition = LoginFile.calculateQrPosition();
+        const qrPosition = LoginFile.calculateQrPosition();
         const padding = qrPosition.padding;
 
         this._ctx.drawImage($canvas,
