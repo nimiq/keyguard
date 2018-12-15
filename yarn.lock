@@ -82,9 +82,9 @@
     lodash "^4.17.5"
     to-fast-properties "^2.0.0"
 
-"@nimiq/core-types@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@nimiq/core-types/-/core-types-1.0.0.tgz#a675cf2c151d9146e79934035e999bbd08a59d42"
+"@nimiq/core-types@nimiq/core-types#soeren/imagewallet-kdf":
+  version "1.4.1"
+  resolved "https://codeload.github.com/nimiq/core-types/tar.gz/302de59a752cad76e9ddde08a9fd83751801b8bf"
 
 "@nimiq/rpc@^0.0.11":
   version "0.0.11"
