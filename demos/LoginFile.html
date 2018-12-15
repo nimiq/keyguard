@@ -63,7 +63,7 @@
             console.log(encryptedKey);
             const encryptedString = Nimiq.BufferUtils.toBase64(encryptedKey);
             console.log(encryptedString);
-            const loginFile = new LoginFile(encryptedString, Math.floor(Math.random() * 9));
+            const loginFile = new LoginFile(encryptedString, Math.floor(Math.random() * 10));
             const dataUrl = await loginFile.toDataUrl();
 
             const img = new Image();
