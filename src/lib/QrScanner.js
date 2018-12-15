@@ -31,6 +31,7 @@ class QrScanner {
             this._scanFrame();
         }, false);
         this._qrWorker = new Worker(QrScanner.WORKER_PATH);
+        this.setInversionMode('both'); // scan also color inverted qr codes
     }
 
     _updateSourceRect() {
@@ -155,6 +156,16 @@ class QrScanner {
     }
 
     /**
+     * @param {string} inversionMode
+     */
+    setInversionMode(inversionMode) {
+        this._qrWorker.postMessage({
+            type: 'inversionMode',
+            data: inversionMode,
+        });
+    }
+
+    /**
      * @param {imageOrFileOrUrl} imageOrFileOrUrl
      * @param {object?} sourceRect
      * @param {Worker?} worker
@@ -166,7 +177,10 @@ class QrScanner {
     static async scanImage(imageOrFileOrUrl, sourceRect = null, worker = null, canvas = null, fixedCanvasSize = false,
         alsoTryWithoutSourceRect = false) {
         const promise = new Promise((resolve, reject) => {
-            worker = worker || new Worker(QrScanner.WORKER_PATH);
+            if (!worker) {
+                worker = new Worker(QrScanner.WORKER_PATH);
+                worker.postMessage({ type: 'inversionMode', data: 'both' }); // scan inverted color qr codes too
+            }
             /** @type {number | undefined} */
             let timeout;
             /** @type {EventListener} */
