@@ -1,8 +1,4 @@
 declare namespace KeyguardRequest {
-    type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
-
-    type Transform<T, K extends keyof T, E> = Omit<T, K> & E
-
     namespace Key {
         type Type = 0 | 1;
     }
@@ -18,8 +14,6 @@ declare namespace KeyguardRequest {
         legacyAccount: { label: string, address: Uint8Array };
     }
 
-    type KeyId2KeyInfo<T extends { keyId: string }> = Transform<T, 'keyId', { keyInfo: KeyInfoObject }>
-
     type BasicRequest = {
         appName: string
     }
@@ -28,8 +22,6 @@ declare namespace KeyguardRequest {
         keyId: string
         keyLabel?: string
     }
-
-    type ParsedSimpleRequest = KeyId2KeyInfo<SimpleRequest>
 
     type SimpleResult = {
         success: boolean
@@ -52,11 +44,6 @@ declare namespace KeyguardRequest {
         flags?: number
     }
 
-    type ConstructTransaction<T extends TransactionInfo> = Transform<T,
-        'sender' | 'senderType' | 'recipient' | 'recipientType' | 'value' | 'fee' |
-        'validityStartHeight' | 'data' | 'flags',
-        { transaction: Nimiq.ExtendedTransaction }>
-
     type SignTransactionRequestLayout = 'standard' | 'checkout' | 'cashlink'
 
     type SignTransactionRequest = SimpleRequest & TransactionInfo & {
@@ -69,9 +56,6 @@ declare namespace KeyguardRequest {
         recipientLabel?: string
     }
 
-    type ParsedSignTransactionRequest = ConstructTransaction<KeyId2KeyInfo<SignTransactionRequest>>
-        & { layout: SignTransactionRequestLayout }
-
     type SignTransactionResult = SignatureResult;
 
     type SignMessageRequest = SimpleRequest & {
@@ -80,8 +64,6 @@ declare namespace KeyguardRequest {
         signer: Uint8Array
         signerLabel?: string
     }
-
-    type ParsedSignMessageRequest = Transform<KeyId2KeyInfo<SignMessageRequest>, 'signer', { signer: Nimiq.Address }>
 
     type SignMessageResult = SignatureResult & {
         data: Uint8Array
@@ -112,8 +94,6 @@ declare namespace KeyguardRequest {
         baseKeyPath: string
         indicesToDerive: string[]
     }
-
-    type ParsedDeriveAddressRequest = KeyId2KeyInfo<DeriveAddressRequest>
 
     type DeriveAddressResult = {
         keyPath: string
