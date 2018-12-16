@@ -7,7 +7,7 @@ class Export {
      * However these pages wil be the default pages which usually don't match the applications requirements.
      * Refer to the corresponsing _buildMoreExportOptions as well as
      * the Build functions of ExportWords and ExportFile to see the general Structure.
-     * @param {KeyguardRequest.ParsedSimpleRequest} request
+     * @param {ParsedSimpleRequest} request
      * @param {Function} resolve
      * @param {Function} reject
      */

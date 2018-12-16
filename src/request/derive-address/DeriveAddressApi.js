@@ -24,7 +24,7 @@ class DeriveAddressApi extends TopLevelApi { // eslint-disable-line no-unused-va
 
     /**
      * @param {KeyguardRequest.DeriveAddressRequest} request
-     * @returns {Promise<KeyguardRequest.ParsedDeriveAddressRequest>}
+     * @returns {Promise<ParsedDeriveAddressRequest>}
      */
     async parseRequest(request) {
         if (!request) {
