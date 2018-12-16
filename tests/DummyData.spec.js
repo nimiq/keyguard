@@ -32,13 +32,13 @@ Dummy.encryptionPassword = 'password';
 Dummy.keyInfos = [
     new KeyInfo(
         '2ec615522906',
-        Key.Type.LEGACY,
+        Nimiq.Secret.Type.PRIVATE_KEY,
         true,
         false,
     ),
     new KeyInfo(
         'ef553f34a779',
-        Key.Type.BIP39,
+        Nimiq.Secret.Type.ENTROPY,
         false,
         false,
     ),
@@ -91,7 +91,7 @@ Dummy.deprecatedAccountRecords = [
 /** @type {KeyguardRequest.LegacyKeyInfoObject[]} */
 Dummy.deprecatedAccount2KeyInfoObject = [{
     id: '2ec615522906',
-    type: Key.Type.LEGACY,
+    type: Nimiq.Secret.Type.PRIVATE_KEY,
     encrypted: true,
     hasPin: false,
     legacyAccount: {

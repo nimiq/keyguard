@@ -69,7 +69,7 @@ class CookieJar { // eslint-disable-line no-unused-vars
         if (!keys) return []; // Make TS happy (match() can potentially return NULL)
 
         return keys.map(key => {
-            const type = /** @type {Key.Type} */ (parseInt(key[0], 10));
+            const type = /** @type {Nimiq.Secret.Type} */ (parseInt(key[0], 10));
             const encrypted = key[1] === '1';
             const hasPin = key[2] === '1';
             const id = key.substr(3);

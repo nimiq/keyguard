@@ -2,7 +2,7 @@
 class KeyInfo {
     /**
      * @param {string} id
-     * @param {Key.Type} type
+     * @param {Nimiq.Secret.Type} type
      * @param {boolean} encrypted
      * @param {boolean} hasPin
      */
@@ -25,7 +25,7 @@ class KeyInfo {
     }
 
     /**
-     * @type {Key.Type}
+     * @type {Nimiq.Secret.Type}
      */
     get type() {
         return this._type;

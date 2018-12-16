@@ -89,7 +89,7 @@ class Key {
      * @private
      */
     _derivePrivateKey(path) {
-        return this._type === Key.Type.LEGACY
+        return this._secret.type === Nimiq.Secret.Type.ENTROPY
             ? new Nimiq.PrivateKey(this._secret)
             : new Nimiq.Entropy(this._secret).toExtendedPrivateKey().derivePath(path).privateKey;
     }
@@ -102,7 +102,7 @@ class Key {
     }
 
     /**
-     * @type {Key.Type}
+     * @type {Nimiq.Secret.Type}
      */
     get type() {
         return this._type;
@@ -124,17 +124,12 @@ class Key {
      * @type {string}
      */
     get id() {
-        const input = this._type === Key.Type.LEGACY
+        const input = this.type === Nimiq.Secret.Type.ENTROPY
             ? Nimiq.PublicKey.derive(new Nimiq.PrivateKey(this._secret)).toAddress().serialize()
             : this._secret;
         return Key.deriveId(input);
     }
 }
-
-Key.Type = {
-    LEGACY: 0,
-    BIP39: 1,
-};
 
 Key.MSG_PREFIX = new Nimiq.SerialBuffer(Nimiq.BufferUtils.fromAscii('Nimiq Signed Message:\n'));
 Key.MSG_PREFIX_LENGTH = Key.MSG_PREFIX.length;

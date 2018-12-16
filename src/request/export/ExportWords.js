@@ -123,10 +123,10 @@ class ExportWords extends Nimiq.Observable {
         let words = [''];
         if (this._key !== null) {
             switch (this._key.type) {
-            case Nimiq.MnemonicUtils.MnemonicType.LEGACY:
+            case Nimiq.Secret.Type.PRIVATE_KEY:
                 words = Nimiq.MnemonicUtils.entropyToLegacyMnemonic(this._key.secret);
                 break;
-            case Nimiq.MnemonicUtils.MnemonicType.BIP39:
+            case Nimiq.Secret.Type.ENTROPY:
                 words = Nimiq.MnemonicUtils.entropyToMnemonic(this._key.secret);
                 break;
             default:

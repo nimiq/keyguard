@@ -15,7 +15,9 @@ class ImportApi extends TopLevelApi {
         super();
 
         this._encryptedKey = new Nimiq.SerialBuffer(0);
-        this._keyType = Key.Type.BIP39;
+
+        /** @type {Nimiq.Secret.Type} */
+        this._keyType = Nimiq.Secret.Type.ENTROPY;
         this._hasPin = false;
 
         // Start UI
@@ -99,7 +101,7 @@ class ImportApi extends TopLevelApi {
     _onFileImported(encryptedKeyBase64) {
         if (encryptedKeyBase64.substr(0, 2) === '#3') {
             // BIP39 Key File
-            this._keyType = Key.Type.BIP39;
+            this._keyType = Nimiq.Secret.Type.ENTROPY;
 
             this._encryptedKey = Nimiq.BufferUtils.fromBase64(encryptedKeyBase64.substr(2));
             this._hasPin = false;
@@ -109,7 +111,7 @@ class ImportApi extends TopLevelApi {
             else this._goToSetPassphrase();
         } else {
             // Legacy Account Access File
-            this._keyType = Key.Type.LEGACY;
+            this._keyType = Nimiq.Secret.Type.PRIVATE_KEY;
 
             if (encryptedKeyBase64.substr(0, 2) === '#2') {
                 // PIN-encoded
@@ -147,13 +149,13 @@ class ImportApi extends TopLevelApi {
         /** @type {{keyPath: string, address: Uint8Array}[]} */
         const addresses = [];
 
-        if (key.type === Key.Type.LEGACY) {
+        if (key.type === Nimiq.Secret.Type.PRIVATE_KEY) {
             const address = key.deriveAddress('');
             addresses.push({
                 keyPath: 'm/0\'',
                 address: address.serialize(),
             });
-        } else if (key.type === Key.Type.BIP39) {
+        } else if (key.type === Nimiq.Secret.Type.ENTROPY) {
             /** @type {KeyguardRequest.ImportRequest} */
             (this._request).requestedKeyPaths.forEach(keyPath => {
                 addresses.push({

@@ -1,6 +1,6 @@
 declare namespace KeyguardRequest {
     namespace Key {
-        type Type = 0 | 1;
+        type Type = 1 | 2;
     }
 
     type KeyInfoObject = {

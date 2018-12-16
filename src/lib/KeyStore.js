@@ -204,7 +204,7 @@ class KeyStore {
             /** @type {KeyguardRequest.KeyInfoObject} */
             const keyObject = {
                 id: legacyKeyId,
-                type: Key.Type.LEGACY,
+                type: 1, // Nimiq.Secret.Type.PRIVATE_KEY
                 encrypted: true,
                 hasPin: account.type === 'low',
             };
