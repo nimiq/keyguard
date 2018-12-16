@@ -106,7 +106,6 @@ class ImportWords {
     }
 
     run() {
-        this._key = null;
         this._entropy = null;
         window.location.hash = ImportWords.Pages.PRIVACY_AGENT;
     }
@@ -121,14 +120,13 @@ class ImportWords {
         switch (mnemonicType) {
         case Nimiq.MnemonicUtils.MnemonicType.BIP39: {
             const entropy = Nimiq.MnemonicUtils.mnemonicToEntropy(mnemonic);
-            this._key = new Key(entropy.serialize(), Key.Type.BIP39);
-            this._resolve(entropy.serialize(), Key.Type.BIP39);
+            this._resolve(entropy);
             break;
         }
         case Nimiq.MnemonicUtils.MnemonicType.LEGACY: {
             const entropy = Nimiq.MnemonicUtils.legacyMnemonicToEntropy(mnemonic);
-            this._key = new Key(entropy.serialize(), Key.Type.LEGACY);
-            this._resolve(entropy.serialize(), Key.Type.LEGACY);
+            const privateKey = new Nimiq.PrivateKey(entropy.serialize());
+            this._resolve(privateKey);
             break;
         }
         case Nimiq.MnemonicUtils.MnemonicType.UNKNOWN: {
@@ -151,8 +149,14 @@ class ImportWords {
      * @private
      */
     _onKeyTypeChosen(keyType, entropy) {
-        this._key = new Key(entropy.serialize(), keyType);
-        this._resolve(entropy.serialize(), keyType);
+        /** @type {Nimiq.Entropy|Nimiq.PrivateKey} */
+        let entropyOrPrivKey;
+        if (keyType === Nimiq.MnemonicUtils.MnemonicType.LEGACY) {
+            entropyOrPrivKey = entropy;
+        } else {
+            entropyOrPrivKey = new Nimiq.PrivateKey(entropy.serialize());
+        }
+        this._resolve(entropyOrPrivKey);
     }
 
     _onEntropyChanged() {

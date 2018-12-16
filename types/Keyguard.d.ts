@@ -39,7 +39,6 @@ type AccountRecord = AccountInfo & {
 type KeyRecord = {
     id: string
     type: Nimiq.Secret.Type
-    encrypted: boolean
     hasPin: boolean
     secret: Uint8Array
 }

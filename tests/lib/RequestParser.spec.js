@@ -84,11 +84,6 @@ describe('RequestParser', () => {
 
         let parsedKeyInfo = await requestParser.parseKeyId('2ec615522906');
         expect(parsedKeyInfo).toEqual(Dummy.keyInfos[0]);
-            '2ec615522906',
-            Key.Type.LEGACY,
-            true,
-            false,
-        ));
 
         await Dummy.Utils.deleteDummyKeyStore();
     });

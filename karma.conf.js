@@ -19,7 +19,6 @@ module.exports = function (/** @type {any} */ config) {
             'tests/**/*.spec.js'
         ],
 
-
         // avoid calling runKeyguard
         exclude: [
             'src/request/**/index.js'

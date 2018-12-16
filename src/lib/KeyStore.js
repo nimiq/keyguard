@@ -3,6 +3,7 @@
 /* global KeyInfo */
 /* global AccountStore */
 /* global BrowserDetection */
+/* global Errors */
 
 /**
  * Usage:
@@ -18,6 +19,14 @@ class KeyStore {
         /** @type {KeyStore} */
         KeyStore._instance = KeyStore._instance || new KeyStore();
         return KeyStore._instance;
+    }
+
+    /**
+     * @param {KeyRecord} keyRecord
+     * @returns {boolean}
+     */
+    static isEncrypted(keyRecord) {
+        return keyRecord.secret.byteLength !== KeyStore.UNENCRYPTED_SECRET_SIZE;
     }
 
     constructor() {
@@ -62,16 +71,21 @@ class KeyStore {
             return null;
         }
 
-        if (!keyRecord.encrypted) {
-            return new Key(keyRecord.secret, keyRecord.type);
+        if (!KeyStore.isEncrypted(keyRecord)) {
+            const purposeId = new Nimiq.SerialBuffer(keyRecord.secret).readUint32();
+            const secret = purposeId === Nimiq.Entropy.PURPOSE_ID
+                ? new Nimiq.Entropy(keyRecord.secret.subarray(4))
+                : new Nimiq.PrivateKey(keyRecord.secret.subarray(4));
+
+            return new Key(secret, keyRecord.hasPin);
         }
 
         if (!passphrase) {
             throw new Error('Passphrase required');
         }
 
-        const plainSecret = await Nimiq.CryptoUtils.decryptOtpKdf(new Nimiq.SerialBuffer(keyRecord.secret), passphrase);
-        return new Key(plainSecret, keyRecord.type);
+        const secret = await Nimiq.Secret.fromEncrypted(new Nimiq.SerialBuffer(keyRecord.secret), passphrase);
+        return new Key(secret, keyRecord.hasPin);
     }
 
     /**
@@ -81,7 +95,7 @@ class KeyStore {
     async getInfo(id) {
         /** @type {?KeyRecord} */
         const keyRecord = await this._get(id);
-        return keyRecord ? KeyInfo.fromObject(keyRecord) : null;
+        return keyRecord ? KeyInfo.fromObject(keyRecord, KeyStore.isEncrypted(keyRecord)) : null;
     }
 
     /**
@@ -102,26 +116,39 @@ class KeyStore {
      * @returns {Promise<void>}
      */
     async put(key, passphrase) {
-        const secret = !passphrase
-            ? key.secret
-            : await Nimiq.CryptoUtils.encryptOtpKdf(new Nimiq.SerialBuffer(key.secret), passphrase);
+        /** @type {Uint8Array} */
+        let secret;
+        if (passphrase) {
+            secret = await key.secret.exportEncrypted(passphrase);
+        } else {
+            const buf = new Nimiq.SerialBuffer(KeyStore.UNENCRYPTED_SECRET_SIZE);
+            const purposeId = key.secret.type === Nimiq.Secret.Type.ENTROPY
+                ? Nimiq.Entropy.PURPOSE_ID
+                : Nimiq.PrivateKey.PURPOSE_ID;
+
+            buf.writeUint32(purposeId);
+            key.secret.serialize(buf);
+            secret = buf.subarray(0, buf.byteLength);
+        }
 
         const keyRecord = /** @type {KeyRecord} */ {
             id: key.id,
             type: key.type,
-            encrypted: !!passphrase && passphrase.length > 0,
             hasPin: key.hasPin,
             secret,
         };
 
-        return this._put(keyRecord);
+        return this.putPlain(keyRecord);
     }
 
     /**
      * @param {KeyRecord} keyRecord
      * @returns {Promise<void>}
      */
-    async _put(keyRecord) {
+    async putPlain(keyRecord) {
+        if (keyRecord.secret.byteLength !== 56 && keyRecord.secret.byteLength !== KeyStore.UNENCRYPTED_SECRET_SIZE) {
+            throw new Errors.KeyguardError('Invalid length: KeyRecord.secret');
+        }
         const db = await this.connect();
         const transaction = db.transaction([KeyStore.DB_KEY_STORE_NAME], 'readwrite');
         const request = transaction.objectStore(KeyStore.DB_KEY_STORE_NAME).put(keyRecord);
@@ -149,7 +176,7 @@ class KeyStore {
             .openCursor();
 
         const results = /** KeyRecord[] */ await KeyStore._readAllFromCursor(request);
-        return results.map(keyRecord => KeyInfo.fromObject(keyRecord));
+        return results.map(keyRecord => KeyInfo.fromObject(keyRecord, KeyStore.isEncrypted(keyRecord)));
     }
 
     /**
@@ -176,7 +203,7 @@ class KeyStore {
     async migrateAccountsToKeys() {
         const accounts = await AccountStore.instance.dangerousListPlain();
         const keysRecords = /** @type {KeyRecord[]} */ (KeyStore.accounts2Keys(accounts));
-        await Promise.all(keysRecords.map(keyRecord => this._put(keyRecord)));
+        await Promise.all(keysRecords.map(keyRecord => this.putPlain(keyRecord)));
 
         // FIXME Uncomment after/for testing (and also adapt KeyStore.spec.js)
         // await AccountStore.instance.drop();
@@ -205,7 +232,6 @@ class KeyStore {
             const keyObject = {
                 id: legacyKeyId,
                 type: 1, // Nimiq.Secret.Type.PRIVATE_KEY
-                encrypted: true,
                 hasPin: account.type === 'low',
             };
 
@@ -289,3 +315,5 @@ KeyStore._instance = null;
 KeyStore.DB_VERSION = 1;
 KeyStore.DB_NAME = 'nimiq-keyguard';
 KeyStore.DB_KEY_STORE_NAME = 'keys';
+
+KeyStore.UNENCRYPTED_SECRET_SIZE = /* purposeId */ 4 + /* secret */ 32;

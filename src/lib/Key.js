@@ -10,13 +10,11 @@ class Key {
     }
 
     /**
-     * @param {Uint8Array} secret
-     * @param {Key.Type} [type]
+     * @param {Nimiq.Entropy|Nimiq.PrivateKey} secret
      * @param {boolean} [hasPin]
      */
-    constructor(secret, type = Key.Type.BIP39, hasPin = false) {
+    constructor(secret, hasPin = false) {
         this._secret = secret;
-        this._type = type;
         this._hasPin = hasPin;
     }
 
@@ -90,12 +88,12 @@ class Key {
      */
     _derivePrivateKey(path) {
         return this._secret.type === Nimiq.Secret.Type.ENTROPY
-            ? new Nimiq.PrivateKey(this._secret)
-            : new Nimiq.Entropy(this._secret).toExtendedPrivateKey().derivePath(path).privateKey;
+            ? /** @type {Nimiq.Entropy} */ (this._secret).toExtendedPrivateKey().derivePath(path).privateKey
+            : /** @type {Nimiq.PrivateKey} */ this._secret;
     }
 
     /**
-     * @type {Uint8Array}
+     * @type {Nimiq.Entropy|Nimiq.PrivateKey}
      */
     get secret() {
         return this._secret;
@@ -105,7 +103,7 @@ class Key {
      * @type {Nimiq.Secret.Type}
      */
     get type() {
-        return this._type;
+        return this._secret.type;
     }
 
     /**
@@ -125,11 +123,11 @@ class Key {
      */
     get id() {
         const input = this.type === Nimiq.Secret.Type.ENTROPY
-            ? Nimiq.PublicKey.derive(new Nimiq.PrivateKey(this._secret)).toAddress().serialize()
-            : this._secret;
+            ? this._secret.serialize()
+            : Nimiq.PublicKey.derive(this._secret).toAddress().serialize();
         return Key.deriveId(input);
     }
 }
 
 Key.MSG_PREFIX = new Nimiq.SerialBuffer(Nimiq.BufferUtils.fromAscii('Nimiq Signed Message:\n'));
-Key.MSG_PREFIX_LENGTH = Key.MSG_PREFIX.length;
+Key.MSG_PREFIX_LENGTH = Key.MSG_PREFIX.byteLength;

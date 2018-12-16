@@ -52,16 +52,16 @@ class KeyInfo {
         return {
             id: this.id,
             type: this.type,
-            encrypted: this.encrypted,
             hasPin: this.hasPin,
         };
     }
 
     /**
      * @param {KeyguardRequest.KeyInfoObject} obj
+     * @param {boolean} encrypted
      * @returns {KeyInfo}
      */
-    static fromObject(obj) {
-        return new KeyInfo(obj.id, obj.type, obj.encrypted, obj.hasPin);
+    static fromObject(obj, encrypted) {
+        return new KeyInfo(obj.id, obj.type, encrypted, obj.hasPin);
     }
 }

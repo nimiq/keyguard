@@ -6,7 +6,6 @@ declare namespace KeyguardRequest {
     type KeyInfoObject = {
         id: string;
         type: Key.Type;
-        encrypted: boolean;
         hasPin: boolean;
     }
 

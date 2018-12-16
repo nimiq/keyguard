@@ -1,6 +1,6 @@
+/* global Nimiq */
 /* global TopLevelApi */
 /* global DeriveAddress */
-/* global Key */
 /* global Errors */
 
 class DeriveAddressApi extends TopLevelApi { // eslint-disable-line no-unused-vars
