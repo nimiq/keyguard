@@ -31,7 +31,7 @@
     display: none;
     width: 100%;
     max-width: 56.25rem; /* 450px */
-    min-height: 58rem; /* 464px */
+    min-height: 70.5rem; /* 564px */
     /**
      * A max-height of 77.5rem is what is set in the Accounts Manager,
      * but some pages in the Keyguard are higher (like the Identicon

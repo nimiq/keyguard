@@ -101,6 +101,9 @@ class PassphraseSetterBox extends Nimiq.Observable {
      * @param {boolean} isValid
      */
     _onInputChangeValidity(isValid) {
+        if (this._password && this._passphraseInput.text === this._password) {
+            this.fire(PassphraseSetterBox.Events.SUBMIT, this._password);
+        }
         this.$el.classList.toggle('input-valid', isValid);
 
         const length = this._passphraseInput.text.length;
@@ -114,6 +117,7 @@ class PassphraseSetterBox extends Nimiq.Observable {
      * @param {Event} event
      */
     _onSubmit(event) {
+        console.log(event);
         event.preventDefault();
         if (!this._password) {
             if (this._passphraseInput.text.length < PassphraseInput.DEFAULT_MIN_LENGTH) {
