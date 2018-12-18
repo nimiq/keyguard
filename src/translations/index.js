@@ -26,7 +26,7 @@ const TRANSLATIONS = {
         'create-heading-create-password': 'Create a password',
         'create-heading-repeat-password': 'Confirm your password',
         'create-heading-validate-backup': 'Validate your backup',
-        'create-wallet-desc': 'This is your Wallet with your first Account in it.',
+        'create-wallet-desc': 'This is your Account with your first Address in it.',
 
         'import-heading-log-in': 'Log in',
         'import-link-no-wallet': 'Don\'t have a wallet yet?',
