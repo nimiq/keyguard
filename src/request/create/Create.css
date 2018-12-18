@@ -43,15 +43,15 @@
     height: 20rem;
     text-align: center;
 }
+
 .wallet-identifier .identicon {
     width: 7rem;
     height: 6rem;
     position: absolute;
     transform: translate(0.2rem, 3.5rem) scale(0);
-    animation: pop-in-13 0.8s cubic-bezier(.99,1.54,.49,1.15);
-    animation-delay: 500ms;
+    animation: pop-in-13 0.4s cubic-bezier(.73,2.08,.48,1);
+    animation-delay: 300ms;
     animation-fill-mode: both;
-
 }
 
 @keyframes pop-in-13 {

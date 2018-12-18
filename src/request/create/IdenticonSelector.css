@@ -7,8 +7,7 @@
     width: 14.25rem;
     height: 14.25rem;
     position: absolute;
-    will-change: transform;
-    transition: transform 0.3s;
+    transition: transform 450ms ease;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
@@ -42,6 +41,7 @@
 .identicon-selector .wrapper:hover,
 .identicon-selector .wrapper:focus {
     cursor: pointer;
+    outline: none;
 }
 
 .identicon-selector .identicons {
