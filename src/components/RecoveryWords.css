@@ -1,42 +1,13 @@
-.title {
-    display: inline-block;
-    box-sizing: border-box;
-    border-radius: 3rem;
-    font-size: 1.5rem;
-    line-height: 3.25rem;
-    background: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjZmZmIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMCAwaDI0djI0SDB6IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTE4IDhoLTFWNmMwLTIuNzYtMi4yNC01LTUtNVM3IDMuMjQgNyA2djJINmMtMS4xIDAtMiAuOS0yIDJ2MTBjMCAxLjEuOSAyIDIgMmgxMmMxLjEgMCAyLS45IDItMlYxMGMwLTEuMS0uOS0yLTItMnptLTYgOWMtMS4xIDAtMi0uOS0yLTJzLjktMiAyLTIgMiAuOSAyIDItLjkgMi0yIDJ6bTMuMS05SDguOVY2YzAtMS43MSAxLjM5LTMuMSAzLjEtMy4xIDEuNzEgMCAzLjEgMS4zOSAzLjEgMy4xdjJ6Ii8+PC9zdmc+');
-    background-size: 1.75rem;
-    background-position: 1.125rem center;
-    background-repeat: no-repeat;
-    background-color: var(--nimiq-blue);
-    padding-left: 4rem;
-    padding-right: 2rem;
-    margin-left: auto;
-    margin-right: auto;
-    transition: opacity 300ms;
-}
-
-.title-wrapper {
-    position: absolute;
-    top: -2.25rem;
-    width: 100%;
-    margin-left: -2rem;
-}
-
 .recovery-words {
     text-align: center;
     line-height: 4rem;
     display: block;
-    margin: 3rem 0;
-    border-radius: 1rem;
 }
 
 .recovery-words .words-container {
     width: 100%;
-    padding: 1rem;
     box-sizing: border-box;
     position: relative;
-    height: 30.25rem;
 }
 
 .recovery-words-input.shake, .recovery-words .shake {
@@ -46,26 +17,25 @@
 .recovery-words .words-container .word-section {
     display: flex;
     flex-wrap: wrap;
-    padding-top: 0.5rem;
+    margin: -.5rem
 }
 
 .recovery-words .word {
-    margin: .25rem;
-    width: 5rem;
+    margin: .5rem;
     display: flex;
     flex-direction: column;
-    flex: 1 0 20%;
+    flex: 1 0 25%;
     position: relative;
 }
 
 .recovery-words input[type="text"] {
-    background-color: rgba(255, 255, 255, 0.05);
     width: 100%;
     font-family: inherit;
     line-height: 2;
     font-size: 1.875rem;
     padding: 0;
-    border-radius: .25rem;
+    border-radius: .5rem;
+    border:1px solid rgba(255,255,255,0.2);
 }
 
 .recovery-words input[type="text"]:focus {

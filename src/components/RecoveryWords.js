@@ -35,28 +35,17 @@ class RecoveryWords extends Nimiq.Observable {
     }
 
     /**
-     * @param {Nimiq.Entropy | Uint8Array} entropy
-     */
-    set entropy(entropy) {
-        const words = Nimiq.MnemonicUtils.entropyToMnemonic(entropy, Nimiq.MnemonicUtils.DEFAULT_WORDLIST);
-        this.setWords(words);
-    }
-
-    /**
      * @param {HTMLElement} [$el]
      * @param {boolean} input
      * @returns {HTMLElement}
      * */
     _createElement($el, input = true) {
         $el = $el || document.createElement('div');
-        $el.classList.add('recovery-words', 'nq-bg-light-blue');
+        $el.classList.add('recovery-words');
 
         $el.innerHTML = `
             <div class="words-container">
-                <div class="title-wrapper">
-                    <div class="title" data-i18n="recovery-words-title">Recovery Words</div>
-                </div>
-                <div class="word-section"> </div>
+                <div class="word-section"></div>
             </div>
         `;
 

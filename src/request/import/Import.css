@@ -1,16 +1,110 @@
-.page .file-import {
-    margin-bottom: 0;
-    width: auto;
-    align-self: stretch;
+.page#import-file .page-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    opacity: 1;
+    transition: filter .4s .5s, opacity .4s .5s;
 }
 
-.page#file-import .page-footer .create-wallet {
-    cursor: pointer;
+.page#import-file .page-footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.625rem;
 }
 
-button.go-to-words {
-    margin-top: 2rem;
-    align-self: flex-start;
+.page#import-file .page-footer .passphrase-box {
+    position: realtive;
+    margin-top: -21.5rem;
+    transition: opacity .4s .5s, z-index .1s .5s;
+    opacity: 0;
+    z-index: -1;
+}
+
+.page#recovery-words {
+    background: radial-gradient(420.00px at 100% 100%, #260133 0%, #1F2348 100%);
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.111158);
+    color: white;
+    border-radius: 8px;
+}
+
+.page#recovery-words .page-header-back-button {
+    background-image: url('data:image/svg+xml,<svg width="23" height="18" viewBox="0 0 23 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22 9.04854L2.99789 9.04826" stroke="%23FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.99902 16.001L1.99951 8.99951L8.99902 2" stroke="%23FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>');
+}
+
+.page#recovery-words p {
+    margin-top: 4rem;
+    opacity: 0.5;
+    text-align: center;
+}
+.page#recovery-words .recovery-words,
+.words-container {
+    display: flex;
+    flex-grow: 1;
+}
+
+.page#recovery-words .page-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.words-container input {
+    height:100%;
+}
+
+.walletfile-qr-code {
+    width: 12rem;
+    height: 20rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 2px dashed rgba(31, 35, 72, 0.4);
+    border-radius: 1rem;
+}
+
+.walletfile-qr-code .qr-code {
+    background-image: url("data:image/svg+xml,%3Csvg width='48' height='48' viewBox='0 0 48 48' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M14 16H2C0.89543 16 0 15.1046 0 14V2C0 0.89543 0.89543 0 2 0H14C15.1046 0 16 0.89543 16 2V14C16 15.1046 15.1046 16 14 16ZM4.49993 4.00003C4.22379 4.00003 3.99993 4.22389 3.99993 4.50003V11.5C3.99993 11.7762 4.22379 12 4.49993 12H11.4999C11.7761 12 11.9999 11.7762 11.9999 11.5V4.50003C11.9999 4.22389 11.7761 4.00003 11.4999 4.00003H4.49993Z' fill='%231F2348'/%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M2 32H14C15.1046 32 16 32.8954 16 34V46C16 47.1046 15.1046 48 14 48H2C0.89543 48 0 47.1046 0 46V34C0 32.8954 0.89543 32 2 32ZM11.4999 44C11.7761 44 11.9999 43.7762 11.9999 43.5V36.5C11.9999 36.2239 11.7761 36 11.4999 36H4.49993C4.22379 36 3.99993 36.2239 3.99993 36.5V43.5C3.99993 43.7762 4.22379 44 4.49993 44H11.4999Z' fill='%231F2348'/%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M34 0H46C47.1046 0 48 0.89543 48 2V14C48 15.1046 47.1046 16 46 16H34C32.8954 16 32 15.1046 32 14V2C32 0.89543 32.8954 0 34 0ZM43.4999 12C43.7761 12 43.9999 11.7762 43.9999 11.5V4.50003C43.9999 4.22389 43.7761 4.00003 43.4999 4.00003H36.4999C36.2238 4.00003 35.9999 4.22389 35.9999 4.50003V11.5C35.9999 11.7762 36.2238 12 36.4999 12H43.4999Z' fill='%231F2348'/%3E%3Cpath d='M20 8.5H22C22.8284 8.5 23.5 7.82843 23.5 7C23.5 6.17157 22.8284 5.5 22 5.5C21.7239 5.5 21.5 5.27614 21.5 5V2C21.5 1.17157 20.8284 0.5 20 0.5C19.1716 0.5 18.5 1.17157 18.5 2V7C18.5 7.82843 19.1716 8.5 20 8.5Z' fill='%231F2348'/%3E%3Cpath d='M26 3.5C26.2761 3.5 26.5 3.72386 26.5 4V15C26.5 15.8284 27.1716 16.5 28 16.5C28.8284 16.5 29.5 15.8284 29.5 15V2C29.5 1.17157 28.8284 0.5 28 0.5H26C25.1716 0.5 24.5 1.17157 24.5 2C24.5 2.82843 25.1716 3.5 26 3.5Z' fill='%231F2348'/%3E%3Cpath d='M11.5 21C11.5 21.8284 12.1716 22.5 13 22.5H20C20.8284 22.5 21.5 21.8284 21.5 21V13C21.5 12.1716 20.8284 11.5 20 11.5C19.1716 11.5 18.5 12.1716 18.5 13V19C18.5 19.2761 18.2761 19.5 18 19.5H13C12.1716 19.5 11.5 20.1716 11.5 21Z' fill='%231F2348'/%3E%3Cpath d='M6 19.5C5.17157 19.5 4.5 20.1716 4.5 21V26C4.5 26.2761 4.27614 26.5 4 26.5H2C1.17157 26.5 0.5 27.1716 0.5 28C0.5 28.8284 1.17157 29.5 2 29.5H28C28.8284 29.5 29.5 28.8284 29.5 28V22C29.5 21.1716 28.8284 20.5 28 20.5C27.1716 20.5 26.5 21.1716 26.5 22V26C26.5 26.2761 26.2761 26.5 26 26.5H8C7.72386 26.5 7.5 26.2761 7.5 26V21C7.5 20.1716 6.82843 19.5 6 19.5Z' fill='%231F2348'/%3E%3Cpath d='M27.5 34C27.5 33.1716 26.8284 32.5 26 32.5H20C19.1716 32.5 18.5 33.1716 18.5 34V42C18.5 42.8284 19.1716 43.5 20 43.5C20.8284 43.5 21.5 42.8284 21.5 42V36C21.5 35.7239 21.7239 35.5 22 35.5H26C26.8284 35.5 27.5 34.8284 27.5 34Z' fill='%231F2348'/%3E%3Cpath d='M46 44.5H29C28.7239 44.5 28.5 44.2761 28.5 44V40C28.5 39.1716 27.8284 38.5 27 38.5C26.1716 38.5 25.5 39.1716 25.5 40V46C25.5 46.8284 26.1716 47.5 27 47.5H46C46.8284 47.5 47.5 46.8284 47.5 46C47.5 45.1716 46.8284 44.5 46 44.5Z' fill='%231F2348'/%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M39 40.5H33C32.1716 40.5 31.5 39.8284 31.5 39V33C31.5 32.1716 32.1716 31.5 33 31.5H39C39.8284 31.5 40.5 32.1716 40.5 33V39C40.5 39.8284 39.8284 40.5 39 40.5ZM35 34.5C34.7239 34.5 34.5 34.7239 34.5 35V37C34.5 37.2761 34.7239 37.5 35 37.5H37C37.2761 37.5 37.5 37.2761 37.5 37V35C37.5 34.7239 37.2761 34.5 37 34.5H35Z' fill='%231F2348'/%3E%3Cpath d='M45 25.5C44.1716 25.5 43.5 26.1716 43.5 27V40C43.5 40.8284 44.1716 41.5 45 41.5C45.8284 41.5 46.5 40.8284 46.5 40V27C46.5 26.1716 45.8284 25.5 45 25.5Z' fill='%231F2348'/%3E%3Cpath d='M46.5 20C46.5 19.1716 45.8284 18.5 45 18.5H34C33.1716 18.5 32.5 19.1716 32.5 20V26C32.5 26.8284 33.1716 27.5 34 27.5C34.8284 27.5 35.5 26.8284 35.5 26V22C35.5 21.7239 35.7239 21.5 36 21.5H45C45.8284 21.5 46.5 20.8284 46.5 20Z' fill='%231F2348'/%3E%3C/svg%3E%0A");
+    display: flex;
+    width: 6rem;
+    height: 6rem;
+    margin-bottom: 2.25rem;
+}
+
+@keyframes rotate {
+    0% { transform: rotateY(0deg); }
+    50% { transform: rotateY(180deg); }
+    100% { transform: rotateY(360deg); }
+}
+
+.page {
+
+}
+.page:target {
+    display:flex;
+    animation-fill-mode: both;
+}
+
+.page#import-file.enter-password .page-body {
+    filter: blur(12px);
+    opacity: 0.2;
+}
+
+.page#import-file.enter-password .page-footer .passphrase-box {
+    opacity: 1;
+    z-index: 3;
+}
+
+
+button#goto-words {
+    margin-top: 3rem;
+}
+a#goto-create {
+    text-decoration: none;
+    margin: 2rem 0;
+}
+a#goto-create i.nq-icon {
+    margin-left: 0.5rem;
+    margin-bottom: -0.25rem;
 }
 
 .page#enter-passphrase .page-body {
@@ -19,30 +113,16 @@ button.go-to-words {
     align-items: center;
 }
 
-.page#enter-passphrase .nq-icon.walletfile-locked {
-    width: 9rem;
-    height: 11.75rem;
-    flex-shrink: 0;
-}
-
-.keyfile-info {
-    display: flex;
-    flex-direction: row;
-}
-
-.keyfile-info p:first-child {
-    margin-top: 0;
-}
-
-.keyfile-info p:last-child {
-    margin-bottom: 0;
-}
-
 .page#set-passphrase .nq-icon.walletfile {
     width: 9rem;
     height: 11.75rem;
     margin-right: 4rem;
     flex-shrink: 0;
+}
+.page#set-passphrase .page-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 #choose-key-type .key-type-or {
@@ -82,5 +162,5 @@ button.go-to-words {
 
 #enter-passphrase .page-footer,
 #set-passphrase .page-footer {
-    padding: 1rem;
+    padding: 0.625rem;
 }

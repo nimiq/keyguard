@@ -1,9 +1,8 @@
 /* global Constants */
 /* global Nimiq */
 /* global TopLevelApi */
-/* global PrivacyAgent */
+/* global Key */
 /* global RecoveryWords */
-/* global Identicon */
 /* global Errors */
 
 class ImportWords {
@@ -16,68 +15,34 @@ class ImportWords {
         this._resolve = resolve;
         this._reject = reject;
         this._defaultKeyPath = request.defaultKeyPath;
+        /** @type {Nimiq.Entropy?} */
+        this._entropy = null;
 
         // Pages
-        /** @type {HTMLElement} */
-        const $privacy = (document.getElementById(ImportWords.Pages.PRIVACY_AGENT));
-        /** @type {HTMLElement} */
-        const $privacyAgent = ($privacy.querySelector('.agent'));
 
         /** @type {HTMLFormElement} */
         const $words = (document.getElementById(ImportWords.Pages.ENTER_WORDS));
         /** @type {HTMLFormElement} */
         const $recoveryWords = ($words.querySelector('.recovery-words'));
-        /** @type {HTMLButtonElement} */
-        const $wordsConfirm = ($words.querySelector('button'));
-
-        /** @type {HTMLFormElement} */
-        this.$chooseKeyType = (document.getElementById(ImportWords.Pages.CHOOSE_KEY_TYPE));
-        /** @type {HTMLInputElement} */
-        const $radioLegacy = (this.$chooseKeyType.querySelector('input#key-type-legacy'));
-        /** @type {HTMLInputElement} */
-        const $radioBip39 = (this.$chooseKeyType.querySelector('input#key-type-bip39'));
-        /** @type {HTMLDivElement} */
-        const $identiconLegacy = (this.$chooseKeyType.querySelector('.identicon-legacy'));
-        /** @type {HTMLDivElement} */
-        const $identiconBip39 = (this.$chooseKeyType.querySelector('.identicon-bip39'));
-        /** @type {HTMLDivElement} */
-        this.$addressLegacy = (this.$chooseKeyType.querySelector('.address-legacy'));
-        /** @type {HTMLDivElement} */
-        this.$addressBip39 = (this.$chooseKeyType.querySelector('.address-bip39'));
-        /** @type {HTMLButtonElement} */
-        this.$confirmButton = (this.$chooseKeyType.querySelector('button'));
 
         // Components
-        const privacyAgent = new PrivacyAgent($privacyAgent);
         const recoveryWords = new RecoveryWords($recoveryWords, true);
-        this._identiconLegacy = new Identicon(undefined, $identiconLegacy);
-        this._identiconBip39 = new Identicon(undefined, $identiconBip39);
 
         // Events
-        privacyAgent.on(PrivacyAgent.Events.CONFIRM, () => {
-            window.location.hash = ImportWords.Pages.ENTER_WORDS;
-            if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
-                recoveryWords.focus();
+
+        recoveryWords.on(RecoveryWords.Events.COMPLETE, (m, mt) => {
+            console.log(m, mt);
+            if (recoveryWords.mnemonic) {
+                this._onRecoveryWordsComplete(m, mt);
             }
         });
+        recoveryWords.on(RecoveryWords.Events.INCOMPLETE, () => console.log('incomplete'));
+        recoveryWords.on(RecoveryWords.Events.INVALID, () => console.log('invalid'));
 
-        recoveryWords.on(RecoveryWords.Events.COMPLETE, () => { $wordsConfirm.disabled = false; });
-        recoveryWords.on(RecoveryWords.Events.INCOMPLETE, () => { $wordsConfirm.disabled = true; });
-        recoveryWords.on(RecoveryWords.Events.INVALID, () => { $wordsConfirm.disabled = true; });
-        $wordsConfirm.disabled = true;
         $words.addEventListener('submit', event => {
             event.preventDefault();
             if (recoveryWords.mnemonic) {
                 this._onRecoveryWordsComplete(recoveryWords.mnemonic, recoveryWords.mnemonicType);
-            }
-        });
-
-        $radioBip39.addEventListener('change', this._onChooseKeyTypeChange.bind(this));
-        $radioLegacy.addEventListener('change', this._onChooseKeyTypeChange.bind(this));
-        this.$chooseKeyType.addEventListener('submit', event => {
-            event.preventDefault();
-            if (this.keyTypeValue !== null && this._entropy) {
-                this._onKeyTypeChosen(this.keyTypeValue, this._entropy);
             }
         });
 
@@ -106,7 +71,7 @@ class ImportWords {
 
     run() {
         this._entropy = null;
-        window.location.hash = ImportWords.Pages.PRIVACY_AGENT;
+        window.location.hash = ImportWords.Pages.ENTER_WORDS;
     }
 
     /**
@@ -129,80 +94,18 @@ class ImportWords {
             break;
         }
         case Nimiq.MnemonicUtils.MnemonicType.UNKNOWN: {
-            this.entropy = Nimiq.MnemonicUtils.mnemonicToEntropy(mnemonic);
-            window.location.hash = ImportWords.Pages.CHOOSE_KEY_TYPE;
+            // const legacyEntropy = Nimiq.MnemonicUtils.legacyMnemonicToEntropy(mnemonic);
+            const entropy = Nimiq.MnemonicUtils.mnemonicToEntropy(mnemonic);
+            this._resolve(entropy.serialize(), Key.Type.UNKNOWN);
             break;
         }
         default:
             this._reject(new Errors.KeyguardError('Invalid mnemonic type'));
         }
     }
-
-    _onChooseKeyTypeChange() {
-        this.$confirmButton.disabled = this.keyTypeValue === null;
-    }
-
-    /**
-     * @param {Nimiq.Secret.Type} keyType
-     * @param {Nimiq.Entropy} entropy
-     * @private
-     */
-    _onKeyTypeChosen(keyType, entropy) {
-        /** @type {Nimiq.Entropy|Nimiq.PrivateKey} */
-        let secret;
-        if (keyType === Nimiq.Secret.Type.ENTROPY) {
-            secret = entropy;
-        } else {
-            secret = new Nimiq.PrivateKey(entropy.serialize());
-        }
-        this._resolve(secret);
-    }
-
-    _onEntropyChanged() {
-        // Reset choice.
-        /** @type {HTMLInputElement} */
-        const selected = (this.$chooseKeyType.querySelector('input[name="key-type"]:checked'));
-        if (selected) {
-            selected.checked = false;
-        }
-        this._onChooseKeyTypeChange();
-
-        if (!this._entropy) {
-            return;
-        }
-
-        const legacyAddress = Nimiq.PublicKey.derive(new Nimiq.PrivateKey(this._entropy.serialize()))
-            .toAddress().toUserFriendlyAddress();
-        this._identiconLegacy.address = legacyAddress;
-        this.$addressLegacy.textContent = legacyAddress;
-
-        const bip39Address = this._entropy.toExtendedPrivateKey().derivePath(this._defaultKeyPath)
-            .toAddress().toUserFriendlyAddress();
-        this._identiconBip39.address = bip39Address;
-        this.$addressBip39.textContent = bip39Address;
-    }
-
-    /**
-     * @type {Nimiq.Secret.Type | null}
-     */
-    get keyTypeValue() {
-        /** @type {HTMLInputElement} */
-        const selected = (this.$chooseKeyType.querySelector('input[name="key-type"]:checked'));
-        return selected ? /** @type {Nimiq.Secret.Type} */ (parseInt(selected.value, 10)) : null;
-    }
-
-    /**
-     * @param {Nimiq.Entropy} entropy
-     */
-    set entropy(entropy) {
-        this._entropy = entropy;
-        this._onEntropyChanged();
-    }
 }
 
 ImportWords.Pages = {
-    PRIVACY_AGENT: 'privacy',
     ENTER_WORDS: 'recovery-words',
-    CHOOSE_KEY_TYPE: 'choose-key-type',
     SET_PASSPHRASE: 'set-passphrase',
 };

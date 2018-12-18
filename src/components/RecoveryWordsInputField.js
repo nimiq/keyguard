@@ -53,7 +53,7 @@ class RecoveryWordsInputField extends Nimiq.Observable {
 
         /** */
         const setPlaceholder = () => {
-            input.placeholder = `${I18n.translatePhrase('recovery-words-input-field-placeholder')}${this._index + 1}`;
+            input.placeholder = `${this._index < 9 ? '0' : ''}${this._index + 1}`;
         };
         I18n.observer.on(I18n.Events.LANGUAGE_CHANGED, setPlaceholder);
         setPlaceholder();
