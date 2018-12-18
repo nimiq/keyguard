@@ -93,15 +93,16 @@
 
 #account-details #close-details {
     position: absolute;
-    right: 3rem;
-    top: 3rem;
-    width: 5rem;
-    height: 5rem;
+    right: 2rem;
+    top: 2rem;
+    width: 3rem;
+    height: 3rem;
     opacity: 0.16;
     border: 0rem;
     background-color: transparent;
-    background-image: url('data:image/svg+xml,<svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M9.80761 9.80762C14.8761 4.7391 23.1239 4.7391 28.1924 9.80762C33.2609 14.8761 33.2609 23.1239 28.1924 28.1924C23.1239 33.2609 14.8761 33.2609 9.80761 28.1924C4.73909 23.1239 4.73909 14.8761 9.80761 9.80762ZM19 17.5858L22.5355 14.0503L23.9497 15.4645L20.4142 19L23.9497 22.5355L22.5355 23.9498L19 20.4142L15.4645 23.9498L14.0503 22.5355L17.5858 19L14.0503 15.4645L15.4645 14.0503L19 17.5858Z" fill="%23101531"/></svg>');
-    background-size: cover;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg width='38' height='38' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M9.808 9.808c5.068-5.069 13.316-5.069 18.384 0 5.069 5.068 5.069 13.316 0 18.384-5.068 5.069-13.316 5.069-18.384 0-5.069-5.068-5.069-13.316 0-18.384zM19 17.586l3.535-3.536 1.415 1.414L20.414 19l3.536 3.535-1.415 1.415L19 20.414l-3.536 3.536-1.414-1.415L17.586 19l-3.536-3.536 1.414-1.414L19 17.586z' fill='%23101531'/%3E%3C/svg%3E");
+    background-size: 135%;
+    background-position: 50%;
 }
 
 #account-details #close-details:after {
@@ -240,7 +241,7 @@
 .transaction .account .identicon {
     width: 10rem;
     height: 10rem;
-    transition: transform 0.25s;
+    transition: transform 0.45s ease;
 }
 
 .transaction .account:focus .identicon,
@@ -255,6 +256,8 @@
 
 .transaction .wallet-label {
     font-size: 1.25rem;
+    margin-top: 0;
+    display: none;
 }
 
 .transaction .arrow {
