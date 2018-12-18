@@ -125,6 +125,10 @@ a#goto-create i.nq-icon {
     align-items: center;
 }
 
+.page#set-passphrase p {
+    text-align: center;
+}
+
 #choose-key-type .key-type-or {
     margin: 2rem 4rem;
     text-align: center;
