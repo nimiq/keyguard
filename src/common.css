@@ -57,6 +57,18 @@
     left: 4.5rem;
     top: 4.5rem;
     cursor: pointer;
+    transition: opacity .3s ease, transform .4s ease, -webkir-transform .4s ease;
+}
+
+.page-header-back-button:hover {
+    opacity: .4;
+    transform: translate3D(-3px,0,0);
+}
+
+.page-header-back-button:focus {
+    opacity: .7; /* Ideally, we could change the color to --nimiq-light-blue on :focus instead, but this works for now */
+    transform: translate3D(-3px,0,0);
+    outline: none;
 }
 
 @media (max-width: 450px) {
