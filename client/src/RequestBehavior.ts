@@ -49,10 +49,9 @@ export class RedirectRequestBehavior extends RequestBehavior {
 
     public async request(endpoint: string, command: KeyguardCommand, args: any[]): Promise<any> {
         const url = RedirectRequestBehavior.getRequestUrl(endpoint, command);
-        const origin = RequestBehavior.getAllowedOrigin(endpoint);
+        const allowedOrigin = RequestBehavior.getAllowedOrigin(endpoint);
 
-        const client = new RedirectRpcClient(url, origin);
-        await client.init();
+        const client = new RedirectRpcClient(url, allowedOrigin);
 
         const state = Object.assign({ __command: command }, this._localState);
         client.callAndSaveLocalState(this._returnUrl, state, 'request', ...args);
