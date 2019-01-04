@@ -14,7 +14,8 @@
     "checklangs": "node tools/translationValidator.js",
     "pr": "yarn typecheck && yarn lint && yarn test && yarn checkdeps && yarn checklangs && cd client && yarn lint && yarn build",
     "watch": "tsc-watch --pretty --onSuccess \"yarn lint\"",
-    "watchfix": "tsc-watch --pretty --onSuccess \"yarn lintfix\""
+    "watchfix": "tsc-watch --pretty --onSuccess \"yarn lintfix\"",
+    "postinstall": "cd client && yarn"
   },
   "repository": {
     "type": "git",

@@ -19,6 +19,5 @@ script:
   - yarn checkdeps
   - yarn checklangs
   - cd client
-  - yarn
   - yarn lint
   - yarn build
