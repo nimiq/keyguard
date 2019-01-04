@@ -19,7 +19,9 @@ class I18n { // eslint-disable-line no-unused-vars
         /** @type {string} */
         this._fallbackLanguage = fallbackLanguage;
 
-        this.language = navigator.language;
+        // FIXME: Re-enable next line (and remove line after) to enable localisation support
+        // this.language = navigator.language;
+        this.language = 'en';
     }
 
     /**
