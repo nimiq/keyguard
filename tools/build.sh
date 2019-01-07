@@ -44,6 +44,8 @@ for DIR in src/request/*/ ; do
         cat $DIR/$url >> dist/request/$REQUEST/$JS_BUNDLE
     done
 
+    sed -i -e "s/CONFIG.ALLOWED_ORIGIN/$ALLOWED_ORIGIN/g" dist/request/$REQUEST/$JS_BUNDLE
+
     # get all local css files included in request's index.html, which are not in a bundle
     LIST_CSS="$(grep '<link' $DIR/index.html | grep -v 'bundle-' | grep -v -E 'http://|https://' | cut -d\" -f4)"
 
@@ -113,9 +115,11 @@ LIST_CSS_TOPLEVEL="../../../node_modules/@nimiq/style/nimiq-style.min.css ../../
 # (since all urls are relative to request directories, we simply use the create request directory as the base)
 for url in $LIST_JS_COMMON; do
     cat src/request/create/$url >> dist/request/$JS_COMMON_BUNDLE
+    sed -i -e "s/CONFIG.ALLOWED_ORIGIN/$ALLOWED_ORIGIN/g" dist/request/$JS_COMMON_BUNDLE
 done
 for url in $LIST_JS_TOPLEVEL; do
     cat src/request/create/$url >> dist/request/$JS_TOPLEVEL_BUNDLE
+    sed -i -e "s/CONFIG.ALLOWED_ORIGIN/$ALLOWED_ORIGIN/g" dist/request/$JS_TOPLEVEL_BUNDLE
 done
 for url in $LIST_CSS_TOPLEVEL; do
     cat src/request/create/$url >> dist/request/$CSS_TOPLEVEL_BUNDLE
