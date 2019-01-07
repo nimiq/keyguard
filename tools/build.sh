@@ -1,12 +1,5 @@
 #!/bin/bash
 
-# Note: Not sure if we use this. It's not straightforward to install on OSX
-# if ! which envsubst > /dev/null 2>&1; then
-#  echo "You don't seem to have envsubst yet. Go get it! Using sed as an " \
-#    "alternative approach is too slow... :("
-#  exit 1
-# fi
-
 # cleanup
 rm -rf dist
 
@@ -59,50 +52,48 @@ for DIR in src/request/*/ ; do
     LIST_JS_TOPLEVEL="$LIST_JS_TOPLEVEL$(grep '<script' $DIR/index.html | grep 'bundle-toplevel' | cut -d\" -f2) "
 
     # replace scripts and links by bundles in built index.html
-    # ~~and replace CSP strings with ENV variables for configuration~~
-    # XXX: using envsubst as a first suggestion. if it is kept, the one should
-    #      make sure to whitelist only known environment variables in there :)
-    # ENV_TO_REPLACE='' # e.g. '${VAR1} $VAR2'
     awk '
-    BEGIN {
-        skip_script = 0
-        skip_link = 0
-    }
-    /<script.*https?/ {
-        print
-        next
-    }
-    /<script/ {
-        # Replace first script tag with bundles, delete all others
-        if (!skip_script) {
-            skip_script = 1
-            # Preserve whitespace / intendation. Note: 1 is first array index in awk
-            split($0, space, "<")
-            print space[1] "<script defer src=\"/request/'${JS_COMMON_BUNDLE}'\"></script>"
-            if("'$REQUEST'" != "iframe") {
-                print space[1] "<script defer src=\"/request/'${JS_TOPLEVEL_BUNDLE}'\"></script>"
+        BEGIN {
+            skip_script = 0
+            skip_link = 0
+        }
+        /<script.*https?/ {
+            print
+            next
+        }
+        /<script/ {
+            # Replace first script tag with bundles, delete all others
+            if (!skip_script) {
+                skip_script = 1
+                # Preserve whitespace / intendation. Note: 1 is first array index in awk
+                split($0, space, "<")
+                print space[1] "<script defer src=\"/request/'${JS_COMMON_BUNDLE}'\"></script>"
+                if("'$REQUEST'" != "iframe") {
+                    print space[1] "<script defer src=\"/request/'${JS_TOPLEVEL_BUNDLE}'\"></script>"
+                }
+                print space[1] "<script defer src=\"/request/'${REQUEST}'/'${JS_BUNDLE}'\"></script>"
             }
-            print space[1] "<script defer src=\"/request/'${REQUEST}'/'${JS_BUNDLE}'\"></script>"
+            next
         }
-        next
-    }
-    /<link.*https?/ {
-        print
-        next
-    }
-    /<link/ {
-        if (!skip_link) {
-            skip_link = 1
-            split($0, space, "<")
-            print space[1] "<link rel=\"stylesheet\" href=\"/request/'${CSS_TOPLEVEL_BUNDLE}'\">"
-            print space[1] "<link rel=\"stylesheet\" href=\"/request/'${REQUEST}'/'${CSS_BUNDLE}'\">"
+        /<link.*https?/ {
+            print
+            next
         }
-        next
-    }
-    { print }
+        /<link/ {
+            if (!skip_link) {
+                skip_link = 1
+                split($0, space, "<")
+                print space[1] "<link rel=\"stylesheet\" href=\"/request/'${CSS_TOPLEVEL_BUNDLE}'\">"
+                print space[1] "<link rel=\"stylesheet\" href=\"/request/'${REQUEST}'/'${CSS_BUNDLE}'\">"
+            }
+            next
+        }
+        { print }
     ' $DIR/index.html > dist/request/${REQUEST}/index.html
 
-    # | envsubst "${ENV_TO_REPLACE}"
+    if [ "$CDN" != "" ]; then
+        sed -i -e "s/https:\/\/cdn.nimiq-testnet.com/$CDN/g" dist/request/${REQUEST}/index.html
+    fi
 done
 
 # prepare bundle lists
