@@ -15,6 +15,7 @@ yarn
 
 Then you can:
 
+- run the build script with `yarn build`.
 - run the tests with `yarn test`.
 - run the typechecker with `yarn typecheck`.
 - run the typecheck file watcher with `yarn watch`.
@@ -48,6 +49,18 @@ Then you can:
 - tests
 - demos
 ```
+
+## Configuration
+
+You can configure the following values via environment variables, which are replaced by the build script.
+- CONFIG_ALLOWED_ORIGIN: The origin from which requests are accepted. For Team Nimiq's Keyguard, this would be 'http://accounts.nimiq.com'. Be aware that slashes have to be masked by `\`. Defaults to `'*'`, which allows all origins.
+- CONFIG_CDN: The CDN (content delivery network) from which the core library is served. Defaults to 'https://cdn.nimiq-testnet.com'.
+
+For local development, you can set temporary environment variables (valid in your current terminal session) by e.g.
+```export CONFIG_ALLOWED_ORIGIN='https:\/\my-custom-accounts-instance.com'```
+on Unix-based systems or
+```set CONFIG_ALLOWED_ORIGIN='https:\/\my-custom-accounts-instance.com'```
+on Windows. For a persisted configuration on your webserver, please refer to the server's documentation, e.g. [https://httpd.apache.org/docs/2.4/env.html] for Apache.
 
 ## I18n usage
 

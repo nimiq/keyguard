@@ -1,3 +1,1 @@
-declare const CONFIG: {
-    ALLOWED_ORIGIN: string
-}
+declare const CONFIG_ALLOWED_ORIGIN: string

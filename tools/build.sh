@@ -1,5 +1,21 @@
 #!/bin/bash
 
+# replace string $1 by environment variable $2 in file $3
+replace_config_variable() {
+    VARNAME="$2"
+
+    VALUE=$(ECHO "${!VARNAME}")
+
+    if [ "$VALUE" != "" ]; then
+        sed -i -e "s/$1/$VALUE/g" $3
+    fi
+}
+
+# ease configuration of allowed origin by adding quotes
+if [ "$KEYGUARD_ALLOWED_ORIGIN" != "" ]; then
+    KEYGUARD_ALLOWED_ORIGIN="'$KEYGUARD_ALLOWED_ORIGIN'"
+fi
+
 # cleanup
 rm -rf dist
 
@@ -37,7 +53,7 @@ for DIR in src/request/*/ ; do
         cat $DIR/$url >> dist/request/$REQUEST/$JS_BUNDLE
     done
 
-    sed -i -e "s/CONFIG.ALLOWED_ORIGIN/$ALLOWED_ORIGIN/g" dist/request/$REQUEST/$JS_BUNDLE
+    replace_config_variable "CONFIG_ALLOWED_ORIGIN" "KEYGUARD_ALLOWED_ORIGIN" dist/request/$REQUEST/$JS_BUNDLE
 
     # get all local css files included in request's index.html, which are not in a bundle
     LIST_CSS="$(grep '<link' $DIR/index.html | grep -v 'bundle-' | grep -v -E 'http://|https://' | cut -d\" -f4)"
@@ -91,9 +107,7 @@ for DIR in src/request/*/ ; do
         { print }
     ' $DIR/index.html > dist/request/${REQUEST}/index.html
 
-    if [ "$CDN" != "" ]; then
-        sed -i -e "s/https:\/\/cdn.nimiq-testnet.com/$CDN/g" dist/request/${REQUEST}/index.html
-    fi
+    replace_config_variable "https:\/\/cdn.nimiq-testnet.com" "KEYGUARD_CDN" dist/request/${REQUEST}/index.html
 done
 
 # prepare bundle lists
@@ -106,11 +120,13 @@ LIST_CSS_TOPLEVEL="../../../node_modules/@nimiq/style/nimiq-style.min.css ../../
 # (since all urls are relative to request directories, we simply use the create request directory as the base)
 for url in $LIST_JS_COMMON; do
     cat src/request/create/$url >> dist/request/$JS_COMMON_BUNDLE
-    sed -i -e "s/CONFIG.ALLOWED_ORIGIN/$ALLOWED_ORIGIN/g" dist/request/$JS_COMMON_BUNDLE
+    if [ "$KEYGUARD_ALLOWED_ORIGIN" != "" ]; then
+        replace_config_variable "CONFIG_ALLOWED_ORIGIN" "KEYGUARD_ALLOWED_ORIGIN" dist/request/$JS_COMMON_BUNDLE
+    fi
 done
 for url in $LIST_JS_TOPLEVEL; do
     cat src/request/create/$url >> dist/request/$JS_TOPLEVEL_BUNDLE
-    sed -i -e "s/CONFIG.ALLOWED_ORIGIN/$ALLOWED_ORIGIN/g" dist/request/$JS_TOPLEVEL_BUNDLE
+    replace_config_variable "CONFIG_ALLOWED_ORIGIN" "KEYGUARD_ALLOWED_ORIGIN" dist/request/$JS_COMMON_BUNDLE
 done
 for url in $LIST_CSS_TOPLEVEL; do
     cat src/request/create/$url >> dist/request/$CSS_TOPLEVEL_BUNDLE

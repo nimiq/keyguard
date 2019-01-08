@@ -58,7 +58,7 @@ async function runKeyguard(RequestApiClass, options) { // eslint-disable-line no
 
     /** @type {string} */
     // eslint-disable-next-line no-undef
-    const allowedOrigin = CONFIG.ALLOWED_ORIGIN ? CONFIG.ALLOWED_ORIGIN : '*';
+    const allowedOrigin = CONFIG_ALLOWED_ORIGIN || '*';
 
     window.rpcServer = new RpcServer(allowedOrigin);
 
