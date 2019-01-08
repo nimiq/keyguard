@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# execute config file given as parameter
+if [ "$1" != "" ]; then
+    source config/$1.conf
+fi
+
 # replace string $1 by environment variable $2 in file $3
 replace_config_variable() {
     VARNAME="$2"
