@@ -1,9 +1,12 @@
 #!/bin/bash
 
-# execute config file given as parameter
+# execute config file given as parameter; default to testnet
+CONFIG_FILE=testnet
 if [ "$1" != "" ]; then
-    source config/$1.conf
+    CONFIG_FILE="$1"
 fi
+
+source config/$CONFIG_FILE.conf
 
 # replace string $1 by environment variable $2 in file $3
 replace_config_variable() {

@@ -25,6 +25,8 @@ Then you can:
 - run `yarn pr` to run all three checks (`typecheck`, `lint`, `test`) as they
   would for a PR.
 
+Note that it is mostly not necessary to run the build script for development purposes, as the code in `src` is fully functional and you can use it as an endpoint.
+
 ## Coding Style
 
 - Code style is enforced with ESLint. Run `yarn lint` to see errors.
