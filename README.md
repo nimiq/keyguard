@@ -59,7 +59,7 @@ Then you can:
 ## Configuration
 
 You can configure the following values by either environment variables or configuration files:
-- KEYGUARD_ALLOWED_ORIGIN: The origin from which requests are accepted. For Team Nimiq's Keyguard, this would be 'http://accounts.nimiq.com'. Be aware that slashes have to be masked by `\`. Defaults to `'*'`, which allows all origins.
+- KEYGUARD_ALLOWED_ORIGIN: The origin from which requests are accepted. '*' allows all origins. Be aware that slashes have to be masked by `\`. Defaults to 'https://accounts.nimiq-testnet.com'.
 - KEYGUARD_CDN: The CDN (content delivery network) from which the core library is served. Defaults to 'https://cdn.nimiq-testnet.com'.
 
 The most straight forward way is to use a configuration file, which has to be placed in `config` folder, and pass their name as argument to the build script. `yarn build local` uses `local.conf`. Some sample files are provided.
