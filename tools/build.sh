@@ -6,6 +6,11 @@ if [ "$1" != "" ]; then
     CONFIG_FILE="$1"
 fi
 
+if [ ! -f config/$CONFIG_FILE.conf ]; then
+    echo "Config file not found!"
+    exit 1
+fi
+
 source config/$CONFIG_FILE.conf
 
 # replace string $1 by environment variable $2 in file $3
@@ -128,9 +133,7 @@ LIST_CSS_TOPLEVEL="../../../node_modules/@nimiq/style/nimiq-style.min.css ../../
 # (since all urls are relative to request directories, we simply use the create request directory as the base)
 for url in $LIST_JS_COMMON; do
     cat src/request/create/$url >> dist/request/$JS_COMMON_BUNDLE
-    if [ "$KEYGUARD_ALLOWED_ORIGIN" != "" ]; then
-        replace_config_variable "CONFIG_ALLOWED_ORIGIN" "KEYGUARD_ALLOWED_ORIGIN" dist/request/$JS_COMMON_BUNDLE
-    fi
+    replace_config_variable "CONFIG_ALLOWED_ORIGIN" "KEYGUARD_ALLOWED_ORIGIN" dist/request/$JS_COMMON_BUNDLE
 done
 for url in $LIST_JS_TOPLEVEL; do
     cat src/request/create/$url >> dist/request/$JS_TOPLEVEL_BUNDLE
