@@ -152,7 +152,7 @@ const TRANSLATIONS = {
         'create-heading-create-password': 'Erstelle ein Passwort',
         'create-heading-repeat-password': 'Bestätige dein Passwort',
         'create-heading-validate-backup': 'Überprüfe dein Backup',
-        'create-wallet-desc': 'Das ist dein Wallet mit deinem ersten Account.',
+        'create-wallet-desc': 'Das ist dein Account mit deiner ersten Addresse.',
 
         'import-heading-log-in': 'Einloggen',
         'import-link-no-wallet': 'Du hast noch keine Wallet?',

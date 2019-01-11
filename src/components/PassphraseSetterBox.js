@@ -93,7 +93,7 @@ class PassphraseSetterBox extends Nimiq.Observable {
      * @returns {Promise<void>}
      */
     async onPassphraseTooShort() {
-        const $hint = /** @type {HTMLElement} */(this.$el.querySelector('.password-strength'));
+        const $hint = /** @type {HTMLElement} */(this.$el.querySelector('.password-strength.strength-0'));
         await AnimationUtils.animate('shake', $hint);
     }
 
@@ -117,7 +117,6 @@ class PassphraseSetterBox extends Nimiq.Observable {
      * @param {Event} event
      */
     _onSubmit(event) {
-        console.log(event);
         event.preventDefault();
         if (!this._password) {
             if (this._passphraseInput.text.length < PassphraseInput.DEFAULT_MIN_LENGTH) {

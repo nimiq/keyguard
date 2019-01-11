@@ -96,7 +96,7 @@
     transition: opacity 300ms;
 }
 
-.passphrase-box .password-strength.shake{
+.passphrase-box .password-strength.shake {
     color: var(--nimiq-red);
 }
 
@@ -109,27 +109,26 @@
     cursor: pointer;
     display: block;
     font-size: 1.625rem;
-    transform: scale(1);
-    transition: transform .45s ease;
+    transition: opacity .3s ease;
 }
 
-.passphrase-box .password-skip i.nq-icon {
-    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" color="%23ffffff" viewBox="0 0 10 17"><polygon fill="currentColor" points="1.43,17 0,15.58 7.13,8.5 0,1.42 1.43,0 10,8.5 "/></svg>');
+.passphrase-box .password-skip .nq-icon {
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" color="white" viewBox="0 0 10 17"><polygon fill="currentColor" points="1.43,17 0,15.58 7.13,8.5 0,1.42 1.43,0 10,8.5 "/></svg>');
     margin-left: 0.5rem;
     height: 0.875rem;
     width: 0.875rem;
     transition: transform .3s ease;
 }
 
-.password-skip:hover,
-.password-skip:focus {
-  transform: scale(1.03);
-  outline: none;
+.passphrase-box .password-skip:hover,
+.passphrase-box .password-skip:focus {
+    outline: none;
+    opacity: 0.7;
 }
 
-.password-skip:hover i.nq-icon,
-.password-skip:focus i.nq-icon {
-  transform: translate3D(3px, 0, 0);
+.passphrase-box .password-skip:hover .nq-icon,
+.passphrase-box .password-skip:focus .nq-icon {
+    transform: translate3D(-0.25rem, 0, 0);
 }
 
 .passphrase-box.repeat .repeat-password {
@@ -138,8 +137,7 @@
 
 .passphrase-box.repeat .password-hint,
 .passphrase-box.repeat .password-skip,
-.passphrase-box.repeat .password-strength,
-.passphrase-box.repeat .prompt.protect {
+.passphrase-box.repeat .password-strength {
     visibility: hidden;
 }
 
@@ -147,15 +145,14 @@
     position: static;
 }
 
-.passphrase-input .eye-button {
+.passphrase-box .passphrase-input .eye-button {
     top: 1.5rem;
     left: 2rem;
     opacity: .5;
-    transition: opacity .3s ease, transform .45s ease;
+    transition: opacity .3s ease;
 }
 
-.passphrase-input .eye-button:hover,
-.passphrase-input .eye-button:focus {
+.passphrase-box .passphrase-input .eye-button:hover,
+.passphrase-box .passphrase-input .eye-button:focus {
     opacity: 1;
-    transform: scale(1.03);
 }

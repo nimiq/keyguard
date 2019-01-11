@@ -13,7 +13,7 @@ class PassphraseInput extends Nimiq.Observable {
         this._minLength = PassphraseInput.DEFAULT_MIN_LENGTH;
         this._showStrengthIndicator = showStrengthIndicator;
         this.$el = PassphraseInput._createElement($el);
-        this.$inputContainer = /** @type {HTMLElement} */ (this.$el.querySelector('.input-container'));
+
         this.$input = /** @type {HTMLInputElement} */ (this.$el.querySelector('input.password'));
         this.$eyeButton = /** @type {HTMLElement} */ (this.$el.querySelector('.eye-button'));
 

@@ -7,7 +7,6 @@
     width: 14.25rem;
     height: 14.25rem;
     position: absolute;
-    transition: transform 450ms ease;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
@@ -15,16 +14,7 @@
     width: 100%;
     height: 100%;
     animation: pop-in 500ms ease;
-    animation-fill-mode: forwards;
-    transform: scale(0);
-}
-
-.identicon-selector .wrapper .address {
-    visibility: hidden;
-    text-align: center;
-    transform: scale(0.5);
-    margin-top: 5rem;
-    color: white;
+    animation-fill-mode: both;
 }
 
 @keyframes pop-in {
@@ -32,9 +22,7 @@
     to   { transform: scale(1); }
 }
 
-.identicon-selector .wrapper .identicon,
-.identicon-selector .wrapper .identicon img,
-.identicon-selector .wrapper .address {
+.identicon-selector .wrapper .identicon img {
     transition: transform 500ms;
 }
 
@@ -54,27 +42,24 @@
     position: relative;
 }
 
-.identicon-selector .wrapper:nth-child(1) { transform: translate(  0.0rem, -14.25rem) scale(1); }
-.identicon-selector .wrapper:nth-child(1):focus,
-.identicon-selector .wrapper:nth-child(1):hover { transform: translate(  0.0rem, -14.25rem) scale(1.1); }
-.identicon-selector .wrapper:nth-child(2) { transform: translate(-12.5rem,  -7.25rem) scale(1); }
-.identicon-selector .wrapper:nth-child(2):focus,
-.identicon-selector .wrapper:nth-child(2):hover { transform: translate(-12.5rem,  -7.25rem) scale(1.1); }
-.identicon-selector .wrapper:nth-child(3) { transform: translate( 12.5rem,  -7.25rem) scale(1); }
-.identicon-selector .wrapper:nth-child(3):focus,
-.identicon-selector .wrapper:nth-child(3):hover { transform: translate( 12.5rem,  -7.25rem) scale(1.1); }
-.identicon-selector .wrapper:nth-child(4) { transform: translate(  0.0rem,   0.00rem) scale(1); }
-.identicon-selector .wrapper:nth-child(4):focus,
-.identicon-selector .wrapper:nth-child(4):hover { transform: translate(  0.0rem,   0.00rem) scale(1.1); }
-.identicon-selector .wrapper:nth-child(5) { transform: translate(-12.5rem,   7.25rem) scale(1); }
-.identicon-selector .wrapper:nth-child(5):focus,
-.identicon-selector .wrapper:nth-child(5):hover { transform: translate(-12.5rem,   7.25rem) scale(1.1); }
-.identicon-selector .wrapper:nth-child(6) { transform: translate( 12.5rem,   7.25rem) scale(1); }
-.identicon-selector .wrapper:nth-child(6):focus,
-.identicon-selector .wrapper:nth-child(6):hover { transform: translate( 12.5rem,   7.25rem) scale(1.1); }
-.identicon-selector .wrapper:nth-child(7) { transform: translate(  0.0rem,  14.25rem) scale(1); }
-.identicon-selector .wrapper:nth-child(7):focus,
-.identicon-selector .wrapper:nth-child(7):hover { transform: translate(  0.0rem,  14.25rem) scale(1.1); }
+.identicon-selector .wrapper:nth-child(1) { transform: translate(  0.0rem, -14.25rem); }
+.identicon-selector .wrapper:nth-child(2) { transform: translate(-12.5rem,  -7.25rem); }
+.identicon-selector .wrapper:nth-child(3) { transform: translate( 12.5rem,  -7.25rem); }
+.identicon-selector .wrapper:nth-child(4) { transform: translate(  0.0rem,   0.00rem); }
+.identicon-selector .wrapper:nth-child(5) { transform: translate(-12.5rem,   7.25rem); }
+.identicon-selector .wrapper:nth-child(6) { transform: translate( 12.5rem,   7.25rem); }
+.identicon-selector .wrapper:nth-child(7) { transform: translate(  0.0rem,  14.25rem); }
+
+
+.identicon-selector .wrapper:nth-child(1):focus img, .identicon-selector .wrapper:nth-child(1):hover img,
+.identicon-selector .wrapper:nth-child(2):focus img, .identicon-selector .wrapper:nth-child(2):hover img,
+.identicon-selector .wrapper:nth-child(3):focus img, .identicon-selector .wrapper:nth-child(3):hover img,
+.identicon-selector .wrapper:nth-child(4):focus img, .identicon-selector .wrapper:nth-child(4):hover img,
+.identicon-selector .wrapper:nth-child(5):focus img, .identicon-selector .wrapper:nth-child(5):hover img,
+.identicon-selector .wrapper:nth-child(6):focus img, .identicon-selector .wrapper:nth-child(6):hover img,
+.identicon-selector .wrapper:nth-child(7):focus img, .identicon-selector .wrapper:nth-child(7):hover img {
+    transform: scale(1.1);
+}
 
 .identicon-selector .wrapper:nth-child(1) .identicon { animation-delay: 100ms; }
 .identicon-selector .wrapper:nth-child(2) .identicon { animation-delay: 150ms; }

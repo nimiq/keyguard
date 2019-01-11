@@ -85,12 +85,7 @@ class IdenticonSelector extends Nimiq.Observable {
             const identicon = new Identicon(address);
             const $identicon = identicon.getElement();
 
-            const $address = document.createElement('div');
-            $address.classList.add('address');
-            $address.textContent = address;
-
             $wrapper.appendChild($identicon);
-            $wrapper.appendChild($address);
 
             $wrapper.addEventListener('click', e => this._onSelectionConfirmed(address, e));
 
@@ -107,11 +102,6 @@ class IdenticonSelector extends Nimiq.Observable {
      */
     _onSelectionConfirmed(selectedAddress, e) {
         e.preventDefault();
-        if (!selectedAddress) { // something went wrong
-            this.generateIdenticons(); // and gerate new identicons
-            // TODO Add: in case it does happen, signal to user instead of silently resolving it.
-            return;
-        }
 
         this.fire(
             IdenticonSelector.Events.IDENTICON_SELECTED,
