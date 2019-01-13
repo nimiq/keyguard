@@ -27,6 +27,7 @@ Dummy.encryptedKeys = [
 
 /** @type {string} */
 Dummy.encryptionPassword = 'password';
+Dummy.encryptionPassword2 = 'password2';
 
 /** @type {KeyInfo[]} */
 Dummy.keyInfos = [
