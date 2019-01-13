@@ -7,7 +7,7 @@ if [ "$1" != "" ]; then
 fi
 
 if [ ! -f config/$CONFIG_FILE.conf ]; then
-    echo "Config file not found!"
+    echo "Config file './config/$CONFIG_FILE.conf' not found!"
     exit 1
 fi
 
