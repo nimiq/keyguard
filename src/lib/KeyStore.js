@@ -42,7 +42,7 @@ class KeyStore {
 
                 if (event.oldVersion < 1) {
                     // Version 1 is the first version of the database.
-                    db.createObjectStore(KeyStore.DB_KEY_STORE_NAME, { keyPath: 'id' });
+                    db.createObjectStore(KeyStore.DB_KEY_STORE_NAME, { keyPath: 'id', autoIncrement: true });
                 }
             };
         });
@@ -51,7 +51,7 @@ class KeyStore {
     }
 
     /**
-     * @param {string} id
+     * @param {number} id
      * @param {Uint8Array} [passphrase]
      * @returns {Promise<?Key>}
      */
@@ -75,18 +75,18 @@ class KeyStore {
     }
 
     /**
-     * @param {string} id
+     * @param {number} id
      * @returns {Promise<?KeyInfo>}
      */
     async getInfo(id) {
-        /** @type {?KeyRecord} */
+        /** @type {?StoredKeyRecord} */
         const keyRecord = await this._get(id);
         return keyRecord ? KeyInfo.fromObject(keyRecord) : null;
     }
 
     /**
-     * @param {string} id
-     * @returns {Promise<?KeyRecord>}
+     * @param {number} id
+     * @returns {Promise<?StoredKeyRecord>}
      * @private
      */
     async _get(id) {
@@ -99,37 +99,51 @@ class KeyStore {
     /**
      * @param {Key} key
      * @param {Uint8Array} [passphrase]
-     * @returns {Promise<void>}
+     * @returns {Promise<number>}
      */
     async put(key, passphrase) {
+
+        const keys = await this._listRecords();
+
         const secret = !passphrase
             ? key.secret
             : await Nimiq.CryptoUtils.encryptOtpKdf(new Nimiq.SerialBuffer(key.secret), passphrase);
-
+        
         const keyRecord = /** @type {KeyRecord} */ {
-            id: key.id,
             type: key.type,
             encrypted: !!passphrase && passphrase.length > 0,
             hasPin: key.hasPin,
             secret,
+            publicKey: key.publicKey,
         };
+
+        const existingKey = keys.find(x => x.publicKey === key.publicKey);
+        if (existingKey) {
+            Object.assign({ id: existingKey.id }, keyRecord);
+        }
 
         return this._put(keyRecord);
     }
 
     /**
      * @param {KeyRecord} keyRecord
-     * @returns {Promise<void>}
+     * @returns {Promise<number>}
      */
     async _put(keyRecord) {
         const db = await this.connect();
         const transaction = db.transaction([KeyStore.DB_KEY_STORE_NAME], 'readwrite');
         const request = transaction.objectStore(KeyStore.DB_KEY_STORE_NAME).put(keyRecord);
-        return KeyStore._requestToPromise(request, transaction);
+
+        const dbKey = await KeyStore._requestToPromise(request, transaction);
+
+        /** @type {number} */
+        const newId = (dbKey.valueOf());
+
+        return newId;
     }
 
     /**
-     * @param {string} id
+     * @param {number} id
      * @returns {Promise<void>}
      */
     async remove(id) {
@@ -143,12 +157,7 @@ class KeyStore {
      * @returns {Promise<KeyInfo[]>}
      */
     async list() {
-        const db = await this.connect();
-        const request = db.transaction([KeyStore.DB_KEY_STORE_NAME], 'readonly')
-            .objectStore(KeyStore.DB_KEY_STORE_NAME)
-            .openCursor();
-
-        const results = /** KeyRecord[] */ await KeyStore._readAllFromCursor(request);
+        const results = await this._listRecords();
         return results.map(keyRecord => KeyInfo.fromObject(keyRecord));
     }
 
@@ -175,7 +184,7 @@ class KeyStore {
      */
     async migrateAccountsToKeys() {
         const accounts = await AccountStore.instance.dangerousListPlain();
-        const keysRecords = /** @type {KeyRecord[]} */ (KeyStore.accounts2Keys(accounts));
+        const keysRecords = /** @type {KeyRecord[]} */ (KeyStore._accountRecords2KeyRecords(accounts));
         await Promise.all(keysRecords.map(keyRecord => this._put(keyRecord)));
 
         // FIXME Uncomment after/for testing (and also adapt KeyStore.spec.js)
@@ -190,53 +199,69 @@ class KeyStore {
         }
     }
 
-    // eslint-disable-next-line valid-jsdoc
     /**
-     * @param {(AccountInfo|AccountRecord)[]} accounts
-     * @param {boolean} [withAccount]
-     * @returns {KeyguardRequest.KeyInfoObject[]|KeyguardRequest.LegacyKeyInfoObject[]|KeyRecord[]}
+     * @param {AccountRecord[]} accounts
+     * @returns {(KeyRecord)[]}
      */
-    static accounts2Keys(accounts, withAccount) {
+    static _accountRecords2KeyRecords(accounts) {
         return accounts.map(account => {
             const address = Nimiq.Address.fromUserFriendlyAddress(account.userFriendlyAddress);
-            const legacyKeyId = Key.deriveId(address.serialize());
+            const legacyKeyPublicKey = Key.derivePublicKey(address.serialize());
+
+            return {
+                publicKey: legacyKeyPublicKey,
+                type: Key.Type.LEGACY,
+                encrypted: true,
+                hasPin: account.type === 'low',
+                secret: /** @type {AccountRecord} */ (account).encryptedKeyPair,
+            };
+        });
+    }
+
+    /**
+     * @param {AccountInfo[]} accounts
+     * @returns {KeyguardRequest.LegacyKeyInfoObject[]}
+     */
+    static accountInfos2KeyInfos(accounts) {
+        return accounts.map((account, id) => {
+            const address = Nimiq.Address.fromUserFriendlyAddress(account.userFriendlyAddress);
 
             /** @type {KeyguardRequest.KeyInfoObject} */
             const keyObject = {
-                id: legacyKeyId,
+                id,
                 type: Key.Type.LEGACY,
                 encrypted: true,
                 hasPin: account.type === 'low',
             };
 
-            if (withAccount) {
-                /** @type {KeyguardRequest.LegacyKeyInfoObject} */
-                const legacyKeyObject = Object.assign({}, keyObject, {
-                    legacyAccount: {
-                        label: account.label,
-                        address: address.serialize(),
-                    },
-                });
+            /** @type {KeyguardRequest.LegacyKeyInfoObject} */
+            const legacyKeyObject = Object.assign({}, keyObject, {
+                legacyAccount: {
+                    label: account.label,
+                    address: address.serialize(),
+                },
+            });
 
-                return legacyKeyObject;
-            }
-
-            if (/** @type {AccountRecord} */ (account).encryptedKeyPair) {
-                /** @type {KeyRecord} */
-                const keyRecord = Object.assign({}, keyObject, {
-                    secret: /** @type {AccountRecord} */ (account).encryptedKeyPair,
-                });
-                return keyRecord;
-            }
-
-            return keyObject;
+            return legacyKeyObject;
         });
+    }
+
+    /**
+     * @returns {Promise<StoredKeyRecord[]>}
+     */
+    async _listRecords() {
+        const db = await this.connect();
+        const request = db.transaction([KeyStore.DB_KEY_STORE_NAME], 'readonly')
+            .objectStore(KeyStore.DB_KEY_STORE_NAME)
+            .openCursor();
+
+        return await KeyStore._readAllFromCursor(request);
     }
 
     /**
      * @param {IDBRequest} request
      * @param {IDBTransaction} transaction
-     * @returns {Promise<*>}
+     * @returns {Promise<any>}
      * @private
      */
     static async _requestToPromise(request, transaction) {
@@ -263,12 +288,12 @@ class KeyStore {
 
     /**
      * @param {IDBRequest} request
-     * @returns {Promise<KeyRecord[]>}
+     * @returns {Promise<StoredKeyRecord[]>}
      * @private
      */
     static _readAllFromCursor(request) {
         return new Promise((resolve, reject) => {
-            /** @type {KeyRecord[]} */
+            /** @type {StoredKeyRecord[]} */
             const results = [];
             request.onsuccess = () => {
                 const cursor = request.result;

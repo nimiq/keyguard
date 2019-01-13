@@ -5,16 +5,18 @@ class Key {
      * @param {Uint8Array} input
      * @returns {string}
      */
-    static deriveId(input) {
-        return Nimiq.BufferUtils.toHex(Nimiq.Hash.blake2b(input).subarray(0, 6));
+    static derivePublicKey(input) {
+        return Nimiq.BufferUtils.toHex(Nimiq.Hash.blake2b(input).subarray(0, 32));
     }
 
     /**
      * @param {Uint8Array} secret
      * @param {Key.Type} [type]
+     * @param {number?} [id]
      * @param {boolean} [hasPin]
      */
-    constructor(secret, type = Key.Type.BIP39, hasPin = false) {
+    constructor(secret, type = Key.Type.BIP39, id = null, hasPin = false) {
+        this._id = id;
         this._secret = secret;
         this._type = type;
         this._hasPin = hasPin;
@@ -95,6 +97,20 @@ class Key {
     }
 
     /**
+     * @param {number?} id
+     */
+    set id(id) {
+        this._id = id;
+    } 
+
+    /**
+     * @type {number?}
+     */
+    get id() {
+        return this._id;
+    }
+
+    /**
      * @type {Uint8Array}
      */
     get secret() {
@@ -123,11 +139,11 @@ class Key {
     /**
      * @type {string}
      */
-    get id() {
+    get publicKey() {
         const input = this._type === Key.Type.LEGACY
             ? Nimiq.PublicKey.derive(new Nimiq.PrivateKey(this._secret)).toAddress().serialize()
             : this._secret;
-        return Key.deriveId(input);
+        return Key.derivePublicKey(input);
     }
 }
 

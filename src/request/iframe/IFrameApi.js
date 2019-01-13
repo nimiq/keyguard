@@ -66,7 +66,7 @@ class IFrameApi {
 
         // Convert to KeyInfoObjects
         await loadNimiq();
-        return /** @type {KeyguardRequest.LegacyKeyInfoObject[]} */ (KeyStore.accounts2Keys(accounts, true));
+        return /** @type {KeyguardRequest.LegacyKeyInfoObject[]} */ (KeyStore.accountInfos2KeyInfos(accounts));
     }
 
     /**

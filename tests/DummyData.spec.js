@@ -25,6 +25,11 @@ Dummy.encryptedKeys = [
     Uint8Array.from([0x01, 0x08, 0x50, 0x96, 0xba, 0xbd, 0x96, 0x39, 0x4f, 0x60, 0xae, 0x4e, 0xdf, 0x75, 0xa9, 0x84, 0xee, 0xe5, 0x8b, 0xc6, 0x1a, 0x33, 0xc8, 0x6e, 0x28, 0xd3, 0x07, 0xc5, 0xfe, 0x27, 0xf2, 0x0d, 0xa7, 0x13, 0xce, 0xce, 0x08, 0xd8, 0xfa, 0x71, 0x40, 0xab, 0x78, 0x8f, 0x8a, 0x20, 0xc3, 0x54, 0x1f, 0x22, 0x48, 0xff, 0xea, 0xdb]),
 ];
 
+/** @type {string[]} */
+Dummy.publicKeys = Dummy.encryptedKeys.map(x =>
+    Nimiq.BufferUtils.toHex(Nimiq.Hash.blake2b(x).subarray(0, 32))
+);
+
 /** @type {string} */
 Dummy.encryptionPassword = 'password';
 Dummy.encryptionPassword2 = 'password2';
@@ -32,13 +37,13 @@ Dummy.encryptionPassword2 = 'password2';
 /** @type {KeyInfo[]} */
 Dummy.keyInfos = [
     new KeyInfo(
-        '2ec615522906',
+        1,
         Key.Type.LEGACY,
         true,
         false,
     ),
     new KeyInfo(
-        'ef553f34a779',
+        2,
         Key.Type.BIP39,
         false,
         false,
@@ -63,10 +68,16 @@ Dummy.keyInfoObjects = [
 
 /** @type {KeyRecord[]} */
 Dummy.keyRecords = [
-    Object.assign({}, Dummy.keyInfoObjects[0], { secret: Dummy.encryptedKeys[0] }),
-    Object.assign({}, Dummy.keyInfoObjects[1], { secret: Dummy.keys[1] }),
+    Object.assign({}, Dummy.keyInfoObjects[0], { secret: Dummy.encryptedKeys[0], publicKey: Dummy.publicKeys[0] }),
+    Object.assign({}, Dummy.keyInfoObjects[1], { secret: Dummy.keys[1], publicKey: Dummy.publicKeys[1] }),
 ];
 
+/** @type {StoredKeyRecord[]} */
+Dummy.storedKeyRecords = Dummy.keyRecords.map((x, i) => ({
+    ...x,
+    id: i + 1
+}));
+    
 /** @type {AccountInfo[]} */
 Dummy.deprecatedAccountInfos = [
     {
@@ -83,7 +94,7 @@ Dummy.deprecatedAccountRecords = [
 
 /** @type {KeyguardRequest.LegacyKeyInfoObject[]} */
 Dummy.deprecatedAccount2KeyInfoObject = [{
-    id: '2ec615522906',
+    id: 2,
     type: Key.Type.LEGACY,
     encrypted: true,
     hasPin: false,

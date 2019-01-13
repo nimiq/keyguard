@@ -37,9 +37,13 @@ type AccountRecord = AccountInfo & {
 }
 
 type KeyRecord = {
-    id: string
     type: Key.Type
     encrypted: boolean
     hasPin: boolean
     secret: Uint8Array
+    publicKey: string
+}
+
+type StoredKeyRecord = KeyRecord & {
+    id: number
 }

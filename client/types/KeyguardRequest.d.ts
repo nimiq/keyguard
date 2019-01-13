@@ -8,7 +8,7 @@ declare namespace KeyguardRequest {
     }
 
     type KeyInfoObject = {
-        id: string;
+        id: number;
         type: Key.Type;
         encrypted: boolean;
         hasPin: boolean;
@@ -92,7 +92,7 @@ declare namespace KeyguardRequest {
     }
 
     type CreateResult = {
-        keyId: string
+        keyId: number
         keyPath: string
         address: Uint8Array
     }
@@ -103,7 +103,7 @@ declare namespace KeyguardRequest {
     }
 
     type ImportResult = {
-        keyId: string;
+        keyId: number;
         keyType: Key.Type;
         addresses: { keyPath: string, address: Uint8Array }[];
     }

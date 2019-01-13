@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-unused-vars
 class KeyInfo {
     /**
-     * @param {string} id
+     * @param {number} id
      * @param {Key.Type} type
      * @param {boolean} encrypted
      * @param {boolean} hasPin
@@ -18,7 +18,7 @@ class KeyInfo {
     }
 
     /**
-     * @type {string}
+     * @type {number}
      */
     get id() {
         return this._id;

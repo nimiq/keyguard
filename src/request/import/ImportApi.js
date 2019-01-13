@@ -137,11 +137,13 @@ class ImportApi extends TopLevelApi {
      * @param {string?} passphrase
      */
     async _onPassphraseEntered(passphrase) {
-        const key = await this._decryptAndStoreKey(passphrase);
-        if (!key) {
+        const decryptAndstoreResult = await this._decryptAndStoreKey(passphrase);
+        if (!decryptAndstoreResult) {
             this._passphraseBox.onPassphraseIncorrect();
             return;
         }
+
+        const [key, newId] = decryptAndstoreResult;
 
         /** @type {{keyPath: string, address: Uint8Array}[]} */
         const addresses = [];
@@ -163,7 +165,7 @@ class ImportApi extends TopLevelApi {
 
             // Store entropy in SessionStorage so addresses can be derived in the KeyguardIframe
             const secretString = Nimiq.BufferUtils.toBase64(key.secret);
-            sessionStorage.setItem(ImportApi.SESSION_STORAGE_KEY_PREFIX + key.id, secretString);
+            sessionStorage.setItem(ImportApi.SESSION_STORAGE_KEY_PREFIX + key.publicKey, secretString);
         } else {
             this.reject(new Errors.KeyguardError(`Unkown key type ${key.type}`));
             return;
@@ -171,7 +173,7 @@ class ImportApi extends TopLevelApi {
 
         /** @type {KeyguardRequest.ImportResult} */
         const result = {
-            keyId: key.id,
+            keyId: newId,
             keyType: key.type,
             addresses,
         };
@@ -181,7 +183,7 @@ class ImportApi extends TopLevelApi {
 
     /**
      * @param {string?} passphrase
-     * @returns {Promise<?Key>}
+     * @returns {Promise<?[Key, number]>}
      */
     async _decryptAndStoreKey(passphrase) {
         TopLevelApi.setLoading(true);
@@ -212,11 +214,11 @@ class ImportApi extends TopLevelApi {
                 secret = this._encryptedKey;
             }
 
-            const key = new Key(secret, this._keyType, this._hasPin);
+            const key = new Key(secret, this._keyType, null, this._hasPin);
 
-            await KeyStore.instance.put(key, encryptionKey || undefined);
+            const newId = await KeyStore.instance.put(key, encryptionKey || undefined);
 
-            return key;
+            return [key, newId];
         } catch (e) {
             console.error(e);
             TopLevelApi.setLoading(false);
