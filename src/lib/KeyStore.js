@@ -71,7 +71,7 @@ class KeyStore {
         }
 
         const plainSecret = await Nimiq.CryptoUtils.decryptOtpKdf(new Nimiq.SerialBuffer(keyRecord.secret), passphrase);
-        return new Key(plainSecret, keyRecord.type);
+        return new Key(plainSecret, keyRecord.type, id);
     }
 
     /**
