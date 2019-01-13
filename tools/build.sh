@@ -1,11 +1,33 @@
 #!/bin/bash
 
-# Note: Not sure if we use this. It's not straightforward to install on OSX
-# if ! which envsubst > /dev/null 2>&1; then
-#  echo "You don't seem to have envsubst yet. Go get it! Using sed as an " \
-#    "alternative approach is too slow... :("
-#  exit 1
-# fi
+# execute config file given as parameter; default to testnet
+CONFIG_FILE=testnet
+if [ "$1" != "" ]; then
+    CONFIG_FILE="$1"
+fi
+
+if [ ! -f config/$CONFIG_FILE.conf ]; then
+    echo "Config file './config/$CONFIG_FILE.conf' not found!"
+    exit 1
+fi
+
+source config/$CONFIG_FILE.conf
+
+# replace string $1 by environment variable $2 in file $3
+replace_config_variable() {
+    VARNAME="$2"
+
+    VALUE=$(ECHO "${!VARNAME}")
+
+    if [ "$VALUE" != "" ]; then
+        sed -i -e "s/$1/$VALUE/g" $3
+    fi
+}
+
+# ease configuration of allowed origin by adding quotes
+if [ "$KEYGUARD_ALLOWED_ORIGIN" != "" ]; then
+    KEYGUARD_ALLOWED_ORIGIN="'$KEYGUARD_ALLOWED_ORIGIN'"
+fi
 
 # cleanup
 rm -rf dist
@@ -44,6 +66,8 @@ for DIR in src/request/*/ ; do
         cat $DIR/$url >> dist/request/$REQUEST/$JS_BUNDLE
     done
 
+    replace_config_variable "CONFIG_ALLOWED_ORIGIN" "KEYGUARD_ALLOWED_ORIGIN" dist/request/$REQUEST/$JS_BUNDLE
+
     # get all local css files included in request's index.html, which are not in a bundle
     LIST_CSS="$(grep '<link' $DIR/index.html | grep -v 'bundle-' | grep -v -E 'http://|https://' | cut -d\" -f4)"
 
@@ -57,50 +81,46 @@ for DIR in src/request/*/ ; do
     LIST_JS_TOPLEVEL="$LIST_JS_TOPLEVEL$(grep '<script' $DIR/index.html | grep 'bundle-toplevel' | cut -d\" -f2) "
 
     # replace scripts and links by bundles in built index.html
-    # ~~and replace CSP strings with ENV variables for configuration~~
-    # XXX: using envsubst as a first suggestion. if it is kept, the one should
-    #      make sure to whitelist only known environment variables in there :)
-    # ENV_TO_REPLACE='' # e.g. '${VAR1} $VAR2'
     awk '
-    BEGIN {
-        skip_script = 0
-        skip_link = 0
-    }
-    /<script.*https?/ {
-        print
-        next
-    }
-    /<script/ {
-        # Replace first script tag with bundles, delete all others
-        if (!skip_script) {
-            skip_script = 1
-            # Preserve whitespace / intendation. Note: 1 is first array index in awk
-            split($0, space, "<")
-            print space[1] "<script defer src=\"/request/'${JS_COMMON_BUNDLE}'\"></script>"
-            if("'$REQUEST'" != "iframe") {
-                print space[1] "<script defer src=\"/request/'${JS_TOPLEVEL_BUNDLE}'\"></script>"
+        BEGIN {
+            skip_script = 0
+            skip_link = 0
+        }
+        /<script.*https?/ {
+            print
+            next
+        }
+        /<script/ {
+            # Replace first script tag with bundles, delete all others
+            if (!skip_script) {
+                skip_script = 1
+                # Preserve whitespace / intendation. Note: 1 is first array index in awk
+                split($0, space, "<")
+                print space[1] "<script defer src=\"/request/'${JS_COMMON_BUNDLE}'\"></script>"
+                if("'$REQUEST'" != "iframe") {
+                    print space[1] "<script defer src=\"/request/'${JS_TOPLEVEL_BUNDLE}'\"></script>"
+                }
+                print space[1] "<script defer src=\"/request/'${REQUEST}'/'${JS_BUNDLE}'\"></script>"
             }
-            print space[1] "<script defer src=\"/request/'${REQUEST}'/'${JS_BUNDLE}'\"></script>"
+            next
         }
-        next
-    }
-    /<link.*https?/ {
-        print
-        next
-    }
-    /<link/ {
-        if (!skip_link) {
-            skip_link = 1
-            split($0, space, "<")
-            print space[1] "<link rel=\"stylesheet\" href=\"/request/'${CSS_TOPLEVEL_BUNDLE}'\">"
-            print space[1] "<link rel=\"stylesheet\" href=\"/request/'${REQUEST}'/'${CSS_BUNDLE}'\">"
+        /<link.*https?/ {
+            print
+            next
         }
-        next
-    }
-    { print }
+        /<link/ {
+            if (!skip_link) {
+                skip_link = 1
+                split($0, space, "<")
+                print space[1] "<link rel=\"stylesheet\" href=\"/request/'${CSS_TOPLEVEL_BUNDLE}'\">"
+                print space[1] "<link rel=\"stylesheet\" href=\"/request/'${REQUEST}'/'${CSS_BUNDLE}'\">"
+            }
+            next
+        }
+        { print }
     ' $DIR/index.html > dist/request/${REQUEST}/index.html
 
-    # | envsubst "${ENV_TO_REPLACE}"
+    replace_config_variable "https:\/\/cdn.nimiq-testnet.com" "KEYGUARD_CDN" dist/request/${REQUEST}/index.html
 done
 
 # prepare bundle lists
@@ -113,9 +133,11 @@ LIST_CSS_TOPLEVEL="../../../node_modules/@nimiq/style/nimiq-style.min.css ../../
 # (since all urls are relative to request directories, we simply use the create request directory as the base)
 for url in $LIST_JS_COMMON; do
     cat src/request/create/$url >> dist/request/$JS_COMMON_BUNDLE
+    replace_config_variable "CONFIG_ALLOWED_ORIGIN" "KEYGUARD_ALLOWED_ORIGIN" dist/request/$JS_COMMON_BUNDLE
 done
 for url in $LIST_JS_TOPLEVEL; do
     cat src/request/create/$url >> dist/request/$JS_TOPLEVEL_BUNDLE
+    replace_config_variable "CONFIG_ALLOWED_ORIGIN" "KEYGUARD_ALLOWED_ORIGIN" dist/request/$JS_COMMON_BUNDLE
 done
 for url in $LIST_CSS_TOPLEVEL; do
     cat src/request/create/$url >> dist/request/$CSS_TOPLEVEL_BUNDLE

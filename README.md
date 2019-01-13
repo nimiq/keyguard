@@ -15,6 +15,7 @@ yarn
 
 Then you can:
 
+- run the build script with `yarn build [config]`.
 - run the tests with `yarn test`.
 - run the typechecker with `yarn typecheck`.
 - run the typecheck file watcher with `yarn watch`.
@@ -23,6 +24,8 @@ Then you can:
   with `yarn lintfix`.
 - run `yarn pr` to run all three checks (`typecheck`, `lint`, `test`) as they
   would for a PR.
+
+Note that it is mostly not necessary to run the build script for development purposes, as the code in `src` is fully functional and you can use it as an endpoint.
 
 ## Coding Style
 
@@ -45,9 +48,27 @@ Then you can:
     - lib
     - components
     - request
+- types
 - tests
+- config
+- tools
 - demos
+- client
+    - src
+    - types
 ```
+
+## Configuration
+
+You can configure the following values by either environment variables or configuration files:
+- KEYGUARD_ALLOWED_ORIGIN: The origin from which requests are accepted. '*' allows all origins. Be aware that slashes have to be masked by `\`. Defaults to 'https://accounts.nimiq-testnet.com'.
+- KEYGUARD_CDN: The CDN (content delivery network) from which the core library is served. Defaults to 'https://cdn.nimiq-testnet.com'.
+
+The best way is to use a configuration file, which has to be placed in the `config` folder, and pass its name as an argument to the build script. `yarn build local` uses `local.conf`. Some sample files are provided.
+
+If you have a CI (Continuous Integration) which builds on your webserver, you can also set those values in your server's configuration via environment variables. Please refer to your server's configuration, e.g. [https://httpd.apache.org/docs/2.4/env.html] for Apache.
+
+In any case, please note that those settings are compile-time, so you have to rebuild to update them.
 
 ## I18n usage
 

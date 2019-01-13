@@ -56,18 +56,11 @@ async function runKeyguard(RequestApiClass, options) { // eslint-disable-line no
     /** @type {TopLevelApi | IFrameApi} */
     const api = new RequestApiClass();
 
-    /**
-     * @returns {string}
-     */
-    function allowedOrigin() {
-        switch (window.location.origin) {
-        case 'https://keyguard-next.nimiq.com': return 'https://accounts.nimiq.com';
-        case 'https://keyguard-next.nimiq-testnet.com': return 'https://accounts.nimiq-testnet.com';
-        default: return '*';
-        }
-    }
+    /** @type {string} */
+    // eslint-disable-next-line no-undef
+    const allowedOrigin = CONFIG_ALLOWED_ORIGIN || '*';
 
-    window.rpcServer = new RpcServer(allowedOrigin());
+    window.rpcServer = new RpcServer(allowedOrigin);
 
     options.whitelist.forEach(/** @param {string} method */ method => {
         // @ts-ignore (Element implicitly has an 'any' type because type 'TopLevelApi' has no index signature.)
