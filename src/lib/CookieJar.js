@@ -59,7 +59,7 @@ class CookieJar { // eslint-disable-line no-unused-vars
             const type = /** @type {Key.Type} */ (parseInt(key[0], 10));
             const encrypted = key[1] === '1';
             const hasPin = key[2] === '1';
-            const id = parseInt(key.substr(3));
+            const id = parseInt(key.substr(3), 10);
             return new KeyInfo(id, type, encrypted, hasPin);
         });
     }

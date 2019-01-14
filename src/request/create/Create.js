@@ -138,7 +138,7 @@ class Create {
         TopLevelApi.setLoading(true);
         const key = new Key(this._selectedEntropy.serialize());
         const passphrase = this._passphrase.length > 0 ? Utf8Tools.stringToUtf8ByteArray(this._passphrase) : undefined;
-        
+
         const newId = await KeyStore.instance.put(key, passphrase);
 
         const keyPath = request.defaultKeyPath;

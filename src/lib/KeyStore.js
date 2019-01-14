@@ -102,13 +102,12 @@ class KeyStore {
      * @returns {Promise<number>}
      */
     async put(key, passphrase) {
-
         const keys = await this._listRecords();
 
         const secret = !passphrase
             ? key.secret
             : await Nimiq.CryptoUtils.encryptOtpKdf(new Nimiq.SerialBuffer(key.secret), passphrase);
-        
+
         const keyRecord = /** @type {KeyRecord} */ {
             type: key.type,
             encrypted: !!passphrase && passphrase.length > 0,
@@ -255,7 +254,7 @@ class KeyStore {
             .objectStore(KeyStore.DB_KEY_STORE_NAME)
             .openCursor();
 
-        return await KeyStore._readAllFromCursor(request);
+        return KeyStore._readAllFromCursor(request);
     }
 
     /**

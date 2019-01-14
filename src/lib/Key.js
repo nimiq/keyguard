@@ -101,7 +101,7 @@ class Key {
      */
     set id(id) {
         this._id = id;
-    } 
+    }
 
     /**
      * @type {number?}
