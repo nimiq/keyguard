@@ -18,14 +18,14 @@ declare namespace KeyguardRequest {
         legacyAccount: { label: string, address: Uint8Array };
     }
 
-    type KeyId2KeyInfo<T extends { keyId: string }> = Transform<T, 'keyId', { keyInfo: KeyInfoObject }>
+    type KeyId2KeyInfo<T extends { keyId: number }> = Transform<T, 'keyId', { keyInfo: KeyInfoObject }>
 
     type BasicRequest = {
         appName: string
     }
 
     type SimpleRequest = BasicRequest & {
-        keyId: string
+        keyId: number
         keyLabel?: string
     }
 
