@@ -73,10 +73,7 @@ Dummy.keyRecords = [
 ];
 
 /** @type {StoredKeyRecord[]} */
-Dummy.storedKeyRecords = Dummy.keyRecords.map((x, i) => ({
-    ...x,
-    id: i + 1
-}));
+Dummy.storedKeyRecords = Dummy.keyRecords.map((x, i) => Object.assign({}, x, { id: i+1 }));
     
 /** @type {AccountInfo[]} */
 Dummy.deprecatedAccountInfos = [

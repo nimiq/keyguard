@@ -310,6 +310,6 @@ class KeyStore {
 /** @type {?KeyStore} */
 KeyStore._instance = null;
 
-KeyStore.DB_VERSION = 1;
+KeyStore.DB_VERSION = 2;
 KeyStore.DB_NAME = 'nimiq-keyguard';
 KeyStore.DB_KEY_STORE_NAME = 'keys';
