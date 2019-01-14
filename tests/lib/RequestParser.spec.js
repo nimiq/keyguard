@@ -82,9 +82,9 @@ describe('RequestParser', () => {
         }
         expect(error).toEqual(new Errors.InvalidRequestError('keyId must be a number'));
 
-        let parsedKeyInfo = await requestParser.parseKeyId(2);
+        let parsedKeyInfo = await requestParser.parseKeyId(1);
         expect(parsedKeyInfo).toEqual(new KeyInfo(
-            2,
+            1,
             Key.Type.LEGACY,
             true,
             false,

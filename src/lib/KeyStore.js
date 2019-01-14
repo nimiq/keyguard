@@ -118,7 +118,7 @@ class KeyStore {
 
         const existingKey = keys.find(x => x.publicKey === key.publicKey);
         if (existingKey) {
-            Object.assign({ id: existingKey.id }, keyRecord);
+            Object.assign(keyRecord, { id: existingKey.id });
         }
 
         return this._put(keyRecord);

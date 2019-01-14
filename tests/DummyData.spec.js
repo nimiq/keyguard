@@ -91,7 +91,7 @@ Dummy.deprecatedAccountRecords = [
 
 /** @type {KeyguardRequest.LegacyKeyInfoObject[]} */
 Dummy.deprecatedAccount2KeyInfoObject = [{
-    id: 2,
+    id: 1,
     type: Key.Type.LEGACY,
     encrypted: true,
     hasPin: false,
