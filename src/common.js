@@ -56,9 +56,12 @@ async function runKeyguard(RequestApiClass, options) { // eslint-disable-line no
     /** @type {TopLevelApi | IFrameApi} */
     const api = new RequestApiClass();
 
+    const CONFIG = {
+        ALLOWED_ORIGIN: '*', // default for development; build script replaces CONFIG.ALLOWED_ORIGIN
+    };
+
     /** @type {string} */
-    // eslint-disable-next-line no-undef
-    const allowedOrigin = CONFIG_ALLOWED_ORIGIN || '*';
+    const allowedOrigin = CONFIG.ALLOWED_ORIGIN;
 
     window.rpcServer = new RpcServer(allowedOrigin);
 
