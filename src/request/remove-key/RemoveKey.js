@@ -39,24 +39,13 @@ class RemoveKey {
         /** @type {HTMLFormElement} */
         const $removeKeyPassphraseBox = ($removeKey.querySelector('.passphrase-box'));
 
-        // Components
-        this._removeKeyPassphraseBox = new PassphraseBox(
-            $removeKeyPassphraseBox, {
-                buttonI18nTag: 'passphrasebox-log-out',
-                bgColor: 'red',
-                hideInput: !this._request.keyInfo.encrypted,
-                minLength: this._request.keyInfo.hasPin ? 6 : undefined,
-            },
-        );
-
         // events
         $goToShowRecoveryWords.addEventListener('click', () => this._exportWordsHandler.run());
         $goToDownloadFile.addEventListener('click', () => this._exportFileHandler.run());
         $goToRemoveKey.addEventListener('click', () => {
-            $removeKey.classList.toggle('show-passphrase-box', true);
-            this._removeKeyPassphraseBox.reset();
-            this._removeKeyPassphraseBox.focus();
+            $removeKey.classList.toggle('show-final-confirmation', true);
         });
+        this._finalConfirmation.on(PassphraseBox.Events.SUBMIT, this._passphraseSubmitted.bind(this));
         this._removeKeyPassphraseBox.on(PassphraseBox.Events.SUBMIT, this._passphraseSubmitted.bind(this));
         this._removeKeyPassphraseBox.on(PassphraseBox.Events.CANCEL, () => {
             $removeKey.classList.toggle('show-passphrase-box', false);
@@ -69,11 +58,19 @@ class RemoveKey {
     }
 
     run() {
-        this._removeKeyPassphraseBox.reset();
         window.location.hash = RemoveKey.Pages.REMOVE_KEY;
-        this._removeKeyPassphraseBox.focus();
     }
 
+    async _finalConfirm() {
+        TopLevelApi.setLoading(true);
+        await KeyStore.instance.remove(this._request.keyInfo.id);
+
+        /** @type {KeyguardRequest.SimpleResult} */
+        const result = {
+            success: true,
+        };
+        this._resolve(result);
+    }
     /**
      * @param {string} phrase
      */
@@ -112,20 +109,15 @@ class RemoveKey {
         $el.classList.add('page', 'nq-card');
         $el.innerHTML = `
         <div class="page-header nq-card-header">
-            <h1 data-i18n="remove-key-log-out" class="nq-h1">Log out</h1>
+            <h1 data-i18n="remove-key-log-out" class="nq-h1">Don't lose access</h1>
         </div>
 
         <div class="page-body nq-card-body">
             <div class="row">
-                <p data-i18n="remove-key-intro-text" class="nq-text">
-                    Logging out means removing your Wallet File from this browser.
-                    Make sure you have it stored somewhere, or at least have your Recovery Words accessible.
+                <p data-i18n="remove-key-intro-text" class="nq-text nq-red">
+                    If you log out without saving your wallet, you will irretrievably lose access to it!
                 </p>
-                <div class="nq-icon warning-sign"></div>
             </div>
-            <p class="nq-text nq-red" data-i18n="remove-key-intro-text-red">
-                If you have neither of them, there’s no chance to regain access to your wallet.
-            </p>
             <div class="flex-grow"></div>
             <div class="row hide-for-passphrase">
                 <button id="show-download-key-file" data-i18n="remove-key-download-key-file" class="nq-button-s">
@@ -135,6 +127,7 @@ class RemoveKey {
                     Show Recovery Words
                 </button>
             </div>
+            <div class="flex-grow"></div>
         </div>
 
         <div class="page-footer nq-card-footer">
