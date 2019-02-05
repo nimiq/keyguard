@@ -1,3 +1,4 @@
+/* global Constants */
 /* global Nimiq */
 /* global KeyStore */
 /* global PassphraseBox */
@@ -218,7 +219,7 @@ class SignTransaction {
         const width = window.innerWidth
                 || document.documentElement.clientWidth
                 || document.getElementsByTagName('body')[0].clientWidth;
-        if (width > 600) this._passphraseBox.focus();
+        if (width > Constants.MIN_WIDTH_FOR_FOCUS) this._passphraseBox.focus();
     }
 
     /**
