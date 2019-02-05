@@ -87,10 +87,10 @@ const TRANSLATIONS = {
         'identicon-selector-button-select': 'Select',
         'identicon-selector-link-back': 'Back',
 
-        'downloadkeyfile-heading-protected': 'Your Key File is protected!',
-        'downloadkeyfile-heading-unprotected': 'Your Key File is not protected!',
+        'downloadkeyfile-heading-protected': 'Your LoginFile is protected!',
+        'downloadkeyfile-heading-unprotected': 'Your LoginFile is not protected!',
         'downloadkeyfile-safe-place': 'Store it in a safe place. If you lose it, it cannot be recovered!',
-        'downloadkeyfile-download': 'Download Key File',
+        'downloadkeyfile-download': 'Download LoginFile',
         'downloadkeyfile-download-anyway': 'Download anyway',
 
         'validate-words-text': 'Please select the correct word from your list of recovery words.',
@@ -104,26 +104,27 @@ const TRANSLATIONS = {
         'export-more-options-heading': 'More export options',
 
         'remove-key-log-out': 'Log out',
-        'remove-key-intro-text': 'Logging out means removing your Wallet File from this browser. '
+        'remove-key-intro-text': 'Logging out means removing your LoginFile from this browser. '
                                + 'Make sure you have it stored somewhere, or at least have your '
                                + 'Recovery Words accessible.',
         'remove-key-intro-text-red': 'If you have neither of them, there’s no chance to regain '
                                    + 'access to your wallet.',
-        'remove-key-key-file': 'Wallet File',
-        'remove-key-download-key-file': 'Download Wallet File',
+        'remove-key-key-file': 'LoginFile',
+        'remove-key-download-key-file': 'Download LoginFile',
         'remove-key-show-recovery-words': 'Show Recovery Words',
-        'remove-key-confirm': 'Log out of your wallet',
+        'remove-key-first-confirm': 'I can log in again',
+        'remove-key-final-confirm': 'Log out of your account',
         'remove-key-recovery-words': 'Recovery Words',
         'remove-key-back': 'Back to logout',
 
-        'derive-address-heading-passphrase': 'Unlock your wallet',
-        'derive-address-passphrase-text': 'Please enter your passphrase to add another account to your wallet.',
-        'derive-address-heading-choose-identicon': 'Choose your account avatar',
-        'derive-address-text-select-avatar': 'Select an avatar for your new account from the selection below.',
+        'derive-address-heading-passphrase': 'Unlock your account',
+        'derive-address-passphrase-text': 'Please enter your password to add another address to your account.',
+        'derive-address-heading-choose-identicon': 'Choose your address avatar',
+        'derive-address-text-select-avatar': 'Select an avatar for your new address from the selection below.',
 
-        'change-passphrase-heading': 'Change your passphrase',
-        'change-paragraph': 'Before entering your new passphrase, you must first unlock your wallet.',
-        'change-set-paragraph': 'Now please enter your new Passphrase and repeat it for confirmation.',
+        'change-passphrase-heading': 'Change your password',
+        'change-paragraph': 'Before entering your new password, you must first unlock your account.',
+        'change-set-paragraph': 'Now please enter your new password and repeat it for confirmation.',
     },
     de: {
         _language: 'Deutsch',
