@@ -20,7 +20,20 @@ class CookieJar { // eslint-disable-line no-unused-vars
             const match = document.cookie.match(new RegExp('accounts=([^;]+)'));
             if (match && match[1]) {
                 const decoded = decodeURIComponent(match[1]);
-                return JSON.parse(decoded);
+                const cookieAccounts = JSON.parse(decoded);
+
+                // Map from cookie format to AccountInfo format
+                return cookieAccounts.map(
+                    /**
+                     * @param {any} acc
+                     * @returns {AccountInfo}
+                     */
+                    acc => ({
+                        userFriendlyAddress: acc.address,
+                        type: acc.type,
+                        label: acc.label,
+                    }),
+                );
             }
             return [];
         }
