@@ -36,8 +36,9 @@
 
     <script defer src="../../lib/Iqons.js"></script>
     <script defer src="../../components/Identicon.js"></script>
-    <script defer src="BaseLayout.js"></script>
-    <script defer src="LayoutStandard.js"></script>
+    <script defer src="../../components/Address.js"></script>
+    <script defer src="../../components/AddressInfo.js"></script>
+    <script defer src="SignTransaction.js"></script>
     <script defer src="SignTransactionApi.js"></script>
     <script defer src="index.js"></script>
 
@@ -64,14 +65,15 @@
     <div id="app">
         <div class="flex-grow"></div>
 
-        <div id="confirm-transaction" class="page nq-card display-none">
+        <div id="confirm-transaction" class="page nq-card">
 
             <div id="layout-container">
                 <div id="account-details">
-                    <button id="close-details"></button>
-                    <div class="flex-grow"></div>
-                    <div id="details"></div>
-                    <div class="flex-grow"></div>
+                    <button id="close-details" class="nq-icon"></button>
+                    <div id="details">
+                        <div class="sender display-none"></div>
+                        <div class="recipient display-none"></div>
+                    </div>
                 </div>
                 <div id="background-overlay"></div>
                 <div id="effect-container">
@@ -84,31 +86,9 @@
                     <div class="page-body transaction">
                         <div class="nq-card-body">
                             <div class="center accounts">
-
-                                <a class="account sender" href="#">
-                                    <div class="identicon"></div>
-                                    <div class="label display-none"></div>
-                                    <div class="wallet-label nq-label display-none"></div>
-                                    <div class="total display-none nq-blue">
-                                        <span class="balance"></span><span class="nim-symbol"></span>
-                                    </div>
-                                    <div class="address">
-                                        <span class="chunk"></span><span class="space">&nbsp;</span>
-                                        <span class="chunk"></span><span class="space">&nbsp;</span>
-                                        <span class="chunk"></span><span class="space">&nbsp;</span>
-                                        <span class="chunk"></span><span class="space">&nbsp;</span>
-                                        <span class="chunk"></span><span class="space">&nbsp;</span>
-                                        <span class="chunk"></span><span class="space">&nbsp;</span>
-                                        <span class="chunk"></span><span class="space">&nbsp;</span>
-                                        <span class="chunk"></span><span class="space">&nbsp;</span>
-                                        <span class="chunk"></span><span class="space">&nbsp;</span>
-                                    </div>
-                                </a>
-
+                                <a class="account sender" href="#"></a>
                                 <i class="arrow nq-icon chevron-right"></i>
-
                                 <a class="account recipient" href="#"></a>
-
                             </div>
                         </div>
 
@@ -124,7 +104,7 @@
                                 <span data-i18n="sign-tx-fee">fee</span>
                             </div>
 
-                            <div class="data-section display-none" id="data"></div>
+                            <div class="data-section display-none nq-text nq-blue" id="data"></div>
                         </div>
                     </div>
 
@@ -150,10 +130,10 @@
         </div>
     </div>
 
-    <svg width="0" height="0" viewBox="0 0 146.0 146.0">
+    <svg width="0" height="0" viewBox="0 0 146 146">
         <defs>
-            <clipPath id="nimiq-rounded-hexagon" clipPathUnits="objectBoundingBox" transform="scale(0.006849315068 0.006849315068)">
-                <path d="M 44.060547,8 C 38.556215,8 33.46353,10.940381 30.707031,15.708984 L 2.0605469,65.291016 c -2.74702868,4.768904 -2.74702868,10.649064 0,15.417968 L 30.701172,130.29102 C 33.449256,135.06056 38.546656,138 44.054688,138 H 101.3418 c 5.50812,0 10.60514,-2.93949 13.35351,-7.70898 v -0.002 l 28.64063,-49.578122 v -0.002 c 2.75485,-4.768341 2.75485,-10.649627 0,-15.417968 v -0.002 L 114.69531,15.710938 C 111.94712,10.940605 106.85041,8 101.3418,8 Z">
+            <clipPath id="nimiq-rounded-hexagon" clipPathUnits="objectBoundingBox">
+                <path d="M.302.055A.106.106 0 0 0 .21.108l-.196.34a.106.106 0 0 0 0 .105l.196.34a.106.106 0 0 0 .092.052h.392c.038 0 .073-.02.092-.053l.196-.34a.106.106 0 0 0 0-.105L.786.107A.106.106 0 0 0 .694.056z">
                 </path>
             </clipPath>
         </defs>

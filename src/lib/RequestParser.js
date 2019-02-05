@@ -187,6 +187,9 @@ class RequestParser { // eslint-disable-line no-unused-vars
         }
         try {
             const parsedUrl = new URL(url);
+            if (parsedUrl.protocol !== 'https:' && parsedUrl.protocol !== 'http:') {
+                throw new Error('shopOrigin protocol must be https: or http:');
+            }
             return parsedUrl.origin;
         } catch (error) {
             throw new Errors.InvalidRequestError(`Invalid url: ${error.message}`);
@@ -195,14 +198,18 @@ class RequestParser { // eslint-disable-line no-unused-vars
 
     /**
      * @param {any} url
-     * @returns {URL}
+     * @returns {URL | undefined}
      */
     parseShopLogoUrl(url) {
-        if (!url || typeof url !== 'string') {
-            throw new Errors.InvalidRequestError('shopOrigin must be of type string');
+        if (!url) return undefined;
+        if (typeof url !== 'string') {
+            throw new Errors.InvalidRequestError('shopLogoUrl must be of type string');
         }
         try {
             const parsedUrl = new URL(url);
+            if (parsedUrl.protocol !== 'https:' && parsedUrl.protocol !== 'http:') {
+                throw new Error('shopLogoUrl protocol must be https: or http:');
+            }
             return parsedUrl;
         } catch (error) {
             throw new Errors.InvalidRequestError(`Invalid url: ${error.message}`);
@@ -215,7 +222,6 @@ class RequestParser { // eslint-disable-line no-unused-vars
      * @returns {number | undefined}
      */
     parseNumber(value) {
-        if (!value) return undefined;
         if (typeof value !== 'number') return undefined;
         return value;
     }

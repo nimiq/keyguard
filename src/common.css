@@ -30,7 +30,7 @@
 .page {
     display: none;
     width: 100%;
-    max-width: 56.25rem; /* 450px */
+    max-width: 52.5rem; /* 420px */
     min-height: 70.5rem; /* 564px */
     /**
      * A max-height of 77.5rem is what is set in the Accounts Manager,
@@ -57,7 +57,15 @@
     left: 4.5rem;
     top: 4.5rem;
     cursor: pointer;
-    opacity: 0.3;
+    opacity: 0.4;
+    transition: opacity .3s ease, transform .4s ease, -webkit-transform .4s ease;
+}
+
+.page-header-back-button:hover,
+.page-header-back-button:focus {
+    opacity: .7; /* TODO Ideally, we could change the color to --nimiq-light-blue on :focus instead, but this works for now */
+    transform: translate3D(-3px, 0, 0);
+    outline: none;
 }
 
 @media (max-width: 450px) {

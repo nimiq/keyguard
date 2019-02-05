@@ -1,6 +1,6 @@
 /* global I18n */
 /* global TopLevelApi */
-/* global LayoutStandard */
+/* global SignTransaction */
 /* global Errors */
 
 class SignTransactionApi extends TopLevelApi {
@@ -11,7 +11,7 @@ class SignTransactionApi extends TopLevelApi {
         TopLevelApi.setLoading(true);
         const parsedRequest = await this.parseRequest(request);
 
-        const handler = new SignTransactionApi.Layouts[parsedRequest.layout](
+        const handler = new SignTransaction(
             parsedRequest,
             this.resolve.bind(this),
             this.reject.bind(this),
@@ -68,11 +68,11 @@ class SignTransactionApi extends TopLevelApi {
         parsedRequest.recipientLabel = this.parseLabel(request.recipientLabel);
         parsedRequest.transaction = this.parseTransaction(request);
         parsedRequest.layout = this.parseLayout(request.layout);
-        if (parsedRequest.layout === 'checkout') {
+        if (parsedRequest.layout === SignTransactionApi.Layouts.checkout) {
             parsedRequest.shopOrigin = this.parseShopOrigin(request.shopOrigin);
             parsedRequest.shopLogoUrl = this.parseShopLogoUrl(request.shopLogoUrl);
-            if (parsedRequest.shopLogoUrl.origin !== parsedRequest.shopOrigin) {
-                throw new Errors.InvalidRequestError('origins of shopLogoUrl must be same as referer');
+            if (parsedRequest.shopLogoUrl && parsedRequest.shopLogoUrl.origin !== parsedRequest.shopOrigin) {
+                throw new Errors.InvalidRequestError('origin of shopLogoUrl must be same as referrer');
             }
         } else {
             parsedRequest.shopOrigin = undefined;
@@ -83,9 +83,9 @@ class SignTransactionApi extends TopLevelApi {
     }
 }
 
-/** @type {{[layout: string]: any, standard: typeof LayoutStandard, checkout: typeof LayoutStandard}} */
+/** @type {{[layout: string]: string}} */
 SignTransactionApi.Layouts = {
-    standard: LayoutStandard,
-    checkout: LayoutStandard,
-    // cashlink: LayoutCashlink,
+    standard: 'standard',
+    checkout: 'checkout',
+    cashlink: 'cashlink',
 };

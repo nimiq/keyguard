@@ -4,6 +4,8 @@
 
 #layout-container {
     overflow: hidden;
+    display: flex;
+    flex-grow: 1;
 }
 
 #layout-container.standard .hide-standard,
@@ -14,11 +16,12 @@
 #layout-container .nq-card-footer {
     border: 0;
     padding: 3rem 4rem;
+    text-align: center;
 }
 
 #layout-container .nq-card-body {
-    padding: 2rem 4rem 0rem;
-
+    padding-top: 2rem;
+    padding-bottom: 0rem;
 }
 
 #layout-container > #account-details {
@@ -35,16 +38,19 @@
     padding: 4rem;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    transition: opacity .4s, z-index .4s;
+    justify-content: center;
+    transition: opacity .4s 0s, z-index 0s .4s;
 }
 
-#layout-container.open > #account-details {
-    z-index: 59;
+#layout-container.account-details-open > #account-details {
+    z-index: 1;
+    transition-delay: 0s;
     opacity: 1;
 }
 
 #layout-container #effect-container {
+    display: flex;
+    flex-direction: column;
     overflow: hidden;
     border-radius: 1rem;
 }
@@ -59,8 +65,8 @@
     opacity: 1;
 }
 
-#layout-container.open > #effect-container > .page-header,
-#layout-container.open > #effect-container > .page-body {
+#layout-container.account-details-open > #effect-container > .page-header,
+#layout-container.account-details-open > #effect-container > .page-body {
     -webkit-filter: blur(20px);
     -moz-filter: blur(20px);
     -o-filter: blur(20px);
@@ -69,7 +75,7 @@
     opacity: 0.5;
 }
 
-#layout-container.open > #effect-container > .page-footer {
+#layout-container.account-details-open > #effect-container > .page-footer {
     -webkit-filter: blur(35px);
     -moz-filter: blur(35px);
     -o-filter: blur(35px);
@@ -87,7 +93,7 @@
     right: 0;
 }
 
-#layout-container.open > #background-overlay {
+#layout-container.account-details-open > #background-overlay {
     z-index: 2;
 }
 
@@ -100,9 +106,8 @@
     opacity: 0.16;
     border: 0rem;
     background-color: transparent;
-    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg width='38' height='38' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M9.808 9.808c5.068-5.069 13.316-5.069 18.384 0 5.069 5.068 5.069 13.316 0 18.384-5.068 5.069-13.316 5.069-18.384 0-5.069-5.068-5.069-13.316 0-18.384zM19 17.586l3.535-3.536 1.415 1.414L20.414 19l3.536 3.535-1.415 1.415L19 20.414l-3.536 3.536-1.414-1.415L17.586 19l-3.536-3.536 1.414-1.414L19 17.586z' fill='%23101531'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml;charset=utf-8,<svg width='38' height='38' fill='none' xmlns='http://www.w3.org/2000/svg'><path fill-rule='evenodd' clip-rule='evenodd' d='M9.808 9.808c5.068-5.069 13.316-5.069 18.384 0 5.069 5.068 5.069 13.316 0 18.384-5.068 5.069-13.316 5.069-18.384 0-5.069-5.068-5.069-13.316 0-18.384zM19 17.586l3.535-3.536 1.415 1.414L20.414 19l3.536 3.535-1.415 1.415L19 20.414l-3.536 3.536-1.414-1.415L17.586 19l-3.536-3.536 1.414-1.414L19 17.586z' fill='%23101531'/></svg>");
     background-size: 135%;
-    background-position: 50%;
 }
 
 #account-details #close-details:after {
@@ -120,7 +125,7 @@
     opacity: 0.25;
 }
 
-#account-details #details {
+#account-details #details > div {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -162,26 +167,13 @@
     margin-top: 3rem;
 }
 
-#account-details .total {
-    margin-top: 2rem;
-}
-
-#account-details .total .balance {
-    font-size: 3rem;
-}
-
-#account-details .total .nim-symbol {
-    margin-left: 1rem;
-    font-weight: 800;
-}
-
-#account-details .wallet-label {
+#account-details .account-label {
     margin-top: 1.5rem;
 }
 
 #account-details .address {
     width: 100%;
-    max-width: calc(28.25 * var(--nimiq-size, 8px));
+    max-width: 28.25rem;
     font-family: 'Fira Mono', monospace;
     opacity: 0.5;
     margin-top: 7rem;
@@ -192,21 +184,21 @@
 }
 
 .chunk {
-    margin: calc(0.875 * var(--nimiq-size, 8px)) 0;
+    margin: 0.875rem 0;
     line-height: 1.11;
     width: 33%;
-    height: 100%;
     text-align: center;
     box-sizing: border-box;
     text-transform: uppercase;
 }
 
-.space {
+.chunk:after {
     font-size: 0;
+    content: ' ';
 }
 
-.transaction .nq-card-body {
-    background-color: white;
+.space {
+    font-size: 0;
 }
 
 .transaction .accounts {
@@ -215,7 +207,6 @@
     padding-bottom: 4rem;
 }
 
-.transaction .account .total,
 .transaction .account .address {
     display: none;
 }
@@ -229,13 +220,14 @@
 }
 
 .transaction .account {
-    width: 50%;
+    width: calc(50% - 1.5rem);
     display: flex;
     flex-direction: column;
     align-items: center;
     text-decoration: none;
     cursor: pointer;
     color: var(--nimiq-dark-blue);
+    outline: none;
 }
 
 .transaction .account .identicon {
@@ -252,12 +244,19 @@
 .transaction .label {
     font-size: 2rem;
     margin: 1.25rem 0;
+    white-space: nowrap;
+    overflow: hidden;
+    position: relative;
+    width: 80%;
 }
-
-.transaction .wallet-label {
-    font-size: 1.25rem;
-    margin-top: 0;
-    display: none;
+.transaction .label:after {
+    content: ' ';
+    display: inline-block;
+    width: 2rem;
+    height: 100%;
+    position: absolute;
+    right: 0;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0), white);
 }
 
 .transaction .arrow {
@@ -267,29 +266,21 @@
     width: 3rem;
 }
 
-.transaction .total {
-    text-align: center;
-}
-
 .transaction .total #value {
     font-size: 5rem;
 }
 
 .transaction .total .nim-symbol {
     margin-left: 1rem;
-    font-weight: 800;
+    font-weight: 700;
 }
 
 .transaction .fee-section {
-    text-align: center;
     opacity: 0.5;
 }
 
 .transaction .data-section {
     margin: 0.5rem 3rem 0;
-    font-size: 2rem;
-    color: var(--nimiq-dark-blue);
-    text-align: center;
 }
 
 .page-footer {
