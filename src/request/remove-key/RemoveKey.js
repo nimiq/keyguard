@@ -1,9 +1,6 @@
 /* global ExportWords */
 /* global ExportFile */
-/* global PassphraseBox */
 /* global KeyStore */
-/* global Errors */
-/* global Utf8Tools */
 /* global TopLevelApi */
 
 class RemoveKey {
@@ -35,21 +32,17 @@ class RemoveKey {
         /** @type {HTMLButtonElement} */
         const $goToShowRecoveryWords = ($removeKey.querySelector('#show-recovery-words'));
         /** @type {HTMLButtonElement} */
-        const $goToRemoveKey = ($removeKey.querySelector('#remove-key-confirm'));
+        const $finalConfirmButton = ($removeKey.querySelector('#remove-key-final-confirm'));
         /** @type {HTMLFormElement} */
-        const $removeKeyPassphraseBox = ($removeKey.querySelector('.passphrase-box'));
+        const $firstConfirmButton = ($removeKey.querySelector('#remove-key-first-confirm'));
 
         // events
         $goToShowRecoveryWords.addEventListener('click', () => this._exportWordsHandler.run());
         $goToDownloadFile.addEventListener('click', () => this._exportFileHandler.run());
-        $goToRemoveKey.addEventListener('click', () => {
-            $removeKey.classList.toggle('show-final-confirmation', true);
+        $firstConfirmButton.addEventListener('click', () => {
+            $removeKey.classList.toggle('show-final-confirm', true);
         });
-        this._finalConfirmation.on(PassphraseBox.Events.SUBMIT, this._passphraseSubmitted.bind(this));
-        this._removeKeyPassphraseBox.on(PassphraseBox.Events.SUBMIT, this._passphraseSubmitted.bind(this));
-        this._removeKeyPassphraseBox.on(PassphraseBox.Events.CANCEL, () => {
-            $removeKey.classList.toggle('show-passphrase-box', false);
-        });
+        $finalConfirmButton.addEventListener('click', this._finalConfirm.bind(this));
 
         this._exportFileHandler.on(ExportFile.Events.KEY_CHANGED,
             e => this._exportWordsHandler.setKey(e.key));
@@ -71,37 +64,6 @@ class RemoveKey {
         };
         this._resolve(result);
     }
-    /**
-     * @param {string} phrase
-     */
-    async _passphraseSubmitted(phrase) {
-        TopLevelApi.setLoading(true);
-        const passphraseBuffer = phrase ? Utf8Tools.stringToUtf8ByteArray(phrase) : undefined;
-        /** @type {Key?} */
-        let key = null;
-        try {
-            key = await KeyStore.instance.get(this._request.keyInfo.id, passphraseBuffer);
-        } catch (e) {
-            if (e.message === 'Invalid key') {
-                TopLevelApi.setLoading(false);
-                this._removeKeyPassphraseBox.onPassphraseIncorrect();
-                return;
-            }
-            this._reject(new Errors.CoreError(e.message));
-            return;
-        }
-        if (!key) {
-            this._reject(new Errors.KeyNotFoundError());
-            return;
-        }
-        await KeyStore.instance.remove(this._request.keyInfo.id);
-
-        /** @type {KeyguardRequest.SimpleResult} */
-        const result = {
-            success: true,
-        };
-        this._resolve(result);
-    }
 
     _buildRemoveKey() {
         const $el = document.createElement('div');
@@ -115,7 +77,7 @@ class RemoveKey {
         <div class="page-body nq-card-body">
             <div class="row">
                 <p data-i18n="remove-key-intro-text" class="nq-text nq-red">
-                    If you log out without saving your wallet, you will irretrievably lose access to it!
+                    If you log out without saving your account, you will irretrievably lose access to it!
                 </p>
             </div>
             <div class="flex-grow"></div>
@@ -131,9 +93,12 @@ class RemoveKey {
         </div>
 
         <div class="page-footer nq-card-footer">
-            <form class="passphrase-box"></form>
-            <button id="remove-key-confirm" class="hide-for-passphrase nq-button red" data-i18n="remove-key-confirm">
-                Log out of your wallet
+            <button id="remove-key-first-confim" class="nq-button red" data-i18n="remove-key-first-confirm">
+                I can log in again
+            </button>
+            <button id="remove-key-final-confirm" class="hide-for-passphrase nq-button red" 
+                data-i18n="remove-key-final-confirm">
+                Log out of your account
             </button>
         </div>
         `;
