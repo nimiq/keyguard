@@ -110,7 +110,7 @@
     background-size: 135%;
 }
 
-#account-details #close-details:after {
+#account-details #close-details::after {
     content: ' ';
     position: absolute;
     left: -2rem;
@@ -144,7 +144,7 @@
     clip-path: url(#nimiq-rounded-hexagon);
 }
 
-.identicon.clip:after {
+.identicon.clip::after {
     content: ' ';
     display: block;
     position: absolute;
@@ -192,7 +192,7 @@
     text-transform: uppercase;
 }
 
-.chunk:after {
+.chunk::after {
     font-size: 0;
     content: ' ';
 }
@@ -211,7 +211,7 @@
     display: none;
 }
 
-.transaction > .nq-card-body:after {
+.transaction > .nq-card-body::after {
     content: ' ';
     display: flex;
     height: 0px;
@@ -249,7 +249,7 @@
     position: relative;
     width: 80%;
 }
-.transaction .label:after {
+.transaction .label::after {
     content: ' ';
     display: inline-block;
     width: 2rem;

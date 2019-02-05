@@ -21,7 +21,7 @@ class SignTransactionApi extends TopLevelApi {
         const $appName = (document.querySelector('#app-name'));
         /** @type {HTMLSpanElement} */
         const $cancelLinkText = ($appName.parentNode);
-        if (request.layout === 'checkout') {
+        if (request.layout === SignTransactionApi.Layouts.CHECKOUT) {
             $cancelLinkText.textContent = I18n.translatePhrase('sign-tx-cancel-payment');
         } else {
             $appName.textContent = request.appName;
@@ -42,9 +42,11 @@ class SignTransactionApi extends TopLevelApi {
      */
     parseLayout(layout) {
         if (!layout) {
-            return SignTransactionApi.Layouts.standard;
+            return SignTransactionApi.Layouts.STANDARD;
         }
-        if (!SignTransactionApi.Layouts[layout]) {
+        if (Object.keys(SignTransactionApi.Layouts)
+            .map(key => SignTransactionApi.Layouts[key])
+            .indexOf(layout) === -1) {
             throw new Errors.InvalidRequestError('Invalid selected layout');
         }
         return layout;
@@ -68,7 +70,7 @@ class SignTransactionApi extends TopLevelApi {
         parsedRequest.recipientLabel = this.parseLabel(request.recipientLabel);
         parsedRequest.transaction = this.parseTransaction(request);
         parsedRequest.layout = this.parseLayout(request.layout);
-        if (parsedRequest.layout === SignTransactionApi.Layouts.checkout) {
+        if (parsedRequest.layout === SignTransactionApi.Layouts.CHECKOUT) {
             parsedRequest.shopOrigin = this.parseShopOrigin(request.shopOrigin);
             parsedRequest.shopLogoUrl = this.parseShopLogoUrl(request.shopLogoUrl);
             if (parsedRequest.shopLogoUrl && parsedRequest.shopLogoUrl.origin !== parsedRequest.shopOrigin) {
@@ -85,7 +87,7 @@ class SignTransactionApi extends TopLevelApi {
 
 /** @type {{[layout: string]: string}} */
 SignTransactionApi.Layouts = {
-    standard: 'standard',
-    checkout: 'checkout',
-    cashlink: 'cashlink',
+    STANDARD: 'standard',
+    CHECKOUT: 'checkout',
+    CASHLINK: 'cashlink',
 };

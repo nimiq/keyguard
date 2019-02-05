@@ -14,6 +14,7 @@ class SignTransaction {
      * @param {Function} reject
      */
     constructor(request, resolve, reject) {
+        this._request = request;
         /** @type {HTMLElement} */
         this.$el = (document.getElementById('layout-container'));
         this.$el.classList.add(request.layout);
@@ -53,7 +54,7 @@ class SignTransaction {
         /** @type {HTMLLinkElement} */
         const $recipientDetails = (this.$el.querySelector('#details > .recipient'));
         switch (request.layout) {
-        case SignTransactionApi.Layouts.checkout:
+        case SignTransactionApi.Layouts.CHECKOUT:
             this._recipientAddressInfo = new AddressInfo(
                 $recipient,
                 {
@@ -74,7 +75,7 @@ class SignTransaction {
                 },
             );
             break;
-        case SignTransactionApi.Layouts.standard:
+        case SignTransactionApi.Layouts.STANDARD:
         default:
             this._recipientAddressInfo = new AddressInfo(
                 $recipient,
@@ -217,7 +218,9 @@ class SignTransaction {
 
     run() {
         // Async pre-load the crypto worker to reduce wait time at first decrypt attempt
-        Nimiq.CryptoWorker.getInstanceAsync();
+        if (this._request.keyInfo.encrypted) {
+            Nimiq.CryptoWorker.getInstanceAsync();
+        }
         // Go to start page
         window.location.hash = SignTransaction.Pages.CONFIRM_TRANSACTION;
         const width = window.innerWidth
