@@ -163,19 +163,11 @@ class SignTransaction {
      * @param {'sender' | 'recipient'} which
      */
     _openDetails(which) {
-        const $el = this.$accountDetails.querySelector(`#details > .${which}`);
-        if ($el) {
-            $el.classList.remove('display-none');
-        }
-        this.$el.classList.add('account-details-open');
+        this.$el.classList.add('account-details-open', which);
     }
 
     _closeDetails() {
-        const $el = this.$accountDetails.querySelector('#details > div:not(.display-none)');
-        if ($el) {
-            $el.classList.add('display-none');
-        }
-        this.$el.classList.remove('account-details-open');
+        this.$el.classList.remove('account-details-open', 'sender', 'recipient');
     }
 
     /**

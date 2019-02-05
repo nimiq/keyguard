@@ -48,6 +48,17 @@
     opacity: 1;
 }
 
+#layout-container #details > div {
+    flex-direction: column;
+    align-items: center;
+    display: none;
+}
+
+#layout-container.account-details-open.recipient #account-details .recipient,
+#layout-container.account-details-open.sender #account-details .sender {
+    display: flex;
+}
+
 #layout-container #effect-container {
     display: flex;
     flex-direction: column;
@@ -123,12 +134,6 @@
 #account-details #close-details:hover,
 #account-details #close-details:focus {
     opacity: 0.25;
-}
-
-#account-details #details > div {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
 }
 
 #account-details .identicon {
