@@ -44,9 +44,8 @@ class SignTransactionApi extends TopLevelApi {
         if (!layout) {
             return SignTransactionApi.Layouts.STANDARD;
         }
-        if (Object.keys(SignTransactionApi.Layouts)
-            .map(key => SignTransactionApi.Layouts[key])
-            .indexOf(layout) === -1) {
+        // @ts-ignore
+        if (Object.values(SignTransactionApi.Layouts).indexOf(layout) === -1) {
             throw new Errors.InvalidRequestError('Invalid selected layout');
         }
         return layout;
