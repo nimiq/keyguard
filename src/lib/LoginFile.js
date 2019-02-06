@@ -95,7 +95,12 @@ class LoginFile {
         const x = LoginFile.WIDTH / 2;
         const y = 97;
         const date = new Date();
-        const datestring = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+        /**
+         * @param {number} num
+         * @returns {string}
+         */
+        const leftPad = num => `${num < 10 ? '0' : ''}${num}`;
+        const datestring = `${date.getFullYear()}-${leftPad(date.getMonth() + 1)}-${leftPad(date.getDate())}`;
         ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
         ctx.fillText(datestring, x, y);
     }
