@@ -81,7 +81,7 @@ class RemoveKey {
                 </p>
             </div>
             <div class="flex-grow"></div>
-            <div class="row hide-for-passphrase">
+            <div>
                 <button id="show-download-key-file" data-i18n="remove-key-download-key-file" class="nq-button-s">
                     Download Wallet File
                 </button>
@@ -93,10 +93,10 @@ class RemoveKey {
         </div>
 
         <div class="page-footer nq-card-footer">
-            <button id="remove-key-first-confim" class="nq-button red" data-i18n="remove-key-first-confirm">
+            <button id="remove-key-first-confirm" class="hide-for-final-confirm nq-button red" data-i18n="remove-key-first-confirm">
                 I can log in again
             </button>
-            <button id="remove-key-final-confirm" class="hide-for-passphrase nq-button red" 
+            <button id="remove-key-final-confirm" class="final-confirm nq-button red" 
                 data-i18n="remove-key-final-confirm">
                 Log out of your account
             </button>

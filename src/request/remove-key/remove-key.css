@@ -37,18 +37,11 @@
     margin-bottom: 0;
 }
 
-.page#privacy:not(.hide-passphrase) .hide-for-passphrase {
-    display: none;
-}
-.page#privacy.hide-passphrase .passphrase-box {
+.page#remove-key:not(.show-final-confirm) .final-confirm {
     display: none;
 }
 
-.page#remove-key.show-passphrase-box .hide-for-passphrase {
-    display: none
-}
-
-.page#remove-key:not(.show-passphrase-box) .passphrase-box {
+.page#remove-key.show-final-confirm .hide-for-final-confirm {
     display: none;
 }
 
