@@ -103,6 +103,7 @@ class PassphraseSetterBox extends Nimiq.Observable {
     _onInputChangeValidity(isValid) {
         if (this._password && this._passphraseInput.text === this._password) {
             this.fire(PassphraseSetterBox.Events.SUBMIT, this._password);
+            return;
         }
         this.$el.classList.toggle('input-valid', isValid);
 
