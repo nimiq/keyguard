@@ -5,10 +5,11 @@
 
 class AddressInfo extends Nimiq.Observable { // eslint-disable-line no-unused-vars
     /**
-     *
+     * Creates a new AddressInfo and appends it to a new node. Only one Element with isDetailedView=false supported, as
+     * event listener added to the Element does not get removed yet.
      * @param {{ userFriendlyAddress: string, label: string?, imageUrl: URL?, accountLabel: string?}} addressInfo
      * @param {HTMLElement} $el
-     * @param {boolean} isDetailedView
+     * @param {boolean} isDetailedView - only one $el with isDetailedView=false supported
      */
     constructor(addressInfo, $el, isDetailedView = false) {
         super();
@@ -23,9 +24,10 @@ class AddressInfo extends Nimiq.Observable { // eslint-disable-line no-unused-va
     }
 
     /**
-     *
+     * Appends this AddressInfo object to a new node. Only one Element with isDetailedView=false supported, as
+     * event listener added to the Element does not get removed yet.
      * @param {HTMLElement} $el
-     * @param {boolean} isDetailedView
+     * @param {boolean} isDetailedView - only one $el with isDetailedView=false supported
      */
     appendTo($el, isDetailedView = false) {
         $el = this._createElement($el, isDetailedView);

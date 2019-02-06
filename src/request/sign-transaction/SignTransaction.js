@@ -116,7 +116,8 @@ class SignTransaction {
      */
     _openDetails(which) {
         which.appendTo(
-            /** @type {HTMLElement} */(this.$accountDetails.querySelector('#details')), true,
+            /** @type {HTMLElement} */(this.$accountDetails.querySelector('#details')),
+            true,
         );
         this.$el.classList.add('account-details-open');
     }
