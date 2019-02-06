@@ -16,7 +16,7 @@ class SignTransaction {
     constructor(request, resolve, reject) {
         this._request = request;
         /** @type {HTMLElement} */
-        this.$el = (document.getElementById('layout-container'));
+        this.$el = (document.getElementById(SignTransaction.Pages.CONFIRM_TRANSACTION));
         this.$el.classList.add(request.layout);
 
         const transaction = request.transaction;
@@ -25,10 +25,7 @@ class SignTransaction {
         this.$accountDetails = (this.$el.querySelector('#account-details'));
 
         /** @type {HTMLLinkElement} */
-        const $sender = (this.$el.querySelector('.account.sender'));
-        /** @type {HTMLLinkElement} */
-        const $senderDetails = (this.$el.querySelector('#details > .sender'));
-
+        const $sender = (this.$el.querySelector('.accounts .sender'));
         this._senderAddressInfo = new AddressInfo(
             {
                 userFriendlyAddress: transaction.sender.toUserFriendlyAddress(),
@@ -38,14 +35,9 @@ class SignTransaction {
             },
             $sender,
         );
-        this._senderAddressInfo.appendTo($senderDetails, true);
 
         /** @type {HTMLLinkElement} */
-        const $recipient = (this.$el.querySelector('.account.recipient'));
-
-        /** @type {HTMLLinkElement} */
-        const $recipientDetails = (this.$el.querySelector('#details > .recipient'));
-
+        const $recipient = (this.$el.querySelector('.accounts .recipient'));
         this._recipientAddressInfo = new AddressInfo(
             {
                 userFriendlyAddress: transaction.recipient.toUserFriendlyAddress(),
@@ -58,13 +50,12 @@ class SignTransaction {
             },
             $recipient,
         );
-        this._recipientAddressInfo.appendTo($recipientDetails, true);
 
         this._senderAddressInfo.on(AddressInfo.Event.CLICKED, () => {
-            this._openDetails('sender');
+            this._openDetails(this._senderAddressInfo);
         });
         this._recipientAddressInfo.on(AddressInfo.Event.CLICKED, () => {
-            this._openDetails('recipient');
+            this._openDetails(this._recipientAddressInfo);
         });
 
         /** @type {HTMLButtonElement} */
@@ -121,14 +112,17 @@ class SignTransaction {
     }
 
     /**
-     * @param {'sender' | 'recipient'} which
+     * @param {AddressInfo} which
      */
     _openDetails(which) {
-        this.$el.classList.add('account-details-open', which);
+        which.appendTo(
+            /** @type {HTMLElement} */(this.$accountDetails.querySelector('#details')), true,
+        );
+        this.$el.classList.add('account-details-open');
     }
 
     _closeDetails() {
-        this.$el.classList.remove('account-details-open', 'sender', 'recipient');
+        this.$el.classList.remove('account-details-open');
     }
 
     /**

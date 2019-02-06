@@ -1,0 +1,15 @@
+.addressInfo.detailed-view .identicon {
+    width: 18rem;
+    height: 18rem;
+}
+
+.addressInfo.detailed-view .label {
+    font-size: 3rem;
+    font-weight: 600;
+    line-height: 1;
+    margin-top: 3rem;
+}
+
+.addressInfo.detailed-view .account-label {
+    margin-top: 1.5rem;
+}

@@ -1,4 +1,5 @@
 /* global Address */
+/* global Constants */
 /* global Identicon */
 /* global Nimiq */
 
@@ -11,6 +12,10 @@ class AddressInfo extends Nimiq.Observable { // eslint-disable-line no-unused-va
      */
     constructor(addressInfo, $el, isDetailedView = false) {
         super();
+        if (!document.getElementById('nimiq-rounded-hexagon')) {
+            const body = document.getElementsByTagName('body')[0];
+            body.insertAdjacentHTML('beforeend', Constants.HEXAGON_CLIP_PATH);
+        }
 
         this._addressInfo = addressInfo;
 
@@ -41,6 +46,7 @@ class AddressInfo extends Nimiq.Observable { // eslint-disable-line no-unused-va
     _createElement($el, isDetailedView) {
         $el = $el || document.createElement('a');
         $el.classList.toggle('addressInfo', true);
+        $el.classList.toggle('detailed-view', isDetailedView);
 
         const label = this._addressInfo.label || (isDetailedView
             ? 'Unnamed Contact'
