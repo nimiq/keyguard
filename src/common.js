@@ -47,7 +47,7 @@ async function runKeyguard(RequestApiClass, options) { // eslint-disable-line no
 
     // Back arrow functionality
     document.body.addEventListener('click', event => {
-        // @ts-ignore
+        // @ts-ignore (Property 'matches' does not exist on type 'EventTarget'.)
         if (!event.target || !event.target.matches('a.page-header-back-button')) return;
         window.history.back();
     });

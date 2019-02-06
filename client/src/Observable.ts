@@ -33,7 +33,7 @@ export default class Observable {
             const listeners = this._listeners.get(type)!;
             for (const key in listeners) {
                 // Skip non-numeric properties.
-                // @ts-ignore
+                // @ts-ignore (Argument of type 'string' is not assignable to parameter of type 'number'.)
                 if (isNaN(key)) continue;
 
                 const listener = listeners[key];
@@ -47,7 +47,7 @@ export default class Observable {
             const listeners = this._listeners.get(Observable.WILDCARD)!;
             for (const key in listeners) {
                 // Skip non-numeric properties.
-                // @ts-ignore
+                // @ts-ignore (Argument of type 'string' is not assignable to parameter of type 'number'.)
                 if (isNaN(key)) continue;
 
                 const listener = listeners[key];
