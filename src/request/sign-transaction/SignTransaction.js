@@ -171,10 +171,8 @@ class SignTransaction {
         }
         // Go to start page
         window.location.hash = SignTransaction.Pages.CONFIRM_TRANSACTION;
-        const width = window.innerWidth
-                || document.documentElement.clientWidth
-                || document.getElementsByTagName('body')[0].clientWidth;
-        if (width > Constants.MIN_WIDTH_FOR_AUTOFOCUS) this._passphraseBox.focus();
+
+        if (getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) this._passphraseBox.focus();
     }
 
     /**
