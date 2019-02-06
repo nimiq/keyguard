@@ -44,7 +44,7 @@ class SignTransactionApi extends TopLevelApi {
         if (!layout) {
             return SignTransactionApi.Layouts.STANDARD;
         }
-        // @ts-ignore (Property 'values' does not exist on type 'ObjectConstructor'.)
+        // @ts-ignore
         if (Object.values(SignTransactionApi.Layouts).indexOf(layout) === -1) {
             throw new Errors.InvalidRequestError('Invalid selected layout');
         }

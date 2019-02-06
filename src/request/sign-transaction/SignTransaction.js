@@ -5,7 +5,6 @@
 /* global Errors */
 /* global Utf8Tools */
 /* global TopLevelApi */
-/* global SignTransactionApi */
 /* global AddressInfo */
 
 class SignTransaction {
@@ -27,78 +26,39 @@ class SignTransaction {
 
         /** @type {HTMLLinkElement} */
         const $sender = (this.$el.querySelector('.account.sender'));
-        this._senderAddressInfo = new AddressInfo(
-            $sender,
-            {
-                userFriendlyAddress: transaction.sender.toUserFriendlyAddress(),
-                label: request.senderLabel || transaction.sender.toUserFriendlyAddress(),
-                imageUrl: null,
-                accountLabel: null,
-            },
-        );
         /** @type {HTMLLinkElement} */
         const $senderDetails = (this.$el.querySelector('#details > .sender'));
-        // eslint-disable-next-line no-new
-        new AddressInfo(
-            $senderDetails,
+
+        this._senderAddressInfo = new AddressInfo(
             {
                 userFriendlyAddress: transaction.sender.toUserFriendlyAddress(),
-                label: request.senderLabel || 'Unnamed Contact',
+                label: request.senderLabel || null,
                 imageUrl: null,
                 accountLabel: request.keyLabel || null,
             },
+            $sender,
         );
+        this._senderAddressInfo.appendTo($senderDetails, true);
 
         /** @type {HTMLLinkElement} */
         const $recipient = (this.$el.querySelector('.account.recipient'));
 
         /** @type {HTMLLinkElement} */
         const $recipientDetails = (this.$el.querySelector('#details > .recipient'));
-        switch (request.layout) {
-        case SignTransactionApi.Layouts.CHECKOUT:
-            this._recipientAddressInfo = new AddressInfo(
-                $recipient,
-                {
-                    userFriendlyAddress: transaction.recipient.toUserFriendlyAddress(),
-                    label: /** @type {string} */ (request.shopOrigin).split('://')[1],
-                    imageUrl: request.shopLogoUrl || null,
-                    accountLabel: null,
-                },
-            );
-            // eslint-disable-next-line no-new
-            new AddressInfo(
-                $recipientDetails,
-                {
-                    userFriendlyAddress: transaction.recipient.toUserFriendlyAddress(),
-                    label: /** @type {string} */ (request.shopOrigin).split('://')[1],
-                    imageUrl: request.shopLogoUrl || null,
-                    accountLabel: null,
-                },
-            );
-            break;
-        case SignTransactionApi.Layouts.STANDARD:
-        default:
-            this._recipientAddressInfo = new AddressInfo(
-                $recipient,
-                {
-                    userFriendlyAddress: transaction.recipient.toUserFriendlyAddress(),
-                    label: request.recipientLabel || transaction.recipient.toUserFriendlyAddress(),
-                    imageUrl: null,
-                    accountLabel: null,
-                },
-            );
-            // eslint-disable-next-line no-new
-            new AddressInfo(
-                $recipientDetails,
-                {
-                    userFriendlyAddress: transaction.recipient.toUserFriendlyAddress(),
-                    label: request.recipientLabel || 'Unnamed Contact',
-                    imageUrl: null,
-                    accountLabel: null,
-                },
-            );
-            break;
-        }
+
+        this._recipientAddressInfo = new AddressInfo(
+            {
+                userFriendlyAddress: transaction.recipient.toUserFriendlyAddress(),
+                label: (request.shopOrigin
+                    ? request.shopOrigin.split('://')[1]
+                    : request.recipientLabel)
+                    || null,
+                imageUrl: request.shopLogoUrl || null,
+                accountLabel: null,
+            },
+            $recipient,
+        );
+        this._recipientAddressInfo.appendTo($recipientDetails, true);
 
         this._senderAddressInfo.on(AddressInfo.Event.CLICKED, () => {
             this._openDetails('sender');
