@@ -78,7 +78,7 @@ class ImportWords {
             }
         });
 
-        // @ts-ignore
+        // @ts-ignore (Property 'test' does not exist on type 'Window'.)
         window.test = () => {
             const testPassphrase = [
                 'curtain', 'cancel', 'tackle', 'always',
@@ -88,7 +88,7 @@ class ImportWords {
                 'frost', 'disorder', 'pave', 'wrestle',
                 'broken', 'mercy', 'crime', 'dismiss',
             ];
-            // @ts-ignore
+            // @ts-ignore (Parameter 'field', 'word', 'index' implicitly have an 'any' type.)
             function putWord(field, word, index) { // eslint-disable-line require-jsdoc-except/require-jsdoc
                 setTimeout(() => {
                     field.value = word;
