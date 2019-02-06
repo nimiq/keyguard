@@ -1,7 +1,6 @@
 #confirm-transaction {
     position: relative;
     overflow: hidden;
-    display: flex;
     flex-grow: 1;
 }
 
@@ -117,7 +116,7 @@
     opacity: 0.16;
     border: 0rem;
     background-color: transparent;
-    background-image: url("data:image/svg+xml;charset=utf-8,<svg width='38' height='38' fill='none' xmlns='http://www.w3.org/2000/svg'><path fill-rule='evenodd' clip-rule='evenodd' d='M9.808 9.808c5.068-5.069 13.316-5.069 18.384 0 5.069 5.068 5.069 13.316 0 18.384-5.068 5.069-13.316 5.069-18.384 0-5.069-5.068-5.069-13.316 0-18.384zM19 17.586l3.535-3.536 1.415 1.414L20.414 19l3.536 3.535-1.415 1.415L19 20.414l-3.536 3.536-1.414-1.415L17.586 19l-3.536-3.536 1.414-1.414L19 17.586z' fill='%23101531'/></svg>");
+    background-image: url('data:image/svg+xml;charset=utf-8,<svg width="38" height="38" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M9.808 9.808c5.068-5.069 13.316-5.069 18.384 0 5.069 5.068 5.069 13.316 0 18.384-5.068 5.069-13.316 5.069-18.384 0-5.069-5.068-5.069-13.316 0-18.384zM19 17.586l3.535-3.536 1.415 1.414L20.414 19l3.536 3.535-1.415 1.415L19 20.414l-3.536 3.536-1.414-1.415L17.586 19l-3.536-3.536 1.414-1.414L19 17.586z" fill="%23101531"/></svg>');
     background-size: 135%;
 }
 
