@@ -36,19 +36,11 @@
 </head>
 <body>
     <div id="login-file">
-        <p class="nq-label">Loading CryptoWorker...</p>
+        <p class="nq-label">Rendering...</p>
     </div>
     <script>
         (async () => {
             console.warn("This demo needs to be run from localhost.");
-
-            try {
-                // Load web assembly encryption library into browser (if supported)
-                await Nimiq.WasmHelper.doImportBrowser();
-            } catch (e) {
-                alert(e.message);
-            }
-
 
             self.NIMIQ_IQONS_SVG_PATH = '/src/assets/Iqons.min.svg';
 
@@ -60,9 +52,9 @@
             encryptedKey.writeUint32(242); // Purpose ID
             entropy.serialize(encryptedKey); // Secret (usually encrypted)
             encryptedKey.writeUint16(0); // Checksum
-            console.log(encryptedKey);
+            console.log('Encrypted Key:', encryptedKey);
             const encryptedString = Nimiq.BufferUtils.toBase64(encryptedKey);
-            console.log(encryptedString);
+            console.log('Encrypted String:', encryptedString);
             const loginFile = new LoginFile(encryptedString, Math.floor(Math.random() * 10));
             const dataUrl = await loginFile.toDataUrl();
 
