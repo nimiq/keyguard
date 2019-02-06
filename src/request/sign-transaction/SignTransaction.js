@@ -172,7 +172,7 @@ class SignTransaction {
         // Go to start page
         window.location.hash = SignTransaction.Pages.CONFIRM_TRANSACTION;
 
-        if (getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) this._passphraseBox.focus();
+        if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) this._passphraseBox.focus();
     }
 
     /**

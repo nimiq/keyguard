@@ -76,9 +76,3 @@ async function runKeyguard(RequestApiClass, options) { // eslint-disable-line no
 
     window.rpcServer.init();
 }
-
-function getDocumentWidth() {
-    return window.innerWidth
-        || document.documentElement.clientWidth
-        || document.getElementsByTagName('body')[0].clientWidth;
-}

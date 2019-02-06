@@ -78,7 +78,6 @@ class SignTransactionApi extends TopLevelApi {
         } else {
             parsedRequest.shopOrigin = undefined;
         }
-        parsedRequest.accountBalance = this.parseNumber(request.accountBalance);
 
         return parsedRequest;
     }
