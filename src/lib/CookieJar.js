@@ -68,7 +68,7 @@ class CookieJar { // eslint-disable-line no-unused-vars
         if (str.length % 14 !== 0) throw new Error('Malformed cookie');
 
         const keys = str.match(/.{14}/g);
-        if (!keys) return []; // Make TS happy (match() can potentially return NULL)
+        if (!keys) return [];
 
         return keys.map(key => {
             const type = /** @type {Nimiq.Secret.Type} */ (parseInt(key[0], 10));
