@@ -84,7 +84,7 @@
 
 "@nimiq/core@nimiq-network/core":
   version "1.4.1"
-  resolved "https://codeload.github.com/nimiq-network/core/tar.gz/d71413a41cc8c308e5529a7514ba9430b0750c03"
+  resolved "https://codeload.github.com/nimiq-network/core/tar.gz/4d3c1059637cd382e8452cb3ad631a6f8df15267"
   dependencies:
     "@nimiq/jungle-db" "^0.9.17"
     atob "^2.0.3"
