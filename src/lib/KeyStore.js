@@ -26,7 +26,10 @@ class KeyStore {
      * @returns {boolean}
      */
     static isEncrypted(keyRecord) {
-        return keyRecord.secret.byteLength !== KeyStore.UNENCRYPTED_SECRET_SIZE;
+        // Because we are supporting legacy secrets which cannot be converted during migration,
+        // a KeyRecord can be both V2 and V3 encrypted.
+        return keyRecord.secret.byteLength === KeyStore.ENCRYPTED_SECRET_SIZE
+            || keyRecord.secret.byteLength === KeyStore.ENCRYPTED_SECRET_SIZE_V2;
     }
 
     constructor() {
@@ -146,7 +149,8 @@ class KeyStore {
      * @returns {Promise<void>}
      */
     async putPlain(keyRecord) {
-        if (keyRecord.secret.byteLength !== 56 && keyRecord.secret.byteLength !== KeyStore.UNENCRYPTED_SECRET_SIZE) {
+        if (keyRecord.secret.byteLength !== KeyStore.ENCRYPTED_SECRET_SIZE
+            && keyRecord.secret.byteLength !== KeyStore.UNENCRYPTED_SECRET_SIZE) {
             throw new Errors.KeyguardError('Invalid length: KeyRecord.secret');
         }
         const db = await this.connect();
@@ -316,4 +320,6 @@ KeyStore.DB_VERSION = 1;
 KeyStore.DB_NAME = 'nimiq-keyguard';
 KeyStore.DB_KEY_STORE_NAME = 'keys';
 
+KeyStore.ENCRYPTED_SECRET_SIZE = 56; /* version + rounds: 2, salt: 16, checksum: 2, purposeId: 4, secret: 32 */
+KeyStore.ENCRYPTED_SECRET_SIZE_V2 = 54; /* version + rounds: 2, secret: 32, salt: 16, checksum: 4 */
 KeyStore.UNENCRYPTED_SECRET_SIZE = /* purposeId */ 4 + /* secret */ 32;

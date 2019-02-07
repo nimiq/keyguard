@@ -203,7 +203,8 @@ class ImportApi extends TopLevelApi {
             }
 
             // Files: 56 = V3, 54 = V2/V1
-            if (this._encryptedKey.byteLength === 56 || this._encryptedKey.byteLength === 54) {
+            if (this._encryptedKey.byteLength === KeyStore.ENCRYPTED_SECRET_SIZE
+                || this._encryptedKey.byteLength === KeyStore.ENCRYPTED_SECRET_SIZE_V2) {
                 // Make sure read position is at 0 after a wrong passphrase
                 this._encryptedKey.reset();
 
