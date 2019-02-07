@@ -26,7 +26,7 @@
   },
   "homepage": "https://github.com/nimiq/keyguard-next/client#readme",
   "dependencies": {
-    "@nimiq/rpc": "^0.1.0-beta.6"
+    "@nimiq/rpc": "^0.1.1"
   },
   "devDependencies": {
     "@nimiq/core-types": "^1.0.0",
