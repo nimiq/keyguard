@@ -1,3 +1,7 @@
+.addressInfo.detailed-view {
+    cursor: auto;
+}
+
 .addressInfo.detailed-view .identicon {
     width: 18rem;
     height: 18rem;

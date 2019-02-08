@@ -143,6 +143,6 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
     static getDocumentWidth() {
         return window.innerWidth
             || document.documentElement.clientWidth
-            || document.getElementsByTagName('body')[0].clientWidth;
+            || document.body.clientWidth;
     }
 }

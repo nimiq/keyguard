@@ -1,73 +1,32 @@
 /* global Address */
 /* global Constants */
 /* global Identicon */
-/* global Nimiq */
 
-class AddressInfo extends Nimiq.Observable { // eslint-disable-line no-unused-vars
+class AddressInfo { // eslint-disable-line no-unused-vars
     /**
-     * Creates a new AddressInfo and appends it to a new node. Only one Element with isDetailedView=false supported, as
-     * event listener added to the Element does not get removed yet.
      * @param {{ userFriendlyAddress: string, label: string?, imageUrl: URL?, accountLabel: string?}} addressInfo
-     * @param {HTMLElement} $el
-     * @param {boolean} [isDetailedView = true] - only one $el with isDetailedView=false supported
      */
-    constructor(addressInfo, $el, isDetailedView = false) {
-        super();
-        if (!document.getElementById('nimiq-rounded-hexagon')) {
-            const body = document.getElementsByTagName('body')[0];
-            body.insertAdjacentHTML('beforeend', Constants.HEXAGON_CLIP_PATH);
+    constructor(addressInfo) {
+        if (addressInfo.imageUrl && !document.getElementById('nimiq-rounded-hexagon')) {
+            document.body.insertAdjacentHTML('beforeend', Constants.HEXAGON_CLIP_PATH);
         }
-
         this._addressInfo = addressInfo;
-
-        this.appendTo($el, isDetailedView);
     }
 
     /**
-     * Appends this AddressInfo object to a new node. Only one Element with isDetailedView=false supported, as
-     * event listener added to the Element does not get removed yet.
+     * Inserts this AddressInfo into $el overwriting the original content of $el.
      * @param {HTMLElement} $el
-     * @param {boolean} [isDetailedView = true] - only one $el with isDetailedView=false supported
+     * @param {boolean} [isDetailedView = false]
      */
-    appendTo($el, isDetailedView = false) {
-        $el = this._createElement($el, isDetailedView);
-        if (!isDetailedView) {
-            $el.addEventListener('click', event => {
-                event.preventDefault(); // in case $el is a HTMLLinkElement
-                this.fire(AddressInfo.Event.CLICKED, this._addressInfo);
-            });
-        }
-    }
-
-    /**
-     * @private
-     * @param {HTMLElement} $el
-     * @param {boolean} isDetailedView
-     * @returns {HTMLElement}
-     */
-    _createElement($el, isDetailedView) {
-        $el = $el || document.createElement('a');
-        $el.classList.toggle('addressInfo', true);
+    renderTo($el, isDetailedView = false) {
+        $el = $el || document.createElement('div');
+        $el.innerText = '';
+        $el.classList.add('addressInfo');
         $el.classList.toggle('detailed-view', isDetailedView);
 
-        const label = this._addressInfo.label || (isDetailedView
-            ? 'Unnamed Contact'
-            : this._addressInfo.userFriendlyAddress);
-
-        const accountLabel = this._addressInfo.accountLabel && isDetailedView
-            ? `
-            <div class="account-label nq-label">${this._addressInfo.accountLabel}</div>`
-            : '';
-
-        $el.innerHTML = `
-            <div class="identicon"></div>
-            <div class="label">${label}</div>
-            ${accountLabel}
-            ${isDetailedView ? '<div class="address"></div>' : ''}
-        `;
-
-        /** @type {HTMLDivElement} */
-        const $identicon = ($el.querySelector('.identicon'));
+        // identicon
+        const $identicon = document.createElement('div');
+        $identicon.classList.add('identicon');
         if (this._addressInfo.imageUrl) { // URl is given, use image
             const $shopLogo = document.createElement('img');
             $shopLogo.src = this._addressInfo.imageUrl.href;
@@ -83,17 +42,31 @@ class AddressInfo extends Nimiq.Observable { // eslint-disable-line no-unused-va
             // eslint-disable-next-line no-new
             new Identicon(this._addressInfo.userFriendlyAddress, $identicon);
         }
+        $el.appendChild($identicon);
+
+        // label
+        const $label = document.createElement('div');
+        $label.classList.add('label');
+        $label.innerText = this._addressInfo.label || (isDetailedView
+            ? 'Unnamed Contact'
+            : this._addressInfo.userFriendlyAddress);
+        $el.appendChild($label);
 
         if (isDetailedView) {
-            // eslint-disable-next-line no-new
-            new Address(/** @type {HTMLElement} */($el.querySelector('.address')),
-                this._addressInfo.userFriendlyAddress);
-        }
+            // accountLabel
+            if (this._addressInfo.accountLabel) {
+                const $accountLabel = document.createElement('div');
+                $accountLabel.classList.add('account-label', 'nq-label');
+                $accountLabel.innerText = this._addressInfo.accountLabel;
+                $el.appendChild($accountLabel);
+            }
 
-        return $el;
+            // address
+            const $address = document.createElement('div');
+            $address.classList.add('address');
+            // eslint-disable-next-line no-new
+            new Address($address, this._addressInfo.userFriendlyAddress);
+            $el.appendChild($address);
+        }
     }
 }
-
-AddressInfo.Event = {
-    CLICKED: 'clicked',
-};

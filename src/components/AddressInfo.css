@@ -24,7 +24,7 @@
 }
 
 .addressInfo .identicon.clip::after {
-    content: ' ';
+    content: '';
     display: block;
     position: absolute;
     top: 0;
@@ -39,8 +39,8 @@
     z-index: 1;
 }
 
-.addressInfo:focus .identicon,
-.addressInfo:hover .identicon {
+.addressInfo:not(.detailed-view):focus .identicon,
+.addressInfo:not(.detailed-view):hover .identicon {
     transform: scale(1.1);
 }
 
@@ -54,7 +54,7 @@
 }
 
 .addressInfo:not(.detailed-view) .label::after {
-    content: ' ';
+    content: '';
     display: inline-block;
     width: 2rem;
     height: 100%;

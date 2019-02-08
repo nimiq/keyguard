@@ -47,7 +47,7 @@
 }
 
 #confirm-transaction.account-details-open > #account-details {
-    z-index: 1;
+    z-index: 3;
     transition-delay: 0s;
     opacity: 1;
 }
@@ -133,6 +133,7 @@
 #confirm-transaction #account-details #close-details:hover,
 #confirm-transaction #account-details #close-details:focus {
     opacity: 0.25;
+    outline: none;
 }
 
 #confirm-transaction .transaction .accounts {

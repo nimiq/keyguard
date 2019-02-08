@@ -26,35 +26,29 @@ class SignTransaction {
 
         /** @type {HTMLLinkElement} */
         const $sender = (this.$el.querySelector('.accounts .sender'));
-        this._senderAddressInfo = new AddressInfo(
-            {
-                userFriendlyAddress: transaction.sender.toUserFriendlyAddress(),
-                label: request.senderLabel || null,
-                imageUrl: null,
-                accountLabel: request.keyLabel || null,
-            },
-            $sender,
-        );
+        this._senderAddressInfo = new AddressInfo({
+            userFriendlyAddress: transaction.sender.toUserFriendlyAddress(),
+            label: request.senderLabel || null,
+            imageUrl: null,
+            accountLabel: request.keyLabel || null,
+        });
+        this._senderAddressInfo.renderTo($sender);
+        $sender.addEventListener('click', () => {
+            this._openDetails(this._senderAddressInfo);
+        });
 
         /** @type {HTMLLinkElement} */
         const $recipient = (this.$el.querySelector('.accounts .recipient'));
-        this._recipientAddressInfo = new AddressInfo(
-            {
-                userFriendlyAddress: transaction.recipient.toUserFriendlyAddress(),
-                label: (request.shopOrigin
-                    ? request.shopOrigin.split('://')[1]
-                    : request.recipientLabel)
-                    || null,
-                imageUrl: request.shopLogoUrl || null,
-                accountLabel: null,
-            },
-            $recipient,
-        );
-
-        this._senderAddressInfo.on(AddressInfo.Event.CLICKED, () => {
-            this._openDetails(this._senderAddressInfo);
+        this._recipientAddressInfo = new AddressInfo({
+            userFriendlyAddress: transaction.recipient.toUserFriendlyAddress(),
+            label: request.shopOrigin
+                ? request.shopOrigin.split('://')[1]
+                : request.recipientLabel || null,
+            imageUrl: request.shopLogoUrl || null,
+            accountLabel: null,
         });
-        this._recipientAddressInfo.on(AddressInfo.Event.CLICKED, () => {
+        this._recipientAddressInfo.renderTo($recipient);
+        $recipient.addEventListener('click', () => {
             this._openDetails(this._recipientAddressInfo);
         });
 
@@ -115,7 +109,7 @@ class SignTransaction {
      * @param {AddressInfo} which
      */
     _openDetails(which) {
-        which.appendTo(
+        which.renderTo(
             /** @type {HTMLElement} */(this.$accountDetails.querySelector('#details')),
             true,
         );

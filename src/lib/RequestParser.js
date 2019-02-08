@@ -188,7 +188,7 @@ class RequestParser { // eslint-disable-line no-unused-vars
         try {
             const parsedUrl = new URL(url);
             if (parsedUrl.protocol !== 'https:' && parsedUrl.protocol !== 'http:') {
-                throw new Error('shopOrigin protocol must be https: or http:');
+                throw new Errors.InvalidRequestError('shopOrigin protocol must be https: or http:');
             }
             return parsedUrl.origin;
         } catch (error) {
@@ -208,7 +208,7 @@ class RequestParser { // eslint-disable-line no-unused-vars
         try {
             const parsedUrl = new URL(url);
             if (parsedUrl.protocol !== 'https:' && parsedUrl.protocol !== 'http:') {
-                throw new Error('shopLogoUrl protocol must be https: or http:');
+                throw new Errors.InvalidRequestError('shopLogoUrl protocol must be https: or http:');
             }
             return parsedUrl;
         } catch (error) {

@@ -24,7 +24,7 @@ class Address { // eslint-disable-line no-unused-vars
      */
     _createElement($el) {
         $el = $el || document.createElement('div');
-        $el.classList.toggle('address', true);
+        $el.classList.add('address');
         $el.innerHTML = `
             <span class="chunk"></span>
             <span class="chunk"></span>
