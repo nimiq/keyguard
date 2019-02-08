@@ -8,7 +8,6 @@ describe('LoginFile', () => {
     it('can generate a Wallet File', async () => {
         const entropy = new Nimiq.Entropy(Dummy.keys[0]);
 
-        // @ts-ignore
         self.NIMIQ_IQONS_SVG_PATH = '/base/src/assets/Iqons.min.svg';
 
         const walletFile = new LoginFile(entropy.toBase64());

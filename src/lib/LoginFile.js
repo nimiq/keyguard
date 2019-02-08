@@ -43,10 +43,7 @@ class LoginFile {
 
     async toObjectUrl() {
         await this._drawPromise;
-        return this._toObjectUrl();
-    }
 
-    _toObjectUrl() {
         return new Promise(resolve => {
             this.$canvas.toBlob(blob => {
                 const url = URL.createObjectURL(blob);
@@ -85,13 +82,11 @@ class LoginFile {
     }
 
     _setFont() {
-        const ctx = this._ctx;
-        ctx.font = `600 14px ${LoginFile.FONT_FAMILY}`;
-        ctx.textAlign = 'center';
+        this._ctx.font = `600 14px ${LoginFile.FONT_FAMILY}`;
+        this._ctx.textAlign = 'center';
     }
 
     _drawDateText() {
-        const ctx = this._ctx;
         const x = LoginFile.WIDTH / 2;
         const y = 97;
         const date = new Date();
@@ -101,16 +96,15 @@ class LoginFile {
          */
         const leftPad = num => `${num < 10 ? '0' : ''}${num}`;
         const datestring = `${date.getFullYear()}-${leftPad(date.getMonth() + 1)}-${leftPad(date.getDate())}`;
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-        ctx.fillText(datestring, x, y);
+        this._ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+        this._ctx.fillText(datestring, x, y);
     }
 
     _drawWarningText() {
-        const ctx = this._ctx;
         const x = LoginFile.WIDTH / 2;
         const y = LoginFile.HEIGHT - 32;
-        ctx.fillStyle = 'white';
-        ctx.fillText('Do not share this file.', x, y);
+        this._ctx.fillStyle = 'white';
+        this._ctx.fillText('Do not share this file.', x, y);
     }
 
     /**
@@ -142,12 +136,10 @@ class LoginFile {
     }
 
     _drawBackground() {
-        const ctx = this._ctx;
-
-        ctx.fillStyle = 'white';
+        this._ctx.fillStyle = 'white';
         this._roundRect(0, 0, this._width, this._height, LoginFile.OUTER_RADIUS, true);
 
-        const gradient = ctx.createRadialGradient(
+        const gradient = this._ctx.createRadialGradient(
             this._width - LoginFile.BORDER_WIDTH,
             this._height - LoginFile.BORDER_WIDTH,
             0,
@@ -158,10 +150,9 @@ class LoginFile {
               + ((this._height - 2 * LoginFile.BORDER_WIDTH) ** 2),
             ),
         );
-        // const gradient = ctx.createLinearGradient(this._width, this._height, 0, 0);
         gradient.addColorStop(0, this._config.corner);
         gradient.addColorStop(1, this._config.color);
-        ctx.fillStyle = gradient;
+        this._ctx.fillStyle = gradient;
         this._roundRect(
             LoginFile.BORDER_WIDTH,
             LoginFile.BORDER_WIDTH,
@@ -173,34 +164,43 @@ class LoginFile {
     }
 
     async _drawDecorations() {
-        const img1 = new Image();
-        const loaded1 = new Promise(resolve => {
-            img1.onload = () => resolve();
-        });
-        // eslint-disable-next-line max-len
-        img1.src = `data:image/svg+xml,<svg width="303" height="288" viewBox="6 6 303 288" fill="none" stroke="white" stroke-miterlimit="10" xmlns="http://www.w3.org/2000/svg" opacity="${this._config.opacityLines}"><path d="M0,214.4c8.1-5.4,17-12.6,27.8-23.4c43-43,28.9-57.1,71.8-100.1c43-43,57.1-28.8,100.1-71.8,c7.1-7.1,12.6-13.4,17.1-19.1"/><path d="M0,204.3c6.7-4.7,13.9-10.7,22.1-18.9c43-43,26-60,69-103c43-43,60-26,103-69c4.8-4.8,8.8-9.3,12.3-13.5"/><path d="M0,194.2c5.1-3.9,10.6-8.6,16.5-14.5c43-43,23.2-62.8,66.2-105.8c43-43,62.8-23.2,105.8-66.2,c2.7-2.7,5.1-5.3,7.4-7.8"/><path d="M0,184c3.5-2.8,7.1-6.1,10.8-9.8c43-43,20.4-65.6,63.4-108.6c43-43,65.6-20.4,108.6-63.4,c0.7-0.7,1.4-1.4,2.1-2.2"/><path d="M173.5,0c-40.8,38.1-66,15.3-107.8,57c-43,43-17.5,68.4-60.5,111.4c-1.8,1.8-3.5,3.4-5.2,4.9"/><path d="M161.3,0c-37.5,29.7-64.5,9-104,48.5C14.4,91.4,42.3,119.6,0,162.3"/><path d="M147.2,0c-34,20.5-61.9,3.5-98.5,40.1C8,80.8,33.8,110.9,0,150.5"/><path d="M128.6,0C99.2,10.2,72.2-0.4,40.2,31.6C2.1,69.7,24.5,100.8,0,137.3"/><path d="M77.8,0C62.9,2.1,47.8,7.1,31.8,23.1C-2.7,57.5,14,87.9,0,120.8"/><path d="M0,79.4c0.9-21.3,1.1-42.6,23.3-64.8C29.9,8,36.5,3.3,42.9,0"/></svg>`;
-        await loaded1;
-        this._ctx.drawImage(img1, 6, 6, 303, 288);
+        await this._drawDataUrlImage(
+            // eslint-disable-next-line max-len
+            `data:image/svg+xml,<svg width="303" height="288" viewBox="6 6 303 288" fill="none" stroke="white" stroke-miterlimit="10" xmlns="http://www.w3.org/2000/svg" opacity="${this._config.opacityLines}"><path d="M0,214.4c8.1-5.4,17-12.6,27.8-23.4c43-43,28.9-57.1,71.8-100.1c43-43,57.1-28.8,100.1-71.8,c7.1-7.1,12.6-13.4,17.1-19.1"/><path d="M0,204.3c6.7-4.7,13.9-10.7,22.1-18.9c43-43,26-60,69-103c43-43,60-26,103-69c4.8-4.8,8.8-9.3,12.3-13.5"/><path d="M0,194.2c5.1-3.9,10.6-8.6,16.5-14.5c43-43,23.2-62.8,66.2-105.8c43-43,62.8-23.2,105.8-66.2,c2.7-2.7,5.1-5.3,7.4-7.8"/><path d="M0,184c3.5-2.8,7.1-6.1,10.8-9.8c43-43,20.4-65.6,63.4-108.6c43-43,65.6-20.4,108.6-63.4,c0.7-0.7,1.4-1.4,2.1-2.2"/><path d="M173.5,0c-40.8,38.1-66,15.3-107.8,57c-43,43-17.5,68.4-60.5,111.4c-1.8,1.8-3.5,3.4-5.2,4.9"/><path d="M161.3,0c-37.5,29.7-64.5,9-104,48.5C14.4,91.4,42.3,119.6,0,162.3"/><path d="M147.2,0c-34,20.5-61.9,3.5-98.5,40.1C8,80.8,33.8,110.9,0,150.5"/><path d="M128.6,0C99.2,10.2,72.2-0.4,40.2,31.6C2.1,69.7,24.5,100.8,0,137.3"/><path d="M77.8,0C62.9,2.1,47.8,7.1,31.8,23.1C-2.7,57.5,14,87.9,0,120.8"/><path d="M0,79.4c0.9-21.3,1.1-42.6,23.3-64.8C29.9,8,36.5,3.3,42.9,0"/></svg>`,
+            6, 6, 303, 288,
+        );
 
-        const img2 = new Image();
-        const loaded2 = new Promise(resolve => {
-            img2.onload = () => resolve();
-        });
-        // eslint-disable-next-line max-len
-        img2.src = `data:image/svg+xml,<svg width="99" height="104" viewBox="110 146 99 104" fill="white" xmlns="http://www.w3.org/2000/svg" opacity="${this._config.opacityWallet}"><path opacity=".8" d="M176,160l-7.2-12.6c-0.5-0.9-1.5-1.4-2.5-1.4h-14.5c-1,0-2,0.6-2.5,1.4L142,160c-0.5,0.9-0.5,2,0,2.9l7.2,12.6,c0.5,0.9,1.5,1.4,2.5,1.4h14.5c1,0,2-0.6,2.5-1.4l7.2-12.6C176.5,162,176.5,160.9,176,160z"/><path opacity=".78" d="M176,233.1l-7.2-12.6c-0.5-0.9-1.5-1.4-2.5-1.4h-14.5c-1,0-2,0.6-2.5,1.4l-7.2,12.6c-0.5,0.9-0.5,2,0,2.9,l7.2,12.6c0.5,0.9,1.5,1.4,2.5,1.4h14.5c1,0,2-0.6,2.5-1.4L176,236C176.5,235.1,176.5,234,176,233.1z"/><path opacity=".5" d="M144.4,178.3l-7.2-12.6c-0.5-0.9-1.5-1.4-2.5-1.4h-14.5c-1,0-2,0.6-2.5,1.4l-7.2,12.6c-0.5,0.9-0.5,2,0,2.9,l7.2,12.6c0.5,0.9,1.5,1.4,2.5,1.4h14.5c1,0,2-0.6,2.5-1.4l7.2-12.6C144.9,180.3,144.9,179.2,144.4,178.3z"/><path opacity=".6" d="M144.4,214.8l-7.2-12.6c-0.5-0.9-1.5-1.4-2.5-1.4h-14.5c-1,0-2,0.6-2.5,1.4l-7.2,12.6c-0.5,0.9-0.5,2,0,2.9,l7.2,12.6c0.5,0.9,1.5,1.4,2.5,1.4h14.5c1,0,2-0.6,2.5-1.4l7.2-12.6C144.9,216.8,144.9,215.7,144.4,214.8z"/><path opacity=".8" d="M207.6,178.3l-7.2-12.6c-0.5-0.9-1.5-1.4-2.5-1.4h-14.5c-1,0-2,0.6-2.5,1.4l-7.2,12.6c-0.5,0.9-0.5,2,0,2.9,l7.2,12.6c0.5,0.9,1.5,1.4,2.5,1.4h14.5c1,0,2-0.6,2.5-1.4l7.2-12.6C208.1,180.3,208.1,179.2,207.6,178.3z"/><path opacity=".6" d="M207.6,214.8l-7.2-12.6c-0.5-0.9-1.5-1.4-2.5-1.4h-14.5c-1,0-2,0.6-2.5,1.4l-7.2,12.6c-0.5,0.9-0.5,2,0,2.9,l7.2,12.6c0.5,0.9,1.5,1.4,2.5,1.4h14.5c1,0,2-0.6,2.5-1.4l7.2-12.6C208.1,216.8,208.1,215.7,207.6,214.8z"/></svg>`;
-        await loaded2;
-        this._ctx.drawImage(img2, 110, 146, 99, 104);
+        await this._drawDataUrlImage(
+            // eslint-disable-next-line max-len
+            `data:image/svg+xml,<svg width="99" height="104" viewBox="110 146 99 104" fill="white" xmlns="http://www.w3.org/2000/svg" opacity="${this._config.opacityWallet}"><path opacity=".8" d="M176,160l-7.2-12.6c-0.5-0.9-1.5-1.4-2.5-1.4h-14.5c-1,0-2,0.6-2.5,1.4L142,160c-0.5,0.9-0.5,2,0,2.9l7.2,12.6,c0.5,0.9,1.5,1.4,2.5,1.4h14.5c1,0,2-0.6,2.5-1.4l7.2-12.6C176.5,162,176.5,160.9,176,160z"/><path opacity=".78" d="M176,233.1l-7.2-12.6c-0.5-0.9-1.5-1.4-2.5-1.4h-14.5c-1,0-2,0.6-2.5,1.4l-7.2,12.6c-0.5,0.9-0.5,2,0,2.9,l7.2,12.6c0.5,0.9,1.5,1.4,2.5,1.4h14.5c1,0,2-0.6,2.5-1.4L176,236C176.5,235.1,176.5,234,176,233.1z"/><path opacity=".5" d="M144.4,178.3l-7.2-12.6c-0.5-0.9-1.5-1.4-2.5-1.4h-14.5c-1,0-2,0.6-2.5,1.4l-7.2,12.6c-0.5,0.9-0.5,2,0,2.9,l7.2,12.6c0.5,0.9,1.5,1.4,2.5,1.4h14.5c1,0,2-0.6,2.5-1.4l7.2-12.6C144.9,180.3,144.9,179.2,144.4,178.3z"/><path opacity=".6" d="M144.4,214.8l-7.2-12.6c-0.5-0.9-1.5-1.4-2.5-1.4h-14.5c-1,0-2,0.6-2.5,1.4l-7.2,12.6c-0.5,0.9-0.5,2,0,2.9,l7.2,12.6c0.5,0.9,1.5,1.4,2.5,1.4h14.5c1,0,2-0.6,2.5-1.4l7.2-12.6C144.9,216.8,144.9,215.7,144.4,214.8z"/><path opacity=".8" d="M207.6,178.3l-7.2-12.6c-0.5-0.9-1.5-1.4-2.5-1.4h-14.5c-1,0-2,0.6-2.5,1.4l-7.2,12.6c-0.5,0.9-0.5,2,0,2.9,l7.2,12.6c0.5,0.9,1.5,1.4,2.5,1.4h14.5c1,0,2-0.6,2.5-1.4l7.2-12.6C208.1,180.3,208.1,179.2,207.6,178.3z"/><path opacity=".6" d="M207.6,214.8l-7.2-12.6c-0.5-0.9-1.5-1.4-2.5-1.4h-14.5c-1,0-2,0.6-2.5,1.4l-7.2,12.6c-0.5,0.9-0.5,2,0,2.9,l7.2,12.6c0.5,0.9,1.5,1.4,2.5,1.4h14.5c1,0,2-0.6,2.5-1.4l7.2-12.6C208.1,216.8,208.1,215.7,207.6,214.8z"/></svg>`,
+            110, 146, 99, 104,
+        );
     }
 
     async _drawIWLogo() {
+        await this._drawDataUrlImage(
+            // eslint-disable-next-line max-len
+            'data:image/svg+xml,<svg width="19.33" height="12" viewBox="285 507 19.33 12" fill="%231F2348" opacity=".7" xmlns="http://www.w3.org/2000/svg"><path d="M287.3,507.1c1.6,3.7,3.1,7.3,4.5,10.9c0.2,0.6,0.4,1,1.2,1c0.8,0,1-0.4,1.2-1c0.5-1.1,1-2.2,1.5-3.6,c0.6,1.4,1.1,2.5,1.6,3.6c0.2,0.5,0.4,0.9,1.2,0.9c0.8,0,1-0.3,1.3-0.9c1.2-3,2.5-6,3.8-9c0.3-0.6,0.5-1.2,0.8-1.8,c-2.1-0.4-2.1-0.4-2.8,1.4c-0.8,1.8-1.5,3.7-2.3,5.6c-0.2,0.5-0.4,1-0.8,1.7c-0.3-0.7-0.4-1.2-0.7-1.6c-0.8-1.3-0.8-2.5,0-3.8,c0.5-1,0.9-2.1,1.2-3.1c-2.6-1-2.4,1.4-3.2,2.6c-0.8-1.2-0.6-3.6-3.2-2.6c0.6,1.4,1.2,2.8,1.7,4.2c0.1,0.3,0.3,0.8,0.1,1.1,c-0.4,1-0.8,2-1.3,3.2c-1-2.5-2-4.8-2.9-7.1C289.5,506.9,289.5,506.9,287.3,507.1z"/><rect x="285" y="507" class="st9" width="2" height="12"/></svg>',
+            285, 507, 19.33, 12,
+        );
+    }
+
+    /**
+     * @param {string} dataUrl
+     * @param {number} x
+     * @param {number} y
+     * @param {number} w
+     * @param {number} h
+     * @returns {Promise<void>}
+     */
+    async _drawDataUrlImage(dataUrl, x, y, w, h) {
         const img = new Image();
         const loaded = new Promise(resolve => {
             img.onload = () => resolve();
         });
-        // eslint-disable-next-line max-len
-        img.src = 'data:image/svg+xml,<svg width="19.33" height="12" viewBox="285 507 19.33 12" fill="%231F2348" opacity=".7" xmlns="http://www.w3.org/2000/svg"><path d="M287.3,507.1c1.6,3.7,3.1,7.3,4.5,10.9c0.2,0.6,0.4,1,1.2,1c0.8,0,1-0.4,1.2-1c0.5-1.1,1-2.2,1.5-3.6,c0.6,1.4,1.1,2.5,1.6,3.6c0.2,0.5,0.4,0.9,1.2,0.9c0.8,0,1-0.3,1.3-0.9c1.2-3,2.5-6,3.8-9c0.3-0.6,0.5-1.2,0.8-1.8,c-2.1-0.4-2.1-0.4-2.8,1.4c-0.8,1.8-1.5,3.7-2.3,5.6c-0.2,0.5-0.4,1-0.8,1.7c-0.3-0.7-0.4-1.2-0.7-1.6c-0.8-1.3-0.8-2.5,0-3.8,c0.5-1,0.9-2.1,1.2-3.1c-2.6-1-2.4,1.4-3.2,2.6c-0.8-1.2-0.6-3.6-3.2-2.6c0.6,1.4,1.2,2.8,1.7,4.2c0.1,0.3,0.3,0.8,0.1,1.1,c-0.4,1-0.8,2-1.3,3.2c-1-2.5-2-4.8-2.9-7.1C289.5,506.9,289.5,506.9,287.3,507.1z"/><rect x="285" y="507" class="st9" width="2" height="12"/></svg>';
+        img.src = dataUrl;
         await loaded;
-        this._ctx.drawImage(img, 285, 507, 19.33, 12);
+        this._ctx.drawImage(img, x, y, w, h);
     }
 
     /**
