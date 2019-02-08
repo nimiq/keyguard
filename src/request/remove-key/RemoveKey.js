@@ -93,8 +93,9 @@ class RemoveKey {
         </div>
 
         <div class="page-footer nq-card-footer">
-            <button id="remove-key-first-confirm" class="hide-for-final-confirm nq-button red" data-i18n="remove-key-first-confirm">
-                I can log in again
+            <button id="remove-key-first-confirm" class="hide-for-final-confirm nq-button red"
+                data-i18n="remove-key-first-confirm">
+                I am able to log in again
             </button>
             <button id="remove-key-final-confirm" class="final-confirm nq-button red" 
                 data-i18n="remove-key-final-confirm">
