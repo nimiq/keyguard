@@ -10,7 +10,7 @@
 class SignMessage {
     /**
      * @param {HTMLDivElement} $page
-     * @param {KeyguardRequest.ParsedSignMessageRequest} request
+     * @param {ParsedSignMessageRequest} request
      * @param {Function} resolve
      * @param {Function} reject
      */
@@ -64,7 +64,7 @@ class SignMessage {
     }
 
     /**
-     * @param {KeyguardRequest.ParsedSignMessageRequest} request
+     * @param {ParsedSignMessageRequest} request
      * @param {Function} resolve
      * @param {Function} reject
      * @param {string} [passphrase]

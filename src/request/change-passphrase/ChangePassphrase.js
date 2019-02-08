@@ -10,7 +10,7 @@ class ChangePassphrase {
      * If a complete page is missing it will be created.
      * However these pages wil be the default pages which usually don't match the applications requirements.
      * Refer to the corresponsing _build() to see the general Structure.
-     * @param {KeyguardRequest.ParsedSimpleRequest} request
+     * @param {ParsedSimpleRequest} request
      * @param {Function} resolve
      * @param {Function} reject
      */

@@ -27,7 +27,7 @@
     letter-spacing: 0.25rem;
 }
 
-.passphrase-input .input-container.shake input {
+.passphrase-input input.password.shake {
     color: var(--nimiq-red);
 }
 

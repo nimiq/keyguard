@@ -53,7 +53,7 @@ class SignTransactionApi extends TopLevelApi {
 
     /**
      * @param {KeyguardRequest.SignTransactionRequest} request
-     * @returns {Promise<KeyguardRequest.ParsedSignTransactionRequest>}
+     * @returns {Promise<ParsedSignTransactionRequest>}
      */
     async parseRequest(request) {
         if (!request) {
