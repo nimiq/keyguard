@@ -85,6 +85,10 @@ class RemoveKey {
                 <button id="show-download-key-file" data-i18n="remove-key-download-key-file" class="nq-button-s">
                     Download Wallet File
                 </button>
+            </div>
+            <div class="flex-grow"></div>
+            <div>
+                <img src="../../assets/sample-recovery-words.png" alt="sample recovery words" />
                 <button id="show-recovery-words" data-i18n="remove-key-show-recovery-words" class="nq-button-s">
                     Show Recovery Words
                 </button>
