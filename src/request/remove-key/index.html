@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy"
-          content="default-src 'self' 'unsafe-eval' https://cdn.nimiq-testnet.com;
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-eval' https://cdn.nimiq-testnet.com;
           img-src http: https: blob: data:;
           child-src 'self' blob:;
           style-src 'self' https://fonts.googleapis.com;
@@ -47,7 +47,8 @@
     <script defer src="index.js"></script>
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Muli:400,600,700">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono&text=0123456789ABCDEFGHJKLMNPQRSTUVXY">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Fira+Mono&text=0123456789ABCDEFGHJKLMNPQRSTUVXY">
 
     <link rel="stylesheet" bundle-toplevel href="../../../node_modules/@nimiq/style/nimiq-style.min.css">
     <link rel="stylesheet" bundle-toplevel href="../../../node_modules/@nimiq/style/nimiq-style-icons.min.css">
@@ -64,6 +65,7 @@
     <link rel="stylesheet" href="../export/Export.css">
     <link rel="stylesheet" href="./remove-key.css">
 </head>
+
 <body>
     <div class="header-top">
         <div class="nimiq-app-name">
@@ -72,6 +74,46 @@
     </div>
 
     <div id="app">
+        <!-- Remove key-->
+        <div class="page nq-card" id="remove-key">
+
+            <div class="page-header nq-card-header">
+                <h1 data-i18n="remove-key-log-out" class="nq-h1">Don't lose access</h1>
+            </div>
+
+            <div class="page-body nq-card-body">
+                <div class="row">
+                    <p data-i18n="remove-key-intro-text" class="nq-text nq-red">
+                        If you log out without saving your account, you will irretrievably lose access to it!
+                    </p>
+                </div>
+                <div class="flex-grow"></div>
+                <div>
+                    <button id="show-download-key-file" data-i18n="remove-key-download-key-file" class="nq-button-s">
+                        Download Wallet File
+                    </button>
+                </div>
+                <div class="flex-grow"></div>
+                <div>
+                    <img src="../../assets/sample-recovery-words.png" alt="sample recovery words" />
+                    <button id="show-recovery-words" data-i18n="remove-key-show-recovery-words" class="nq-button-s">
+                        Show Recovery Words
+                    </button>
+                </div>
+                <div class="flex-grow"></div>
+            </div>
+
+            <div class="page-footer nq-card-footer">
+                <button id="remove-key-first-confirm" class="hide-for-final-confirm nq-button red"
+                    data-i18n="remove-key-first-confirm">
+                    I am able to log in again
+                </button>
+                <button id="remove-key-final-confirm" class="final-confirm nq-button red"
+                    data-i18n="remove-key-final-confirm">
+                    Log out of your account
+                </button>
+            </div>
+        </div>
 
         <div class="flex-grow"></div>
 
@@ -89,4 +131,5 @@
 
     </div>
 </body>
+
 </html>
