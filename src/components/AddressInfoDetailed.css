@@ -17,3 +17,19 @@
 .addressInfo.detailed-view .account-label {
     margin-top: 1.5rem;
 }
+
+.addressInfo.detailed-view .address {
+    width: 100%;
+    max-width: 27.375rem;
+    text-transform: uppercase;
+    line-height: 1.75;
+    font-family: 'Fira Mono', monospace;
+    opacity: 0.5;
+    margin-top: 7rem;
+    display: flex;
+    font-size: 3rem;
+    white-space: pre-wrap;
+    text-align: center;
+    word-spacing: 0.75rem;
+    margin-left: 1.25rem;
+}

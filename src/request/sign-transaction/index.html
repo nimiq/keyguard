@@ -37,7 +37,6 @@
 
     <script defer src="../../lib/Iqons.js"></script>
     <script defer src="../../components/Identicon.js"></script>
-    <script defer src="../../components/Address.js"></script>
     <script defer src="../../components/AddressInfo.js"></script>
     <script defer src="SignTransaction.js"></script>
     <script defer src="SignTransactionApi.js"></script>
@@ -53,7 +52,6 @@
     <link rel="stylesheet" bundle-toplevel href="../../components/PassphraseInput.css">
     <link rel="stylesheet" bundle-toplevel href="../../components/PassphraseBox.css">
 
-    <link rel="stylesheet" href="../../components/Address.css">
     <link rel="stylesheet" href="../../components/AddressInfo.css">
     <link rel="stylesheet" href="../../components/AddressInfoDetailed.css">
     <link rel="stylesheet" href="../../components/PaymentInfoLine.css">
@@ -75,7 +73,6 @@
                 <button id="close-details" class="nq-icon"></button>
                 <div id="details"></div>
             </div>
-            <div id="background-overlay"></div>
             <div id="effect-container">
                 <div class="page-header nq-card-header">
                     <a tabindex="0" class="page-header-back-button nq-icon arrow-left hide-standard"></a>
@@ -86,9 +83,9 @@
                 <div class="page-body transaction">
                     <div class="nq-card-body">
                         <div class="center accounts">
-                            <div class="sender" href="#"></div>
+                            <div class="sender"></div>
                             <i class="arrow nq-icon"></i>
-                            <div class="recipient" href="#"></div>
+                            <div class="recipient"></div>
                         </div>
                     </div>
 

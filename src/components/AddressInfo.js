@@ -1,4 +1,3 @@
-/* global Address */
 /* global Constants */
 /* global Identicon */
 
@@ -20,7 +19,7 @@ class AddressInfo { // eslint-disable-line no-unused-vars
      */
     renderTo($el, isDetailedView = false) {
         $el = $el || document.createElement('div');
-        $el.innerText = '';
+        $el.textContent = '';
         $el.classList.add('addressInfo');
         $el.classList.toggle('detailed-view', isDetailedView);
 
@@ -47,7 +46,7 @@ class AddressInfo { // eslint-disable-line no-unused-vars
         // label
         const $label = document.createElement('div');
         $label.classList.add('label');
-        $label.innerText = this._addressInfo.label || (isDetailedView
+        $label.textContent = this._addressInfo.label || (isDetailedView
             ? 'Unnamed Contact'
             : this._addressInfo.userFriendlyAddress);
         $el.appendChild($label);
@@ -57,15 +56,15 @@ class AddressInfo { // eslint-disable-line no-unused-vars
             if (this._addressInfo.accountLabel) {
                 const $accountLabel = document.createElement('div');
                 $accountLabel.classList.add('account-label', 'nq-label');
-                $accountLabel.innerText = this._addressInfo.accountLabel;
+                $accountLabel.textContent = this._addressInfo.accountLabel;
                 $el.appendChild($accountLabel);
             }
 
             // address
             const $address = document.createElement('div');
             $address.classList.add('address');
-            // eslint-disable-next-line no-new
-            new Address($address, this._addressInfo.userFriendlyAddress);
+            // last space is necessary for the rendering to work properly with white-space: pre-wrap.
+            $address.textContent = `${this._addressInfo.userFriendlyAddress} `;
             $el.appendChild($address);
         }
     }

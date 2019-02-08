@@ -55,9 +55,6 @@ class SignTransaction {
         /** @type {HTMLButtonElement} */
         const $closeDetails = (this.$accountDetails.querySelector('#close-details'));
         $closeDetails.addEventListener('click', this._closeDetails.bind(this));
-        /** @type {HTMLElement} */
-        const $background = (this.$el.querySelector('#background-overlay'));
-        $background.addEventListener('click', this._closeDetails.bind(this));
 
         /** @type {HTMLDivElement} */
         const $value = (this.$el.querySelector('#value'));
