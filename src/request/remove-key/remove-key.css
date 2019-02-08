@@ -57,3 +57,13 @@
 .page-footer {
     padding: 1rem;
 }
+
+.page#remove-key .backup-option {
+    display: flex;
+    align-items: center;
+    margin-top: 2rem;
+}
+
+.page#remove-key .backup-option > div {
+    margin-left: 3rem;
+}

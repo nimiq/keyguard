@@ -78,30 +78,41 @@
         <div class="page nq-card" id="remove-key">
 
             <div class="page-header nq-card-header">
-                <h1 data-i18n="remove-key-log-out" class="nq-h1">Don't lose access</h1>
+                <h1 data-i18n="remove-key-heading" class="nq-h1">Don't lose access</h1>
             </div>
 
             <div class="page-body nq-card-body">
-                <div class="row">
+                <div class="row center">
                     <p data-i18n="remove-key-intro-text" class="nq-text nq-red">
                         If you log out without saving your account, you will irretrievably lose access to it!
                     </p>
                 </div>
-                <div class="flex-grow"></div>
-                <div>
-                    <button id="show-download-key-file" data-i18n="remove-key-download-key-file" class="nq-button-s">
-                        Download Wallet File
-                    </button>
-                </div>
-                <div class="flex-grow"></div>
-                <div>
+                <div class="backup-option">
                     <img src="../../assets/sample-recovery-words.png" alt="sample recovery words" />
-                    <button id="show-recovery-words" data-i18n="remove-key-show-recovery-words" class="nq-button-s">
-                        Show Recovery Words
-                    </button>
+                    <div>
+                        <div data-i18n="remove-key-login-file-question">
+                            Is your LoginFile savely stored and accessible?
+                        </div>
+                        <button id="show-download-login-file" data-i18n="remove-key-download-login-file"
+                            class="nq-button-s">
+                            Download LoginFile
+                        </button>
+                    </div>
                 </div>
-                <div class="flex-grow"></div>
+                <div class="backup-option">
+                    <img src="../../assets/sample-recovery-words.png" alt="sample recovery words" />
+                    <div>
+                        <div data-i18n="remove-key-recovery-words-question">
+                            Do you know where your Recovery Words are?
+                        </div>
+                        <button id="show-recovery-words" data-i18n="remove-key-show-recovery-words" class="nq-button-s">
+                            Create a backup
+                        </button>
+                    </div>
+                </div>
             </div>
+
+            <div class="flex-grow"></div>
 
             <div class="page-footer nq-card-footer">
                 <button id="remove-key-first-confirm" class="hide-for-final-confirm nq-button red"
@@ -114,8 +125,6 @@
                 </button>
             </div>
         </div>
-
-        <div class="flex-grow"></div>
 
         <button class="global-close nq-button-s display-none">
             <span class="nq-icon arrow-left"></span>

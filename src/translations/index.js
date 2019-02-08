@@ -87,10 +87,10 @@ const TRANSLATIONS = {
         'identicon-selector-button-select': 'Select',
         'identicon-selector-link-back': 'Back',
 
-        'downloadkeyfile-heading-protected': 'Your LoginFile is protected!',
-        'downloadkeyfile-heading-unprotected': 'Your LoginFile is not protected!',
+        'downloadkeyfile-heading-protected': 'Your Key File is protected!',
+        'downloadkeyfile-heading-unprotected': 'Your Key File is not protected!',
         'downloadkeyfile-safe-place': 'Store it in a safe place. If you lose it, it cannot be recovered!',
-        'downloadkeyfile-download': 'Download LoginFile',
+        'downloadkeyfile-download': 'Download Key File',
         'downloadkeyfile-download-anyway': 'Download anyway',
 
         'validate-words-text': 'Please select the correct word from your list of recovery words.',
@@ -103,15 +103,14 @@ const TRANSLATIONS = {
         'export-finish': 'Finish Export',
         'export-more-options-heading': 'More export options',
 
-        'remove-key-log-out': 'Log out',
-        'remove-key-intro-text': 'Logging out means removing your LoginFile from this browser. '
-                               + 'Make sure you have it stored somewhere, or at least have your '
-                               + 'Recovery Words accessible.',
-        'remove-key-intro-text-red': 'If you have neither of them, there’s no chance to regain '
-                                   + 'access to your wallet.',
-        'remove-key-key-file': 'LoginFile',
-        'remove-key-download-key-file': 'Download LoginFile',
-        'remove-key-show-recovery-words': 'Show Recovery Words',
+        'remove-key-heading': 'Don\'t lose access',
+        'remove-key-intro-text': 'If you log out without saving your account, you will irretrievably'
+                                + 'lose access to it!',
+        'remove-key-login-file': 'LoginFile',
+        'remove-key-login-file-question': 'Is your LoginFile savely stored and accessible?',
+        'remove-key-download-login-file': 'Download LoginFile',
+        'remove-key-recovery-words-question': 'Do you know where your Recovery Words are?',
+        'remove-key-show-recovery-words': 'Create a backup',
         'remove-key-first-confirm': 'I can log in again',
         'remove-key-final-confirm': 'Log out of your account',
         'remove-key-recovery-words': 'Recovery Words',
@@ -237,15 +236,14 @@ const TRANSLATIONS = {
         'export-finish': 'Export abschließen',
         'export-more-options-heading': 'Zusätzliche Export Optionen',
 
-        'remove-key-log-out': 'Log out',
-        'remove-key-intro-text': 'Ausloggen bedeutet deine Schlüsseldatei aus diesem Browser zu entfernen. '
-                               + 'Stelle sicher, dass du sie an einem sicheren Ort verwahrt hast, '
-                               + 'oder zumindest deine Wiederherstellungswörter für dich zugänglich sind.',
-        'remove-key-intro-text-red': 'Falls du zu beiden keinen Zugang hast besteht keine Möglichkeit wieder '
-                                   + 'Zugriff auf dein Wallet zu erhalten.',
-        'remove-key-key-file': 'Schlüsseldatei',
-        'remove-key-download-key-file': 'Schlüsseldatei herunterladen',
-        'remove-key-show-recovery-words': 'Wiederherstellungswörter anzeigen',
+        'remove-key-heading': 'Verliere deinen Zugang nicht',
+        'remove-key-intro-text': 'Falls du dich ausloggst, ohne dein Konto zu sichern, wirst du unwiderruflich'
+                                + 'den Zugriff darauf verlieren. ',
+        'remove-key-login-file': 'Schlüsseldatei',
+        'remove-key-login-file-question': 'Ist deine LoginDatei sicher gespeichert und zugänglich?',
+        'remove-key-download-login-file': 'LoginDatei herunterladen',
+        'remove-key-recovery-words-question': 'Weißt du, wo sich deine Wiederherstellungswörter befinden?',
+        'remove-key-show-recovery-words': 'Sicherung anlegen',
         'remove-key-confirm': 'Aus deinem Wallet ausloggen',
         'remove-key-recovery-words': 'Wiederherstellungswörter',
         'remove-key-back': 'Zurück zum logout',

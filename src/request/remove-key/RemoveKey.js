@@ -27,7 +27,7 @@ class RemoveKey {
 
         // remove key
         /** @type {HTMLButtonElement} */
-        const $goToDownloadFile = ($removeKey.querySelector('#show-download-key-file'));
+        const $goToDownloadFile = ($removeKey.querySelector('#show-download-login-file'));
         /** @type {HTMLButtonElement} */
         const $goToShowRecoveryWords = ($removeKey.querySelector('#show-recovery-words'));
         /** @type {HTMLButtonElement} */
