@@ -1,7 +1,6 @@
 /* global Constants */
 /* global Nimiq */
 /* global TopLevelApi */
-/* global Key */
 /* global PrivacyAgent */
 /* global RecoveryWords */
 /* global Identicon */
@@ -78,7 +77,7 @@ class ImportWords {
         this.$chooseKeyType.addEventListener('submit', event => {
             event.preventDefault();
             if (this.keyTypeValue !== null && this._entropy) {
-                this._onKeyTypeChosen(/** @type {Key.Type} */ (this.keyTypeValue), this._entropy);
+                this._onKeyTypeChosen(this.keyTypeValue, this._entropy);
             }
         });
 
@@ -144,19 +143,19 @@ class ImportWords {
     }
 
     /**
-     * @param {Key.Type} keyType
+     * @param {Nimiq.Secret.Type} keyType
      * @param {Nimiq.Entropy} entropy
      * @private
      */
     _onKeyTypeChosen(keyType, entropy) {
         /** @type {Nimiq.Entropy|Nimiq.PrivateKey} */
-        let entropyOrPrivKey;
-        if (keyType === Nimiq.MnemonicUtils.MnemonicType.LEGACY) {
-            entropyOrPrivKey = entropy;
+        let secret;
+        if (keyType === Nimiq.Secret.Type.ENTROPY) {
+            secret = entropy;
         } else {
-            entropyOrPrivKey = new Nimiq.PrivateKey(entropy.serialize());
+            secret = new Nimiq.PrivateKey(entropy.serialize());
         }
-        this._resolve(entropyOrPrivKey);
+        this._resolve(secret);
     }
 
     _onEntropyChanged() {
@@ -183,10 +182,13 @@ class ImportWords {
         this.$addressBip39.textContent = bip39Address;
     }
 
+    /**
+     * @type {Nimiq.Secret.Type | null}
+     */
     get keyTypeValue() {
         /** @type {HTMLInputElement} */
         const selected = (this.$chooseKeyType.querySelector('input[name="key-type"]:checked'));
-        return selected ? parseInt(selected.value, 10) : null;
+        return selected ? /** @type {Nimiq.Secret.Type} */ (parseInt(selected.value, 10)) : null;
     }
 
     /**

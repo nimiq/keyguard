@@ -13,10 +13,6 @@ interface Window {
     TRANSLATIONS: dict
 }
 
-declare namespace Key {
-    type Type = 0 | 1
-}
-
 type AccountType = string
 
 declare namespace AccountType {

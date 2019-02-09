@@ -148,13 +148,13 @@ class ImportApi extends TopLevelApi {
         /** @type {{keyPath: string, address: Uint8Array}[]} */
         const addresses = [];
 
-        if (key.type === Nimiq.Secret.Type.PRIVATE_KEY) {
+        if (key.secret instanceof Nimiq.PrivateKey) {
             const address = key.deriveAddress('');
             addresses.push({
                 keyPath: 'm/0\'',
                 address: address.serialize(),
             });
-        } else if (key.type === Nimiq.Secret.Type.ENTROPY) {
+        } else if (key.secret instanceof Nimiq.Entropy) {
             /** @type {KeyguardRequest.ImportRequest} */
             (this._request).requestedKeyPaths.forEach(keyPath => {
                 addresses.push({
@@ -232,13 +232,13 @@ class ImportApi extends TopLevelApi {
     }
 
     /**
-     * @param {Nimiq.Entropy|Nimiq.PrivateKey} entropyOrPrivKey
+     * @param {Nimiq.Entropy|Nimiq.PrivateKey} secret
      */
-    _onRecoveryWordsComplete(entropyOrPrivKey) {
+    _onRecoveryWordsComplete(secret) {
         this._hasPin = false;
         this._passphraseBox.setMinLength();
-        this._keyType = entropyOrPrivKey.type;
-        this._encryptedKey = entropyOrPrivKey.serialize();
+        this._keyType = secret.type;
+        this._encryptedKey = secret.serialize();
         this._goToSetPassphrase();
     }
 
