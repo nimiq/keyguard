@@ -1,6 +1,4 @@
-/* global Constants */
 /* global Nimiq */
-/* global TopLevelApi */
 /* global Key */
 /* global RecoveryWords */
 /* global Errors */
@@ -15,37 +13,46 @@ class ImportWords {
         this._resolve = resolve;
         this._reject = reject;
         this._defaultKeyPath = request.defaultKeyPath;
-        /** @type {Nimiq.Entropy?} */
-        this._entropy = null;
 
         // Pages
-
         /** @type {HTMLFormElement} */
         const $words = (document.getElementById(ImportWords.Pages.ENTER_WORDS));
         /** @type {HTMLFormElement} */
         const $recoveryWords = ($words.querySelector('.recovery-words'));
-
         // Components
-        const recoveryWords = new RecoveryWords($recoveryWords, true);
-
+        this._recoveryWords = new RecoveryWords($recoveryWords, true);
         // Events
-
-        recoveryWords.on(RecoveryWords.Events.COMPLETE, (m, mt) => {
-            console.log(m, mt);
-            if (recoveryWords.mnemonic) {
-                this._onRecoveryWordsComplete(m, mt);
+        this._recoveryWords.on(RecoveryWords.Events.COMPLETE, (mnemonic, mnemonicType) => {
+            if (this._recoveryWords.mnemonic) {
+                this._onRecoveryWordsComplete(mnemonic, mnemonicType);
             }
         });
-        recoveryWords.on(RecoveryWords.Events.INCOMPLETE, () => console.log('incomplete'));
-        recoveryWords.on(RecoveryWords.Events.INVALID, () => console.log('invalid'));
+
+        window.addEventListener('hashchange', event => {
+            const newHash = new URL(event.newURL).hash;
+            const oldHash = new URL(event.oldURL).hash;
+            if (oldHash && newHash) {
+                const oldPageElement = document.querySelector(oldHash);
+                const newPageElement = document.querySelector(newHash);
+                if (newPageElement && oldPageElement
+                    && newPageElement.classList.contains('dark') !== oldPageElement.classList.contains('dark')) {
+                    /** @type {HTMLElement} */
+                    const $rotationContainer = (document.getElementById('rotation-container'));
+                    $rotationContainer.classList.toggle('flipped');
+                }
+            }
+        });
+        this._recoveryWords.on(RecoveryWords.Events.INCOMPLETE, () => console.log('incomplete'));
+        this._recoveryWords.on(RecoveryWords.Events.INVALID, () => console.log('invalid'));
 
         $words.addEventListener('submit', event => {
             event.preventDefault();
-            if (recoveryWords.mnemonic) {
-                this._onRecoveryWordsComplete(recoveryWords.mnemonic, recoveryWords.mnemonicType);
+            if (this._recoveryWords.mnemonic) {
+                this._onRecoveryWordsComplete(this._recoveryWords.mnemonic, this._recoveryWords.mnemonicType);
             }
         });
 
+        // TODO remove test words
         // @ts-ignore (Property 'test' does not exist on type 'Window'.)
         window.test = () => {
             const testPassphrase = [
@@ -63,14 +70,14 @@ class ImportWords {
                     field._onBlur();
                 }, index * 50);
             }
-            recoveryWords.$fields.forEach((field, index) => {
+            this._recoveryWords.$fields.forEach((field, index) => {
                 putWord(field, testPassphrase[index], index);
             });
         };
     }
 
     run() {
-        this._entropy = null;
+        this._recoveryWords.setWords(new Array(24));
         window.location.hash = ImportWords.Pages.ENTER_WORDS;
     }
 
@@ -107,5 +114,4 @@ class ImportWords {
 
 ImportWords.Pages = {
     ENTER_WORDS: 'recovery-words',
-    SET_PASSPHRASE: 'set-passphrase',
 };

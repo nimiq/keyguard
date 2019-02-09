@@ -1,4 +1,3 @@
-/* global Constants */
 /* global TopLevelApi */
 /* global ImportFile */
 /* global Nimiq */
@@ -33,13 +32,6 @@ class ImportApi extends TopLevelApi {
         $cancelLink.addEventListener('click', () => this.reject(new Errors.RequestCanceled()));
 
         importFileHandler.run();
-    }
-
-    run() {
-        window.location.hash = ImportApi.Pages.FILE_IMPORT;
-
-        // Async pre-load the crypto worker to reduce wait time at first decrypt attempt
-        Nimiq.CryptoWorker.getInstanceAsync();
     }
 
     /**

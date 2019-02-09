@@ -1,3 +1,4 @@
+/* global Constants */
 /* global Nimiq */
 /* global Key */
 /* global ImportWords */
@@ -29,19 +30,16 @@ class ImportFile {
         this.importWordsHandler = new ImportWords(request, this._onRecoveryWordsComplete.bind(this), reject);
 
         /** @type {HTMLElement} */
-        this.$importFilePage = document.getElementById(ImportFile.Pages.IMPORT_FILE)
-                             || this._buildImportFile();
+        this.$importFilePage = (document.getElementById(ImportFile.Pages.IMPORT_FILE));
 
         /** @type {HTMLDivElement} */
         const $fileImport = (this.$importFilePage.querySelector('.file-import'));
-
-        console.log(this.$importFilePage, $fileImport);
 
         const fileImport = new FileImport($fileImport);
 
         /** @type {HTMLElement} */
         const $gotoWords = (this.$importFilePage.querySelector('#goto-words'));
-        $gotoWords.addEventListener('click', this._goToImportWords.bind(this));
+        $gotoWords.addEventListener('click', () => { this.importWordsHandler.run(); });
 
         /** @type {HTMLElement} */
         const $gotoCreate = (this.$importFilePage.querySelector('#goto-create'));
@@ -49,7 +47,7 @@ class ImportFile {
 
         /** @type {HTMLFormElement} */
         const $passphraseBox = (this.$importFilePage.querySelector('.passphrase-box'));
-        const passphraseBox = new PassphraseBox(
+        this.passphraseBox = new PassphraseBox(
             $passphraseBox,
             {
                 buttonI18nTag: 'passphrasebox-log-in',
@@ -57,8 +55,8 @@ class ImportFile {
             },
         );
         fileImport.on(FileImport.Events.IMPORT, this._onFileImported.bind(this));
-        passphraseBox.on(PassphraseBox.Events.SUBMIT, this._onPassphraseEntered.bind(this));
-        passphraseBox.on(PassphraseBox.Events.CANCEL, () => window.history.back()); // Go back to import type selection
+        this.passphraseBox.on(PassphraseBox.Events.SUBMIT, this._onPassphraseEntered.bind(this));
+        this.passphraseBox.on(PassphraseBox.Events.CANCEL, () => window.history.back()); // Go back to import type selection
 
 
         /** @type {HTMLFormElement} */
@@ -71,8 +69,7 @@ class ImportFile {
     }
 
     run() {
-        this.importWordsHandler.run();
-        // window.location.hash = ImportFile.Pages.IMPORT_FILE;
+        window.location.hash = ImportFile.Pages.IMPORT_FILE;
     }
 
     _onFileImported() {
@@ -85,7 +82,7 @@ class ImportFile {
     async _onPassphraseEntered(passphrase) {
         const key = await this._decryptAndStoreKey(passphrase);
         if (!key) {
-            // this._passphraseBox.onPassphraseIncorrect();
+            this.passphraseBox.onPassphraseIncorrect();
             return;
         }
 
@@ -170,11 +167,6 @@ class ImportFile {
         }
     }
 
-    _goToImportWords() {
-        // flip and display Words.
-        this.importWordsHandler.run();
-    }
-
     /**
      * @param { Nimiq.SerialBuffer } entropy
      * @param { Key.Type } keyType
@@ -186,7 +178,9 @@ class ImportFile {
 
         this._passphraseSetterBox.reset();
         window.location.hash = ImportApi.Pages.SET_PASSPHRASE;
-        this._passphraseSetterBox.focus();
+        if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
+            this._passphraseSetterBox.focus();
+        }
     }
 
     /**
@@ -195,39 +189,6 @@ class ImportFile {
     _goToCreate(e) {
         e.preventDefault();
         this._reject(new Errors.GoToCreate());
-    }
-
-    /**
-     * @returns {HTMLElement}
-     */
-    _buildImportFile() {
-        const $el = document.createElement('div');
-        $el.id = ImportFile.Pages.IMPORT_FILE;
-        $el.classList.add('page', 'nq-card');
-        $el.innerHTML = `
-        <div class="page-header nq-card-header">
-            <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
-            <h1 class="nq-h1">Upload your Login File</h1>
-        </div>
-
-        <div class="page-body nq-card-body">
-            <div class="file-import"></div>
-        </div>
-
-        <div class="page-footer">
-            <button data-i18n="login-goto-words" class="nq-button-s hide-for-password-input" id="goto-words">
-                Use Recovery Words
-            </button>
-            <a class="nq-text-s nq-blue hide-for-password-input" id="goto-create" href="#">
-                Create new Wallet<i class="nq-icon chevron-right"></i>
-            </a>
-            <form class="passphrase-box hide-if-key-active"></form>
-        </div>
-        `;
-        /** @type {HTMLElement} */
-        const $app = (document.getElementById('app'));
-        $app.insertBefore($el, $app.children[1]);
-        return $el;
     }
 }
 

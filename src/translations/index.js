@@ -28,7 +28,7 @@ const TRANSLATIONS = {
         'create-heading-validate-backup': 'Validate your backup',
         'create-wallet-desc': 'This is your Account with your first Address in it.',
 
-        'import-heading-log-in': 'Log in',
+        'import-heading-enter-recovery-words': 'Enter Recovery Words',
         'import-link-no-wallet': 'Don\'t have a wallet yet?',
         'import-heading-protect': 'Protect your wallet',
         'import-text-set-password': 'You can now set a password to encrypt your wallet on this device.',
@@ -159,7 +159,7 @@ const TRANSLATIONS = {
         'create-heading-validate-backup': 'Überprüfe dein Backup',
         'create-wallet-desc': 'Das ist dein Account mit deiner ersten Addresse.',
 
-        'import-heading-log-in': 'Einloggen',
+        'import-heading-enter-recovery-words': 'Wiederherstellungswörter eingeben',
         'import-link-no-wallet': 'Du hast noch keine Wallet?',
         'import-heading-protect': 'Wallet verschlüsseln',
         'import-text-set-password': 'Du kannst jetzt ein Passwort eingeben, um deine Wallet auf diesem '
