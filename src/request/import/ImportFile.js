@@ -56,8 +56,6 @@ class ImportFile {
         );
         fileImport.on(FileImport.Events.IMPORT, this._onFileImported.bind(this));
         this.passphraseBox.on(PassphraseBox.Events.SUBMIT, this._onPassphraseEntered.bind(this));
-        this.passphraseBox.on(PassphraseBox.Events.CANCEL, () => window.history.back()); // Go back to import type selection
-
 
         /** @type {HTMLFormElement} */
         const $passphraseSetterBox = (document.querySelector('.passphrase-setter-box'));
