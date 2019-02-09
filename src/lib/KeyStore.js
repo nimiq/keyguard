@@ -27,9 +27,9 @@ class KeyStore {
      */
     static isEncrypted(keyRecord) {
         // Because we are supporting legacy secrets which cannot be converted during migration,
-        // a KeyRecord can be both V2 and V3 encrypted.
-        return keyRecord.secret.byteLength === KeyStore.ENCRYPTED_SECRET_SIZE
-            || keyRecord.secret.byteLength === KeyStore.ENCRYPTED_SECRET_SIZE_V2;
+        // a KeyRecord can be both V2 (legacy) and V3 (Imagewallet, default) encrypted.
+        return keyRecord.secret.byteLength === KeyStore.ENCRYPTED_SECRET_SIZE_V2
+            || keyRecord.secret.byteLength === KeyStore.ENCRYPTED_SECRET_SIZE;
     }
 
     constructor() {
@@ -320,6 +320,11 @@ KeyStore.DB_VERSION = 1;
 KeyStore.DB_NAME = 'nimiq-keyguard';
 KeyStore.DB_KEY_STORE_NAME = 'keys';
 
+// The current default (V3/Imagewallet format)
 KeyStore.ENCRYPTED_SECRET_SIZE = 56; /* version + rounds: 2, salt: 16, checksum: 2, purposeId: 4, secret: 32 */
+
+// 'Legacy' format, used by migrated keys
 KeyStore.ENCRYPTED_SECRET_SIZE_V2 = 54; /* version + rounds: 2, secret: 32, salt: 16, checksum: 4 */
+
+// Default unencrypted format (legacy keys could not be stored unencrypted)
 KeyStore.UNENCRYPTED_SECRET_SIZE = /* purposeId */ 4 + /* secret */ 32;
