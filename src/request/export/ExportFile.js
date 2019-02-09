@@ -49,6 +49,15 @@ class ExportFile extends Nimiq.Observable {
             alert('Wallet Files are not yet implemented.');
             this._finish();
         });
+        window.addEventListener('hashchange', event => {
+            const newUrl = new URL(event.newURL);
+            if (newUrl.hash === `#${ExportFile.Pages.EXPORT_FILE}`) {
+                this._downloadKeyFilePassphraseBox.reset();
+                if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
+                    this._downloadKeyFilePassphraseBox.focus();
+                }
+            }
+        });
     }
 
     run() {
