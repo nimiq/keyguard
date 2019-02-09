@@ -47,6 +47,7 @@
 
 .passphrase-box.hide-input .passphrase-input {
     visibility: hidden;
+    margin: 0;
 }
 
 .passphrase-box .submit {

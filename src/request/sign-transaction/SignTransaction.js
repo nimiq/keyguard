@@ -1,60 +1,67 @@
+/* global Constants */
 /* global Nimiq */
 /* global KeyStore */
-/* global Identicon */
 /* global PassphraseBox */
 /* global Errors */
 /* global Utf8Tools */
 /* global TopLevelApi */
+/* global AddressInfo */
 
-class BaseLayout {
+class SignTransaction {
     /**
      * @param {ParsedSignTransactionRequest} request
      * @param {Function} resolve
      * @param {Function} reject
      */
     constructor(request, resolve, reject) {
-        /** @type {HTMLDivElement} */
-        const $pageBody = (document.querySelector('#confirm-transaction .transaction'));
+        this._request = request;
+        /** @type {HTMLElement} */
+        this.$el = (document.getElementById(SignTransaction.Pages.CONFIRM_TRANSACTION));
+        this.$el.classList.add(request.layout);
 
-        /** @type {HTMLDivElement} */
-        const $senderIdenticon = ($pageBody.querySelector('#sender-identicon'));
-        /** @type {HTMLDivElement} */
-        const $recipientIdenticon = ($pageBody.querySelector('#recipient-identicon'));
-
-        /** @type {HTMLDivElement} */
-        const $senderLabel = ($pageBody.querySelector('#sender-label'));
-        /** @type {HTMLDivElement} */
-        const $recipientLabel = ($pageBody.querySelector('#recipient-label'));
-
-        /** @type {HTMLDivElement} */
-        const $senderAddress = ($pageBody.querySelector('#sender-address'));
-        /** @type {HTMLDivElement} */
-        const $recipientAddress = ($pageBody.querySelector('#recipient-address'));
-
-        /** @type {HTMLDivElement} */
-        const $value = ($pageBody.querySelector('#value'));
-        /** @type {HTMLDivElement} */
-        const $fee = ($pageBody.querySelector('#fee'));
-        /** @type {HTMLDivElement} */
-        const $data = ($pageBody.querySelector('#data'));
-
-        // Set sender data.
         const transaction = request.transaction;
-        const senderAddress = transaction.sender.toUserFriendlyAddress();
-        new Identicon(senderAddress, $senderIdenticon); // eslint-disable-line no-new
-        $senderAddress.textContent = senderAddress;
-        if (request.senderLabel) {
-            $senderLabel.classList.remove('display-none');
-            $senderLabel.textContent = request.senderLabel;
-        }
 
-        // Set recipient data.
-        if ($recipientAddress) {
-            const recipientAddress = transaction.recipient.toUserFriendlyAddress();
-            new Identicon(recipientAddress, $recipientIdenticon); // eslint-disable-line no-new
-            $recipientAddress.textContent = recipientAddress;
-            $recipientLabel.textContent = request.recipientLabel || '';
-        }
+        /** @type {HTMLElement} */
+        this.$accountDetails = (this.$el.querySelector('#account-details'));
+
+        /** @type {HTMLLinkElement} */
+        const $sender = (this.$el.querySelector('.accounts .sender'));
+        this._senderAddressInfo = new AddressInfo({
+            userFriendlyAddress: transaction.sender.toUserFriendlyAddress(),
+            label: request.senderLabel || null,
+            imageUrl: null,
+            accountLabel: request.keyLabel || null,
+        });
+        this._senderAddressInfo.renderTo($sender);
+        $sender.addEventListener('click', () => {
+            this._openDetails(this._senderAddressInfo);
+        });
+
+        /** @type {HTMLLinkElement} */
+        const $recipient = (this.$el.querySelector('.accounts .recipient'));
+        this._recipientAddressInfo = new AddressInfo({
+            userFriendlyAddress: transaction.recipient.toUserFriendlyAddress(),
+            label: request.shopOrigin
+                ? request.shopOrigin.split('://')[1]
+                : request.recipientLabel || null,
+            imageUrl: request.shopLogoUrl || null,
+            accountLabel: null,
+        });
+        this._recipientAddressInfo.renderTo($recipient);
+        $recipient.addEventListener('click', () => {
+            this._openDetails(this._recipientAddressInfo);
+        });
+
+        /** @type {HTMLButtonElement} */
+        const $closeDetails = (this.$accountDetails.querySelector('#close-details'));
+        $closeDetails.addEventListener('click', this._closeDetails.bind(this));
+
+        /** @type {HTMLDivElement} */
+        const $value = (this.$el.querySelector('#value'));
+        /** @type {HTMLDivElement} */
+        const $fee = (this.$el.querySelector('#fee'));
+        /** @type {HTMLDivElement} */
+        const $data = (this.$el.querySelector('#data'));
 
         // Set value and fee.
         const total = transaction.value + transaction.fee;
@@ -63,18 +70,17 @@ class BaseLayout {
         $value.textContent = this._formatNumber(totalNim);
 
         if ($fee && transaction.fee > 0) {
-            $fee.textContent = Nimiq.Policy.satoshisToCoins(transaction.fee).toString();
+            $fee.textContent = this._formatNumber(Nimiq.Policy.satoshisToCoins(transaction.fee));
             /** @type {HTMLDivElement} */
-            const $feeSection = ($pageBody.querySelector('.fee-section'));
+            const $feeSection = (this.$el.querySelector('.fee-section'));
             $feeSection.classList.remove('display-none');
         }
 
         // Set transaction extra data.
         if ($data && transaction.data.byteLength > 0) {
-            // FIXME Detect and use proper encoding.
-            $data.textContent = Nimiq.BufferUtils.toAscii(transaction.data);
+            $data.textContent = Utf8Tools.utf8ByteArrayToString(transaction.data);
             /** @type {HTMLDivElement} */
-            const $dataSection = ($pageBody.querySelector('.data-section'));
+            const $dataSection = (this.$el.querySelector('.data-section'));
             $dataSection.classList.remove('display-none');
         }
 
@@ -85,6 +91,7 @@ class BaseLayout {
             hideInput: !request.keyInfo.encrypted,
             buttonI18nTag: 'passphrasebox-confirm-tx',
             minLength: request.keyInfo.hasPin ? 6 : undefined,
+            hideCancel: true,
         });
 
         this._passphraseBox.on(
@@ -93,11 +100,21 @@ class BaseLayout {
                 this._onConfirm(request, resolve, reject, passphrase);
             },
         );
+    }
 
-        // This event cannot throw a 'CANCEL' error like in other requests,
-        // because for checkout we need to go back to the CheckoutOverview
-        // in the Accounts Manager and not return directly to the caller.
-        this._passphraseBox.on(PassphraseBox.Events.CANCEL, () => window.history.back());
+    /**
+     * @param {AddressInfo} which
+     */
+    _openDetails(which) {
+        which.renderTo(
+            /** @type {HTMLElement} */(this.$accountDetails.querySelector('#details')),
+            true,
+        );
+        this.$el.classList.add('account-details-open');
+    }
+
+    _closeDetails() {
+        this.$el.classList.remove('account-details-open');
     }
 
     /**
@@ -139,12 +156,14 @@ class BaseLayout {
     }
 
     run() {
-        // Go to start page
-        window.location.hash = BaseLayout.Pages.CONFIRM_TRANSACTION;
-        this._passphraseBox.focus();
-
         // Async pre-load the crypto worker to reduce wait time at first decrypt attempt
-        Nimiq.CryptoWorker.getInstanceAsync();
+        if (this._request.keyInfo.encrypted) {
+            Nimiq.CryptoWorker.getInstanceAsync();
+        }
+        // Go to start page
+        window.location.hash = SignTransaction.Pages.CONFIRM_TRANSACTION;
+
+        if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) this._passphraseBox.focus();
     }
 
     /**
@@ -169,6 +188,6 @@ class BaseLayout {
     }
 }
 
-BaseLayout.Pages = {
+SignTransaction.Pages = {
     CONFIRM_TRANSACTION: 'confirm-transaction',
 };

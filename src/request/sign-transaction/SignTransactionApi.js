@@ -1,7 +1,6 @@
 /* global I18n */
 /* global TopLevelApi */
-/* global LayoutStandard */
-/* global LayoutCheckout */
+/* global SignTransaction */
 /* global Errors */
 
 class SignTransactionApi extends TopLevelApi {
@@ -9,11 +8,10 @@ class SignTransactionApi extends TopLevelApi {
      * @param {KeyguardRequest.SignTransactionRequest} request
      */
     async onRequest(request) {
+        TopLevelApi.setLoading(true);
         const parsedRequest = await this.parseRequest(request);
-        const $layoutContainer = document.getElementById('layout-container');
 
-        const handler = new SignTransactionApi.Layouts[parsedRequest.layout](
-            $layoutContainer,
+        const handler = new SignTransaction(
             parsedRequest,
             this.resolve.bind(this),
             this.reject.bind(this),
@@ -23,7 +21,7 @@ class SignTransactionApi extends TopLevelApi {
         const $appName = (document.querySelector('#app-name'));
         /** @type {HTMLSpanElement} */
         const $cancelLinkText = ($appName.parentNode);
-        if (request.layout === 'checkout') {
+        if (request.layout === SignTransactionApi.Layouts.CHECKOUT) {
             $cancelLinkText.textContent = I18n.translatePhrase('sign-tx-cancel-payment');
         } else {
             $appName.textContent = request.appName;
@@ -34,6 +32,7 @@ class SignTransactionApi extends TopLevelApi {
         $cancelLink.addEventListener('click', () => this.reject(new Errors.RequestCanceled()));
 
         handler.run();
+        TopLevelApi.setLoading(false);
     }
 
     /**
@@ -43,9 +42,10 @@ class SignTransactionApi extends TopLevelApi {
      */
     parseLayout(layout) {
         if (!layout) {
-            return SignTransactionApi.Layouts.standard;
+            return SignTransactionApi.Layouts.STANDARD;
         }
-        if (!SignTransactionApi.Layouts[layout]) {
+        // @ts-ignore (Property 'values' does not exist on type 'ObjectConstructor'.)
+        if (Object.values(SignTransactionApi.Layouts).indexOf(layout) === -1) {
             throw new Errors.InvalidRequestError('Invalid selected layout');
         }
         return layout;
@@ -69,8 +69,12 @@ class SignTransactionApi extends TopLevelApi {
         parsedRequest.recipientLabel = this.parseLabel(request.recipientLabel);
         parsedRequest.transaction = this.parseTransaction(request);
         parsedRequest.layout = this.parseLayout(request.layout);
-        if (parsedRequest.layout === 'checkout') {
+        if (parsedRequest.layout === SignTransactionApi.Layouts.CHECKOUT) {
             parsedRequest.shopOrigin = this.parseShopOrigin(request.shopOrigin);
+            parsedRequest.shopLogoUrl = this.parseShopLogoUrl(request.shopLogoUrl);
+            if (parsedRequest.shopLogoUrl && parsedRequest.shopLogoUrl.origin !== parsedRequest.shopOrigin) {
+                throw new Errors.InvalidRequestError('origin of shopLogoUrl must be same as referrer');
+            }
         } else {
             parsedRequest.shopOrigin = undefined;
         }
@@ -79,9 +83,9 @@ class SignTransactionApi extends TopLevelApi {
     }
 }
 
-/** @type {{[layout: string]: any, standard: typeof LayoutStandard, checkout: typeof LayoutCheckout}} */
+/** @type {{[layout: string]: string}} */
 SignTransactionApi.Layouts = {
-    standard: LayoutStandard,
-    checkout: LayoutCheckout,
-    // 'cashlink': LayoutCashlink,
+    STANDARD: 'standard',
+    CHECKOUT: 'checkout',
+    CASHLINK: 'cashlink',
 };

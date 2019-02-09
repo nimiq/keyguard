@@ -149,4 +149,13 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
         const match = document.cookie.match(new RegExp('migrate=([^;]+)'));
         return !!match && match[1] === '1';
     }
+
+    /**
+     * @returns {number} the current width of the document
+     */
+    static getDocumentWidth() {
+        return window.innerWidth
+            || document.documentElement.clientWidth
+            || document.body.clientWidth;
+    }
 }

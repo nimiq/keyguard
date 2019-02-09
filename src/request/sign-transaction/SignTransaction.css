@@ -1,154 +1,167 @@
-#layout-container {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
+#confirm-transaction {
+    position: relative;
+    overflow: hidden;
+    flex-grow: 1;
 }
 
-/*
-#######################################
-#### S T A N D A R D   L A Y O U T ####
-#######################################
-*/
-
-.transaction .accounts {
-    flex-direction: row;
-    align-items: flex-start;
+#confirm-transaction.standard .hide-standard,
+#confirm-transaction.checkout .hide-checkout {
+    display: none;
 }
 
-.transaction .account {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.transaction .account .identicon {
-    width: 8rem;
-    height: 8rem;
-    margin-bottom: 2rem;
-}
-
-.transaction .account .label {
-    font-size: 2.25rem;
-    line-height: 2.5rem;
-    height: 2.5rem;
-    font-weight: 600;
-    margin-bottom: 1.25rem;
-}
-
-.transaction .account > .address {
-    white-space: unset;
-}
-
-.transaction .arrow {
-    margin: 3rem 1rem;
-    height: 2rem;
-    width: 2rem;
-}
-
-.transaction .total {
+#confirm-transaction .nq-card-footer {
+    border: 0;
+    padding: 3rem 4rem;
     text-align: center;
 }
 
-.transaction .total #value {
-    font-size: 6rem;
-    line-height: 8rem;
+#confirm-transaction .nq-card-body {
+    padding-top: 2rem;
+    padding-bottom: 0rem;
 }
 
-.transaction .total .nim-symbol {
-    margin-left: 1rem;
-}
-
-.transaction .fee-section {
-    text-align: center;
-    opacity: 0.5;
-}
-
-.transaction .data-section {
-    margin: 2rem 3rem 0;
-    text-align: center;
-}
-
-.layout-standard .nq-card-footer {
-    border-radius: 0;
-}
-
-.page-footer {
-    padding: 1rem;
-}
-
-.layout-standard ~ .page-footer {
+#confirm-transaction .page-footer {
+    padding: 0.75rem;
     background: white;
     border-bottom-left-radius: 1rem;
     border-bottom-right-radius: 1rem;
 }
 
-/*
-#######################################
-#### C H E C K O U T   L A Y O U T ####
-#######################################
-*/
 
-.payment-info-line {
-    margin-top: -3.5rem;
+#confirm-transaction > #account-details {
+    position: absolute;
+    overflow: hidden;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    border-radius: 1rem;
+    background-color: rgba(255,255,255, 0.75);
+    z-index: -1;
+    opacity: 0;
+    padding: 4rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: opacity .4s 0s, z-index 0s .4s;
 }
 
-.transaction-section {
-    background: var(--nimiq-card-header-bg);
-    border-bottom: 1px solid var(--nimiq-card-border-color);
-    padding-bottom: 3rem;
-    border-top-left-radius: 1rem;
-    border-top-right-radius: 1rem;
-    flex-grow: 1;
-}
-
-.layout-checkout h1 {
-    font-size: 3rem;
-    line-height: 3.625rem;
-    letter-spacing: 0.021em;
-    font-weight: normal;
-    padding: 4rem 4rem 1rem 4rem;
-    margin: 0;
-}
-
-.layout-checkout h1 strong {
-    font-weight: bold;
-}
-
-.layout-checkout h1 .nim-symbol::before {
+#confirm-transaction.account-details-open > #account-details {
+    z-index: 3;
+    transition-delay: 0s;
     opacity: 1;
 }
 
-.layout-checkout .account {
-    flex-direction: row;
-    padding: 1.5rem 4rem;
+#confirm-transaction #details {
+    flex-direction: column;
+    align-items: center;
 }
 
-.layout-checkout .account .identicon {
-    margin-right: 2rem;
-    margin-bottom: 0;
-    flex-shrink: 0;
-}
-
-.layout-checkout .account-text {
+#confirm-transaction #effect-container {
     display: flex;
     flex-direction: column;
-    width: calc(100% - 10rem);
+    overflow: hidden;
+    border-radius: 1rem;
+    flex-grow: 1;
 }
 
-.layout-checkout .account .label {
-    margin-bottom: 0.5rem;
+#confirm-transaction > #effect-container > * {
+    transition: filter .4s, opacity .4s;
+    -webkit-filter: blur(0px);
+    -moz-filter: blur(0px);
+    -o-filter: blur(0px);
+    -ms-filter: blur(0px);
+    filter: blur(0px);
+    opacity: 1;
 }
 
-.layout-checkout .data-section {
-    margin: 1rem 4rem;
-    text-align: left;
+#confirm-transaction.account-details-open > #effect-container > .page-header,
+#confirm-transaction.account-details-open > #effect-container > .page-body {
+    -webkit-filter: blur(20px);
+    -moz-filter: blur(20px);
+    -o-filter: blur(20px);
+    -ms-filter: blur(20px);
+    filter: blur(20px);
+    opacity: 0.5;
 }
 
-.layout-checkout .sender-section {
-    background: var(--nimiq-card-bg);
-    padding-bottom: 1.5rem;
+#confirm-transaction.account-details-open > #effect-container > .page-footer {
+    -webkit-filter: blur(35px);
+    -moz-filter: blur(35px);
+    -o-filter: blur(35px);
+    -ms-filter: blur(35px);
+    filter: blur(35px);
+    opacity: 0.5;
 }
 
-.layout-checkout .sender-section .nq-label {
-    margin: 3rem 3rem 2rem 3rem;
+#confirm-transaction #account-details #close-details {
+    position: absolute;
+    right: 2rem;
+    top: 2rem;
+    width: 3rem;
+    height: 3rem;
+    opacity: 0.16;
+    border: 0rem;
+    background-color: transparent;
+    background-image: url('data:image/svg+xml;charset=utf-8,<svg width="38" height="38" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M9.808 9.808c5.068-5.069 13.316-5.069 18.384 0 5.069 5.068 5.069 13.316 0 18.384-5.068 5.069-13.316 5.069-18.384 0-5.069-5.068-5.069-13.316 0-18.384zM19 17.586l3.535-3.536 1.415 1.414L20.414 19l3.536 3.535-1.415 1.415L19 20.414l-3.536 3.536-1.414-1.415L17.586 19l-3.536-3.536 1.414-1.414L19 17.586z" fill="%23101531"/></svg>');
+    background-size: 135%;
+}
+
+#confirm-transaction #account-details #close-details::after {
+    content: '';
+    position: absolute;
+    left: -2rem;
+    right: -2rem;
+    top: -2rem;
+    bottom: -2rem;
+    cursor: pointer;
+}
+
+#confirm-transaction #account-details #close-details:hover,
+#confirm-transaction #account-details #close-details:focus {
+    opacity: 0.25;
+    outline: none;
+}
+
+#confirm-transaction .transaction .accounts {
+    flex-direction: row;
+    align-items: flex-start;
+    padding-bottom: 4rem;
+}
+
+#confirm-transaction .transaction > .nq-card-body::after {
+    content: '';
+    display: flex;
+    height: 0px;
+    border-top: 1px solid #1F2348;
+    opacity: 0.1;
+}
+
+#confirm-transaction .transaction .addressInfo {
+    width: calc(50% - 1.5rem);
+}
+
+
+#confirm-transaction .transaction .arrow {
+    background-image: url('data:image/svg+xml,<svg width="23" height="18" viewBox="0 0 23 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13.9995 1.99902L20.999 9.00049L13.9995 16" stroke="%230582CA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="18.999" y1="9" x2="0.999023" y2="9" stroke="%230582CA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>');
+    margin-top: 4rem;
+    height: 2.25rem;
+    width: 3rem;
+}
+
+#confirm-transaction .transaction .total #value {
+    font-size: 5rem;
+}
+
+#confirm-transaction .transaction .total .nim-symbol {
+    margin-left: 1rem;
+    font-weight: 700;
+}
+
+#confirm-transaction .transaction .fee-section {
+    opacity: 0.5;
+}
+
+#confirm-transaction .transaction .data-section {
+    margin: 0.5rem 3rem 0;
 }

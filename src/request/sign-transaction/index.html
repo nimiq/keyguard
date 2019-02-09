@@ -20,6 +20,7 @@
     <script defer bundle-common src="../../lib/KeyInfo.js"></script>
     <script defer bundle-common src="../../lib/Errors.js"></script>
     <script defer bundle-common src="../../lib/ErrorConstants.js"></script>
+    <script defer bundle-common src="../../lib/Constants.js"></script>
     <script defer bundle-common src="../../lib/CookieJar.js"></script>
     <script defer bundle-common src="../../lib/BrowserDetection.js"></script>
     <script defer bundle-common src="../../lib/AccountStore.js"></script>
@@ -36,10 +37,8 @@
 
     <script defer src="../../lib/Iqons.js"></script>
     <script defer src="../../components/Identicon.js"></script>
-    <script defer src="../../components/PaymentInfoLine.js"></script>
-    <script defer src="BaseLayout.js"></script>
-    <script defer src="LayoutStandard.js"></script>
-    <script defer src="LayoutCheckout.js"></script>
+    <script defer src="../../components/AddressInfo.js"></script>
+    <script defer src="SignTransaction.js"></script>
     <script defer src="SignTransactionApi.js"></script>
     <script defer src="index.js"></script>
 
@@ -53,6 +52,8 @@
     <link rel="stylesheet" bundle-toplevel href="../../components/PassphraseInput.css">
     <link rel="stylesheet" bundle-toplevel href="../../components/PassphraseBox.css">
 
+    <link rel="stylesheet" href="../../components/AddressInfo.css">
+    <link rel="stylesheet" href="../../components/AddressInfoDetailed.css">
     <link rel="stylesheet" href="../../components/PaymentInfoLine.css">
     <link rel="stylesheet" href="SignTransaction.css">
 </head>
@@ -67,13 +68,48 @@
         <div class="flex-grow"></div>
 
         <div id="confirm-transaction" class="page nq-card">
-            <div class="payment-info-line display-none"></div>
 
-            <div id="layout-container"></div>
-
-            <div class="page-footer">
-                <form id="passphrase-box"></form>
+            <div id="account-details">
+                <button id="close-details" class="nq-icon"></button>
+                <div id="details"></div>
             </div>
+            <div id="effect-container">
+                <div class="page-header nq-card-header">
+                    <a tabindex="0" class="page-header-back-button nq-icon arrow-left hide-standard"></a>
+                    <h1 data-i18n="sign-tx-heading-checkout" class="nq-h1 hide-standard">Verify Payment</h1>
+                    <h1 data-i18n="sign-tx-heading-tx" class="nq-h1 hide-checkout">Confirm Transaction</h1>
+                </div>
+
+                <div class="page-body transaction">
+                    <div class="nq-card-body">
+                        <div class="center accounts">
+                            <div class="sender"></div>
+                            <i class="arrow nq-icon"></i>
+                            <div class="recipient"></div>
+                        </div>
+                    </div>
+
+                    <div class="nq-card-footer">
+                        <div class="total nq-light-blue">
+                            <span id="value"></span><span class="nim-symbol"></span>
+                        </div>
+
+                        <div class="fee-section nq-text-s display-none">
+                            <span data-i18n="sign-tx-includes">includes</span>
+                            <span id="fee"></span>
+                            <span class="nim-symbol"></span>
+                            <span data-i18n="sign-tx-fee">fee</span>
+                        </div>
+
+                        <div class="data-section display-none nq-text nq-blue" id="data"></div>
+                    </div>
+                </div>
+
+                <div class="page-footer">
+                    <form id="passphrase-box"></form>
+                </div>
+            </div>
+
         </div>
 
         <button class="global-close nq-button-s display-none">
@@ -88,5 +124,6 @@
             <div class="loading-animation"></div>
         </div>
     </div>
+
 </body>
 </html>
