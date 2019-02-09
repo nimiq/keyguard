@@ -62,6 +62,7 @@
     display: flex;
     align-items: center;
     margin-top: 2rem;
+    max-width: 90%;
 }
 
 .page#remove-key .backup-option .login-file-svg-container {
@@ -77,4 +78,10 @@
 
 .page#remove-key .backup-option > *:nth-child(2) {
     margin-left: 3rem;
+}
+
+.page#remove-key .page-body {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
 }
