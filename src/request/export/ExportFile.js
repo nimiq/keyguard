@@ -1,3 +1,4 @@
+/* global Constants */
 /* global Nimiq */
 /* global PassphraseBox */
 /* global KeyStore */
@@ -53,7 +54,9 @@ class ExportFile extends Nimiq.Observable {
     run() {
         this._downloadKeyFilePassphraseBox.reset();
         window.location.hash = ExportFile.Pages.EXPORT_FILE;
-        this._downloadKeyFilePassphraseBox.focus();
+        if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
+            this._downloadKeyFilePassphraseBox.focus();
+        }
     }
 
     /**
