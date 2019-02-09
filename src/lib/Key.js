@@ -87,9 +87,9 @@ class Key {
      * @private
      */
     _derivePrivateKey(path) {
-        return this._secret.type === Nimiq.Secret.Type.ENTROPY
-            ? /** @type {Nimiq.Entropy} */ (this._secret).toExtendedPrivateKey().derivePath(path).privateKey
-            : /** @type {Nimiq.PrivateKey} */ this._secret;
+        return this._secret instanceof Nimiq.Entropy
+            ? this._secret.toExtendedPrivateKey().derivePath(path).privateKey
+            : this._secret;
     }
 
     /**
@@ -122,7 +122,7 @@ class Key {
      * @type {string}
      */
     get id() {
-        const input = this.type === Nimiq.Secret.Type.ENTROPY
+        const input = this._secret instanceof Nimiq.Entropy
             ? this._secret.serialize()
             : Nimiq.PublicKey.derive(this._secret).toAddress().serialize();
         return Key.deriveId(input);
