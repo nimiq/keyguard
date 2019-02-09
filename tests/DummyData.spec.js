@@ -84,6 +84,14 @@ Dummy.deprecatedAccountInfos = [
     },
 ];
 
+Dummy.deprecatedAccountCookie = [
+    {
+        address: 'NQ71 CT4K 7R9R EHSB 7HY9 TSTP XNRQ L2RK 8U4U',
+        type: 'high',
+        label: 'Dummy account 1',
+    },
+];
+
 /** @type {AccountRecord[]} */
 Dummy.deprecatedAccountRecords = [
     Object.assign({}, Dummy.deprecatedAccountInfos[0], { encryptedKeyPair: Dummy.encryptedKeys[0] }),
@@ -104,7 +112,7 @@ Dummy.deprecatedAccount2KeyInfoObject = [{
 Dummy.keyInfoCookieEncoded = '0102ec615522906100ef553f34a779';
 
 /** @type {string} */
-Dummy.cookie = `k=${Dummy.keyInfoCookieEncoded};accounts=${JSON.stringify(Dummy.deprecatedAccountInfos)};some=thing;`;
+Dummy.cookie = `k=${Dummy.keyInfoCookieEncoded};accounts=${JSON.stringify(Dummy.deprecatedAccountCookie)};some=thing;`;
 
 Dummy.DUMMY_ACCOUNT_DATABASE_NAME = 'keyguard-dummy-account-database';
 Dummy.DUMMY_KEY_DATABASE_NAME = 'keyguard-dummy-key-database';

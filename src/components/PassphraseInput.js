@@ -13,7 +13,7 @@ class PassphraseInput extends Nimiq.Observable {
         this._minLength = PassphraseInput.DEFAULT_MIN_LENGTH;
         this._showStrengthIndicator = showStrengthIndicator;
         this.$el = PassphraseInput._createElement($el);
-        this.$inputContainer = /** @type {HTMLElement} */ (this.$el.querySelector('.input-container'));
+
         this.$input = /** @type {HTMLInputElement} */ (this.$el.querySelector('input.password'));
         this.$eyeButton = /** @type {HTMLElement} */ (this.$el.querySelector('.eye-button'));
 
@@ -27,7 +27,10 @@ class PassphraseInput extends Nimiq.Observable {
 
         this.$input.placeholder = placeholder;
 
-        this.$eyeButton.addEventListener('click', () => this._changeVisibility());
+        this.$eyeButton.addEventListener('click', () => {
+            this._changeVisibility();
+            this.focus();
+        });
 
         this._onInputChanged();
         this.$input.addEventListener('input', () => this._onInputChanged());
@@ -44,7 +47,9 @@ class PassphraseInput extends Nimiq.Observable {
         /* eslint-disable max-len */
         $el.innerHTML = `
             <div class="input-container">
-                <input class="password" type="password" placeholder="Enter Passphrase">
+                <div class="input-wrapper">
+                    <input class="password" type="password" placeholder="Enter password">
+                </div>
                 <span class="nq-icon eye eye-button"/>
             </div>
             <div class="strength-indicator-container">
@@ -84,7 +89,7 @@ class PassphraseInput extends Nimiq.Observable {
     }
 
     async onPassphraseIncorrect() {
-        await AnimationUtils.animate('shake', this.$inputContainer);
+        await AnimationUtils.animate('shake', this.$input);
         this.reset();
     }
 
@@ -96,7 +101,6 @@ class PassphraseInput extends Nimiq.Observable {
         this.$input.setAttribute('type', becomeVisible ? 'text' : 'password');
         this.$eyeButton.classList.toggle('eye-off', becomeVisible);
         this.$eyeButton.classList.toggle('eye', !becomeVisible);
-        this.$input.focus();
     }
 
     _onInputChanged() {

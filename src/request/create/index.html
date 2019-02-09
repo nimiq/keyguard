@@ -20,6 +20,7 @@
     <script defer bundle-common src="../../lib/KeyInfo.js"></script>
     <script defer bundle-common src="../../lib/Errors.js"></script>
     <script defer bundle-common src="../../lib/ErrorConstants.js"></script>
+    <script defer bundle-common src="../../lib/Constants.js"></script>
     <script defer bundle-common src="../../lib/CookieJar.js"></script>
     <script defer bundle-common src="../../lib/BrowserDetection.js"></script>
     <script defer bundle-common src="../../lib/AccountStore.js"></script>
@@ -33,15 +34,8 @@
     <script defer bundle-toplevel src="../TopLevelApi.js"></script>
     <script defer bundle-toplevel src="../../translations/index.js"></script>
 
-    <script defer src="../../lib/AutoComplete.js"></script>
     <script defer src="../../lib/Iqons.js"></script>
     <script defer src="../../components/Identicon.js"></script>
-    <script defer src="../../components/DownloadKeyfile.js"></script>
-    <script defer src="../../components/PrivacyAgent.js"></script>
-    <script defer src="../../components/PrivacyWarning.js"></script>
-    <script defer src="../../components/ValidateWords.js"></script>
-    <script defer src="../../components/RecoveryWordsInputField.js"></script>
-    <script defer src="../../components/RecoveryWords.js"></script>
     <script defer src="../../components/PassphraseSetterBox.js"></script>
     <script defer src="../../components/ProgressIndicator.js"></script>
     <script defer src="IdenticonSelector.js"></script>
@@ -59,11 +53,6 @@
     <link rel="stylesheet" bundle-toplevel href="../../components/PassphraseInput.css">
     <link rel="stylesheet" bundle-toplevel href="../../components/PassphraseBox.css">
 
-    <link rel="stylesheet" href="../../components/DownloadKeyfile.css">
-    <link rel="stylesheet" href="../../components/RecoveryWords.css">
-    <link rel="stylesheet" href="../../components/RecoveryWordsInputField.css">
-    <link rel="stylesheet" href="../../components/ValidateWords.css">
-    <link rel="stylesheet" href="../../components/PrivacyAgent.css">
     <link rel="stylesheet" href="../../components/ProgressIndicator.css">
     <link rel="stylesheet" href="./IdenticonSelector.css">
     <link rel="stylesheet" href="./Create.css">
@@ -82,13 +71,12 @@
             <div class="page-header nq-card-header">
                 <div class="progress-indicator"></div>
                 <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
-                <h1 data-i18n="create-heading-choose-identicon" class="nq-h1">Choose your avatar</h1>
+                <h1 data-i18n="create-heading-choose-identicon" class="nq-h1">Choose an avatar</h1>
             </div>
 
             <div class="page-body nq-card-body">
-                <p data-i18n="create-text-select-avatar" class="nq-text">Select an avatar for your wallet's default account from the selection below.</p>
-                <p data-i18n="create-hint-more-accounts" class="nq-text">You can add more accounts later.</p>
-                <div class="identicon-selector"></div>
+                <div class="identicon-selector">
+                </div>
             </div>
         </div>
 
@@ -96,87 +84,24 @@
             <div class="page-header nq-card-header">
                 <div class="progress-indicator"></div>
                 <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
-                <h1 data-i18n="create-heading-keyfile" class="nq-h1">This is your Key File</h1>
+                <h1 class="nq-h1 hide-on-repetition" data-i18n="create-heading-create-password">Create a password</h1>
+                <h1 class="nq-h1 show-on-repetition" data-i18n="create-heading-repeat-password">Confirm your password</h1>
             </div>
 
             <div class="page-body nq-card-body">
-                <div class="keyfile-info">
-                    <div class="nq-icon walletfile"></div>
-                    <div class="keyfile-text">
-                        <p data-i18n="create-text-keyfile-info" class="nq-text">Your Key File gives you full access to your wallet. You'll need it everytime you log in.</p>
-                        <p data-i18n="create-hint-keyfile-password" class="nq-text">To protect your wallet, first protect it with a password.</p>
-                    </div>
+                <div class="wallet-identifier">
+                    <div class="blank"></div>
+                    <div class="blank"></div>
+                    <div class="blank"></div>
+                    <div class="blank"></div>
+                    <div class="blank"></div>
+                    <div class="identicon"></div>
                 </div>
+                <h2 class="nq-h2 nq-blue" data-i18n="create-wallet-desc">This is your Account with your first Address in it.</h2>
             </div>
 
             <div class="page-footer">
                 <form class="passphrase-box"></form>
-            </div>
-        </div>
-
-        <div id="download-keyfile" class="page nq-card">
-            <div class="page-header nq-card-header">
-                <div class="progress-indicator"></div>
-                <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
-                <h1 data-i18n="create-heading-keyfile" class="nq-h1">This is your Key File</h1>
-            </div>
-
-            <div class="page-body nq-card-body">
-                <div class="keyfile-info">
-                    <div class="icon nq-icon walletfile"></div>
-                    <div class="keyfile-text">
-                        <p data-i18n="create-text-keyfile-info" class="nq-text">Your Key File gives you full access to your wallet. You'll need it everytime you log in.</p>
-                        <p data-i18n="create-hint-keyfile-password" class="nq-text">To protect your wallet, first protect it with a password.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="page-footer">
-                <div class="download-keyfile"></div>
-            </div>
-        </div>
-
-        <div id="privacy-agent" class="page nq-card">
-            <div class="page-header nq-card-header">
-                <div class="progress-indicator"></div>
-                <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
-                <h1 data-i18n="create-heading-backup-account" class="nq-h1">Create a backup</h1>
-            </div>
-
-            <div class="page-body nq-card-body">
-                <div class="privacy-agent"></div>
-            </div>
-        </div>
-
-        <div id="recovery-words" class="page nq-card">
-            <div class="page-header nq-card-header">
-                <div class="progress-indicator"></div>
-                <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
-                <h1 data-i18n="create-heading-backup-account" class="nq-h1">Create a backup</h1>
-            </div>
-
-            <div class="page-body nq-card-body">
-                <p data-i18n="recovery-words-explanation" class="nq-text">The following words will grant you access to your wallet even if your Wallet File is lost.</p>
-                <p data-i18n="recovery-words-storing" class="nq-text">Write these words on a piece of paper and store them at a safe, offline place.</p>
-
-                <div class="recovery-words"></div>
-
-                <button class="continue nq-button" data-i18n="continue">Continue</button>
-                <div class="skip-container">
-                    <a class="skip nq-text-s nq-link">Skip backup for now</a>
-                </div>
-            </div>
-        </div>
-
-        <div id="validate-words" class="page nq-card">
-            <div class="page-header nq-card-header">
-                <div class="progress-indicator"></div>
-                <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
-                <h1 data-i18n="create-heading-validate-backup" class="nq-h1">Validate your backup</h1>
-            </div>
-
-            <div class="page-body nq-card-body">
-                <div class="validate-words"></div>
             </div>
         </div>
 

@@ -1,3 +1,4 @@
+/* global Constants */
 /* global TopLevelApi */
 /* global FileImport */
 /* global ImportWords */
@@ -241,13 +242,17 @@ class ImportApi extends TopLevelApi {
     _goToEnterPassphrase() {
         this._passphraseBox.reset();
         window.location.hash = ImportApi.Pages.ENTER_PASSPHRASE;
-        this._passphraseBox.focus();
+        if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
+            this._passphraseBox.focus();
+        }
     }
 
     _goToSetPassphrase() {
         this._passphraseSetterBox.reset();
         window.location.hash = ImportApi.Pages.SET_PASSPHRASE;
-        this._passphraseSetterBox.focus();
+        if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
+            this._passphraseSetterBox.focus();
+        }
     }
 
     /**

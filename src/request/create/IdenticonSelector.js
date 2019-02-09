@@ -12,26 +12,15 @@ class IdenticonSelector extends Nimiq.Observable {
 
         this._keyPath = keyPath;
 
-        this._clearSelection = this._clearSelection.bind(this);
-        this._onSelectionConfirmed = this._onSelectionConfirmed.bind(this);
-
         this.$el = IdenticonSelector._createElement($el);
 
         /** @type {{ [address: string]: Nimiq.Entropy}} */
         this._volatileEntropies = {};
 
-        /** @type {?string} */
-        this._selectedAddress = null;
-
         this.$identicons = /** @type {HTMLElement} */ (this.$el.querySelector('.identicons'));
-        this.$confirmButton = /** @type {HTMLElement} */ (this.$el.querySelector('.backdrop button'));
         this.$generateMoreButton = /** @type {HTMLElement} */ (this.$el.querySelector('.generate-more'));
-        this.$backdrop = /** @type {HTMLElement} */ (this.$el.querySelector('.backdrop'));
 
-        this.generateIdenticons = this.generateIdenticons.bind(this);
-        this.$generateMoreButton.addEventListener('click', this.generateIdenticons);
-        this.$backdrop.addEventListener('click', this._clearSelection);
-        this.$confirmButton.addEventListener('click', this._onSelectionConfirmed);
+        this.$generateMoreButton.addEventListener('click', this.generateIdenticons.bind(this));
     }
 
     /**
@@ -50,12 +39,8 @@ class IdenticonSelector extends Nimiq.Observable {
                     <h2 data-i18n="identicon-selector-loading">Mixing colors</h2>
                 </div>
             </div>
-            <button class="generate-more nq-button-s">Generate new</button>
-
-            <div class="backdrop center">
-                <button class="nq-button inverse" data-i18n="identicon-selector-button-select">Select</button>
-                <a tabindex="0" class="nq-text-s nq-link" data-i18n="identicon-selector-link-back">Back</a>
-            </div>`;
+            <h2 class="nq-h2 nq-blue">Avatars represent Addresses.</h2>
+            <button class="generate-more nq-button-s">Generate new</button>`;
 
         I18n.translateDom($el);
         return $el;
@@ -92,20 +77,17 @@ class IdenticonSelector extends Nimiq.Observable {
         this.$identicons.textContent = '';
 
         Object.keys(entropies).forEach(address => {
-            const $wrapper = document.createElement('div');
+            const $wrapper = document.createElement('a');
             $wrapper.classList.add('wrapper');
+            $wrapper.setAttribute('tabindex', '0');
+            $wrapper.setAttribute('href', '#');
 
             const identicon = new Identicon(address);
             const $identicon = identicon.getElement();
 
-            const $address = document.createElement('div');
-            $address.classList.add('address');
-            $address.textContent = address;
-
             $wrapper.appendChild($identicon);
-            $wrapper.appendChild($address);
 
-            $wrapper.addEventListener('click', () => this._onIdenticonSelected($wrapper, address));
+            $wrapper.addEventListener('click', e => this._onSelectionConfirmed(address, e));
 
             this.$identicons.appendChild($wrapper);
         });
@@ -114,42 +96,18 @@ class IdenticonSelector extends Nimiq.Observable {
     }
 
     /**
-     * @param {HTMLElement} $el
-     * @param {string} address
+     * @param {string} selectedAddress
+     * @param {Event} e
      * @private
      */
-    _onIdenticonSelected($el, address) {
-        const $returningIdenticon = this.$el.querySelector('.wrapper.returning');
-        if ($returningIdenticon) {
-            $returningIdenticon.classList.remove('returning');
-        }
+    _onSelectionConfirmed(selectedAddress, e) {
+        e.preventDefault();
 
-        this._selectedAddress = address;
-        this.$selectedIdenticon = $el;
-        this.$el.classList.add('selected');
-        $el.classList.add('selected');
-    }
-
-    /**
-     * @private
-     */
-    _onSelectionConfirmed() {
-        if (!this._selectedAddress) { // something went wrong
-            this._clearSelection(); // clear current selection
-            this.generateIdenticons(); // and gerate new identicons
-            // TODO Add: in case it does happen, signal to user instead of silently resolving it.
-            return;
-        }
-        this.fire(IdenticonSelector.Events.IDENTICON_SELECTED, this._volatileEntropies[this._selectedAddress]);
-    }
-
-    _clearSelection() {
-        if (this.$selectedIdenticon) {
-            this.$selectedIdenticon.classList.add('returning');
-            this.$selectedIdenticon.classList.remove('selected');
-        }
-
-        this.$el.classList.remove('selected');
+        this.fire(
+            IdenticonSelector.Events.IDENTICON_SELECTED,
+            this._volatileEntropies[selectedAddress],
+            selectedAddress,
+        );
     }
 }
 

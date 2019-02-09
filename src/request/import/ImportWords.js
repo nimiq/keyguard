@@ -1,4 +1,6 @@
+/* global Constants */
 /* global Nimiq */
+/* global TopLevelApi */
 /* global Key */
 /* global PrivacyAgent */
 /* global RecoveryWords */
@@ -55,7 +57,9 @@ class ImportWords {
         // Events
         privacyAgent.on(PrivacyAgent.Events.CONFIRM, () => {
             window.location.hash = ImportWords.Pages.ENTER_WORDS;
-            recoveryWords.focus();
+            if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
+                recoveryWords.focus();
+            }
         });
 
         recoveryWords.on(RecoveryWords.Events.COMPLETE, () => { $wordsConfirm.disabled = false; });
@@ -78,7 +82,7 @@ class ImportWords {
             }
         });
 
-        // @ts-ignore
+        // @ts-ignore (Property 'test' does not exist on type 'Window'.)
         window.test = () => {
             const testPassphrase = [
                 'curtain', 'cancel', 'tackle', 'always',
@@ -88,7 +92,7 @@ class ImportWords {
                 'frost', 'disorder', 'pave', 'wrestle',
                 'broken', 'mercy', 'crime', 'dismiss',
             ];
-            // @ts-ignore
+            // @ts-ignore (Parameter 'field', 'word', 'index' implicitly have an 'any' type.)
             function putWord(field, word, index) { // eslint-disable-line require-jsdoc-except/require-jsdoc
                 setTimeout(() => {
                     field.value = word;

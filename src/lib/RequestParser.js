@@ -187,7 +187,30 @@ class RequestParser { // eslint-disable-line no-unused-vars
         }
         try {
             const parsedUrl = new URL(url);
+            if (parsedUrl.protocol !== 'https:' && parsedUrl.protocol !== 'http:') {
+                throw new Errors.InvalidRequestError('shopOrigin protocol must be https: or http:');
+            }
             return parsedUrl.origin;
+        } catch (error) {
+            throw new Errors.InvalidRequestError(`Invalid url: ${error.message}`);
+        }
+    }
+
+    /**
+     * @param {any} url
+     * @returns {URL | undefined}
+     */
+    parseShopLogoUrl(url) {
+        if (!url) return undefined;
+        if (typeof url !== 'string') {
+            throw new Errors.InvalidRequestError('shopLogoUrl must be of type string');
+        }
+        try {
+            const parsedUrl = new URL(url);
+            if (parsedUrl.protocol !== 'https:' && parsedUrl.protocol !== 'http:') {
+                throw new Errors.InvalidRequestError('shopLogoUrl protocol must be https: or http:');
+            }
+            return parsedUrl;
         } catch (error) {
             throw new Errors.InvalidRequestError(`Invalid url: ${error.message}`);
         }

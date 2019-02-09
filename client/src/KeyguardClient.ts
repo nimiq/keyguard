@@ -19,6 +19,7 @@ export class KeyguardClient {
         endpoint = KeyguardClient.DEFAULT_ENDPOINT,
         defaultBehavior?: RequestBehavior,
         defaultIframeBehavior?: RequestBehavior,
+        preserveRequests?: boolean,
     ) {
         this._endpoint = endpoint;
         this._defaultBehavior = defaultBehavior || new RedirectRequestBehavior();
@@ -30,7 +31,7 @@ export class KeyguardClient {
             : RequestBehavior.getAllowedOrigin(this._endpoint);
 
         // Listen for response
-        this._redirectClient = new RedirectRpcClient('', allowedOrigin);
+        this._redirectClient = new RedirectRpcClient('', allowedOrigin, preserveRequests);
         this._redirectClient.onResponse('request', this._onResolve.bind(this), this._onReject.bind(this));
 
         this._observable = new Observable();

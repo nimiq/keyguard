@@ -48,7 +48,7 @@ class PassphraseBox extends Nimiq.Observable {
     static _createElement($el, options) {
         $el = $el || document.createElement('form');
         $el.classList.add('passphrase-box', 'actionbox');
-        if (!options.hideInput) $el.classList.add(`nq-bg-${options.bgColor}`);
+        if (!options.hideInput) $el.classList.add(`nq-${options.bgColor}-bg`);
 
         // To enable i18n validation with the dynamic nature of the passphrase box's contents,
         // all possible i18n tags and texts have to be specified here in the below format to
@@ -69,7 +69,7 @@ class PassphraseBox extends Nimiq.Observable {
 
         $el.innerHTML = `
             <a class="cancel nq-icon cancel-circle-white"></a>
-            <h2 class="prompt" data-i18n="passphrasebox-enter-passphrase">Enter your passphrase</h2>
+            <div class="prompt nq-text-s" data-i18n="passphrasebox-enter-passphrase">Enter your password</div>
             <div passphrase-input></div>
             ${buttonVersions[options.buttonI18nTag]}
         `;

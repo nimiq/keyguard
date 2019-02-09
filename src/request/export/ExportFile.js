@@ -1,3 +1,4 @@
+/* global Constants */
 /* global Nimiq */
 /* global PassphraseBox */
 /* global KeyStore */
@@ -11,7 +12,7 @@ class ExportFile extends Nimiq.Observable {
      * if a complete page is missing it will be created.
      * However these pages wil be the default pages which usually don't match the applications requirements.
      * Refer to the corresponsing _build(Privcy | RecoveryWords | ValidateWords) to see the general Structure.
-     * @param {KeyguardRequest.ParsedSimpleRequest} request
+     * @param {ParsedSimpleRequest} request
      * @param {Function} resolve
      * @param {Function} reject
      */
@@ -48,12 +49,23 @@ class ExportFile extends Nimiq.Observable {
             alert('Wallet Files are not yet implemented.');
             this._finish();
         });
+        window.addEventListener('hashchange', event => {
+            const newUrl = new URL(event.newURL);
+            if (newUrl.hash === `#${ExportFile.Pages.EXPORT_FILE}`) {
+                this._downloadKeyFilePassphraseBox.reset();
+                if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
+                    this._downloadKeyFilePassphraseBox.focus();
+                }
+            }
+        });
     }
 
     run() {
         this._downloadKeyFilePassphraseBox.reset();
         window.location.hash = ExportFile.Pages.EXPORT_FILE;
-        this._downloadKeyFilePassphraseBox.focus();
+        if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
+            this._downloadKeyFilePassphraseBox.focus();
+        }
     }
 
     /**

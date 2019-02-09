@@ -31,7 +31,7 @@ class SignMessageApi extends TopLevelApi { // eslint-disable-line no-unused-vars
 
     /**
      * @param {KeyguardRequest.SignMessageRequest} request
-     * @returns {Promise<KeyguardRequest.ParsedSignMessageRequest>}
+     * @returns {Promise<ParsedSignMessageRequest>}
      */
     async parseRequest(request) {
         if (!request) {
