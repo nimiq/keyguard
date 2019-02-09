@@ -62,7 +62,7 @@
     display: flex;
     align-items: center;
     margin-top: 2rem;
-    max-width: 90%;
+    max-width: 84%;
 }
 
 .page#remove-key .backup-option .login-file-svg-container {
