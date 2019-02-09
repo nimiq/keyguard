@@ -1,3 +1,4 @@
+/* global Constants */
 /* global Nimiq */
 /* global PrivacyWarning */
 /* global RecoveryWords */
@@ -74,7 +75,9 @@ class ExportWords extends Nimiq.Observable {
     run() {
         this._privacyWarningPassphraseBox.reset();
         window.location.hash = ExportWords.Pages.PRIVACY;
-        this._privacyWarningPassphraseBox.focus();
+        if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
+            this._privacyWarningPassphraseBox.focus();
+        }
     }
 
     /**

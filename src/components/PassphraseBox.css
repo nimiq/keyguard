@@ -45,8 +45,9 @@
     transform: translate(0, -3.5rem);
 }
 
+.passphrase-box.hide-input .prompt,
 .passphrase-box.hide-input .passphrase-input {
-    visibility: hidden;
+    display: none;
     margin: 0;
 }
 

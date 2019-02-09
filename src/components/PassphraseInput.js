@@ -27,7 +27,10 @@ class PassphraseInput extends Nimiq.Observable {
 
         this.$input.placeholder = placeholder;
 
-        this.$eyeButton.addEventListener('click', () => this._changeVisibility());
+        this.$eyeButton.addEventListener('click', () => {
+            this._changeVisibility();
+            this.focus();
+        });
 
         this._onInputChanged();
         this.$input.addEventListener('input', () => this._onInputChanged());
@@ -98,7 +101,6 @@ class PassphraseInput extends Nimiq.Observable {
         this.$input.setAttribute('type', becomeVisible ? 'text' : 'password');
         this.$eyeButton.classList.toggle('eye-off', becomeVisible);
         this.$eyeButton.classList.toggle('eye', !becomeVisible);
-        this.$input.focus();
     }
 
     _onInputChanged() {

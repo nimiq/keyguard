@@ -1,4 +1,6 @@
+/* global Constants */
 /* global Nimiq */
+/* global TopLevelApi */
 /* global Key */
 /* global PrivacyAgent */
 /* global RecoveryWords */
@@ -55,7 +57,9 @@ class ImportWords {
         // Events
         privacyAgent.on(PrivacyAgent.Events.CONFIRM, () => {
             window.location.hash = ImportWords.Pages.ENTER_WORDS;
-            recoveryWords.focus();
+            if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
+                recoveryWords.focus();
+            }
         });
 
         recoveryWords.on(RecoveryWords.Events.COMPLETE, () => { $wordsConfirm.disabled = false; });
