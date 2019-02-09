@@ -27,7 +27,7 @@ class ChangePassphraseApi extends TopLevelApi { // eslint-disable-line no-unused
 
     /**
      * @param {KeyguardRequest.SimpleRequest} request
-     * @returns {Promise<KeyguardRequest.ParsedSimpleRequest>}
+     * @returns {Promise<ParsedSimpleRequest>}
      */
     async parseRequest(request) {
         if (!request) {

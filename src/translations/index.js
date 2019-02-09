@@ -5,8 +5,8 @@ const TRANSLATIONS = {
         continue: 'Continue',
 
         'passphrase-strength': 'Strength',
-        'passphrase-placeholder': 'Enter passphrase',
-        'passphrase-repeat-placeholder': 'Repeat passphrase',
+        'passphrase-placeholder': 'Enter password',
+        'passphrase-repeat-placeholder': 'Repeat password',
 
         'privacy-warning-heading': 'Are you being watched?',
         'privacy-warning-text': 'Now is the perfect time to assess your surroundings. '
@@ -22,15 +22,11 @@ const TRANSLATIONS = {
         'recovery-words-storing': 'Write these words on a piece of paper and store them at a safe, offline place.',
         'recovery-words-continue-to-words': 'Continue to Recovery Words',
 
-        'create-heading-choose-identicon': 'Choose your avatar',
-        'create-text-select-avatar': 'Select an avatar for your wallet\'s default account from the selection below.',
-        'create-hint-more-accounts': 'You can add more accounts later.',
-        'create-heading-keyfile': 'This is your Key File',
-        'create-text-keyfile-info': 'Your Key File gives you full access to your wallet. '
-                                  + 'You\'ll need it everytime you log in.',
-        'create-hint-keyfile-password': 'To protect your wallet, first protect it with a password.',
-        'create-heading-backup-account': 'Create a backup',
+        'create-heading-choose-identicon': 'Choose an avatar',
+        'create-heading-create-password': 'Create a password',
+        'create-heading-repeat-password': 'Confirm your password',
         'create-heading-validate-backup': 'Validate your backup',
+        'create-wallet-desc': 'This is your Account with your first Address in it.',
 
         'import-heading-log-in': 'Log in',
         'import-link-no-wallet': 'Don\'t have a wallet yet?',
@@ -69,7 +65,7 @@ const TRANSLATIONS = {
         'sign-msg-text': 'Please enter your passphrase to sign the following message:',
         'sign-msg-sign-with': 'Sign with',
 
-        'passphrasebox-enter-passphrase': 'Enter your passphrase',
+        'passphrasebox-enter-passphrase': 'Enter your password',
         'passphrasebox-protect-keyfile': 'Protect your keyfile with a password',
         'passphrasebox-repeat-password': 'Repeat your password',
         'passphrasebox-continue': 'Continue',
@@ -78,11 +74,12 @@ const TRANSLATIONS = {
         'passphrasebox-download': 'Download Key File',
         'passphrasebox-confirm-tx': 'Confirm transaction',
         'passphrasebox-sign-msg': 'Sign message',
+        'passphrasebox-password-strength-0': 'Enter at least 8 characters',
         'passphrasebox-password-strength-8': 'Great, that\'s a good password!',
         'passphrasebox-password-strength-10': 'Super, that\'s a strong password!',
         'passphrasebox-password-strength-12': 'Excellent, that\'s a very strong password!',
         'passphrasebox-password-hint': 'Your password should have at least 8 characters.',
-        'passphrasebox-password-skip': 'Skip password protection for now',
+        'passphrasebox-password-skip': 'Skip for now',
 
         'identicon-selector-loading': 'Mixing colors',
         'identicon-selector-button-select': 'Select',
@@ -132,8 +129,8 @@ const TRANSLATIONS = {
         continue: 'Weiter',
 
         'passphrase-strength': 'Stärke',
-        'passphrase-placeholder': 'Passphrase eingeben',
-        'passphrase-repeat-placeholder': 'Passphrase wiederholen',
+        'passphrase-placeholder': 'Passwort eingeben',
+        'passphrase-repeat-placeholder': 'Passwort wiederholen',
 
         'privacy-warning-heading': 'Wirst du beobachtet?',
         'privacy-warning-text': 'Jetzt ist eine gute Zeit um sich umzuschauen. Gibt es Fenster in der Nähe? '
@@ -153,14 +150,10 @@ const TRANSLATIONS = {
         'recovery-words-continue-to-words': 'Weiter zu den Wiederherstellungswörtern',
 
         'create-heading-choose-identicon': 'Wähle deinen Konto-Avatar',
-        'create-text-select-avatar': 'Wähle einen Avatar für den Standard-Account deiner Wallet aus der Auswahl unten.',
-        'create-hint-more-accounts': 'Neue Konten kannst du später hinzufügen.',
-        'create-heading-keyfile': 'Das ist deine Wallet Datei',
-        'create-text-keyfile-info': 'Deine Wallet Datei gibt dir vollen Zugang zu deiner Wallet. '
-                                  + 'Du brauchst sie jedesmal wenn du dich einloggst.',
-        'create-hint-keyfile-password': 'Um deine Wallet zu schützen, schütze es mit einem Passwort.',
-        'create-heading-backup-account': 'Erstelle ein Backup',
+        'create-heading-create-password': 'Erstelle ein Passwort',
+        'create-heading-repeat-password': 'Bestätige dein Passwort',
         'create-heading-validate-backup': 'Überprüfe dein Backup',
+        'create-wallet-desc': 'Das ist dein Account mit deiner ersten Addresse.',
 
         'import-heading-log-in': 'Einloggen',
         'import-link-no-wallet': 'Du hast noch keine Wallet?',
@@ -202,7 +195,7 @@ const TRANSLATIONS = {
         'sign-msg-text': 'Bitte gib deine Passphrase ein, um die folgende Nachricht zu signieren:',
         'sign-msg-sign-with': 'Signieren mit',
 
-        'passphrasebox-enter-passphrase': 'Gib deine Passphrase ein',
+        'passphrasebox-enter-passphrase': 'Gib dein Passwort ein',
         'passphrasebox-protect-keyfile': 'Sichere dein KeyFile mit einem Passwort',
         'passphrasebox-repeat-password': 'Wiederhole dein Passwort',
         'passphrasebox-continue': 'Weiter',
@@ -211,11 +204,12 @@ const TRANSLATIONS = {
         'passphrasebox-download': 'Schlüsseldatei herunterladen',
         'passphrasebox-confirm-tx': 'Überweisung bestätigen',
         'passphrasebox-sign-msg': 'Nachricht signieren',
+        'passphrasebox-password-strength-0': 'Gib mindestens 8 Zeichen ein',
         'passphrasebox-password-strength-8': 'Schön, das ist ein gutes Passwort!',
         'passphrasebox-password-strength-10': 'Super, das ist ein starkes Passwort!',
         'passphrasebox-password-strength-12': 'Exzellent, das ist ein sehr starkes Passwort!',
         'passphrasebox-password-hint': 'Dein Passwort muss mindestens 8 Zeichen haben.',
-        'passphrasebox-password-skip': 'Passwortschutz erstmal überspringen',
+        'passphrasebox-password-skip': 'Erstmal überspringen',
 
         'identicon-selector-loading': 'Mische Farben',
         'identicon-selector-button-select': 'Auswählen',

@@ -19,13 +19,19 @@ export class KeyguardClient {
         endpoint = KeyguardClient.DEFAULT_ENDPOINT,
         defaultBehavior?: RequestBehavior,
         defaultIframeBehavior?: RequestBehavior,
+        preserveRequests?: boolean,
     ) {
         this._endpoint = endpoint;
         this._defaultBehavior = defaultBehavior || new RedirectRequestBehavior();
         this._defaultIframeBehavior = defaultIframeBehavior || new IFrameRequestBehavior();
 
+        // If this is a page-reload, allow location.origin as RPC origin
+        const allowedOrigin = new URL(document.referrer).origin === window.location.origin
+            ? window.location.origin
+            : RequestBehavior.getAllowedOrigin(this._endpoint);
+
         // Listen for response
-        this._redirectClient = new RedirectRpcClient('', RequestBehavior.getAllowedOrigin(this._endpoint));
+        this._redirectClient = new RedirectRpcClient('', allowedOrigin, preserveRequests);
         this._redirectClient.onResponse('request', this._onResolve.bind(this), this._onReject.bind(this));
 
         this._observable = new Observable();

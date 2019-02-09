@@ -57,7 +57,7 @@ class FileImport extends Nimiq.Observable {
      */
     _onFileSelected(event) {
         this.$errorMessage.textContent = '';
-        // @ts-ignore
+        // @ts-ignore (Property 'files' does not exist on type 'EventTarget & Element'.)
         const files = event.target.files;
         this._readFile(files[0]);
         this.$fileInput.value = '';

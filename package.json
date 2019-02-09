@@ -14,7 +14,8 @@
     "checklangs": "node tools/translationValidator.js",
     "pr": "yarn typecheck && yarn lint && yarn test && yarn checkdeps && yarn checklangs && cd client && yarn lint && yarn build",
     "watch": "tsc-watch --pretty --onSuccess \"yarn lint\"",
-    "watchfix": "tsc-watch --pretty --onSuccess \"yarn lintfix\""
+    "watchfix": "tsc-watch --pretty --onSuccess \"yarn lintfix\"",
+    "postinstall": "cd client && yarn"
   },
   "repository": {
     "type": "git",
@@ -32,7 +33,7 @@
   "homepage": "https://github.com/nimiq/keyguard-next#readme",
   "devDependencies": {
     "@nimiq/core-types": "^1.0.0",
-    "@nimiq/rpc": "^0.0.3",
+    "@nimiq/rpc": "^0.0.11",
     "@nimiq/style": "^0.4.1",
     "@types/jasmine": "^2.8.8",
     "@types/node": "^10.5.2",

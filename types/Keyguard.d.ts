@@ -43,3 +43,18 @@ type KeyRecord = {
     hasPin: boolean
     secret: Uint8Array
 }
+
+type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
+type Transform<T, K extends keyof T, E> = Omit<T, K> & E
+type KeyId2KeyInfo<T extends { keyId: string }> = Transform<T, 'keyId', { keyInfo: KeyInfo }>
+type ConstructTransaction<T extends KeyguardRequest.TransactionInfo> = Transform<T,
+    'sender' | 'senderType' | 'recipient' | 'recipientType' | 'value' | 'fee' |
+    'validityStartHeight' | 'data' | 'flags',
+    { transaction: Nimiq.ExtendedTransaction }>
+
+type ParsedSimpleRequest = KeyId2KeyInfo<KeyguardRequest.SimpleRequest>
+type ParsedSignTransactionRequest = ConstructTransaction<Transform<KeyId2KeyInfo<KeyguardRequest.SignTransactionRequest>, 'shopLogoUrl',{ shopLogoUrl?: URL }>>
+& { layout: KeyguardRequest.SignTransactionRequestLayout }
+type ParsedSignMessageRequest = Transform<KeyId2KeyInfo<KeyguardRequest.SignMessageRequest>,
+    'signer', { signer: Nimiq.Address }>
+type ParsedDeriveAddressRequest = KeyId2KeyInfo<KeyguardRequest.DeriveAddressRequest>

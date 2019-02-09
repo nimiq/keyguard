@@ -9,7 +9,7 @@
 
 class SignTransaction {
     /**
-     * @param {KeyguardRequest.ParsedSignTransactionRequest} request
+     * @param {ParsedSignTransactionRequest} request
      * @param {Function} resolve
      * @param {Function} reject
      */
@@ -118,7 +118,7 @@ class SignTransaction {
     }
 
     /**
-     * @param {KeyguardRequest.ParsedSignTransactionRequest} request
+     * @param {ParsedSignTransactionRequest} request
      * @param {Function} resolve
      * @param {Function} reject
      * @param {string} [passphrase]
