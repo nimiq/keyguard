@@ -233,7 +233,7 @@ const TRANSLATIONS = {
         'remove-key-heading': 'Verliere deinen Zugang nicht',
         'remove-key-intro-text': 'Falls du dich ausloggst, ohne dein Konto zu sichern, wirst du unwiderruflich'
                                 + 'den Zugriff darauf verlieren. ',
-        'remove-key-login-file': 'Schlüsseldatei',
+        'remove-key-login-file': 'LoginDatei',
         'remove-key-login-file-question': 'Ist deine LoginDatei sicher gespeichert und zugänglich?',
         'remove-key-download-login-file': 'LoginDatei herunterladen',
         'remove-key-recovery-words-question': 'Weißt du, wo sich deine Wiederherstellungswörter befinden?',
