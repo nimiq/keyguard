@@ -101,8 +101,8 @@ const TRANSLATIONS = {
         'export-more-options-heading': 'More export options',
 
         'remove-key-heading': 'Don\'t lose access',
-        'remove-key-intro-text': 'If you log out without saving your account, you will irretrievably'
-                                + ' lose access to it!',
+        'remove-key-intro-text': 'If you log out without saving your account, you will irretrievably '
+                                + 'lose access to it!',
         'remove-key-login-file': 'LoginFile',
         'remove-key-login-file-question': 'Is your LoginFile savely stored and accessible?',
         'remove-key-download-login-file': 'Download LoginFile',
