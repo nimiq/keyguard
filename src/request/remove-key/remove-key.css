@@ -64,6 +64,17 @@
     margin-top: 2rem;
 }
 
-.page#remove-key .backup-option > div {
+.page#remove-key .backup-option .login-file-svg-container {
+    min-width: 90px;
+    margin: 0;
+    padding: 0;
+}
+
+.page#remove-key .backup-option .login-file-svg-container svg {
+    width: 100%;
+    height: 100%;
+}
+
+.page#remove-key .backup-option > *:nth-child(2) {
     margin-left: 3rem;
 }
