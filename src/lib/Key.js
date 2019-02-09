@@ -139,7 +139,7 @@ class Key {
     /**
      * @type {string}
      */
-    get publicKey() {
+    get hash() {
         const input = this._type === Key.Type.LEGACY
             ? Nimiq.PublicKey.derive(new Nimiq.PrivateKey(this._secret)).toAddress().serialize()
             : this._secret;

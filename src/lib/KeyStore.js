@@ -113,10 +113,10 @@ class KeyStore {
             encrypted: !!passphrase && passphrase.length > 0,
             hasPin: key.hasPin,
             secret,
-            publicKey: key.publicKey,
+            hash: key.hash,
         };
 
-        const existingKey = keys.find(x => x.publicKey === key.publicKey);
+        const existingKey = keys.find(x => x.hash === key.hash);
         if (existingKey) {
             Object.assign(keyRecord, { id: existingKey.id });
         }
@@ -183,7 +183,7 @@ class KeyStore {
      */
     async migrateAccountsToKeys() {
         const accounts = await AccountStore.instance.dangerousListPlain();
-        const keysRecords = /** @type {KeyRecord[]} */ (KeyStore._accountRecords2KeyRecords(accounts));
+        const keysRecords = KeyStore._accountRecords2KeyRecords(accounts);
         await Promise.all(keysRecords.map(keyRecord => this._put(keyRecord)));
 
         // FIXME Uncomment after/for testing (and also adapt KeyStore.spec.js)
@@ -205,14 +205,14 @@ class KeyStore {
     static _accountRecords2KeyRecords(accounts) {
         return accounts.map(account => {
             const address = Nimiq.Address.fromUserFriendlyAddress(account.userFriendlyAddress);
-            const legacyKeyPublicKey = Key.derivePublicKey(address.serialize());
+            const legacyKeyHash = Key.deriveHash(address.serialize());
 
             return {
-                publicKey: legacyKeyPublicKey,
+                hash: legacyKeyHash,
                 type: Key.Type.LEGACY,
                 encrypted: true,
                 hasPin: account.type === 'low',
-                secret: /** @type {AccountRecord} */ (account).encryptedKeyPair,
+                secret: account.encryptedKeyPair,
             };
         });
     }

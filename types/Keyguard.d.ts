@@ -41,7 +41,7 @@ type KeyRecord = {
     encrypted: boolean
     hasPin: boolean
     secret: Uint8Array
-    publicKey: string
+    hash: string
 }
 
 type StoredKeyRecord = KeyRecord & {

@@ -27,8 +27,8 @@ describe('KeyStore', () => {
             KeyStore.instance._get(Dummy.keyInfos[0].id),
             KeyStore.instance._get(Dummy.keyInfos[1].id),
         ]);
-        expect(key1).toEqual(Dummy.storedKeyRecords[0]);
-        expect(key2).toEqual(Dummy.storedKeyRecords[1]);
+        expect(key1).toEqual(Dummy.storedKeyRecords()[0]);
+        expect(key2).toEqual(Dummy.storedKeyRecords()[1]);
     });
 
     it('can get and decrypt keys', async () => {
@@ -151,7 +151,7 @@ describe('KeyStore', () => {
 
         expect(migrationCookieDeleted && accountsCookieDeleted).toBe(true);
         const key1 = await KeyStore.instance._get(Dummy.keyInfos[0].id);
-        expect(key1).toEqual(Dummy.storedKeyRecords[0]);
+        expect(key1).toEqual(Dummy.storedKeyRecords()[0]);
 
         // TODO: Expect Accounts DB to not be deleted
 
