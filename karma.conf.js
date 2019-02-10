@@ -14,11 +14,10 @@ module.exports = function (/** @type {any} */ config) {
 
         // list of files / patterns to load in the browser
         files: [
-            'https://cdn.nimiq-testnet.com/web-offline.js',
+            'https://cdn.nimiq-network.com/branches/master/web-offline.js',
             'src/**/*js',
             'tests/**/*.spec.js'
         ],
-
 
         // avoid calling runKeyguard
         exclude: [

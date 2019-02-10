@@ -10,15 +10,13 @@ class Key {
     }
 
     /**
-     * @param {Uint8Array} secret
-     * @param {Key.Type} [type]
-     * @param {number?} [id]
+     * @param {Nimiq.Entropy|Nimiq.PrivateKey} secret
      * @param {boolean} [hasPin]
+     * @param {number?} [id]
      */
-    constructor(secret, type = Key.Type.BIP39, id = null, hasPin = false) {
+    constructor(secret, hasPin = false, id = null) {
         this._id = id;
         this._secret = secret;
-        this._type = type;
         this._hasPin = hasPin;
     }
 
@@ -91,9 +89,9 @@ class Key {
      * @private
      */
     _derivePrivateKey(path) {
-        return this._type === Key.Type.LEGACY
-            ? new Nimiq.PrivateKey(this._secret)
-            : new Nimiq.Entropy(this._secret).toExtendedPrivateKey().derivePath(path).privateKey;
+        return this._secret instanceof Nimiq.Entropy
+            ? this._secret.toExtendedPrivateKey().derivePath(path).privateKey
+            : this._secret;
     }
 
     /**
@@ -111,17 +109,17 @@ class Key {
     }
 
     /**
-     * @type {Uint8Array}
+     * @type {Nimiq.Entropy|Nimiq.PrivateKey}
      */
     get secret() {
         return this._secret;
     }
 
     /**
-     * @type {Key.Type}
+     * @type {Nimiq.Secret.Type}
      */
     get type() {
-        return this._type;
+        return this._secret.type;
     }
 
     /**
@@ -140,17 +138,12 @@ class Key {
      * @type {string}
      */
     get hash() {
-        const input = this._type === Key.Type.LEGACY
-            ? Nimiq.PublicKey.derive(new Nimiq.PrivateKey(this._secret)).toAddress().serialize()
-            : this._secret;
+        const input = this._secret instanceof Nimiq.Entropy
+            ? this._secret.serialize()
+            : Nimiq.PublicKey.derive(this._secret).toAddress().serialize();
         return Key.deriveHash(input);
     }
 }
 
-Key.Type = {
-    LEGACY: 0,
-    BIP39: 1,
-};
-
 Key.MSG_PREFIX = new Nimiq.SerialBuffer(Nimiq.BufferUtils.fromAscii('Nimiq Signed Message:\n'));
-Key.MSG_PREFIX_LENGTH = Key.MSG_PREFIX.length;
+Key.MSG_PREFIX_LENGTH = Key.MSG_PREFIX.byteLength;

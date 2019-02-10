@@ -13,10 +13,6 @@ interface Window {
     TRANSLATIONS: dict
 }
 
-declare namespace Key {
-    type Type = 0 | 1
-}
-
 type AccountType = string
 
 declare namespace AccountType {
@@ -37,8 +33,7 @@ type AccountRecord = AccountInfo & {
 }
 
 type KeyRecord = {
-    type: Key.Type
-    encrypted: boolean
+    type: Nimiq.Secret.Type
     hasPin: boolean
     secret: Uint8Array
     hash: string

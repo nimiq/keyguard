@@ -1,10 +1,11 @@
 /* global Nimiq */
 /* global Key */
 /* global Dummy */
+
 describe('Key', () => {
     it('can sign a message (LEGACY)', () => {
-        const key = new Key(Dummy.keys[0], Key.Type.LEGACY);
-        const pubkey = Nimiq.PublicKey.derive(new Nimiq.PrivateKey(Dummy.keys[0]));
+        const key = new Key(Dummy.secrets[0]);
+        const pubkey = Nimiq.PublicKey.derive(Dummy.secrets[0]);
         const data = Nimiq.BufferUtils.fromAscii('hello');
 
         const signature1 = key.sign('m', data);
@@ -17,7 +18,7 @@ describe('Key', () => {
     });
 
     it('can sign a message (BIP39)', () => {
-        const key = new Key(Dummy.keys[1], Key.Type.BIP39);
+        const key = new Key(Dummy.secrets[1]);
         const data = Nimiq.BufferUtils.fromAscii('hello');
 
         const pubkey1 = key.derivePublicKey('m');
@@ -32,16 +33,16 @@ describe('Key', () => {
     });
 
     it('can derive addresses (LEGACY)', () => {
-        const key = new Key(Dummy.keys[0], Key.Type.LEGACY);
+        const key = new Key(Dummy.secrets[0]);
         const address = 'NQ71 CT4K 7R9R EHSB 7HY9 TSTP XNRQ L2RK 8U4U';
         expect(key.deriveAddress('m').toUserFriendlyAddress()).toEqual(address);
         expect(key.deriveAddress('m/0\'').toUserFriendlyAddress()).toEqual(address);
     });
 
     it('can derive addresses (BIP39)', () => {
-        const key = new Key(Dummy.keys[0], Key.Type.BIP39);
-        const address1 = 'NQ55 07AD F3U4 9FTD XP5N 1UMS 2FVT 3N69 Q0H9';
-        const address2 = 'NQ15 YMBC GHHD S4DY CPR5 LC74 HAKD ES3R 5B7P';
+        const key = new Key(Dummy.secrets[1]);
+        const address1 = 'NQ46 2RM7 QE4T 82KR 61Q9 9B7E R38G LBVM N6KY';
+        const address2 = 'NQ70 APBA 9GCC FL44 D82R UJCD DS4B Y824 3LYJ';
         expect(key.deriveAddress('m').toUserFriendlyAddress()).toEqual(address1);
         expect(key.deriveAddress('m/0\'').toUserFriendlyAddress()).toEqual(address2);
     });

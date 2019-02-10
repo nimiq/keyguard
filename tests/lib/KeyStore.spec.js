@@ -4,8 +4,8 @@
 /* global Dummy */
 
 describe('KeyStore', () => {
-    beforeEach(async () => Dummy.Utils.createDummyKeyStore());
-    afterEach(async () => Dummy.Utils.deleteDummyKeyStore());
+    beforeEach(async () => await Dummy.Utils.createDummyKeyStore());
+    afterEach(async () => await Dummy.Utils.deleteDummyKeyStore());
 
     it('is a singleton', () => {
         const instance1 = KeyStore.instance;
@@ -39,12 +39,12 @@ describe('KeyStore', () => {
         if (!key1 || !key2) throw new Error();
         expect(key1.id).toEqual(Dummy.keyInfos[0].id);
         expect(key1.type).toEqual(Dummy.keyInfos[0].type);
-        expect(key1.secret).toEqual(Dummy.keys[0]);
+        expect(key1.secret).toEqual(Dummy.secrets[0]);
         expect(key1.hasPin).toEqual(Dummy.keyInfos[0].hasPin);
 
         expect(key2.id).toEqual(Dummy.keyInfos[1].id);
         expect(key2.type).toEqual(Dummy.keyInfos[1].type);
-        expect(key2.secret).toEqual(Dummy.keys[1]);
+        expect(key2.secret).toEqual(Dummy.secrets[1]);
         expect(key2.hasPin).toEqual(Dummy.keyInfos[1].hasPin);
     });
 
@@ -84,12 +84,18 @@ describe('KeyStore', () => {
 
         // add an encrypted key
         const passphrase = Nimiq.BufferUtils.fromAscii(Dummy.encryptionPassword);
-        await KeyStore.instance.put(new Key(Dummy.keys[0], Key.Type.LEGACY), passphrase);
+        await KeyStore.instance.put(new Key(
+            Dummy.secrets[0],
+            Dummy.keyInfos[0].hasPin,
+        ), passphrase);
         currentKeys = await KeyStore.instance.list();
         expect(currentKeys.length).toBe(1);
 
         // add a plain key
-        await KeyStore.instance.put(new Key(Dummy.keys[1], Key.Type.BIP39));
+        await KeyStore.instance.put(new Key(
+            Dummy.secrets[1],
+            Dummy.keyInfos[1].hasPin,
+        ));
         currentKeys = await KeyStore.instance.list();
         expect(currentKeys).toEqual(Dummy.keyInfos);
 
@@ -99,8 +105,8 @@ describe('KeyStore', () => {
             KeyStore.instance.get(Dummy.keyInfos[1].id),
         ]);
         if (!key1 || !key2) throw new Error();
-        expect(Nimiq.BufferUtils.equals(key1.secret, Dummy.keys[0])).toBe(true);
-        expect(Nimiq.BufferUtils.equals(key2.secret, Dummy.keys[1])).toBe(true);
+        expect(key1.secret.equals(Dummy.secrets[0])).toBe(true);
+        expect(key2.secret.equals(Dummy.secrets[1])).toBe(true);
     });
 
     it('can migrate accounts', async () => {

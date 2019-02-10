@@ -32,7 +32,7 @@
   },
   "homepage": "https://github.com/nimiq/keyguard-next#readme",
   "devDependencies": {
-    "@nimiq/core-types": "^1.0.0",
+    "@nimiq/core": "nimiq-network/core",
     "@nimiq/rpc": "^0.0.11",
     "@nimiq/style": "^0.4.1",
     "@types/jasmine": "^2.8.8",

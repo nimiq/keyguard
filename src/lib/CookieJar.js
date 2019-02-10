@@ -52,7 +52,9 @@ class CookieJar { // eslint-disable-line no-unused-vars
      */
     static _encodeCookie(keys) {
         return keys.map(
-            keyInfo => `${keyInfo.type}${keyInfo.encrypted ? 1 : 0}${keyInfo.hasPin ? 1 : 0}${keyInfo.id}`,
+            keyInfo => `${keyInfo.type}`
+                     + `${keyInfo.hasPin ? 1 : 0}`
+                     + `${keyInfo.id}`,
         ).join(';');
     }
 
@@ -66,11 +68,13 @@ class CookieJar { // eslint-disable-line no-unused-vars
         const keys = str.split(';');
 
         return keys.map(key => {
-            const type = /** @type {Key.Type} */ (parseInt(key[0], 10));
-            const encrypted = key[1] === '1';
-            const hasPin = key[2] === '1';
-            const id = parseInt(key.substr(3), 10);
-            return new KeyInfo(id, type, encrypted, hasPin);
+            const type = /** @type {Nimiq.Secret.Type} */ (parseInt(key[0], 10));
+            const hasPin = key[1] === '1';
+            const id = parseInt(key.substr(2), 10);
+            return new KeyInfo(id, type, true, hasPin);
+            // Cookies are only eaten during IframeApi.list(), in which the KeyInfo is
+            // converted into a KeyguardRequest.KeyInfoObject, loosing the 'encrypted' status flag.
+            // Thus it does not matter what we pass to the KeyInfo contructor here for that flag.
         });
     }
 }

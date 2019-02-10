@@ -3,6 +3,7 @@
 /* global KeyInfo */
 /* global AccountStore */
 /* global BrowserDetection */
+/* global Errors */
 
 /**
  * Usage:
@@ -18,6 +19,17 @@ class KeyStore {
         /** @type {KeyStore} */
         KeyStore._instance = KeyStore._instance || new KeyStore();
         return KeyStore._instance;
+    }
+
+    /**
+     * @param {KeyRecord} keyRecord
+     * @returns {boolean}
+     */
+    static isEncrypted(keyRecord) {
+        // Because we are supporting legacy secrets which cannot be converted during migration,
+        // a KeyRecord can be both V2 (legacy) and V3 (Imagewallet, default) encrypted.
+        return keyRecord.secret.byteLength === KeyStore.ENCRYPTED_SECRET_SIZE_V2
+            || keyRecord.secret.byteLength === KeyStore.ENCRYPTED_SECRET_SIZE;
     }
 
     constructor() {
@@ -62,16 +74,21 @@ class KeyStore {
             return null;
         }
 
-        if (!keyRecord.encrypted) {
-            return new Key(keyRecord.secret, keyRecord.type);
+        if (!KeyStore.isEncrypted(keyRecord)) {
+            const purposeId = new Nimiq.SerialBuffer(keyRecord.secret).readUint32();
+            const secret = purposeId === Nimiq.Entropy.PURPOSE_ID
+                ? new Nimiq.Entropy(keyRecord.secret.subarray(4))
+                : new Nimiq.PrivateKey(keyRecord.secret.subarray(4));
+
+            return new Key(secret, keyRecord.hasPin);
         }
 
         if (!passphrase) {
             throw new Error('Passphrase required');
         }
 
-        const plainSecret = await Nimiq.CryptoUtils.decryptOtpKdf(new Nimiq.SerialBuffer(keyRecord.secret), passphrase);
-        return new Key(plainSecret, keyRecord.type, id);
+        const secret = await Nimiq.Secret.fromEncrypted(new Nimiq.SerialBuffer(keyRecord.secret), passphrase);
+        return new Key(secret, keyRecord.hasPin, id);
     }
 
     /**
@@ -81,7 +98,7 @@ class KeyStore {
     async getInfo(id) {
         /** @type {?StoredKeyRecord} */
         const keyRecord = await this._get(id);
-        return keyRecord ? KeyInfo.fromObject(keyRecord) : null;
+        return keyRecord ? KeyInfo.fromObject(keyRecord, KeyStore.isEncrypted(keyRecord)) : null;
     }
 
     /**
@@ -104,13 +121,22 @@ class KeyStore {
     async put(key, passphrase) {
         const keys = await this._listRecords();
 
-        const secret = !passphrase
-            ? key.secret
-            : await Nimiq.CryptoUtils.encryptOtpKdf(new Nimiq.SerialBuffer(key.secret), passphrase);
+        let secret;
+        if (passphrase) {
+            secret = await key.secret.exportEncrypted(passphrase);
+        } else {
+            const buf = new Nimiq.SerialBuffer(KeyStore.UNENCRYPTED_SECRET_SIZE);
+            const purposeId = key.secret.type === Nimiq.Secret.Type.ENTROPY
+                ? Nimiq.Entropy.PURPOSE_ID
+                : Nimiq.PrivateKey.PURPOSE_ID;
+
+            buf.writeUint32(purposeId);
+            key.secret.serialize(buf);
+            secret = buf.subarray(0, buf.byteLength);
+        }
 
         const keyRecord = /** @type {KeyRecord} */ {
             type: key.type,
-            encrypted: !!passphrase && passphrase.length > 0,
             hasPin: key.hasPin,
             secret,
             hash: key.hash,
@@ -121,14 +147,18 @@ class KeyStore {
             Object.assign(keyRecord, { id: existingKey.id });
         }
 
-        return this._put(keyRecord);
+        return this.putPlain(keyRecord);
     }
 
     /**
      * @param {KeyRecord} keyRecord
      * @returns {Promise<number>}
      */
-    async _put(keyRecord) {
+    async putPlain(keyRecord) {
+        if (keyRecord.secret.byteLength !== KeyStore.ENCRYPTED_SECRET_SIZE
+            && keyRecord.secret.byteLength !== KeyStore.UNENCRYPTED_SECRET_SIZE) {
+            throw new Errors.KeyguardError('KeyRecord.secret has invalid length');
+        }
         const db = await this.connect();
         const transaction = db.transaction([KeyStore.DB_KEY_STORE_NAME], 'readwrite');
         const request = transaction.objectStore(KeyStore.DB_KEY_STORE_NAME).put(keyRecord);
@@ -157,7 +187,7 @@ class KeyStore {
      */
     async list() {
         const results = await this._listRecords();
-        return results.map(keyRecord => KeyInfo.fromObject(keyRecord));
+        return results.map(keyRecord => KeyInfo.fromObject(keyRecord, KeyStore.isEncrypted(keyRecord)));
     }
 
     /**
@@ -184,7 +214,7 @@ class KeyStore {
     async migrateAccountsToKeys() {
         const accounts = await AccountStore.instance.dangerousListPlain();
         const keysRecords = KeyStore._accountRecords2KeyRecords(accounts);
-        await Promise.all(keysRecords.map(keyRecord => this._put(keyRecord)));
+        await Promise.all(keysRecords.map(keyRecord => this.putPlain(keyRecord)));
 
         // FIXME Uncomment after/for testing (and also adapt KeyStore.spec.js)
         // await AccountStore.instance.drop();
@@ -209,8 +239,7 @@ class KeyStore {
 
             return {
                 hash: legacyKeyHash,
-                type: Key.Type.LEGACY,
-                encrypted: true,
+                type: Nimiq.Secret.Type.PRIVATE_KEY,
                 hasPin: account.type === 'low',
                 secret: account.encryptedKeyPair,
             };
@@ -228,8 +257,7 @@ class KeyStore {
             /** @type {KeyguardRequest.KeyInfoObject} */
             const keyObject = {
                 id,
-                type: Key.Type.LEGACY,
-                encrypted: true,
+                type: Nimiq.Secret.Type.PRIVATE_KEY,
                 hasPin: account.type === 'low',
             };
 
@@ -313,3 +341,12 @@ KeyStore._instance = null;
 KeyStore.DB_VERSION = 2;
 KeyStore.DB_NAME = 'nimiq-keyguard';
 KeyStore.DB_KEY_STORE_NAME = 'keys';
+
+// The current default (V3/Imagewallet format)
+KeyStore.ENCRYPTED_SECRET_SIZE = 56; /* version + rounds: 2, salt: 16, checksum: 2, purposeId: 4, secret: 32 */
+
+// 'Legacy' format, used by migrated keys
+KeyStore.ENCRYPTED_SECRET_SIZE_V2 = 54; /* version + rounds: 2, secret: 32, salt: 16, checksum: 4 */
+
+// Default unencrypted format (legacy keys could not be stored unencrypted)
+KeyStore.UNENCRYPTED_SECRET_SIZE = /* purposeId */ 4 + /* secret */ 32;
