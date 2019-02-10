@@ -101,25 +101,17 @@
 
 .page#remove-key .page-footer button.checkbox #checkmark {
     stroke: rgba(255,255,255,0.5);
-    stroke-dasharray: 4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 200 330;
+    stroke-dashoffset: 201;
+    stroke-width: 3px;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: 1s linear;
 }
 
-.page#remove-key .page-footer button.checkbox #checkmark.check {
-    animation: check 1s;
-}
-
-@keyframes check {
-    0% {
-        stroke: rgba(255,255,255,0.5);
-        stroke-dasharray: 4;
-    } 
-    50% {
-        transform: scale(1.3) translate(-2px, -2px);
-    } 
-    100% {
-        stroke: white;
-        stroke-width: 5px; 
-        stroke-dasharray: none;
-        transform: scale(1);
-    }
+.page#remove-key .page-footer button.checkbox #checkmark.checked {
+    stroke-dashoffset: 0;
+    stroke: rgba(255,255,255,0.8);
 }

@@ -38,9 +38,8 @@ class RemoveKey {
         $goToShowRecoveryWords.addEventListener('click', () => this._exportWordsHandler.run());
         $goToDownloadFile.addEventListener('click', () => this._exportFileHandler.run());
         $firstConfirmButton.addEventListener('click', () => {
-            AnimationUtils.animate('check', $checkmark, undefined,
-            //() => $removeKey.classList.add('show-final-confirm')
-            );
+            $checkmark.classList.add('checked');
+            window.setTimeout(() => $removeKey.classList.add('show-final-confirm'), 800);
         });
         $finalConfirmButton.addEventListener('click', this._finalConfirm.bind(this));
 
