@@ -1,3 +1,4 @@
+/* global Constants */
 /* global Nimiq */
 /* global KeyStore */
 /* global Identicon */
@@ -119,7 +120,9 @@ class SignMessage {
     run() {
         // Go to start page
         window.location.hash = SignMessage.Pages.AUTHORIZE;
-        this._passphraseBox.focus();
+        if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
+            this._passphraseBox.focus();
+        }
 
         // Async pre-load the crypto worker to reduce wait time at first decrypt attempt
         Nimiq.CryptoWorker.getInstanceAsync();

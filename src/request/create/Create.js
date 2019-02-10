@@ -1,3 +1,4 @@
+/* global Constants */
 /* global IdenticonSelector */
 /* global PassphraseSetterBox */
 /* global Key */
@@ -62,7 +63,9 @@ class Create {
                 );
                 this.progressIndicator.setStep(2);
                 this._passphraseSetter.reset();
-                this._passphraseSetter.focus();
+                if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
+                    this._passphraseSetter.focus();
+                }
             },
         );
 

@@ -49,6 +49,7 @@ declare namespace KeyguardRequest {
     type SignTransactionRequest = SimpleRequest & TransactionInfo & {
         layout?: SignTransactionRequestLayout
         shopOrigin?: string
+        shopLogoUrl?: string
 
         keyPath: string
 

@@ -1,3 +1,4 @@
+/* global Constants */
 /* global PassphraseBox */
 /* global PassphraseSetterBox */
 /* global KeyStore */
@@ -50,7 +51,9 @@ class ChangePassphrase {
     run() {
         this._enterPassphraseBox.reset();
         window.location.hash = ChangePassphrase.Pages.ENTER_PASSPHRASE;
-        this._enterPassphraseBox.focus();
+        if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
+            this._enterPassphraseBox.focus();
+        }
     }
 
     /**
@@ -79,7 +82,9 @@ class ChangePassphrase {
         this._key = key;
         this._setPassphraseBox.reset();
         window.location.hash = ChangePassphrase.Pages.SET_PASSPHRASE;
-        this._setPassphraseBox.focus();
+        if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
+            this._setPassphraseBox.focus();
+        }
         TopLevelApi.setLoading(false);
     }
 

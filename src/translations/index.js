@@ -52,7 +52,8 @@ const TRANSLATIONS = {
         'choose-key-type-bip39-address-heading': 'Multiple addresses',
         'choose-key-type-bip39-address-info': 'Created after xx/xx/2018',
 
-        'sign-tx-heading': 'New Transaction',
+        'sign-tx-heading-tx': 'Confirm Transaction',
+        'sign-tx-heading-checkout': 'Verify Payment',
         'sign-tx-includes': 'includes',
         'sign-tx-fee': 'fee',
         'sign-tx-youre-sending': 'You\'re sending',
@@ -181,7 +182,8 @@ const TRANSLATIONS = {
         'choose-key-type-bip39-address-heading': 'Mehrere Adressen',
         'choose-key-type-bip39-address-info': 'Erstellt nach xx.xx.2018',
 
-        'sign-tx-heading': 'Neue Überweisung',
+        'sign-tx-heading-tx': 'Überweisung bestätigen',
+        'sign-tx-heading-checkout': 'Zahlung bestätigen',
         'sign-tx-includes': 'inklusive',
         'sign-tx-fee': 'Gebühr',
         'sign-tx-youre-sending': 'Du sendest',

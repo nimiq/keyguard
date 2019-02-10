@@ -30,7 +30,7 @@
 .page {
     display: none;
     width: 100%;
-    max-width: 56.25rem; /* 450px */
+    max-width: 52.5rem; /* 420px */
     min-height: 70.5rem; /* 564px */
     /**
      * A max-height of 77.5rem is what is set in the Accounts Manager,
@@ -54,10 +54,9 @@
     width: 3rem;
     height: 3rem;
     position: absolute;
-    left: 4.5rem;
-    top: 4.5rem;
+    left: 4rem;
     cursor: pointer;
-    opacity: .4;
+    opacity: 0.4;
     transition: opacity .3s ease, transform .4s ease, -webkit-transform .4s ease;
 }
 
@@ -165,6 +164,8 @@
 }
 
 .global-close {
+    position: relative;
+    z-index: 3;
     margin-top: 8rem;
     margin-bottom: 5rem;
 }
