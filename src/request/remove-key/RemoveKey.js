@@ -2,6 +2,7 @@
 /* global ExportFile */
 /* global KeyStore */
 /* global TopLevelApi */
+/* global AnimationUtils */
 
 class RemoveKey {
     /**
@@ -30,12 +31,16 @@ class RemoveKey {
         const $finalConfirmButton = ($removeKey.querySelector('#remove-key-final-confirm'));
         /** @type {HTMLFormElement} */
         const $firstConfirmButton = ($removeKey.querySelector('#remove-key-first-confirm'));
+        /** @type {HTMLElement} */
+        const $checkmark = ($removeKey.querySelector('#checkmark'));
 
         // events
         $goToShowRecoveryWords.addEventListener('click', () => this._exportWordsHandler.run());
         $goToDownloadFile.addEventListener('click', () => this._exportFileHandler.run());
         $firstConfirmButton.addEventListener('click', () => {
-            $removeKey.classList.add('show-final-confirm');
+            AnimationUtils.animate('check', $checkmark, undefined,
+            //() => $removeKey.classList.add('show-final-confirm')
+            );
         });
         $finalConfirmButton.addEventListener('click', this._finalConfirm.bind(this));
 

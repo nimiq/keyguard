@@ -37,18 +37,9 @@
     margin-bottom: 0;
 }
 
-.page#remove-key:not(.show-final-confirm) .final-confirm {
-    display: none;
-}
-
-.page#remove-key.show-final-confirm .hide-for-final-confirm {
-    display: none;
-}
-
-.page#download-key-file.show-download .hide-for-download {
-    display: none
-}
-
+.page#remove-key:not(.show-final-confirm) .final-confirm,
+.page#remove-key.show-final-confirm .hide-for-final-confirm,
+.page#download-key-file.show-download .hide-for-download,
 .page#download-key-file:not(.show-download) .download-key-file,
 .page#download-key-file:not(.show-download) .back-to-remove {
     display: none;
@@ -90,7 +81,7 @@
     width: calc(100% - 7rem);
 }
 
-.page#remove-key .page-footer button.checkbox {
+.page#remove-key.page#remove-key:not(.show-final-confirm) .page-footer button.checkbox {
     width: 100%;
     height: 11.25rem;
     margin-bottom: 0;
@@ -108,6 +99,27 @@
     margin-right: 3rem;
 }
 
-.page#remove-key .page-footer button.checkbox .foo {
-    background: url('data:image/svg+xml;utf8,<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><circle opacity="0.7" cx="16" cy="16" r="15" stroke="white" stroke-width="2"/></svg>');
+.page#remove-key .page-footer button.checkbox #checkmark {
+    stroke: rgba(255,255,255,0.5);
+    stroke-dasharray: 4;
+}
+
+.page#remove-key .page-footer button.checkbox #checkmark.check {
+    animation: check 1s;
+}
+
+@keyframes check {
+    0% {
+        stroke: rgba(255,255,255,0.5);
+        stroke-dasharray: 4;
+    } 
+    50% {
+        transform: scale(1.3) translate(-2px, -2px);
+    } 
+    100% {
+        stroke: white;
+        stroke-width: 5px; 
+        stroke-dasharray: none;
+        transform: scale(1);
+    }
 }
