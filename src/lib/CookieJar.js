@@ -55,7 +55,7 @@ class CookieJar { // eslint-disable-line no-unused-vars
             keyInfo => `${keyInfo.type}`
                      + `${keyInfo.hasPin ? 1 : 0}`
                      + `${keyInfo.id}`,
-        ).join(';');
+        ).join(',');
     }
 
     /**
@@ -65,7 +65,7 @@ class CookieJar { // eslint-disable-line no-unused-vars
     static _decodeCookie(str) {
         if (!str) return [];
 
-        const keys = str.split(';');
+        const keys = str.split(',');
 
         return keys.map(key => {
             const type = /** @type {Nimiq.Secret.Type} */ (parseInt(key[0], 10));

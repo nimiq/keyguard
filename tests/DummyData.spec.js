@@ -134,7 +134,7 @@ Dummy.deprecatedAccount2KeyInfoObject = [{
     },
 }];
 
-Dummy.keyInfoCookieEncoded = '0100;1001';
+Dummy.keyInfoCookieEncoded = '100,201';
 
 /** @type {string} */
 Dummy.cookie = `k=${Dummy.keyInfoCookieEncoded};accounts=${JSON.stringify(Dummy.deprecatedAccountCookie)};some=thing;`;
