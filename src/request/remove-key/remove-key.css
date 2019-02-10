@@ -61,14 +61,17 @@
 .page#remove-key .backup-option {
     display: flex;
     align-items: center;
-    margin-top: 2rem;
-    max-width: 84%;
+    margin: 5rem 3rem 0;
 }
 
-.page#remove-key .backup-option .login-file-svg-container {
-    min-width: 90px;
-    margin: 0;
-    padding: 0;
+.page#remove-ket .backup-option + .backup-option {
+    margin-top: 3.75rem;
+}
+
+.page#remove-key .backup-option .login-file-svg-container,
+.page#remove-key .backup-option img {
+    min-width: 8.375rem;
+    height: 14.744rem;
 }
 
 .page#remove-key .backup-option .login-file-svg-container svg {
