@@ -29,7 +29,7 @@ class RemoveKey {
         const $goToShowRecoveryWords = ($removeKey.querySelector('#show-recovery-words'));
         /** @type {HTMLButtonElement} */
         const $finalConfirmButton = ($removeKey.querySelector('#remove-key-final-confirm'));
-        /** @type {HTMLFormElement} */
+         /** @type {HTMLButtonElement} */
         const $firstConfirmButton = ($removeKey.querySelector('#remove-key-first-confirm'));
         /** @type {HTMLElement} */
         const $checkmark = ($removeKey.querySelector('#checkmark'));
