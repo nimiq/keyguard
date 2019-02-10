@@ -5,10 +5,6 @@
 
 class RemoveKey {
     /**
-     * if a complete page is missing it will be created.
-     * However these pages wil be the default pages which usually don't match the applications requirements.
-     * Refer to the corresponsing _buildRemoveKey as well as
-     * the Build functions of ExportWords and ExportFile to see the general Structure.
      * @param {ParsedSimpleRequest} request
      * @param {Function} resolve
      * @param {Function} reject
