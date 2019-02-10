@@ -39,7 +39,7 @@ class RemoveKey {
         $goToShowRecoveryWords.addEventListener('click', () => this._exportWordsHandler.run());
         $goToDownloadFile.addEventListener('click', () => this._exportFileHandler.run());
         $firstConfirmButton.addEventListener('click', () => {
-            $removeKey.classList.toggle('show-final-confirm', true);
+            $removeKey.classList.add('show-final-confirm');
         });
         $finalConfirmButton.addEventListener('click', this._finalConfirm.bind(this));
 
