@@ -54,18 +54,14 @@
     display: none;
 }
 
-.page-footer {
-    padding: 1rem;
-}
-
 .page#remove-key .backup-option {
     display: flex;
     align-items: center;
-    margin: 5rem 3rem 0;
+    margin: 4rem 3rem 0;
 }
 
-.page#remove-ket .backup-option + .backup-option {
-    margin-top: 3.75rem;
+.page#remove-key .backup-option + .backup-option {
+    margin-top: 3rem;
 }
 
 .page#remove-key .backup-option .login-file-svg-container,
@@ -87,4 +83,9 @@
     display: flex;
     flex-flow: row wrap;
     justify-content: center;
+}
+
+.page#remove-key button#remove-key-final-confirm {
+    margin-top: 0;
+    width: calc(100% - 7rem);
 }

@@ -110,7 +110,7 @@ const TRANSLATIONS = {
         'remove-key-recovery-words-question': 'Do you know where your Recovery Words are?',
         'remove-key-show-recovery-words': 'Create a backup',
         'remove-key-first-confirm': 'I am able to log in again',
-        'remove-key-final-confirm': 'Log out of your account',
+        'remove-key-final-confirm': 'Log out',
         'remove-key-recovery-words': 'Recovery Words',
         'remove-key-back': 'Back to logout',
 
@@ -241,7 +241,7 @@ const TRANSLATIONS = {
         'remove-key-recovery-words-question': 'Weißt du, wo sich deine Wiederherstellungswörter befinden?',
         'remove-key-show-recovery-words': 'Sicherung anlegen',
         'remove-key-first-confirm': 'Ich kann mich wieder einloggen',
-        'remove-key-final-confirm': 'Aus deinem Konto ausloggen',
+        'remove-key-final-confirm': 'Ausloggen',
         'remove-key-recovery-words': 'Wiederherstellungswörter',
         'remove-key-back': 'Zurück zum logout',
 
