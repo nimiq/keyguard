@@ -2,6 +2,7 @@
 /* global I18n */
 /* global PassphraseInput */
 /* global AnimationUtils */
+/* global PasswordStrength */
 
 class PassphraseSetterBox extends Nimiq.Observable {
     /**
@@ -43,9 +44,10 @@ class PassphraseSetterBox extends Nimiq.Observable {
         /* eslint-disable max-len */
         $el.innerHTML = `
             <div class="password-strength strength-0  nq-text-s" data-i18n="passphrasebox-password-strength-0" >Enter at least 8 characters</div>
-            <div class="password-strength strength-8  nq-text-s" data-i18n="passphrasebox-password-strength-8" >Great, that's a good password!</div>
-            <div class="password-strength strength-10 nq-text-s" data-i18n="passphrasebox-password-strength-10">Super, that's a strong password!</div>
-            <div class="password-strength strength-12 nq-text-s" data-i18n="passphrasebox-password-strength-12">Excellent, that's a very strong password!</div>
+            <div class="password-strength strength-4  nq-text-s" data-i18n="passphrasebox-password-strength-4" >Hm, that's a weak password :(</div>
+            <div class="password-strength strength-8  nq-text-s" data-i18n="passphrasebox-password-strength-8" >Ok, that's an average password.</div>
+            <div class="password-strength strength-10 nq-text-s" data-i18n="passphrasebox-password-strength-10">Great, that's a strong password!</div>
+            <div class="password-strength strength-12 nq-text-s" data-i18n="passphrasebox-password-strength-12">Super, that's a secure password!</div>
             <div class="repeat-password nq-text-s" data-i18n="passphrasebox-repeat-password">Repeat your password</div>
 
             <div passphrase-input></div>
@@ -105,13 +107,17 @@ class PassphraseSetterBox extends Nimiq.Observable {
             this.fire(PassphraseSetterBox.Events.SUBMIT, this._password);
             return;
         }
-        this.$el.classList.toggle('input-valid', isValid);
 
         const length = this._passphraseInput.text.length;
+        const score = PasswordStrength.strength(this._passphraseInput.text);
+
+        this.$el.classList.toggle('input-valid', isValid && score >= 40);
+
         this.$el.classList.toggle('strength-0', length < 8);
-        this.$el.classList.toggle('strength-8', length >= 8 && length < 10);
-        this.$el.classList.toggle('strength-10', length >= 10 && length < 12);
-        this.$el.classList.toggle('strength-12', length >= 12);
+        this.$el.classList.toggle('strength-4', length >= 8 && score < 40);
+        this.$el.classList.toggle('strength-8', length >= 8 && score >= 40 && score < 75);
+        this.$el.classList.toggle('strength-10', length >= 8 && score >= 75 && score < 150);
+        this.$el.classList.toggle('strength-12', length >= 8 && score >= 150);
     }
 
     /**

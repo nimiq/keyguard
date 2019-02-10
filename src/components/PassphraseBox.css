@@ -87,6 +87,7 @@
 }
 
 .passphrase-box:not(.input-valid).strength-0 .password-strength.strength-0,
+.passphrase-box:not(.input-valid).strength-4 .password-strength.strength-4,
 .passphrase-box.input-valid.strength-8 .password-strength.strength-8,
 .passphrase-box.input-valid.strength-10 .password-strength.strength-10,
 .passphrase-box.input-valid.strength-12 .password-strength.strength-12 {
