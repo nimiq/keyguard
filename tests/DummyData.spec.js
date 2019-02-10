@@ -34,7 +34,7 @@ Dummy.encryptedKeys = [
 ];
 
 /** @type {() => string[]} */
-Dummy.hashes = () => Dummy.encryptedKeys.map(x =>
+Dummy.hashes = () => Dummy.encryptedKeys.map( /** @param {Uint8Array} x */x =>
     Nimiq.BufferUtils.toHex(Nimiq.Hash.blake2b(x).subarray(0, 32))
 );
 

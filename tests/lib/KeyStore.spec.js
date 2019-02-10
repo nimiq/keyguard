@@ -172,33 +172,33 @@ describe('KeyStore', () => {
 
         // add key
         const passphrase = Nimiq.BufferUtils.fromAscii(Dummy.encryptionPassword);
-        await KeyStore.instance.put(new Key(Dummy.keys[1], Key.Type.BIP39), passphrase);
+        await KeyStore.instance.put(new Key(Dummy.keys[1]), passphrase);
         currentKeys = await KeyStore.instance.list();
         expect(currentKeys.length).toBe(1);
 
         // add key again
-        await KeyStore.instance.put(new Key(Dummy.keys[1], Key.Type.BIP39), passphrase);
+        await KeyStore.instance.put(new Key(Dummy.keys[1]), passphrase);
         currentKeys = await KeyStore.instance.list();
         expect(currentKeys.length).toBe(1);
 
-         // add key again with different password
+        // add key again with different password
         const passphrase2 = Nimiq.BufferUtils.fromAscii(Dummy.encryptionPassword2);
-        await KeyStore.instance.put(new Key(Dummy.keys[1], Key.Type.BIP39), passphrase2);
+        await KeyStore.instance.put(new Key(Dummy.keys[1]), passphrase2);
         currentKeys = await KeyStore.instance.list();
         expect(currentKeys.length).toBe(1);
 
         // same for legacy keys
-        await KeyStore.instance.put(new Key(Dummy.keys[1], Key.Type.LEGACY), passphrase);
+        await KeyStore.instance.put(new Key(Dummy.keys[1]), passphrase);
         currentKeys = await KeyStore.instance.list();
         expect(currentKeys.length).toBe(2);
 
         // add key again
-        await KeyStore.instance.put(new Key(Dummy.keys[1], Key.Type.LEGACY), passphrase);
+        await KeyStore.instance.put(new Key(Dummy.keys[1]), passphrase);
         currentKeys = await KeyStore.instance.list();
         expect(currentKeys.length).toBe(2);
 
          // add key again with different password
-        await KeyStore.instance.put(new Key(Dummy.keys[1], Key.Type.LEGACY), passphrase2);
+        await KeyStore.instance.put(new Key(Dummy.keys[1]), passphrase2);
         currentKeys = await KeyStore.instance.list();
         expect(currentKeys.length).toBe(2);
     });
