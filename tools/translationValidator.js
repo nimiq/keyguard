@@ -15,7 +15,7 @@ const localizedFiles = spawnSync('grep', ['-i', '-r', '-l', 'i18n', 'src'], { sh
  * @returns {object}
  */
 function findI18nKeysAndStrings(filePath) {
-    const textContentRegEx = /data-i18n="(.*?)".*?>(.*?)</g;
+    const textContentRegEx = /data-i18n="(.*?)".*?>\s*(.*?)\s*</gs;
     const placeholderRegEx = /data-i18n-placeholder="(.*?)"(?:.*?placeholder="(.*?)")?/g;
     const phraseRegEx = /translatePhrase\('(.*?)'\)/g;
 
@@ -79,7 +79,7 @@ Object.keys(DICT).forEach(lang => {
             const inDict = langDict[key].replace('/\n/g', '').replace(/\s+/g, ' ');
             const inRef = REF_DICT[key] && REF_DICT[key].replace('/\n/g', '').replace(/\s+/g, ' ');
 
-            if (inRef && inDict !== inRef) {
+            if (inRef !== false && inDict !== inRef) {
                 console.error(
                     '\x1b[33m%s\x1b[0m',
                     `WARN: Different english for >${key}< in dict vs. DOM:\n\t${inDict}\n\t${inRef}`,
