@@ -153,58 +153,23 @@ a#goto-create i.nq-icon {
     align-items: center;
 }
 
-.page#set-passphrase .nq-icon.walletfile {
+.page#set-password .nq-icon.walletfile {
     width: 9rem;
     height: 11.75rem;
     margin-right: 4rem;
     flex-shrink: 0;
 }
-.page#set-passphrase .page-body {
+.page#set-password .page-body {
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-.page#set-passphrase p {
+.page#set-password p {
     text-align: center;
-}
-
-#choose-key-type .key-type-or {
-    margin: 2rem 4rem;
-    text-align: center;
-}
-
-#choose-key-type .key-type-option input {
-    display: none;
-}
-
-#choose-key-type .key-type-option label {
-    cursor: pointer;
-    border: 1px solid transparent;
-    border-radius: 1rem;
-    padding: 1rem;
-    align-items: flex-start;
-    border: solid 2px rgba(128, 128, 128, 0.2);
-}
-
-#choose-key-type .key-type-option label:hover,
-#choose-key-type .key-type-option input:checked + label {
-    background: rgba(128, 128, 128, 0.2);
-    border-color: transparent;
-}
-
-#choose-key-type .key-type-option .identicon {
-    width: 10rem;
-    height: 10rem;
-    margin-right: 2rem;
-    flex-shrink: 0;
-}
-
-#choose-key-type .key-type-option .address {
-    white-space: unset;
 }
 
 #enter-passphrase .page-footer,
-#set-passphrase .page-footer {
+#set-password .page-footer {
     padding: 0.625rem;
 }

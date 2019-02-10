@@ -62,6 +62,20 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
         if ((BrowserDetection.isIOS() || BrowserDetection.isSafari()) && TopLevelApi._hasMigrateFlag()) {
             await KeyStore.instance.migrateAccountsToKeys();
         }
+        if ((BrowserDetection.isIOS() || BrowserDetection.isSafari()) && TopLevelApi._hasRemoveKey()) {
+            const match = document.cookie.match(new RegExp('removeKey=([^;]+)'));
+            if (match && match[1]) {
+                try {
+                    /** @type {string[]} */
+                    const removeKeyArray = JSON.parse(match[1]);
+                    removeKeyArray.forEach(element => {
+                        KeyStore.instance.remove(element);
+                    });
+                } catch (e) {
+                    this._reject(e);
+                }
+            }
+        }
 
         return new Promise((resolve, reject) => {
             this._resolve = resolve;
@@ -134,6 +148,15 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
     static _hasMigrateFlag() {
         const match = document.cookie.match(new RegExp('migrate=([^;]+)'));
         return !!match && match[1] === '1';
+    }
+
+    /**
+     * @returns {boolean}
+     * @private
+     */
+    static _hasRemoveKey() {
+        const match = document.cookie.match(new RegExp('removeKey=([^;]+)'));
+        return !!match && match[1] !== '';
     }
 
     /**

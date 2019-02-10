@@ -4,7 +4,6 @@
 /* global ImportWords */
 /* global FileImport */
 /* global PassphraseBox */
-/* global PassphraseSetterBox */
 /* global ImportApi */
 /* global Errors */
 /* global TopLevelApi */
@@ -27,7 +26,7 @@ class ImportFile {
         this._keyType = Key.Type.BIP39;
         this._hasPin = false;
 
-        this.importWordsHandler = new ImportWords(request, this._onRecoveryWordsComplete.bind(this), reject);
+        this.importWordsHandler = new ImportWords(request, resolve, reject);
 
         /** @type {HTMLElement} */
         this.$importFilePage = (document.getElementById(ImportFile.Pages.IMPORT_FILE));
@@ -56,14 +55,6 @@ class ImportFile {
         );
         fileImport.on(FileImport.Events.IMPORT, this._onFileImported.bind(this));
         this.passphraseBox.on(PassphraseBox.Events.SUBMIT, this._onPassphraseEntered.bind(this));
-
-        /** @type {HTMLFormElement} */
-        const $passphraseSetterBox = (document.querySelector('.passphrase-setter-box'));
-
-        this._passphraseSetterBox = new PassphraseSetterBox($passphraseSetterBox);
-
-        this._passphraseSetterBox.on(PassphraseSetterBox.Events.SUBMIT, this._onPassphraseEntered.bind(this));
-        this._passphraseSetterBox.on(PassphraseSetterBox.Events.SKIP, () => this._onPassphraseEntered(null));
     }
 
     run() {
@@ -71,7 +62,11 @@ class ImportFile {
     }
 
     _onFileImported() {
+        this.passphraseBox.reset();
         this.$importFilePage.classList.add('enter-password');
+        if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
+            this.passphraseBox.focus();
+        }
     }
 
     /**
@@ -112,9 +107,13 @@ class ImportFile {
 
         /** @type {KeyguardRequest.ImportResult} */
         const result = {
-            keyId: key.id,
-            keyType: key.type,
-            addresses,
+            keys: [
+                {
+                    keyId: key.id,
+                    keyType: key.type,
+                    addresses,
+                },
+            ],
         };
 
         this._resolve(result);
@@ -165,21 +164,21 @@ class ImportFile {
         }
     }
 
-    /**
-     * @param { Nimiq.SerialBuffer } entropy
-     * @param { Key.Type } keyType
-     */
-    _onRecoveryWordsComplete(entropy, keyType) {
-        this._hasPin = false;
-        this._keyType = keyType;
-        this._encryptedKey = entropy;
+    // /**
+    //  * @param { Nimiq.SerialBuffer } entropy
+    //  * @param { Key.Type } keyType
+    //  */
+    // _onRecoveryWordsComplete(entropy, keyType) {
+    //     this._hasPin = false;
+    //     this._keyType = keyType;
+    //     this._encryptedKey = entropy;
 
-        this._passphraseSetterBox.reset();
-        window.location.hash = ImportApi.Pages.SET_PASSPHRASE;
-        if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
-            this._passphraseSetterBox.focus();
-        }
-    }
+    //     this._passphraseSetterBox.reset();
+    //     window.location.hash = ImportApi.Pages.SET_PASSPHRASE;
+    //     if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
+    //         this._passphraseSetterBox.focus();
+    //     }
+    // }
 
     /**
      * @param {Event} e
