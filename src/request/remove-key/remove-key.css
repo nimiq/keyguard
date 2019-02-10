@@ -85,7 +85,7 @@
     justify-content: center;
 }
 
-.page#remove-key button#remove-key-final-confirm {
+.page#remove-key .page-footer button {
     margin-top: 0;
     width: calc(100% - 7rem);
 }
