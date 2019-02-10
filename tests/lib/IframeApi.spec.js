@@ -88,10 +88,12 @@ describe('IframeApi', () => {
         await iframeApi.migrateAccountsToKeys(null);
         expect(KeyStore.instance.migrateAccountsToKeys).toHaveBeenCalled();
 
-        const ids = (await KeyStore.instance.list()).map(x => x.id);
         // check that keys have been copied correctly
-        const key1 = await KeyStore.instance._get(ids[0]);
-        expect(key1).toEqual(Dummy.storedKeyRecords()[0]);
+        const ids = (await KeyStore.instance.list()).map(x => x.id);
+        for (let id of ids) {
+            const key = await KeyStore.instance._get(id);
+            expect(key).toEqual(Dummy.storedKeyRecords()[id]);
+        }
 
         await Promise.all([
             Dummy.Utils.deleteDummyAccountStore(),
