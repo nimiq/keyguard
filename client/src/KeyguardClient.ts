@@ -108,9 +108,9 @@ export class KeyguardClient {
         return this._request(requestBehavior, KeyguardCommand.DERIVE_ADDRESSES, [keyId, paths]);
     }
 
-    public async releaseKey(keyId: string, requestBehavior = this._defaultIframeBehavior)
+    public async releaseKey(keyId: string, shouldBeRemoved = false, requestBehavior = this._defaultIframeBehavior)
     : Promise<true> {
-        return this._request(requestBehavior, KeyguardCommand.RELEASE_KEY, [keyId]);
+        return this._request(requestBehavior, KeyguardCommand.RELEASE_KEY, [keyId, shouldBeRemoved]);
     }
 
     public async listLegacyAccounts(requestBehavior = this._defaultIframeBehavior)

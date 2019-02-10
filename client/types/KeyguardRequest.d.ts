@@ -90,9 +90,11 @@ declare namespace KeyguardRequest {
     }
 
     type ImportResult = {
-        keyId: string;
-        keyType: Key.Type;
-        addresses: { keyPath: string, address: Uint8Array }[];
+        keys: {
+            keyId: string;
+            keyType: Key.Type;
+            addresses: { keyPath: string, address: Uint8Array }[],
+        }[];
     }
 
     type DeriveAddressRequest = SimpleRequest & {
