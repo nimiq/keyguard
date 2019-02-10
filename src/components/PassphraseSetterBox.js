@@ -116,7 +116,7 @@ class PassphraseSetterBox extends Nimiq.Observable {
 
         const score = PasswordStrength.strength(this._passphraseInput.text);
 
-        this.$el.classList.toggle('input-valid', isValid && score >= 40);
+        this.$el.classList.toggle('input-eligable', isValid && score >= 40);
 
         this.$el.classList.toggle('strength-0', !isValid);
         this.$el.classList.toggle('strength-4', isValid && score < 40);
