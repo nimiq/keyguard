@@ -120,7 +120,7 @@ describe('KeyStore', () => {
 
         expect(cookieSet).toBe(false);
         const key1 = await KeyStore.instance._get(Dummy.keyInfos[0].id);
-        expect(key1).toEqual(Dummy.storedKeyRecords[0]);
+        expect(key1).toEqual(Dummy.storedKeyRecords()[0]);
 
         // TODO: Expect Accounts DB to be deleted
 

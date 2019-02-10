@@ -53,7 +53,7 @@ class CookieJar { // eslint-disable-line no-unused-vars
     static _encodeCookie(keys) {
         return keys.map(
             keyInfo => `${keyInfo.type}${keyInfo.encrypted ? 1 : 0}${keyInfo.hasPin ? 1 : 0}${keyInfo.id}`,
-        ).join('');
+        ).join(';');
     }
 
     /**
@@ -63,10 +63,7 @@ class CookieJar { // eslint-disable-line no-unused-vars
     static _decodeCookie(str) {
         if (!str) return [];
 
-        if (str.length % 15 !== 0) throw new Error('Malformed cookie');
-
-        const keys = str.match(/.{15}/g);
-        if (!keys) return []; // Make TS happy (match() can potentially return NULL)
+        const keys = str.split(';');
 
         return keys.map(key => {
             const type = /** @type {Key.Type} */ (parseInt(key[0], 10));

@@ -37,13 +37,13 @@ Dummy.encryptionPassword2 = 'password2';
 /** @type {KeyInfo[]} */
 Dummy.keyInfos = [
     new KeyInfo(
-        1,
+        0,
         Key.Type.LEGACY,
         true,
         false,
     ),
     new KeyInfo(
-        2,
+        1,
         Key.Type.BIP39,
         false,
         false,
@@ -73,7 +73,7 @@ Dummy.keyRecords = () => [
 ];
 
 /** @type {() => StoredKeyRecord[]} */
-Dummy.storedKeyRecords = () => Dummy.keyRecords().map((x, i) => Object.assign({}, x, { id: i+1 }));
+Dummy.storedKeyRecords = () => Dummy.keyRecords().map((x, i) => Object.assign({}, x, { id: i }));
 
 /** @type {AccountInfo[]} */
 Dummy.deprecatedAccountInfos = [
@@ -99,7 +99,7 @@ Dummy.deprecatedAccountRecords = [
 
 /** @type {KeyguardRequest.LegacyKeyInfoObject[]} */
 Dummy.deprecatedAccount2KeyInfoObject = [{
-    id: 1,
+    id: 0,
     type: Key.Type.LEGACY,
     encrypted: true,
     hasPin: false,
@@ -109,7 +109,7 @@ Dummy.deprecatedAccount2KeyInfoObject = [{
     },
 }];
 
-Dummy.keyInfoCookieEncoded = '0102ec615522906100ef553f34a779';
+Dummy.keyInfoCookieEncoded = '0100;1001';
 
 /** @type {string} */
 Dummy.cookie = `k=${Dummy.keyInfoCookieEncoded};accounts=${JSON.stringify(Dummy.deprecatedAccountCookie)};some=thing;`;

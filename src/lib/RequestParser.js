@@ -75,7 +75,7 @@ class RequestParser { // eslint-disable-line no-unused-vars
      * @returns {Promise<KeyInfo>}
      */
     async parseKeyId(keyId) {
-        if (!keyId || typeof keyId !== 'number') {
+        if (keyId === undefined || keyId === null || typeof keyId !== 'number') {
             throw new Errors.InvalidRequestError('keyId must be a number');
         }
         const keyInfo = await KeyStore.instance.getInfo(keyId);

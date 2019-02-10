@@ -5,7 +5,7 @@ class Key {
      * @param {Uint8Array} input
      * @returns {string}
      */
-    static derivePublicKey(input) {
+    static deriveHash(input) {
         return Nimiq.BufferUtils.toHex(Nimiq.Hash.blake2b(input).subarray(0, 32));
     }
 
@@ -143,7 +143,7 @@ class Key {
         const input = this._type === Key.Type.LEGACY
             ? Nimiq.PublicKey.derive(new Nimiq.PrivateKey(this._secret)).toAddress().serialize()
             : this._secret;
-        return Key.derivePublicKey(input);
+        return Key.deriveHash(input);
     }
 }
 

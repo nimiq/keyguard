@@ -166,7 +166,7 @@ class ImportApi extends TopLevelApi {
 
             // Store entropy in SessionStorage so addresses can be derived in the KeyguardIframe
             const secretString = Nimiq.BufferUtils.toBase64(key.secret);
-            sessionStorage.setItem(ImportApi.SESSION_STORAGE_KEY_PREFIX + key.publicKey, secretString);
+            sessionStorage.setItem(ImportApi.SESSION_STORAGE_KEY_PREFIX + key.hash, secretString);
         } else {
             this.reject(new Errors.KeyguardError(`Unkown key type ${key.type}`));
             return;
