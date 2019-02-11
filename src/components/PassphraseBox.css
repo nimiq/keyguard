@@ -86,11 +86,11 @@
     pointer-events: none;
 }
 
-.passphrase-box.strength-0 .password-strength.strength-0,
-.passphrase-box.strength-4 .password-strength.strength-4,
-.passphrase-box.strength-8 .password-strength.strength-8,
-.passphrase-box.strength-10 .password-strength.strength-10,
-.passphrase-box.strength-12 .password-strength.strength-12 {
+.passphrase-box.strength-short .password-strength.strength-short,
+.passphrase-box.strength-weak .password-strength.strength-weak,
+.passphrase-box.strength-good .password-strength.strength-good,
+.passphrase-box.strength-strong .password-strength.strength-strong,
+.passphrase-box.strength-secure .password-strength.strength-secure {
     opacity: 1;
     transition-delay: 150ms;
 }
