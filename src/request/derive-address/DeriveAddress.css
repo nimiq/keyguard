@@ -26,6 +26,10 @@
     position: relative;
 }
 
+.identicon-selector .generate-more {
+    margin-top: 5rem;
+}
+
 .page-footer {
     padding: 1rem;
 }

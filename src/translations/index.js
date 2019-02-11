@@ -85,6 +85,8 @@ const TRANSLATIONS = {
         'identicon-selector-loading': 'Mixing colors',
         'identicon-selector-button-select': 'Select',
         'identicon-selector-link-back': 'Back',
+        'identicon-selector-generate-new': 'Generate new',
+        'identicon-selector-more-addresses': 'More addresses',
 
         'downloadkeyfile-heading-protected': 'Your Key File is protected!',
         'downloadkeyfile-heading-unprotected': 'Your Key File is not protected!',
@@ -118,7 +120,6 @@ const TRANSLATIONS = {
         'derive-address-heading-passphrase': 'Unlock your wallet',
         'derive-address-passphrase-text': 'Please enter your passphrase to add another account to your wallet.',
         'derive-address-heading-choose-identicon': 'Choose your account avatar',
-        'derive-address-text-select-avatar': 'Select an avatar for your new account from the selection below.',
 
         'change-passphrase-heading': 'Change your passphrase',
         'change-paragraph': 'Before entering your new passphrase, you must first unlock your wallet.',
@@ -216,6 +217,8 @@ const TRANSLATIONS = {
         'identicon-selector-loading': 'Mische Farben',
         'identicon-selector-button-select': 'Auswählen',
         'identicon-selector-link-back': 'Zurück',
+        'identicon-selector-generate-new': 'Neu generieren',
+        'identicon-selector-more-addresses': 'Mehr Adressen',
 
         'downloadkeyfile-heading-protected': 'Dein Schlüsseldatei ist geschützt!',
         'downloadkeyfile-heading-unprotected': 'Dein Schlüsseldatei ist nicht geschützt!',
