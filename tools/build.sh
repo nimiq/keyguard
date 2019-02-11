@@ -24,9 +24,12 @@ replace_config_variable() {
     fi
 }
 
-# ease configuration of allowed origin by adding quotes
+# ease configuration of allowed origin and network by adding quotes
 if [ "$KEYGUARD_ALLOWED_ORIGIN" != "" ]; then
     KEYGUARD_ALLOWED_ORIGIN="'$KEYGUARD_ALLOWED_ORIGIN'"
+fi
+if [ "$KEYGUARD_NETWORK" != "" ]; then
+    KEYGUARD_NETWORK="'$KEYGUARD_NETWORK'"
 fi
 
 # cleanup
@@ -135,12 +138,12 @@ LIST_CSS_TOPLEVEL="../../../node_modules/@nimiq/style/nimiq-style.min.css ../../
 for url in $LIST_JS_COMMON; do
     cat src/request/create/$url >> dist/request/$JS_COMMON_BUNDLE
     replace_config_variable "CONFIG.ALLOWED_ORIGIN" "KEYGUARD_ALLOWED_ORIGIN" dist/request/$JS_COMMON_BUNDLE
-    replace_config_variable "CONFIG.NETWORK" "KEYGUARD_NETWORK" dist/request/$REQUEST/$JS_COMMON_BUNDLE
+    replace_config_variable "CONFIG.NETWORK" "KEYGUARD_NETWORK" dist/request/$JS_COMMON_BUNDLE
 done
 for url in $LIST_JS_TOPLEVEL; do
     cat src/request/create/$url >> dist/request/$JS_TOPLEVEL_BUNDLE
     replace_config_variable "CONFIG.ALLOWED_ORIGIN" "KEYGUARD_ALLOWED_ORIGIN" dist/request/$JS_TOPLEVEL_BUNDLE
-    replace_config_variable "CONFIG.NETWORK" "KEYGUARD_NETWORK" dist/request/$REQUEST/$JS_TOPLEVEL_BUNDLE
+    replace_config_variable "CONFIG.NETWORK" "KEYGUARD_NETWORK" dist/request/$JS_TOPLEVEL_BUNDLE
 done
 for url in $LIST_CSS_TOPLEVEL; do
     cat src/request/create/$url >> dist/request/$CSS_TOPLEVEL_BUNDLE
