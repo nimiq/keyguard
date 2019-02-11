@@ -2,10 +2,10 @@
 
 class LoginFile {
     /**
-     * @param {string} encodedPrivKey
-     * @param {number} [color]
+     * @param {string} encodedSecret - Base64-encoded and encrypted secret
+     * @param {number} [color = 0]
      */
-    constructor(encodedPrivKey, color = 0) {
+    constructor(encodedSecret, color = 0) {
         this._width = LoginFile.WIDTH;
         this._height = LoginFile.HEIGHT;
         const $canvas = document.createElement('canvas');
@@ -16,7 +16,7 @@ class LoginFile {
         if (!this._config) throw new Error(`Invalid color index: ${color}`);
         /** @type {CanvasRenderingContext2D} */
         this._ctx = ($canvas.getContext('2d'));
-        this._drawPromise = this._draw(encodedPrivKey);
+        this._drawPromise = this._draw(encodedSecret);
     }
 
     static calculateQrPosition() {
@@ -53,10 +53,10 @@ class LoginFile {
     }
 
     /**
-     * @param {string} encodedPrivKey
+     * @param {string} encodedSecret
      * @returns {Promise<void>}
      */
-    async _draw(encodedPrivKey) {
+    async _draw(encodedSecret) {
         this._drawBackground();
         await this._drawDecorations();
         await this._drawNimiqLogo();
@@ -67,7 +67,7 @@ class LoginFile {
 
         await this._drawIWLogo();
 
-        this._drawQrCode(encodedPrivKey);
+        this._drawQrCode(encodedSecret);
     }
 
     async _drawNimiqLogo() {
@@ -108,13 +108,13 @@ class LoginFile {
     }
 
     /**
-     * @param {string} encodedPrivKey
+     * @param {string} encodedSecret
      */
-    _drawQrCode(encodedPrivKey) {
+    _drawQrCode(encodedSecret) {
         const $el = document.createElement('div');
         /* eslint-disable no-multi-spaces */
         const $canvas = QrEncoder.render({
-            text: encodedPrivKey,
+            text: encodedSecret,
             radius: 0.7,    // We encode 56 bytes. To keep within a smaller QR base size, we need to reduce
             ecLevel: 'M',   // the error-correction level to M. Thus we reduce the radius from .8 to .7
             fill: 'white',  // to reduce scanning issues.
@@ -208,10 +208,10 @@ class LoginFile {
      * @param {number} y
      * @param {number} width
      * @param {number} height
-     * @param {number} radius
-     * @param {boolean} [fill]
-     * @param {boolean} [stroke]
-     * @param {boolean} [withIWCorner]
+     * @param {number} [radius = 5]
+     * @param {boolean} [fill = false]
+     * @param {boolean} [stroke = false]
+     * @param {boolean} [withIWCorner = false]
      */
     _roundRect(x, y, width, height, radius = 5, fill = false, stroke = false, withIWCorner = false) {
         const ctx = this._ctx;
