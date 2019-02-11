@@ -11,6 +11,7 @@ interface Window {
     rpcServer: Rpc.RpcServer
     KeyStore: any
     TRANSLATIONS: dict
+    NIMIQ_IQONS_SVG_PATH?: string
 }
 
 declare namespace Key {
