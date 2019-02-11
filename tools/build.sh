@@ -67,6 +67,7 @@ for DIR in src/request/*/ ; do
     done
 
     replace_config_variable "CONFIG.ALLOWED_ORIGIN" "KEYGUARD_ALLOWED_ORIGIN" dist/request/$REQUEST/$JS_BUNDLE
+    replace_config_variable "CONFIG.NETWORK" "KEYGUARD_NETWORK" dist/request/$REQUEST/$JS_BUNDLE
 
     # get all local css files included in request's index.html, which are not in a bundle
     LIST_CSS="$(grep '<link' $DIR/index.html | grep -v 'bundle-' | grep -v -E 'http://|https://' | cut -d\" -f4)"
@@ -134,10 +135,12 @@ LIST_CSS_TOPLEVEL="../../../node_modules/@nimiq/style/nimiq-style.min.css ../../
 for url in $LIST_JS_COMMON; do
     cat src/request/create/$url >> dist/request/$JS_COMMON_BUNDLE
     replace_config_variable "CONFIG.ALLOWED_ORIGIN" "KEYGUARD_ALLOWED_ORIGIN" dist/request/$JS_COMMON_BUNDLE
+    replace_config_variable "CONFIG.NETWORK" "KEYGUARD_NETWORK" dist/request/$REQUEST/$JS_COMMON_BUNDLE
 done
 for url in $LIST_JS_TOPLEVEL; do
     cat src/request/create/$url >> dist/request/$JS_TOPLEVEL_BUNDLE
-    replace_config_variable "CONFIG.ALLOWED_ORIGIN" "KEYGUARD_ALLOWED_ORIGIN" dist/request/$JS_COMMON_BUNDLE
+    replace_config_variable "CONFIG.ALLOWED_ORIGIN" "KEYGUARD_ALLOWED_ORIGIN" dist/request/$JS_TOPLEVEL_BUNDLE
+    replace_config_variable "CONFIG.NETWORK" "KEYGUARD_NETWORK" dist/request/$REQUEST/$JS_TOPLEVEL_BUNDLE
 done
 for url in $LIST_CSS_TOPLEVEL; do
     cat src/request/create/$url >> dist/request/$CSS_TOPLEVEL_BUNDLE
