@@ -75,10 +75,12 @@ class KeyStore {
         }
 
         if (!KeyStore.isEncrypted(keyRecord)) {
-            const purposeId = new Nimiq.SerialBuffer(keyRecord.secret).readUint32();
-            const secret = purposeId === Nimiq.Entropy.PURPOSE_ID
-                ? new Nimiq.Entropy(keyRecord.secret.subarray(4))
-                : new Nimiq.PrivateKey(keyRecord.secret.subarray(4));
+            // TODO: Compare stored type with purposeID to make sure?
+            //       What would the error handling look like?
+
+            const secret = keyRecord.type === Nimiq.Secret.Type.PRIVATE_KEY
+                ? new Nimiq.PrivateKey(keyRecord.secret.subarray(4)) // The first 4 bytes are the purposeID
+                : new Nimiq.Entropy(keyRecord.secret.subarray(4));
 
             return new Key(secret, keyRecord.hasPin);
         }
@@ -119,26 +121,28 @@ class KeyStore {
      * @returns {Promise<void>}
      */
     async put(key, passphrase) {
-        /** @type {Uint8Array} */
-        let secret;
+        /** @type {Nimiq.SerialBuffer} */
+        let buffer;
         if (passphrase) {
-            secret = await key.secret.exportEncrypted(passphrase);
+            buffer = await key.secret.exportEncrypted(passphrase);
         } else {
-            const buf = new Nimiq.SerialBuffer(KeyStore.UNENCRYPTED_SECRET_SIZE);
-            const purposeId = key.secret.type === Nimiq.Secret.Type.ENTROPY
-                ? Nimiq.Entropy.PURPOSE_ID
-                : Nimiq.PrivateKey.PURPOSE_ID;
+            buffer = new Nimiq.SerialBuffer(KeyStore.UNENCRYPTED_SECRET_SIZE);
 
-            buf.writeUint32(purposeId);
-            key.secret.serialize(buf);
-            secret = buf.subarray(0, buf.byteLength);
+            // When storing the secret unencrypted, we prepend the
+            // purposeID to the secret as a safety redundancy.
+            const purposeId = key.secret instanceof Nimiq.PrivateKey
+                ? Nimiq.PrivateKey.PURPOSE_ID
+                : Nimiq.Entropy.PURPOSE_ID;
+
+            buffer.writeUint32(purposeId);
+            key.secret.serialize(buffer);
         }
 
         const keyRecord = /** @type {KeyRecord} */ {
             id: key.id,
             type: key.type,
             hasPin: key.hasPin,
-            secret,
+            secret: buffer.subarray(0, buffer.byteLength),
         };
 
         return this.putPlain(keyRecord);
