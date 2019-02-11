@@ -119,25 +119,25 @@ class ImportWords {
      */
     _onRecoveryWordsComplete(mnemonic, mnemonicType) {
         switch (mnemonicType) {
-        case Nimiq.MnemonicUtils.MnemonicType.BIP39: {
-            const entropy = Nimiq.MnemonicUtils.mnemonicToEntropy(mnemonic);
-            this._key = new Key(entropy.serialize(), Key.Type.BIP39);
-            this._resolve(entropy.serialize(), Key.Type.BIP39);
-            break;
-        }
-        case Nimiq.MnemonicUtils.MnemonicType.LEGACY: {
-            const entropy = Nimiq.MnemonicUtils.legacyMnemonicToEntropy(mnemonic);
-            this._key = new Key(entropy.serialize(), Key.Type.LEGACY);
-            this._resolve(entropy.serialize(), Key.Type.LEGACY);
-            break;
-        }
-        case Nimiq.MnemonicUtils.MnemonicType.UNKNOWN: {
-            this.entropy = Nimiq.MnemonicUtils.mnemonicToEntropy(mnemonic);
-            window.location.hash = ImportWords.Pages.CHOOSE_KEY_TYPE;
-            break;
-        }
-        default:
-            this._reject(new Errors.KeyguardError('Invalid mnemonic type'));
+            case Nimiq.MnemonicUtils.MnemonicType.BIP39: {
+                const entropy = Nimiq.MnemonicUtils.mnemonicToEntropy(mnemonic);
+                this._key = new Key(entropy.serialize(), Key.Type.BIP39);
+                this._resolve(entropy.serialize(), Key.Type.BIP39);
+                break;
+            }
+            case Nimiq.MnemonicUtils.MnemonicType.LEGACY: {
+                const entropy = Nimiq.MnemonicUtils.legacyMnemonicToEntropy(mnemonic);
+                this._key = new Key(entropy.serialize(), Key.Type.LEGACY);
+                this._resolve(entropy.serialize(), Key.Type.LEGACY);
+                break;
+            }
+            case Nimiq.MnemonicUtils.MnemonicType.UNKNOWN: {
+                this.entropy = Nimiq.MnemonicUtils.mnemonicToEntropy(mnemonic);
+                window.location.hash = ImportWords.Pages.CHOOSE_KEY_TYPE;
+                break;
+            }
+            default:
+                this._reject(new Errors.KeyguardError('Invalid mnemonic type'));
         }
     }
 

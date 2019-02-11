@@ -123,15 +123,15 @@ class ExportWords extends Nimiq.Observable {
         let words = [''];
         if (this._key !== null) {
             switch (this._key.type) {
-            case Nimiq.MnemonicUtils.MnemonicType.LEGACY:
-                words = Nimiq.MnemonicUtils.entropyToLegacyMnemonic(this._key.secret);
-                break;
-            case Nimiq.MnemonicUtils.MnemonicType.BIP39:
-                words = Nimiq.MnemonicUtils.entropyToMnemonic(this._key.secret);
-                break;
-            default:
-                this._reject(new Errors.KeyguardError('Unknown mnemonic type'));
-                return;
+                case Nimiq.MnemonicUtils.MnemonicType.LEGACY:
+                    words = Nimiq.MnemonicUtils.entropyToLegacyMnemonic(this._key.secret);
+                    break;
+                case Nimiq.MnemonicUtils.MnemonicType.BIP39:
+                    words = Nimiq.MnemonicUtils.entropyToMnemonic(this._key.secret);
+                    break;
+                default:
+                    this._reject(new Errors.KeyguardError('Unknown mnemonic type'));
+                    return;
             }
         }
         this._recoveryWords.setWords(words);
