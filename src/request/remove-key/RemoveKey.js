@@ -2,7 +2,6 @@
 /* global ExportFile */
 /* global KeyStore */
 /* global TopLevelApi */
-/* global AnimationUtils */
 
 class RemoveKey {
     /**
@@ -29,7 +28,7 @@ class RemoveKey {
         const $goToShowRecoveryWords = ($removeKey.querySelector('#show-recovery-words'));
         /** @type {HTMLButtonElement} */
         const $finalConfirmButton = ($removeKey.querySelector('#remove-key-final-confirm'));
-         /** @type {HTMLButtonElement} */
+        /** @type {HTMLButtonElement} */
         const $firstConfirmButton = ($removeKey.querySelector('#remove-key-first-confirm'));
         /** @type {HTMLElement} */
         const $checkmark = ($removeKey.querySelector('#checkmark'));
