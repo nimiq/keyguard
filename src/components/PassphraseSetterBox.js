@@ -44,10 +44,10 @@ class PassphraseSetterBox extends Nimiq.Observable {
         /* eslint-disable max-len */
         $el.innerHTML = `
             <div class="password-strength strength-short  nq-text-s" data-i18n="passphrasebox-password-strength-short" >Enter at least 8 characters</div>
-            <div class="password-strength strength-weak   nq-text-s" data-i18n="passphrasebox-password-strength-weak"  >Hm, that's a weak password :(</div>
-            <div class="password-strength strength-good   nq-text-s" data-i18n="passphrasebox-password-strength-good"  >Ok, that's an average password.</div>
-            <div class="password-strength strength-strong nq-text-s" data-i18n="passphrasebox-password-strength-strong">Great, that's a strong password!</div>
-            <div class="password-strength strength-secure nq-text-s" data-i18n="passphrasebox-password-strength-secure">Super, that's a secure password!</div>
+            <div class="password-strength strength-weak   nq-text-s" data-i18n="passphrasebox-password-strength-weak"  >That password is too weak</div>
+            <div class="password-strength strength-good   nq-text-s" data-i18n="passphrasebox-password-strength-good"  >Ok, that is an average password</div>
+            <div class="password-strength strength-strong nq-text-s" data-i18n="passphrasebox-password-strength-strong">Great, that is a strong password</div>
+            <div class="password-strength strength-secure nq-text-s" data-i18n="passphrasebox-password-strength-secure">Super, that is a secure password</div>
             <div class="repeat-password nq-text-s" data-i18n="passphrasebox-repeat-password">Repeat your password</div>
 
             <div passphrase-input></div>
