@@ -32,20 +32,19 @@ describe('KeyStore', () => {
     });
 
     it('can get and decrypt keys', async () => {
-        const [key1, key2] = await Promise.all([
+        const keys = await Promise.all([
             KeyStore.instance.get(Dummy.keyInfos[0].id, Nimiq.BufferUtils.fromAscii(Dummy.encryptionPassword)),
             KeyStore.instance.get(Dummy.keyInfos[1].id),
+            KeyStore.instance.get(Dummy.keyInfos[2].id),
         ]);
-        if (!key1 || !key2) throw new Error();
-        expect(key1.id).toEqual(Dummy.keyInfos[0].id);
-        expect(key1.type).toEqual(Dummy.keyInfos[0].type);
-        expect(key1.secret).toEqual(Dummy.secrets[0]);
-        expect(key1.hasPin).toEqual(Dummy.keyInfos[0].hasPin);
 
-        expect(key2.id).toEqual(Dummy.keyInfos[1].id);
-        expect(key2.type).toEqual(Dummy.keyInfos[1].type);
-        expect(key2.secret).toEqual(Dummy.secrets[1]);
-        expect(key2.hasPin).toEqual(Dummy.keyInfos[1].hasPin);
+        for (let [i, key] of keys.entries()) {
+            if (!key) throw new Error();
+            expect(key.id).toEqual(Dummy.keyInfos[i].id);
+            expect(key.type).toEqual(Dummy.keyInfos[i].type);
+            expect(key.secret).toEqual(Dummy.secrets[i]);
+            expect(key.hasPin).toEqual(Dummy.keyInfos[i].hasPin);
+        }
     });
 
     it('can list keys', async () => {

@@ -66,7 +66,7 @@ class IFrameApi {
 
         // Convert to KeyInfoObjects
         await loadNimiq();
-        return /** @type {KeyguardRequest.LegacyKeyInfoObject[]} */ (KeyStore.accountInfos2KeyInfos(accounts));
+        return KeyStore.accountInfos2KeyInfos(accounts);
     }
 
     /**
@@ -110,7 +110,7 @@ class IFrameApi {
      */
     async _getAccounts() {
         if (BrowserDetection.isIOS() || BrowserDetection.isSafari()) {
-            return /** @type {AccountInfo[]} */ (CookieJar.eat(true));
+            return CookieJar.eatDeprecated();
         }
 
         return AccountStore.instance.list();
@@ -121,7 +121,7 @@ class IFrameApi {
      */
     async _getKeys() {
         if (BrowserDetection.isIOS() || BrowserDetection.isSafari()) {
-            return /** @type {KeyInfo[]} */ (CookieJar.eat());
+            return CookieJar.eat();
         }
 
         return KeyStore.instance.list();

@@ -8,7 +8,7 @@ describe('CookieJar', () => {
 
     it('can decode a cookie', () => {
         const decoded = CookieJar._decodeCookie(Dummy.keyInfoCookieEncoded);
-        expect(decoded).toEqual(Dummy.keyInfos);
+        expect(decoded).toEqual(Dummy.cookieKeyInfos);
     });
 
     it('can be filled with key info', () => {
@@ -20,10 +20,9 @@ describe('CookieJar', () => {
 
     it('can be eaten from', () => {
         spyOnProperty(document, 'cookie', 'get').and.returnValue(Dummy.cookie);
-        const deprecatedAccountInfo = CookieJar.eat(/*listDeprecatedAccounts*/ true);
+        const deprecatedAccountInfo = CookieJar.eatDeprecated();
         expect(deprecatedAccountInfo).toEqual(Dummy.deprecatedAccountInfos);
-        let keyInfo = CookieJar.eat();
-        keyInfo = keyInfo.map(/** @param {KeyInfo} x */(x) => ({ ...x, encrypted: true });
-        expect(keyInfo).toEqual(Dummy.keyInfos);
+        const keyInfo = CookieJar.eat();
+        expect(keyInfo).toEqual(Dummy.cookieKeyInfos);
     });
 });

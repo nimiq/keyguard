@@ -11,38 +11,40 @@ class CookieJar { // eslint-disable-line no-unused-vars
     }
 
     /**
-     * @param {boolean} [listDeprecatedAccounts] - @deprecated Only for database migration
-     * @returns {KeyInfo[] | AccountInfo[]}
+     * @returns {KeyInfo[]}
      */
-    static eat(listDeprecatedAccounts) {
-        // Legacy cookie
-        if (listDeprecatedAccounts) {
-            const match = document.cookie.match(new RegExp('accounts=([^;]+)'));
-            if (match && match[1]) {
-                const decoded = decodeURIComponent(match[1]);
-                const cookieAccounts = JSON.parse(decoded);
-
-                // Map from cookie format to AccountInfo format
-                return cookieAccounts.map(
-                    /**
-                     * @param {any} acc
-                     * @returns {AccountInfo}
-                     */
-                    acc => ({
-                        userFriendlyAddress: acc.address,
-                        type: acc.type,
-                        label: acc.label,
-                    }),
-                );
-            }
-            return [];
-        }
-
+    static eat() {
         const match = document.cookie.match(new RegExp('k=([^;]+)'));
         if (match && match[1]) {
             return this._decodeCookie(match[1]);
         }
 
+        return [];
+    }
+
+    /**
+     * @deprecated Only for database migration
+     * @returns {AccountInfo[]}
+     */
+    static eatDeprecated() {
+        const match = document.cookie.match(new RegExp('accounts=([^;]+)'));
+        if (match && match[1]) {
+            const decoded = decodeURIComponent(match[1]);
+            const cookieAccounts = JSON.parse(decoded);
+
+            // Map from cookie format to AccountInfo format
+            return cookieAccounts.map(
+                /**
+                 * @param {any} acc
+                 * @returns {AccountInfo}
+                 */
+                acc => ({
+                    userFriendlyAddress: acc.address,
+                    type: acc.type,
+                    label: acc.label,
+                }),
+            );
+        }
         return [];
     }
 

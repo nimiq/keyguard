@@ -10,6 +10,7 @@ describe('IframeApi', () => {
 
     beforeEach(() => {
         spyOn(CookieJar, 'eat').and.callThrough();
+        spyOn(CookieJar, 'eatDeprecated').and.callThrough();
         spyOn(AccountStore.instance, 'list').and.callThrough();
         spyOn(KeyStore.instance, 'list').and.callThrough();
         spyOn(KeyStore.instance, 'migrateAccountsToKeys').and.callThrough();
@@ -21,7 +22,7 @@ describe('IframeApi', () => {
 
         const listedAccounts = await iframeApi.listLegacyAccounts(null);
 
-        expect(CookieJar.eat).toHaveBeenCalledWith(true);
+        expect(CookieJar.eatDeprecated).toHaveBeenCalled();
         expect(AccountStore.instance.list).not.toHaveBeenCalled();
         expect(KeyStore.instance.list).not.toHaveBeenCalled();
         expect(listedAccounts).toEqual(Dummy.deprecatedAccount2KeyInfoObject);
@@ -32,7 +33,7 @@ describe('IframeApi', () => {
 
         const listedKeys = await iframeApi.list(null);
 
-        expect(CookieJar.eat).toHaveBeenCalledWith();
+        expect(CookieJar.eat).toHaveBeenCalled();
         expect(AccountStore.instance.list).not.toHaveBeenCalled();
         expect(KeyStore.instance.list).not.toHaveBeenCalled();
         expect(listedKeys).toEqual(Dummy.keyInfoObjects);
@@ -90,8 +91,9 @@ describe('IframeApi', () => {
         // check that keys have been copied correctly
         const ids = (await KeyStore.instance.list()).map(x => x.id);
         for (let id of ids) {
-            const key = await KeyStore.instance._get(id);
-            expect(key).toEqual(Dummy.storedKeyRecords()[id]);
+            const keyRecord = await KeyStore.instance._get(id);
+            const expectedKeyRecord = /** @type {StoredKeyRecord} */(Dummy.storedKeyRecords().find(x => x.id === id));
+            expect(keyRecord).toEqual(expectedKeyRecord);
         }
 
         await Promise.all([
