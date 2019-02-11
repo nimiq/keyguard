@@ -35,7 +35,6 @@ describe('KeyStore', () => {
         const keys = await Promise.all([
             KeyStore.instance.get(Dummy.keyInfos[0].id, Nimiq.BufferUtils.fromAscii(Dummy.encryptionPassword)),
             KeyStore.instance.get(Dummy.keyInfos[1].id),
-            KeyStore.instance.get(Dummy.keyInfos[2].id),
         ]);
 
         for (let [i, key] of keys.entries()) {
@@ -163,7 +162,7 @@ describe('KeyStore', () => {
         await Dummy.Utils.deleteDummyAccountStore();
     });
 
-    it('don\'n store same key twice', async () => {
+    it('doesn\'t store same key twice', async () => {
         // first clear database
         await Dummy.Utils.deleteDummyKeyStore();
 
@@ -171,33 +170,33 @@ describe('KeyStore', () => {
 
         // add key
         const passphrase = Nimiq.BufferUtils.fromAscii(Dummy.encryptionPassword);
-        await KeyStore.instance.put(new Key(Dummy.keys[1]), passphrase);
+        await KeyStore.instance.put(new Key(Dummy.secrets[1]), passphrase);
         currentKeys = await KeyStore.instance.list();
         expect(currentKeys.length).toBe(1);
 
         // add key again
-        await KeyStore.instance.put(new Key(Dummy.keys[1]), passphrase);
+        await KeyStore.instance.put(new Key(Dummy.secrets[1]), passphrase);
         currentKeys = await KeyStore.instance.list();
         expect(currentKeys.length).toBe(1);
 
         // add key again with different password
         const passphrase2 = Nimiq.BufferUtils.fromAscii(Dummy.encryptionPassword2);
-        await KeyStore.instance.put(new Key(Dummy.keys[1]), passphrase2);
+        await KeyStore.instance.put(new Key(Dummy.secrets[1]), passphrase2);
         currentKeys = await KeyStore.instance.list();
         expect(currentKeys.length).toBe(1);
 
         // same for legacy keys
-        await KeyStore.instance.put(new Key(Dummy.keys[1]), passphrase);
+        await KeyStore.instance.put(new Key(Dummy.secrets[0]), passphrase);
         currentKeys = await KeyStore.instance.list();
         expect(currentKeys.length).toBe(2);
 
         // add key again
-        await KeyStore.instance.put(new Key(Dummy.keys[1]), passphrase);
+        await KeyStore.instance.put(new Key(Dummy.secrets[0]), passphrase);
         currentKeys = await KeyStore.instance.list();
         expect(currentKeys.length).toBe(2);
 
          // add key again with different password
-        await KeyStore.instance.put(new Key(Dummy.keys[1]), passphrase2);
+        await KeyStore.instance.put(new Key(Dummy.secrets[0]), passphrase2);
         currentKeys = await KeyStore.instance.list();
         expect(currentKeys.length).toBe(2);
     });

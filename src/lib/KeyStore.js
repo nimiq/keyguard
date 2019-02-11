@@ -80,7 +80,7 @@ class KeyStore {
                 ? new Nimiq.Entropy(keyRecord.secret.subarray(4))
                 : new Nimiq.PrivateKey(keyRecord.secret.subarray(4));
 
-            return new Key(secret, keyRecord.hasPin);
+            return new Key(secret, keyRecord.hasPin, id);
         }
 
         if (!passphrase) {

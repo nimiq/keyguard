@@ -29,9 +29,13 @@ const encryptedKeys = [
     Uint8Array.from([ 0x03, 0x08, 0x38, 0x8f, 0x65, 0x9f, 0x23, 0xfb, 0x80, 0x13, 0xd5, 0xef, 0x86, 0xdc, 0x4d, 0xdc, 0xd7, 0x13, 0xf4, 0x00, 0x34, 0x90, 0xe4, 0xc7, 0x9e, 0x78, 0x84, 0xa5, 0x5e, 0x21, 0x3a, 0xdb, 0x6a, 0xe1, 0x94, 0x48, 0xbd, 0x93, 0xed, 0xd1, 0x2b, 0xfd, 0x0e, 0x1f, 0x34, 0xd5, 0x4b, 0x38, 0x17, 0x4b, 0x8b, 0xf2, 0xd7, 0x4e, 0x1c, 0x10 ]),
 ];
 
-const hashes = () => encryptedKeys.map( /** @param {Uint8Array} x */x =>
-    Nimiq.BufferUtils.toHex(Nimiq.Hash.blake2b(x).subarray(0, 32))
-);
+const hashes = () => secrets.map(x => {
+    const input = x instanceof Nimiq.Entropy
+        ? x.serialize()
+        : Nimiq.PublicKey.derive(x).toAddress().serialize();
+
+    return Nimiq.BufferUtils.toHex(Nimiq.Hash.blake2b(input).subarray(0, 32))
+});
 
 const encryptionPassword = 'password';
 const encryptionPassword2 = 'password2';
@@ -51,7 +55,7 @@ const keyInfos = [
     ),
 ];
 
-const cookieKeyInfos = keyInfos.map(/** @param {KeyInfo} x */x => new KeyInfo(x.id, x.type, x.encrypted, x.hasPin));
+const cookieKeyInfos = keyInfos.map(/** @param {KeyInfo} x */x => new KeyInfo(x.id, x.type, true, x.hasPin));
 
 const keyInfoObjects = keyInfos.map(/** @param {KeyInfo} x */x => 
     ({
@@ -70,7 +74,7 @@ const keyRecords = () => [
 ];
 
 /** @type {() => StoredKeyRecord[]} */
-const storedKeyRecords = () => keyRecords().map((x, i) => Object.assign({}, x, { id: i }));
+const storedKeyRecords = () => keyRecords().map((x, i) => Object.assign({}, x, { id: i + 1 }));
 
 const deprecatedAccountInfos = [
     {
@@ -188,7 +192,6 @@ const Utils = {
     },
 };
 
-
 const Dummy = {
     keys,
     secrets,
@@ -207,5 +210,6 @@ const Dummy = {
     keyInfoObjects,
     deprecatedAccount2KeyInfoObject,
     DUMMY_ACCOUNT_DATABASE_NAME,
-    DUMMY_KEY_DATABASE_NAME
+    DUMMY_KEY_DATABASE_NAME,
+    deprecatedAccountRecords
 }

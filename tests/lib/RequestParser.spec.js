@@ -82,7 +82,7 @@ describe('RequestParser', () => {
         }
         expect(error).toEqual(new Errors.InvalidRequestError('keyId must be a number'));
 
-        const parsedKeyInfo = await requestParser.parseKeyId(0);
+        const parsedKeyInfo = await requestParser.parseKeyId(Dummy.keyInfos[0].id);
         expect(parsedKeyInfo).toEqual(Dummy.keyInfos[0]);
 
         await Dummy.Utils.deleteDummyKeyStore();
