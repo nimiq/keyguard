@@ -96,12 +96,12 @@ class PassphraseSetterBox extends Nimiq.Observable {
      */
     async onPassphraseIneligable() {
         // We have to shake both possible too-weak notices
-        const $hint0 = /** @type {HTMLElement} */(this.$el.querySelector('.password-strength.strength-short'));
-        const $hint4 = /** @type {HTMLElement} */(this.$el.querySelector('.password-strength.strength-weak'));
+        const $hintTooShort = /** @type {HTMLElement} */ (this.$el.querySelector('.password-strength.strength-short'));
+        const $hintWeak = /** @type {HTMLElement} */ (this.$el.querySelector('.password-strength.strength-weak'));
 
         await Promise.all([
-            AnimationUtils.animate('shake', $hint0),
-            AnimationUtils.animate('shake', $hint4),
+            AnimationUtils.animate('shake', $hintTooShort),
+            AnimationUtils.animate('shake', $hintWeak),
         ]);
     }
 
@@ -116,19 +116,25 @@ class PassphraseSetterBox extends Nimiq.Observable {
 
         const score = PasswordStrength.strength(this._passphraseInput.text);
 
-        this.$el.classList.toggle('input-eligable', isValid && score >= 40);
+        this.$el.classList.toggle('input-eligable', isValid && score >= PasswordStrength.Score.MINIMUM);
 
         this.$el.classList.toggle('strength-short', !isValid);
-        this.$el.classList.toggle('strength-weak', isValid && score < 40);
-        this.$el.classList.toggle('strength-good', isValid && score >= 40 && score < 75);
-        this.$el.classList.toggle('strength-strong', isValid && score >= 75 && score < 150);
-        this.$el.classList.toggle('strength-secure', isValid && score >= 150);
+        this.$el.classList.toggle('strength-weak', isValid && score < PasswordStrength.Score.MINIMUM);
+        this.$el.classList.toggle('strength-good',
+            isValid
+            && score >= PasswordStrength.Score.MINIMUM
+            && score < PasswordStrength.Score.STRONG);
+        this.$el.classList.toggle('strength-strong',
+            isValid
+            && score >= PasswordStrength.Score.STRONG
+            && score < PasswordStrength.Score.SECURE);
+        this.$el.classList.toggle('strength-secure', isValid && score >= PasswordStrength.Score.SECURE);
     }
 
     _isEligablePassword() {
         const password = this._passphraseInput.text;
         if (password.length < PassphraseInput.DEFAULT_MIN_LENGTH) return false;
-        return PasswordStrength.strength(password) >= 40;
+        return PasswordStrength.strength(password) >= PasswordStrength.Score.MINIMUM;
     }
 
     /**
