@@ -38,13 +38,13 @@ const encryptionPassword2 = 'password2';
 
 const keyInfos = [
     new KeyInfo(
-        0,
+        1,
         Nimiq.Secret.Type.PRIVATE_KEY,
         true,
         false,
     ),
     new KeyInfo(
-        1,
+        2,
         Nimiq.Secret.Type.ENTROPY,
         false,
         true,
@@ -102,7 +102,7 @@ const deprecatedAccount2KeyInfoObject = [{
     },
 }];
 
-const keyInfoCookieEncoded = '100,211';
+const keyInfoCookieEncoded = '101,212';
 
 /** @type {string} */
 const cookie = `k=${keyInfoCookieEncoded};accounts=${JSON.stringify(deprecatedAccountCookie)};some=thing;`;
