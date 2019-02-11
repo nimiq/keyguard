@@ -54,17 +54,7 @@ Dummy.keyInfos = [
         1,
         Nimiq.Secret.Type.ENTROPY,
         false,
-        false,
-    ),
-];
-
-/** @type {KeyInfo[]} */
-Dummy.cookieKeyInfos = [
-    new KeyInfo(
-        0,
-        Nimiq.Secret.Type.PRIVATE_KEY,
         true,
-        false,
     ),
     new KeyInfo(
         1,
@@ -134,7 +124,7 @@ Dummy.deprecatedAccount2KeyInfoObject = [{
     },
 }];
 
-Dummy.keyInfoCookieEncoded = '100,201';
+Dummy.keyInfoCookieEncoded = '100,211,202';
 
 /** @type {string} */
 Dummy.cookie = `k=${Dummy.keyInfoCookieEncoded};accounts=${JSON.stringify(Dummy.deprecatedAccountCookie)};some=thing;`;
