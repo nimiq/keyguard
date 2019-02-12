@@ -36,6 +36,7 @@
     <script defer bundle-toplevel src="../../translations/index.js"></script>
 
     <script defer src="../../lib/AutoComplete.js"></script>
+    <script defer src="../../lib/Iqons.js"></script>
     <script defer src="../../lib/QrScanner.js"></script>
     <script defer src="../../components/DownloadKeyfile.js"></script>
     <script defer src="../../lib/LoginFile.js"></script>
@@ -99,15 +100,16 @@
                     <h1 class="nq-h1">Create a password</h1>
                 </div>
 
-                <div class="page-body nq-card-body">
-                        <p class="nq-light-blue nq-text">Using the Recovery Words creates a new LoginFile. Create a password to secure it.</p>
+                <div class="page-body nq-card-body login-file">
+                    <p class="nq-light-blue nq-text">Using the Recovery Words creates a new LoginFile. Create a password to secure it.</p>
+                    <p class="nq-light-blue nq-text no-login-file-available">Using the Recovery Words creates a new Account. Create a password to secure it.</p>
+                    <div class="flex-grow"></div>
+                    <div class="nq-icon walletfile-qr-code">
+                        <div class="lock"></div>
                         <div class="flex-grow"></div>
-                        <div class="nq-icon walletfile-qr-code">
-                            <div class="lock"></div>
-                            <div class="flex-grow"></div>
-                            <div class="qr-code"></div>
-                        </div>
-                        <div class="flex-grow"></div>
+                        <div class="qr-code"></div>
+                    </div>
+                    <div class="flex-grow"></div>
                 </div>
 
                 <div class="page-footer">

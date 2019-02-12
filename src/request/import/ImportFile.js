@@ -30,16 +30,14 @@ class ImportFile {
 
         /** @type {HTMLDivElement} */
         const $fileImport = (this.$importFilePage.querySelector('.file-import'));
-
         const fileImport = new FileImport($fileImport);
 
         /** @type {HTMLElement} */
         const $gotoWords = (this.$importFilePage.querySelector('#goto-words'));
         $gotoWords.addEventListener('click', () => { this.importWordsHandler.run(); });
 
-        /** @type {HTMLElement} */
-        const $gotoCreate = (this.$importFilePage.querySelector('#goto-create'));
-        $gotoCreate.addEventListener('click', this._goToCreate.bind(this));
+        const $gotoCreate = this.$importFilePage.querySelector('#goto-create');
+        if ($gotoCreate) $gotoCreate.addEventListener('click', this._goToCreate.bind(this));
 
         /** @type {HTMLFormElement} */
         const $passphraseBox = (this.$importFilePage.querySelector('.passphrase-box'));
@@ -59,7 +57,7 @@ class ImportFile {
     }
 
     _onFileImported() {
-        // this._encryptedKey = ??? // TODO
+        // this._encryptedKey = ??? // TODO LoginFile
         this.passphraseBox.reset();
         this.$importFilePage.classList.add('enter-password');
         if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
@@ -68,6 +66,7 @@ class ImportFile {
     }
 
     /**
+     * TODO LoginFile
      * @param {string?} passphrase
      */
     async _onPassphraseEntered(passphrase) {
@@ -113,6 +112,7 @@ class ImportFile {
     }
 
     /**
+     * TODO LoginFile
      * @param {string?} passphrase
      * @returns {Promise<?Key>}
      */
