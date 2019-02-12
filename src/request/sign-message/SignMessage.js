@@ -87,7 +87,7 @@ class SignMessage {
                 this._passphraseBox.onPassphraseIncorrect();
                 return;
             }
-            reject(new Errors.CoreError(e.message, e));
+            reject(new Errors.CoreError(e));
             return;
         }
 

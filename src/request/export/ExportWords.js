@@ -96,7 +96,7 @@ class ExportWords extends Nimiq.Observable {
                 this._privacyWarningPassphraseBox.onPassphraseIncorrect();
                 return;
             }
-            this._reject(new Errors.CoreError(e.message, e));
+            this._reject(new Errors.CoreError(e));
             return;
         }
         if (!key) {

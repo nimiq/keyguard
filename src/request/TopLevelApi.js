@@ -68,13 +68,13 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
             this._reject = reject;
 
             window.addEventListener('unhandledrejection', event => {
-                const error = new Errors.KeyguardError(undefined, /** @type {PromiseRejectionEvent} */(event).reason);
+                const error = new Errors.UnclassifiedError(/** @type {PromiseRejectionEvent} */(event).reason);
                 this.reject(error);
                 return false;
             });
 
             window.addEventListener('error', event => {
-                const error = new Errors.KeyguardError(undefined, event.error);
+                const error = new Errors.UnclassifiedError(event.error);
                 this.reject(error);
                 return false;
             });

@@ -5,20 +5,21 @@ class Errors { }
 Errors.BaseError = class extends Error {
     /**
      *  @param {string} type
-     *  @param {string} message
-     *  @param {Error?} innerError
+     *  @param {string|Error?} messageOrError
      * */
-    constructor(type, message = '', innerError = null) {
-        if (innerError) {
-            super(innerError.message);
-            if (innerError.name !== 'Error') {
-                this.name = innerError.name;
+    constructor(type, messageOrError = null) {
+        if (messageOrError instanceof Error) {
+            const error = messageOrError;
+            super(error.message);
+            if (error.name !== 'Error') {
+                this.name = error.name;
             }
-            if (innerError.stack) {
-                this.stack = innerError.stack;
+            if (error.stack) {
+                this.stack = error.stack;
             }
         } else {
-            super(message);
+            const message = messageOrError;
+            super(message || '');
             this.name = type;
         }
     }
@@ -27,40 +28,36 @@ Errors.BaseError = class extends Error {
 Errors.InvalidRequestError = class extends Errors.BaseError {
     /**
      *  @param {string} message
-     *  @param {Error?} innerError
      * */
-    constructor(message = '', innerError = null) {
-        super(ErrorConstants.Types.INVALID_REQUEST, message, innerError);
+    constructor(message = '') {
+        super(ErrorConstants.Types.INVALID_REQUEST, message);
     }
 };
 
 Errors.CoreError = class extends Errors.BaseError {
     /**
-     *  @param {string} message
-     *  @param {Error?} innerError
+     *  @param {string|Error?} messageOrError
      * */
-    constructor(message = '', innerError = null) {
-        super(ErrorConstants.Types.CORE, message, innerError);
+    constructor(messageOrError = null) {
+        super(ErrorConstants.Types.CORE, messageOrError);
     }
 };
 
 Errors.KeyguardError = class extends Errors.BaseError {
     /**
-     *  @param {string} message
-     *  @param {Error?} innerError
+     *  @param {string|Error?} messageOrError
      * */
-    constructor(message = '', innerError = null) {
-        super(ErrorConstants.Types.KEYGUARD, message, innerError);
+    constructor(messageOrError = null) {
+        super(ErrorConstants.Types.KEYGUARD, messageOrError);
     }
 };
 
 Errors.UnclassifiedError = class extends Errors.BaseError {
     /**
-     *  @param {string} message
-     *  @param {Error?} innerError
+     *  @param {string|Error?} messageOrError
      * */
-    constructor(message = '', innerError = null) {
-        super(ErrorConstants.Types.UNCLASSIFIED, message, innerError);
+    constructor(messageOrError = null) {
+        super(ErrorConstants.Types.UNCLASSIFIED, messageOrError);
     }
 };
 
