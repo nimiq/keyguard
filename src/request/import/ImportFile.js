@@ -79,12 +79,12 @@ class ImportFile {
         /** @type {{keyPath: string, address: Uint8Array}[]} */
         const addresses = [];
 
-        if (key.type === Key.Type.LEGACY) {
+        if (key.secret instanceof Nimiq.Entropy) {
             addresses.push({
                 keyPath: Constants.LEGACY_DERIVATION_PATH,
                 address: key.deriveAddress('').serialize(),
             });
-        } else if (key.type === Key.Type.BIP39) {
+        } else if (key.secret instanceof Nimiq.PrivateKey) {
             /** @type {KeyguardRequest.ImportRequest} */
             (this._request).requestedKeyPaths.forEach(keyPath => {
                 addresses.push({
@@ -94,7 +94,7 @@ class ImportFile {
             });
 
             // Store entropy in SessionStorage so addresses can be derived in the KeyguardIframe
-            const secretString = Nimiq.BufferUtils.toBase64(key.secret);
+            const secretString = Nimiq.BufferUtils.toBase64(key.secret.serialize());
             sessionStorage.setItem(ImportApi.SESSION_STORAGE_KEY_PREFIX + key.id, secretString);
         } else {
             this._reject(new Errors.KeyguardError(`Unkown key type ${key.type}`));
@@ -125,27 +125,29 @@ class ImportFile {
             //     2. Unencrypted key file and no new password set
             //     3. Unencrypted key file and new password set
 
-            let secret = new Uint8Array(0);
+            /** @type {Nimiq.Entropy | Nimiq.PrivateKey} */
+            let secret;
             let encryptionKey = null;
 
             if (passphrase !== null) {
                 encryptionKey = Utf8Tools.stringToUtf8ByteArray(passphrase);
             }
 
-            if (this._encryptedKey.length === Nimiq.CryptoUtils.ENCRYPTION_SIZE) {
+            if (this._encryptedKey.byteLength === KeyStore.ENCRYPTED_SECRET_SIZE_V2
+                || this._encryptedKey.byteLength === KeyStore.ENCRYPTED_SECRET_SIZE) {
                 // Make sure read position is at 0 even after a wrong passphrase
                 this._encryptedKey.reset();
 
-                secret = await Nimiq.CryptoUtils.decryptOtpKdf(
+                secret = await Nimiq.Secret.fromEncrypted(
                     this._encryptedKey,
                     /** @type {Uint8Array} */ (encryptionKey),
                 );
             } else {
                 // Key File was not encrypted and the imported Uint8Array is the plain secret
-                secret = this._encryptedKey;
+                secret = new Nimiq.Entropy(this._encryptedKey);
             }
 
-            const key = new Key(secret, Key.Type.BIP39, false);
+            const key = new Key(secret, false);
 
             await KeyStore.instance.put(key, encryptionKey || undefined);
 

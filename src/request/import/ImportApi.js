@@ -1,7 +1,6 @@
 /* global TopLevelApi */
 /* global ImportFile */
 /* global Nimiq */
-/* global Key */
 /* global Errors */
 
 class ImportApi extends TopLevelApi {
@@ -51,14 +50,5 @@ class ImportApi extends TopLevelApi {
         return parsedRequest;
     }
 }
-
-ImportApi.Pages = {
-    FILE_IMPORT: 'file-import',
-    ENTER_PASSPHRASE: 'enter-passphrase',
-    SET_PASSPHRASE: 'set-passphrase',
-    PRIVACY_AGENT: 'privacy',
-    ENTER_WORDS: 'words',
-    CHOOSE_KEY_TYPE: 'choose-key-type',
-};
 
 ImportApi.SESSION_STORAGE_KEY_PREFIX = 'nimiq_key_';

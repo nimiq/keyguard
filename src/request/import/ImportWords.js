@@ -5,6 +5,7 @@
 /* global Iqons */
 /* global Key */
 /* global KeyStore */
+/* global LoginFile */
 /* global Nimiq */
 /* global PassphraseSetterBox */
 /* global RecoveryWords */
@@ -80,8 +81,8 @@ class ImportWords extends FlippableHandler {
                     /** @type {KeyguardRequest.KeyResult[]} */(this._keys)[0].addresses[0].address,
                 ).toUserFriendlyAddress(),
             );
-            // color = LoginFile.CONFIG[color].name; // TODO uncomment after rebase/merge.
-            this.$walletFileIcon.classList.add(`nq-${color}-bg`, 'lock-closed');
+            const colorString = LoginFile.CONFIG[color].name;
+            this.$walletFileIcon.classList.add(`nq-${colorString}-bg`, 'lock-closed');
         });
         this._passwordSetter.on(PassphraseSetterBox.Events.SUBMIT, async password => {
             const keys = await this._storeKeys(password);
@@ -96,11 +97,15 @@ class ImportWords extends FlippableHandler {
                 'nq-blue-bg',
                 'nq-light-blue-bg',
                 'nq-gold-bg',
+                'nq-light-green',
                 'nq-green-bg',
                 'nq-orange-bg',
                 'nq-red-bg',
+                'nq-purple-bg',
+                'nq-pink-bg',
+                'nq-brown-bg',
                 'nq-gray-bg',
-                'nq-light-gray-bg'); // TODO add additional colors
+                'nq-light-gray-bg');
         });
         this._passwordSetter.on(PassphraseSetterBox.Events.SKIP, async () => {
             const keys = await this._storeKeys();
