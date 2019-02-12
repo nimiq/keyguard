@@ -81,37 +81,18 @@
     width: calc(100% - 7rem);
 }
 
-.page#remove-key.page#remove-key:not(.show-final-confirm) .page-footer button.checkbox {
+.page#remove-key.page#remove-key:not(.show-final-confirm) .page-footer #remove-key-label-confirm {
     width: 100%;
     height: 11.25rem;
+    background-color: var(--nimiq-red);
+    color: #fff;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 21px;
+    font-size: 14px;
     margin-bottom: 0;
     border-radius: 4px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-transform: unset;
-    letter-spacing: unset;
-    font-weight: 600;
-}
-
-.page#remove-key .page-footer button.checkbox svg {
-    margin-left: -2rem;
-    margin-right: 3rem;
-}
-
-.page#remove-key .page-footer button.checkbox #checkmark {
-    stroke: rgba(255,255,255,0.5);
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    stroke-dasharray: 200 330;
-    stroke-dashoffset: 201;
-    stroke-width: 3px;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    transition: 1s linear;
-}
-
-.page#remove-key .page-footer button.checkbox #checkmark.checked {
-    stroke-dashoffset: 0;
-    stroke: rgba(255,255,255,0.8);
+    margin: 2rem auto;
+    cursor: text;
+    text-align: center;
 }

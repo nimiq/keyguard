@@ -5,7 +5,7 @@
 
 class RemoveKey {
     /**
-     * @param {ParsedSimpleRequest} request
+     * @param {ParsedRemoveKeyRequest} request
      * @param {Function} resolve
      * @param {Function} reject
      */
@@ -26,21 +26,28 @@ class RemoveKey {
         const $goToDownloadFile = ($removeKey.querySelector('#show-download-login-file'));
         /** @type {HTMLButtonElement} */
         const $goToShowRecoveryWords = ($removeKey.querySelector('#show-recovery-words'));
+        /** @type {HTMLDivElement} */
+        const $labelConfirm = ($removeKey.querySelector('#remove-key-label-confirm'));
+        /** @type {HTMLSpanElement} */
+        const $labelSpan = ($labelConfirm.querySelector('span'));
+        /** @type {HTMLInputElement} */ 
+        const $labelInput = ($labelConfirm.querySelector('input'));
         /** @type {HTMLButtonElement} */
         const $finalConfirmButton = ($removeKey.querySelector('#remove-key-final-confirm'));
-        /** @type {HTMLButtonElement} */
-        const $firstConfirmButton = ($removeKey.querySelector('#remove-key-first-confirm'));
-        /** @type {HTMLElement} */
-        const $checkmark = ($removeKey.querySelector('#checkmark'));
+
+        $labelSpan.textContent = this._request.keyLabel;
 
         // events
         $goToShowRecoveryWords.addEventListener('click', () => this._exportWordsHandler.run());
         $goToDownloadFile.addEventListener('click', () => this._exportFileHandler.run());
-        $firstConfirmButton.addEventListener('click', () => {
-            $checkmark.classList.add('checked');
-            window.setTimeout(() => $removeKey.classList.add('show-final-confirm'), 800);
-        });
         $finalConfirmButton.addEventListener('click', this._finalConfirm.bind(this));
+        $labelConfirm.addEventListener('click', () => $labelInput.focus());
+
+        $labelInput.addEventListener('input', () => {
+            if ($labelInput.value === this._request.keyLabel) {
+                $removeKey.classList.add('show-final-confirm');
+            }
+        });
 
         this._exportFileHandler.on(ExportFile.Events.KEY_CHANGED,
             e => this._exportWordsHandler.setKey(e.key));

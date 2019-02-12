@@ -4,7 +4,7 @@
 
 class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
-     * @param {KeyguardRequest.SimpleRequest} request
+     * @param {KeyguardRequest.RemoveKeyRequest} request
      */
     async onRequest(request) {
         const parsedRequest = await this.parseRequest(request);
@@ -22,8 +22,8 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     }
 
     /**
-     * @param {KeyguardRequest.SimpleRequest} request
-     * @returns {Promise<ParsedSimpleRequest>}
+     * @param {KeyguardRequest.RemoveKeyRequest} request
+     * @returns {Promise<ParsedRemoveKeyRequest>}
      */
     async parseRequest(request) {
         if (!request) {
