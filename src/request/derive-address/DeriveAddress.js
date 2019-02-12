@@ -91,7 +91,7 @@ class DeriveAddress {
             this._reject(new Errors.KeyNotFoundError());
             return false;
         }
-        const masterKey = new Nimiq.Entropy(key.secret).toExtendedPrivateKey();
+        const masterKey = /** @type {Nimiq.Entropy} */ (key.secret).toExtendedPrivateKey();
         const pathsToDerive = this._request.indicesToDerive.map(index => `${this._request.baseKeyPath}/${index}`);
 
         this._identiconSelector.init(masterKey, pathsToDerive);

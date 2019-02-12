@@ -2,11 +2,6 @@
 # yarn lockfile v1
 
 
-"@nimiq/core-types@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@nimiq/core-types/-/core-types-1.0.0.tgz#a675cf2c151d9146e79934035e999bbd08a59d42"
-  integrity sha512-OUDYAsEjuCmZewMZz8otPE6GMtvfxqbwtsa6oQ5okzRRQqNXkKTkR1/wM+DY1RcyiF141Fd9J7TnU4sJwzH94w==
-
 "@nimiq/rpc@^0.1.1":
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/@nimiq/rpc/-/rpc-0.1.1.tgz#7f9b10faab6cc589691db562047d136f0513bf98"
