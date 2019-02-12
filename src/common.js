@@ -28,11 +28,9 @@ async function loadNimiq() {
         case Constants.NETWORK.TEST:
             Nimiq.GenesisConfig.test();
             break;
-
         case Constants.NETWORK.MAIN:
             Nimiq.GenesisConfig.main();
             break;
-
         default:
             throw new Errors.KeyguardError(ErrorConstants.Messages.INVALID_NETWORK_CONFIG);
         }
