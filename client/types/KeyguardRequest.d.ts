@@ -78,23 +78,15 @@ declare namespace KeyguardRequest {
         defaultKeyPath: string;
     }
 
-    type CreateResult = {
-        keyId: string
-        keyPath: string
-        address: Uint8Array
-    }
-
     type ImportRequest = BasicRequest & {
         defaultKeyPath: string;
         requestedKeyPaths: string[];
     }
 
-    type ImportResult = {
-        keys: {
-            keyId: string;
-            keyType: Key.Type;
-            addresses: { keyPath: string, address: Uint8Array }[],
-        }[];
+    type KeyResult = {
+        keyId: string;
+        keyType: Key.Type;
+        addresses: { keyPath: string, address: Uint8Array }[],
     }
 
     type DeriveAddressRequest = SimpleRequest & {

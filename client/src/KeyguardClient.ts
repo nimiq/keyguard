@@ -49,7 +49,7 @@ export class KeyguardClient {
     /* TOP-LEVEL REQUESTS */
 
     public create(request: KeyguardRequest.CreateRequest, requestBehavior = this._defaultBehavior)
-        : Promise<KeyguardRequest.CreateResult> {
+        : Promise<KeyguardRequest.KeyResult[]> {
         return this._request(requestBehavior,  KeyguardCommand.CREATE, [request]);
     }
 
@@ -59,7 +59,7 @@ export class KeyguardClient {
     }
 
     public import(request: KeyguardRequest.ImportRequest, requestBehavior = this._defaultBehavior)
-        : Promise<KeyguardRequest.ImportResult> {
+        : Promise<KeyguardRequest.KeyResult[]> {
         return this._request(requestBehavior,  KeyguardCommand.IMPORT, [request]);
     }
 
