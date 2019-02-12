@@ -145,20 +145,24 @@ class Iqons {
      * @returns {Promise<Document>}
      */
     static async _getAssets() {
-        /** @type {Promise<Document>} */
-        this._assetPromise = this._assetPromise || fetch(this.svgPath)
+        // eslint-disable-next-line no-return-assign
+        return this._assetsPromise || (this._assetsPromise = fetch(window.NIMIQ_IQONS_SVG_PATH || Iqons.SVG_PATH)
             .then(response => response.text())
             .then(assetsText => {
                 const parser = new DOMParser();
-                const assets = parser.parseFromString(assetsText, 'image/svg+xml');
-                this._assets = assets;
-                return assets;
-            });
-        return this._assetPromise;
+                return parser.parseFromString(assetsText, 'image/svg+xml');
+            })
+        );
     }
 
-    static get hasAssets() {
-        return !!this._assets;
+    /**
+     * @returns {boolean}
+     */
+    static hasAssets() {
+        if (!this._assetsPromise) return false;
+        let hasReturned = false;
+        this._assetsPromise.then(() => { hasReturned = true; });
+        return hasReturned;
     }
 
     /** @type {string[]} */
@@ -252,7 +256,7 @@ class Iqons {
     }
 }
 
-Iqons.svgPath = '../../assets/Iqons.min.svg';
+Iqons.SVG_PATH = '../../assets/Iqons.min.svg';
 
 Iqons.CATALOG = {
     face: [

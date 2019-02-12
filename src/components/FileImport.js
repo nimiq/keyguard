@@ -2,6 +2,7 @@
 /* global AnimationUtils */
 /* global QrScanner */
 /* global I18n */
+/* global LoginFile */
 
 class FileImport extends Nimiq.Observable {
     /**
@@ -72,17 +73,7 @@ class FileImport extends Nimiq.Observable {
      * @param {File} file
      */
     async _readFile(file) {
-        // TODO Add WalletBackup to keyguard-next code base
-        // const qrPosition = WalletBackup.calculateQrPosition();
-        const qrPosition = {
-            x: 156,
-            y: 548.6886,
-            width: 173.4,
-            height: 173.4,
-            size: 185.4,
-            padding: 12,
-        };
-
+        const qrPosition = LoginFile.calculateQrPosition();
         try {
             const decoded = await QrScanner.scanImage(file, qrPosition, null, null, false, true);
             this.fire(FileImport.Events.IMPORT, decoded);

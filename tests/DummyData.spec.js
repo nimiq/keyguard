@@ -121,7 +121,7 @@ const Utils = {
      * @param {IDBDatabase} db
      * @param {string} objectStoreName
      * @param {object} entry
-     * @returns {Promise<void>}
+     * @returns {Promise<any>}
      */
     addEntryToDatabase: (db, objectStoreName, entry) => new Promise((resolve, reject) => {
         const request = db.transaction([objectStoreName], 'readwrite')

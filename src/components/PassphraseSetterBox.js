@@ -2,6 +2,7 @@
 /* global I18n */
 /* global PassphraseInput */
 /* global AnimationUtils */
+/* global PasswordStrength */
 
 class PassphraseSetterBox extends Nimiq.Observable {
     /**
@@ -42,10 +43,11 @@ class PassphraseSetterBox extends Nimiq.Observable {
 
         /* eslint-disable max-len */
         $el.innerHTML = `
-            <div class="password-strength strength-0  nq-text-s" data-i18n="passphrasebox-password-strength-0" >Enter at least 8 characters</div>
-            <div class="password-strength strength-8  nq-text-s" data-i18n="passphrasebox-password-strength-8" >Great, that's a good password!</div>
-            <div class="password-strength strength-10 nq-text-s" data-i18n="passphrasebox-password-strength-10">Super, that's a strong password!</div>
-            <div class="password-strength strength-12 nq-text-s" data-i18n="passphrasebox-password-strength-12">Excellent, that's a very strong password!</div>
+            <div class="password-strength strength-short  nq-text-s" data-i18n="passphrasebox-password-strength-short" >Enter at least 8 characters</div>
+            <div class="password-strength strength-weak   nq-text-s" data-i18n="passphrasebox-password-strength-weak"  >That password is too weak</div>
+            <div class="password-strength strength-good   nq-text-s" data-i18n="passphrasebox-password-strength-good"  >Ok, that is an average password</div>
+            <div class="password-strength strength-strong nq-text-s" data-i18n="passphrasebox-password-strength-strong">Great, that is a strong password</div>
+            <div class="password-strength strength-secure nq-text-s" data-i18n="passphrasebox-password-strength-secure">Super, that is a secure password</div>
             <div class="repeat-password nq-text-s" data-i18n="passphrasebox-repeat-password">Repeat your password</div>
 
             <div passphrase-input></div>
@@ -92,9 +94,15 @@ class PassphraseSetterBox extends Nimiq.Observable {
     /**
      * @returns {Promise<void>}
      */
-    async onPassphraseTooShort() {
-        const $hint = /** @type {HTMLElement} */(this.$el.querySelector('.password-strength.strength-0'));
-        await AnimationUtils.animate('shake', $hint);
+    async onPassphraseIneligable() {
+        // We have to shake both possible too-weak notices
+        const $hintTooShort = /** @type {HTMLElement} */ (this.$el.querySelector('.password-strength.strength-short'));
+        const $hintWeak = /** @type {HTMLElement} */ (this.$el.querySelector('.password-strength.strength-weak'));
+
+        await Promise.all([
+            AnimationUtils.animate('shake', $hintTooShort),
+            AnimationUtils.animate('shake', $hintWeak),
+        ]);
     }
 
     /**
@@ -105,13 +113,28 @@ class PassphraseSetterBox extends Nimiq.Observable {
             this.fire(PassphraseSetterBox.Events.SUBMIT, this._password);
             return;
         }
-        this.$el.classList.toggle('input-valid', isValid);
 
-        const length = this._passphraseInput.text.length;
-        this.$el.classList.toggle('strength-0', length < 8);
-        this.$el.classList.toggle('strength-8', length >= 8 && length < 10);
-        this.$el.classList.toggle('strength-10', length >= 10 && length < 12);
-        this.$el.classList.toggle('strength-12', length >= 12);
+        const score = PasswordStrength.strength(this._passphraseInput.text);
+
+        this.$el.classList.toggle('input-eligable', isValid && score >= PasswordStrength.Score.MINIMUM);
+
+        this.$el.classList.toggle('strength-short', !isValid);
+        this.$el.classList.toggle('strength-weak', isValid && score < PasswordStrength.Score.MINIMUM);
+        this.$el.classList.toggle('strength-good',
+            isValid
+            && score >= PasswordStrength.Score.MINIMUM
+            && score < PasswordStrength.Score.STRONG);
+        this.$el.classList.toggle('strength-strong',
+            isValid
+            && score >= PasswordStrength.Score.STRONG
+            && score < PasswordStrength.Score.SECURE);
+        this.$el.classList.toggle('strength-secure', isValid && score >= PasswordStrength.Score.SECURE);
+    }
+
+    _isEligablePassword() {
+        const password = this._passphraseInput.text;
+        if (password.length < PassphraseInput.DEFAULT_MIN_LENGTH) return false;
+        return PasswordStrength.strength(password) >= PasswordStrength.Score.MINIMUM;
     }
 
     /**
@@ -119,11 +142,11 @@ class PassphraseSetterBox extends Nimiq.Observable {
      */
     _onSubmit(event) {
         event.preventDefault();
+        if (!this._isEligablePassword()) {
+            this.onPassphraseIneligable();
+            return;
+        }
         if (!this._password) {
-            if (this._passphraseInput.text.length < PassphraseInput.DEFAULT_MIN_LENGTH) {
-                this.onPassphraseTooShort();
-                return;
-            }
             this._password = this._passphraseInput.text;
             this._passphraseInput.reset();
             this.$el.classList.add('repeat');

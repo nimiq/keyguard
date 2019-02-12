@@ -5,14 +5,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy"
-          content="default-src 'self' 'unsafe-eval' https://cdn.nimiq-network.com;
+          content="default-src 'self' 'unsafe-eval' https://cdn.nimiq-testnet.com;
           img-src http: https: blob: data:;
           child-src 'self' blob:;
           style-src 'self' https://fonts.googleapis.com;
           font-src https://fonts.gstatic.com;">
     <title>Nimiq Keyguard</title>
 
-    <script defer src="https://cdn.nimiq-network.com/branches/master/web-offline.js"></script>
+    <script defer src="https://cdn.nimiq-testnet.com/v1.4.2/web-offline.js"></script>
 
     <script defer bundle-common src="../../lib/RpcServer.es.js"></script>
     <script defer bundle-common src="../../lib/KeyStore.js"></script>
@@ -35,6 +35,7 @@
     <script defer bundle-toplevel src="../../translations/index.js"></script>
 
     <script defer src="../../lib/Iqons.js"></script>
+    <script defer src="../../lib/PasswordStrength.js"></script>
     <script defer src="../../components/Identicon.js"></script>
     <script defer src="../../components/PassphraseSetterBox.js"></script>
     <script defer src="../../components/ProgressIndicator.js"></script>

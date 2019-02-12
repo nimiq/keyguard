@@ -11,7 +11,7 @@ funcs.find('src', '.js').forEach(file => {
 class2Path.set('TRANSLATIONS', 'src/translations/index.js');
 // Use this once key-derivation branch is merged:
 // class2Path.set('Nimiq', 'https://cdn.nimiq.com/web-offline.js');
-class2Path.set('Nimiq', 'https://cdn.nimiq-network.com/branches/master/web-offline.js');
+class2Path.set('Nimiq', 'https://cdn.nimiq-testnet.com/v1.4.2/web-offline.js');
 class2Path.set('Rpc', 'node_modules/@nimiq/rpc/dist/rpc.umd.js');
 class2Path.delete('index');
 
