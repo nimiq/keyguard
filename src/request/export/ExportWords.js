@@ -114,24 +114,20 @@ class ExportWords extends Nimiq.Observable {
     }
 
     /**
-     * used to set the key if already decrypted elsewhere. This will disable the passphrase requirement.
-     * Set to null to reenable passphrase requirement.
+     * Used to set the key if already decrypted elsewhere. This will disable the passphrase requirement.
+     * Set to null to re-enable passphrase requirement.
      * @param {Key | null} key
      */
     setKey(key) {
         this._key = key;
         let words = [''];
         if (this._key !== null) {
-            switch (this._key.type) {
-            case Nimiq.MnemonicUtils.MnemonicType.LEGACY:
-                words = Nimiq.MnemonicUtils.entropyToLegacyMnemonic(this._key.secret);
-                break;
-            case Nimiq.MnemonicUtils.MnemonicType.BIP39:
+            if (this._key.secret instanceof Nimiq.PrivateKey) {
+                words = Nimiq.MnemonicUtils.entropyToLegacyMnemonic(this._key.secret.serialize());
+            } else if (this._key.secret instanceof Nimiq.Entropy) {
                 words = Nimiq.MnemonicUtils.entropyToMnemonic(this._key.secret);
-                break;
-            default:
+            } else {
                 this._reject(new Errors.KeyguardError('Unknown mnemonic type'));
-                return;
             }
         }
         this._recoveryWords.setWords(words);

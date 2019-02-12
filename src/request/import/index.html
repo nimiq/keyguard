@@ -12,7 +12,7 @@
           font-src https://fonts.gstatic.com;">
     <title>Nimiq Keyguard</title>
 
-    <script defer src="https://cdn.nimiq-testnet.com/web-offline.js"></script>
+    <script defer src="https://cdn.nimiq-testnet.com/v1.4.2/web-offline.js"></script>
 
     <script defer bundle-common src="../../lib/RpcServer.es.js"></script>
     <script defer bundle-common src="../../lib/KeyStore.js"></script>
@@ -130,7 +130,7 @@
             <div class="page-body nq-card-body">
                 <p data-i18n="choose-key-type-text" class="nq-text">We couldn't determine the type of your key. Please select it below.</p>
                 <div class="key-type-option">
-                    <input type="radio" name="key-type" id="key-type-legacy" value="0">
+                    <input type="radio" name="key-type" id="key-type-legacy" value="1">
                     <label for="key-type-legacy" class="row">
                         <div class="identicon-legacy"></div>
                         <div class="key-type-info">
@@ -142,7 +142,7 @@
                 </div>
                 <div class="key-type-or nq-label" data-i18n="choose-key-type-or">or</div>
                 <div class="key-type-option">
-                    <input type="radio" name="key-type" id="key-type-bip39" value="1">
+                    <input type="radio" name="key-type" id="key-type-bip39" value="2">
                     <label for="key-type-bip39" class="row">
                         <div class="identicon-bip39"></div>
                         <div class="key-type-info">

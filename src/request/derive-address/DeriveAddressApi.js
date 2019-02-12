@@ -1,6 +1,6 @@
+/* global Nimiq */
 /* global TopLevelApi */
 /* global DeriveAddress */
-/* global Key */
 /* global Errors */
 
 class DeriveAddressApi extends TopLevelApi { // eslint-disable-line no-unused-vars
@@ -34,7 +34,7 @@ class DeriveAddressApi extends TopLevelApi { // eslint-disable-line no-unused-va
         const parsedRequest = {};
         parsedRequest.appName = this.parseAppName(request.appName);
         parsedRequest.keyInfo = await this.parseKeyId(request.keyId);
-        if (parsedRequest.keyInfo.type === Key.Type.LEGACY) {
+        if (parsedRequest.keyInfo.type === Nimiq.Secret.Type.PRIVATE_KEY) {
             throw new Errors.InvalidRequestError('Cannot derive addresses for single-account wallets');
         }
         parsedRequest.keyLabel = this.parseLabel(request.keyLabel);
