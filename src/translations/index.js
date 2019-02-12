@@ -117,9 +117,9 @@ const TRANSLATIONS = {
         'remove-key-recovery-words': 'Recovery Words',
         'remove-key-back': 'Back to logout',
 
-        'derive-address-heading-passphrase': 'Unlock your wallet',
-        'derive-address-passphrase-text': 'Please enter your passphrase to add another account to your wallet.',
-        'derive-address-heading-choose-identicon': 'Choose your account avatar',
+        'derive-address-heading-password': 'Unlock your account',
+        'derive-address-password-text': 'To add a new address, please unlock your account first.',
+        'derive-address-heading-choose-identicon': 'Choose a new address',
 
         'change-passphrase-heading': 'Change your passphrase',
         'change-paragraph': 'Before entering your new passphrase, you must first unlock your wallet.',
@@ -250,8 +250,8 @@ const TRANSLATIONS = {
         'remove-key-recovery-words': 'Wiederherstellungswörter',
         'remove-key-back': 'Zurück zum logout',
 
-        'derive-address-heading-passphrase': 'Entschlüssele dein Wallet',
-        'derive-address-passphrase-text': 'Bitte gib deine Passphrase ein um deiner Wallet einen weiteren Account '
+        'derive-address-heading-password': 'Entschlüssele deinen Account',
+        'derive-address-password-text': 'Bitte gib dein Password ein um deinem Account eine weitere Adresse '
                                         + 'hinzuzufügen.',
         'derive-address-heading-choose-identicon': 'Wähle deinen Konto-Avatar',
         'derive-address-text-select-avatar': 'Wähle einen Avatar für deinen neuen Account aus der Auswahl unten.',
