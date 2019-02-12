@@ -37,11 +37,13 @@
 
     <script defer src="../../lib/AutoComplete.js"></script>
     <script defer src="../../lib/QrScanner.js"></script>
+    <script defer src="../../components/DownloadKeyfile.js"></script>
     <script defer src="../../lib/LoginFile.js"></script>
     <script defer src="../../lib/PasswordStrength.js"></script>
     <script defer src="../../lib/QrEncoder.js"></script>
     <script defer src="../../lib/Iqons.js"></script>
     <script defer src="../../components/FileImport.js"></script>
+    <script defer src="../../components/FlippableHandler.js"></script>
     <script defer src="../../components/PassphraseSetterBox.js"></script>
     <script defer src="../../components/RecoveryWords.js"></script>
     <script defer src="../../components/RecoveryWordsInputField.js"></script>
@@ -61,6 +63,7 @@
     <link rel="stylesheet" bundle-toplevel href="../../components/PassphraseBox.css">
 
     <link rel="stylesheet" href="../../components/FileImport.css">
+    <link rel="stylesheet" href="../../components/FlippableHandler.css">
     <link rel="stylesheet" href="../../components/RecoveryWords.css">
     <link rel="stylesheet" href="./Import.css">
 </head>
@@ -74,6 +77,7 @@
     <div id="app">
 
         <div id="rotation-container">
+
             <!-- enter recovery words -->
             <form id="recovery-words" class="page nq-card dark">
                 <div class="page-header nq-card-header">
@@ -84,6 +88,7 @@
                 <div class="page-body nq-card-body">
                     <div class="recovery-words"></div>
                     <p class="nq-label">Press Tab to Jump to the next field</p>
+                    <p class="nq-label nq-red">This is not a valid account. Typo?</p>
                 </div>
             </form>
 
@@ -95,9 +100,10 @@
                 </div>
 
                 <div class="page-body nq-card-body">
-                        <p class="nq-light-blue nq-text">Using the Recovery Words imports your Account unencrypted. Create a password to secure it.</p>
+                        <p class="nq-light-blue nq-text">Using the Recovery Words creates a new LoginFile. Create a password to secure it.</p>
                         <div class="flex-grow"></div>
                         <div class="nq-icon walletfile-qr-code">
+                            <div class="lock"></div>
                             <div class="flex-grow"></div>
                             <div class="qr-code"></div>
                         </div>
@@ -109,27 +115,43 @@
                 </div>
             </div>
 
-            <div id="import-file" class="page nq-card">
+            <div id="download-file" class="page nq-card">
                 <div class="page-header nq-card-header">
                     <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
-                    <h1 class="nq-h1">Upload your Login File</h1>
+                    <h1 class="nq-h1">Download your Login File</h1>
                 </div>
 
                 <div class="page-body nq-card-body">
-                    <div class="file-import"></div>
+                    <div class="file"></div>
                 </div>
 
                 <div class="page-footer">
-                    <button data-i18n="import-file-button-words" class="nq-button-s hide-for-password-input" id="goto-words">
-                        Use Recovery Words
+                    <button data-i18n="downloadkeyfile-download" class="nq-button light-blue" id="download-login-file">
+                        Download LoginFile
                     </button>
-                    <a class="nq-text-s nq-blue hide-for-password-input" id="goto-create" href="#">
-                        Create new Wallet<i class="nq-icon chevron-right"></i>
-                    </a>
-                    <form class="passphrase-box hide-if-key-active"></form>
                 </div>
             </div>
 
+            <div id="import-file" class="page nq-card">
+                    <div class="page-header nq-card-header">
+                        <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
+                        <h1 class="nq-h1">Upload your Login File</h1>
+                    </div>
+
+                    <div class="page-body nq-card-body">
+                        <div class="file-import"></div>
+                    </div>
+
+                    <div class="page-footer">
+                        <button data-i18n="import-file-button-words" class="nq-button-s hide-for-password-input" id="goto-words">
+                            Use Recovery Words
+                        </button>
+                        <a class="nq-text-s nq-blue hide-for-password-input" id="goto-create" href="#">
+                            Create new Wallet<i class="nq-icon chevron-right"></i>
+                        </a>
+                        <form class="passphrase-box hide-if-key-active"></form>
+                    </div>
+                </div>
             <!-- Default and loading screen -->
             <div id="loading" class="page">
                 <div class="loading-animation"></div>

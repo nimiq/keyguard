@@ -91,7 +91,7 @@ const TRANSLATIONS = {
         'downloadkeyfile-heading-protected': 'Your Key File is protected!',
         'downloadkeyfile-heading-unprotected': 'Your Key File is not protected!',
         'downloadkeyfile-safe-place': 'Store it in a safe place. If you lose it, it cannot be recovered!',
-        'downloadkeyfile-download': 'Download Key File',
+        'downloadkeyfile-download': 'Download LoginFile',
         'downloadkeyfile-download-anyway': 'Download anyway',
 
         'validate-words-text': 'Please select the correct word from your list of recovery words.',

@@ -30,7 +30,7 @@ class DownloadKeyfile extends Nimiq.Observable {
 
             <p data-i18n="downloadkeyfile-safe-place" class="nq-text">Store it in a safe place. If you lose it, it cannot be recovered!</p>
 
-            <button class="download protected nq-button inverse" data-i18n="downloadkeyfile-download">Download Key File</button>
+            <button class="download protected nq-button inverse" data-i18n="downloadkeyfile-download">Download LoginFile</button>
             <button class="download unprotected nq-button inverse" data-i18n="downloadkeyfile-download-anyway">Download anyway</button>
         `;
         /* eslint-enable max-len */

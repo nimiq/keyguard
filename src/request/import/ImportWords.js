@@ -1,4 +1,7 @@
 /* global Constants */
+/* global DownloadKeyfile */
+/* global FlippableHandler */
+/* global ImportApi */
 /* global KeyStore */
 /* global Nimiq */
 /* global PassphraseSetterBox */
@@ -8,34 +11,45 @@
 /* global RecoveryWords */
 /* global Errors */
 
-class ImportWords {
+class ImportWords extends FlippableHandler {
     /**
      * @param {KeyguardRequest.ImportRequest} request
      * @param {Function} resolve
      * @param {Function} reject
      */
     constructor(request, resolve, reject) {
+        super();
+        this._request = request;
         this._resolve = resolve;
         this._reject = reject;
-        this._defaultKeyPath = request.defaultKeyPath;
 
         /** @type {{entropy: Nimiq.Entropy?, privateKey: Nimiq.PrivateKey?}} */
         this._secret = { entropy: null, privateKey: null };
 
         // Pages
         /** @type {HTMLFormElement} */
-        const $words = (document.getElementById(ImportWords.Pages.ENTER_WORDS));
+        this.$words = (document.getElementById(ImportWords.Pages.ENTER_WORDS));
         /** @type {HTMLFormElement} */
         const $setPassword = (document.getElementById(ImportWords.Pages.SET_PASSWORD));
-
         /** @type {HTMLFormElement} */
-        const $recoveryWords = ($words.querySelector('.recovery-words'));
+        const $downloadFile = (document.getElementById(ImportWords.Pages.DOWNLOAD_LOGINFILE));
+
+        // Elements
+        /** @type {HTMLFormElement} */
+        this.$recoveryWords = (this.$words.querySelector('.recovery-words'));
         /** @type {HTMLFormElement} */
         const $passwordSetter = ($setPassword.querySelector('.passphrase-setter-box'));
+        /** @type {HTMLDivElement} */
+        this.$walletFileIcon = ($setPassword.querySelector('.walletfile-qr-code'));
+        /** @type {HTMLButtonElement} */
+        this.$downloadFileButton = ($downloadFile.querySelector('#download-login-file'));
+        /** @type {HTMLDivElement} */
+        const $file = ($downloadFile.querySelector('.file'));
 
         // Components
-        this._recoveryWords = new RecoveryWords($recoveryWords, true);
+        this._recoveryWords = new RecoveryWords(this.$recoveryWords, true);
         this._passwordSetter = new PassphraseSetterBox($passwordSetter);
+        const downloadKeyFile = new DownloadKeyfile($file);
 
         // Events
         this._recoveryWords.on(RecoveryWords.Events.COMPLETE, (mnemonic, mnemonicType) => {
@@ -44,42 +58,34 @@ class ImportWords {
             }
         });
         this._recoveryWords.on(RecoveryWords.Events.INCOMPLETE, () => console.log('incomplete')); // todo
-        this._recoveryWords.on(RecoveryWords.Events.INVALID, () => console.log('invalid')); // todo
-        $words.addEventListener('submit', event => {
+        this._recoveryWords.on(RecoveryWords.Events.INVALID, this._onRecoveryWordsIncomplete.bind(this));
+        this.$words.addEventListener('submit', event => {
             event.preventDefault();
             if (this._recoveryWords.mnemonic) {
                 this._onRecoveryWordsComplete(this._recoveryWords.mnemonic, this._recoveryWords.mnemonicType);
             }
         });
+        this.$words.querySelectorAll('input').forEach(
+            el => el.addEventListener('focus', this._onRecoveryWordsFocused.bind(this)),
+        );
 
         this._passwordSetter.on(PassphraseSetterBox.Events.ENTERED, () => {
-            // update visual
+            this.$walletFileIcon.classList.add('nq-orange-bg', 'lock-closed');
         });
         this._passwordSetter.on(PassphraseSetterBox.Events.SUBMIT, async password => {
             const keys = await this._storeKeys(password);
-            console.log(keys);
+            // downloadKeyFile.setSecret(  , true); // TODO set encoded secret here.
+            downloadKeyFile.on(DownloadKeyfile.Events.DOWNLOADED, () => {
+                this._resolve(keys);
+            });
+            window.location.hash = ImportWords.Pages.DOWNLOAD_LOGINFILE;
         });
         this._passwordSetter.on(PassphraseSetterBox.Events.NOT_EQUAL, () => {
-            // update visual
+            this.$walletFileIcon.classList.remove('nq-orange-bg', 'lock-closed');
         });
         this._passwordSetter.on(PassphraseSetterBox.Events.SKIP, async () => {
             const keys = await this._storeKeys();
-            console.log(keys);
-        });
-
-        window.addEventListener('hashchange', event => {
-            const newHash = new URL(event.newURL).hash;
-            const oldHash = new URL(event.oldURL).hash;
-            if (oldHash && newHash) {
-                const oldPageElement = document.querySelector(oldHash);
-                const newPageElement = document.querySelector(newHash);
-                if (newPageElement && oldPageElement
-                    && newPageElement.classList.contains('dark') !== oldPageElement.classList.contains('dark')) {
-                    /** @type {HTMLElement} */
-                    const $rotationContainer = (document.getElementById('rotation-container'));
-                    $rotationContainer.classList.toggle('flipped');
-                }
-            }
+            this._resolve(keys);
         });
 
         // TODO remove test words
@@ -114,7 +120,8 @@ class ImportWords {
 
     /**
      *
-     * @param {string?} [password='']
+     * @param {string} [password = '']
+     * @returns {Promise<{keyId: string, keyType: string, addresses: {keyPath: string, address: Uint8Array}[]}[]>}
      */
     async _storeKeys(password = '') {
         TopLevelApi.setLoading(true);
@@ -123,23 +130,45 @@ class ImportWords {
             encryptionKey = Utf8Tools.stringToUtf8ByteArray(password);
         }
         try {
-            /** @type {{entropy: Key?, privateKey: Key?}} */
-            const keys = { entropy: null, privateKey: null };
+            /** @type {{keyId: string, keyType: string, addresses: {keyPath: string, address: Uint8Array}[]}[]} */
+            const keys = [];
             if (this._secret.entropy) {
                 const key = new Key(this._secret.entropy.serialize(), Key.Type.BIP39, false);
                 await KeyStore.instance.put(key, encryptionKey || undefined);
-                keys.entropy = key;
+                /** @type {{keyPath: string, address: Uint8Array}[]} */
+                const addresses = [];
+                this._request.requestedKeyPaths.forEach(keyPath => {
+                    addresses.push({
+                        keyPath,
+                        address: key.deriveAddress(keyPath).serialize(),
+                    });
+                });
+                keys.push({
+                    keyId: key.id,
+                    keyType: Key.Type.BIP39,
+                    addresses,
+                });
             }
             if (this._secret.privateKey) {
                 const key = new Key(this._secret.privateKey.serialize(), Key.Type.LEGACY, false);
                 await KeyStore.instance.put(key, encryptionKey || undefined);
-                keys.privateKey = key;
+                keys.push({
+                    keyId: key.id,
+                    keyType: Key.Type.LEGACY,
+                    addresses: [{
+                        keyPath: Constants.LEGACY_DERIVATION_PATH,
+                        address: key.deriveAddress('').serialize(),
+                    }],
+                });
+                const secretString = Nimiq.BufferUtils.toBase64(key.secret);
+                sessionStorage.setItem(ImportApi.SESSION_STORAGE_KEY_PREFIX + key.id, secretString);
             }
             return keys;
         } catch (e) {
             console.log(e);
+            return [];
+        } finally {
             TopLevelApi.setLoading(false);
-            return null;
         }
     }
 
@@ -170,14 +199,24 @@ class ImportWords {
             this._reject(new Errors.KeyguardError('Invalid mnemonic type'));
         }
         this._passwordSetter.reset();
+        this.$walletFileIcon.classList.remove('nq-orange-bg', 'lock-closed');
         window.location.hash = ImportWords.Pages.SET_PASSWORD;
         if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
             this._passwordSetter.focus();
         }
+    }
+
+    _onRecoveryWordsIncomplete() {
+        this.$words.classList.add('invalid-words');
+    }
+
+    _onRecoveryWordsFocused() {
+        this.$words.classList.remove('invalid-words');
     }
 }
 
 ImportWords.Pages = {
     ENTER_WORDS: 'recovery-words',
     SET_PASSWORD: 'set-password',
+    DOWNLOAD_LOGINFILE: 'download-file',
 };

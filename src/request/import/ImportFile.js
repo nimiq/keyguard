@@ -20,11 +20,8 @@ class ImportFile {
         this._resolve = resolve;
         this._reject = reject;
         this._request = request;
-        this._defaultKeyPath = request.defaultKeyPath;
 
         this._encryptedKey = new Nimiq.SerialBuffer(0);
-        this._keyType = Key.Type.BIP39;
-        this._hasPin = false;
 
         this.importWordsHandler = new ImportWords(request, resolve, reject);
 
@@ -62,6 +59,7 @@ class ImportFile {
     }
 
     _onFileImported() {
+        // this._encryptedKey = ??? // TODO
         this.passphraseBox.reset();
         this.$importFilePage.classList.add('enter-password');
         if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
@@ -83,10 +81,9 @@ class ImportFile {
         const addresses = [];
 
         if (key.type === Key.Type.LEGACY) {
-            const address = key.deriveAddress('');
             addresses.push({
-                keyPath: 'm/0\'',
-                address: address.serialize(),
+                keyPath: Constants.LEGACY_DERIVATION_PATH,
+                address: key.deriveAddress('').serialize(),
             });
         } else if (key.type === Key.Type.BIP39) {
             /** @type {KeyguardRequest.ImportRequest} */
@@ -105,16 +102,12 @@ class ImportFile {
             return;
         }
 
-        /** @type {KeyguardRequest.ImportResult} */
-        const result = {
-            keys: [
-                {
-                    keyId: key.id,
-                    keyType: key.type,
-                    addresses,
-                },
-            ],
-        };
+        /** @type {KeyguardRequest.KeyResult[]} */
+        const result = [{
+            keyId: key.id,
+            keyType: key.type,
+            addresses,
+        }];
 
         this._resolve(result);
     }
@@ -152,39 +145,23 @@ class ImportFile {
                 secret = this._encryptedKey;
             }
 
-            const key = new Key(secret, this._keyType, this._hasPin);
+            const key = new Key(secret, Key.Type.BIP39, false);
 
             await KeyStore.instance.put(key, encryptionKey || undefined);
 
             return key;
-        } catch (e) {
-            console.error(e);
+        } catch (event) {
+            console.error(event);
             TopLevelApi.setLoading(false);
             return null;
         }
     }
 
-    // /**
-    //  * @param { Nimiq.SerialBuffer } entropy
-    //  * @param { Key.Type } keyType
-    //  */
-    // _onRecoveryWordsComplete(entropy, keyType) {
-    //     this._hasPin = false;
-    //     this._keyType = keyType;
-    //     this._encryptedKey = entropy;
-
-    //     this._passphraseSetterBox.reset();
-    //     window.location.hash = ImportApi.Pages.SET_PASSPHRASE;
-    //     if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
-    //         this._passphraseSetterBox.focus();
-    //     }
-    // }
-
     /**
-     * @param {Event} e
+     * @param {Event} event
      */
-    _goToCreate(e) {
-        e.preventDefault();
+    _goToCreate(event) {
+        event.preventDefault();
         this._reject(new Errors.GoToCreate());
     }
 }
