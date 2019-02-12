@@ -138,7 +138,7 @@ class SignTransaction {
                 this._passphraseBox.onPassphraseIncorrect();
                 return;
             }
-            reject(new Errors.CoreError(e.message));
+            reject(new Errors.CoreError(e.message, e));
             return;
         }
         if (!key) {

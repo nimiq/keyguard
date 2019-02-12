@@ -5,7 +5,7 @@ const ErrorConstants = {
         INVALID_REQUEST: 'InvalidRequest',
         // used for errors thrown from core methods
         CORE: 'Core',
-        // used for internal keyguard Errors.
+        // used for other internal keyguard Errors.
         KEYGUARD: 'Keyguard',
         // used for the remaining Errors which are not assigned an own type just yet.
         UNCLASSIFIED: 'Unclassified',

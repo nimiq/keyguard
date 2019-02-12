@@ -2,27 +2,65 @@
 
 class Errors { }
 
-Errors.InvalidRequestError = class extends Error {
-    /** @param { string } message */
-    constructor(message = '') {
-        super(message);
-        this.name = ErrorConstants.Types.INVALID_REQUEST;
+Errors.BaseError = class extends Error {
+    /**
+     *  @param {string} type
+     *  @param {string} message
+     *  @param {Error?} innerError
+     * */
+    constructor(type, message = '', innerError = null) {
+        if (innerError) {
+            super(innerError.message);
+            if (innerError.name !== 'Error') {
+                this.name = innerError.name;
+            }
+            if (innerError.stack) {
+                this.stack = innerError.stack;
+            }
+        } else {
+            super(message);
+            this.name = type;
+        }
     }
 };
 
-Errors.CoreError = class extends Error {
-    /** @param {string} message */
-    constructor(message = '') {
-        super(message);
-        this.name = ErrorConstants.Types.CORE;
+Errors.InvalidRequestError = class extends Errors.BaseError {
+    /**
+     *  @param {string} message
+     *  @param {Error?} innerError
+     * */
+    constructor(message = '', innerError = null) {
+        super(ErrorConstants.Types.INVALID_REQUEST, message, innerError);
     }
 };
 
-Errors.KeyguardError = class extends Error {
-    /** @param {string} message */
-    constructor(message = '') {
-        super(message);
-        this.name = ErrorConstants.Types.KEYGUARD;
+Errors.CoreError = class extends Errors.BaseError {
+    /**
+     *  @param {string} message
+     *  @param {Error?} innerError
+     * */
+    constructor(message = '', innerError = null) {
+        super(ErrorConstants.Types.CORE, message, innerError);
+    }
+};
+
+Errors.KeyguardError = class extends Errors.BaseError {
+    /**
+     *  @param {string} message
+     *  @param {Error?} innerError
+     * */
+    constructor(message = '', innerError = null) {
+        super(ErrorConstants.Types.KEYGUARD, message, innerError);
+    }
+};
+
+Errors.UnclassifiedError = class extends Errors.BaseError {
+    /**
+     *  @param {string} message
+     *  @param {Error?} innerError
+     * */
+    constructor(message = '', innerError = null) {
+        super(ErrorConstants.Types.UNCLASSIFIED, message, innerError);
     }
 };
 
