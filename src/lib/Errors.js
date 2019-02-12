@@ -6,12 +6,14 @@ Errors.BaseError = class extends Error {
     /**
      *  @param {string} type
      *  @param {string|Error?} messageOrError
-     * */
+     */
     constructor(type, messageOrError = null) {
         if (messageOrError instanceof Error) {
             const error = messageOrError;
             super(error.message);
-            if (error.name !== 'Error') {
+            if (error.name === 'Error') {
+                this.name = type;
+            } else {
                 this.name = error.name;
             }
             if (error.stack) {
@@ -27,8 +29,8 @@ Errors.BaseError = class extends Error {
 
 Errors.InvalidRequestError = class extends Errors.BaseError {
     /**
-     *  @param {string} message
-     * */
+     *  @param {string} [message]
+     */
     constructor(message = '') {
         super(ErrorConstants.Types.INVALID_REQUEST, message);
     }
@@ -36,27 +38,27 @@ Errors.InvalidRequestError = class extends Errors.BaseError {
 
 Errors.CoreError = class extends Errors.BaseError {
     /**
-     *  @param {string|Error?} messageOrError
-     * */
-    constructor(messageOrError = null) {
+     *  @param {string|Error} [messageOrError]
+     */
+    constructor(messageOrError) {
         super(ErrorConstants.Types.CORE, messageOrError);
     }
 };
 
 Errors.KeyguardError = class extends Errors.BaseError {
     /**
-     *  @param {string|Error?} messageOrError
-     * */
-    constructor(messageOrError = null) {
+     *  @param {string|Error} [messageOrError]
+     */
+    constructor(messageOrError) {
         super(ErrorConstants.Types.KEYGUARD, messageOrError);
     }
 };
 
 Errors.UnclassifiedError = class extends Errors.BaseError {
     /**
-     *  @param {string|Error?} messageOrError
+     *  @param {string|Error} [messageOrError]
      * */
-    constructor(messageOrError = null) {
+    constructor(messageOrError) {
         super(ErrorConstants.Types.UNCLASSIFIED, messageOrError);
     }
 };
