@@ -1,7 +1,6 @@
 /* global Nimiq */
 /* global RpcServer */
 /* global Errors */
-/* global ErrorConstants */
 /* global Constants */
 
 /** @type {Promise<void>?} */
@@ -32,7 +31,7 @@ async function loadNimiq() {
             Nimiq.GenesisConfig.main();
             break;
         default:
-            throw new Errors.KeyguardError(ErrorConstants.Messages.INVALID_NETWORK_CONFIG);
+            throw new Errors.InvalidNetworkConfig();
         }
 
         resolve();
