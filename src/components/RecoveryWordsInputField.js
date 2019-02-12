@@ -113,12 +113,18 @@ class RecoveryWordsInputField extends Nimiq.Observable {
      * @param {KeyboardEvent} e
      */
     _onKeydown(e) {
-        if (e.keyCode === 32 /* space */) {
+        if (e.keyCode === 32 /* space */
+            || e.keyCode === 9 /* tab */) {
             e.preventDefault();
         }
 
-        if (e.keyCode === 32 /* space */ || e.keyCode === 13 /* enter */) {
-            this._checkValidity(true);
+        if (e.keyCode === 32 // space
+            || e.keyCode === 13 // enter
+            || (e.keyCode === 9 && !e.shiftKey)) { // tab
+            this._checkValidity(1);
+        }
+        if (e.keyCode === 9 && e.shiftKey) { // shift-tab
+            this._checkValidity(-1);
         }
     }
 
@@ -142,16 +148,15 @@ class RecoveryWordsInputField extends Nimiq.Observable {
 
     /**
      *
-     * @param {boolean} [setFocusToNextInput]
+     * @param {number} [setFocusToNextInputOffset = 0]
      */
-    _checkValidity(setFocusToNextInput = false) {
+    _checkValidity(setFocusToNextInputOffset = 0) {
         if (Nimiq.MnemonicUtils.DEFAULT_WORDLIST.indexOf(this.value.toLowerCase()) >= 0) {
             this.complete = true;
             this.dom.element.classList.add('complete');
             this.fire(RecoveryWordsInputField.Events.VALID, this);
-
-            if (setFocusToNextInput) {
-                this._focusNext();
+            if (setFocusToNextInputOffset) {
+                this._focusNext(setFocusToNextInputOffset);
             }
         } else {
             this._onInvalid();
@@ -170,8 +175,12 @@ class RecoveryWordsInputField extends Nimiq.Observable {
         this._focusNext();
     }
 
-    _focusNext() {
-        this.fire(RecoveryWordsInputField.Events.FOCUS_NEXT, this._index + 1);
+    /**
+     *
+     * @param {number} [offset = 1]
+     */
+    _focusNext(offset = 1) {
+        this.fire(RecoveryWordsInputField.Events.FOCUS_NEXT, this._index + offset);
     }
 
     _onInvalid() {

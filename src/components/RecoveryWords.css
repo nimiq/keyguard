@@ -10,7 +10,8 @@
     position: relative;
 }
 
-.recovery-words-input.shake, .recovery-words .shake {
+.recovery-words input[type="text"].shake ,
+.recovery-words .shake {
     border-color: var(--nimiq-red);
 }
 

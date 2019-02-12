@@ -106,7 +106,7 @@ class RecoveryWords extends Nimiq.Observable {
         }
     }
 
-    _checkPhraseComplete() {
+    async _checkPhraseComplete() {
         // Check if all fields are complete
         if (this.$fields.some(field => !field.complete)) {
             this._onFieldIncomplete();
@@ -124,10 +124,13 @@ class RecoveryWords extends Nimiq.Observable {
             } else {
                 // wrong words
                 if (this._mnemonic) {
+                    console.log('mnemonic');
                     this._mnemonic = null;
-                    this.fire(RecoveryWords.Events.INVALID);
                 }
-                this._animateError();
+                // the animation is long enough to make the invalid event fire after
+                // the focus event, which then in turn deactivates the notification again
+                await this._animateError();
+                this.fire(RecoveryWords.Events.INVALID);
             }
         }
     }
@@ -137,6 +140,7 @@ class RecoveryWords extends Nimiq.Observable {
      * @param {?string} paste
      */
     _setFocusToNextInput(index, paste) {
+        index = Math.max(index, 0);
         if (index < this.$fields.length) {
             this.$fields[index].focus();
             if (paste) {
