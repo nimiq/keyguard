@@ -30,7 +30,7 @@ class RemoveKey {
         /** @type {HTMLDivElement} */
         const $labelConfirm = ($removeKey.querySelector('#remove-key-label-confirm'));
         /** @type {HTMLSpanElement} */
-        const $labelSpan = ($labelConfirm.querySelector('span'));
+        const $labelSpan = ($labelConfirm.querySelector('#label'));
         /** @type {HTMLInputElement} */
         this.$labelInput = ($labelConfirm.querySelector('input'));
         /** @type {HTMLButtonElement} */

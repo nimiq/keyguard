@@ -111,6 +111,8 @@ const TRANSLATIONS = {
         'remove-key-recovery-words-question': 'Do you know where your Recovery Words are?',
         'remove-key-show-recovery-words': 'Create a backup',
         'remove-key-first-confirm': 'I am able to log in again',
+        'remove-key-enter-label-1': 'Type',
+        'remove-key-enter-label-2': 'to log out.',
         'remove-key-final-confirm': 'Log out',
         'remove-key-recovery-words': 'Recovery Words',
         'remove-key-back': 'Back to logout',
@@ -242,7 +244,8 @@ const TRANSLATIONS = {
         'remove-key-download-login-file': 'LoginDatei herunterladen',
         'remove-key-recovery-words-question': 'Weißt du, wo sich deine Wiederherstellungswörter befinden?',
         'remove-key-show-recovery-words': 'Sicherung anlegen',
-        'remove-key-first-confirm': 'Ich kann mich wieder einloggen',
+        'remove-key-enter-label-1': 'Gib',
+        'remove-key-enter-label-2': 'ein, um dich auszuloggen.',
         'remove-key-final-confirm': 'Ausloggen',
         'remove-key-recovery-words': 'Wiederherstellungswörter',
         'remove-key-back': 'Zurück zum logout',
@@ -254,8 +257,8 @@ const TRANSLATIONS = {
         'derive-address-text-select-avatar': 'Wähle einen Avatar für deinen neuen Account aus der Auswahl unten.',
 
         'change-passphrase-heading': 'Ändere dein Passwort',
-        'change-paragraph': 'Um dein Passwort zu ändern musst du vorher dein Wallet entschlüsseln.',
-        'change-set-paragraph': 'Gib jetzt dein neues Passwort ein und wiederhole es danach um es zu bestätigen.',
+        'change-paragraph': 'Um dein Passwort zu ändern, musst du vorher deinen Account entschlüsseln.',
+        'change-set-paragraph': 'Gib jetzt dein neues Passwort ein und wiederhole es danach, um es zu bestätigen.',
     },
 };
 
