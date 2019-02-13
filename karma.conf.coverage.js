@@ -14,7 +14,7 @@ module.exports = function (/** @type {any} */ config) {
 
         // list of files / patterns to load in the browser
         files: [
-            'https://cdn.nimiq.com/web.js',
+            'https://cdn.nimiq-testnet.com/v1.4.2/web-offline.js',
             'instrumented/**/*js',
             'tests/**/*.spec.js'
         ],

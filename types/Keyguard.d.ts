@@ -11,10 +11,7 @@ interface Window {
     rpcServer: Rpc.RpcServer
     KeyStore: any
     TRANSLATIONS: dict
-}
-
-declare namespace Key {
-    type Type = 0 | 1
+    NIMIQ_IQONS_SVG_PATH?: string
 }
 
 type AccountType = string
@@ -38,8 +35,7 @@ type AccountRecord = AccountInfo & {
 
 type KeyRecord = {
     id: string
-    type: Key.Type
-    encrypted: boolean
+    type: Nimiq.Secret.Type
     hasPin: boolean
     secret: Uint8Array
 }

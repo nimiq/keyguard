@@ -207,7 +207,7 @@
 #app {
     display: flex;
     flex-direction: column;
-    justify-content: start;
+    justify-content: center;
     align-items: center;
     min-height: calc(100vh - 11.625rem); /* window hight - header height */
     padding: 0 1rem;
