@@ -29,10 +29,10 @@ Errors.BaseError = class extends Error {
 
 Errors.InvalidRequestError = class extends Errors.BaseError {
     /**
-     *  @param {string} [message]
+     *  @param {string|Error} [messageOrError]
      */
-    constructor(message = '') {
-        super(ErrorConstants.Types.INVALID_REQUEST, message);
+    constructor(messageOrError)  {
+        super(ErrorConstants.Types.INVALID_REQUEST, messageOrError);
     }
 };
 
