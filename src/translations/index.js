@@ -104,7 +104,7 @@ const TRANSLATIONS = {
 
         'remove-key-heading': 'Don\'t lose access',
         'remove-key-intro-text': 'If you log out without saving your account, you will irretrievably '
-                                + 'lose access to it!',
+                               + 'lose access to it!',
         'remove-key-login-file': 'LoginFile',
         'remove-key-login-file-question': 'Is your LoginFile savely stored and accessible?',
         'remove-key-download-login-file': 'Download LoginFile',
@@ -238,7 +238,7 @@ const TRANSLATIONS = {
 
         'remove-key-heading': 'Verliere deinen Zugang nicht',
         'remove-key-intro-text': 'Falls du dich ausloggst, ohne dein Konto zu sichern, wirst du unwiderruflich'
-                                + 'den Zugriff darauf verlieren. ',
+                               + 'den Zugriff darauf verlieren. ',
         'remove-key-login-file': 'LoginDatei',
         'remove-key-login-file-question': 'Ist deine LoginDatei sicher gespeichert und zugänglich?',
         'remove-key-download-login-file': 'LoginDatei herunterladen',
