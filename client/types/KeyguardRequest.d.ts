@@ -86,7 +86,7 @@ declare namespace KeyguardRequest {
     type KeyResult = {
         keyId: string;
         keyType: Key.Type;
-        addresses: { keyPath: string, address: Uint8Array }[],
+        addresses: { keyPath: string, address: Uint8Array }[];
     }
 
     type DeriveAddressRequest = SimpleRequest & {

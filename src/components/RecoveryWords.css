@@ -36,7 +36,7 @@
     font-size: 1.875rem;
     padding: 0;
     border-radius: .5rem;
-    border:1px solid rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.2);
 }
 
 .recovery-words input[type="text"]:focus {

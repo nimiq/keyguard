@@ -1,10 +1,10 @@
 class LoginFileIcon { // eslint-disable-line no-unused-vars
     /**
      *
-     * @param {HTMLDivElement?} [$el = undefined]
+     * @param {HTMLDivElement?} [$el]
      */
-    constructor($el = undefined) {
-        this._colorClass = '';
+    constructor($el) {
+        this.colorClass = '';
         this.fileUnavailable = false;
 
         $el = $el || document.createElement('div');
@@ -25,8 +25,8 @@ class LoginFileIcon { // eslint-disable-line no-unused-vars
 
     lock(colorClassName = '') {
         if (!this.fileUnavailable && colorClassName) {
-            this._colorClass = colorClassName;
-            this.$el.classList.add(this._colorClass);
+            this.colorClass = colorClassName;
+            this.$el.classList.add(this.colorClass);
         }
         this.$el.classList.add('locked');
     }
@@ -37,10 +37,14 @@ class LoginFileIcon { // eslint-disable-line no-unused-vars
     }
 
     unlock() {
-        if (this._colorClass) {
-            this.$el.classList.remove(this._colorClass);
+        if (this.colorClass) {
+            this.$el.classList.remove(this.colorClass);
             this._colorClass = '';
         }
         this.$el.classList.remove('locked');
+    }
+
+    getElement() {
+        return this.$el;
     }
 }

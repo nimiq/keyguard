@@ -1,19 +1,8 @@
 /* global TopLevelApi */
 /* global ImportFile */
-/* global Nimiq */
 /* global Errors */
 
 class ImportApi extends TopLevelApi {
-    constructor() {
-        super();
-
-        this._encryptedKey = new Nimiq.SerialBuffer(0);
-
-        /** @type {Nimiq.Secret.Type} */
-        this._keyType = Nimiq.Secret.Type.ENTROPY;
-        this._hasPin = false;
-    }
-
     /**
      * @param {KeyguardRequest.ImportRequest} request
      */

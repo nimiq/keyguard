@@ -53,11 +53,16 @@ class ImportFile {
     }
 
     run() {
+        Nimiq.CryptoWorker.getInstanceAsync();
         window.location.hash = ImportFile.Pages.IMPORT_FILE;
     }
 
-    _onFileImported() {
-        // this._encryptedKey = ??? // TODO LoginFile
+    /**
+     * @param {string} decoded
+     */
+    _onFileImported(decoded) {
+        console.log(decoded);
+        // this._encryptedKey = decoded; // TODO LoginFile
         this.passphraseBox.reset();
         this.$importFilePage.classList.add('enter-password');
         if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {

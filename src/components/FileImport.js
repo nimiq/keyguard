@@ -32,6 +32,7 @@ class FileImport extends Nimiq.Observable {
 
         $el.innerHTML = `
             <h3 class="nq-h3 nq-light-blue">Drag here or click to upload</h3>
+            <div class="flex-grow"></div>
             <div class="qr-code"></div>
             <span class="error-message"></span>
             <input type="file" accept="image/*">

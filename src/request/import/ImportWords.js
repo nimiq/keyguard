@@ -32,7 +32,7 @@ class ImportWords extends FlippableHandler {
 
         // Pages
         /** @type {HTMLFormElement} */
-        this.$words = (document.getElementById(ImportWords.Pages.ENTER_WORDS));
+        const $words = (document.getElementById(ImportWords.Pages.ENTER_WORDS));
         /** @type {HTMLFormElement} */
         this.$setPassword = (document.getElementById(ImportWords.Pages.SET_PASSWORD));
         /** @type {HTMLFormElement} */
@@ -40,20 +40,20 @@ class ImportWords extends FlippableHandler {
 
         // Elements
         /** @type {HTMLFormElement} */
-        this.$recoveryWords = (this.$words.querySelector('.recovery-words'));
+        const $recoveryWords = ($words.querySelector('.recovery-words'));
         /** @type {HTMLFormElement} */
         const $passwordSetter = (this.$setPassword.querySelector('.passphrase-setter-box'));
         /** @type {HTMLDivElement} */
-        this.$loginFileIcon = (this.$setPassword.querySelector('.login-file-icon'));
+        const $loginFileIcon = (this.$setPassword.querySelector('.login-file-icon'));
         /** @type {HTMLButtonElement} */
-        this.$downloadFileButton = ($downloadFile.querySelector('#download-login-file'));
+        const $downloadFileButton = ($downloadFile.querySelector('.download-login-file'));
         /** @type {HTMLDivElement} */
         const $file = ($downloadFile.querySelector('.file'));
 
         // Components
-        this._recoveryWords = new RecoveryWords(this.$recoveryWords, true);
+        this._recoveryWords = new RecoveryWords($recoveryWords, true);
         this._passwordSetter = new PassphraseSetterBox($passwordSetter);
-        this._loginFileIcon = new LoginFileIcon(this.$loginFileIcon);
+        this._loginFileIcon = new LoginFileIcon($loginFileIcon);
         const downloadKeyFile = new DownloadKeyfile($file); // TODO LoginFile
 
         // Events
@@ -66,16 +66,16 @@ class ImportWords extends FlippableHandler {
             this._secret = { entropy: null, privateKey: null };
             this._keys = [];
         });
-        this._recoveryWords.on(RecoveryWords.Events.INVALID, this._onRecoveryWordsInvalid.bind(this));
-        this.$words.addEventListener('submit', event => {
+        this._recoveryWords.on(RecoveryWords.Events.INVALID, () => $words.classList.add('invalid-words'));
+        $words.querySelectorAll('input').forEach(
+            el => el.addEventListener('focus', () => $words.classList.remove('invalid-words')),
+        );
+        $words.addEventListener('submit', event => {
             event.preventDefault();
             if (this._recoveryWords.mnemonic) {
                 this._onRecoveryWordsComplete(this._recoveryWords.mnemonic, this._recoveryWords.mnemonicType);
             }
         });
-        this.$words.querySelectorAll('input').forEach(
-            el => el.addEventListener('focus', this._onRecoveryWordsFocused.bind(this)),
-        );
 
         this._passwordSetter.on(PassphraseSetterBox.Events.ENTERED, () => {
             const color = Iqons.getBackgroundColorIndex(
@@ -87,10 +87,14 @@ class ImportWords extends FlippableHandler {
             this._loginFileIcon.lock(`nq-${colorString}-bg`);
         });
         this._passwordSetter.on(PassphraseSetterBox.Events.SUBMIT, async password => {
-            const keys = await this._storeKeys(password);
-            // downloadKeyFile.setSecret(  , true); // TODO set encoded secret here.
+            await this._storeKeys(password);
+            if (!this._fileAvailable) {
+                this._resolve(this._keys);
+                return;
+            }
+            // TODO LoginFile set encoded secret here.
             downloadKeyFile.on(DownloadKeyfile.Events.DOWNLOADED, () => {
-                this._resolve(keys);
+                this._resolve(this._keys);
             });
             window.location.hash = ImportWords.Pages.DOWNLOAD_LOGINFILE;
         });
@@ -98,6 +102,10 @@ class ImportWords extends FlippableHandler {
         this._passwordSetter.on(PassphraseSetterBox.Events.SKIP, async () => {
             await this._storeKeys();
             this._resolve(this._keys);
+        });
+
+        $downloadFileButton.addEventListener('click', () => {
+            // TODO LoginFile
         });
 
         // TODO remove test words
@@ -130,7 +138,6 @@ class ImportWords extends FlippableHandler {
     }
 
     /**
-     *
      * @param {string} [password = '']
      * @returns {Promise<void>}
      */
@@ -150,17 +157,18 @@ class ImportWords extends FlippableHandler {
             if (this._secret.privateKey) {
                 const key = new Key(this._secret.privateKey, false);
                 await KeyStore.instance.put(key, encryptionKey || undefined);
+            } else {
+                TopLevelApi.setLoading(false);
             }
-        } catch (e) {
+        } catch (e) { // Keystore.instance.put throws Errors.KeyguardError
             console.log(e);
-        } finally {
             TopLevelApi.setLoading(false);
+            this._reject(e);
         }
     }
 
     /**
      * Store key and request passphrase
-     *
      * @param {Array<string>} mnemonic
      * @param {number | null} mnemonicType
      */
@@ -170,6 +178,7 @@ class ImportWords extends FlippableHandler {
 
         if (mnemonicType === Nimiq.MnemonicUtils.MnemonicType.BIP39
             || mnemonicType === Nimiq.MnemonicUtils.MnemonicType.UNKNOWN) {
+            this._fileAvailable = true;
             this._secret.entropy = Nimiq.MnemonicUtils.mnemonicToEntropy(mnemonic);
             const key = new Key(this._secret.entropy, false);
             /** @type {{keyPath: string, address: Uint8Array}[]} */
@@ -190,6 +199,7 @@ class ImportWords extends FlippableHandler {
 
         if (mnemonicType === Nimiq.MnemonicUtils.MnemonicType.LEGACY
             || mnemonicType === Nimiq.MnemonicUtils.MnemonicType.UNKNOWN) {
+            this._fileAvailable = false;
             const entropy = Nimiq.MnemonicUtils.legacyMnemonicToEntropy(mnemonic);
             this._secret.privateKey = new Nimiq.PrivateKey(entropy.serialize());
             const key = new Key(this._secret.privateKey, false);
@@ -202,22 +212,15 @@ class ImportWords extends FlippableHandler {
                 }],
             });
         }
+
         this._passwordSetter.reset();
         this._loginFileIcon.unlock();
-        this.fileAvailable = mnemonicType === Nimiq.MnemonicUtils.MnemonicType.BIP39;
-        this._loginFileIcon.setFileUnavailable(!this.fileAvailable);
+        this._loginFileIcon.setFileUnavailable(!this._fileAvailable);
+        this.$setPassword.classList.toggle('login-file-available', this._fileAvailable);
         window.location.hash = ImportWords.Pages.SET_PASSWORD;
         if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
             this._passwordSetter.focus();
         }
-    }
-
-    _onRecoveryWordsInvalid() {
-        this.$words.classList.add('invalid-words');
-    }
-
-    _onRecoveryWordsFocused() {
-        this.$words.classList.remove('invalid-words');
     }
 }
 

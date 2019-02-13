@@ -32,11 +32,20 @@ const TRANSLATIONS = {
         'import-link-no-wallet': 'Don\'t have a wallet yet?',
         'import-heading-protect': 'Protect your wallet',
         'import-text-set-password': 'You can now set a password to encrypt your wallet on this device.',
+        'import-upload-login-file': 'Upload your Login File',
+        'import-create-account': 'Create new Account',
 
         'import-file-lost-file': 'Lost your Key File? You can recover your account with your 24 Recovery Words.',
         'import-file-button-words': 'Login with Recovery Words',
         'import-file-heading-unlock': 'Unlock your Key File',
         'import-file-text-unprotected-keyfile': 'Your Key File is unprotected.',
+
+        'import-words-file-available': 'Using the Recovery Words creates a new LoginFile. '
+                                     + 'Create a password to secure it.',
+        'import-words-file-unavailable': 'Using the Recovery Words creates a new Account. '
+                                       + 'Create a password to secure it.',
+        'import-words-hint': 'Press Tab to Jump to the next field',
+        'import-words-error': 'This is not a valid account. Typo?',
 
         'file-import-prompt': 'Drop your Key File here',
         'file-import-click-hint': 'Or click to select a file.',
@@ -164,12 +173,22 @@ const TRANSLATIONS = {
         'import-heading-protect': 'Wallet verschlüsseln',
         'import-text-set-password': 'Du kannst jetzt ein Passwort eingeben, um deine Wallet auf diesem '
                                   + 'Gerät zu verschlüsseln.',
+        'import-upload-login-file': 'Lade dein Login File hoch',
+        'import-create-account': 'Erstelle einen neuen Account',
 
         'import-file-lost-file': 'Schlüsseldatei verloren? Du kannst deinen Account mit deinen 24 '
                                + 'Wiederherstellungswörtern wiederherstellen',
         'import-file-button-words': 'Wiederherstellungswörter eingeben',
         'import-file-heading-unlock': 'Entsperre deine Schlüsseldatei',
         'import-file-text-unprotected-keyfile': 'Deine Schlüsseldatei ist ungeschützt.',
+
+
+        'import-words-file-available': 'Die Wiederherstellungswörter erzeugen ein neues Loginfile. '
+                                     + 'Setze ein Passwort um es zu schützen.',
+        'import-words-file-unavailable': 'Die Wiederherstellungswörter erzeugen einen neuen Account. '
+                                       + 'Setze ein Passwort um es zu schützen.',
+        'import-words-hint': 'Mit Tab kannst du zum nächsten Feld springen',
+        'import-words-error': 'Das ist kein gültiger Account. Schreibfehler?',
 
         'file-import-prompt': 'Ziehe deine Schlüsseldatei auf dieses Feld',
         'file-import-click-hint': 'Oder klicke um eine Datei auszuwählen.',

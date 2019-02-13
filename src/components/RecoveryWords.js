@@ -123,10 +123,7 @@ class RecoveryWords extends Nimiq.Observable {
                 console.error(e); // eslint-disable-line no-console
             } else {
                 // wrong words
-                if (this._mnemonic) {
-                    console.log('mnemonic');
-                    this._mnemonic = null;
-                }
+                if (this._mnemonic) this._mnemonic = null;
                 // the animation is long enough to make the invalid event fire after
                 // the focus event, which then in turn deactivates the notification again
                 await this._animateError();

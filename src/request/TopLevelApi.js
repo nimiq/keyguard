@@ -59,21 +59,26 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
          *
          * @deprecated Only for database migration
          */
-        if ((BrowserDetection.isIOS() || BrowserDetection.isSafari()) && TopLevelApi._hasMigrateFlag()) {
-            await KeyStore.instance.migrateAccountsToKeys();
-        }
-        if ((BrowserDetection.isIOS() || BrowserDetection.isSafari()) && TopLevelApi._hasRemoveKey()) {
-            const match = document.cookie.match(new RegExp('removeKey=([^;]+)'));
-            if (match && match[1]) {
-                try {
-                    /** @type {string[]} */
-                    const removeKeyArray = JSON.parse(match[1]);
-                    removeKeyArray.forEach(element => {
-                        KeyStore.instance.remove(element);
-                    });
-                } catch (e) {
-                    this._reject(e);
+        if ((BrowserDetection.isIOS() || BrowserDetection.isSafari())) {
+            if (TopLevelApi._hasMigrateFlag()) {
+                await KeyStore.instance.migrateAccountsToKeys();
+            }
+            if (TopLevelApi._hasRemoveKey()) {
+                // eat
+                const match = document.cookie.match(new RegExp('removeKey=([^;]+)'));
+                if (match && match[1]) {
+                    try {
+                        /** @type {string[]} */
+                        const removeKeyArray = JSON.parse(match[1]);
+                        removeKeyArray.forEach(keyId => {
+                            KeyStore.instance.remove(keyId);
+                        });
+                    } catch (e) {
+                        this._reject(e);
+                    }
                 }
+                // crumble
+                document.cookie = 'removeKey=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
             }
         }
 

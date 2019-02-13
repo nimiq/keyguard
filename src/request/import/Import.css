@@ -21,15 +21,21 @@
     z-index: -1;
 }
 
+.page#import-file.enter-password .page-body {
+    filter: blur(12px);
+    opacity: 0.2;
+}
+
+.page#import-file.enter-password .page-footer .passphrase-box {
+    opacity: 1;
+    z-index: 3;
+}
+
 .page#recovery-words {
     background: radial-gradient(420.00px at 100% 100%, #260133 0%, #1F2348 100%);
     box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.111158);
     color: white;
     border-radius: 8px;
-}
-
-.page#recovery-words .page-header-back-button {
-    background-image: url('data:image/svg+xml,<svg width="23" height="18" viewBox="0 0 23 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22 9.04854L2.99789 9.04826" stroke="%23FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.99902 16.001L1.99951 8.99951L8.99902 2" stroke="%23FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>');
 }
 
 .page#recovery-words p {
@@ -55,18 +61,8 @@
     flex-direction: column;
 }
 
-.words-container input {
-    height:100%;
-}
-
-.page#import-file.enter-password .page-body {
-    filter: blur(12px);
-    opacity: 0.2;
-}
-
-.page#import-file.enter-password .page-footer .passphrase-box {
-    opacity: 1;
-    z-index: 3;
+.page#recovery-words .words-container input {
+    height: 100%;
 }
 
 button#goto-words {
@@ -74,18 +70,13 @@ button#goto-words {
 }
 
 a#goto-create {
+    font-size: 1.75rem;
     text-decoration: none;
     margin: 2rem 0;
 }
 a#goto-create i.nq-icon {
     margin-left: 0.5rem;
     margin-bottom: -0.25rem;
-}
-
-.page#enter-passphrase .page-body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
 }
 
 .page#set-password .nq-icon.walletfile {
@@ -105,8 +96,11 @@ a#goto-create i.nq-icon {
     font-weight: 600;
 }
 
-#enter-passphrase .page-footer,
-#set-password .page-footer {
+.page#set-password.login-file-available .login-file-unavailable,
+.page#set-password:not(.login-file-available) .login-file-available {
+    display: none;
+}
+.page#set-password .page-footer {
     padding: 0.625rem;
 }
 
