@@ -85,6 +85,8 @@ const TRANSLATIONS = {
         'identicon-selector-loading': 'Mixing colors',
         'identicon-selector-button-select': 'Select',
         'identicon-selector-link-back': 'Back',
+        'identicon-selector-generate-new': 'Generate new',
+        'identicon-selector-more-addresses': 'More addresses',
 
         'downloadkeyfile-heading-protected': 'Your Key File is protected!',
         'downloadkeyfile-heading-unprotected': 'Your Key File is not protected!',
@@ -117,10 +119,9 @@ const TRANSLATIONS = {
         'remove-key-recovery-words': 'Recovery Words',
         'remove-key-back': 'Back to logout',
 
-        'derive-address-heading-passphrase': 'Unlock your account',
-        'derive-address-passphrase-text': 'Please enter your password to add another address to your account.',
-        'derive-address-heading-choose-identicon': 'Choose your address avatar',
-        'derive-address-text-select-avatar': 'Select an avatar for your new address from the selection below.',
+        'derive-address-heading-password': 'Unlock your account',
+        'derive-address-password-text': 'To add a new address, please unlock your account first.',
+        'derive-address-heading-choose-identicon': 'Choose a new address',
 
         'change-passphrase-heading': 'Change your password',
         'change-paragraph': 'Before entering your new password, you must first unlock your account.',
@@ -145,7 +146,7 @@ const TRANSLATIONS = {
         'recovery-words-title': 'Wiederherstellungswörter',
         'recovery-words-input-label': 'Wiederherstellungswörter',
         'recovery-words-input-field-placeholder': 'Wort ',
-        'recovery-words-explanation': 'Es gibt wirklich keine Password-Wiederherstellung. Die folgenden Wörter '
+        'recovery-words-explanation': 'Es gibt wirklich keine Passwort-Wiederherstellung. Die folgenden Wörter '
                                     + 'sind ein Backup von deiner Schlüsseldatei und werden dir Zugang zu deiner '
                                     + 'Wallet gewähren, auch wenn deine Schlüsseldatei verloren ist.',
         'recovery-words-storing': 'Schreibe diese Wörter auf ein Stück Papier und verwahre es an einem sicheren, '
@@ -218,6 +219,8 @@ const TRANSLATIONS = {
         'identicon-selector-loading': 'Mische Farben',
         'identicon-selector-button-select': 'Auswählen',
         'identicon-selector-link-back': 'Zurück',
+        'identicon-selector-generate-new': 'Neu generieren',
+        'identicon-selector-more-addresses': 'Mehr Adressen',
 
         'downloadkeyfile-heading-protected': 'Dein Schlüsseldatei ist geschützt!',
         'downloadkeyfile-heading-unprotected': 'Dein Schlüsseldatei ist nicht geschützt!',
@@ -250,8 +253,8 @@ const TRANSLATIONS = {
         'remove-key-recovery-words': 'Wiederherstellungswörter',
         'remove-key-back': 'Zurück zum logout',
 
-        'derive-address-heading-passphrase': 'Entschlüssele dein Wallet',
-        'derive-address-passphrase-text': 'Bitte gib deine Passphrase ein um deiner Wallet einen weiteren Account '
+        'derive-address-heading-password': 'Entschlüssele deinen Account',
+        'derive-address-password-text': 'Bitte gib dein Passwort ein um deinem Account eine weitere Adresse '
                                         + 'hinzuzufügen.',
         'derive-address-heading-choose-identicon': 'Wähle deinen Konto-Avatar',
         'derive-address-text-select-avatar': 'Wähle einen Avatar für deinen neuen Account aus der Auswahl unten.',
