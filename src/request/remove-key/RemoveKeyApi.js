@@ -36,7 +36,7 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         const parsedLabel = this.parseLabel(request.keyLabel);
 
         if (parsedLabel === undefined) {
-            throw new Errors.InvalidRequestError('Label must be a string');
+            throw new Errors.InvalidRequestError('keyLabel must be a string');
         }
 
         parsedRequest.keyLabel = parsedLabel;
