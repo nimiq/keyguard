@@ -144,7 +144,7 @@ const TRANSLATIONS = {
         'recovery-words-title': 'Wiederherstellungswörter',
         'recovery-words-input-label': 'Wiederherstellungswörter',
         'recovery-words-input-field-placeholder': 'Wort ',
-        'recovery-words-explanation': 'Es gibt wirklich keine Password-Wiederherstellung. Die folgenden Wörter '
+        'recovery-words-explanation': 'Es gibt wirklich keine Passwort-Wiederherstellung. Die folgenden Wörter '
                                     + 'sind ein Backup von deiner Schlüsseldatei und werden dir Zugang zu deiner '
                                     + 'Wallet gewähren, auch wenn deine Schlüsseldatei verloren ist.',
         'recovery-words-storing': 'Schreibe diese Wörter auf ein Stück Papier und verwahre es an einem sicheren, '
@@ -251,7 +251,7 @@ const TRANSLATIONS = {
         'remove-key-back': 'Zurück zum logout',
 
         'derive-address-heading-password': 'Entschlüssele deinen Account',
-        'derive-address-password-text': 'Bitte gib dein Password ein um deinem Account eine weitere Adresse '
+        'derive-address-password-text': 'Bitte gib dein Passwort ein um deinem Account eine weitere Adresse '
                                         + 'hinzuzufügen.',
         'derive-address-heading-choose-identicon': 'Wähle deinen Konto-Avatar',
         'derive-address-text-select-avatar': 'Wähle einen Avatar für deinen neuen Account aus der Auswahl unten.',
