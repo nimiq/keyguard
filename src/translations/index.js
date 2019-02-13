@@ -34,7 +34,7 @@ const TRANSLATIONS = {
         'import-text-set-password': 'You can now set a password to encrypt your wallet on this device.',
 
         'import-file-lost-file': 'Lost your Key File? You can recover your account with your 24 Recovery Words.',
-        'import-file-button-words': 'Enter Recovery Words',
+        'import-file-button-words': 'Login with Recovery Words',
         'import-file-heading-unlock': 'Unlock your Key File',
         'import-file-text-unprotected-keyfile': 'Your Key File is unprotected.',
 

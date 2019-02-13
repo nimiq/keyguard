@@ -44,6 +44,7 @@
     <script defer src="../../lib/QrEncoder.js"></script>
     <script defer src="../../components/FileImport.js"></script>
     <script defer src="../../components/FlippableHandler.js"></script>
+    <script defer src="../../components/LoginFileIcon.js"></script>
     <script defer src="../../components/PassphraseSetterBox.js"></script>
     <script defer src="../../components/RecoveryWords.js"></script>
     <script defer src="../../components/RecoveryWordsInputField.js"></script>
@@ -64,6 +65,7 @@
 
     <link rel="stylesheet" href="../../components/FileImport.css">
     <link rel="stylesheet" href="../../components/FlippableHandler.css">
+    <link rel="stylesheet" href="../../components/LoginFileIcon.css">
     <link rel="stylesheet" href="../../components/RecoveryWords.css">
     <link rel="stylesheet" href="./Import.css">
 </head>
@@ -99,15 +101,11 @@
                     <h1 class="nq-h1">Create a password</h1>
                 </div>
 
-                <div class="page-body nq-card-body login-file">
+                <div class="page-body nq-card-body">
                     <p class="nq-light-blue nq-text">Using the Recovery Words creates a new LoginFile. Create a password to secure it.</p>
                     <p class="nq-light-blue nq-text no-login-file-available">Using the Recovery Words creates a new Account. Create a password to secure it.</p>
                     <div class="flex-grow"></div>
-                    <div class="nq-icon walletfile-qr-code">
-                        <div class="lock"></div>
-                        <div class="flex-grow"></div>
-                        <div class="qr-code"></div>
-                    </div>
+                    <div class="nq-icon login-file-icon"></div>
                     <div class="flex-grow"></div>
                 </div>
 
@@ -145,7 +143,7 @@
 
                     <div class="page-footer">
                         <button data-i18n="import-file-button-words" class="nq-button-s hide-for-password-input" id="goto-words">
-                            Use Recovery Words
+                            Login with Recovery Words
                         </button>
                         <a class="nq-text-s nq-blue hide-for-password-input" id="goto-create" href="#">
                             Create new Wallet<i class="nq-icon chevron-right"></i>

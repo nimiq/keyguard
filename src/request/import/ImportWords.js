@@ -6,6 +6,7 @@
 /* global Key */
 /* global KeyStore */
 /* global LoginFile */
+/* global LoginFileIcon */
 /* global Nimiq */
 /* global PassphraseSetterBox */
 /* global RecoveryWords */
@@ -33,7 +34,7 @@ class ImportWords extends FlippableHandler {
         /** @type {HTMLFormElement} */
         this.$words = (document.getElementById(ImportWords.Pages.ENTER_WORDS));
         /** @type {HTMLFormElement} */
-        const $setPassword = (document.getElementById(ImportWords.Pages.SET_PASSWORD));
+        this.$setPassword = (document.getElementById(ImportWords.Pages.SET_PASSWORD));
         /** @type {HTMLFormElement} */
         const $downloadFile = (document.getElementById(ImportWords.Pages.DOWNLOAD_LOGINFILE));
 
@@ -41,9 +42,9 @@ class ImportWords extends FlippableHandler {
         /** @type {HTMLFormElement} */
         this.$recoveryWords = (this.$words.querySelector('.recovery-words'));
         /** @type {HTMLFormElement} */
-        const $passwordSetter = ($setPassword.querySelector('.passphrase-setter-box'));
+        const $passwordSetter = (this.$setPassword.querySelector('.passphrase-setter-box'));
         /** @type {HTMLDivElement} */
-        this.$walletFileIcon = ($setPassword.querySelector('.walletfile-qr-code'));
+        this.$loginFileIcon = (this.$setPassword.querySelector('.login-file-icon'));
         /** @type {HTMLButtonElement} */
         this.$downloadFileButton = ($downloadFile.querySelector('#download-login-file'));
         /** @type {HTMLDivElement} */
@@ -52,6 +53,7 @@ class ImportWords extends FlippableHandler {
         // Components
         this._recoveryWords = new RecoveryWords(this.$recoveryWords, true);
         this._passwordSetter = new PassphraseSetterBox($passwordSetter);
+        this._loginFileIcon = new LoginFileIcon(this.$loginFileIcon);
         const downloadKeyFile = new DownloadKeyfile($file); // TODO LoginFile
 
         // Events
@@ -82,7 +84,7 @@ class ImportWords extends FlippableHandler {
                 ).toUserFriendlyAddress(),
             );
             const colorString = LoginFile.CONFIG[color].name;
-            this.$walletFileIcon.classList.add(`nq-${colorString}-bg`, 'lock-closed');
+            this._loginFileIcon.lock(`nq-${colorString}-bg`);
         });
         this._passwordSetter.on(PassphraseSetterBox.Events.SUBMIT, async password => {
             const keys = await this._storeKeys(password);
@@ -92,24 +94,10 @@ class ImportWords extends FlippableHandler {
             });
             window.location.hash = ImportWords.Pages.DOWNLOAD_LOGINFILE;
         });
-        this._passwordSetter.on(PassphraseSetterBox.Events.NOT_EQUAL, () => {
-            this.$walletFileIcon.classList.remove('lock-closed',
-                'nq-blue-bg',
-                'nq-light-blue-bg',
-                'nq-gold-bg',
-                'nq-light-green',
-                'nq-green-bg',
-                'nq-orange-bg',
-                'nq-red-bg',
-                'nq-purple-bg',
-                'nq-pink-bg',
-                'nq-brown-bg',
-                'nq-gray-bg',
-                'nq-light-gray-bg');
-        });
+        this._passwordSetter.on(PassphraseSetterBox.Events.NOT_EQUAL, () => this._loginFileIcon.unlock());
         this._passwordSetter.on(PassphraseSetterBox.Events.SKIP, async () => {
-            const keys = await this._storeKeys();
-            this._resolve(keys);
+            await this._storeKeys();
+            this._resolve(this._keys);
         });
 
         // TODO remove test words
@@ -214,9 +202,10 @@ class ImportWords extends FlippableHandler {
                 }],
             });
         }
-
         this._passwordSetter.reset();
-        this.$walletFileIcon.classList.remove('nq-orange-bg', 'lock-closed');
+        this._loginFileIcon.unlock();
+        this.fileAvailable = mnemonicType === Nimiq.MnemonicUtils.MnemonicType.BIP39;
+        this._loginFileIcon.setFileUnavailable(!this.fileAvailable);
         window.location.hash = ImportWords.Pages.SET_PASSWORD;
         if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
             this._passwordSetter.focus();
