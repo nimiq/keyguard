@@ -31,7 +31,7 @@ Errors.InvalidRequestError = class extends Errors.BaseError {
     /**
      *  @param {string|Error} [messageOrError]
      */
-    constructor(messageOrError)  {
+    constructor(messageOrError) {
         super(ErrorConstants.Types.INVALID_REQUEST, messageOrError);
     }
 };
