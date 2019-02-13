@@ -52,7 +52,7 @@
     <link rel="stylesheet" bundle-toplevel href="../../components/PassphraseInput.css">
     <link rel="stylesheet" bundle-toplevel href="../../components/PassphraseBox.css">
 
-    <link rel="stylesheet" href="./IdenticonSelector.css">
+    <link rel="stylesheet" href="../create/IdenticonSelector.css">
     <link rel="stylesheet" href="./DeriveAddress.css">
 </head>
 <body>
@@ -63,32 +63,35 @@
     </div>
 
     <div id="app">
-        <div class="flex-grow"></div>
-
-        <div id="passphrase" class="page nq-card">
+        <div id="unlock" class="page nq-card">
             <div class="page-header nq-card-header">
-                <h1 data-i18n="derive-address-heading-passphrase" class="nq-h1">Unlock your wallet</h1>
+                <h1 data-i18n="derive-address-heading-password" class="nq-h1">Unlock your account</h1>
             </div>
 
             <div class="page-body nq-card-body">
-                <div class="passphrase-icon-text">
-                    <div class="nq-icon walletfile-locked"></div>
-                    <p data-i18n="derive-address-passphrase-text" class="nq-text">Please enter your passphrase to add another account to your wallet.</p>
+                <p class="nq-text nq-orange" data-i18n="derive-address-password-text">
+                    To add a new address, please unlock your account first.
+                </p>
+                <div class="lock-container">
+                    <div class="nq-icon locked"></div>
                 </div>
             </div>
 
-            <div class="page-footer">
+            <div class="page-footer nq-card-footer">
                 <form class="passphrase-box"></form>
+            </div>
+
+            <div class="blurred-identicons">
+                <img src="../../assets/blurred-identicons.svg">
             </div>
         </div>
 
         <div id="choose-identicon" class="page nq-card">
             <div class="page-header nq-card-header">
-                <h1 data-i18n="derive-address-heading-choose-identicon" class="nq-h1">Choose your account avatar</h1>
+                <h1 data-i18n="derive-address-heading-choose-identicon" class="nq-h1">Choose a new address</h1>
             </div>
 
             <div class="page-body nq-card-body">
-                <p data-i18n="derive-address-text-select-avatar" class="nq-text">Select an avatar for your new account from the selection below.</p>
                 <div class="identicon-selector"></div>
             </div>
         </div>
@@ -97,8 +100,6 @@
             <span class="nq-icon arrow-left"></span>
             Back to <span id="app-name"></span>
         </button>
-
-        <div class="flex-grow"></div>
 
         <div id="loading" class="page">
             <div class="loading-animation"></div>

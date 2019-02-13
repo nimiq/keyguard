@@ -25,13 +25,9 @@ class DerivedIdenticonSelector extends Nimiq.Observable {
         this._selectedAddress = null;
 
         this.$identicons = /** @type {HTMLElement} */ (this.$el.querySelector('.identicons'));
-        this.$confirmButton = /** @type {HTMLElement} */ (this.$el.querySelector('.backdrop button'));
         this.$generateMoreButton = /** @type {HTMLElement} */ (this.$el.querySelector('.generate-more'));
-        this.$backdrop = /** @type {HTMLElement} */ (this.$el.querySelector('.backdrop'));
 
         this.$generateMoreButton.addEventListener('click', this.nextPage.bind(this));
-        this.$backdrop.addEventListener('click', this._clearSelection.bind(this));
-        this.$confirmButton.addEventListener('click', this._onSelectionConfirmed.bind(this));
     }
 
     /**
@@ -50,12 +46,9 @@ class DerivedIdenticonSelector extends Nimiq.Observable {
                     <h2 data-i18n="identicon-selector-loading">Mixing colors</h2>
                 </div>
             </div>
-            <button class="generate-more nq-button-s">Generate new</button>
-
-            <div class="backdrop center">
-                <button class="nq-button inverse" data-i18n="identicon-selector-button-select">Select</button>
-                <a tabindex="0" class="nq-text-s nq-link" data-i18n="identicon-selector-link-back">Back</a>
-            </div>`;
+            <button class="generate-more nq-button-s" data-i18n="identicon-selector-more-addresses">
+                More addresses
+            </button>`;
 
         I18n.translateDom($el);
         return $el;
@@ -83,7 +76,6 @@ class DerivedIdenticonSelector extends Nimiq.Observable {
     }
 
     nextPage() {
-        // This check is mainly to make Typescript happy, as "this._masterKey is potentially undefined"
         if (!this._masterKey) {
             this.fire(
                 DerivedIdenticonSelector.Events.MASTER_KEY_NOT_SET,
@@ -103,6 +95,7 @@ class DerivedIdenticonSelector extends Nimiq.Observable {
      * @param {number} page
      */
     generateIdenticons(masterKey, pathsToDerive, page) {
+        this.$generateMoreButton.blur();
         this.$el.classList.remove('active');
 
         /** @type {{ [address: string]: { address: Nimiq.Address, keyPath: string } }} */
@@ -125,20 +118,17 @@ class DerivedIdenticonSelector extends Nimiq.Observable {
         this.$identicons.textContent = '';
 
         Object.keys(derivedAddresses).forEach(address => {
-            const $wrapper = document.createElement('div');
+            const $wrapper = document.createElement('a');
             $wrapper.classList.add('wrapper');
+            $wrapper.setAttribute('tabindex', '0');
+            $wrapper.setAttribute('href', '#');
 
             const identicon = new Identicon(address);
             const $identicon = identicon.getElement();
 
-            const $address = document.createElement('div');
-            $address.classList.add('address');
-            $address.textContent = address;
-
             $wrapper.appendChild($identicon);
-            $wrapper.appendChild($address);
 
-            $wrapper.addEventListener('click', () => this._onIdenticonSelected($wrapper, address));
+            $wrapper.addEventListener('click', event => this._onSelectionConfirmed(address, event));
 
             this.$identicons.appendChild($wrapper);
         });
@@ -147,42 +137,18 @@ class DerivedIdenticonSelector extends Nimiq.Observable {
     }
 
     /**
-     * @param {HTMLElement} $el
-     * @param {string} address
+     * @param {string} selectedAddress
+     * @param {Event} event
      * @private
      */
-    _onIdenticonSelected($el, address) {
-        const $returningIdenticon = this.$el.querySelector('.wrapper.returning');
-        if ($returningIdenticon) {
-            $returningIdenticon.classList.remove('returning');
-        }
+    _onSelectionConfirmed(selectedAddress, event) {
+        event.preventDefault();
 
-        this._selectedAddress = address;
-        this.$selectedIdenticon = $el;
-        this.$el.classList.add('selected');
-        $el.classList.add('selected');
-    }
-
-    /**
-     * @private
-     */
-    _onSelectionConfirmed() {
-        if (!this._selectedAddress) { // something went wrong
-            this._clearSelection(); // clear current selection and
-            this.nextPage(); // switch pages
-            // TODO ADD: in case it does happen, signal to user instead of silently resolving it.
-            return;
-        }
-        this.fire(DerivedIdenticonSelector.Events.IDENTICON_SELECTED, this._derivedAddresses[this._selectedAddress]);
-    }
-
-    _clearSelection() {
-        if (this.$selectedIdenticon) {
-            this.$selectedIdenticon.classList.add('returning');
-            this.$selectedIdenticon.classList.remove('selected');
-        }
-
-        this.$el.classList.remove('selected');
+        this.fire(
+            DerivedIdenticonSelector.Events.IDENTICON_SELECTED,
+            this._derivedAddresses[selectedAddress],
+            selectedAddress,
+        );
     }
 }
 
