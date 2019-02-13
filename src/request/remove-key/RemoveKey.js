@@ -2,6 +2,7 @@
 /* global ExportFile */
 /* global KeyStore */
 /* global TopLevelApi */
+/* global Constants */
 
 class RemoveKey {
     /**
@@ -30,7 +31,7 @@ class RemoveKey {
         const $labelConfirm = ($removeKey.querySelector('#remove-key-label-confirm'));
         /** @type {HTMLSpanElement} */
         const $labelSpan = ($labelConfirm.querySelector('span'));
-        /** @type {HTMLInputElement} */ 
+        /** @type {HTMLInputElement} */
         this.$labelInput = ($labelConfirm.querySelector('input'));
         /** @type {HTMLButtonElement} */
         const $finalConfirmButton = ($removeKey.querySelector('#remove-key-final-confirm'));
