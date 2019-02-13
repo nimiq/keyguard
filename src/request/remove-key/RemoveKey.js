@@ -31,7 +31,7 @@ class RemoveKey {
         /** @type {HTMLSpanElement} */
         const $labelSpan = ($labelConfirm.querySelector('span'));
         /** @type {HTMLInputElement} */ 
-        const $labelInput = ($labelConfirm.querySelector('input'));
+        this.$labelInput = ($labelConfirm.querySelector('input'));
         /** @type {HTMLButtonElement} */
         const $finalConfirmButton = ($removeKey.querySelector('#remove-key-final-confirm'));
 
@@ -41,10 +41,10 @@ class RemoveKey {
         $goToShowRecoveryWords.addEventListener('click', () => this._exportWordsHandler.run());
         $goToDownloadFile.addEventListener('click', () => this._exportFileHandler.run());
         $finalConfirmButton.addEventListener('click', this._finalConfirm.bind(this));
-        $labelConfirm.addEventListener('click', () => $labelInput.focus());
+        $labelConfirm.addEventListener('click', () => this.$labelInput.focus());
 
-        $labelInput.addEventListener('input', () => {
-            if ($labelInput.value === this._request.keyLabel) {
+        this.$labelInput.addEventListener('input', () => {
+            if (this.$labelInput.value === this._request.keyLabel) {
                 $removeKey.classList.add('show-final-confirm');
             }
         });
@@ -57,6 +57,9 @@ class RemoveKey {
 
     run() {
         window.location.hash = RemoveKey.Pages.REMOVE_KEY;
+        if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
+            this.$labelInput.focus();
+        }
     }
 
     async _finalConfirm() {

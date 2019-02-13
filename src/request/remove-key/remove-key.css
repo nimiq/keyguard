@@ -83,16 +83,42 @@
 
 .page#remove-key.page#remove-key:not(.show-final-confirm) .page-footer #remove-key-label-confirm {
     width: 100%;
-    height: 11.25rem;
+    height: 14.5rem;
     background-color: var(--nimiq-red);
     color: #fff;
     font-style: normal;
     font-weight: 600;
     line-height: 21px;
     font-size: 14px;
-    margin-bottom: 0;
     border-radius: 4px;
     margin: 2rem auto;
+    margin-bottom: 0;
     cursor: text;
-    text-align: center;
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+}
+
+.page#remove-key.page#remove-key:not(.show-final-confirm) .page-footer #remove-key-label-confirm:hover {
+    transform: scale(1.02) perspective(1px);
+    box-shadow: 0 0.5rem 3rem rgba(0,0,0,.15);
+}
+
+.page#remove-key.page#remove-key:not(.show-final-confirm) .page-footer #remove-key-label-confirm div {
+    margin-top: 1.4rem;
+    flex-grow: 1;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.page#remove-key.page#remove-key:not(.show-final-confirm) .page-footer #remove-key-label-confirm span {
+    margin-top: 1.4rem;
+    flex-grow: 1;
+    color: #fff;
+}
+
+.page#remove-key.page#remove-key:not(.show-final-confirm) .page-footer #remove-key-label-confirm input {
+    font-size: 3.6rem;
+    border-bottom: none;
+    margin-bottom: 4rem;
+    width: 100%;
 }
