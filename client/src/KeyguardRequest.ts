@@ -1,9 +1,6 @@
 import * as Nimiq from '@nimiq/core-web';
 
-export enum Type {
-    PRIVATE_KEY = 1,
-    ENTROPY = 2,
-}
+export type Type = 1 | 2;
 
 // tslint:disable-next-line:interface-over-type-literal
 export type KeyInfoObject = {
@@ -115,6 +112,13 @@ export type Request = CreateRequest
     | DeriveAddressRequest
     | SignMessageRequest
     | RemoveKeyRequest;
+
+export type RpcResult = CreateResult
+    | ImportResult
+    | SignTransactionResult
+    | SignMessageResult
+    | DeriveAddressResult
+    | SimpleResult;
 
 export type KeyguardError = {
     Types: {
