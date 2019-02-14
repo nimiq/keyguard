@@ -73,8 +73,8 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
                 // this really should never happen
                 this.reject(new Errors.InvalidRequestError('Request was not successfully parsed'));
             } else {
-                if (!(/** @type {ParsedSimpleRequest} */(this.parsedRequest).keyInfo
-                    && !(/** @type {ParsedSimpleRequest} */(this.parsedRequest).keyInfo.encrypted))) {
+                if (!(/** @type {ParsedSimpleRequest} */(this.parsedRequest).keyInfo)
+                    || /** @type {ParsedSimpleRequest} */(this.parsedRequest).keyInfo.encrypted) {
                     Nimiq.CryptoWorker.getInstanceAsync();
                 }
 
