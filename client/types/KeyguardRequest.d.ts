@@ -23,7 +23,7 @@ declare namespace KeyguardRequest {
     }
 
     type RemoveKeyRequest = BasicRequest & {
-        keyId: number 
+        keyId: number
         keyLabel: string
     }
 

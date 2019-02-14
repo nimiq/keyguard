@@ -81,11 +81,11 @@ describe('KeyStore', () => {
         expect(currentKeys.length).toBe(0);
 
         // add an encrypted key
-        const passphrase = Nimiq.BufferUtils.fromAscii(Dummy.encryptionPassword);
+        const password = Nimiq.BufferUtils.fromAscii(Dummy.encryptionPassword);
         await KeyStore.instance.put(new Key(
             Dummy.secrets[0],
             Dummy.keyInfos[0].hasPin,
-        ), passphrase);
+        ), password);
         currentKeys = await KeyStore.instance.list();
         expect(currentKeys.length).toBe(1);
 
@@ -99,7 +99,7 @@ describe('KeyStore', () => {
 
         // check that the keys have been stored correctly
         const [key1, key2] = await Promise.all([
-            KeyStore.instance.get(Dummy.keyInfos[0].id, passphrase),
+            KeyStore.instance.get(Dummy.keyInfos[0].id, password),
             KeyStore.instance.get(Dummy.keyInfos[1].id),
         ]);
         if (!key1 || !key2) throw new Error();
@@ -166,37 +166,38 @@ describe('KeyStore', () => {
         // first clear database
         await Dummy.Utils.deleteDummyKeyStore();
 
+        const password1 = Nimiq.BufferUtils.fromAscii(Dummy.encryptionPassword);
+        const password2 = Nimiq.BufferUtils.fromAscii(Dummy.encryptionPassword2);
+
         let currentKeys = await KeyStore.instance.list();
 
         // add key
-        const passphrase = Nimiq.BufferUtils.fromAscii(Dummy.encryptionPassword);
-        await KeyStore.instance.put(new Key(Dummy.secrets[1]), passphrase);
+        await KeyStore.instance.put(new Key(Dummy.secrets[1]), password1);
         currentKeys = await KeyStore.instance.list();
         expect(currentKeys.length).toBe(1);
 
         // add key again
-        await KeyStore.instance.put(new Key(Dummy.secrets[1]), passphrase);
+        await KeyStore.instance.put(new Key(Dummy.secrets[1]), password1);
         currentKeys = await KeyStore.instance.list();
         expect(currentKeys.length).toBe(1);
 
         // add key again with different password
-        const passphrase2 = Nimiq.BufferUtils.fromAscii(Dummy.encryptionPassword2);
-        await KeyStore.instance.put(new Key(Dummy.secrets[1]), passphrase2);
+        await KeyStore.instance.put(new Key(Dummy.secrets[1]), password2);
         currentKeys = await KeyStore.instance.list();
         expect(currentKeys.length).toBe(1);
 
         // same for legacy keys
-        await KeyStore.instance.put(new Key(Dummy.secrets[0]), passphrase);
+        await KeyStore.instance.put(new Key(Dummy.secrets[0]), password1);
         currentKeys = await KeyStore.instance.list();
         expect(currentKeys.length).toBe(2);
 
         // add key again
-        await KeyStore.instance.put(new Key(Dummy.secrets[0]), passphrase);
+        await KeyStore.instance.put(new Key(Dummy.secrets[0]), password1);
         currentKeys = await KeyStore.instance.list();
         expect(currentKeys.length).toBe(2);
 
          // add key again with different password
-        await KeyStore.instance.put(new Key(Dummy.secrets[0]), passphrase2);
+        await KeyStore.instance.put(new Key(Dummy.secrets[0]), password2);
         currentKeys = await KeyStore.instance.list();
         expect(currentKeys.length).toBe(2);
     });

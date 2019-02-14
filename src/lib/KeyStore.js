@@ -33,7 +33,7 @@ class KeyStore {
     }
 
     constructor() {
-        /** @type {?Promise<IDBDatabase>} */
+        /** @type {Promise<IDBDatabase>?} */
         this._dbPromise = null;
     }
 
@@ -52,9 +52,14 @@ class KeyStore {
                 /** @type {IDBDatabase} */
                 const db = request.result;
 
-                if (event.oldVersion < 1) {
-                    // Version 1 is the first version of the database.
-                    db.createObjectStore(KeyStore.DB_KEY_STORE_NAME, { keyPath: 'id', autoIncrement: true });
+                switch (event.oldVersion) {
+                    case 1:
+                        // Version 1 was only used in Testnet, so we'll wipe it out.
+                        db.deleteObjectStore(KeyStore.DB_KEY_STORE_NAME);
+                        // no break intentionally
+                    case 0:
+                        db.createObjectStore(KeyStore.DB_KEY_STORE_NAME, { keyPath: 'id', autoIncrement: true });
+                        break;
                 }
             };
         });
@@ -65,10 +70,10 @@ class KeyStore {
     /**
      * @param {number} id
      * @param {Uint8Array} [passphrase]
-     * @returns {Promise<?Key>}
+     * @returns {Promise<Key?>}
      */
     async get(id, passphrase) {
-        /** @type {?KeyRecord} */
+        /** @type {KeyRecord?} */
         const keyRecord = await this._get(id);
         if (!keyRecord) {
             return null;
@@ -95,17 +100,17 @@ class KeyStore {
 
     /**
      * @param {number} id
-     * @returns {Promise<?KeyInfo>}
+     * @returns {Promise<KeyInfo?>}
      */
     async getInfo(id) {
-        /** @type {?StoredKeyRecord} */
+        /** @type {StoredKeyRecord?} */
         const keyRecord = await this._get(id);
         return keyRecord ? KeyInfo.fromObject(keyRecord, KeyStore.isEncrypted(keyRecord)) : null;
     }
 
     /**
      * @param {number} id
-     * @returns {Promise<?StoredKeyRecord>}
+     * @returns {Promise<StoredKeyRecord?>}
      * @private
      */
     async _get(id) {
@@ -340,7 +345,7 @@ class KeyStore {
         });
     }
 }
-/** @type {?KeyStore} */
+/** @type {KeyStore?} */
 KeyStore._instance = null;
 
 KeyStore.DB_VERSION = 2;
