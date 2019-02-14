@@ -83,7 +83,7 @@ class DeriveAddress {
                 this._passphraseBox.onPassphraseIncorrect();
                 return false;
             }
-            this._reject(new Errors.CoreError(e.message));
+            this._reject(new Errors.CoreError(e));
             return false;
         }
 
