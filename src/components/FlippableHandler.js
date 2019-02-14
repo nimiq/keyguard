@@ -1,10 +1,10 @@
 class FlippableHandler {
     /**
-     * Classname 'dark' is the default flippable name, and has its css already available.
+     * Classname 'flipped' is the default flippable name, and has its css already available.
      * If other classes should be flipped to the backside they need to be added to FlippableHandler.css
-     * @param {string} [classname = "dark"] - Pages with this classname will be on the backside of the flip.
+     * @param {string} [classname = "flipped"] - Pages with this classname will be on the backside of the flip.
      */
-    constructor(classname = 'dark') {
+    constructor(classname = 'flipped') {
         if (!FlippableHandler.flippableHandlerInitialised) {
             /** @type {HTMLElement} */
             const $rotationContainer = (document.getElementById('rotation-container'));

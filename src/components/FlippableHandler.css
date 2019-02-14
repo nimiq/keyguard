@@ -12,16 +12,12 @@
     will-change: transform;
 }
 
-#rotation-container > .page.dark,
+#rotation-container > .page.flipped,
 #rotation-container.flipped {
     transform: rotateY(180deg);
 }
 
-#rotation-container > .page.dark {
-    background: var(--nimiq-blue-bg);
-}
-
-#rotation-container > .page.dark .page-header-back-button {
+#rotation-container > .page.flipped .page-header-back-button {
     background-image: url('data:image/svg+xml,<svg width="23" height="18" viewBox="0 0 23 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22 9.04854L2.99789 9.04826" stroke="%23FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.99902 16.001L1.99951 8.99951L8.99902 2" stroke="%23FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>');
 }
 
@@ -35,7 +31,7 @@
     display: flex;
 }
 
-#rotation-container > .page:not(.dark) {
+#rotation-container > .page:not(.flipped) {
     transform: rotateY(0deg);
     z-index: 2;
 }
