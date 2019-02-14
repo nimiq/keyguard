@@ -1,6 +1,6 @@
-class PasswordStrength { // eslint-disable-line no-unused-vars
+class PasswordStrength {
     /**
-     * Scores below 30 are considered 'weak', scores from 75 are 'strong',
+     * Scores below 40 are considered 'weak', scores from 75 are 'strong',
      * scores above 150 are 'secure'.
      *
      * @param {string} password
@@ -78,11 +78,13 @@ class PasswordStrength { // eslint-disable-line no-unused-vars
             + weight.flatLower
             + weight.flatNumber;
 
-        // score < 30          => weak
-        // 30 <= score < 75    => average
-        // 75 <= score < 150   => strong
-        // 150 <= score        => secure
-
         return score;
     }
 }
+
+/** @type {{[score: string]: number}} */
+PasswordStrength.Score = {
+    MINIMUM: 40,
+    STRONG: 75,
+    SECURE: 150,
+};

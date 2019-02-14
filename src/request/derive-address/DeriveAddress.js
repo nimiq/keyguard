@@ -37,8 +37,8 @@ class DeriveAddress {
 
         this._passphraseBox.on(
             PassphraseBox.Events.SUBMIT,
-            async /** @param {string|undefined} passphrase */ passphrase => {
-                if (!(await this._onPassphraseEntered(passphrase))) return;
+            async /** @param {string|undefined} password */ password => {
+                if (!(await this._onPasswordEntered(password))) return;
                 window.location.hash = DeriveAddress.Pages.CHOOSE_IDENTICON;
             },
         );
@@ -64,26 +64,26 @@ class DeriveAddress {
     } // constructor
 
     /**
-     * @param {string} [passphrase]
+     * @param {string} [password]
      * @returns {Promise<boolean>}
      */
-    async _onPassphraseEntered(passphrase) {
+    async _onPasswordEntered(password) {
         TopLevelApi.setLoading(true);
-        const passphraseBuffer = passphrase && passphrase.length > 0
-            ? Utf8Tools.stringToUtf8ByteArray(passphrase)
+        const passwordBuffer = password && password.length > 0
+            ? Utf8Tools.stringToUtf8ByteArray(password)
             : undefined;
 
         /** @type {Key|null} */
         let key = null;
         try {
-            key = await KeyStore.instance.get(this._request.keyInfo.id, passphraseBuffer);
+            key = await KeyStore.instance.get(this._request.keyInfo.id, passwordBuffer);
         } catch (e) {
             if (e.message === 'Invalid key') {
                 TopLevelApi.setLoading(false);
                 this._passphraseBox.onPassphraseIncorrect();
                 return false;
             }
-            this._reject(new Errors.CoreError(e.message));
+            this._reject(new Errors.CoreError(e));
             return false;
         }
 
@@ -91,7 +91,7 @@ class DeriveAddress {
             this._reject(new Errors.KeyNotFoundError());
             return false;
         }
-        const masterKey = new Nimiq.Entropy(key.secret).toExtendedPrivateKey();
+        const masterKey = /** @type {Nimiq.Entropy} */ (key.secret).toExtendedPrivateKey();
         const pathsToDerive = this._request.indicesToDerive.map(index => `${this._request.baseKeyPath}/${index}`);
 
         this._identiconSelector.init(masterKey, pathsToDerive);
@@ -101,7 +101,7 @@ class DeriveAddress {
 
     async run() {
         if (this._request.keyInfo.encrypted) {
-            window.location.hash = DeriveAddress.Pages.PASSPHRASE;
+            window.location.hash = DeriveAddress.Pages.UNLOCK;
             if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
                 this._passphraseBox.focus();
             }
@@ -109,13 +109,13 @@ class DeriveAddress {
             // Async pre-load the crypto worker to reduce wait time at first decrypt attempt
             Nimiq.CryptoWorker.getInstanceAsync();
         } else {
-            await this._onPassphraseEntered();
+            await this._onPasswordEntered();
             window.location.hash = DeriveAddress.Pages.CHOOSE_IDENTICON;
         }
     }
 }
 
 DeriveAddress.Pages = {
-    PASSPHRASE: 'passphrase',
+    UNLOCK: 'unlock',
     CHOOSE_IDENTICON: 'choose-identicon',
 };

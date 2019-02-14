@@ -1,7 +1,6 @@
 /* global Nimiq */
 /* global RpcServer */
 /* global Errors */
-/* global ErrorConstants */
 /* global Constants */
 
 /** @type {Promise<void>?} */
@@ -22,19 +21,17 @@ async function loadNimiq() {
     // eslint-disable-next-line no-return-assign
     return __nimiqLoaded || (__nimiqLoaded = new Promise(async resolve => {
         // Load web assembly encryption library into browser (if supported)
-        await Nimiq.WasmHelper.doImportBrowser();
+        await Nimiq.WasmHelper.doImport();
 
         switch (CONFIG.NETWORK) {
             case Constants.NETWORK.TEST:
                 Nimiq.GenesisConfig.test();
                 break;
-
             case Constants.NETWORK.MAIN:
                 Nimiq.GenesisConfig.main();
                 break;
-
             default:
-                throw new Errors.KeyguardError(ErrorConstants.Messages.INVALID_NETWORK_CONFIG);
+                 throw new Errors.InvalidNetworkConfig();
         }
 
         resolve();

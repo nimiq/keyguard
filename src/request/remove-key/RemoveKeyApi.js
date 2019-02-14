@@ -4,7 +4,7 @@
 
 class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
-     * @param {KeyguardRequest.SimpleRequest} request
+     * @param {KeyguardRequest.RemoveKeyRequest} request
      */
     async onRequest(request) {
         const parsedRequest = await this.parseRequest(request);
@@ -22,8 +22,8 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     }
 
     /**
-     * @param {KeyguardRequest.SimpleRequest} request
-     * @returns {Promise<ParsedSimpleRequest>}
+     * @param {KeyguardRequest.RemoveKeyRequest} request
+     * @returns {Promise<ParsedRemoveKeyRequest>}
      */
     async parseRequest(request) {
         if (!request) {
@@ -33,7 +33,13 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         const parsedRequest = {};
         parsedRequest.appName = this.parseAppName(request.appName);
         parsedRequest.keyInfo = await this.parseKeyId(request.keyId);
-        parsedRequest.keyLabel = this.parseLabel(request.keyLabel);
+        const parsedLabel = this.parseLabel(request.keyLabel);
+
+        if (parsedLabel === undefined) {
+            throw new Errors.InvalidRequestError('keyLabel must be a string');
+        }
+
+        parsedRequest.keyLabel = parsedLabel;
 
         return parsedRequest;
     }

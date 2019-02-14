@@ -1,12 +1,11 @@
 declare namespace KeyguardRequest {
     namespace Key {
-        type Type = 0 | 1;
+        type Type = 1 | 2;
     }
 
     type KeyInfoObject = {
         id: string;
         type: Key.Type;
-        encrypted: boolean;
         hasPin: boolean;
     }
 
@@ -21,6 +20,11 @@ declare namespace KeyguardRequest {
     type SimpleRequest = BasicRequest & {
         keyId: string
         keyLabel?: string
+    }
+
+    type RemoveKeyRequest = BasicRequest & {
+        keyId: string
+        keyLabel: string
     }
 
     type SimpleResult = {
@@ -107,6 +111,7 @@ declare namespace KeyguardRequest {
         | SignTransactionRequest
         | DeriveAddressRequest
         | SignMessageRequest
+        | RemoveKeyRequest
 
     type KeyguardError = {
         Types: {
@@ -127,7 +132,7 @@ declare namespace KeyguardRequest {
             // used to signal that a given keyId no longer exist in KG, to be treated by caller.
             KEY_NOT_FOUND: 'keyId not found',
             // network name does not exist
-            INVALID_NETWORK_CONFIG: 'invalid network config'
+            INVALID_NETWORK_CONFIG: 'Invalid network config'
         },
     }
 }

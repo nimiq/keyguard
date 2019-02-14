@@ -1,6 +1,6 @@
 {
   "name": "@nimiq/keyguard-client",
-  "version": "0.1.6-beta.4",
+  "version": "0.1.6",
   "description": "Nimiq Keyguard client library",
   "main": "dist/KeyguardClient.common.js",
   "module": "dist/KeyguardClient.es.js",
@@ -29,7 +29,6 @@
     "@nimiq/rpc": "^0.1.1"
   },
   "devDependencies": {
-    "@nimiq/core-types": "^1.0.0",
     "rollup": "^0.64.0",
     "tslint": "^5.11.0",
     "typescript": "^3.0.1"

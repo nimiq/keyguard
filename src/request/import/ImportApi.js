@@ -15,7 +15,9 @@ class ImportApi extends TopLevelApi {
         super();
 
         this._encryptedKey = new Nimiq.SerialBuffer(0);
-        this._keyType = Key.Type.BIP39;
+
+        /** @type {Nimiq.Secret.Type} */
+        this._keyType = Nimiq.Secret.Type.ENTROPY;
         this._hasPin = false;
 
         // Start UI
@@ -99,17 +101,16 @@ class ImportApi extends TopLevelApi {
     _onFileImported(encryptedKeyBase64) {
         if (encryptedKeyBase64.substr(0, 2) === '#3') {
             // BIP39 Key File
-            this._keyType = Key.Type.BIP39;
+            this._keyType = Nimiq.Secret.Type.ENTROPY;
 
             this._encryptedKey = Nimiq.BufferUtils.fromBase64(encryptedKeyBase64.substr(2));
             this._hasPin = false;
             this._passphraseBox.setMinLength();
 
-            if (this._encryptedKey.length === Nimiq.CryptoUtils.ENCRYPTION_SIZE) this._goToEnterPassphrase();
-            else this._goToSetPassphrase();
+            this._goToEnterPassphrase();
         } else {
             // Legacy Account Access File
-            this._keyType = Key.Type.LEGACY;
+            this._keyType = Nimiq.Secret.Type.PRIVATE_KEY;
 
             if (encryptedKeyBase64.substr(0, 2) === '#2') {
                 // PIN-encoded
@@ -147,13 +148,13 @@ class ImportApi extends TopLevelApi {
         /** @type {{keyPath: string, address: Uint8Array}[]} */
         const addresses = [];
 
-        if (key.type === Key.Type.LEGACY) {
+        if (key.secret instanceof Nimiq.PrivateKey) {
             const address = key.deriveAddress('');
             addresses.push({
                 keyPath: 'm/0\'',
                 address: address.serialize(),
             });
-        } else if (key.type === Key.Type.BIP39) {
+        } else if (key.secret instanceof Nimiq.Entropy) {
             /** @type {KeyguardRequest.ImportRequest} */
             (this._request).requestedKeyPaths.forEach(keyPath => {
                 addresses.push({
@@ -163,7 +164,7 @@ class ImportApi extends TopLevelApi {
             });
 
             // Store entropy in SessionStorage so addresses can be derived in the KeyguardIframe
-            const secretString = Nimiq.BufferUtils.toBase64(key.secret);
+            const secretString = Nimiq.BufferUtils.toBase64(key.secret.serialize());
             sessionStorage.setItem(ImportApi.SESSION_STORAGE_KEY_PREFIX + key.id, secretString);
         } else {
             this.reject(new Errors.KeyguardError(`Unkown key type ${key.type}`));
@@ -190,30 +191,35 @@ class ImportApi extends TopLevelApi {
             // Separating the processing of the encryptionKey (password) and the secret (key) is necessary
             // to cover these scenarios:
             //     1. Encrypted key file with password or PIN
-            //     2. Unencrypted key file and no new password set
-            //     3. Unencrypted key file and new password set
+            //     2. Unencrypted words with no new password set
+            //     3. Unencrypted words with new password set
 
-            let secret = new Uint8Array(0);
+            /** @type {Nimiq.Entropy|Nimiq.PrivateKey} */
+            let secret;
             let encryptionKey = null;
 
             if (passphrase !== null) {
                 encryptionKey = Utf8Tools.stringToUtf8ByteArray(passphrase);
             }
 
-            if (this._encryptedKey.length === Nimiq.CryptoUtils.ENCRYPTION_SIZE) {
-                // Make sure read position is at 0 even after a wrong passphrase
+            // Files: 56 = V3, 54 = V2/V1
+            if (this._encryptedKey.byteLength === KeyStore.ENCRYPTED_SECRET_SIZE
+                || this._encryptedKey.byteLength === KeyStore.ENCRYPTED_SECRET_SIZE_V2) {
+                // Make sure read position is at 0 after a wrong passphrase
                 this._encryptedKey.reset();
 
-                secret = await Nimiq.CryptoUtils.decryptOtpKdf(
+                secret = await Nimiq.Secret.fromEncrypted(
                     this._encryptedKey,
                     /** @type {Uint8Array} */ (encryptionKey),
                 );
             } else {
-                // Key File was not encrypted and the imported Uint8Array is the plain secret
-                secret = this._encryptedKey;
+                // Words are not encrypted and this._encryptedKey is the plain secret
+                secret = this._keyType === Nimiq.Secret.Type.ENTROPY
+                    ? new Nimiq.Entropy(this._encryptedKey)
+                    : new Nimiq.PrivateKey(this._encryptedKey);
             }
 
-            const key = new Key(secret, this._keyType, this._hasPin);
+            const key = new Key(secret, this._hasPin);
 
             await KeyStore.instance.put(key, encryptionKey || undefined);
 
@@ -226,14 +232,13 @@ class ImportApi extends TopLevelApi {
     }
 
     /**
-     * @param { Nimiq.SerialBuffer } entropy
-     * @param { Key.Type } keyType
+     * @param {Nimiq.Entropy|Nimiq.PrivateKey} secret
      */
-    _onRecoveryWordsComplete(entropy, keyType) {
+    _onRecoveryWordsComplete(secret) {
         this._hasPin = false;
         this._passphraseBox.setMinLength();
-        this._keyType = keyType;
-        this._encryptedKey = entropy;
+        this._keyType = secret.type;
+        this._encryptedKey = secret.serialize();
         this._goToSetPassphrase();
     }
 

@@ -14,10 +14,6 @@ interface Window {
     NIMIQ_IQONS_SVG_PATH?: string
 }
 
-declare namespace Key {
-    type Type = 0 | 1
-}
-
 type AccountType = string
 
 declare namespace AccountType {
@@ -39,8 +35,7 @@ type AccountRecord = AccountInfo & {
 
 type KeyRecord = {
     id: string
-    type: Key.Type
-    encrypted: boolean
+    type: Nimiq.Secret.Type
     hasPin: boolean
     secret: Uint8Array
 }
@@ -59,3 +54,4 @@ type ParsedSignTransactionRequest = ConstructTransaction<Transform<KeyId2KeyInfo
 type ParsedSignMessageRequest = Transform<KeyId2KeyInfo<KeyguardRequest.SignMessageRequest>,
     'signer', { signer: Nimiq.Address }>
 type ParsedDeriveAddressRequest = KeyId2KeyInfo<KeyguardRequest.DeriveAddressRequest>
+type ParsedRemoveKeyRequest = KeyId2KeyInfo<KeyguardRequest.RemoveKeyRequest>
