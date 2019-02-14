@@ -23,6 +23,10 @@ class LoginFileIcon { // eslint-disable-line no-unused-vars
         this.$el = $el;
     }
 
+    /**
+     *
+     * @param {string} [colorClassName = ''] - only relevant for LoginFileIcon without `setFileUnavailable(true)`
+     */
     lock(colorClassName = '') {
         if (!this.fileUnavailable && colorClassName) {
             this.colorClass = colorClassName;

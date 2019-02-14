@@ -47,7 +47,7 @@ const TRANSLATIONS = {
         'import-words-hint': 'Press Tab to Jump to the next field',
         'import-words-error': 'This is not a valid account. Typo?',
 
-        'file-import-prompt': 'Drop your Key File here',
+        'file-import-prompt': 'Drag here or click to upload',
         'file-import-click-hint': 'Or click to select a file.',
 
         'enter-recovery-words-heading': 'Import from recovery words',

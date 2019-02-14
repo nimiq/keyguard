@@ -1,4 +1,4 @@
-class FlippableHandler { // eslint-disable-line no-unused-vars
+class FlippableHandler {
     /**
      * Classname 'dark' is the default flippable name, and has its css already available.
      * If other classes should be flipped to the backside they need to be added to FlippableHandler.css

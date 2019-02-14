@@ -1,5 +1,5 @@
 export type CreateRequest = KeyguardRequest.CreateRequest;
-export type KeyResult = KeyguardRequest.KeyResult[];
+export type KeyResult = KeyguardRequest.KeyResult;
 export type SimpleRequest = KeyguardRequest.SimpleRequest;
 export type SimpleResult = KeyguardRequest.SimpleResult;
 export type DeriveAddressRequest = KeyguardRequest.DeriveAddressRequest;

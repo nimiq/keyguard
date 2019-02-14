@@ -17,9 +17,9 @@ class ImportFile {
      * @param {Function} reject
      */
     constructor(request, resolve, reject) {
+        this._request = request;
         this._resolve = resolve;
         this._reject = reject;
-        this._request = request;
 
         this._encryptedKey = new Nimiq.SerialBuffer(0);
 
@@ -86,12 +86,12 @@ class ImportFile {
         /** @type {{keyPath: string, address: Uint8Array}[]} */
         const addresses = [];
 
-        if (key.secret instanceof Nimiq.Entropy) {
+        if (key.secret instanceof Nimiq.PrivateKey) {
             addresses.push({
                 keyPath: Constants.LEGACY_DERIVATION_PATH,
                 address: key.deriveAddress('').serialize(),
             });
-        } else if (key.secret instanceof Nimiq.PrivateKey) {
+        } else if (key.secret instanceof Nimiq.Entropy) {
             /** @type {KeyguardRequest.ImportRequest} */
             (this._request).requestedKeyPaths.forEach(keyPath => {
                 addresses.push({

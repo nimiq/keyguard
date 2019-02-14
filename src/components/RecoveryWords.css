@@ -36,11 +36,11 @@
     font-size: 1.875rem;
     padding: 0;
     border-radius: .5rem;
-    border: 1px solid rgba(255,255,255,0.2);
+    border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
 .recovery-words input[type="text"]:focus {
-    border-bottom: .125rem solid rgba(255, 255, 255, 0.5);
+    border-color: rgba(255, 255, 255, 0.3);
 }
 
 .recovery-words input[type="text"]::-webkit-calendar-picker-indicator {

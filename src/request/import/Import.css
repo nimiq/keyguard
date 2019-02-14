@@ -14,8 +14,11 @@
 }
 
 .page#import-file .page-footer .passphrase-box {
-    position: realtive;
-    margin-top: -21.5rem;
+    position: absolute;
+    margin: 0.75rem;
+    width: calc(100% - 1.5rem);
+    left: 0;
+    bottom: 0;
     transition: opacity .4s .5s, z-index .1s .5s;
     opacity: 0;
     z-index: -1;
@@ -32,10 +35,7 @@
 }
 
 .page#recovery-words {
-    background: radial-gradient(420.00px at 100% 100%, #260133 0%, #1F2348 100%);
-    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.111158);
     color: white;
-    border-radius: 8px;
 }
 
 .page#recovery-words p {
@@ -74,7 +74,7 @@ a#goto-create {
     text-decoration: none;
     margin: 2rem 0;
 }
-a#goto-create i.nq-icon {
+a#goto-create .nq-icon {
     margin-left: 0.5rem;
     margin-bottom: -0.25rem;
 }

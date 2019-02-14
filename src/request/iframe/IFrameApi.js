@@ -52,7 +52,7 @@ class IFrameApi {
      * @returns {boolean}
      */
     releaseKey(state, keyId, shouldBeRemoved) {
-        if (sessionStorage.getItem(IFrameApi.SESSION_STORAGE_KEY_PREFIX + keyId) && shouldBeRemoved) {
+        if (shouldBeRemoved && sessionStorage.getItem(IFrameApi.SESSION_STORAGE_KEY_PREFIX + keyId)) {
             if (BrowserDetection.isIOS() || BrowserDetection.isSafari()) {
                 const match = document.cookie.match(new RegExp('removeKey=([^;]+)'));
                 /** @type {string[]} */

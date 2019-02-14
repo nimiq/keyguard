@@ -8,6 +8,7 @@
 /* global LoginFile */
 /* global LoginFileIcon */
 /* global Nimiq */
+/* global PassphraseInput */
 /* global PassphraseSetterBox */
 /* global RecoveryWords */
 /* global TopLevelApi */
@@ -26,7 +27,7 @@ class ImportWords extends FlippableHandler {
         this._reject = reject;
 
         /** @type {{entropy: Nimiq.Entropy?, privateKey: Nimiq.PrivateKey?}} */
-        this._secret = { entropy: null, privateKey: null };
+        this._secrets = { entropy: null, privateKey: null };
         /** @type {KeyguardRequest.KeyResult[]} */
         this._keys = [];
 
@@ -63,7 +64,7 @@ class ImportWords extends FlippableHandler {
             }
         });
         this._recoveryWords.on(RecoveryWords.Events.INCOMPLETE, () => {
-            this._secret = { entropy: null, privateKey: null };
+            this._secrets = { entropy: null, privateKey: null };
             this._keys = [];
         });
         this._recoveryWords.on(RecoveryWords.Events.INVALID, () => $words.classList.add('invalid-words'));
@@ -80,6 +81,11 @@ class ImportWords extends FlippableHandler {
         this._passwordSetter.on(PassphraseSetterBox.Events.ENTERED, () => {
             const color = Iqons.getBackgroundColorIndex(
                 new Nimiq.Address(
+                    /*
+                     * this will either be unrelevant (UNKNOWN/PRIVATE_KEY) or correct (ENTROPY)
+                     * as `LoginFileIcon.setFileUnavailable(true)` was called in the former
+                     * and in the latter index 0 is the only index and contains the entropy
+                     */
                     this._keys[0].addresses[0].address,
                 ).toUserFriendlyAddress(),
             );
@@ -144,18 +150,18 @@ class ImportWords extends FlippableHandler {
     async _storeKeys(password = '') {
         TopLevelApi.setLoading(true);
         let encryptionKey = null;
-        if (password && password.length > 7) {
+        if (password && password.length >= PassphraseInput.DEFAULT_MIN_LENGTH) {
             encryptionKey = Utf8Tools.stringToUtf8ByteArray(password);
         }
         try {
-            if (this._secret.entropy) {
-                const key = new Key(this._secret.entropy, false);
+            if (this._secrets.entropy) {
+                const key = new Key(this._secrets.entropy, false);
                 await KeyStore.instance.put(key, encryptionKey || undefined);
                 const secretString = Nimiq.BufferUtils.toBase64(key.secret.serialize());
                 sessionStorage.setItem(ImportApi.SESSION_STORAGE_KEY_PREFIX + key.id, secretString);
             }
-            if (this._secret.privateKey) {
-                const key = new Key(this._secret.privateKey, false);
+            if (this._secrets.privateKey) {
+                const key = new Key(this._secrets.privateKey, false);
                 await KeyStore.instance.put(key, encryptionKey || undefined);
             } else {
                 TopLevelApi.setLoading(false);
@@ -173,22 +179,19 @@ class ImportWords extends FlippableHandler {
      * @param {number | null} mnemonicType
      */
     _onRecoveryWordsComplete(mnemonic, mnemonicType) {
-        this._secret = { entropy: null, privateKey: null };
+        this._secrets = { entropy: null, privateKey: null };
         this._keys = [];
 
         if (mnemonicType === Nimiq.MnemonicUtils.MnemonicType.BIP39
             || mnemonicType === Nimiq.MnemonicUtils.MnemonicType.UNKNOWN) {
             this._fileAvailable = true;
-            this._secret.entropy = Nimiq.MnemonicUtils.mnemonicToEntropy(mnemonic);
-            const key = new Key(this._secret.entropy, false);
+            this._secrets.entropy = Nimiq.MnemonicUtils.mnemonicToEntropy(mnemonic);
+            const key = new Key(this._secrets.entropy, false);
             /** @type {{keyPath: string, address: Uint8Array}[]} */
-            const addresses = [];
-            this._request.requestedKeyPaths.forEach(keyPath => {
-                addresses.push({
-                    keyPath,
-                    address: key.deriveAddress(keyPath).serialize(),
-                });
-            });
+            const addresses = this._request.requestedKeyPaths.map(keyPath => ({
+                keyPath,
+                address: key.deriveAddress(keyPath).serialize(),
+            }));
             this._keys.push({
                 keyId: key.id,
                 keyType: Nimiq.Secret.Type.ENTROPY,
@@ -201,8 +204,8 @@ class ImportWords extends FlippableHandler {
             || mnemonicType === Nimiq.MnemonicUtils.MnemonicType.UNKNOWN) {
             this._fileAvailable = false;
             const entropy = Nimiq.MnemonicUtils.legacyMnemonicToEntropy(mnemonic);
-            this._secret.privateKey = new Nimiq.PrivateKey(entropy.serialize());
-            const key = new Key(this._secret.privateKey, false);
+            this._secrets.privateKey = new Nimiq.PrivateKey(entropy.serialize());
+            const key = new Key(this._secrets.privateKey, false);
             this._keys.push({
                 keyId: key.id,
                 keyType: Nimiq.Secret.Type.PRIVATE_KEY,

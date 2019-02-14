@@ -31,7 +31,7 @@ class FileImport extends Nimiq.Observable {
         $el.classList.add('file-import');
 
         $el.innerHTML = `
-            <h3 class="nq-h3 nq-light-blue">Drag here or click to upload</h3>
+            <h3 class="nq-h3 nq-light-blue" data-i18n="file-import-prompt">Drag here or click to upload</h3>
             <div class="flex-grow"></div>
             <div class="qr-code"></div>
             <span class="error-message"></span>
@@ -66,7 +66,7 @@ class FileImport extends Nimiq.Observable {
             const fileReader = new FileReader();
             fileReader.onload = async e => {
                 const image = document.createElement('img');
-                // @ts-ignore
+                // @ts-ignore Object is possibly 'null'. Property 'result' does not exist on type 'EventTarget'.
                 image.src = e.target.result;
                 image.id = 'image-wallet';
                 this.$el.appendChild(image);
