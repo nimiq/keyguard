@@ -38,7 +38,7 @@ describe('KeyStore', () => {
         ]);
 
         for (let [i, key] of keys.entries()) {
-            if (!key) throw new Error();
+            if (!key) throw new Error(`Key with id ${Dummy.keyInfos[i].id} not found!`);
             expect(key.id).toEqual(Dummy.keyInfos[i].id);
             expect(key.type).toEqual(Dummy.keyInfos[i].type);
             expect(key.secret).toEqual(Dummy.secrets[i]);
