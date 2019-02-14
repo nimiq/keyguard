@@ -1,8 +1,16 @@
 /* global Nimiq */
 /* global RpcServer */
+/* global Errors */
+/* global Constants */
 
 /** @type {Promise<void>?} */
 let __nimiqLoaded = null;
+
+// Defaults for development. Build script replaces CONFIG.ALLOWED_ORIGIN and CONFIG.NETWORK.
+const CONFIG = {
+    ALLOWED_ORIGIN: '*',
+    NETWORK: 'test',
+};
 
 /**
  * Singleton promise
@@ -15,8 +23,16 @@ async function loadNimiq() {
         // Load web assembly encryption library into browser (if supported)
         await Nimiq.WasmHelper.doImport();
 
-        // Configure to use test net for now
-        Nimiq.GenesisConfig.test();
+        switch (CONFIG.NETWORK) {
+        case Constants.NETWORK.TEST:
+            Nimiq.GenesisConfig.test();
+            break;
+        case Constants.NETWORK.MAIN:
+            Nimiq.GenesisConfig.main();
+            break;
+        default:
+            throw new Errors.InvalidNetworkConfig();
+        }
 
         resolve();
     }));
@@ -55,10 +71,6 @@ async function runKeyguard(RequestApiClass, options) { // eslint-disable-line no
     // Instantiate handler.
     /** @type {TopLevelApi | IFrameApi} */
     const api = new RequestApiClass();
-
-    const CONFIG = {
-        ALLOWED_ORIGIN: '*', // default for development; build script replaces CONFIG.ALLOWED_ORIGIN
-    };
 
     /** @type {string} */
     const allowedOrigin = CONFIG.ALLOWED_ORIGIN;
