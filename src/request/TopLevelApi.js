@@ -29,6 +29,7 @@
  *  // Finally, start your API:
  *  runKeyguard(SignTransactionApi);
  * ```
+ * @abstract
  */
 class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
     constructor() {
