@@ -92,7 +92,7 @@ describe('IframeApi', () => {
         const ids = (await KeyStore.instance.list()).map(record => record.id);
         for (let id of ids) {
             const keyRecord = await KeyStore.instance._get(id);
-            const expectedKeyRecord = /** @type {StoredKeyRecord} */(Dummy.storedKeyRecords().find(x => x.id === id));
+            const expectedKeyRecord = /** @type {StoredKeyRecord} */(Dummy.storedKeyRecords().find(record => record.id === id));
             expect(keyRecord).toEqual(expectedKeyRecord);
         }
 
