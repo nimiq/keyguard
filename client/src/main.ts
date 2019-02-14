@@ -1,5 +1,5 @@
 export * from './KeyguardClient';
 export * from './RequestBehavior';
 export * from './KeyguardCommand';
-export * from './KeyguardRequestWrapper';
+export * from './KeyguardRequest';
 export * from './KeyguardErrors';

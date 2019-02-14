@@ -1,40 +1,44 @@
-declare namespace KeyguardRequest {
-    namespace Key {
-        type Type = 1 | 2;
+import Nimiq from '@nimiq/core-web';
+
+export namespace KeyguardRequest {
+    enum Type {
+        PRIVATE_KEY = 1,
+        ENTROPY = 2,
     }
 
+    // tslint:disable-next-line:interface-over-type-literal
     type KeyInfoObject = {
         id: string;
-        type: Key.Type;
+        type: Type;
         hasPin: boolean;
-    }
+    };
 
     type LegacyKeyInfoObject = KeyInfoObject & {
         legacyAccount: { label: string, address: Uint8Array };
-    }
+    };
 
     type BasicRequest = {
-        appName: string
-    }
+        appName: string,
+    };
 
     type SimpleRequest = BasicRequest & {
         keyId: string
-        keyLabel?: string
-    }
+        keyLabel?: string,
+    };
+
+    type SimpleResult = {
+        success: boolean,
+    };
 
     type RemoveKeyRequest = BasicRequest & {
         keyId: string
         keyLabel: string
     }
 
-    type SimpleResult = {
-        success: boolean
-    }
-
     type SignatureResult = {
         publicKey: Uint8Array
-        signature: Uint8Array
-    }
+        signature: Uint8Array,
+    };
 
     type TransactionInfo = {
         sender: Uint8Array
@@ -48,7 +52,7 @@ declare namespace KeyguardRequest {
         flags?: number
     }
 
-    type SignTransactionRequestLayout = 'standard' | 'checkout' | 'cashlink'
+    type SignTransactionRequestLayout = 'standard' | 'checkout' | 'cashlink';
 
     type SignTransactionRequest = SimpleRequest & TransactionInfo & {
         layout?: SignTransactionRequestLayout
@@ -58,8 +62,8 @@ declare namespace KeyguardRequest {
         keyPath: string
 
         senderLabel?: string
-        recipientLabel?: string
-    }
+        recipientLabel?: string,
+    };
 
     type SignTransactionResult = SignatureResult;
 
@@ -67,51 +71,51 @@ declare namespace KeyguardRequest {
         keyPath: string
         message: Uint8Array
         signer: Uint8Array
-        signerLabel?: string
-    }
+        signerLabel?: string,
+    };
 
     type SignMessageResult = SignatureResult & {
-        data: Uint8Array
-    }
+        data: Uint8Array,
+    };
 
     type CreateRequest = BasicRequest & {
         defaultKeyPath: string;
-    }
+    };
 
     type CreateResult = {
         keyId: string
         keyPath: string
-        address: Uint8Array
-    }
+        address: Uint8Array,
+    };
 
     type ImportRequest = BasicRequest & {
         defaultKeyPath: string;
         requestedKeyPaths: string[];
-    }
+    };
 
     type ImportResult = {
         keyId: string;
-        keyType: Key.Type;
-        addresses: { keyPath: string, address: Uint8Array }[];
-    }
+        keyType: Type;
+        addresses: Array<{ keyPath: string, address: Uint8Array }>;
+    };
 
     type DeriveAddressRequest = SimpleRequest & {
         baseKeyPath: string
-        indicesToDerive: string[]
-    }
+        indicesToDerive: string[],
+    };
 
     type DeriveAddressResult = {
         keyPath: string
-        address: Uint8Array
-    }
+        address: Uint8Array,
+    };
 
-    type KeyguardRequest = CreateRequest
+    type Request = CreateRequest
         | ImportRequest
         | SimpleRequest
         | SignTransactionRequest
         | DeriveAddressRequest
         | SignMessageRequest
-        | RemoveKeyRequest
+        | RemoveKeyRequest;
 
     type KeyguardError = {
         Types: {
@@ -138,5 +142,5 @@ declare namespace KeyguardRequest {
 declare interface Window {
     __keyguardErrorContainer: {
         ErrorConstants: KeyguardRequest.KeyguardError,
-    },
+    };
 }
