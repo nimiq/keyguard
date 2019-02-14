@@ -9,7 +9,7 @@
   "rules": {
     "arrow-parens": ["error", "as-needed"],
     "class-methods-use-this": ["off"],
-    "indent": ["error", 4],
+    "indent": ["error", 4, { "SwitchCase": 1 }],
     "max-len": ["error", 120],
     "no-param-reassign": ["off"],
     "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
