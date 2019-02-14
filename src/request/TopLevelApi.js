@@ -65,8 +65,6 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
             await KeyStore.instance.migrateAccountsToKeys();
         }
         this.parsedRequest = await this.parseRequest(request);
-        console.log(request);
-        console.log(this.parsedRequest);
 
         return new Promise((resolve, reject) => {
             this._resolve = resolve;
@@ -77,7 +75,6 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
             } else {
                 if (!(/** @type {ParsedSimpleRequest} */(this.parsedRequest).keyInfo
                     && !(/** @type {ParsedSimpleRequest} */(this.parsedRequest).keyInfo.encrypted))) {
-                    console.log('loadWorker');
                     Nimiq.CryptoWorker.getInstanceAsync();
                 }
 
