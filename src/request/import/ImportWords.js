@@ -1,5 +1,6 @@
 /* global Constants */
 /* global DownloadKeyfile */
+/* global Errors */
 /* global FlippableHandler */
 /* global ImportApi */
 /* global Iqons */
@@ -199,7 +200,6 @@ class ImportWords extends FlippableHandler {
             });
         }
 
-
         if (mnemonicType === Nimiq.MnemonicUtils.MnemonicType.LEGACY
             || mnemonicType === Nimiq.MnemonicUtils.MnemonicType.UNKNOWN) {
             this._fileAvailable = false;
@@ -214,6 +214,11 @@ class ImportWords extends FlippableHandler {
                     address: key.deriveAddress('').serialize(),
                 }],
             });
+        }
+
+        if (this._keys.length === 0) { // no mnemonicType was matched.
+            this._reject(new Errors.KeyguardError('Invalid mnemonic type'));
+            return;
         }
 
         this._passwordSetter.reset();
