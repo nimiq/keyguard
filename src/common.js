@@ -31,7 +31,7 @@ async function loadNimiq() {
                 Nimiq.GenesisConfig.main();
                 break;
             default:
-                 throw new Errors.InvalidNetworkConfig();
+                throw new Errors.InvalidNetworkConfig();
         }
 
         resolve();
