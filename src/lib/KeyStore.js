@@ -52,16 +52,16 @@ class KeyStore {
                 /** @type {IDBDatabase} */
                 const db = request.result;
 
-                switch (event.oldVersion) {
-                    case 1:
-                        // Version 1 was only used in Testnet, so we'll wipe it out.
-                        db.deleteObjectStore(KeyStore.DB_KEY_STORE_NAME);
-                        // eslint-disable-next-line no-fallthrough
-                    case 0:
-                        db.createObjectStore(KeyStore.DB_KEY_STORE_NAME, { keyPath: 'id', autoIncrement: true });
-                        break;
-                    default:
-                        break;
+                if (event.oldVersion < 1) {
+                    // Version 1 is the first version of the database.
+                    db.createObjectStore(KeyStore.DB_KEY_STORE_NAME, { keyPath: 'id' });
+                }
+                
+                if (event.oldVersion < 2) {
+                    // Version 2 changes the key id calculation, thus we drop and recreate the whole database.
+                    // (Version 1 was only in use in testnet)
+                    db.deleteObjectStore(KeyStore.DB_KEY_STORE_NAME);
+                    db.createObjectStore(KeyStore.DB_KEY_STORE_NAME, { keyPath: 'id', autoIncrement: true });
                 }
             };
         });
