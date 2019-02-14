@@ -56,9 +56,11 @@ class KeyStore {
                     case 1:
                         // Version 1 was only used in Testnet, so we'll wipe it out.
                         db.deleteObjectStore(KeyStore.DB_KEY_STORE_NAME);
-                        // no break intentionally
+                        // eslint-disable-next-line no-fallthrough
                     case 0:
                         db.createObjectStore(KeyStore.DB_KEY_STORE_NAME, { keyPath: 'id', autoIncrement: true });
+                        break;
+                    default:
                         break;
                 }
             };

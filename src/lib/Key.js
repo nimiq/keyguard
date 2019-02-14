@@ -12,12 +12,12 @@ class Key {
     /**
      * @param {Nimiq.Entropy|Nimiq.PrivateKey} secret
      * @param {boolean} [hasPin]
-     * @param {number} [id]
+     * @param {number?} [id]
      */
-    constructor(secret, hasPin = false, id = undefined) {
+    constructor(secret, hasPin = false, id = null) {
+        this._id = id;
         this._secret = secret;
         this._hasPin = hasPin;
-        this._id = id;
     }
 
     /**
