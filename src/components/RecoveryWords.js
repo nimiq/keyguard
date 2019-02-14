@@ -35,28 +35,17 @@ class RecoveryWords extends Nimiq.Observable {
     }
 
     /**
-     * @param {Nimiq.Entropy | Uint8Array} entropy
-     */
-    set entropy(entropy) {
-        const words = Nimiq.MnemonicUtils.entropyToMnemonic(entropy, Nimiq.MnemonicUtils.DEFAULT_WORDLIST);
-        this.setWords(words);
-    }
-
-    /**
      * @param {HTMLElement} [$el]
      * @param {boolean} input
      * @returns {HTMLElement}
      * */
     _createElement($el, input = true) {
         $el = $el || document.createElement('div');
-        $el.classList.add('recovery-words', 'nq-bg-light-blue');
+        $el.classList.add('recovery-words');
 
         $el.innerHTML = `
             <div class="words-container">
-                <div class="title-wrapper">
-                    <div class="title" data-i18n="recovery-words-title">Recovery Words</div>
-                </div>
-                <div class="word-section"> </div>
+                <div class="word-section"></div>
             </div>
         `;
 
@@ -117,7 +106,7 @@ class RecoveryWords extends Nimiq.Observable {
         }
     }
 
-    _checkPhraseComplete() {
+    async _checkPhraseComplete() {
         // Check if all fields are complete
         if (this.$fields.some(field => !field.complete)) {
             this._onFieldIncomplete();
@@ -134,11 +123,14 @@ class RecoveryWords extends Nimiq.Observable {
                 console.error(e); // eslint-disable-line no-console
             } else {
                 // wrong words
-                if (this._mnemonic) {
-                    this._mnemonic = null;
-                    this.fire(RecoveryWords.Events.INVALID);
-                }
-                this._animateError();
+                if (this._mnemonic) this._mnemonic = null;
+                /*
+                 * The animation time is used to delay the INVALID event firing, thus the await. It is possible
+                 * to trigger this by a keyboard event which results in a focus on a different $field which would
+                 * reset the invalid state again. This way the message pops up after the animation and after the focus.
+                 */
+                await this._animateError();
+                this.fire(RecoveryWords.Events.INVALID);
             }
         }
     }
@@ -148,6 +140,7 @@ class RecoveryWords extends Nimiq.Observable {
      * @param {?string} paste
      */
     _setFocusToNextInput(index, paste) {
+        index = Math.max(index, 0);
         if (index < this.$fields.length) {
             this.$fields[index].focus();
             if (paste) {

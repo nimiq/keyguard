@@ -101,12 +101,15 @@ class Create {
 
         const keyPath = request.defaultKeyPath;
 
-        /** @type {KeyguardRequest.CreateResult} */
-        const result = {
+        /** @type {KeyguardRequest.KeyResult[]} */
+        const result = [{
             keyId: key.id,
-            keyPath,
-            address: key.deriveAddress(keyPath).serialize(),
-        };
+            keyType: key.type,
+            addresses: [{
+                address: key.deriveAddress(keyPath).serialize(),
+                keyPath,
+            }],
+        }];
 
         this._resolve(result);
     }

@@ -48,9 +48,26 @@ class IFrameApi {
     /**
      * @param {Rpc.State?} state
      * @param {string} keyId
+     * @param {boolean} shouldBeRemoved
      * @returns {boolean}
      */
-    releaseKey(state, keyId) {
+    releaseKey(state, keyId, shouldBeRemoved) {
+        if (shouldBeRemoved && sessionStorage.getItem(IFrameApi.SESSION_STORAGE_KEY_PREFIX + keyId)) {
+            if (BrowserDetection.isIOS() || BrowserDetection.isSafari()) {
+                const match = document.cookie.match(new RegExp('removeKey=([^;]+)'));
+                /** @type {string[]} */
+                let removeKeyArray;
+                if (match && match[1]) {
+                    removeKeyArray = JSON.parse(match[1]);
+                } else {
+                    removeKeyArray = [];
+                }
+                removeKeyArray.push(keyId);
+                document.cookie = `removeKey=${JSON.stringify(removeKeyArray)};max-age=31536000`;
+            } else {
+                KeyStore.instance.remove(keyId);
+            }
+        }
         sessionStorage.removeItem(IFrameApi.SESSION_STORAGE_KEY_PREFIX + keyId);
         return true;
     }

@@ -15,4 +15,5 @@ const Constants = { // eslint-disable-line no-unused-vars
         TEST: 'test',
         MAIN: 'main',
     },
+    LEGACY_DERIVATION_PATH: 'm/0\'',
 };

@@ -1,86 +1,106 @@
-.page .file-import {
-    margin-bottom: 0;
-    width: auto;
-    align-self: stretch;
-}
-
-.page#file-import .page-footer .create-wallet {
-    cursor: pointer;
-}
-
-button.go-to-words {
-    margin-top: 2rem;
-    align-self: flex-start;
-}
-
-.page#enter-passphrase .page-body {
+.page#import-file .page-body {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
+    opacity: 1;
+    transition: filter .4s .5s, opacity .4s .5s;
 }
 
-.page#enter-passphrase .nq-icon.walletfile-locked {
-    width: 9rem;
-    height: 11.75rem;
-    flex-shrink: 0;
-}
-
-.keyfile-info {
+.page#import-file .page-footer {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.625rem;
 }
 
-.keyfile-info p:first-child {
-    margin-top: 0;
+.page#import-file .page-footer .passphrase-box {
+    position: absolute;
+    margin: 0.75rem;
+    width: calc(100% - 1.5rem);
+    left: 0;
+    bottom: 0;
+    transition: opacity .4s .5s, z-index .1s .5s;
+    opacity: 0;
+    z-index: -1;
 }
 
-.keyfile-info p:last-child {
+.page#import-file.enter-password .page-body {
+    filter: blur(12px);
+    opacity: 0.2;
+}
+
+.page#import-file.enter-password .page-footer .passphrase-box {
+    opacity: 1;
+    z-index: 3;
+}
+
+.page#recovery-words {
+    color: white;
+}
+
+.page#recovery-words p {
+    margin-top: 4rem;
     margin-bottom: 0;
+    opacity: 0.5;
+    text-align: center;
 }
 
-.page#set-passphrase .nq-icon.walletfile {
+.page#recovery-words.invalid-words p:not(.nq-red),
+.page#recovery-words:not(.invalid-words) p.nq-red {
+    display: none;
+}
+
+.page#recovery-words .recovery-words,
+.words-container {
+    display: flex;
+    flex-grow: 1;
+}
+
+.page#recovery-words .page-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.page#recovery-words .words-container input {
+    height: 100%;
+}
+
+button#goto-words {
+    margin-top: 3rem;
+}
+
+a#goto-create {
+    font-size: 1.75rem;
+    text-decoration: none;
+    margin: 2rem 0;
+}
+a#goto-create .nq-icon {
+    margin-left: 0.5rem;
+    margin-bottom: -0.25rem;
+}
+
+.page#set-password .nq-icon.walletfile {
     width: 9rem;
     height: 11.75rem;
     margin-right: 4rem;
     flex-shrink: 0;
 }
-
-#choose-key-type .key-type-or {
-    margin: 2rem 4rem;
-    text-align: center;
+.page#set-password .page-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-#choose-key-type .key-type-option input {
+.page#set-password p {
+    text-align: center;
+    font-weight: 600;
+}
+
+.page#set-password.login-file-available .login-file-unavailable,
+.page#set-password:not(.login-file-available) .login-file-available {
     display: none;
 }
-
-#choose-key-type .key-type-option label {
-    cursor: pointer;
-    border: 1px solid transparent;
-    border-radius: 1rem;
-    padding: 1rem;
-    align-items: flex-start;
-    border: solid 2px rgba(128, 128, 128, 0.2);
+.page#set-password .page-footer {
+    padding: 0.625rem;
 }
 
-#choose-key-type .key-type-option label:hover,
-#choose-key-type .key-type-option input:checked + label {
-    background: rgba(128, 128, 128, 0.2);
-    border-color: transparent;
-}
-
-#choose-key-type .key-type-option .identicon {
-    width: 10rem;
-    height: 10rem;
-    margin-right: 2rem;
-    flex-shrink: 0;
-}
-
-#choose-key-type .key-type-option .address {
-    white-space: unset;
-}
-
-#enter-passphrase .page-footer,
-#set-passphrase .page-footer {
-    padding: 1rem;
-}
