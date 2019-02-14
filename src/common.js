@@ -9,7 +9,7 @@ let __nimiqLoaded = null;
 // Defaults for development. Build script replaces CONFIG.ALLOWED_ORIGIN and CONFIG.NETWORK.
 const CONFIG = {
     ALLOWED_ORIGIN: '*',
-    NETWORK: Constants.NETWORK.TEST,
+    NETWORK: 'test',
     BASE_URL: '/src/',
 };
 
