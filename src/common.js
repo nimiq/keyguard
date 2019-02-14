@@ -9,16 +9,16 @@ let __nimiqLoaded = null;
 // Defaults for development. Build script replaces CONFIG.ALLOWED_ORIGIN and CONFIG.NETWORK.
 const CONFIG = {
     ALLOWED_ORIGIN: '*',
-    NETWORK: 'test',
-    BASE_URL: '/src'
+    NETWORK: Constants.NETWORK.TEST,
+    BASE_URL: '/src/',
 };
 
 // Register service worker if necessary (and possible)
 if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register(`${CONFIG.BASE_URL}/ServiceWorker.js`, {
-        scope: './'
-    }).then(function (reg) {
-        console.log('Service worker has been registered for scope: ' + reg.scope);
+    navigator.serviceWorker.register(`${CONFIG.BASE_URL}ServiceWorker.js`, {
+        scope: './',
+    }).then(reg => {
+        console.log(`Service worker has been registered for scope: ${reg.scope}`);
     });
 }
 
