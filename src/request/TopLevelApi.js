@@ -3,6 +3,7 @@
 /* global KeyStore */
 /* global CookieJar */
 /* global I18n */
+/* global Nimiq */
 /* global RequestParser */
 
 /**
@@ -62,36 +63,60 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
         if ((BrowserDetection.isIOS() || BrowserDetection.isSafari()) && TopLevelApi._hasMigrateFlag()) {
             await KeyStore.instance.migrateAccountsToKeys();
         }
+        this.parsedRequest = await this.parseRequest(request);
+        console.log(request);
+        console.log(this.parsedRequest);
 
         return new Promise((resolve, reject) => {
             this._resolve = resolve;
             this._reject = reject;
+            if (!this.parsedRequest) { // should already be rejected here with an Errors.InvalidRequestError()
+                // this really should never happen
+                this.reject(new Errors.InvalidRequestError('Request was not successfully parsed'));
+            } else {
+                if (!(/** @type {ParsedSimpleRequest} */(this.parsedRequest).keyInfo
+                    && !(/** @type {ParsedSimpleRequest} */(this.parsedRequest).keyInfo.encrypted))) {
+                    console.log('loadWorker');
+                    Nimiq.CryptoWorker.getInstanceAsync();
+                }
 
-            window.addEventListener('unhandledrejection', event => {
-                const error = new Errors.UnclassifiedError(/** @type {PromiseRejectionEvent} */(event).reason);
-                this.reject(error);
-                return false;
-            });
+                window.addEventListener('unhandledrejection', event => {
+                    const error = new Errors.UnclassifiedError(/** @type {PromiseRejectionEvent} */(event).reason);
+                    this.reject(error);
+                    return false;
+                });
 
-            window.addEventListener('error', event => {
-                const error = new Errors.UnclassifiedError(event.error);
-                this.reject(error);
-                return false;
-            });
+                window.addEventListener('error', event => {
+                    const error = new Errors.UnclassifiedError(event.error);
+                    this.reject(error);
+                    return false;
+                });
 
-            window.location.hash = 'loading';
-            this.onRequest(request).catch(reject);
+                window.location.hash = 'loading';
+                this.onRequest(this.parsedRequest).catch(reject);
+            }
         });
     }
 
     /**
      * Overwritten by each request's API class
      *
-     * @param {KeyguardRequest.KeyguardRequest} request
+     * @param {ParsedRequest} request
      * @abstract
      */
     async onRequest(request) { // eslint-disable-line no-unused-vars
-        throw new Error('Not implemented');
+        throw new Error('onRequest not implemented');
+    }
+
+    /**
+     * Overwritten by each request's API class
+     *
+     * @param {KeyguardRequest.KeyguardRequest} request
+     * @returns {Promise<ParsedRequest>}
+     * @abstract
+     */
+    async parseRequest(request) { // eslint-disable-line no-unused-vars
+        throw new Error('parseRequest not implemented');
     }
 
     /**

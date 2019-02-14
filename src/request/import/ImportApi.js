@@ -30,7 +30,7 @@ class ImportApi extends TopLevelApi {
      * @param {KeyguardRequest.ImportRequest} request
      */
     async onRequest(request) {
-        this._request = this.parseRequest(request);
+        this._request = request;
 
         // Global cancel link
         /** @type {HTMLElement} */
@@ -260,9 +260,9 @@ class ImportApi extends TopLevelApi {
 
     /**
      * @param {KeyguardRequest.ImportRequest} request
-     * @returns {KeyguardRequest.ImportRequest}
+     * @returns {Promise<KeyguardRequest.ImportRequest>}
      */
-    parseRequest(request) {
+    async parseRequest(request) {
         if (!request) {
             throw new Errors.InvalidRequestError('request is required');
         }

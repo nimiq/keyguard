@@ -5,14 +5,13 @@
 
 class SignTransactionApi extends TopLevelApi {
     /**
-     * @param {KeyguardRequest.SignTransactionRequest} request
+     * @param {ParsedSignTransactionRequest} request
      */
     async onRequest(request) {
         TopLevelApi.setLoading(true);
-        const parsedRequest = await this.parseRequest(request);
 
         const handler = new SignTransaction(
-            parsedRequest,
+            request,
             this.resolve.bind(this),
             this.reject.bind(this),
         );
