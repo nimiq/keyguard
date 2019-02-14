@@ -57,11 +57,11 @@ class FileImport extends Nimiq.Observable {
      * @param {Event} event
      */
     _onFileSelected(event) {
-        // @ts-ignore
-        if (event.target && event.target.files && event.target.files.length === 1) {
+        /** @type {HTMLInputElement} */
+        const eventTarget = (event.target);
+        if (eventTarget && eventTarget.files && eventTarget.files.length === 1) {
             this.$errorMessage.textContent = '';
-            // @ts-ignore
-            const files = event.target.files;
+            const files = eventTarget.files;
 
             const fileReader = new FileReader();
             fileReader.onload = async e => {

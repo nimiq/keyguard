@@ -80,7 +80,7 @@ class ImportWords extends FlippableHandler {
         this._passwordSetter.on(PassphraseSetterBox.Events.ENTERED, () => {
             const color = Iqons.getBackgroundColorIndex(
                 new Nimiq.Address(
-                    /** @type {KeyguardRequest.KeyResult[]} */(this._keys)[0].addresses[0].address,
+                    this._keys[0].addresses[0].address,
                 ).toUserFriendlyAddress(),
             );
             const colorString = LoginFile.CONFIG[color].name;

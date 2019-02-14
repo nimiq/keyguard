@@ -37,7 +37,9 @@ class ImportFile {
         $gotoWords.addEventListener('click', () => { this.importWordsHandler.run(); });
 
         const $gotoCreate = this.$importFilePage.querySelector('#goto-create');
-        if ($gotoCreate) $gotoCreate.addEventListener('click', this._goToCreate.bind(this));
+        if ($gotoCreate) {
+            $gotoCreate.addEventListener('click', this._goToCreate.bind(this));
+        }
 
         /** @type {HTMLFormElement} */
         const $passphraseBox = (this.$importFilePage.querySelector('.passphrase-box'));
