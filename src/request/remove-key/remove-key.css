@@ -37,30 +37,86 @@
     margin-bottom: 0;
 }
 
-.page#privacy:not(.hide-passphrase) .hide-for-passphrase {
-    display: none;
-}
-.page#privacy.hide-passphrase .passphrase-box {
-    display: none;
-}
-
-.page#remove-key.show-passphrase-box .hide-for-passphrase {
-    display: none
-}
-
-.page#remove-key:not(.show-passphrase-box) .passphrase-box {
-    display: none;
-}
-
-.page#download-key-file.show-download .hide-for-download {
-    display: none
-}
-
+.page#remove-key:not(.show-final-confirm) .final-confirm,
+.page#remove-key.show-final-confirm .hide-for-final-confirm,
+.page#download-key-file.show-download .hide-for-download,
 .page#download-key-file:not(.show-download) .download-key-file,
 .page#download-key-file:not(.show-download) .back-to-remove {
     display: none;
 }
 
-.page-footer {
-    padding: 1rem;
+.page#remove-key .backup-option {
+    display: flex;
+    align-items: center;
+    margin: 4rem 3rem 0;
+}
+
+.page#remove-key .backup-option + .backup-option {
+    margin-top: 3rem;
+}
+
+.page#remove-key .backup-option .login-file-svg-container,
+.page#remove-key .backup-option img {
+    min-width: 8.375rem;
+    height: 14.744rem;
+}
+
+.page#remove-key .backup-option .login-file-svg-container svg {
+    width: 100%;
+    height: 100%;
+}
+
+.page#remove-key .backup-option > *:nth-child(2) {
+    margin-left: 3rem;
+}
+
+.page#remove-key .page-body {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+}
+
+.page#remove-key .page-footer button {
+    margin-top: 0;
+    width: calc(100% - 7rem);
+}
+
+.page#remove-key:not(.show-final-confirm) #remove-key-label-confirm {
+    width: 100%;
+    height: 14.5rem;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 2.625rem;
+    font-size: 1.75rem;
+    border-radius: 0.5rem;
+    margin: 2rem auto;
+    margin-bottom: 0;
+    cursor: text;
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+}
+
+.page#remove-key #remove-key-label-confirm:hover {
+    transform: scale(1.02) perspective(1px);
+    box-shadow: 0 0.5rem 3rem rgba(0,0,0,.15);
+}
+
+.page#remove-key #remove-key-label-confirm div {
+    margin-top: 1.4rem;
+    flex-grow: 1;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.page#remove-key #remove-key-label-confirm #label {
+    margin-top: 1.4rem;
+    flex-grow: 1;
+    color: #fff;
+}
+
+.page#remove-key #remove-key-label-confirm input {
+    font-size: 3.6rem;
+    border-bottom: none;
+    margin-bottom: 4rem;
+    width: 100%;
 }

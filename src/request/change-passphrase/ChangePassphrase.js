@@ -25,11 +25,9 @@ class ChangePassphrase {
         this._passphrase = '';
 
         /** @type {HTMLElement} */
-        const $enterPassphrasePage = document.getElementById(ChangePassphrase.Pages.ENTER_PASSPHRASE)
-                                  || this._buildEnterPassphrasePage();
+        const $enterPassphrasePage = (document.getElementById(ChangePassphrase.Pages.ENTER_PASSPHRASE));
         /** @type {HTMLElement} */
-        const $setPassphrasePage = document.getElementById(ChangePassphrase.Pages.SET_PASSPHRASE)
-                                || this._buildSetPassphrasePage();
+        const $setPassphrasePage = (document.getElementById(ChangePassphrase.Pages.SET_PASSPHRASE));
 
         /** @type {HTMLFormElement} */
         const $enterPassphraseBox = ($enterPassphrasePage.querySelector('.passphrase-box'));
@@ -112,57 +110,6 @@ class ChangePassphrase {
             success: true,
         };
         this._resolve(result);
-    }
-
-    _buildEnterPassphrasePage() {
-        const $el = document.createElement('div');
-        $el.id = ChangePassphrase.Pages.ENTER_PASSPHRASE;
-        $el.classList.add('page', 'nq-card');
-        $el.innerHTML = `
-            <div class="page-header nq-card-header">
-                <h1 data-i18n="change-passphrase-heading" class="nq-h1">Change your passphrase</h1>
-            </div>
-
-            <div class="page-body nq-card-body">
-                <p data-i18n="change-paragraph" class="nq-text">
-                    Before entering your new passphrase, you must first unlock your wallet.
-                </p>
-            </div>
-
-            <div class="page-footer">
-                <form class="passphrase-box"></form>
-            </div>
-        `;
-        /** @type {HTMLElement} */
-        const $app = (document.getElementById('app'));
-        $app.insertBefore($el, $app.children[1]);
-        return $el;
-    }
-
-    _buildSetPassphrasePage() {
-        const $el = document.createElement('div');
-        $el.id = ChangePassphrase.Pages.SET_PASSPHRASE;
-        $el.classList.add('page', 'nq-card');
-        $el.innerHTML = `
-            <div class="page-header nq-card-header">
-                <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
-                <h1 data-i18n="change-passphrase-heading" class="nq-h1">Change your passphrase</h1>
-            </div>
-
-            <div class="page-body nq-card-body">
-                <p data-i18n="change-set-paragraph" class="nq-text">
-                    Now please enter your new Passphrase and repeat it for confirmation.
-                </p>
-            </div>
-
-            <div class="page-footer">
-                <form class="passphrase-box"></form>
-            </div>
-        `;
-        /** @type {HTMLElement} */
-        const $app = (document.getElementById('app'));
-        $app.insertBefore($el, $app.children[1]);
-        return $el;
     }
 }
 

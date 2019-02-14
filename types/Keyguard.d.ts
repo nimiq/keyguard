@@ -54,3 +54,4 @@ type ParsedSignTransactionRequest = ConstructTransaction<Transform<KeyId2KeyInfo
 type ParsedSignMessageRequest = Transform<KeyId2KeyInfo<KeyguardRequest.SignMessageRequest>,
     'signer', { signer: Nimiq.Address }>
 type ParsedDeriveAddressRequest = KeyId2KeyInfo<KeyguardRequest.DeriveAddressRequest>
+type ParsedRemoveKeyRequest = KeyId2KeyInfo<KeyguardRequest.RemoveKeyRequest>

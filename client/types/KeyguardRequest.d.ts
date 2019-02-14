@@ -22,6 +22,11 @@ declare namespace KeyguardRequest {
         keyLabel?: string
     }
 
+    type RemoveKeyRequest = BasicRequest & {
+        keyId: string
+        keyLabel: string
+    }
+
     type SimpleResult = {
         success: boolean
     }
@@ -106,6 +111,7 @@ declare namespace KeyguardRequest {
         | SignTransactionRequest
         | DeriveAddressRequest
         | SignMessageRequest
+        | RemoveKeyRequest
 
     type KeyguardError = {
         Types: {

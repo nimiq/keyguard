@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy"
-          content="default-src 'self' 'unsafe-eval' https://cdn.nimiq-testnet.com;
-          img-src http: https: blob: data:;
-          child-src 'self' blob:;
-          style-src 'self' https://fonts.googleapis.com;
-          font-src https://fonts.gstatic.com;">
+        content="default-src 'self' 'unsafe-eval' https://cdn.nimiq-testnet.com;
+        img-src http: https: blob: data:;
+        child-src 'self' blob:;
+        style-src 'self' https://fonts.googleapis.com;
+        font-src https://fonts.gstatic.com;">
     <title>Nimiq Keyguard</title>
 
     <script defer src="https://cdn.nimiq-testnet.com/v1.4.2/web-offline.js"></script>
@@ -65,6 +66,7 @@
     <link rel="stylesheet" href="../export/Export.css">
     <link rel="stylesheet" href="./remove-key.css">
 </head>
+
 <body>
     <div class="header-top">
         <div class="nimiq-app-name">
@@ -73,28 +75,58 @@
     </div>
 
     <div id="app">
+        <!-- Remove key-->
+        <div class="page nq-card" id="remove-key">
 
-        <div class="flex-grow"></div>
-
-        <!-- export file without export words link but with back arrow -->
-        <div class="page nq-card" id="download-key-file">
             <div class="page-header nq-card-header">
                 <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
-                <h1 data-i18n="export-file-heading" class="nq-h1">Download Key File</h1>
+                <h1 data-i18n="remove-key-heading" class="nq-h1">Don't lose access</h1>
             </div>
 
             <div class="page-body nq-card-body">
-                <div class="flex-grow"></div>
-                <div class="download-icon hide-for-download">
-                    <div class="nq-icon walletfile"></div>
-                    <div class="nq-icon arrow-down"></div>
+                <div class="row center">
+                    <p data-i18n="remove-key-intro-text" class="nq-text nq-red">
+                        If you log out without saving your account, you will irretrievably lose access to it!
+                    </p>
                 </div>
-                <div class="download-key-file"></div>
-                <div class="flex-grow"></div>
+                <div class="backup-option">
+                    <div class="login-file-svg-container">
+                        <img src="../../assets/dummy-login-file.svg">
+                    </div>
+                    <div>
+                        <div data-i18n="remove-key-login-file-question">
+                            Is your LoginFile savely stored and accessible?
+                        </div>
+                        <button id="show-download-login-file" data-i18n="remove-key-download-login-file"
+                            class="nq-button-s">
+                            Download LoginFile
+                        </button>
+                    </div>
+                </div>
+                <div class="backup-option">
+                    <img src="../../assets/sample-recovery-words.png" alt="sample recovery words" />
+                    <div>
+                        <div data-i18n="remove-key-recovery-words-question">
+                            Do you know where your Recovery Words are?
+                        </div>
+                        <button id="show-recovery-words" data-i18n="remove-key-show-recovery-words" class="nq-button-s">
+                            Create a backup
+                        </button>
+                    </div>
+                </div>
             </div>
 
-            <div class="page-footer hide-for-download">
-                <form class="passphrase-box"></form>
+            <div class="page-footer nq-card-footer">
+                <div id="remove-key-label-confirm" class="hide-for-final-confirm nq-red-bg">
+                    <div>
+                        <span data-i18n="remove-key-enter-label-1">Type</span> "<span id="label"></span>" <span data-i18n="remove-key-enter-label-2">to log out.</span>
+                    </div>
+                    <input type="text">
+                </div>
+                <button id="remove-key-final-confirm" class="final-confirm nq-button red"
+                    data-i18n="remove-key-final-confirm">
+                    Log out
+                </button>
             </div>
         </div>
 
@@ -103,13 +135,11 @@
             Back to <span id="app-name"></span>
         </button>
 
-        <div class="flex-grow"></div>
-
         <!-- Default and loading screen -->
         <div id="loading" class="page">
             <div class="loading-animation"></div>
         </div>
-
     </div>
 </body>
+
 </html>
