@@ -89,7 +89,7 @@ describe('IframeApi', () => {
         expect(KeyStore.instance.migrateAccountsToKeys).toHaveBeenCalled();
 
         // check that keys have been copied correctly
-        const ids = (await KeyStore.instance.list()).map(x => x.id);
+        const ids = (await KeyStore.instance.list()).map(record => record.id);
         for (let id of ids) {
             const keyRecord = await KeyStore.instance._get(id);
             const expectedKeyRecord = /** @type {StoredKeyRecord} */(Dummy.storedKeyRecords().find(x => x.id === id));
