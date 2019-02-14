@@ -167,6 +167,7 @@ describe('KeyStore', () => {
         await Dummy.Utils.deleteDummyKeyStore();
 
         let currentKeys = await KeyStore.instance.list();
+        expect(currentKeys.length).toBe(0); // Just to be sure
 
         // add key
         const passphrase = Nimiq.BufferUtils.fromAscii(Dummy.encryptionPassword);
