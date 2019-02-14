@@ -84,7 +84,7 @@ class ExportFile extends Nimiq.Observable {
                 this._downloadKeyFilePassphraseBox.onPassphraseIncorrect();
                 return;
             }
-            this._reject(new Errors.CoreError(e.message));
+            this._reject(new Errors.CoreError(e));
             return;
         }
         if (!key) {

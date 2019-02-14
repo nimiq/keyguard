@@ -192,7 +192,7 @@ class RequestParser { // eslint-disable-line no-unused-vars
             }
             return parsedUrl.origin;
         } catch (error) {
-            throw new Errors.InvalidRequestError(`Invalid url: ${error.message}`);
+            throw new Errors.InvalidRequestError(error);
         }
     }
 
@@ -212,7 +212,7 @@ class RequestParser { // eslint-disable-line no-unused-vars
             }
             return parsedUrl;
         } catch (error) {
-            throw new Errors.InvalidRequestError(`Invalid url: ${error.message}`);
+            throw new Errors.InvalidRequestError(error);
         }
     }
 }

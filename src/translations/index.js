@@ -85,6 +85,8 @@ const TRANSLATIONS = {
         'identicon-selector-loading': 'Mixing colors',
         'identicon-selector-button-select': 'Select',
         'identicon-selector-link-back': 'Back',
+        'identicon-selector-generate-new': 'Generate new',
+        'identicon-selector-more-addresses': 'More addresses',
 
         'downloadkeyfile-heading-protected': 'Your Key File is protected!',
         'downloadkeyfile-heading-unprotected': 'Your Key File is not protected!',
@@ -102,27 +104,28 @@ const TRANSLATIONS = {
         'export-finish': 'Finish Export',
         'export-more-options-heading': 'More export options',
 
-        'remove-key-log-out': 'Log out',
-        'remove-key-intro-text': 'Logging out means removing your Wallet File from this browser. '
-                               + 'Make sure you have it stored somewhere, or at least have your '
-                               + 'Recovery Words accessible.',
-        'remove-key-intro-text-red': 'If you have neither of them, there’s no chance to regain '
-                                   + 'access to your wallet.',
-        'remove-key-key-file': 'Wallet File',
-        'remove-key-download-key-file': 'Download Wallet File',
-        'remove-key-show-recovery-words': 'Show Recovery Words',
-        'remove-key-confirm': 'Log out of your wallet',
+        'remove-key-heading': 'Don\'t lose access',
+        'remove-key-intro-text': 'If you log out without saving your account, you will irretrievably '
+                               + 'lose access to it!',
+        'remove-key-login-file': 'LoginFile',
+        'remove-key-login-file-question': 'Is your LoginFile savely stored and accessible?',
+        'remove-key-download-login-file': 'Download LoginFile',
+        'remove-key-recovery-words-question': 'Do you know where your Recovery Words are?',
+        'remove-key-show-recovery-words': 'Create a backup',
+        'remove-key-first-confirm': 'I am able to log in again',
+        'remove-key-enter-label-1': 'Type',
+        'remove-key-enter-label-2': 'to log out.',
+        'remove-key-final-confirm': 'Log out',
         'remove-key-recovery-words': 'Recovery Words',
         'remove-key-back': 'Back to logout',
 
-        'derive-address-heading-passphrase': 'Unlock your wallet',
-        'derive-address-passphrase-text': 'Please enter your passphrase to add another account to your wallet.',
-        'derive-address-heading-choose-identicon': 'Choose your account avatar',
-        'derive-address-text-select-avatar': 'Select an avatar for your new account from the selection below.',
+        'derive-address-heading-password': 'Unlock your account',
+        'derive-address-password-text': 'To add a new address, please unlock your account first.',
+        'derive-address-heading-choose-identicon': 'Choose a new address',
 
-        'change-passphrase-heading': 'Change your passphrase',
-        'change-paragraph': 'Before entering your new passphrase, you must first unlock your wallet.',
-        'change-set-paragraph': 'Now please enter your new Passphrase and repeat it for confirmation.',
+        'change-passphrase-heading': 'Change your password',
+        'change-paragraph': 'Before entering your new password, you must first unlock your account.',
+        'change-set-paragraph': 'Now please enter your new password and repeat it for confirmation.',
     },
     de: {
         _language: 'Deutsch',
@@ -143,7 +146,7 @@ const TRANSLATIONS = {
         'recovery-words-title': 'Wiederherstellungswörter',
         'recovery-words-input-label': 'Wiederherstellungswörter',
         'recovery-words-input-field-placeholder': 'Wort ',
-        'recovery-words-explanation': 'Es gibt wirklich keine Password-Wiederherstellung. Die folgenden Wörter '
+        'recovery-words-explanation': 'Es gibt wirklich keine Passwort-Wiederherstellung. Die folgenden Wörter '
                                     + 'sind ein Backup von deiner Schlüsseldatei und werden dir Zugang zu deiner '
                                     + 'Wallet gewähren, auch wenn deine Schlüsseldatei verloren ist.',
         'recovery-words-storing': 'Schreibe diese Wörter auf ein Stück Papier und verwahre es an einem sicheren, '
@@ -216,6 +219,8 @@ const TRANSLATIONS = {
         'identicon-selector-loading': 'Mische Farben',
         'identicon-selector-button-select': 'Auswählen',
         'identicon-selector-link-back': 'Zurück',
+        'identicon-selector-generate-new': 'Neu generieren',
+        'identicon-selector-more-addresses': 'Mehr Adressen',
 
         'downloadkeyfile-heading-protected': 'Dein Schlüsseldatei ist geschützt!',
         'downloadkeyfile-heading-unprotected': 'Dein Schlüsseldatei ist nicht geschützt!',
@@ -234,28 +239,29 @@ const TRANSLATIONS = {
         'export-finish': 'Export abschließen',
         'export-more-options-heading': 'Zusätzliche Export Optionen',
 
-        'remove-key-log-out': 'Log out',
-        'remove-key-intro-text': 'Ausloggen bedeutet deine Schlüsseldatei aus diesem Browser zu entfernen. '
-                               + 'Stelle sicher, dass du sie an einem sicheren Ort verwahrt hast, '
-                               + 'oder zumindest deine Wiederherstellungswörter für dich zugänglich sind.',
-        'remove-key-intro-text-red': 'Falls du zu beiden keinen Zugang hast besteht keine Möglichkeit wieder '
-                                   + 'Zugriff auf dein Wallet zu erhalten.',
-        'remove-key-key-file': 'Schlüsseldatei',
-        'remove-key-download-key-file': 'Schlüsseldatei herunterladen',
-        'remove-key-show-recovery-words': 'Wiederherstellungswörter anzeigen',
-        'remove-key-confirm': 'Aus deinem Wallet ausloggen',
+        'remove-key-heading': 'Verliere deinen Zugang nicht',
+        'remove-key-intro-text': 'Falls du dich ausloggst, ohne dein Konto zu sichern, wirst du unwiderruflich'
+                               + 'den Zugriff darauf verlieren. ',
+        'remove-key-login-file': 'LoginDatei',
+        'remove-key-login-file-question': 'Ist deine LoginDatei sicher gespeichert und zugänglich?',
+        'remove-key-download-login-file': 'LoginDatei herunterladen',
+        'remove-key-recovery-words-question': 'Weißt du, wo sich deine Wiederherstellungswörter befinden?',
+        'remove-key-show-recovery-words': 'Sicherung anlegen',
+        'remove-key-enter-label-1': 'Gib',
+        'remove-key-enter-label-2': 'ein, um dich auszuloggen.',
+        'remove-key-final-confirm': 'Ausloggen',
         'remove-key-recovery-words': 'Wiederherstellungswörter',
         'remove-key-back': 'Zurück zum logout',
 
-        'derive-address-heading-passphrase': 'Entschlüssele dein Wallet',
-        'derive-address-passphrase-text': 'Bitte gib deine Passphrase ein um deiner Wallet einen weiteren Account '
+        'derive-address-heading-password': 'Entschlüssele deinen Account',
+        'derive-address-password-text': 'Bitte gib dein Passwort ein um deinem Account eine weitere Adresse '
                                         + 'hinzuzufügen.',
         'derive-address-heading-choose-identicon': 'Wähle deinen Konto-Avatar',
         'derive-address-text-select-avatar': 'Wähle einen Avatar für deinen neuen Account aus der Auswahl unten.',
 
         'change-passphrase-heading': 'Ändere dein Passwort',
-        'change-paragraph': 'Um dein Passwort zu ändern musst du vorher dein Wallet entschlüsseln.',
-        'change-set-paragraph': 'Gib jetzt dein neues Passwort ein und wiederhole es danach um es zu bestätigen.',
+        'change-paragraph': 'Um dein Passwort zu ändern, musst du vorher deinen Account entschlüsseln.',
+        'change-set-paragraph': 'Gib jetzt dein neues Passwort ein und wiederhole es danach, um es zu bestätigen.',
     },
 };
 

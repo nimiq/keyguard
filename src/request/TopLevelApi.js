@@ -3,7 +3,6 @@
 /* global KeyStore */
 /* global CookieJar */
 /* global I18n */
-/* global ErrorConstants */
 /* global RequestParser */
 
 /**
@@ -69,26 +68,13 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
             this._reject = reject;
 
             window.addEventListener('unhandledrejection', event => {
-                let error = /** @type {PromiseRejectionEvent} */(event).reason;
-                if (error instanceof Error) {
-                    error.name = error.name === 'Error' ? ErrorConstants.Types.UNCLASSIFIED : error.name;
-                } else {
-                    error = new Errors.KeyguardError(
-                        `Unknown Error: ${/** @type {PromiseRejectionEvent} */(event).reason}`,
-                    );
-                }
-
+                const error = new Errors.UnclassifiedError(/** @type {PromiseRejectionEvent} */(event).reason);
                 this.reject(error);
                 return false;
             });
 
             window.addEventListener('error', event => {
-                let error = event.error;
-                if (error instanceof Error) {
-                    error.name = event.error.name === 'Error' ? ErrorConstants.Types.UNCLASSIFIED : error.name;
-                } else {
-                    error = new Errors.KeyguardError(`Unknown Error: ${event.error}`);
-                }
+                const error = new Errors.UnclassifiedError(event.error);
                 this.reject(error);
                 return false;
             });

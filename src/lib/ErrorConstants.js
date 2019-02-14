@@ -5,7 +5,7 @@ const ErrorConstants = {
         INVALID_REQUEST: 'InvalidRequest',
         // used for errors thrown from core methods
         CORE: 'Core',
-        // used for internal keyguard Errors.
+        // used for other internal keyguard Errors.
         KEYGUARD: 'Keyguard',
         // used for the remaining Errors which are not assigned an own type just yet.
         UNCLASSIFIED: 'Unclassified',
@@ -17,6 +17,8 @@ const ErrorConstants = {
         CANCELED: 'CANCELED',
         // used to signal that a given keyId no longer exist in KG, to be treated by caller.
         KEY_NOT_FOUND: 'keyId not found',
+        // network name does not exist
+        INVALID_NETWORK_CONFIG: 'Invalid network config',
     },
 };
 
