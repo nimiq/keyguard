@@ -23,8 +23,7 @@
   },
   "include": [
     "src/*.ts",
-    "types/ErrorContainer.d.ts",
-    "src/KeyguardRequest.ts
+    "types/ErrorContainer.d.ts"
   ],
   "exclude": [
     "node_modules",
