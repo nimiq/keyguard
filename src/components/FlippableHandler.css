@@ -1,0 +1,49 @@
+#rotation-container {
+    position: relative;
+    width: 100%;
+    max-width: 56.5rem; /* 420px + 2 * 2rem because of .nq-card margin*/
+    height: 76.5rem; /* 564px */
+    padding-top: 3rem;
+    margin-top: -3rem;
+    padding-bottom: 3rem;
+    margin-bottom: -3rem;
+    transition: 0.6s;
+    transform-style: preserve-3d;
+    will-change: transform;
+}
+
+#rotation-container > .page.flipped,
+#rotation-container.flipped {
+    transform: rotateY(180deg);
+}
+
+#rotation-container > .page.flipped .page-header-back-button {
+    background-image: url('data:image/svg+xml,<svg width="23" height="18" viewBox="0 0 23 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22 9.04854L2.99789 9.04826" stroke="%23FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.99902 16.001L1.99951 8.99951L8.99902 2" stroke="%23FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>');
+}
+
+#rotation-container > .page {
+    position: absolute;
+    backface-visibility: hidden;
+    overflow: hidden;
+}
+
+.display-flex {
+    display: flex;
+}
+
+#rotation-container > .page:not(.flipped) {
+    transform: rotateY(0deg);
+    z-index: 2;
+}
+
+#rotation-container > .page:target {
+    z-index: 3;
+}
+
+#rotation-container > #loading {
+    width: 100%;
+    height: 100%;
+    min-height: auto;
+    z-index: 6;
+    background-color: var(--nimiq-gray);
+}

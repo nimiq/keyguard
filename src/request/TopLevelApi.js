@@ -59,8 +59,34 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
          *
          * @deprecated Only for database migration
          */
-        if ((BrowserDetection.isIOS() || BrowserDetection.isSafari()) && TopLevelApi._hasMigrateFlag()) {
-            await KeyStore.instance.migrateAccountsToKeys();
+        if ((BrowserDetection.isIOS() || BrowserDetection.isSafari())) {
+            if (TopLevelApi._hasMigrateFlag()) {
+                await KeyStore.instance.migrateAccountsToKeys();
+            }
+            /*
+             * There is a case using recovery words when the kind of secret, entropy or privateKey is ambiguous.
+             * In that scenario both keys will be encrypted and stored.
+             * After returning the AccountsManager will do an activity lookup for addresses to both of these keys.
+             * In case one did not see any activity at all, it will be discarded and removed by this code.
+             * The cookie is set in `IFrameAPI.releaseKey()` which requires the session to still be active.
+             */
+            if (TopLevelApi._hasRemoveKey()) {
+                // eat
+                const match = document.cookie.match(new RegExp('removeKey=([^;]+)'));
+                if (match && match[1]) {
+                    try {
+                        /** @type {string[]} */
+                        const removeKeyArray = JSON.parse(match[1]);
+                        removeKeyArray.forEach(keyId => {
+                            KeyStore.instance.remove(keyId);
+                        });
+                    } catch (e) {
+                        this._reject(e);
+                    }
+                }
+                // crumble
+                document.cookie = 'removeKey=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+            }
         }
 
         return new Promise((resolve, reject) => {
@@ -134,6 +160,15 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
     static _hasMigrateFlag() {
         const match = document.cookie.match(new RegExp('migrate=([^;]+)'));
         return !!match && match[1] === '1';
+    }
+
+    /**
+     * @returns {boolean}
+     * @private
+     */
+    static _hasRemoveKey() {
+        const match = document.cookie.match(new RegExp('removeKey=([^;]+)'));
+        return !!match && match[1] !== '';
     }
 
     /**

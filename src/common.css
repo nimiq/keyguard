@@ -57,13 +57,13 @@
     left: 4rem;
     cursor: pointer;
     opacity: 0.4;
-    transition: opacity .3s ease, transform .4s ease, -webkit-transform .4s ease;
+    transition: opacity .3s ease, left .4s ease;
 }
 
 .page-header-back-button:hover,
 .page-header-back-button:focus {
     opacity: .7; /* TODO Ideally, we could change the color to --nimiq-light-blue on :focus instead, but this works for now */
-    transform: translate3D(-3px, 0, 0);
+    left: 3.625rem;
     outline: none;
 }
 
