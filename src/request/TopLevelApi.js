@@ -65,20 +65,20 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
             await KeyStore.instance.migrateAccountsToKeys();
         }
 
-        this.parsedRequest = await this.parseRequest(request);
+        const parsedRequest = await this.parseRequest(request);
 
         return new Promise((resolve, reject) => {
             this._resolve = resolve;
             this._reject = reject;
 
-            if (!this.parsedRequest) { // should already be rejected here with an Errors.InvalidRequestError()
+            if (!parsedRequest) { // should already be rejected here with an Errors.InvalidRequestError()
                 // this really should never happen
                 this.reject(new Errors.InvalidRequestError('Request was not successfully parsed'));
                 return;
             }
 
-            if (!(/** @type {ParsedSimpleRequest} */(this.parsedRequest).keyInfo)
-                || /** @type {ParsedSimpleRequest} */(this.parsedRequest).keyInfo.encrypted) {
+            if (!(/** @type {ParsedSimpleRequest} */(parsedRequest).keyInfo)
+                || /** @type {ParsedSimpleRequest} */(parsedRequest).keyInfo.encrypted) {
                 Nimiq.CryptoWorker.getInstanceAsync();
             }
 
@@ -95,7 +95,7 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
             });
 
             window.location.hash = 'loading';
-            this.onRequest(this.parsedRequest).catch(reject);
+            this.onRequest(parsedRequest).catch(reject);
         });
     }
 
