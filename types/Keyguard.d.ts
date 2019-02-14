@@ -1,3 +1,6 @@
+// tslint:disable-next-line no-reference
+/// <reference path="../client/types/KeyguardRequestNamespace.d.ts" />
+
 interface Newable {
     new(...args: any[]): any
 }
@@ -54,3 +57,4 @@ type ParsedSignTransactionRequest = ConstructTransaction<Transform<KeyId2KeyInfo
 type ParsedSignMessageRequest = Transform<KeyId2KeyInfo<KeyguardRequest.SignMessageRequest>,
     'signer', { signer: Nimiq.Address }>
 type ParsedDeriveAddressRequest = KeyId2KeyInfo<KeyguardRequest.DeriveAddressRequest>
+type ParsedRemoveKeyRequest = KeyId2KeyInfo<KeyguardRequest.RemoveKeyRequest>

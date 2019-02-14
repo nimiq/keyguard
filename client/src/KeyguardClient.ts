@@ -1,7 +1,7 @@
 import { RedirectRpcClient } from '@nimiq/rpc';
 import { RequestBehavior, RedirectRequestBehavior, IFrameRequestBehavior } from './RequestBehavior';
 import { KeyguardCommand } from './KeyguardCommand';
-import { KeyguardRequest } from './KeyguardRequest';
+import * as KeyguardRequest from './KeyguardRequest';
 import Observable from './Observable';
 
 export class KeyguardClient {

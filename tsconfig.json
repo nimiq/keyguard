@@ -57,9 +57,8 @@
   "include": [
     "types/Nimiq.d.ts",
     "types/Keyguard.d.ts",
-    "client/types/KeyguardRequestNamespace.d.ts",
-    "client/types/ErrorContainer.d.ts",
     "types/RpcServer.d.ts",
+    "client/types/ErrorContainer.d.ts",
     "src/**/*.js",
     "tests/**/*.js"
   ],
