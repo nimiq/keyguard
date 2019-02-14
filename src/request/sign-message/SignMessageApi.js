@@ -4,16 +4,15 @@
 
 class SignMessageApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
-     * @param {KeyguardRequest.SignMessageRequest} request
+     * @param {ParsedSignMessageRequest} request
      */
     async onRequest(request) {
-        const parsedRequest = await this.parseRequest(request);
         /** @type {HTMLDivElement} */
         const $page = (document.getElementById(SignMessage.Pages.AUTHORIZE));
 
         const handler = new SignMessage(
             $page,
-            parsedRequest,
+            request,
             this.resolve.bind(this),
             this.reject.bind(this),
         );

@@ -4,11 +4,10 @@
 
 class ExportApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
-     * @param {KeyguardRequest.SimpleRequest} request
+     * @param {ParsedSimpleRequest} request
      */
     async onRequest(request) {
-        const parsedRequest = await this.parseRequest(request);
-        const exportHandler = new Export(parsedRequest, this.resolve.bind(this), this.reject.bind(this));
+        const exportHandler = new Export(request, this.resolve.bind(this), this.reject.bind(this));
 
         /** @type {HTMLElement} */
         const $appName = (document.querySelector('#app-name'));

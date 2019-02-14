@@ -7,8 +7,7 @@ class ImportApi extends TopLevelApi {
      * @param {KeyguardRequest.ImportRequest} request
      */
     async onRequest(request) {
-        const parsedRequest = this.parseRequest(request);
-        const importFileHandler = new ImportFile(parsedRequest, this.resolve.bind(this), this.reject.bind(this));
+        const importFileHandler = new ImportFile(request, this.resolve.bind(this), this.reject.bind(this));
 
         // Global cancel link
         /** @type {HTMLElement} */
@@ -24,9 +23,9 @@ class ImportApi extends TopLevelApi {
 
     /**
      * @param {KeyguardRequest.ImportRequest} request
-     * @returns {KeyguardRequest.ImportRequest}
+     * @returns {Promise<KeyguardRequest.ImportRequest>}
      */
-    parseRequest(request) {
+    async parseRequest(request) {
         if (!request) {
             throw new Errors.InvalidRequestError('request is required');
         }

@@ -3,6 +3,7 @@
 /* global KeyStore */
 /* global CookieJar */
 /* global I18n */
+/* global Nimiq */
 /* global RequestParser */
 
 /**
@@ -28,6 +29,7 @@
  *  // Finally, start your API:
  *  runKeyguard(SignTransactionApi);
  * ```
+ * @abstract
  */
 class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
     constructor() {
@@ -89,9 +91,27 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
             }
         }
 
+        const parsedRequest = await this.parseRequest(request);
+
         return new Promise((resolve, reject) => {
             this._resolve = resolve;
             this._reject = reject;
+
+            if (!parsedRequest) { // should already be rejected here with an Errors.InvalidRequestError()
+                // this really should never happen
+                this.reject(new Errors.InvalidRequestError('Request was not successfully parsed'));
+                return;
+            }
+
+            /**
+             * Load the crypto worker only if needed. That is, requests who are either
+             * Import or Create (the only ones which don't have the keyInfo property)
+             * or any request which has the keyInfo property and the encrypted flag set.
+             */
+            if (!(/** @type {ParsedSimpleRequest} */(parsedRequest).keyInfo)
+                || /** @type {ParsedSimpleRequest} */(parsedRequest).keyInfo.encrypted) {
+                Nimiq.CryptoWorker.getInstanceAsync();
+            }
 
             window.addEventListener('unhandledrejection', event => {
                 const error = new Errors.UnclassifiedError(/** @type {PromiseRejectionEvent} */(event).reason);
@@ -106,18 +126,29 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
             });
 
             window.location.hash = 'loading';
-            this.onRequest(request).catch(reject);
+            this.onRequest(parsedRequest).catch(reject);
         });
     }
 
     /**
      * Overwritten by each request's API class
      *
-     * @param {KeyguardRequest.KeyguardRequest} request
+     * @param {ParsedRequest} request
      * @abstract
      */
     async onRequest(request) { // eslint-disable-line no-unused-vars
-        throw new Error('Not implemented');
+        throw new Error('onRequest not implemented');
+    }
+
+    /**
+     * Overwritten by each request's API class
+     *
+     * @param {KeyguardRequest.KeyguardRequest} request
+     * @returns {Promise<ParsedRequest>}
+     * @abstract
+     */
+    async parseRequest(request) { // eslint-disable-line no-unused-vars
+        throw new Error('parseRequest not implemented');
     }
 
     /**
