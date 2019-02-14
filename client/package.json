@@ -9,7 +9,7 @@
     "typecheck": "tsc",
     "lint": "tslint 'src/*.ts'",
     "lint-fix": "tslint --fix 'src/*.ts'",
-    "build": "tsc && rollup -c"
+    "build": "rm -rf build && rm -rf dist && tsc && rollup -c"
   },
   "files": [
     "dist",

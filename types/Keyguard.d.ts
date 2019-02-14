@@ -1,5 +1,3 @@
-import { KeyguardRequest } from '../client/types/KeyguardRequestNamespace';
-
 interface Newable {
     new(...args: any[]): any
 }

@@ -1,4 +1,4 @@
-import Nimiq from '@nimiq/core-web';
+import * as Nimiq from '@nimiq/core-web';
 
 export namespace KeyguardRequest {
     enum Type {
@@ -32,8 +32,8 @@ export namespace KeyguardRequest {
 
     type RemoveKeyRequest = BasicRequest & {
         keyId: string
-        keyLabel: string
-    }
+        keyLabel: string,
+    };
 
     type SignatureResult = {
         publicKey: Uint8Array
@@ -49,8 +49,8 @@ export namespace KeyguardRequest {
         validityStartHeight: number
         recipientType?: Nimiq.Account.Type
         data?: Uint8Array
-        flags?: number
-    }
+        flags?: number,
+    };
 
     type SignTransactionRequestLayout = 'standard' | 'checkout' | 'cashlink';
 
@@ -136,11 +136,5 @@ export namespace KeyguardRequest {
             // used to signal that a given keyId no longer exist in KG, to be treated by caller.
             KEY_NOT_FOUND: 'keyId not found',
         },
-    }
-}
-
-declare interface Window {
-    __keyguardErrorContainer: {
-        ErrorConstants: KeyguardRequest.KeyguardError,
     };
 }
