@@ -124,8 +124,11 @@ class RecoveryWords extends Nimiq.Observable {
             } else {
                 // wrong words
                 if (this._mnemonic) this._mnemonic = null;
-                // the animation is long enough to make the invalid event fire after
-                // the focus event, which then in turn deactivates the notification again
+                /*
+                 * The animation time is used to delay the INVALID event firing, thus the await. It is possible
+                 * to trigger this by a keyboard event which results in a focus on a different $field which would
+                 * reset the invalid state again. This way the message pops up after the animation and after the focus.
+                 */
                 await this._animateError();
                 this.fire(RecoveryWords.Events.INVALID);
             }
