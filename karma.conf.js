@@ -14,7 +14,10 @@ module.exports = function (/** @type {any} */ config) {
 
         // list of files / patterns to load in the browser
         files: [
-            'https://cdn.nimiq-testnet.com/v1.4.2/web-offline.js',
+            'node_modules/@nimiq/core-web/web-offline.js',
+            {'pattern': 'node_modules/@nimiq/core-web/worker-wasm.wasm', included: false},
+            {'pattern': 'node_modules/@nimiq/core-web/worker-wasm.js', included: false},
+            {'pattern': 'node_modules/@nimiq/core-web/worker.js', included: false},
             'src/**/*js',
             'tests/**/*.spec.js'
         ],

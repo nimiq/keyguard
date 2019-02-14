@@ -62,7 +62,7 @@ Note that it is mostly not necessary to run the build script for development pur
 
 You can configure the following values by either environment variables or configuration files:
 - KEYGUARD_ALLOWED_ORIGIN: The origin from which requests are accepted. '*' allows all origins. Be aware that slashes have to be masked by `\`. Defaults to 'https://accounts.nimiq-testnet.com'.
-- KEYGUARD_CDN: The CDN (content delivery network) from which the core library is served. Defaults to 'https://cdn.nimiq-testnet.com'.
+- KEYGUARD_CDN: The CDN (content delivery network) from which the core library is served. Defaults to '/assets/nimiq'.
 - KEYGUARD_NETWORK: The network to connect with. Possible values: 'main', 'test'. Defaults to 'test'.
 
 The best way is to use a configuration file, which has to be placed in the `config` folder, and pass its name as an argument to the build script. `yarn build local` uses `local.conf`. Some sample files are provided.
