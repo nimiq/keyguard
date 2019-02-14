@@ -845,25 +845,25 @@ QrEncoder.vendor_qrcode = (function () {
 
             _this.getMaskFunction = /** @param {number} maskPattern */ function (maskPattern) {
                 switch (maskPattern) {
-                case QRMaskPattern.PATTERN000:
-                    return /** @param {number} i @param {number} j */ function (i, j) { return (i + j) % 2 == 0; };
-                case QRMaskPattern.PATTERN001:
-                    return /** @param {number} i @param {number} j */ function (i, j) { return i % 2 == 0; }; // eslint-disable-line no-unused-vars
-                case QRMaskPattern.PATTERN010:
-                    return /** @param {number} i @param {number} j */ function (i, j) { return j % 3 == 0; };
-                case QRMaskPattern.PATTERN011:
-                    return /** @param {number} i @param {number} j */ function (i, j) { return (i + j) % 3 == 0; };
-                case QRMaskPattern.PATTERN100:
-                    return /** @param {number} i @param {number} j */ function (i, j) { return (Math.floor(i / 2) + Math.floor(j / 3)) % 2 == 0; };
-                case QRMaskPattern.PATTERN101:
-                    return /** @param {number} i @param {number} j */ function (i, j) { return (i * j) % 2 + (i * j) % 3 == 0; };
-                case QRMaskPattern.PATTERN110:
-                    return /** @param {number} i @param {number} j */ function (i, j) { return ((i * j) % 2 + (i * j) % 3) % 2 == 0; };
-                case QRMaskPattern.PATTERN111:
-                    return /** @param {number} i @param {number} j */ function (i, j) { return ((i * j) % 3 + (i + j) % 2) % 2 == 0; };
+                    case QRMaskPattern.PATTERN000:
+                        return /** @param {number} i @param {number} j */ function (i, j) { return (i + j) % 2 == 0; };
+                    case QRMaskPattern.PATTERN001:
+                        return /** @param {number} i @param {number} j */ function (i, j) { return i % 2 == 0; }; // eslint-disable-line no-unused-vars
+                    case QRMaskPattern.PATTERN010:
+                        return /** @param {number} i @param {number} j */ function (i, j) { return j % 3 == 0; };
+                    case QRMaskPattern.PATTERN011:
+                        return /** @param {number} i @param {number} j */ function (i, j) { return (i + j) % 3 == 0; };
+                    case QRMaskPattern.PATTERN100:
+                        return /** @param {number} i @param {number} j */ function (i, j) { return (Math.floor(i / 2) + Math.floor(j / 3)) % 2 == 0; };
+                    case QRMaskPattern.PATTERN101:
+                        return /** @param {number} i @param {number} j */ function (i, j) { return (i * j) % 2 + (i * j) % 3 == 0; };
+                    case QRMaskPattern.PATTERN110:
+                        return /** @param {number} i @param {number} j */ function (i, j) { return ((i * j) % 2 + (i * j) % 3) % 2 == 0; };
+                    case QRMaskPattern.PATTERN111:
+                        return /** @param {number} i @param {number} j */ function (i, j) { return ((i * j) % 3 + (i + j) % 2) % 2 == 0; };
 
-                default:
-                    throw new Error(`bad maskPattern:${maskPattern}`);
+                    default:
+                        throw new Error(`bad maskPattern:${maskPattern}`);
                 }
             };
 
@@ -1394,16 +1394,16 @@ QrEncoder.vendor_qrcode = (function () {
              */
             const getRsBlockTable = function (typeNumber, errorCorrectLevel) {
                 switch (errorCorrectLevel) {
-                case QRErrorCorrectLevel.L:
-                    return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 0];
-                case QRErrorCorrectLevel.M:
-                    return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 1];
-                case QRErrorCorrectLevel.Q:
-                    return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 2];
-                case QRErrorCorrectLevel.H:
-                    return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 3];
-                default:
-                    return undefined;
+                    case QRErrorCorrectLevel.L:
+                        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 0];
+                    case QRErrorCorrectLevel.M:
+                        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 1];
+                    case QRErrorCorrectLevel.Q:
+                        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 2];
+                    case QRErrorCorrectLevel.H:
+                        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 3];
+                    default:
+                        return undefined;
                 }
             };
 

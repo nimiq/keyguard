@@ -24,14 +24,14 @@ async function loadNimiq() {
         await Nimiq.WasmHelper.doImport();
 
         switch (CONFIG.NETWORK) {
-        case Constants.NETWORK.TEST:
-            Nimiq.GenesisConfig.test();
-            break;
-        case Constants.NETWORK.MAIN:
-            Nimiq.GenesisConfig.main();
-            break;
-        default:
-            throw new Errors.InvalidNetworkConfig();
+            case Constants.NETWORK.TEST:
+                Nimiq.GenesisConfig.test();
+                break;
+            case Constants.NETWORK.MAIN:
+                Nimiq.GenesisConfig.main();
+                break;
+            default:
+                throw new Errors.InvalidNetworkConfig();
         }
 
         resolve();

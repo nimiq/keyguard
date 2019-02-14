@@ -117,24 +117,24 @@ class ImportWords {
      */
     _onRecoveryWordsComplete(mnemonic, mnemonicType) {
         switch (mnemonicType) {
-        case Nimiq.MnemonicUtils.MnemonicType.BIP39: {
-            const entropy = Nimiq.MnemonicUtils.mnemonicToEntropy(mnemonic);
-            this._resolve(entropy);
-            break;
-        }
-        case Nimiq.MnemonicUtils.MnemonicType.LEGACY: {
-            const entropy = Nimiq.MnemonicUtils.legacyMnemonicToEntropy(mnemonic);
-            const privateKey = new Nimiq.PrivateKey(entropy.serialize());
-            this._resolve(privateKey);
-            break;
-        }
-        case Nimiq.MnemonicUtils.MnemonicType.UNKNOWN: {
-            this.entropy = Nimiq.MnemonicUtils.mnemonicToEntropy(mnemonic);
-            window.location.hash = ImportWords.Pages.CHOOSE_KEY_TYPE;
-            break;
-        }
-        default:
-            this._reject(new Errors.KeyguardError('Invalid mnemonic type'));
+            case Nimiq.MnemonicUtils.MnemonicType.BIP39: {
+                const entropy = Nimiq.MnemonicUtils.mnemonicToEntropy(mnemonic);
+                this._resolve(entropy);
+                break;
+            }
+            case Nimiq.MnemonicUtils.MnemonicType.LEGACY: {
+                const entropy = Nimiq.MnemonicUtils.legacyMnemonicToEntropy(mnemonic);
+                const privateKey = new Nimiq.PrivateKey(entropy.serialize());
+                this._resolve(privateKey);
+                break;
+            }
+            case Nimiq.MnemonicUtils.MnemonicType.UNKNOWN: {
+                this.entropy = Nimiq.MnemonicUtils.mnemonicToEntropy(mnemonic);
+                window.location.hash = ImportWords.Pages.CHOOSE_KEY_TYPE;
+                break;
+            }
+            default:
+                this._reject(new Errors.KeyguardError('Invalid mnemonic type'));
         }
     }
 
