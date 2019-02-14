@@ -5,6 +5,7 @@
 /* global KeyStore */
 
 beforeAll(async () => {
+    Nimiq._path = `${window.location.origin}/base/node_modules/@nimiq/core-web/`;
     await loadNimiq();
 });
 
