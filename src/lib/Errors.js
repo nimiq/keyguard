@@ -80,3 +80,9 @@ Errors.GoToCreate = class extends Errors.KeyguardError {
         super(ErrorConstants.Messages.GOTO_CREATE);
     }
 };
+
+Errors.InvalidNetworkConfig = class extends Errors.KeyguardError {
+    constructor() {
+        super(ErrorConstants.Messages.INVALID_NETWORK_CONFIG);
+    }
+};

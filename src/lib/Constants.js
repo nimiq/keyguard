@@ -11,4 +11,8 @@ const Constants = { // eslint-disable-line no-unused-vars
             </defs>
         </svg>`,
     /* eslint-enable max-len */
+    NETWORK: {
+        TEST: 'test',
+        MAIN: 'main',
+    },
 };
