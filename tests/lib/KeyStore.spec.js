@@ -38,7 +38,7 @@ describe('KeyStore', () => {
         ]);
 
         for (let [i, key] of keys.entries()) {
-            if (!key) throw new Error();
+            if (!key) throw new Error(`Key with id ${Dummy.keyInfos[i].id} not found!`);
             expect(key.id).toEqual(Dummy.keyInfos[i].id);
             expect(key.type).toEqual(Dummy.keyInfos[i].type);
             expect(key.secret).toEqual(Dummy.secrets[i]);
@@ -170,6 +170,7 @@ describe('KeyStore', () => {
         const password2 = Nimiq.BufferUtils.fromAscii(Dummy.encryptionPassword2);
 
         let currentKeys = await KeyStore.instance.list();
+        expect(currentKeys.length).toBe(0); // Just to be sure
 
         // add key
         await KeyStore.instance.put(new Key(Dummy.secrets[1]), password1);
