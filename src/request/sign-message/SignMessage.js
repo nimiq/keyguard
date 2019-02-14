@@ -123,9 +123,6 @@ class SignMessage {
         if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
             this._passphraseBox.focus();
         }
-
-        // Async pre-load the crypto worker to reduce wait time at first decrypt attempt
-        Nimiq.CryptoWorker.getInstanceAsync();
     }
 }
 

@@ -1,4 +1,3 @@
-/* global Nimiq */
 /* global TopLevelApi */
 /* global ChangePassphrase */
 /* global Errors */
@@ -19,9 +18,6 @@ class ChangePassphraseApi extends TopLevelApi { // eslint-disable-line no-unused
         $cancelLink.addEventListener('click', () => this.reject(new Errors.RequestCanceled()));
 
         handler.run();
-
-        // Async pre-load the crypto worker to reduce wait time at first decrypt attempt
-        Nimiq.CryptoWorker.getInstanceAsync();
     }
 
     /**

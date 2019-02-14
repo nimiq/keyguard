@@ -115,12 +115,6 @@ class Create {
         // go to start page
         window.location.hash = Create.Pages.CHOOSE_IDENTICON;
         this._identiconSelector.generateIdenticons();
-
-        // XXX: Is the following necessary, or is the CryptoWorker already
-        // instanced when generating addresses for identicons?
-
-        // Async pre-load the crypto worker to reduce wait time when encrypting
-        // Nimiq.CryptoWorker.getInstanceAsync();
     }
 }
 
