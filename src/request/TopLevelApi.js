@@ -77,6 +77,11 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
                 return;
             }
 
+            /**
+             * Load the crypto worker only if needed. That is, requests who are either
+             * Import or Create (the only ones which don't have the keyInfo property)
+             * or any request which has the keyInfo property and the encrypted flag set.
+             */
             if (!(/** @type {ParsedSimpleRequest} */(parsedRequest).keyInfo)
                 || /** @type {ParsedSimpleRequest} */(parsedRequest).keyInfo.encrypted) {
                 Nimiq.CryptoWorker.getInstanceAsync();
