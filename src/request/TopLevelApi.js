@@ -64,35 +64,38 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
         if ((BrowserDetection.isIOS() || BrowserDetection.isSafari()) && TopLevelApi._hasMigrateFlag()) {
             await KeyStore.instance.migrateAccountsToKeys();
         }
+
         this.parsedRequest = await this.parseRequest(request);
 
         return new Promise((resolve, reject) => {
             this._resolve = resolve;
             this._reject = reject;
+
             if (!this.parsedRequest) { // should already be rejected here with an Errors.InvalidRequestError()
                 // this really should never happen
                 this.reject(new Errors.InvalidRequestError('Request was not successfully parsed'));
-            } else {
-                if (!(/** @type {ParsedSimpleRequest} */(this.parsedRequest).keyInfo)
-                    || /** @type {ParsedSimpleRequest} */(this.parsedRequest).keyInfo.encrypted) {
-                    Nimiq.CryptoWorker.getInstanceAsync();
-                }
-
-                window.addEventListener('unhandledrejection', event => {
-                    const error = new Errors.UnclassifiedError(/** @type {PromiseRejectionEvent} */(event).reason);
-                    this.reject(error);
-                    return false;
-                });
-
-                window.addEventListener('error', event => {
-                    const error = new Errors.UnclassifiedError(event.error);
-                    this.reject(error);
-                    return false;
-                });
-
-                window.location.hash = 'loading';
-                this.onRequest(this.parsedRequest).catch(reject);
+                return;
             }
+
+            if (!(/** @type {ParsedSimpleRequest} */(this.parsedRequest).keyInfo)
+                || /** @type {ParsedSimpleRequest} */(this.parsedRequest).keyInfo.encrypted) {
+                Nimiq.CryptoWorker.getInstanceAsync();
+            }
+
+            window.addEventListener('unhandledrejection', event => {
+                const error = new Errors.UnclassifiedError(/** @type {PromiseRejectionEvent} */(event).reason);
+                this.reject(error);
+                return false;
+            });
+
+            window.addEventListener('error', event => {
+                const error = new Errors.UnclassifiedError(event.error);
+                this.reject(error);
+                return false;
+            });
+
+            window.location.hash = 'loading';
+            this.onRequest(this.parsedRequest).catch(reject);
         });
     }
 
