@@ -15,9 +15,9 @@ class Key {
      * @param {number?} [id]
      */
     constructor(secret, hasPin = false, id = null) {
-        this._id = id;
         this._secret = secret;
         this._hasPin = hasPin;
+        this._id = id;
     }
 
     /**
