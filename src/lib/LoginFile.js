@@ -31,9 +31,9 @@ class LoginFile {
     }
 
     filename() {
-        const walletName = 'Nimiq Login File '
-                         + `${this._config.name[0].toUpperCase()}${this._config.name.substr(1)} Wallet`;
-        return `${walletName.replace(/ /g, '-')}.png`;
+        const fileName = 'Nimiq LoginFile '
+                          + `${this._config.name[0].toUpperCase()}${this._config.name.substr(1)} Account`;
+        return `${fileName.replace(/ /g, '-')}.png`;
     }
 
     async toDataUrl() {
