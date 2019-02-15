@@ -242,7 +242,7 @@ class KeyStore {
 
     /**
      * @param {AccountRecord[]} accounts
-     * @returns {(KeyRecord)[]}
+     * @returns {KeyRecord[]}
      */
     static _accountRecords2KeyRecords(accounts) {
         return accounts.map(account => {
@@ -263,23 +263,19 @@ class KeyStore {
      * @returns {KeyguardRequest.LegacyKeyInfoObject[]}
      */
     static accountInfos2KeyInfos(accounts) {
-        return accounts.map((account, id) => {
+        return accounts.map((account, index) => {
             const address = Nimiq.Address.fromUserFriendlyAddress(account.userFriendlyAddress);
 
-            /** @type {KeyguardRequest.KeyInfoObject} */
-            const keyObject = {
-                id,
+            /** @type {KeyguardRequest.LegacyKeyInfoObject} */
+            const legacyKeyObject = {
+                id: index + 1,
                 type: Nimiq.Secret.Type.PRIVATE_KEY,
                 hasPin: account.type === 'low',
-            };
-
-            /** @type {KeyguardRequest.LegacyKeyInfoObject} */
-            const legacyKeyObject = Object.assign({}, keyObject, {
                 legacyAccount: {
                     label: account.label,
                     address: address.serialize(),
                 },
-            });
+            };
 
             return legacyKeyObject;
         });

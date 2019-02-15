@@ -203,5 +203,17 @@ describe('KeyStore', () => {
         expect(currentKeys.length).toBe(2);
     });
 
+    it('returns existing id when storing existing key', async () => {
+        // first clear database
+        await Dummy.Utils.deleteDummyKeyStore();
+
+        const password = Nimiq.BufferUtils.fromAscii(Dummy.encryptionPassword);
+
+        // add key
+        const id1 = await KeyStore.instance.put(new Key(Dummy.secrets[1]), password);
+        const id2 = await KeyStore.instance.put(new Key(Dummy.secrets[1]), password);
+        expect(id1).toBe(id2);
+    });
+
     // TODO: can migrate accounts on iOS when migration cookie is set
 });

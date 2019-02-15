@@ -103,7 +103,7 @@ class Create {
 
         /** @type {KeyguardRequest.KeyResult[]} */
         const result = [{
-            keyId: /** @type {number} */ (newId.valueOf()),
+            keyId: newId,
             keyType: key.type,
             addresses: [{
                 address: key.deriveAddress(keyPath).serialize(),

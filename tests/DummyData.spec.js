@@ -30,10 +30,10 @@ const encryptedKeys = [
     Uint8Array.from([ 0x03, 0x08, 0x38, 0x8f, 0x65, 0x9f, 0x23, 0xfb, 0x80, 0x13, 0xd5, 0xef, 0x86, 0xdc, 0x4d, 0xdc, 0xd7, 0x13, 0xf4, 0x00, 0x34, 0x90, 0xe4, 0xc7, 0x9e, 0x78, 0x84, 0xa5, 0x5e, 0x21, 0x3a, 0xdb, 0x6a, 0xe1, 0x94, 0x48, 0xbd, 0x93, 0xed, 0xd1, 0x2b, 0xfd, 0x0e, 0x1f, 0x34, 0xd5, 0x4b, 0x38, 0x17, 0x4b, 0x8b, 0xf2, 0xd7, 0x4e, 0x1c, 0x10 ]),
 ];
 
-const hashes = () => secrets.map(x => {
-    const input = x instanceof Nimiq.Entropy
-        ? x.serialize()
-        : Nimiq.PublicKey.derive(x).toAddress().serialize();
+const hashes = () => secrets.map(secret => {
+    const input = secret instanceof Nimiq.Entropy
+        ? secret.serialize()
+        : Nimiq.PublicKey.derive(secret).toAddress().serialize();
 
     return Nimiq.BufferUtils.toHex(Nimiq.Hash.blake2b(input).subarray(0, 32))
 });
@@ -52,7 +52,7 @@ const keyInfos = [
         2,
         Nimiq.Secret.Type.ENTROPY,
         false,
-        true,
+        false,
     ),
 ];
 
@@ -70,8 +70,18 @@ _purposeIdBuf.writeUint32(Nimiq.Entropy.PURPOSE_ID);
 const _purposeIdArray = Array.from(_purposeIdBuf.subarray(0, 4));
 
 const keyRecords = () => [
-    Object.assign({}, { type: keyInfoObjects[0].type, hasPin: keyInfoObjects[0].hasPin,  secret: encryptedKeys[0], hash: hashes()[0] }),
-    Object.assign({},{  type: keyInfoObjects[1].type, hasPin: keyInfoObjects[1].hasPin, secret: new Uint8Array(_purposeIdArray.concat(Array.from(Dummy.keys[1]))), hash: Dummy.hashes()[1] }),
+    Object.assign({}, {
+        type: keyInfoObjects[0].type,
+        hasPin: keyInfoObjects[0].hasPin,
+        secret: encryptedKeys[0],
+        hash: hashes()[0]
+    }),
+    Object.assign({}, {
+        type: keyInfoObjects[1].type,
+        hasPin: keyInfoObjects[1].hasPin,
+        secret: new Uint8Array(_purposeIdArray.concat(Array.from(Dummy.keys[1]))),
+        hash: Dummy.hashes()[1]
+    }),
 ];
 
 /** @type {() => StoredKeyRecord[]} */
@@ -98,7 +108,7 @@ const deprecatedAccountRecords = [
 ];
 
 const deprecatedAccount2KeyInfoObject = [{
-    id: 0,
+    id: 1,
     type: Nimiq.Secret.Type.PRIVATE_KEY,
     hasPin: false,
     legacyAccount: {
@@ -107,7 +117,7 @@ const deprecatedAccount2KeyInfoObject = [{
     },
 }];
 
-const keyInfoCookieEncoded = '101,212';
+const keyInfoCookieEncoded = '101,202';
 
 /** @type {string} */
 const cookie = `k=${keyInfoCookieEncoded};accounts=${JSON.stringify(deprecatedAccountCookie)};some=thing;`;

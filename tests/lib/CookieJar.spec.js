@@ -13,7 +13,8 @@ describe('CookieJar', () => {
 
     it('can be filled with key info', () => {
         spyOnProperty(document, 'cookie', 'set').and.callFake((/** @type {string} */ cookie) => {
-            expect(cookie.valueOf().substr(0, Dummy.keyInfoCookieEncoded.length + 2)).toEqual(`k=${Dummy.keyInfoCookieEncoded}`);
+            const cookieValue = cookie.valueOf().split(';')[0];
+            expect(cookieValue).toEqual(`k=${Dummy.keyInfoCookieEncoded}`);
         });
         CookieJar.fill(Dummy.keyInfos);
     });
