@@ -103,12 +103,12 @@ export class KeyguardClient {
         return this._request(requestBehavior, KeyguardCommand.HAS_KEYS, []);
     }
 
-    public async deriveAddresses(keyId: string, paths: string[], requestBehavior = this._defaultIframeBehavior)
+    public async deriveAddresses(keyId: number, paths: string[], requestBehavior = this._defaultIframeBehavior)
     : Promise<Uint8Array[]> {
         return this._request(requestBehavior, KeyguardCommand.DERIVE_ADDRESSES, [keyId, paths]);
     }
 
-    public async releaseKey(keyId: string, shouldBeRemoved = false, requestBehavior = this._defaultIframeBehavior)
+    public async releaseKey(keyId: number, shouldBeRemoved = false, requestBehavior = this._defaultIframeBehavior)
     : Promise<true> {
         return this._request(requestBehavior, KeyguardCommand.RELEASE_KEY, [keyId, shouldBeRemoved]);
     }

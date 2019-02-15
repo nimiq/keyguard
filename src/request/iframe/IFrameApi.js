@@ -29,7 +29,7 @@ class IFrameApi {
 
     /**
      * @param {Rpc.State?} state
-     * @param {string} keyId
+     * @param {number} keyId
      * @param {string[]} paths
      * @returns {Promise<Nimiq.SerialBuffer[]>}
      */
