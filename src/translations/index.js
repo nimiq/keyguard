@@ -48,6 +48,7 @@ const TRANSLATIONS = {
                                        + 'Create a password to secure it.',
         'import-words-hint': 'Press Tab to Jump to the next field',
         'import-words-error': 'This is not a valid account. Typo?',
+        'import-words-download-loginfile': 'Download your LoginFile',
 
         'file-import-prompt': 'Drag here or click to upload',
         'file-import-click-hint': 'Or click to select a file.',
@@ -99,11 +100,8 @@ const TRANSLATIONS = {
         'identicon-selector-generate-new': 'Generate new',
         'identicon-selector-more-addresses': 'More addresses',
 
-        'downloadkeyfile-heading-protected': 'Your Key File is protected!',
-        'downloadkeyfile-heading-unprotected': 'Your Key File is not protected!',
-        'downloadkeyfile-safe-place': 'Store it in a safe place. If you lose it, it cannot be recovered!',
-        'downloadkeyfile-download': 'Download LoginFile',
-        'downloadkeyfile-download-anyway': 'Download anyway',
+        'download-loginfile-download': 'Download LoginFile',
+        'download-loginfile-tap-and-hold': 'Tap and hold to download',
 
         'validate-words-text': 'Please select the correct word from your list of recovery words.',
         'validate-words-back': 'Back to words',
@@ -193,6 +191,7 @@ const TRANSLATIONS = {
                                        + 'Setze ein Passwort um es zu schützen.',
         'import-words-hint': 'Mit Tab kannst du zum nächsten Feld springen',
         'import-words-error': 'Das ist kein gültiger Account. Schreibfehler?',
+        'import-words-download-loginfile': 'Lade dein LoginFile herunter',
 
         'file-import-prompt': 'Ziehe deine Schlüsseldatei auf dieses Feld',
         'file-import-click-hint': 'Oder klicke um eine Datei auszuwählen.',
@@ -245,12 +244,8 @@ const TRANSLATIONS = {
         'identicon-selector-generate-new': 'Neu generieren',
         'identicon-selector-more-addresses': 'Mehr Adressen',
 
-        'downloadkeyfile-heading-protected': 'Dein Schlüsseldatei ist geschützt!',
-        'downloadkeyfile-heading-unprotected': 'Dein Schlüsseldatei ist nicht geschützt!',
-        'downloadkeyfile-safe-place': 'Lagere sie in einem sicheren Ort. Wenn du sie verlierst, '
-                                    + 'kann sie nicht wiederhergestellt werden!',
-        'downloadkeyfile-download': 'Schlüsseldatei herunterladen',
-        'downloadkeyfile-download-anyway': 'Trotzdem herunterladen',
+        'download-loginfile-download': 'LoginDatei herunterladen',
+        'download-loginfile-tap-and-hold': 'Halte gedrückt zum runterladen',
 
         'validate-words-text': 'Bitte wähle das richtige Wort aus deiner Liste von Wiederherstellungswörtern aus.',
         'validate-words-back': 'Zurück zu den Wörtern',
