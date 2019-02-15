@@ -247,7 +247,7 @@ const TRANSLATIONS = {
         'identicon-selector-more-addresses': 'Mehr Adressen',
 
         'download-loginfile-download': 'LoginDatei herunterladen',
-        'download-loginfile-tap-and-hold': 'Halte gedrückt zum runterladen',
+        'download-loginfile-tap-and-hold': 'Zum Herunterladen gedrückt halten',
 
         'validate-words-text': 'Bitte wähle das richtige Wort aus deiner Liste von Wiederherstellungswörtern aus.',
         'validate-words-back': 'Zurück zu den Wörtern',

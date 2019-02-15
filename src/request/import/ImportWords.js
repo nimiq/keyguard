@@ -154,6 +154,8 @@ class ImportWords {
                 putWord(field, testPassphrases[n][index], index);
             });
         };
+        // @ts-ignore ('possible null' and 'test is unknown')
+        document.querySelector('[data-i18n="import-words-hint"]').addEventListener('click', () => test(1));
     }
 
     run() {

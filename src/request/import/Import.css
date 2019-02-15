@@ -44,6 +44,10 @@
     z-index: 3;
 }
 
+.page#import-file.enter-password .file-import {
+    pointer-events: none;
+}
+
 .page#recovery-words p {
     margin-top: 4rem;
     margin-bottom: 0;

@@ -53,6 +53,7 @@ class DownloadLoginFile extends Nimiq.Observable {
                     <span data-i18n="download-loginfile-download">Download LoginFile</span>
                 </button>
             </a>
+            <span class="nq-label tap-and-hold" data-i18n="download-loginfile-tap-and-hold">Tap and hold to download</span>
         `;
 
         I18n.translateDom($el);
@@ -90,8 +91,9 @@ class DownloadLoginFile extends Nimiq.Observable {
     }
 
     _onDownloadClick() {
-        // TODO: Only fire if supports `download` attribute?
-        this.fire(DownloadLoginFile.Events.DOWNLOADED);
+        if (this._supportsNativeDownload()) {
+            this.fire(DownloadLoginFile.Events.DOWNLOADED);
+        }
     }
 
     /**
@@ -128,14 +130,14 @@ class DownloadLoginFile extends Nimiq.Observable {
         this.$linkButton.href = href;
         this.$linkButton.download = filename;
 
-        // TODO Adjust visible UI elements
+        this.$el.classList.remove('fallback-download');
     }
 
     _setupFallbackDownload() {
         // Hack to make image downloadable on iOS via long tap.
         this.$linkImage.href = 'javascript:void(0);'; // eslint-disable-line no-script-url
 
-        // TODO Adjust visible UI elements
+        this.$el.classList.add('fallback-download');
     }
 
     get file() {

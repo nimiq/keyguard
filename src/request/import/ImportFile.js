@@ -65,7 +65,6 @@ class ImportFile {
      * @param {string} decoded
      */
     _onFileImported(decoded) {
-        console.log(decoded);
 
         // TODO: Handle legacy Account Access Files (both the 1st and #2 versions)
 
