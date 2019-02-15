@@ -34,7 +34,8 @@ const TRANSLATIONS = {
         'import-link-no-wallet': 'Don\'t have a wallet yet?',
         'import-heading-protect': 'Protect your wallet',
         'import-text-set-password': 'You can now set a password to encrypt your wallet on this device.',
-        'import-upload-login-file': 'Upload your Login File',
+        'import-upload-login-file': 'Upload your LoginFile',
+        'import-unlock-account': 'Unlock your account',
         'import-create-account': 'Create new Account',
 
         'import-file-lost-file': 'Lost your Key File? You can recover your account with your 24 Recovery Words.',
@@ -81,7 +82,7 @@ const TRANSLATIONS = {
         'passphrasebox-protect-keyfile': 'Protect your keyfile with a password',
         'passphrasebox-repeat-password': 'Repeat your password',
         'passphrasebox-continue': 'Continue',
-        'passphrasebox-log-in': 'Log in to your wallet',
+        'passphrasebox-log-in': 'Unlock',
         'passphrasebox-log-out': 'Confirm logout',
         'passphrasebox-download': 'Download Key File',
         'passphrasebox-confirm-tx': 'Confirm transaction',
@@ -175,7 +176,8 @@ const TRANSLATIONS = {
         'import-heading-protect': 'Wallet verschlüsseln',
         'import-text-set-password': 'Du kannst jetzt ein Passwort eingeben, um deine Wallet auf diesem '
                                   + 'Gerät zu verschlüsseln.',
-        'import-upload-login-file': 'Lade dein Login File hoch',
+        'import-upload-login-file': 'Lade dein LoginFile hoch',
+        'import-unlock-account': 'Entsperre deinen Account',
         'import-create-account': 'Erstelle einen neuen Account',
 
         'import-file-lost-file': 'Schlüsseldatei verloren? Du kannst deinen Account mit deinen 24 '
@@ -225,7 +227,7 @@ const TRANSLATIONS = {
         'passphrasebox-protect-keyfile': 'Sichere dein KeyFile mit einem Passwort',
         'passphrasebox-repeat-password': 'Wiederhole dein Passwort',
         'passphrasebox-continue': 'Weiter',
-        'passphrasebox-log-in': 'In deine Wallet einloggen',
+        'passphrasebox-log-in': 'Entsperren',
         'passphrasebox-log-out': 'Abmeldung bestätigen',
         'passphrasebox-download': 'Schlüsseldatei herunterladen',
         'passphrasebox-confirm-tx': 'Überweisung bestätigen',

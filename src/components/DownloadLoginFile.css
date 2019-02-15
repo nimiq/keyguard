@@ -10,15 +10,15 @@
     text-decoration: none;
     color: inherit;
     outline: none;
-    flex-grow: 1;
+    height: 40rem;
+    margin: auto;
 }
 
-.download-loginfile .link-image:hover .loginfile,
-.download-loginfile .link-image:focus .loginfile {
-    transform: scale(1.1);
+.download-loginfile .loginfile {
     height: 100%;
 }
 
-.download-loginfile .link-button {
+.download-loginfile .link-button button {
     margin-top: 4rem;
+    margin-bottom: 0;
 }

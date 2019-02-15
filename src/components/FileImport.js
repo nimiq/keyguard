@@ -16,7 +16,7 @@ class FileImport extends Nimiq.Observable {
         /** @type {HTMLInputElement} */
         this.$fileInput = (this.$el.querySelector('input'));
 
-        // TODO Re-add the drop target interaction and event listeners?
+        // TODO Re-add the drop target interaction and event listeners
 
         this.$el.addEventListener('click', this._openFileInput.bind(this));
         this.$fileInput.addEventListener('change', e => this._onFileSelected(e));
@@ -32,9 +32,8 @@ class FileImport extends Nimiq.Observable {
 
         $el.innerHTML = `
             <h3 class="nq-h3 nq-light-blue" data-i18n="file-import-prompt">Drag here or click to upload</h3>
-            <div class="flex-grow"></div>
-            <div class="qr-code"></div>
             <span class="error-message"></span>
+            <div class="qr-code"></div>
             <input type="file" accept="image/*">
         `;
 
@@ -65,13 +64,16 @@ class FileImport extends Nimiq.Observable {
 
             const fileReader = new FileReader();
             fileReader.onload = async e => {
+                const qrCodeFound = await this._readFile(files[0]);
+                this.$fileInput.value = '';
+                if (!qrCodeFound) return;
+
+                // Set image in UI
                 const image = document.createElement('img');
                 // @ts-ignore Object is possibly 'null'. Property 'result' does not exist on type 'EventTarget'.
                 image.src = e.target.result;
-                image.id = 'image-wallet';
                 this.$el.appendChild(image);
-                await this._readFile(files[0]);
-                this.$fileInput.value = '';
+                image.onload = () => { image.classList.add('pop-down'); };
             };
             fileReader.readAsDataURL(files[0]);
         }
@@ -79,19 +81,22 @@ class FileImport extends Nimiq.Observable {
 
     _onQrError() {
         AnimationUtils.animate('shake', this.$el);
-        this.$errorMessage.textContent = 'Could not read Key File.';
+        this.$errorMessage.textContent = 'Could not read LoginFile.';
     }
 
     /**
      * @param {File} file
+     * @returns {Promise<boolean>}
      */
     async _readFile(file) {
         const qrPosition = LoginFile.calculateQrPosition();
         try {
             const decoded = await QrScanner.scanImage(file, qrPosition, null, null, false, true);
             this.fire(FileImport.Events.IMPORT, decoded);
+            return true;
         } catch (e) {
             this._onQrError();
+            return false;
         }
     }
 }

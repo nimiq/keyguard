@@ -47,9 +47,11 @@ class DownloadLoginFile extends Nimiq.Observable {
             <a class="link-image">
                 <img class="loginfile" src=""></img>
             </a>
-            <a class="link-button nq-button light-blue">
-                <i class="nq-icon download"></i>
-                <span data-i18n="download-loginfile-download">Download LoginFile</span>
+            <a class="link-button">
+                <button class="nq-button light-blue">
+                    <i class="nq-icon download"></i>
+                    <span data-i18n="download-loginfile-download">Download LoginFile</span>
+                </button>
             </a>
         `;
 
