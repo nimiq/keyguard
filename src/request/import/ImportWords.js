@@ -124,14 +124,24 @@ class ImportWords {
 
         // TODO remove test words
         // @ts-ignore (Property 'test' does not exist on type 'Window'.)
-        window.test = () => {
-            const testPassphrase = [
-                'curtain', 'cancel', 'tackle', 'always',
-                'draft', 'fade', 'alarm', 'flip',
-                'earth', 'sketch', 'motor', 'short',
-                'make', 'exact', 'diary', 'broccoli',
-                'frost', 'disorder', 'pave', 'wrestle',
-                'broken', 'mercy', 'crime', 'dismiss',
+        window.test = (n = 0) => {
+            const testPassphrases = [
+                [
+                    'curtain', 'cancel', 'tackle', 'always',
+                    'draft', 'fade', 'alarm', 'flip',
+                    'earth', 'sketch', 'motor', 'short',
+                    'make', 'exact', 'diary', 'broccoli',
+                    'frost', 'disorder', 'pave', 'wrestle',
+                    'broken', 'mercy', 'crime', 'car',
+                ],
+                [
+                    'spare', 'ribbon', 'onion', 'drift',
+                    'fever', 'attitude', 'vocal', 'age',
+                    'style', 'huge', 'apart', 'hammer',
+                    'tonight', 'entry', 'permit', 'laugh',
+                    'security', 'enable', 'uniform', 'elegant',
+                    'eager', 'idea', 'pretty', 'way',
+                ],
             ];
             // @ts-ignore (Parameter 'field', 'word', 'index' implicitly have an 'any' type.)
             function putWord(field, word, index) { // eslint-disable-line require-jsdoc-except/require-jsdoc
@@ -141,7 +151,7 @@ class ImportWords {
                 }, index * 50);
             }
             this._recoveryWords.$fields.forEach((field, index) => {
-                putWord(field, testPassphrase[index], index);
+                putWord(field, testPassphrases[n][index], index);
             });
         };
     }
