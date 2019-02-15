@@ -75,7 +75,7 @@ const keyRecords = () => [
 ];
 
 /** @type {() => StoredKeyRecord[]} */
-const storedKeyRecords = () => keyRecords().map((x, i) => Object.assign({}, x, { id: i + 1 }));
+const storedKeyRecords = () => keyRecords().map((record, i) => Object.assign({}, record, { id: i + 1 }));
 
 const deprecatedAccountInfos = [
     {
