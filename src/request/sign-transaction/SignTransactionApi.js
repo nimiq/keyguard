@@ -8,28 +8,15 @@ class SignTransactionApi extends TopLevelApi {
      * @param {ParsedSignTransactionRequest} request
      */
     async onRequest(request) {
-        const handler = new SignTransaction(
-            request,
-            this.resolve.bind(this),
-            this.reject.bind(this),
-        );
+        const handler = new SignTransaction(request, this.resolve.bind(this), this.reject.bind(this));
 
-        /** @type {HTMLElement} */
-        const $appName = (document.querySelector('#app-name'));
-        /** @type {HTMLSpanElement} */
-        const $cancelLinkText = ($appName.parentNode);
         if (request.layout === SignTransactionApi.Layouts.CHECKOUT) {
-            $cancelLinkText.textContent = I18n.translatePhrase('sign-tx-cancel-payment');
+            this.setGlobalCloseButtonText(I18n.translatePhrase('sign-tx-cancel-payment'));
         } else {
-            $appName.textContent = request.appName;
+            this.setGlobalCloseButtonText(`${I18n.translatePhrase('back-to')} ${request.appName}`);
         }
-        /** @type {HTMLButtonElement} */
-        const $cancelLink = ($cancelLinkText.parentNode);
-        $cancelLink.classList.remove('display-none');
-        $cancelLink.addEventListener('click', () => this.reject(new Errors.RequestCanceled()));
 
         handler.run();
-        TopLevelApi.setLoading(false);
     }
 
     /**

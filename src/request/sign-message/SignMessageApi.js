@@ -1,6 +1,7 @@
 /* global TopLevelApi */
 /* global SignMessage */
 /* global Errors */
+/* global I18n */
 
 class SignMessageApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
@@ -16,17 +17,9 @@ class SignMessageApi extends TopLevelApi { // eslint-disable-line no-unused-vars
             this.resolve.bind(this),
             this.reject.bind(this),
         );
-
-        /** @type {HTMLElement} */
-        const $appName = (document.querySelector('#app-name'));
-        $appName.textContent = request.appName;
-        /** @type {HTMLButtonElement} */
-        const $cancelLink = ($appName.parentNode);
-        $cancelLink.classList.remove('display-none');
-        $cancelLink.addEventListener('click', () => this.reject(new Errors.RequestCanceled()));
+        this.setGlobalCloseButtonText(`${I18n.translatePhrase('back-to')} ${request.appName}`);
 
         handler.run();
-        TopLevelApi.setLoading(false);
     }
 
     /**

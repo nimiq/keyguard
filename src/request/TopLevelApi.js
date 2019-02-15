@@ -126,6 +126,7 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
             });
 
             this.onRequest(parsedRequest).catch(reject);
+            TopLevelApi.setLoading(false);
         });
     }
 
@@ -173,6 +174,20 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
      */
     reject(error) {
         this._reject(error);
+    }
+
+
+    /**
+     * @param {string} buttonText
+     */
+    setGlobalCloseButtonText(buttonText) {
+        /** @type {HTMLElement} */
+        const $globalCloseText = (document.querySelector('#global-close-text'));
+        /** @type {HTMLSpanElement} */
+        const $button = ($globalCloseText.parentNode);
+        $globalCloseText.textContent = buttonText;
+        $button.addEventListener('click', () => this.reject(new Errors.RequestCanceled()));
+        $button.classList.remove('display-none');
     }
 
     /**
