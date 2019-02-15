@@ -143,7 +143,7 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
     /**
      * Overwritten by each request's API class
      *
-     * @param {KeyguardRequest.KeyguardRequest} request
+     * @param {KeyguardRequest.Request} request
      * @returns {Promise<ParsedRequest>}
      * @abstract
      */
