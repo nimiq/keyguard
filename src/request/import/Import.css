@@ -115,3 +115,9 @@ a#goto-create .nq-icon {
     padding: 0.625rem;
 }
 
+.page#download-file .page-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
