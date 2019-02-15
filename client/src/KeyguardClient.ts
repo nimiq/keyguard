@@ -50,7 +50,7 @@ export class KeyguardClient {
     /* TOP-LEVEL REQUESTS */
 
     public create(request: KeyguardRequest.CreateRequest, requestBehavior = this._defaultBehavior)
-        : Promise<KeyguardRequest.CreateResult> {
+        : Promise<KeyguardRequest.KeyResult[]> {
         return this._request(requestBehavior,  KeyguardCommand.CREATE, [request]);
     }
 
@@ -60,7 +60,7 @@ export class KeyguardClient {
     }
 
     public import(request: KeyguardRequest.ImportRequest, requestBehavior = this._defaultBehavior)
-        : Promise<KeyguardRequest.ImportResult> {
+        : Promise<KeyguardRequest.KeyResult[]> {
         return this._request(requestBehavior,  KeyguardCommand.IMPORT, [request]);
     }
 
@@ -109,9 +109,9 @@ export class KeyguardClient {
         return this._request(requestBehavior, KeyguardCommand.DERIVE_ADDRESSES, [keyId, paths]);
     }
 
-    public async releaseKey(keyId: string, requestBehavior = this._defaultIframeBehavior)
+    public async releaseKey(keyId: string, shouldBeRemoved = false, requestBehavior = this._defaultIframeBehavior)
     : Promise<true> {
-        return this._request(requestBehavior, KeyguardCommand.RELEASE_KEY, [keyId]);
+        return this._request(requestBehavior, KeyguardCommand.RELEASE_KEY, [keyId, shouldBeRemoved]);
     }
 
     public async listLegacyAccounts(requestBehavior = this._defaultIframeBehavior)

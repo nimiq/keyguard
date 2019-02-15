@@ -1,86 +1,121 @@
 /* global Constants */
-/* global Nimiq */
-/* global TopLevelApi */
-/* global PrivacyAgent */
-/* global RecoveryWords */
-/* global Identicon */
+/* global DownloadKeyfile */
 /* global Errors */
+/* global FlippableHandler */
+/* global ImportApi */
+/* global Iqons */
+/* global Key */
+/* global KeyStore */
+/* global LoginFile */
+/* global LoginFileIcon */
+/* global Nimiq */
+/* global PassphraseInput */
+/* global PassphraseSetterBox */
+/* global RecoveryWords */
+/* global TopLevelApi */
+/* global Utf8Tools */
 
-class ImportWords {
+class ImportWords extends FlippableHandler {
     /**
      * @param {KeyguardRequest.ImportRequest} request
      * @param {Function} resolve
      * @param {Function} reject
      */
     constructor(request, resolve, reject) {
+        super();
+        this._request = request;
         this._resolve = resolve;
         this._reject = reject;
-        this._defaultKeyPath = request.defaultKeyPath;
+
+        /** @type {{entropy: Nimiq.Entropy?, privateKey: Nimiq.PrivateKey?}} */
+        this._secrets = { entropy: null, privateKey: null };
+        /** @type {KeyguardRequest.KeyResult[]} */
+        this._keys = [];
 
         // Pages
-        /** @type {HTMLElement} */
-        const $privacy = (document.getElementById(ImportWords.Pages.PRIVACY_AGENT));
-        /** @type {HTMLElement} */
-        const $privacyAgent = ($privacy.querySelector('.agent'));
-
         /** @type {HTMLFormElement} */
         const $words = (document.getElementById(ImportWords.Pages.ENTER_WORDS));
         /** @type {HTMLFormElement} */
-        const $recoveryWords = ($words.querySelector('.recovery-words'));
-        /** @type {HTMLButtonElement} */
-        const $wordsConfirm = ($words.querySelector('button'));
-
+        this.$setPassword = (document.getElementById(ImportWords.Pages.SET_PASSWORD));
         /** @type {HTMLFormElement} */
-        this.$chooseKeyType = (document.getElementById(ImportWords.Pages.CHOOSE_KEY_TYPE));
-        /** @type {HTMLInputElement} */
-        const $radioLegacy = (this.$chooseKeyType.querySelector('input#key-type-legacy'));
-        /** @type {HTMLInputElement} */
-        const $radioBip39 = (this.$chooseKeyType.querySelector('input#key-type-bip39'));
+        const $downloadFile = (document.getElementById(ImportWords.Pages.DOWNLOAD_LOGINFILE));
+
+        // Elements
+        /** @type {HTMLFormElement} */
+        const $recoveryWords = ($words.querySelector('.recovery-words'));
+        /** @type {HTMLFormElement} */
+        const $passwordSetter = (this.$setPassword.querySelector('.passphrase-setter-box'));
         /** @type {HTMLDivElement} */
-        const $identiconLegacy = (this.$chooseKeyType.querySelector('.identicon-legacy'));
-        /** @type {HTMLDivElement} */
-        const $identiconBip39 = (this.$chooseKeyType.querySelector('.identicon-bip39'));
-        /** @type {HTMLDivElement} */
-        this.$addressLegacy = (this.$chooseKeyType.querySelector('.address-legacy'));
-        /** @type {HTMLDivElement} */
-        this.$addressBip39 = (this.$chooseKeyType.querySelector('.address-bip39'));
+        const $loginFileIcon = (this.$setPassword.querySelector('.login-file-icon'));
         /** @type {HTMLButtonElement} */
-        this.$confirmButton = (this.$chooseKeyType.querySelector('button'));
+        const $downloadFileButton = ($downloadFile.querySelector('.download-login-file'));
+        /** @type {HTMLDivElement} */
+        const $file = ($downloadFile.querySelector('.file'));
 
         // Components
-        const privacyAgent = new PrivacyAgent($privacyAgent);
-        const recoveryWords = new RecoveryWords($recoveryWords, true);
-        this._identiconLegacy = new Identicon(undefined, $identiconLegacy);
-        this._identiconBip39 = new Identicon(undefined, $identiconBip39);
+        this._recoveryWords = new RecoveryWords($recoveryWords, true);
+        this._passwordSetter = new PassphraseSetterBox($passwordSetter);
+        this._loginFileIcon = new LoginFileIcon($loginFileIcon);
+        const downloadKeyFile = new DownloadKeyfile($file); // TODO LoginFile
 
         // Events
-        privacyAgent.on(PrivacyAgent.Events.CONFIRM, () => {
-            window.location.hash = ImportWords.Pages.ENTER_WORDS;
-            if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
-                recoveryWords.focus();
+        this._recoveryWords.on(RecoveryWords.Events.COMPLETE, (mnemonic, mnemonicType) => {
+            if (this._recoveryWords.mnemonic) {
+                this._onRecoveryWordsComplete(mnemonic, mnemonicType);
             }
         });
-
-        recoveryWords.on(RecoveryWords.Events.COMPLETE, () => { $wordsConfirm.disabled = false; });
-        recoveryWords.on(RecoveryWords.Events.INCOMPLETE, () => { $wordsConfirm.disabled = true; });
-        recoveryWords.on(RecoveryWords.Events.INVALID, () => { $wordsConfirm.disabled = true; });
-        $wordsConfirm.disabled = true;
+        this._recoveryWords.on(RecoveryWords.Events.INCOMPLETE, () => {
+            this._secrets = { entropy: null, privateKey: null };
+            this._keys = [];
+        });
+        this._recoveryWords.on(RecoveryWords.Events.INVALID, () => $words.classList.add('invalid-words'));
+        $words.querySelectorAll('input').forEach(
+            el => el.addEventListener('focus', () => $words.classList.remove('invalid-words')),
+        );
         $words.addEventListener('submit', event => {
             event.preventDefault();
-            if (recoveryWords.mnemonic) {
-                this._onRecoveryWordsComplete(recoveryWords.mnemonic, recoveryWords.mnemonicType);
+            if (this._recoveryWords.mnemonic) {
+                this._onRecoveryWordsComplete(this._recoveryWords.mnemonic, this._recoveryWords.mnemonicType);
             }
         });
 
-        $radioBip39.addEventListener('change', this._onChooseKeyTypeChange.bind(this));
-        $radioLegacy.addEventListener('change', this._onChooseKeyTypeChange.bind(this));
-        this.$chooseKeyType.addEventListener('submit', event => {
-            event.preventDefault();
-            if (this.keyTypeValue !== null && this._entropy) {
-                this._onKeyTypeChosen(this.keyTypeValue, this._entropy);
+        this._passwordSetter.on(PassphraseSetterBox.Events.ENTERED, () => {
+            const color = Iqons.getBackgroundColorIndex(
+                new Nimiq.Address(
+                    /*
+                     * this will either be unrelevant (UNKNOWN/PRIVATE_KEY) or correct (ENTROPY)
+                     * as `LoginFileIcon.setFileUnavailable(true)` was called in the former
+                     * and in the latter index 0 is the only index and contains the entropy
+                     */
+                    this._keys[0].addresses[0].address,
+                ).toUserFriendlyAddress(),
+            );
+            const colorString = LoginFile.CONFIG[color].name;
+            this._loginFileIcon.lock(`nq-${colorString}-bg`);
+        });
+        this._passwordSetter.on(PassphraseSetterBox.Events.SUBMIT, async password => {
+            await this._storeKeys(password);
+            if (!this._fileAvailable) {
+                this._resolve(this._keys);
+                return;
             }
+            // TODO LoginFile set encoded secret here.
+            downloadKeyFile.on(DownloadKeyfile.Events.DOWNLOADED, () => {
+                this._resolve(this._keys);
+            });
+            window.location.hash = ImportWords.Pages.DOWNLOAD_LOGINFILE;
+        });
+        this._passwordSetter.on(PassphraseSetterBox.Events.NOT_EQUAL, () => this._loginFileIcon.unlock());
+        this._passwordSetter.on(PassphraseSetterBox.Events.SKIP, async () => {
+            await this._storeKeys();
+            this._resolve(this._keys);
         });
 
+        $downloadFileButton.addEventListener('click', () => {
+            // TODO LoginFile
+        });
+
+        // TODO remove test words
         // @ts-ignore (Property 'test' does not exist on type 'Window'.)
         window.test = () => {
             const testPassphrase = [
@@ -98,111 +133,107 @@ class ImportWords {
                     field._onBlur();
                 }, index * 50);
             }
-            recoveryWords.$fields.forEach((field, index) => {
+            this._recoveryWords.$fields.forEach((field, index) => {
                 putWord(field, testPassphrase[index], index);
             });
         };
     }
 
     run() {
-        this._entropy = null;
-        window.location.hash = ImportWords.Pages.PRIVACY_AGENT;
+        this._recoveryWords.setWords(new Array(24));
+        window.location.hash = ImportWords.Pages.ENTER_WORDS;
+    }
+
+    /**
+     * @param {string} [password = '']
+     * @returns {Promise<void>}
+     */
+    async _storeKeys(password = '') {
+        TopLevelApi.setLoading(true);
+        let encryptionKey = null;
+        if (password && password.length >= PassphraseInput.DEFAULT_MIN_LENGTH) {
+            encryptionKey = Utf8Tools.stringToUtf8ByteArray(password);
+        }
+        try {
+            if (this._secrets.entropy) {
+                const key = new Key(this._secrets.entropy, false);
+                await KeyStore.instance.put(key, encryptionKey || undefined);
+                const secretString = Nimiq.BufferUtils.toBase64(key.secret.serialize());
+                sessionStorage.setItem(ImportApi.SESSION_STORAGE_KEY_PREFIX + key.id, secretString);
+            }
+            if (this._secrets.privateKey) {
+                const key = new Key(this._secrets.privateKey, false);
+                await KeyStore.instance.put(key, encryptionKey || undefined);
+            } else {
+                TopLevelApi.setLoading(false);
+            }
+        } catch (e) { // Keystore.instance.put throws Errors.KeyguardError
+            console.log(e);
+            TopLevelApi.setLoading(false);
+            this._reject(e);
+        }
     }
 
     /**
      * Store key and request passphrase
-     *
      * @param {Array<string>} mnemonic
      * @param {number | null} mnemonicType
      */
     _onRecoveryWordsComplete(mnemonic, mnemonicType) {
-        switch (mnemonicType) {
-            case Nimiq.MnemonicUtils.MnemonicType.BIP39: {
-                const entropy = Nimiq.MnemonicUtils.mnemonicToEntropy(mnemonic);
-                this._resolve(entropy);
-                break;
-            }
-            case Nimiq.MnemonicUtils.MnemonicType.LEGACY: {
-                const entropy = Nimiq.MnemonicUtils.legacyMnemonicToEntropy(mnemonic);
-                const privateKey = new Nimiq.PrivateKey(entropy.serialize());
-                this._resolve(privateKey);
-                break;
-            }
-            case Nimiq.MnemonicUtils.MnemonicType.UNKNOWN: {
-                this.entropy = Nimiq.MnemonicUtils.mnemonicToEntropy(mnemonic);
-                window.location.hash = ImportWords.Pages.CHOOSE_KEY_TYPE;
-                break;
-            }
-            default:
-                this._reject(new Errors.KeyguardError('Invalid mnemonic type'));
+        this._secrets = { entropy: null, privateKey: null };
+        this._keys = [];
+
+        if (mnemonicType === Nimiq.MnemonicUtils.MnemonicType.BIP39
+            || mnemonicType === Nimiq.MnemonicUtils.MnemonicType.UNKNOWN) {
+            this._fileAvailable = true;
+            this._secrets.entropy = Nimiq.MnemonicUtils.mnemonicToEntropy(mnemonic);
+            const key = new Key(this._secrets.entropy, false);
+            /** @type {{keyPath: string, address: Uint8Array}[]} */
+            const addresses = this._request.requestedKeyPaths.map(keyPath => ({
+                keyPath,
+                address: key.deriveAddress(keyPath).serialize(),
+            }));
+            this._keys.push({
+                keyId: key.id,
+                keyType: Nimiq.Secret.Type.ENTROPY,
+                addresses,
+            });
         }
-    }
 
-    _onChooseKeyTypeChange() {
-        this.$confirmButton.disabled = this.keyTypeValue === null;
-    }
-
-    /**
-     * @param {Nimiq.Secret.Type} keyType
-     * @param {Nimiq.Entropy} entropy
-     * @private
-     */
-    _onKeyTypeChosen(keyType, entropy) {
-        /** @type {Nimiq.Entropy|Nimiq.PrivateKey} */
-        let secret;
-        if (keyType === Nimiq.Secret.Type.ENTROPY) {
-            secret = entropy;
-        } else {
-            secret = new Nimiq.PrivateKey(entropy.serialize());
+        if (mnemonicType === Nimiq.MnemonicUtils.MnemonicType.LEGACY
+            || mnemonicType === Nimiq.MnemonicUtils.MnemonicType.UNKNOWN) {
+            this._fileAvailable = false;
+            const entropy = Nimiq.MnemonicUtils.legacyMnemonicToEntropy(mnemonic);
+            this._secrets.privateKey = new Nimiq.PrivateKey(entropy.serialize());
+            const key = new Key(this._secrets.privateKey, false);
+            this._keys.push({
+                keyId: key.id,
+                keyType: Nimiq.Secret.Type.PRIVATE_KEY,
+                addresses: [{
+                    keyPath: Constants.LEGACY_DERIVATION_PATH,
+                    address: key.deriveAddress('').serialize(),
+                }],
+            });
         }
-        this._resolve(secret);
-    }
 
-    _onEntropyChanged() {
-        // Reset choice.
-        /** @type {HTMLInputElement} */
-        const selected = (this.$chooseKeyType.querySelector('input[name="key-type"]:checked'));
-        if (selected) {
-            selected.checked = false;
-        }
-        this._onChooseKeyTypeChange();
-
-        if (!this._entropy) {
+        if (this._keys.length === 0) { // no mnemonicType was matched.
+            this._reject(new Errors.KeyguardError('Invalid mnemonic type'));
             return;
         }
 
-        const legacyAddress = Nimiq.PublicKey.derive(new Nimiq.PrivateKey(this._entropy.serialize()))
-            .toAddress().toUserFriendlyAddress();
-        this._identiconLegacy.address = legacyAddress;
-        this.$addressLegacy.textContent = legacyAddress;
-
-        const bip39Address = this._entropy.toExtendedPrivateKey().derivePath(this._defaultKeyPath)
-            .toAddress().toUserFriendlyAddress();
-        this._identiconBip39.address = bip39Address;
-        this.$addressBip39.textContent = bip39Address;
-    }
-
-    /**
-     * @type {Nimiq.Secret.Type | null}
-     */
-    get keyTypeValue() {
-        /** @type {HTMLInputElement} */
-        const selected = (this.$chooseKeyType.querySelector('input[name="key-type"]:checked'));
-        return selected ? /** @type {Nimiq.Secret.Type} */ (parseInt(selected.value, 10)) : null;
-    }
-
-    /**
-     * @param {Nimiq.Entropy} entropy
-     */
-    set entropy(entropy) {
-        this._entropy = entropy;
-        this._onEntropyChanged();
+        this._passwordSetter.reset();
+        this._loginFileIcon.unlock();
+        this._loginFileIcon.setFileUnavailable(!this._fileAvailable);
+        this.$setPassword.classList.toggle('login-file-available', this._fileAvailable);
+        window.location.hash = ImportWords.Pages.SET_PASSWORD;
+        if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
+            this._passwordSetter.focus();
+        }
     }
 }
 
 ImportWords.Pages = {
-    PRIVACY_AGENT: 'privacy',
     ENTER_WORDS: 'recovery-words',
-    CHOOSE_KEY_TYPE: 'choose-key-type',
-    SET_PASSPHRASE: 'set-passphrase',
+    SET_PASSWORD: 'set-password',
+    DOWNLOAD_LOGINFILE: 'download-file',
 };

@@ -78,18 +78,12 @@ export type CreateRequest = BasicRequest & {
     defaultKeyPath: string;
 };
 
-export type CreateResult = {
-    keyId: string
-    keyPath: string
-    address: Uint8Array,
-};
-
 export type ImportRequest = BasicRequest & {
     defaultKeyPath: string;
     requestedKeyPaths: string[];
 };
 
-export type ImportResult = {
+export type KeyResult = {
     keyId: string;
     keyType: Type;
     addresses: Array<{ keyPath: string, address: Uint8Array }>;
@@ -113,8 +107,7 @@ export type Request = CreateRequest
     | SignMessageRequest
     | RemoveKeyRequest;
 
-export type RpcResult = CreateResult
-    | ImportResult
+export type RpcResult = KeyResult
     | SignTransactionResult
     | SignMessageResult
     | DeriveAddressResult
