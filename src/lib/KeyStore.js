@@ -154,7 +154,7 @@ class KeyStore {
             hash: key.hash,
         };
 
-        const existingKey = keys.find(x => x.hash === key.hash);
+        const existingKey = keys.find(k => k.hash === key.hash);
         if (existingKey) {
             Object.assign(keyRecord, { id: existingKey.id });
         }
