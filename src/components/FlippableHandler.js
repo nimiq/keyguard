@@ -4,7 +4,7 @@ class FlippableHandler {
      * If other classes should be flipped to the backside they need to be added to FlippableHandler.css
      * @param {string} [classname = "flipped"] - Pages with this classname will be on the backside of the flip.
      */
-    static flippable(classname = 'flipped') {
+    static init(classname = 'flipped') {
         if (!FlippableHandler.flippableHandlerInitialised) {
             /** @type {HTMLElement} */
             const $rotationContainer = (document.getElementById('rotation-container'));
@@ -20,7 +20,7 @@ class FlippableHandler {
                         window.setTimeout(() => $newEl.classList.remove('display-flex'), 600);
                         $oldEl.classList.add('display-flex');
                         window.setTimeout(() => $oldEl.classList.remove('display-flex'), 300);
-                        $rotationContainer.classList.toggle('flipped');
+                        $rotationContainer.classList.toggle('flipped', $newEl.classList.contains(classname));
                     }
                 }
             });

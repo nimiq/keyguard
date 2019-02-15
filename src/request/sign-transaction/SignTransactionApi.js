@@ -8,8 +8,6 @@ class SignTransactionApi extends TopLevelApi {
      * @param {ParsedSignTransactionRequest} request
      */
     async onRequest(request) {
-        TopLevelApi.setLoading(true);
-
         const handler = new SignTransaction(
             request,
             this.resolve.bind(this),
@@ -30,7 +28,7 @@ class SignTransactionApi extends TopLevelApi {
         $cancelLink.classList.remove('display-none');
         $cancelLink.addEventListener('click', () => this.reject(new Errors.RequestCanceled()));
 
-        window.setTimeout(() => handler.run(), 0);
+        handler.run();
         TopLevelApi.setLoading(false);
     }
 

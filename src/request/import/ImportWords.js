@@ -26,7 +26,7 @@ class ImportWords {
         this._resolve = resolve;
         this._reject = reject;
 
-        FlippableHandler.flippable();
+        FlippableHandler.init();
 
         /** @type {{entropy: Nimiq.Entropy?, privateKey: Nimiq.PrivateKey?}} */
         this._secrets = { entropy: null, privateKey: null };

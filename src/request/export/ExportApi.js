@@ -17,7 +17,8 @@ class ExportApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         $cancelLink.classList.remove('display-none');
         $cancelLink.addEventListener('click', () => this.reject(new Errors.RequestCanceled()));
 
-        window.setTimeout(() => exportHandler.run(), 0);
+        exportHandler.run();
+        TopLevelApi.setLoading(false);
     }
 
     /**

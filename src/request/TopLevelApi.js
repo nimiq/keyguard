@@ -125,7 +125,6 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
                 return false;
             });
 
-            window.location.hash = 'loading';
             this.onRequest(parsedRequest).catch(reject);
         });
     }
