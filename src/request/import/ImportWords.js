@@ -1,5 +1,5 @@
 /* global Constants */
-/* global DownloadKeyfile */
+/* global DownloadLoginFile */
 /* global Errors */
 /* global FlippableHandler */
 /* global ImportApi */
@@ -32,6 +32,8 @@ class ImportWords {
         this._secrets = { entropy: null, privateKey: null };
         /** @type {KeyguardRequest.KeyResult[]} */
         this._keys = [];
+        /** @type {Nimiq.SerialBuffer?} */
+        this._encryptedSecret = null;
 
         // Pages
         /** @type {HTMLFormElement} */
@@ -48,16 +50,14 @@ class ImportWords {
         const $passwordSetter = (this.$setPassword.querySelector('.passphrase-setter-box'));
         /** @type {HTMLDivElement} */
         const $loginFileIcon = (this.$setPassword.querySelector('.login-file-icon'));
-        /** @type {HTMLButtonElement} */
-        const $downloadFileButton = ($downloadFile.querySelector('.download-login-file'));
         /** @type {HTMLDivElement} */
-        const $file = ($downloadFile.querySelector('.file'));
+        const $downloadLoginFile = ($downloadFile.querySelector('.download-loginfile'));
 
         // Components
         this._recoveryWords = new RecoveryWords($recoveryWords, true);
         this._passwordSetter = new PassphraseSetterBox($passwordSetter);
         this._loginFileIcon = new LoginFileIcon($loginFileIcon);
-        const downloadKeyFile = new DownloadKeyfile($file); // TODO LoginFile
+        const downloadLoginFile = new DownloadLoginFile($downloadLoginFile);
 
         // Events
         this._recoveryWords.on(RecoveryWords.Events.COMPLETE, (mnemonic, mnemonicType) => {
@@ -83,7 +83,7 @@ class ImportWords {
         this._passwordSetter.on(PassphraseSetterBox.Events.ENTERED, () => {
             const color = Iqons.getBackgroundColorIndex(
                 new Nimiq.Address(
-                    /*
+                    /**
                      * this will either be unrelevant (UNKNOWN/PRIVATE_KEY) or correct (ENTROPY)
                      * as `LoginFileIcon.setFileUnavailable(true)` was called in the former
                      * and in the latter index 0 is the only index and contains the entropy
@@ -100,8 +100,18 @@ class ImportWords {
                 this._resolve(this._keys);
                 return;
             }
-            // TODO LoginFile set encoded secret here.
-            downloadKeyFile.on(DownloadKeyfile.Events.DOWNLOADED, () => {
+
+            // Prepare LoginFile for download
+            const firstAddress = new Nimiq.Address(
+                /**
+                 * This code is only called for unambiguous entropies,
+                 * thus this._keys[0] is definitely an entropy.
+                 */
+                this._keys[0].addresses[0].address,
+            );
+            downloadLoginFile.setSecret(/** @type {Nimiq.SerialBuffer} */ (this._encryptedSecret), firstAddress);
+
+            downloadLoginFile.on(DownloadLoginFile.Events.DOWNLOADED, () => {
                 this._resolve(this._keys);
             });
             window.location.hash = ImportWords.Pages.DOWNLOAD_LOGINFILE;
@@ -110,10 +120,6 @@ class ImportWords {
         this._passwordSetter.on(PassphraseSetterBox.Events.SKIP, async () => {
             await this._storeKeys();
             this._resolve(this._keys);
-        });
-
-        $downloadFileButton.addEventListener('click', () => {
-            // TODO LoginFile
         });
 
         // TODO remove test words
@@ -161,6 +167,16 @@ class ImportWords {
                 await KeyStore.instance.put(key, encryptionKey || undefined);
                 const secretString = Nimiq.BufferUtils.toBase64(key.secret.serialize());
                 sessionStorage.setItem(ImportApi.SESSION_STORAGE_KEY_PREFIX + key.id, secretString);
+
+                if (encryptionKey) {
+                    // Make the encrypted secret available for the LoginFile
+                    this._encryptedSecret = await this._secrets.entropy.exportEncrypted(encryptionKey);
+                }
+
+                // TODO: The key is encrypted twice here:
+                //     1. Inside the KeyStore when storing it (put)
+                //     2. Again to get the encrypted secret for the LoginFile (exportEncrypted)
+                // Is it possible to encrypt once and use KeyStore.putPlain() instead?
             }
             if (this._secrets.privateKey) {
                 const key = new Key(this._secrets.privateKey, false);
@@ -178,7 +194,7 @@ class ImportWords {
     /**
      * Store key and request passphrase
      * @param {Array<string>} mnemonic
-     * @param {number | null} mnemonicType
+     * @param {number?} mnemonicType
      */
     _onRecoveryWordsComplete(mnemonic, mnemonicType) {
         this._secrets = { entropy: null, privateKey: null };
