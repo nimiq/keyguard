@@ -1,5 +1,4 @@
 /* global Constants */
-/* global Nimiq */
 /* global DerivedIdenticonSelector */
 /* global PassphraseBox */
 /* global KeyStore */
@@ -105,9 +104,6 @@ class DeriveAddress {
             if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
                 this._passphraseBox.focus();
             }
-
-            // Async pre-load the crypto worker to reduce wait time at first decrypt attempt
-            Nimiq.CryptoWorker.getInstanceAsync();
         } else {
             await this._onPasswordEntered();
             window.location.hash = DeriveAddress.Pages.CHOOSE_IDENTICON;

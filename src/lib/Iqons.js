@@ -55,6 +55,15 @@ class Iqons {
         return `data:image/svg+xml;base64,${btoa(this.placeholder(color, strokeWidth))}`;
     }
 
+    /**
+     * @param {string} address
+     * @returns {number}
+     */
+    static getBackgroundColorIndex(address) {
+        const hash = this._hash(address);
+        return parseInt(hash[2], 10);
+    }
+
     /* Private API */
 
     /**

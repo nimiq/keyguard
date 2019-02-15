@@ -56,7 +56,7 @@ class KeyStore {
                     // Version 1 is the first version of the database.
                     db.createObjectStore(KeyStore.DB_KEY_STORE_NAME, { keyPath: 'id' });
                 }
-                
+
                 if (event.oldVersion < 2) {
                     // Version 2 changes the key id calculation, thus we drop and recreate the whole database.
                     // (Version 1 was only in use in testnet)

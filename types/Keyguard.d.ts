@@ -59,3 +59,11 @@ type ParsedSignMessageRequest = Transform<KeyId2KeyInfo<KeyguardRequest.SignMess
     'signer', { signer: Nimiq.Address }>
 type ParsedDeriveAddressRequest = KeyId2KeyInfo<KeyguardRequest.DeriveAddressRequest>
 type ParsedRemoveKeyRequest = KeyId2KeyInfo<KeyguardRequest.RemoveKeyRequest>
+
+type ParsedRequest = ParsedDeriveAddressRequest
+                   | ParsedRemoveKeyRequest
+                   | ParsedSignMessageRequest
+                   | ParsedSignTransactionRequest
+                   | ParsedSimpleRequest
+                   | KeyguardRequest.CreateRequest
+                   | KeyguardRequest.ImportRequest;

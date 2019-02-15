@@ -7,8 +7,7 @@ class CreateApi extends TopLevelApi { // eslint-disable-line no-unused-vars
      * @param {KeyguardRequest.CreateRequest} request
      */
     async onRequest(request) {
-        const parsedRequest = this.parseRequest(request);
-        const handler = new Create(parsedRequest, this.resolve.bind(this), this.reject.bind(this));
+        const handler = new Create(request, this.resolve.bind(this), this.reject.bind(this));
 
         /** @type {HTMLElement} */
         const $appName = (document.querySelector('#app-name'));
@@ -23,9 +22,9 @@ class CreateApi extends TopLevelApi { // eslint-disable-line no-unused-vars
 
     /**
      * @param {KeyguardRequest.CreateRequest} request
-     * @returns {KeyguardRequest.CreateRequest}
+     * @returns {Promise<KeyguardRequest.CreateRequest>}
      */
-    parseRequest(request) {
+    async parseRequest(request) {
         if (!request) {
             throw new Errors.InvalidRequestError('request is required');
         }

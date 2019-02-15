@@ -11,7 +11,6 @@ class FileImport extends Nimiq.Observable {
     constructor($el) {
         super();
         this.$el = FileImport._createElement($el);
-
         /** @type {HTMLElement} */
         this.$errorMessage = (this.$el.querySelector('.error-message'));
         /** @type {HTMLInputElement} */
@@ -20,7 +19,7 @@ class FileImport extends Nimiq.Observable {
         // TODO Re-add the drop target interaction and event listeners?
 
         this.$el.addEventListener('click', this._openFileInput.bind(this));
-        this.$fileInput.addEventListener('change', this._onFileSelected.bind(this));
+        this.$fileInput.addEventListener('change', e => this._onFileSelected(e));
     }
 
     /**
@@ -32,8 +31,9 @@ class FileImport extends Nimiq.Observable {
         $el.classList.add('file-import');
 
         $el.innerHTML = `
-            <h3 data-i18n="file-import-prompt">Drop your Key File here</h3>
-            <span class="click-hint" data-i18n="file-import-click-hint">Or click to select a file.</span>
+            <h3 class="nq-h3 nq-light-blue" data-i18n="file-import-prompt">Drag here or click to upload</h3>
+            <div class="flex-grow"></div>
+            <div class="qr-code"></div>
             <span class="error-message"></span>
             <input type="file" accept="image/*">
         `;
@@ -54,14 +54,27 @@ class FileImport extends Nimiq.Observable {
     }
 
     /**
-     * @param {DOMEvent} event
+     * @param {Event} event
      */
     _onFileSelected(event) {
-        this.$errorMessage.textContent = '';
-        // @ts-ignore (Property 'files' does not exist on type 'EventTarget & Element'.)
-        const files = event.target.files;
-        this._readFile(files[0]);
-        this.$fileInput.value = '';
+        /** @type {HTMLInputElement} */
+        const eventTarget = (event.target);
+        if (eventTarget && eventTarget.files && eventTarget.files.length === 1) {
+            this.$errorMessage.textContent = '';
+            const files = eventTarget.files;
+
+            const fileReader = new FileReader();
+            fileReader.onload = async e => {
+                const image = document.createElement('img');
+                // @ts-ignore Object is possibly 'null'. Property 'result' does not exist on type 'EventTarget'.
+                image.src = e.target.result;
+                image.id = 'image-wallet';
+                this.$el.appendChild(image);
+                await this._readFile(files[0]);
+                this.$fileInput.value = '';
+            };
+            fileReader.readAsDataURL(files[0]);
+        }
     }
 
     _onQrError() {

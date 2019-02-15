@@ -101,12 +101,15 @@ class Create {
 
         const keyPath = request.defaultKeyPath;
 
-        /** @type {KeyguardRequest.CreateResult} */
-        const result = {
+        /** @type {KeyguardRequest.KeyResult[]} */
+        const result = [{
             keyId: /** @type {number} */ (newId.valueOf()),
-            keyPath,
-            address: key.deriveAddress(keyPath).serialize(),
-        };
+            keyType: key.type,
+            addresses: [{
+                address: key.deriveAddress(keyPath).serialize(),
+                keyPath,
+            }],
+        }];
 
         this._resolve(result);
     }
@@ -115,12 +118,6 @@ class Create {
         // go to start page
         window.location.hash = Create.Pages.CHOOSE_IDENTICON;
         this._identiconSelector.generateIdenticons();
-
-        // XXX: Is the following necessary, or is the CryptoWorker already
-        // instanced when generating addresses for identicons?
-
-        // Async pre-load the crypto worker to reduce wait time when encrypting
-        // Nimiq.CryptoWorker.getInstanceAsync();
     }
 }
 
