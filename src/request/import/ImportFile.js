@@ -55,7 +55,6 @@ class ImportFile {
     }
 
     run() {
-        Nimiq.CryptoWorker.getInstanceAsync();
         window.location.hash = ImportFile.Pages.IMPORT_FILE;
     }
 

@@ -17,7 +17,7 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         $cancelLink.classList.remove('display-none');
         $cancelLink.addEventListener('click', () => this.reject(new Errors.RequestCanceled()));
 
-        removeKeyHandler.run();
+        window.setTimeout(() => removeKeyHandler.run(), 0);
     }
 
     /**

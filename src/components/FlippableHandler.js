@@ -4,7 +4,7 @@ class FlippableHandler {
      * If other classes should be flipped to the backside they need to be added to FlippableHandler.css
      * @param {string} [classname = "flipped"] - Pages with this classname will be on the backside of the flip.
      */
-    constructor(classname = 'flipped') {
+    static flippable(classname = 'flipped') {
         if (!FlippableHandler.flippableHandlerInitialised) {
             /** @type {HTMLElement} */
             const $rotationContainer = (document.getElementById('rotation-container'));

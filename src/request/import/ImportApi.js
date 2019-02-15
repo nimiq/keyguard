@@ -18,7 +18,7 @@ class ImportApi extends TopLevelApi {
         $cancelLink.classList.remove('display-none');
         $cancelLink.addEventListener('click', () => this.reject(new Errors.RequestCanceled()));
 
-        importFileHandler.run();
+        window.setTimeout(() => importFileHandler.run(), 0);
     }
 
     /**

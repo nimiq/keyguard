@@ -30,7 +30,7 @@ class SignTransactionApi extends TopLevelApi {
         $cancelLink.classList.remove('display-none');
         $cancelLink.addEventListener('click', () => this.reject(new Errors.RequestCanceled()));
 
-        handler.run();
+        window.setTimeout(() => handler.run(), 0);
         TopLevelApi.setLoading(false);
     }
 

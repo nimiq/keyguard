@@ -17,7 +17,7 @@ class ChangePassphraseApi extends TopLevelApi { // eslint-disable-line no-unused
         $cancelLink.classList.remove('display-none');
         $cancelLink.addEventListener('click', () => this.reject(new Errors.RequestCanceled()));
 
-        handler.run();
+        window.setTimeout(() => handler.run(), 0);
     }
 
     /**
