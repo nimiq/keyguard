@@ -29,7 +29,7 @@ replace_config_variable() {
     fi
 }
 
-# ease configuration by adding quotes
+# ease configuration of allowed origin and network by adding quotes
 if [ "$KEYGUARD_ALLOWED_ORIGIN" != "" ]; then
     KEYGUARD_ALLOWED_ORIGIN="'$KEYGUARD_ALLOWED_ORIGIN'"
 fi
