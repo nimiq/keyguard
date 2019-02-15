@@ -44,10 +44,6 @@
     z-index: 3;
 }
 
-.page#recovery-words {
-    color: white;
-}
-
 .page#recovery-words p {
     margin-top: 4rem;
     margin-bottom: 0;
