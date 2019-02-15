@@ -49,6 +49,11 @@
     margin-bottom: 0;
     opacity: 0.5;
     text-align: center;
+    color: white;
+}
+
+.page#recovery-words .nq-red {
+    color: var(--nimiq-red);
 }
 
 .page#recovery-words.invalid-words p:not(.nq-red),
