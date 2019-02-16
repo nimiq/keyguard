@@ -98,7 +98,6 @@
 }
 
 #loading {
-    display: flex;
     flex-flow: column;
     justify-content: center;
     align-items: center;
@@ -119,7 +118,7 @@
 }
 
 .loading #loading {
-    display: flex !important;
+    display: flex;
     background-color: rgba(0, 0, 0, 0.4); /* darken background when used on top of pages */
 }
 

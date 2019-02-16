@@ -4,6 +4,8 @@ const TRANSLATIONS = {
         loading: 'Loading...',
         continue: 'Continue',
 
+        'back-to': 'Back to',
+
         'passphrase-strength': 'Strength',
         'passphrase-placeholder': 'Enter password',
         'passphrase-repeat-placeholder': 'Repeat password',
@@ -143,6 +145,8 @@ const TRANSLATIONS = {
         _language: 'Deutsch',
         loading: 'Wird geladen...',
         continue: 'Weiter',
+
+        'back-to': 'Zurück zu',
 
         'passphrase-strength': 'Stärke',
         'passphrase-placeholder': 'Passwort eingeben',

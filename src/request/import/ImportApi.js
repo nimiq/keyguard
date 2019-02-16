@@ -1,6 +1,7 @@
 /* global TopLevelApi */
 /* global ImportFile */
 /* global Errors */
+/* global I18n */
 
 class ImportApi extends TopLevelApi {
     /**
@@ -8,16 +9,7 @@ class ImportApi extends TopLevelApi {
      */
     async onRequest(request) {
         const importFileHandler = new ImportFile(request, this.resolve.bind(this), this.reject.bind(this));
-
-        // Global cancel link
-        /** @type {HTMLElement} */
-        const $appName = (document.querySelector('#app-name'));
-        $appName.textContent = request.appName;
-        /** @type {HTMLButtonElement} */
-        const $cancelLink = ($appName.parentNode);
-        $cancelLink.classList.remove('display-none');
-        $cancelLink.addEventListener('click', () => this.reject(new Errors.RequestCanceled()));
-
+        this.setGlobalCloseButtonText(`${I18n.translatePhrase('back-to')} ${request.appName}`);
         importFileHandler.run();
     }
 
