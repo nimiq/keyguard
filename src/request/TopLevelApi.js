@@ -53,7 +53,7 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
      * Method to be called by the Keyguard client via RPC
      *
      * @param {Rpc.State?} state
-     * @param {KeyguardRequest.Request} request
+     * @param {any} request
      */
     async request(state, request) {
         /**
@@ -108,8 +108,8 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
              * Import or Create (the only ones which don't have the keyInfo property)
              * or any request which has the keyInfo property and the encrypted flag set.
              */
-            if (!(/** @type {ParsedSimpleRequest} */(parsedRequest).keyInfo)
-                || /** @type {ParsedSimpleRequest} */(parsedRequest).keyInfo.encrypted) {
+            if (!(/** @type {Parsed<KeyguardRequest.SimpleRequest>} */(parsedRequest).keyInfo)
+                || /** @type {Parsed<KeyguardRequest.SimpleRequest>} */(parsedRequest).keyInfo.encrypted) {
                 Nimiq.CryptoWorker.getInstanceAsync();
             }
 
@@ -133,7 +133,7 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
     /**
      * Overwritten by each request's API class
      *
-     * @param {ParsedRequest} request
+     * @param {Parsed<KeyguardRequest.Request>} request
      * @abstract
      */
     async onRequest(request) { // eslint-disable-line no-unused-vars
@@ -144,7 +144,7 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
      * Overwritten by each request's API class
      *
      * @param {KeyguardRequest.Request} request
-     * @returns {Promise<ParsedRequest>}
+     * @returns {Promise<Parsed<KeyguardRequest.Request>>}
      * @abstract
      */
     async parseRequest(request) { // eslint-disable-line no-unused-vars

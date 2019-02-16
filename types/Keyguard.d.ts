@@ -1,5 +1,5 @@
 // tslint:disable-next-line no-reference
-/// <reference path="../client/types/KeyguardRequestNamespace.d.ts" />
+/// <reference path="./KeyguardRequestNamespace.d.ts" />
 
 interface Newable {
     new(...args: any[]): any
@@ -49,24 +49,18 @@ type StoredKeyRecord = KeyRecord & {
 
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
 type Transform<T, K extends keyof T, E> = Omit<T, K> & E
+
 type KeyId2KeyInfo<T extends { keyId: number }> = Transform<T, 'keyId', { keyInfo: KeyInfo }>
 type ConstructTransaction<T extends KeyguardRequest.TransactionInfo> = Transform<T,
     'sender' | 'senderType' | 'recipient' | 'recipientType' | 'value' | 'fee' |
     'validityStartHeight' | 'data' | 'flags',
     { transaction: Nimiq.ExtendedTransaction }>
 
-type ParsedSimpleRequest = KeyId2KeyInfo<KeyguardRequest.SimpleRequest>
-type ParsedSignTransactionRequest = ConstructTransaction<Transform<KeyId2KeyInfo<KeyguardRequest.SignTransactionRequest>, 'shopLogoUrl',{ shopLogoUrl?: URL }>>
-& { layout: KeyguardRequest.SignTransactionRequestLayout }
-type ParsedSignMessageRequest = Transform<KeyId2KeyInfo<KeyguardRequest.SignMessageRequest>,
-    'signer', { signer: Nimiq.Address }>
-type ParsedDeriveAddressRequest = KeyId2KeyInfo<KeyguardRequest.DeriveAddressRequest>
-type ParsedRemoveKeyRequest = KeyId2KeyInfo<KeyguardRequest.RemoveKeyRequest>
-
-type ParsedRequest = ParsedDeriveAddressRequest
-                   | ParsedRemoveKeyRequest
-                   | ParsedSignMessageRequest
-                   | ParsedSignTransactionRequest
-                   | ParsedSimpleRequest
-                   | KeyguardRequest.CreateRequest
-                   | KeyguardRequest.ImportRequest;
+type Parsed<T extends KeyguardRequest.Request> =
+    T extends KeyguardRequest.SimpleRequest
+        | KeyguardRequest.DeriveAddressRequest
+        | KeyguardRequest.RemoveKeyRequest ? KeyId2KeyInfo<KeyguardRequest.SimpleRequest> :
+    T extends KeyguardRequest.SignTransactionRequest ? ConstructTransaction<Transform<KeyId2KeyInfo<KeyguardRequest.SignTransactionRequest>, 'shopLogoUrl',{ shopLogoUrl?: URL }>>
+        & { layout: KeyguardRequest.SignTransactionRequestLayout } :
+    T extends KeyguardRequest.SignMessageRequest ? Transform<KeyId2KeyInfo<KeyguardRequest.SignMessageRequest>,
+        'signer', { signer: Nimiq.Address }> : T;
