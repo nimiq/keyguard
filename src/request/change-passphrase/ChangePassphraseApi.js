@@ -1,6 +1,7 @@
 /* global TopLevelApi */
 /* global ChangePassphrase */
 /* global Errors */
+/* global I18n */
 
 class ChangePassphraseApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
@@ -8,15 +9,7 @@ class ChangePassphraseApi extends TopLevelApi { // eslint-disable-line no-unused
      */
     async onRequest(request) {
         const handler = new ChangePassphrase(request, this.resolve.bind(this), this.reject.bind(this));
-
-        /** @type {HTMLElement} */
-        const $appName = (document.querySelector('#app-name'));
-        $appName.textContent = request.appName;
-        /** @type {HTMLButtonElement} */
-        const $cancelLink = ($appName.parentNode);
-        $cancelLink.classList.remove('display-none');
-        $cancelLink.addEventListener('click', () => this.reject(new Errors.RequestCanceled()));
-
+        this.setGlobalCloseButtonText(`${I18n.translatePhrase('back-to')} ${request.appName}`);
         handler.run();
     }
 

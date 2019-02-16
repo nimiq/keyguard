@@ -1,6 +1,7 @@
 /* global TopLevelApi */
 /* global Export */
 /* global Errors */
+/* global I18n */
 
 class ExportApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
@@ -8,15 +9,7 @@ class ExportApi extends TopLevelApi { // eslint-disable-line no-unused-vars
      */
     async onRequest(request) {
         const exportHandler = new Export(request, this.resolve.bind(this), this.reject.bind(this));
-
-        /** @type {HTMLElement} */
-        const $appName = (document.querySelector('#app-name'));
-        $appName.textContent = request.appName;
-        /** @type {HTMLButtonElement} */
-        const $cancelLink = ($appName.parentNode);
-        $cancelLink.classList.remove('display-none');
-        $cancelLink.addEventListener('click', () => this.reject(new Errors.RequestCanceled()));
-
+        this.setGlobalCloseButtonText(`${I18n.translatePhrase('back-to')} ${request.appName}`);
         exportHandler.run();
     }
 
@@ -33,6 +26,7 @@ class ExportApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         parsedRequest.appName = this.parseAppName(request.appName);
         parsedRequest.keyInfo = await this.parseKeyId(request.keyId);
         parsedRequest.keyLabel = this.parseLabel(request.keyLabel);
+        // parsedRequest.usedKeyPaths = this.parsePathsArray(request.usedKeyPaths, 'usedKeyPaths');
 
         return parsedRequest;
     }
