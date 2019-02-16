@@ -1,7 +1,6 @@
 /* global TopLevelApi */
 /* global RemoveKey */
 /* global Errors */
-/* global I18n */
 
 class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
@@ -9,7 +8,6 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
      */
     async onRequest(request) {
         const removeKeyHandler = new RemoveKey(request, this.resolve.bind(this), this.reject.bind(this));
-        this.setGlobalCloseButtonText(`${I18n.translatePhrase('back-to')} ${request.appName}`);
         removeKeyHandler.run();
     }
 

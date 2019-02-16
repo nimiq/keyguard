@@ -126,6 +126,7 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
             });
 
             this.onRequest(parsedRequest).catch(reject);
+            this.setGlobalCloseButtonText(`${I18n.translatePhrase('back-to')} ${parsedRequest.appName}`);
             TopLevelApi.setLoading(false);
         });
     }
@@ -185,6 +186,7 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
         const $globalCloseText = (document.querySelector('#global-close-text'));
         /** @type {HTMLSpanElement} */
         const $button = ($globalCloseText.parentNode);
+        if (!$button.classList.contains('display-none')) return;
         $globalCloseText.textContent = buttonText;
         $button.addEventListener('click', () => this.reject(new Errors.RequestCanceled()));
         $button.classList.remove('display-none');

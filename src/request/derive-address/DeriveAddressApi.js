@@ -2,7 +2,6 @@
 /* global TopLevelApi */
 /* global DeriveAddress */
 /* global Errors */
-/* global I18n */
 
 class DeriveAddressApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
@@ -10,7 +9,6 @@ class DeriveAddressApi extends TopLevelApi { // eslint-disable-line no-unused-va
      */
     async onRequest(request) {
         const handler = new DeriveAddress(request, this.resolve.bind(this), this.reject.bind(this));
-        this.setGlobalCloseButtonText(`${I18n.translatePhrase('back-to')} ${request.appName}`);
         handler.run();
     }
 

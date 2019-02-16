@@ -1,7 +1,6 @@
 /* global TopLevelApi */
 /* global ChangePassphrase */
 /* global Errors */
-/* global I18n */
 
 class ChangePassphraseApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
@@ -9,7 +8,6 @@ class ChangePassphraseApi extends TopLevelApi { // eslint-disable-line no-unused
      */
     async onRequest(request) {
         const handler = new ChangePassphrase(request, this.resolve.bind(this), this.reject.bind(this));
-        this.setGlobalCloseButtonText(`${I18n.translatePhrase('back-to')} ${request.appName}`);
         handler.run();
     }
 

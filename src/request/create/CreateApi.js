@@ -1,7 +1,6 @@
 /* global TopLevelApi */
 /* global Create */
 /* global Errors */
-/* global I18n */
 
 class CreateApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
@@ -9,7 +8,6 @@ class CreateApi extends TopLevelApi { // eslint-disable-line no-unused-vars
      */
     async onRequest(request) {
         const handler = new Create(request, this.resolve.bind(this), this.reject.bind(this));
-        this.setGlobalCloseButtonText(`${I18n.translatePhrase('back-to')} ${request.appName}`);
         handler.run();
     }
 
