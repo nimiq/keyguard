@@ -1,9 +1,10 @@
 .download-loginfile {
     display: flex;
     flex-direction: column;
+    text-decoration: none;
 }
 
-.download-loginfile .link-image {
+.download-loginfile .loginfile {
     text-decoration: none;
     color: inherit;
     outline: none;
@@ -11,19 +12,15 @@
     margin: auto;
 }
 
-.download-loginfile .loginfile {
-    height: 100%;
-}
-
 .download-loginfile .long-touch-indicator {
-    width: 96px;
-    height: 96px;
+    width: 11rem;
+    height: 11rem;
     position: absolute;
-    top: 80px;
-    left: calc(50% - 48px);
+    left: calc(50% - 5.5rem);
+    top: 25.5rem; /* To lie over the wallet indicator on the LoginFile*/
     pointer-events: none;
     display: none;
-    stroke: var(--nimiq-green);
+    stroke: white;
 }
 
 .download-loginfile .long-touch-indicator.animate {
@@ -33,15 +30,11 @@
 @keyframes long-touch-indicator-animation {
     from {
         stroke-dashoffset: 100.5;
-        stroke: white;
+        stroke: rgba(255, 255, 255, 0.6);
     }
 }
 
-.download-loginfile .link-button {
-    text-decoration: none;
-}
-
-.download-loginfile .link-button button {
+.download-loginfile button {
     margin-top: 4rem;
     margin-bottom: 0;
 }
@@ -50,15 +43,12 @@
     background-image: url('data:image/svg+xml,<svg width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15.36 11.38a.83.83 0 0 0-.59-1.42h-3.31a.2.2 0 0 1-.2-.2V1.24a1.25 1.25 0 1 0-2.5 0v8.5c0 .12-.1.2-.22.2H5.23a.83.83 0 0 0-.59 1.43l4.77 4.77c.33.33.86.33 1.18 0l4.77-4.77zM16.02 18.75c0-.69-.55-1.25-1.25-1.25H5.23a1.25 1.25 0 1 0 0 2.5h9.54c.7 0 1.25-.56 1.25-1.25z" fill="white"/></svg>');
 }
 
-.download-loginfile.tab-and-hold,
-.download-loginfile.fallback-download .link-button,
-.download-loginfile .continue,
-.download-loginfile.has-held .nq-label {
+.download-loginfile .tap-and-hold,
+.download-loginfile.fallback-download button {
     display: none;
 }
 
-.download-loginfile.fallback-download .tab-and-hold,
-.download-loginfile.has-held .continue {
+.download-loginfile.fallback-download .tap-and-hold {
     display: block;
 }
 
@@ -68,5 +58,5 @@
     margin: 6rem 0 2rem;
     font-size: 2rem;
     line-height: 1.25;
-    color: rgb(31,35,72,.5);
+    color: rgb(31,35,72,.5) !important; /* important is necessary for iOS */
 }

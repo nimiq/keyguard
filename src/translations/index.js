@@ -102,7 +102,7 @@ const TRANSLATIONS = {
         'identicon-selector-more-addresses': 'More addresses',
 
         'download-loginfile-download': 'Download LoginFile',
-        'download-loginfile-tap-and-hold': 'Tap and hold to download',
+        'download-loginfile-tap-and-hold': 'Tap and hold image to download',
 
         'validate-words-text': 'Please select the correct word from your list of recovery words.',
         'validate-words-back': 'Back to words',
@@ -247,7 +247,7 @@ const TRANSLATIONS = {
         'identicon-selector-more-addresses': 'Mehr Adressen',
 
         'download-loginfile-download': 'LoginDatei herunterladen',
-        'download-loginfile-tap-and-hold': 'Zum Herunterladen gedrückt halten',
+        'download-loginfile-tap-and-hold': 'Zum Herunterladen Bild gedrückt halten',
 
         'validate-words-text': 'Bitte wähle das richtige Wort aus deiner Liste von Wiederherstellungswörtern aus.',
         'validate-words-back': 'Zurück zu den Wörtern',

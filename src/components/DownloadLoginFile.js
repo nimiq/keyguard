@@ -7,7 +7,7 @@
 
 class DownloadLoginFile extends Nimiq.Observable {
     /**
-     * @param {HTMLElement} [$el]
+     * @param {HTMLAnchorElement} [$el]
      * @param {Uint8Array} [secret]
      * @param {Nimiq.Address} [firstAddress]
      */
@@ -19,16 +19,10 @@ class DownloadLoginFile extends Nimiq.Observable {
         /** @type {LoginFile | null} */
         this._file = null;
 
-        /** @type {HTMLAnchorElement} */
-        this.$linkImage = (this.$el.querySelector('.link-image'));
-        /** @type {HTMLAnchorElement} */
-        this.$linkButton = (this.$el.querySelector('.link-button'));
-
         /** @type {HTMLImageElement} */
         this.$loginfile = (this.$el.querySelector('.loginfile'));
 
-        // this.$linkImage.addEventListener('click', this._onDownloadClick.bind(this));
-        // this.$linkButton.addEventListener('click', this._onDownloadClick.bind(this));
+        // this.$el.addEventListener('click', this._onDownloadClick.bind(this));
 
         if (secret && firstAddress) {
             this.setSecret(secret, firstAddress);
@@ -48,18 +42,16 @@ class DownloadLoginFile extends Nimiq.Observable {
     }
 
     /**
-     * @param {?HTMLElement} [$el]
-     * @returns {HTMLElement}
+     * @param {?HTMLAnchorElement} [$el]
+     * @returns {HTMLAnchorElement}
      */
     static _createElement($el) {
-        $el = $el || document.createElement('div');
+        $el = $el || document.createElement('a');
         $el.classList.add('download-loginfile');
 
         /* eslint-disable max-len */
         $el.innerHTML = `
-            <a class="link-image">
-                <img class="loginfile" src=""></img>
-            </a>
+            <img class="loginfile" src=""></img>
 
             <svg class="long-touch-indicator" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
                 <defs>
@@ -73,14 +65,11 @@ class DownloadLoginFile extends Nimiq.Observable {
                 </g>
             </svg>
 
-            <a class="link-button">
-                <button class="nq-button light-blue">
-                    <i class="nq-icon download"></i>
-                    <span data-i18n="download-loginfile-download">Download LoginFile</span>
-                </button>
-            </a>
-            <span class="nq-label tap-and-hold" data-i18n="download-loginfile-tap-and-hold">Tap and hold to download</span>
-            <button class="nq-button light-blue continue">Continue</button>
+            <button class="nq-button light-blue">
+                <i class="nq-icon download"></i>
+                <span data-i18n="download-loginfile-download">Download LoginFile</span>
+            </button>
+            <span class="nq-label tap-and-hold" data-i18n="download-loginfile-tap-and-hold">Tap and hold image to download</span>
         `;
         /* eslint-enable max-len */
 
@@ -143,7 +132,7 @@ class DownloadLoginFile extends Nimiq.Observable {
      * @returns {boolean}
      */
     _supportsNativeDownload() {
-        return typeof this.$linkImage.download !== 'undefined';
+        return typeof this.$el.download !== 'undefined';
     }
 
     /**
@@ -152,18 +141,15 @@ class DownloadLoginFile extends Nimiq.Observable {
      * @returns {void}
      */
     _setupNativeDownload(href, filename) {
-        this.$linkImage.href = href;
-        this.$linkImage.download = filename;
-
-        this.$linkButton.href = href;
-        this.$linkButton.download = filename;
+        this.$el.href = href;
+        this.$el.download = filename;
 
         this.$el.classList.remove('fallback-download');
     }
 
     _setupFallbackDownload() {
         // Hack to make image downloadable on iOS via long tap.
-        this.$linkImage.href = 'javascript:void(0);'; // eslint-disable-line no-script-url
+        this.$el.href = 'javascript:void(0);'; // eslint-disable-line no-script-url
 
         this.$el.classList.add('fallback-download');
     }
@@ -206,7 +192,7 @@ class DownloadLoginFile extends Nimiq.Observable {
         // some browsers open a download dialog and blur the window focus, which we use as a hint for a download
         window.addEventListener('blur', this._onWindowBlur);
         // otherwise consider the download as successful after some time
-        this._blurTimeout = window.setTimeout(() => this._onDownloadEnd(), 1000);
+        this._blurTimeout = window.setTimeout(() => this._onDownloadEnd(), 500);
     }
 
     _onDownloadEnd() {
