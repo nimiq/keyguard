@@ -186,7 +186,6 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
         this._reject(error);
     }
 
-
     /**
      * @param {string} buttonText
      */
@@ -205,10 +204,6 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
      */
     static setLoading(showLoading) {
         document.body.classList.toggle('loading', showLoading);
-    }
-
-    static showNoReferrerError() {
-
     }
 
     /**
