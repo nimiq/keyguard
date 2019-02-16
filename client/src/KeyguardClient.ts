@@ -2,6 +2,7 @@ import { RedirectRpcClient } from '@nimiq/rpc';
 import { RequestBehavior, RedirectRequestBehavior, IFrameRequestBehavior } from './RequestBehavior';
 import { KeyguardCommand } from './KeyguardCommand';
 import * as KeyguardRequest from './PublicRequest';
+import { PublicToInternal } from './InternalRequest';
 import Observable from './Observable';
 
 export class KeyguardClient {
@@ -10,7 +11,8 @@ export class KeyguardClient {
         : window.location.origin === 'https://accounts.nimiq-testnet.com' ? 'https://keyguard-next.nimiq-testnet.com'
         : `${location.protocol}//${location.hostname}:8000/src`;
 
-    private static mapIdStringToNumber(request: KeyguardRequest.Request | null) {
+    private static mapIdStringToNumber<T extends KeyguardRequest.Request>(request: T)
+        : PublicToInternal<T> {
         if (request && request.keyId) {
             if (request.keyId.substr(0, 1) !== 'K') {
                 throw new Error('keyId must start with K');
@@ -157,7 +159,9 @@ export class KeyguardClient {
         command: KeyguardCommand,
         request: KeyguardRequest.Request | null = null,
     ): Promise<any> {
-        const args: KeyguardRequest.Request[] = request ? [ KeyguardClient.mapIdStringToNumber(request) ] : [];
+        const args: KeyguardRequest.Request[] = request
+            ? [ KeyguardClient.mapIdStringToNumber(request) ]
+            : [];
         const result = await behavior.request(this._endpoint, command, args );
         return KeyguardClient.mapIdNumberToString(result);
     }

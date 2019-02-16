@@ -1,21 +1,15 @@
-import * as Public from './PublicRequest';
+import * as Public from '../src/PublicRequest';
 
-type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
-type Transform<T, K extends keyof T, E> = Omit<T, K> & E
+type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
+type Transform<T, K extends keyof T, E> = Omit<T, K> & E;
 
-type PublicToInternal<T> = T extends { keyId: string }
+export type PublicToInternal<T> = T extends { keyId: string }
     ? Transform<T, 'keyId', { keyId: number }>
     : T extends { id: string }
         ? Transform<T, 'id', { id: number }>
         : T;
 
-type InternalToPublic<T> = T extends { keyId: number }
-    ? Transform<T, 'keyId', { keyId: string }>
-    : T extends { id: string }
-        ? Transform<T, 'id', { id: string }>
-        : T;
-
-export * from './PublicRequest';
+export * from '../src/PublicRequest';
 
 export type KeyInfoObject = PublicToInternal<Public.KeyInfoObject>;
 export type LegacyKeyInfoObject = PublicToInternal<Public.LegacyKeyInfoObject>;
@@ -27,7 +21,7 @@ export type DeriveAddressesRequest = PublicToInternal<Public.DeriveAddressesRequ
 export type ReleaseKeyRequest = PublicToInternal<Public.ReleaseKeyRequest>;
 export type SignMessageRequest = PublicToInternal<Public.SignMessageRequest>;
 export type SignTransactionRequest = PublicToInternal<Public.SignTransactionRequest>;
-export type TopLevelRequest = PublicToInternal<Public.TopLevelRequest>; 
-export type IFrameRequest = PublicToInternal<Public.IFrameRequest>
-export type Request = PublicToInternal<Public.Request>
-export type RpcResult = PublicToInternal<Public.RpcResult>
+export type TopLevelRequest = PublicToInternal<Public.TopLevelRequest>;
+export type IFrameRequest = PublicToInternal<Public.IFrameRequest>;
+export type Request = PublicToInternal<Public.Request>;
+export type RpcResult = PublicToInternal<Public.RpcResult>;
