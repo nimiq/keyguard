@@ -214,3 +214,7 @@
     padding: 0 1rem;
     width: 100%;
 }
+
+#error {
+    justify-content: start;
+}
