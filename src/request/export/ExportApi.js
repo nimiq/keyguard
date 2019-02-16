@@ -1,7 +1,6 @@
 /* global TopLevelApi */
 /* global Export */
 /* global Errors */
-/* global I18n */
 
 class ExportApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
@@ -9,7 +8,6 @@ class ExportApi extends TopLevelApi { // eslint-disable-line no-unused-vars
      */
     async onRequest(request) {
         const exportHandler = new Export(request, this.resolve.bind(this), this.reject.bind(this));
-        this.setGlobalCloseButtonText(`${I18n.translatePhrase('back-to')} ${request.appName}`);
         exportHandler.run();
     }
 

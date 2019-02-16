@@ -12,8 +12,6 @@ class SignTransactionApi extends TopLevelApi {
 
         if (request.layout === SignTransactionApi.Layouts.CHECKOUT) {
             this.setGlobalCloseButtonText(I18n.translatePhrase('sign-tx-cancel-payment'));
-        } else {
-            this.setGlobalCloseButtonText(`${I18n.translatePhrase('back-to')} ${request.appName}`);
         }
 
         handler.run();
