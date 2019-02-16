@@ -1,6 +1,6 @@
 {
   "name": "@nimiq/keyguard-client",
-  "version": "0.2.0-beta1",
+  "version": "0.2.0",
   "description": "Nimiq Keyguard client library",
   "main": "dist/KeyguardClient.common.js",
   "module": "dist/KeyguardClient.es.js",
@@ -8,7 +8,7 @@
   "scripts": {
     "typecheck": "tsc",
     "lint": "tslint 'src/*.ts'",
-    "lint-fix": "tslint --fix 'src/*.ts'",
+    "lintfix": "tslint --fix 'src/*.ts'",
     "build": "rm -rf build && rm -rf dist && tsc && rollup -c"
   },
   "files": [
