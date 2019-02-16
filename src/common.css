@@ -216,5 +216,6 @@
 }
 
 #error {
+    display: flex;
     justify-content: start;
 }
