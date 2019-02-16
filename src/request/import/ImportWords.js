@@ -50,7 +50,7 @@ class ImportWords {
         const $passwordSetter = (this.$setPassword.querySelector('.passphrase-setter-box'));
         /** @type {HTMLDivElement} */
         const $loginFileIcon = (this.$setPassword.querySelector('.login-file-icon'));
-        /** @type {HTMLDivElement} */
+        /** @type {HTMLAnchorElement} */
         const $downloadLoginFile = ($downloadFile.querySelector('.download-loginfile'));
 
         // Components

@@ -31,7 +31,7 @@ class ExportFile extends Nimiq.Observable {
 
         /** @type {HTMLFormElement} */
         const $downloadKeyFilePassphraseBox = ($exportFilePage.querySelector('.passphrase-box'));
-        /** @type {HTMLFormElement} */
+        /** @type {HTMLAnchorElement} */
         const $downloadKeyFile = ($exportFilePage.querySelector('.download-key-file'));
 
         this._downloadKeyFilePassphraseBox = new PassphraseBox(
@@ -137,7 +137,7 @@ class ExportFile extends Nimiq.Observable {
                     <div class="nq-icon walletfile"></div>
                     <div class="nq-icon arrow-down"></div>
                 </div>
-                <div class="download-key-file"></div>
+                <a class="download-key-file"></a>
                 <button class="go-to-words hide-for-download nq-button-s" data-i18n="export-button-words">
                     Show Recovery Words
                 </button>
