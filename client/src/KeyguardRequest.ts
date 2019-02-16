@@ -97,13 +97,27 @@ export type DeriveAddressResult = {
     address: Uint8Array,
 };
 
-export type Request = CreateRequest
+export type DeriveAddressesRequest = {
+    keyId: string,
+    paths: string[],
+};
+
+export type ReleaseKeyRequest = {
+    keyId: string,
+    shouldBeRemoved: boolean,
+};
+
+export type TopLevelRequest = CreateRequest
     | ImportRequest
     | SimpleRequest
     | SignTransactionRequest
     | DeriveAddressRequest
     | SignMessageRequest
     | RemoveKeyRequest;
+
+export type IFrameRequest = DeriveAddressesRequest | ReleaseKeyRequest;
+
+export type Request = TopLevelRequest | IFrameRequest;
 
 export type RpcResult = KeyResult
     | SignTransactionResult
