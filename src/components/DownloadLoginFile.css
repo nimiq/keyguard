@@ -15,6 +15,28 @@
     height: 100%;
 }
 
+.download-loginfile .long-touch-indicator {
+    width: 96px;
+    height: 96px;
+    position: absolute;
+    top: 80px;
+    left: calc(50% - 48px);
+    pointer-events: none;
+    display: none;
+    stroke: var(--nimiq-green);
+}
+
+.download-loginfile .long-touch-indicator.animate {
+    animation: long-touch-indicator-animation .7s linear forwards;
+}
+
+@keyframes long-touch-indicator-animation {
+    from {
+        stroke-dashoffset: 100.5;
+        stroke: white;
+    }
+}
+
 .download-loginfile .link-button {
     text-decoration: none;
 }
@@ -29,11 +51,14 @@
 }
 
 .download-loginfile.tab-and-hold,
-.download-loginfile.fallback-download .link-button {
+.download-loginfile.fallback-download .link-button,
+.download-loginfile .continue,
+.download-loginfile.has-held .nq-label {
     display: none;
 }
 
-.download-loginfile.fallback-download .tab-and-hold {
+.download-loginfile.fallback-download .tab-and-hold,
+.download-loginfile.has-held .continue {
     display: block;
 }
 

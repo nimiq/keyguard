@@ -27,12 +27,24 @@ class DownloadLoginFile extends Nimiq.Observable {
         /** @type {HTMLImageElement} */
         this.$loginfile = (this.$el.querySelector('.loginfile'));
 
-        this.$linkImage.addEventListener('click', this._onDownloadClick.bind(this));
-        this.$linkButton.addEventListener('click', this._onDownloadClick.bind(this));
+        // this.$linkImage.addEventListener('click', this._onDownloadClick.bind(this));
+        // this.$linkButton.addEventListener('click', this._onDownloadClick.bind(this));
 
         if (secret && firstAddress) {
             this.setSecret(secret, firstAddress);
         }
+
+        /** @type {SVGElement} */
+        this.$longTouchIndicator = (this.$el.querySelector('.long-touch-indicator'));
+
+        this._longTouchStart = 0;
+        this._longTouchTimeout = undefined;
+        this._blurTimeout = undefined;
+
+        this._onWindowBlur = this._onWindowBlur.bind(this);
+        this.$el.addEventListener('mousedown', e => this._onMouseDown(e)); // also gets triggered after touchstart
+        this.$el.addEventListener('touchstart', () => this._onTouchStart());
+        this.$el.addEventListener('touchend', () => this._onTouchEnd());
     }
 
     /**
@@ -43,10 +55,24 @@ class DownloadLoginFile extends Nimiq.Observable {
         $el = $el || document.createElement('div');
         $el.classList.add('download-loginfile');
 
+        /* eslint-disable max-len */
         $el.innerHTML = `
             <a class="link-image">
                 <img class="loginfile" src=""></img>
             </a>
+
+            <svg class="long-touch-indicator" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+                <defs>
+                    <clipPath id="hexClip-download-loginfile">
+                        <path clip-rule="evenodd" d="M16 4.29h32l16 27.71l-16 27.71h-32l-16 -27.71zM20.62 12.29h22.76l11.38 19.71l-11.38 19.71h-22.76l-11.38 -19.71z"/>
+                    </clipPath>
+                </defs>
+                <path fill-rule="evenodd" d="M16 4.29h32l16 27.71l-16 27.71h-32l-16 -27.71zM20.62 12.29h22.76l11.38 19.71l-11.38 19.71h-22.76l-11.38 -19.71z" fill="white" opacity="0.2"/>
+                <g clip-path="url(#hexClip-download-loginfile)">
+                    <circle id="circle" cx="32" cy="32" r="16" fill="none" stroke-width="32" stroke-dasharray="100.53 100.53" transform="rotate(-120 32 32)"/>
+                </g>
+            </svg>
+
             <a class="link-button">
                 <button class="nq-button light-blue">
                     <i class="nq-icon download"></i>
@@ -54,7 +80,9 @@ class DownloadLoginFile extends Nimiq.Observable {
                 </button>
             </a>
             <span class="nq-label tap-and-hold" data-i18n="download-loginfile-tap-and-hold">Tap and hold to download</span>
+            <button class="nq-button light-blue continue">Continue</button>
         `;
+        /* eslint-enable max-len */
 
         I18n.translateDom($el);
         return $el;
@@ -90,11 +118,11 @@ class DownloadLoginFile extends Nimiq.Observable {
         return promise;
     }
 
-    _onDownloadClick() {
-        if (this._supportsNativeDownload()) {
-            this.fire(DownloadLoginFile.Events.DOWNLOADED);
-        }
-    }
+    // _onDownloadClick() {
+    //     if (this._supportsNativeDownload()) {
+    //         this.fire(DownloadLoginFile.Events.DOWNLOADED);
+    //     }
+    // }
 
     /**
      * @param {string} href
@@ -140,6 +168,85 @@ class DownloadLoginFile extends Nimiq.Observable {
         this.$el.classList.add('fallback-download');
     }
 
+    /**
+     * @param {MouseEvent} event
+     */
+    _onMouseDown(event) {
+        if (event.button === 0) { // primary button
+            if (!this._supportsNativeDownload()) return;
+            this._onDownloadStart();
+        } else if (event.button === 2) { // secondary button
+            window.addEventListener('blur', this._onWindowBlur);
+        }
+    }
+
+    _onTouchStart() {
+        if (this._supportsNativeDownload()) return;
+        // if no native download is supported, show a hint to download by long tap
+        this._showLongTouchIndicator();
+        this._longTouchStart = Date.now();
+        window.clearTimeout(this._longTouchTimeout);
+        this._longTouchTimeout = window.setTimeout(() => this._onLongTouch(), DownloadLoginFile.LONG_TOUCH_DURATION);
+    }
+
+    _onTouchEnd() {
+        if (this._supportsNativeDownload()) return;
+        this._hideLongTouchIndicator();
+        window.clearTimeout(this._longTouchTimeout);
+        // if (Date.now() - this._longTouchStart > DownloadLoginFile.LONG_TOUCH_DURATION) return;
+        // this._onLongTouchCancel();
+    }
+
+    _onLongTouch() {
+        this._hideLongTouchIndicator();
+        this._onDownloadStart();
+    }
+
+    _onDownloadStart() {
+        // some browsers open a download dialog and blur the window focus, which we use as a hint for a download
+        window.addEventListener('blur', this._onWindowBlur);
+        // otherwise consider the download as successful after some time
+        this._blurTimeout = window.setTimeout(() => this._onDownloadEnd(), 1000);
+    }
+
+    _onDownloadEnd() {
+        this.fire(DownloadLoginFile.Events.DOWNLOADED);
+        window.removeEventListener('blur', this._onWindowBlur);
+        window.clearTimeout(this._blurTimeout);
+    }
+
+    _onWindowBlur() {
+        // wait for the window to refocus when the browser download dialog closes
+        this._listenOnce('focus', () => this._onDownloadEnd(), window);
+        window.clearTimeout(this._blurTimeout);
+    }
+
+    _showLongTouchIndicator() {
+        this.$longTouchIndicator.style.display = 'block';
+        this.$longTouchIndicator.classList.remove('animate');
+        window.setTimeout(() => this.$longTouchIndicator.classList.add('animate'));
+    }
+
+    _hideLongTouchIndicator() {
+        this.$longTouchIndicator.style.display = 'none';
+    }
+
+    /**
+     * @param {string} eventName
+     * @param {Function} callback
+     * @param {EventTarget} target
+     */
+    _listenOnce(eventName, callback, target) {
+        /**
+         * @param {Event} event
+         */
+        const listener = event => {
+            target.removeEventListener(eventName, listener);
+            callback.call(target, event);
+        };
+        target.addEventListener(eventName, listener, false);
+    }
+
     get file() {
         return this._file;
     }
@@ -161,3 +268,5 @@ class DownloadLoginFile extends Nimiq.Observable {
 DownloadLoginFile.Events = {
     DOWNLOADED: 'loginfile-downloaded',
 };
+
+DownloadLoginFile.LONG_TOUCH_DURATION = 800;

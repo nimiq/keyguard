@@ -155,7 +155,7 @@ class ImportWords {
             });
         };
         // @ts-ignore ('possible null' and 'test is unknown')
-        document.querySelector('[data-i18n="import-words-hint"]').addEventListener('click', () => test(1));
+        document.querySelector('.input-hint').addEventListener('click', () => window.test(1));
     }
 
     run() {
