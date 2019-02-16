@@ -22,7 +22,9 @@ class DownloadLoginFile extends Nimiq.Observable {
         /** @type {HTMLImageElement} */
         this.$loginfile = (this.$el.querySelector('.loginfile'));
 
-        // this.$el.addEventListener('click', this._onDownloadClick.bind(this));
+        /** @type {HTMLButtonElement} */
+        const $continueButton = (this.$el.querySelector('.continue'));
+        $continueButton.addEventListener('click', this._onDownloadEnd.bind(this));
 
         if (secret && firstAddress) {
             this.setSecret(secret, firstAddress);
@@ -37,8 +39,8 @@ class DownloadLoginFile extends Nimiq.Observable {
 
         this._onWindowBlur = this._onWindowBlur.bind(this);
         this.$el.addEventListener('mousedown', e => this._onMouseDown(e)); // also gets triggered after touchstart
-        this.$el.addEventListener('touchstart', () => this._onTouchStart());
-        this.$el.addEventListener('touchend', () => this._onTouchEnd());
+        this.$loginfile.addEventListener('touchstart', () => this._onTouchStart());
+        this.$loginfile.addEventListener('touchend', () => this._onTouchEnd());
     }
 
     /**
@@ -65,11 +67,12 @@ class DownloadLoginFile extends Nimiq.Observable {
                 </g>
             </svg>
 
-            <button class="nq-button light-blue">
+            <button class="nq-button light-blue download-button">
                 <i class="nq-icon download"></i>
                 <span data-i18n="download-loginfile-download">Download LoginFile</span>
             </button>
             <span class="nq-label tap-and-hold" data-i18n="download-loginfile-tap-and-hold">Tap and hold image to download</span>
+            <button class="nq-button light-blue continue">Continue</button>
         `;
         /* eslint-enable max-len */
 
@@ -106,12 +109,6 @@ class DownloadLoginFile extends Nimiq.Observable {
         img.src = await this.file.toDataUrl();
         return promise;
     }
-
-    // _onDownloadClick() {
-    //     if (this._supportsNativeDownload()) {
-    //         this.fire(DownloadLoginFile.Events.DOWNLOADED);
-    //     }
-    // }
 
     /**
      * @param {string} href
@@ -179,13 +176,11 @@ class DownloadLoginFile extends Nimiq.Observable {
         if (this._supportsNativeDownload()) return;
         this._hideLongTouchIndicator();
         window.clearTimeout(this._longTouchTimeout);
-        // if (Date.now() - this._longTouchStart > DownloadLoginFile.LONG_TOUCH_DURATION) return;
-        // this._onLongTouchCancel();
     }
 
     _onLongTouch() {
         this._hideLongTouchIndicator();
-        this._onDownloadStart();
+        this._onHeldToDownload();
     }
 
     _onDownloadStart() {
@@ -193,6 +188,10 @@ class DownloadLoginFile extends Nimiq.Observable {
         window.addEventListener('blur', this._onWindowBlur);
         // otherwise consider the download as successful after some time
         this._blurTimeout = window.setTimeout(() => this._onDownloadEnd(), 500);
+    }
+
+    _onHeldToDownload() {
+        this.$el.classList.add('held-to-download');
     }
 
     _onDownloadEnd() {

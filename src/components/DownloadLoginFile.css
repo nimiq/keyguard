@@ -44,12 +44,18 @@
 }
 
 .download-loginfile .tap-and-hold,
-.download-loginfile.fallback-download button {
+.download-loginfile .continue,
+.download-loginfile.fallback-download .download-button {
     display: none;
 }
 
-.download-loginfile.fallback-download .tap-and-hold {
+.download-loginfile.fallback-download .tap-and-hold,
+.download-loginfile.held-to-download .continue {
     display: block;
+}
+
+.download-loginfile.held-to-download .tap-and-hold {
+    display: none; /* needs to come _after_ "display: block" above to overwrite it */
 }
 
 .download-loginfile .nq-label {
