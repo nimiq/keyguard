@@ -5,11 +5,19 @@ import * as KeyguardRequest from './PublicRequest';
 import { PublicToInternal } from './InternalRequest';
 import Observable from './Observable';
 
+type HasKeyId<T> = T & {
+    keyId: string;
+};
+
 export class KeyguardClient {
     private static readonly DEFAULT_ENDPOINT =
         window.location.origin === 'https://accounts.nimiq.com' ? 'https://keyguard-next.nimiq.com'
         : window.location.origin === 'https://accounts.nimiq-testnet.com' ? 'https://keyguard-next.nimiq-testnet.com'
         : `${location.protocol}//${location.hostname}:8000/src`;
+
+    private static hasKeyId(request: T KeyguardRequest.Request): request is HasKeyId<typeof request> {
+        return request.keyId === undefined ? false : true;
+    }
 
     private static mapIdStringToNumber<T extends KeyguardRequest.Request>(request: T)
         : PublicToInternal<T> {

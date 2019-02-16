@@ -6,7 +6,7 @@
 
 class RemoveKey {
     /**
-     * @param {ParsedRemoveKeyRequest} request
+     * @param {Parsed<KeyguardRequest.RemoveKeyRequest>} request
      * @param {Function} resolve
      * @param {Function} reject
      */

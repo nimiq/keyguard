@@ -1,4 +1,4 @@
-import * as Public from '../src/PublicRequest';
+import * as Public from './PublicRequest';
 
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 type Transform<T, K extends keyof T, E> = Omit<T, K> & E;
@@ -9,7 +9,7 @@ export type PublicToInternal<T> = T extends { keyId: string }
         ? Transform<T, 'id', { id: number }>
         : T;
 
-export * from '../src/PublicRequest';
+export * from './PublicRequest';
 
 export type KeyInfoObject = PublicToInternal<Public.KeyInfoObject>;
 export type LegacyKeyInfoObject = PublicToInternal<Public.LegacyKeyInfoObject>;

@@ -57,10 +57,10 @@ type ConstructTransaction<T extends KeyguardRequest.TransactionInfo> = Transform
     { transaction: Nimiq.ExtendedTransaction }>
 
 type Parsed<T extends KeyguardRequest.Request> =
-    T extends KeyguardRequest.SimpleRequest
-        | KeyguardRequest.DeriveAddressRequest
-        | KeyguardRequest.RemoveKeyRequest ? KeyId2KeyInfo<KeyguardRequest.SimpleRequest> :
+    T extends KeyguardRequest.SignMessageRequest ? Transform<KeyId2KeyInfo<KeyguardRequest.SignMessageRequest>,
+        'signer', { signer: Nimiq.Address }> :
     T extends KeyguardRequest.SignTransactionRequest ? ConstructTransaction<Transform<KeyId2KeyInfo<KeyguardRequest.SignTransactionRequest>, 'shopLogoUrl',{ shopLogoUrl?: URL }>>
         & { layout: KeyguardRequest.SignTransactionRequestLayout } :
-    T extends KeyguardRequest.SignMessageRequest ? Transform<KeyId2KeyInfo<KeyguardRequest.SignMessageRequest>,
-        'signer', { signer: Nimiq.Address }> : T;
+    T extends KeyguardRequest.SimpleRequest
+        | KeyguardRequest.DeriveAddressRequest
+        | KeyguardRequest.RemoveKeyRequest ? KeyId2KeyInfo<T> : T;

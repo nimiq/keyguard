@@ -4,7 +4,7 @@
 
 class SignMessageApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
-     * @param {ParsedSignMessageRequest} request
+     * @param {Parsed<KeyguardRequest.SignMessageRequest>} request
      */
     async onRequest(request) {
         /** @type {HTMLDivElement} */
@@ -30,7 +30,7 @@ class SignMessageApi extends TopLevelApi { // eslint-disable-line no-unused-vars
 
     /**
      * @param {KeyguardRequest.SignMessageRequest} request
-     * @returns {Promise<ParsedSignMessageRequest>}
+     * @returns {Promise<Parsed<KeyguardRequest.SignMessageRequest>>}
      */
     async parseRequest(request) {
         if (!request) {
