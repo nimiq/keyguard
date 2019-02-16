@@ -138,7 +138,7 @@ const TRANSLATIONS = {
         'change-paragraph': 'Before entering your new password, you must first unlock your account.',
         'change-set-paragraph': 'Now please enter your new password and repeat it for confirmation.',
 
-        'error-no-referrer-heading': 'That went wrong',
+        'error-no-referrer-heading': 'That went wrong :(',
         'error-no-referrer-message': 'We could not verify the origin of your request. Please go back and try again.',
     },
     de: {
@@ -289,7 +289,7 @@ const TRANSLATIONS = {
         'change-paragraph': 'Um dein Passwort zu ändern, musst du vorher deinen Account entschlüsseln.',
         'change-set-paragraph': 'Gib jetzt dein neues Passwort ein und wiederhole es danach, um es zu bestätigen.',
 
-        'error-no-referrer-heading': 'Das ging schief',
+        'error-no-referrer-heading': 'Das ging schief :(',
         'error-no-referrer-message': 'Wir konnten nicht überprüfen, wo deine Anfrage herkommt. Bitte gehe zurück und '
                                    + 'versuche es nochmal.',
     },
