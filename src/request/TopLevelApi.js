@@ -129,6 +129,7 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
                 reject(new Errors.KeyguardError('Handler undefined'));
                 return;
             }
+
             try {
                 const handler = new this.Handler(parsedRequest, resolve, reject);
 
@@ -136,9 +137,9 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
 
                 this.setGlobalCloseButtonText(`${I18n.translatePhrase('back-to')} ${parsedRequest.appName}`);
 
-                TopLevelApi.setLoading(false);
-
                 handler.run();
+
+                TopLevelApi.setLoading(false);
             } catch (error) {
                 reject(error);
             }
@@ -148,7 +149,7 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
     /**
      * Overwritten by each request's API class
      *
-     * @param {KeyguardRequest.KeyguardRequest} request
+     * @param {KeyguardRequest.Request} request
      * @returns {Promise<ParsedRequest>}
      * @abstract
      */
