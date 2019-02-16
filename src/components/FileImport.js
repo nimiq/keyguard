@@ -16,10 +16,18 @@ class FileImport extends Nimiq.Observable {
         /** @type {HTMLInputElement} */
         this.$fileInput = (this.$el.querySelector('input'));
 
-        // TODO Re-add the drop target interaction and event listeners
+        // Add drag-and-drop handlers
+        this.$el.addEventListener('dragover', this._onDragOver.bind(this));
+        this.$el.addEventListener('dragleave', this._onDragEnd.bind(this));
+        this.$el.addEventListener('dragend', this._onDragEnd.bind(this));
+        this.$el.addEventListener('drop', this._onFileDrop.bind(this));
 
         this.$el.addEventListener('click', this._openFileInput.bind(this));
         this.$fileInput.addEventListener('change', e => this._onFileSelected(e));
+
+        // Prevent dropping on window
+        window.addEventListener('dragover', event => event.preventDefault());
+        window.addEventListener('drop', event => event.preventDefault());
     }
 
     /**
@@ -58,25 +66,30 @@ class FileImport extends Nimiq.Observable {
     _onFileSelected(event) {
         /** @type {HTMLInputElement} */
         const eventTarget = (event.target);
-        if (eventTarget && eventTarget.files && eventTarget.files.length === 1) {
-            this.$errorMessage.textContent = '';
-            const files = eventTarget.files;
+        if (!eventTarget.files || !eventTarget.files.length) return;
+        this._handleFile(eventTarget.files[0]);
+    }
 
-            const fileReader = new FileReader();
-            fileReader.onload = async e => {
-                const qrCodeFound = await this._readFile(files[0]);
-                this.$fileInput.value = '';
-                if (!qrCodeFound) return;
+    /**
+     * @param {File} file
+     */
+    _handleFile(file) {
+        this.$errorMessage.textContent = '';
 
-                // Set image in UI
-                const image = document.createElement('img');
-                // @ts-ignore Object is possibly 'null'. Property 'result' does not exist on type 'EventTarget'.
-                image.src = e.target.result;
-                this.$el.appendChild(image);
-                image.onload = () => { image.classList.add('pop-down'); };
-            };
-            fileReader.readAsDataURL(files[0]);
-        }
+        const fileReader = new FileReader();
+        fileReader.onload = async e => {
+            const qrCodeFound = await this._readFile(file);
+            this.$fileInput.value = '';
+            if (!qrCodeFound) return;
+
+            // Set image in UI
+            const image = document.createElement('img');
+            // @ts-ignore Object is possibly 'null'. Property 'result' does not exist on type 'EventTarget'.
+            image.src = e.target.result;
+            this.$el.appendChild(image);
+            image.onload = () => { image.classList.add('pop-down'); };
+        };
+        fileReader.readAsDataURL(file);
     }
 
     _onQrError() {
@@ -98,6 +111,39 @@ class FileImport extends Nimiq.Observable {
             this._onQrError();
             return false;
         }
+    }
+
+    /**
+     * @param {DragEvent} event
+     */
+    async _onFileDrop(event) {
+        event.stopPropagation();
+        event.preventDefault();
+        if (!event.dataTransfer || !event.dataTransfer.files || !event.dataTransfer.files.length) return;
+        this._handleFile(event.dataTransfer.files[0]);
+
+        this._onDragEnd();
+    }
+
+    /**
+     * @param {DragEvent} event
+     */
+    _onDragOver(event) {
+        event.stopPropagation();
+        event.preventDefault();
+
+        // Remove the red message when background changes to blue
+        this.$errorMessage.textContent = '';
+
+        if (!event.dataTransfer) return;
+
+        event.dataTransfer.dropEffect = 'copy';
+
+        this.$el.classList.add('drag-over');
+    }
+
+    _onDragEnd() {
+        this.$el.classList.remove('drag-over');
     }
 }
 
