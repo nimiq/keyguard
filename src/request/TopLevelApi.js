@@ -53,7 +53,7 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
         if (!document.referrer) {
             const errorPage = new NoReferrerErrorPage();
             /** @type {HTMLDivElement} */
-            (document.querySelector('#app')).prepend(errorPage.getElement());
+            (document.querySelector('#app')).append(errorPage.getElement());
             window.location.hash = 'error';
             TopLevelApi.setLoading(false);
         }
