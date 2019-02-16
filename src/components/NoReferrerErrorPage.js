@@ -1,3 +1,5 @@
+/* global I18n */
+
 class NoReferrerErrorPage { // eslint-disable-line no-unused-vars
     constructor() {
         this.$el = NoReferrerErrorPage._createElement();
