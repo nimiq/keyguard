@@ -29,12 +29,11 @@ class IFrameApi {
 
     /**
      * @param {Rpc.State?} state
-     * @param {number} keyId
-     * @param {string[]} paths
+     * @param {KeyguardRequest.DeriveAddressesRequest} request
      * @returns {Promise<Nimiq.SerialBuffer[]>}
      */
-    async deriveAddresses(state, keyId, paths) {
-        const storedEntropy = sessionStorage.getItem(IFrameApi.SESSION_STORAGE_KEY_PREFIX + keyId);
+    async deriveAddresses(state, request) {
+        const storedEntropy = sessionStorage.getItem(IFrameApi.SESSION_STORAGE_KEY_PREFIX + request.keyId);
         if (!storedEntropy) throw new Errors.KeyNotFoundError();
 
         await loadNimiq();
@@ -42,17 +41,16 @@ class IFrameApi {
         const entropy = new Nimiq.Entropy(Nimiq.BufferUtils.fromBase64(storedEntropy));
         const master = entropy.toExtendedPrivateKey();
 
-        return paths.map(path => master.derivePath(path).toAddress().serialize());
+        return request.paths.map(path => master.derivePath(path).toAddress().serialize());
     }
 
     /**
      * @param {Rpc.State?} state
-     * @param {number} keyId
-     * @param {boolean} shouldBeRemoved
+     * @param {KeyguardRequest.ReleaseKeyRequest} request
      * @returns {boolean}
      */
-    releaseKey(state, keyId, shouldBeRemoved) {
-        if (shouldBeRemoved && sessionStorage.getItem(IFrameApi.SESSION_STORAGE_KEY_PREFIX + keyId)) {
+    releaseKey(state, request) {
+        if (request.shouldBeRemoved && sessionStorage.getItem(IFrameApi.SESSION_STORAGE_KEY_PREFIX + request.keyId)) {
             if (BrowserDetection.isIOS() || BrowserDetection.isSafari()) {
                 const match = document.cookie.match(new RegExp('removeKey=([^;]+)'));
                 /** @type {number[]} */
@@ -62,13 +60,13 @@ class IFrameApi {
                 } else {
                     removeKeyArray = [];
                 }
-                removeKeyArray.push(keyId);
+                removeKeyArray.push(request.keyId);
                 document.cookie = `removeKey=${JSON.stringify(removeKeyArray)};max-age=31536000`;
             } else {
-                KeyStore.instance.remove(keyId);
+                KeyStore.instance.remove(request.keyId);
             }
         }
-        sessionStorage.removeItem(IFrameApi.SESSION_STORAGE_KEY_PREFIX + keyId);
+        sessionStorage.removeItem(IFrameApi.SESSION_STORAGE_KEY_PREFIX + request.keyId);
         return true;
     }
 

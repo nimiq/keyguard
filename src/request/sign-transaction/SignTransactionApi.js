@@ -5,7 +5,7 @@
 
 class SignTransactionApi extends TopLevelApi {
     /**
-     * @param {ParsedSignTransactionRequest} request
+     * @param {Parsed<KeyguardRequest.SignTransactionRequest>} request
      */
     async onRequest(request) {
         const handler = new SignTransaction(request, this.resolve.bind(this), this.reject.bind(this));
@@ -37,7 +37,7 @@ class SignTransactionApi extends TopLevelApi {
 
     /**
      * @param {KeyguardRequest.SignTransactionRequest} request
-     * @returns {Promise<ParsedSignTransactionRequest>}
+     * @returns {Promise<Parsed<KeyguardRequest.SignTransactionRequest>>}
      */
     async parseRequest(request) {
         if (!request) {
