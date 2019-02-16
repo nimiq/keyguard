@@ -4,6 +4,8 @@ const TRANSLATIONS = {
         loading: 'Loading...',
         continue: 'Continue',
 
+        'back-to': 'Back to',
+
         'passphrase-strength': 'Strength',
         'passphrase-placeholder': 'Enter password',
         'passphrase-repeat-placeholder': 'Repeat password',
@@ -129,7 +131,7 @@ const TRANSLATIONS = {
         'remove-key-back': 'Back to logout',
 
         'derive-address-heading-password': 'Unlock your account',
-        'derive-address-password-text': 'To add a new address, please unlock your account first.',
+        'derive-address-password-text': 'To add a new address, please[br]unlock your account first.',
         'derive-address-heading-choose-identicon': 'Choose a new address',
 
         'change-passphrase-heading': 'Change your password',
@@ -140,6 +142,8 @@ const TRANSLATIONS = {
         _language: 'Deutsch',
         loading: 'Wird geladen...',
         continue: 'Weiter',
+
+        'back-to': 'Zurück zu',
 
         'passphrase-strength': 'Stärke',
         'passphrase-placeholder': 'Passwort eingeben',
