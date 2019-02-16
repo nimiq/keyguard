@@ -1,6 +1,5 @@
 import * as Nimiq from '@nimiq/core-web';
 
-// tslint:disable-next-line:interface-over-type-literal
 export type KeyInfoObject = {
     id: string;
     type: Nimiq.Secret.Type;
