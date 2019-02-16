@@ -5,14 +5,6 @@
 
 class DeriveAddressApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
-     * @param {ParsedDeriveAddressRequest} request
-     */
-    async onRequest(request) {
-        const handler = new DeriveAddress(request, this.resolve.bind(this), this.reject.bind(this));
-        handler.run();
-    }
-
-    /**
      * @param {KeyguardRequest.DeriveAddressRequest} request
      * @returns {Promise<ParsedDeriveAddressRequest>}
      */
@@ -32,5 +24,9 @@ class DeriveAddressApi extends TopLevelApi { // eslint-disable-line no-unused-va
         parsedRequest.indicesToDerive = this.parseIndicesArray(request.indicesToDerive);
 
         return parsedRequest;
+    }
+
+    get Handler() {
+        return DeriveAddress;
     }
 }

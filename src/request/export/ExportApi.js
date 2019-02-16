@@ -4,14 +4,6 @@
 
 class ExportApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
-     * @param {ParsedSimpleRequest} request
-     */
-    async onRequest(request) {
-        const exportHandler = new Export(request, this.resolve.bind(this), this.reject.bind(this));
-        exportHandler.run();
-    }
-
-    /**
      * @param {KeyguardRequest.SimpleRequest} request
      * @returns {Promise<ParsedSimpleRequest>}
      */
@@ -27,5 +19,9 @@ class ExportApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         // parsedRequest.usedKeyPaths = this.parsePathsArray(request.usedKeyPaths, 'usedKeyPaths');
 
         return parsedRequest;
+    }
+
+    get Handler() {
+        return Export;
     }
 }

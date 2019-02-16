@@ -4,14 +4,6 @@
 
 class ChangePassphraseApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
-     * @param {ParsedSimpleRequest} request
-     */
-    async onRequest(request) {
-        const handler = new ChangePassphrase(request, this.resolve.bind(this), this.reject.bind(this));
-        handler.run();
-    }
-
-    /**
      * @param {KeyguardRequest.SimpleRequest} request
      * @returns {Promise<ParsedSimpleRequest>}
      */
@@ -26,5 +18,9 @@ class ChangePassphraseApi extends TopLevelApi { // eslint-disable-line no-unused
         parsedRequest.keyLabel = this.parseLabel(request.keyLabel);
 
         return parsedRequest;
+    }
+
+    get Handler() {
+        return ChangePassphrase;
     }
 }
