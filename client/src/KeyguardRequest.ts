@@ -1,11 +1,9 @@
 import * as Nimiq from '@nimiq/core-web';
 
-export type Type = 1 | 2;
-
 // tslint:disable-next-line:interface-over-type-literal
 export type KeyInfoObject = {
     id: string;
-    type: Type;
+    type: Nimiq.Secret.Type;
     hasPin: boolean;
 };
 
@@ -85,7 +83,7 @@ export type ImportRequest = BasicRequest & {
 
 export type KeyResult = {
     keyId: string;
-    keyType: Type;
+    keyType: Nimiq.Secret.Type;
     addresses: Array<{ keyPath: string, address: Uint8Array }>;
 };
 
