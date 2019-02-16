@@ -10,12 +10,14 @@
 
 class SignMessage {
     /**
-     * @param {HTMLDivElement} $page
      * @param {ParsedSignMessageRequest} request
      * @param {Function} resolve
      * @param {Function} reject
      */
-    constructor($page, request, resolve, reject) {
+    constructor(request, resolve, reject) {
+        /** @type {HTMLDivElement} */
+        const $page = (document.getElementById(SignMessage.Pages.AUTHORIZE));
+
         /** @type {HTMLDivElement} */
         const $signerIdenticon = ($page.querySelector('#signer-identicon'));
 
