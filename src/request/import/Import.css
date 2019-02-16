@@ -1,19 +1,9 @@
-.page#import-file .page-body {
+.page#import-file .page-body,
+.page#unlock-account .page-body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    opacity: 1;
-    transition: filter .4s .3s, opacity .4s .3s;
     padding-top: 3rem;
-}
-
-.page#import-file .page-header .unlock,
-.page#import-file .page-header.unlock .upload {
-    display: none;
-}
-
-.page#import-file .page-header.unlock .unlock {
-    display: block;
 }
 
 .page#import-file .page-footer {
@@ -23,7 +13,30 @@
     padding: 0.625rem;
 }
 
-.page#import-file .page-footer .passphrase-box {
+.page#unlock-account .page-body {
+    opacity: 1;
+    transition: filter .4s .3s, opacity .4s .3s;
+}
+
+.page#unlock-account.animate .page-body {
+    filter: blur(12px);
+    opacity: 0.2;
+}
+
+.page#unlock-account .loginfile-image {
+    width: 24.5rem;
+    height: auto;
+    transform: scale(1.05);
+    opacity: 0.2;
+    transition: transform .3s, opacity .3s;
+}
+
+.page#unlock-account.animate .loginfile-image {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.page#unlock-account .page-footer .passphrase-box {
     position: absolute;
     margin: 0.75rem;
     width: calc(100% - 1.5rem);
@@ -34,18 +47,9 @@
     z-index: -1;
 }
 
-.page#import-file.enter-password .page-body {
-    filter: blur(12px);
-    opacity: 0.2;
-}
-
-.page#import-file.enter-password .page-footer .passphrase-box {
+.page#unlock-account.animate .page-footer .passphrase-box {
     opacity: 1;
     z-index: 3;
-}
-
-.page#import-file.enter-password .file-import {
-    pointer-events: none;
 }
 
 .page#recovery-words p {

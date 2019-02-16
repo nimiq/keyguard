@@ -27,10 +27,12 @@ class ImportFile {
 
         /** @type {HTMLElement} */
         this.$importFilePage = (document.getElementById(ImportFile.Pages.IMPORT_FILE));
+        /** @type {HTMLElement} */
+        this.$unlockAccountPage = (document.getElementById(ImportFile.Pages.UNLOCK_ACCOUNT));
 
         /** @type {HTMLDivElement} */
         const $fileImport = (this.$importFilePage.querySelector('.file-import'));
-        const fileImport = new FileImport($fileImport);
+        const fileImport = new FileImport($fileImport, false);
 
         /** @type {HTMLElement} */
         const $gotoWords = (this.$importFilePage.querySelector('#goto-words'));
@@ -41,8 +43,11 @@ class ImportFile {
             $gotoCreate.addEventListener('click', this._goToCreate.bind(this));
         }
 
+        /** @type {HTMLImageElement} */
+        this.$loginFileImage = (this.$unlockAccountPage.querySelector('.loginfile-image'));
+
         /** @type {HTMLFormElement} */
-        const $passphraseBox = (this.$importFilePage.querySelector('.passphrase-box'));
+        const $passphraseBox = (this.$unlockAccountPage.querySelector('.passphrase-box'));
         this.passphraseBox = new PassphraseBox(
             $passphraseBox,
             {
@@ -52,9 +57,6 @@ class ImportFile {
         );
         fileImport.on(FileImport.Events.IMPORT, this._onFileImported.bind(this));
         this.passphraseBox.on(PassphraseBox.Events.SUBMIT, this._onPassphraseEntered.bind(this));
-
-        /** @type {HTMLFormElement} */
-        this.$importFileHeader = (this.$importFilePage.querySelector('.page-header'));
     }
 
     run() {
@@ -63,17 +65,20 @@ class ImportFile {
 
     /**
      * @param {string} decoded
+     * @param {string} src
      */
-    _onFileImported(decoded) {
+    _onFileImported(decoded, src) {
         // TODO: Handle legacy Account Access Files (both the 1st and #2 versions)
 
         this._encryptedKey = Nimiq.BufferUtils.fromBase64(decoded);
+        this.$loginFileImage.src = src;
         this.passphraseBox.reset();
-        this.$importFilePage.classList.add('enter-password');
+        this.$unlockAccountPage.classList.remove('animate');
+        window.location.hash = ImportFile.Pages.UNLOCK_ACCOUNT;
+        setTimeout(() => this.$unlockAccountPage.classList.add('animate'), 0);
         if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
             this.passphraseBox.focus();
         }
-        this.$importFileHeader.classList.add('unlock');
     }
 
     /**
@@ -156,4 +161,5 @@ class ImportFile {
 
 ImportFile.Pages = {
     IMPORT_FILE: 'import-file',
+    UNLOCK_ACCOUNT: 'unlock-account',
 };

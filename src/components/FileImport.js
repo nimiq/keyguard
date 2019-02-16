@@ -7,10 +7,13 @@
 class FileImport extends Nimiq.Observable {
     /**
      * @param {HTMLDivElement} [$el]
+     * @param {boolean} [displayFile = true]
      */
-    constructor($el) {
+    constructor($el, displayFile = true) {
         super();
         this.$el = FileImport._createElement($el);
+        this._displayFile = displayFile;
+
         /** @type {HTMLElement} */
         this.$errorMessage = (this.$el.querySelector('.error-message'));
         /** @type {HTMLInputElement} */
@@ -77,17 +80,21 @@ class FileImport extends Nimiq.Observable {
         this.$errorMessage.textContent = '';
 
         const fileReader = new FileReader();
-        fileReader.onload = async e => {
-            const qrCodeFound = await this._readFile(file);
+        fileReader.onload = async event => {
+            // @ts-ignore Object is possibly 'null'. Property 'result' does not exist on type 'EventTarget'.
+            const qrCodeFound = await this._readFile(file, event.target.result);
             this.$fileInput.value = '';
             if (!qrCodeFound) return;
 
-            // Set image in UI
-            const image = document.createElement('img');
-            // @ts-ignore Object is possibly 'null'. Property 'result' does not exist on type 'EventTarget'.
-            image.src = e.target.result;
-            this.$el.appendChild(image);
-            image.onload = () => { image.classList.add('pop-down'); };
+            if (this._displayFile) {
+                // Set image in UI
+                const image = this.$el.querySelector('img') || document.createElement('img');
+                // @ts-ignore Object is possibly 'null'. Property 'result' does not exist on type 'EventTarget'.
+                image.src = event.target.result;
+                this.$el.appendChild(image);
+                image.classList.remove('pop-down');
+                image.onload = () => { image.classList.add('pop-down'); };
+            }
         };
         fileReader.readAsDataURL(file);
     }
@@ -99,13 +106,14 @@ class FileImport extends Nimiq.Observable {
 
     /**
      * @param {File} file
+     * @param {string} src
      * @returns {Promise<boolean>}
      */
-    async _readFile(file) {
+    async _readFile(file, src) {
         const qrPosition = LoginFile.calculateQrPosition();
         try {
             const decoded = await QrScanner.scanImage(file, qrPosition, null, null, false, true);
-            this.fire(FileImport.Events.IMPORT, decoded);
+            this.fire(FileImport.Events.IMPORT, decoded, src);
             return true;
         } catch (e) {
             this._onQrError();
