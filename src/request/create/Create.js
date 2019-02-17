@@ -101,7 +101,7 @@ class Create {
 
         const keyPath = request.defaultKeyPath;
 
-        /** @type {KeyguardRequest.KeyResult[]} */
+        /** @type {KeyguardRequest.KeyResult} */
         const result = [{
             keyId: newId,
             keyType: key.type,

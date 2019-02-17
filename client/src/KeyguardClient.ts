@@ -1,13 +1,13 @@
 import { RedirectRpcClient } from '@nimiq/rpc';
 import { RequestBehavior, RedirectRequestBehavior, IFrameRequestBehavior } from './RequestBehavior';
 import { KeyguardCommand } from './KeyguardCommand';
-import * as KeyguardRequest from './PublicRequest';
-import { PublicToInternal } from './InternalRequest';
+import { Request, CreateRequest, ImportRequest, SimpleRequest, SignTransactionRequest, SignMessageRequest,
+    DeriveAddressRequest, DeriveAddressesRequest, RemoveKeyRequest, ReleaseKeyRequest, EmptyRequest, RpcResult,
+    KeyResult, SignTransactionResult, SignMessageResult, DeriveAddressResult, DeriveAddressesResult, ListResult,
+    ListLegacyResult, SimpleResult } from './PublicRequest';
+import { PublicToInternal, InternalToPublic } from './InternalRequest';
 import Observable from './Observable';
-
-type HasKeyId<T> = T & {
-    keyId: string;
-};
+import Nimiq from '@nimiq/core-web';
 
 export class KeyguardClient {
     private static readonly DEFAULT_ENDPOINT =
@@ -15,28 +15,35 @@ export class KeyguardClient {
         : window.location.origin === 'https://accounts.nimiq-testnet.com' ? 'https://keyguard-next.nimiq-testnet.com'
         : `${location.protocol}//${location.hostname}:8000/src`;
 
-    private static hasKeyId(request: T KeyguardRequest.Request): request is HasKeyId<typeof request> {
-        return request.keyId === undefined ? false : true;
-    }
-
-    private static mapIdStringToNumber<T extends KeyguardRequest.Request>(request: T)
-        : PublicToInternal<T> {
-        if (request && request.keyId) {
-            if (request.keyId.substr(0, 1) !== 'K') {
-                throw new Error('keyId must start with K');
-            }
-            const parsedKeyId = parseInt(request.keyId.substr(1), 10);
-            if (isNaN(parsedKeyId)) {
-                throw new Error('keyId cannot be parsed');
-            }
-            request.keyId = parsedKeyId;
+    private static parseId(id: string) {
+        if (id.substr(0, 1) !== 'K') {
+            throw new Error('keyId must start with K');
         }
-        return request;
+        const parsedId = parseInt(id.substr(1), 10);
+        if (isNaN(parsedId)) {
+            throw new Error('keyId cannot be parsed');
+        }
+        return parsedId;
     }
 
-    private static mapIdNumberToString(result: any) {
+    private static publicToInternal<T extends Request>(object: any)
+        : PublicToInternal<T> {
+        if (object && object.keyId) {
+            object.keyId = KeyguardClient.parseId(object.keyId);
+        }
+        if (object && object.id) {
+            object.id = KeyguardClient.parseId(object.id);
+        }
+        return object;
+    }
+
+    private static internalToPublic<T extends RpcResult>(result: any)
+        : InternalToPublic<T> {
         if (result && result.keyId) {
             result.keyId = `K${result.keyId}`;
+        }
+        if (result && result.id) {
+            result.id = `K${result.id}`;
         }
         return result;
     }
@@ -80,98 +87,100 @@ export class KeyguardClient {
 
     /* TOP-LEVEL REQUESTS */
 
-    public create(request: KeyguardRequest.CreateRequest, requestBehavior = this._defaultBehavior)
-        : Promise<KeyguardRequest.KeyResult[]> {
-        return this._request(requestBehavior,  KeyguardCommand.CREATE, request);
+    public create(request: CreateRequest, requestBehavior = this._defaultBehavior): Promise<KeyResult> {
+        return this._request<CreateRequest, KeyResult> (requestBehavior, KeyguardCommand.CREATE, request);
     }
 
-    public remove(request: KeyguardRequest.SimpleRequest, requestBehavior = this._defaultBehavior)
-        : Promise<KeyguardRequest.SimpleResult> {
-        return this._request(requestBehavior,  KeyguardCommand.REMOVE, request);
+    public remove(request: RemoveKeyRequest, requestBehavior = this._defaultBehavior): Promise<SimpleResult> {
+        return this._request<RemoveKeyRequest, SimpleResult>(requestBehavior, KeyguardCommand.REMOVE, request);
     }
 
-    public import(request: KeyguardRequest.ImportRequest, requestBehavior = this._defaultBehavior)
-        : Promise<KeyguardRequest.KeyResult[]> {
-        return this._request(requestBehavior,  KeyguardCommand.IMPORT, request);
+    public import(request: ImportRequest, requestBehavior = this._defaultBehavior): Promise<KeyResult> {
+        return this._request<ImportRequest, KeyResult> (requestBehavior, KeyguardCommand.IMPORT, request);
     }
 
-    public async export(request: KeyguardRequest.SimpleRequest, requestBehavior = this._defaultBehavior)
-        : Promise<KeyguardRequest.SimpleResult> {
-        return this._request(requestBehavior,  KeyguardCommand.EXPORT, request);
+    public async export(request: SimpleRequest, requestBehavior = this._defaultBehavior)
+        : Promise<SimpleResult> {
+        return this._request<SimpleRequest, SimpleResult>(requestBehavior, KeyguardCommand.EXPORT, request);
     }
 
-    public async changePassphrase(request: KeyguardRequest.SimpleRequest, requestBehavior = this._defaultBehavior)
-        : Promise<KeyguardRequest.SimpleResult> {
-        return this._request(requestBehavior,  KeyguardCommand.CHANGE_PASSPHRASE, request);
+    public async changePassphrase(request: SimpleRequest, requestBehavior = this._defaultBehavior)
+        : Promise<SimpleResult> {
+        return this._request<SimpleRequest, SimpleResult>(requestBehavior, KeyguardCommand.CHANGE_PASSPHRASE, request);
     }
 
-    public async signTransaction(request: KeyguardRequest.SignTransactionRequest,
-                                 requestBehavior = this._defaultBehavior)
-        : Promise<KeyguardRequest.SignTransactionResult> {
-        return this._request(requestBehavior,  KeyguardCommand.SIGN_TRANSACTION, request);
+    public async signTransaction(request: SignTransactionRequest, requestBehavior = this._defaultBehavior)
+        : Promise<SignTransactionResult> {
+        return this._request<SignTransactionRequest, SignTransactionResult>
+            (requestBehavior, KeyguardCommand.SIGN_TRANSACTION, request);
     }
 
-    public async signMessage(request: KeyguardRequest.SignMessageRequest,
-                             requestBehavior = this._defaultBehavior)
-        : Promise<KeyguardRequest.SignMessageResult> {
-        return this._request(requestBehavior,  KeyguardCommand.SIGN_MESSAGE, request);
+    public async signMessage(request: SignMessageRequest, requestBehavior = this._defaultBehavior)
+        : Promise<SignMessageResult> {
+        return this._request<SignMessageRequest, SignMessageResult>
+            (requestBehavior, KeyguardCommand.SIGN_MESSAGE, request);
     }
 
-    public async deriveAddress(request: KeyguardRequest.DeriveAddressRequest,
-                               requestBehavior = this._defaultBehavior)
-        : Promise<KeyguardRequest.DeriveAddressResult> {
-        return this._request(requestBehavior,  KeyguardCommand.DERIVE_ADDRESS, request);
+    public async deriveAddress(request: DeriveAddressRequest, requestBehavior = this._defaultBehavior)
+        : Promise<DeriveAddressResult> {
+        return this._request<DeriveAddressRequest, DeriveAddressResult>
+            (requestBehavior, KeyguardCommand.DERIVE_ADDRESS, request);
     }
 
     /* IFRAME REQUESTS */
 
-    public async list(requestBehavior = this._defaultIframeBehavior)
-    : Promise<KeyguardRequest.KeyInfoObject[]> {
-        return this._request(requestBehavior, KeyguardCommand.LIST);
+    public async list(requestBehavior = this._defaultIframeBehavior): Promise<ListResult> {
+        return this._request<EmptyRequest, ListResult>(requestBehavior, KeyguardCommand.LIST, null);
     }
 
-    public async hasKeys(requestBehavior = this._defaultIframeBehavior)
-    : Promise<boolean> {
-        return this._request(requestBehavior, KeyguardCommand.HAS_KEYS);
+    public async hasKeys(requestBehavior = this._defaultIframeBehavior): Promise<boolean> {
+        const result = await this._request<EmptyRequest, SimpleResult>(requestBehavior, KeyguardCommand.HAS_KEYS, null);
+        return result.success;
     }
 
     public async deriveAddresses(keyId: string, paths: string[], requestBehavior = this._defaultIframeBehavior)
-    : Promise<Uint8Array[]> {
-        return this._request(requestBehavior, KeyguardCommand.DERIVE_ADDRESSES, { keyId, paths });
+        : Promise<Nimiq.SerialBuffer[]> {
+        return this._request<DeriveAddressesRequest, DeriveAddressesResult>
+            (requestBehavior, KeyguardCommand.DERIVE_ADDRESSES, { keyId, paths });
     }
 
     public async releaseKey(keyId: string, shouldBeRemoved = false, requestBehavior = this._defaultIframeBehavior)
-    : Promise<true> {
-        return this._request(requestBehavior, KeyguardCommand.RELEASE_KEY, { keyId, shouldBeRemoved });
+        : Promise<true> {
+        await this._request<ReleaseKeyRequest, SimpleResult>
+            (requestBehavior, KeyguardCommand.RELEASE_KEY, { keyId, shouldBeRemoved });
+        return true;
     }
 
     public async listLegacyAccounts(requestBehavior = this._defaultIframeBehavior)
-    : Promise<KeyguardRequest.LegacyKeyInfoObject[]> {
-        return this._request(requestBehavior, KeyguardCommand.LIST_LEGACY_ACCOUNTS);
+        : Promise<ListLegacyResult> {
+        return this._request<EmptyRequest, ListLegacyResult>
+            (requestBehavior, KeyguardCommand.LIST_LEGACY_ACCOUNTS, null);
     }
 
     public async hasLegacyAccounts(requestBehavior = this._defaultIframeBehavior)
-    : Promise<boolean> {
-        return this._request(requestBehavior, KeyguardCommand.HAS_LEGACY_ACCOUNTS);
+        : Promise<boolean> {
+        const result = await this._request<EmptyRequest, SimpleResult>
+            (requestBehavior, KeyguardCommand.HAS_LEGACY_ACCOUNTS, null);
+        return result.success;
     }
 
     public async migrateAccountsToKeys(requestBehavior = this._defaultIframeBehavior)
-    : Promise<boolean> {
-        return this._request(requestBehavior, KeyguardCommand.MIGRATE_ACCOUNTS_TO_KEYS);
+        : Promise<boolean> {
+            const result = await this._request<EmptyRequest, SimpleResult>
+                (requestBehavior, KeyguardCommand.MIGRATE_ACCOUNTS_TO_KEYS, null);
+            return result.success;
     }
 
     /* PRIVATE METHODS */
 
-    private async _request(
+    private async _request<T1 extends Request, T2 extends RpcResult>(
         behavior: RequestBehavior,
         command: KeyguardCommand,
-        request: KeyguardRequest.Request | null = null,
-    ): Promise<any> {
-        const args: KeyguardRequest.Request[] = request
-            ? [ KeyguardClient.mapIdStringToNumber(request) ]
-            : [];
-        const result = await behavior.request(this._endpoint, command, args );
-        return KeyguardClient.mapIdNumberToString(result);
+        request: T1,
+    ): Promise<InternalToPublic<T2>> {
+        const internalRequest = KeyguardClient.publicToInternal(request);
+        const result = await behavior.request(this._endpoint, command, [ internalRequest ]);
+        return KeyguardClient.internalToPublic<T2>(result);
     }
 
     private _onReject(error: any, id: number, state: any) {

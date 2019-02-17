@@ -109,7 +109,7 @@ class ImportFile {
             return;
         }
 
-        /** @type {KeyguardRequest.KeyResult[]} */
+        /** @type {KeyguardRequest.KeyResult} */
         const result = [{
             keyId: newId,
             keyType: key.type,

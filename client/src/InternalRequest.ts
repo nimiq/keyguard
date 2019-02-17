@@ -9,6 +9,12 @@ export type PublicToInternal<T> = T extends { keyId: string }
         ? Transform<T, 'id', { id: number }>
         : T;
 
+export type InternalToPublic<T> = T extends { keyId: number }
+    ? Transform<T, 'keyId', { keyId: string }>
+    : T extends { id: number }
+        ? Transform<T, 'id', { id: string }>
+        : T;
+
 export * from './PublicRequest';
 
 export type KeyInfoObject = PublicToInternal<Public.KeyInfoObject>;

@@ -11,6 +11,12 @@ export type LegacyKeyInfoObject = KeyInfoObject & {
     legacyAccount: { label: string, address: Uint8Array };
 };
 
+export type ListResult = KeyInfoObject[];
+
+export type ListLegacyResult = LegacyKeyInfoObject[];
+
+export type EmptyRequest = null;
+
 export type BasicRequest = {
     appName: string,
 };
@@ -81,11 +87,11 @@ export type ImportRequest = BasicRequest & {
     requestedKeyPaths: string[];
 };
 
-export type KeyResult = {
+export type KeyResult = Array<{
     keyId: string;
     keyType: Nimiq.Secret.Type;
     addresses: Array<{ keyPath: string, address: Uint8Array }>;
-};
+}>;
 
 export type DeriveAddressRequest = SimpleRequest & {
     baseKeyPath: string
@@ -96,6 +102,8 @@ export type DeriveAddressResult = {
     keyPath: string
     address: Uint8Array,
 };
+
+export type DeriveAddressesResult = Nimiq.SerialBuffer[];
 
 export type DeriveAddressesRequest = {
     keyId: string,
@@ -115,15 +123,18 @@ export type TopLevelRequest = CreateRequest
     | SignMessageRequest
     | RemoveKeyRequest;
 
-export type IFrameRequest = DeriveAddressesRequest | ReleaseKeyRequest;
+export type IFrameRequest = EmptyRequest | DeriveAddressesRequest | ReleaseKeyRequest;
 
-export type Request = TopLevelRequest | IFrameRequest;
+export type Request = TopLevelRequest | IFrameRequest | SimpleResult;
 
 export type RpcResult = KeyResult
     | SignTransactionResult
     | SignMessageResult
     | DeriveAddressResult
-    | SimpleResult;
+    | SimpleResult
+    | ListResult
+    | ListLegacyResult
+    | DeriveAddressesResult;
 
 export type KeyguardError = {
     Types: {

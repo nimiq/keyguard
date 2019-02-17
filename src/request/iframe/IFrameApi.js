@@ -20,11 +20,13 @@ class IFrameApi {
 
     /**
      * @param {Rpc.State?} state
-     * @returns {Promise<boolean>}
+     * @returns {Promise<KeyguardRequest.SimpleResult>}
      */
     async hasKeys(state) {
         const keyInfos = await this._getKeys();
-        return keyInfos.length > 0;
+        return {
+            success: keyInfos.length > 0,
+        };
     }
 
     /**
@@ -47,7 +49,7 @@ class IFrameApi {
     /**
      * @param {Rpc.State?} state
      * @param {KeyguardRequest.ReleaseKeyRequest} request
-     * @returns {boolean}
+     * @returns {KeyguardRequest.SimpleResult}
      */
     releaseKey(state, request) {
         if (request.shouldBeRemoved && sessionStorage.getItem(IFrameApi.SESSION_STORAGE_KEY_PREFIX + request.keyId)) {
@@ -67,7 +69,9 @@ class IFrameApi {
             }
         }
         sessionStorage.removeItem(IFrameApi.SESSION_STORAGE_KEY_PREFIX + request.keyId);
-        return true;
+        return {
+            success: true,
+        }
     }
 
     /**
