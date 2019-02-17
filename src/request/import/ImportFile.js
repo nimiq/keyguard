@@ -2,7 +2,7 @@
 /* global Nimiq */
 /* global Key */
 /* global ImportWords */
-/* global FileImport */
+/* global FileImporter */
 /* global PassphraseBox */
 /* global ImportApi */
 /* global Errors */
@@ -32,7 +32,7 @@ class ImportFile {
 
         /** @type {HTMLDivElement} */
         const $fileImport = (this.$importFilePage.querySelector('.file-import'));
-        const fileImport = new FileImport($fileImport, false);
+        const fileImport = new FileImporter($fileImport, false);
 
         /** @type {HTMLElement} */
         const $gotoWords = (this.$importFilePage.querySelector('#goto-words'));
@@ -55,7 +55,7 @@ class ImportFile {
                 hideCancel: true,
             },
         );
-        fileImport.on(FileImport.Events.IMPORT, this._onFileImported.bind(this));
+        fileImport.on(FileImporter.Events.IMPORT, this._onFileImported.bind(this));
         this.passphraseBox.on(PassphraseBox.Events.SUBMIT, this._onPassphraseEntered.bind(this));
     }
 

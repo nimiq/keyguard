@@ -4,14 +4,14 @@
 /* global I18n */
 /* global LoginFile */
 
-class FileImport extends Nimiq.Observable {
+class FileImporter extends Nimiq.Observable {
     /**
      * @param {HTMLDivElement} [$el]
      * @param {boolean} [displayFile = true]
      */
     constructor($el, displayFile = true) {
         super();
-        this.$el = FileImport._createElement($el);
+        this.$el = FileImporter._createElement($el);
         this._displayFile = displayFile;
 
         /** @type {HTMLElement} */
@@ -113,7 +113,7 @@ class FileImport extends Nimiq.Observable {
         const qrPosition = LoginFile.calculateQrPosition();
         try {
             const decoded = await QrScanner.scanImage(file, qrPosition, null, null, false, true);
-            this.fire(FileImport.Events.IMPORT, decoded, src);
+            this.fire(FileImporter.Events.IMPORT, decoded, src);
             return true;
         } catch (e) {
             this._onQrError();
@@ -155,6 +155,6 @@ class FileImport extends Nimiq.Observable {
     }
 }
 
-FileImport.Events = {
+FileImporter.Events = {
     IMPORT: 'import',
 };
