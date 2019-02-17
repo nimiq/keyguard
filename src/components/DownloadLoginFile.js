@@ -72,7 +72,7 @@ class DownloadLoginFile extends Nimiq.Observable {
                 <span data-i18n="download-loginfile-download">Download LoginFile</span>
             </button>
             <span class="nq-label tap-and-hold" data-i18n="download-loginfile-tap-and-hold">Tap and hold image to download</span>
-            <button class="nq-button light-blue continue">Continue</button>
+            <button class="nq-button light-blue continue" data-i18n="download-loginfile-continue">Continue</button>
         `;
         /* eslint-enable max-len */
 

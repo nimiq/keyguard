@@ -103,6 +103,7 @@ const TRANSLATIONS = {
 
         'download-loginfile-download': 'Download LoginFile',
         'download-loginfile-tap-and-hold': 'Tap and hold image to download',
+        'download-loginfile-continue': 'Continue',
 
         'validate-words-text': 'Please select the correct word from your list of recovery words.',
         'validate-words-back': 'Back to words',
@@ -248,6 +249,7 @@ const TRANSLATIONS = {
 
         'download-loginfile-download': 'LoginDatei herunterladen',
         'download-loginfile-tap-and-hold': 'Zum Herunterladen Bild gedrückt halten',
+        'download-loginfile-continue': 'Weiter',
 
         'validate-words-text': 'Bitte wähle das richtige Wort aus deiner Liste von Wiederherstellungswörtern aus.',
         'validate-words-back': 'Zurück zu den Wörtern',
