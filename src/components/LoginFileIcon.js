@@ -10,15 +10,11 @@ class LoginFileIcon { // eslint-disable-line no-unused-vars
         $el = $el || document.createElement('div');
         $el.classList.add('nq-icon', 'login-file-icon');
 
-        const $lock = document.createElement('div');
-        $lock.classList.add('lock');
-        $el.appendChild($lock);
-        const $grow = document.createElement('div');
-        $grow.classList.add('flex-grow');
-        $el.appendChild($grow);
-        const $qrCodeIcon = document.createElement('div');
-        $qrCodeIcon.classList.add('qr-code-icon');
-        $el.appendChild($qrCodeIcon);
+        $el.innerHTML = `
+            <div class="nq-icon lock"></div>
+            <div class="flex-grow"></div>
+            <div class="nq-icon qr-code-icon"></div>
+        `;
 
         this.$el = $el;
     }
