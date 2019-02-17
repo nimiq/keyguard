@@ -22,6 +22,9 @@ class ImportFile {
         this._reject = reject;
 
         this._encryptedKey = new Nimiq.SerialBuffer(0);
+        this._flags = {
+            hasPin: false,
+        };
 
         this.importWordsHandler = new ImportWords(request, resolve, reject);
 
@@ -68,12 +71,22 @@ class ImportFile {
      * @param {string} src
      */
     _onFileImported(decoded, src) {
-        // TODO: Handle legacy Account Access Files (both the 1st and #2 versions)
+        if (decoded.substr(0, 2) === '#2') {
+            // Imported file is a PIN-encrypted Account Access File
+            decoded = decoded.substr(2);
+            this._flags.hasPin = true;
+        }
 
         this._encryptedKey = Nimiq.BufferUtils.fromBase64(decoded);
+
+        // Prepare next page
         this.$loginFileImage.src = src;
+        const version = this._encryptedKey.readUint8();
+        this.passphraseBox.setMinLength(this._flags.hasPin ? 6 : version < 3 ? 10 : undefined);
         this.passphraseBox.reset();
         this.$unlockAccountPage.classList.remove('animate');
+
+        // Go to next page
         window.location.hash = ImportFile.Pages.UNLOCK_ACCOUNT;
         setTimeout(() => this.$unlockAccountPage.classList.add('animate'), 0);
         if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
@@ -145,7 +158,7 @@ class ImportFile {
             /** @type {HTMLElement} */
             (this.$unlockAccountPage.querySelector('.lock-locked')).classList.add('lock-unlocked');
 
-            const key = new Key(secret, false);
+            const key = new Key(secret, this._flags.hasPin);
             await KeyStore.instance.put(key, encryptionKey);
             return key;
         } catch (event) {
