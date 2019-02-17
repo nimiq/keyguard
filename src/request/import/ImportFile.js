@@ -140,6 +140,11 @@ class ImportFile {
             this._encryptedKey.reset();
 
             const secret = await Nimiq.Secret.fromEncrypted(this._encryptedKey, encryptionKey);
+
+            // If this code runs, the password was correct
+            /** @type {HTMLElement} */
+            (this.$unlockAccountPage.querySelector('.lock-locked')).classList.add('lock-unlocked');
+
             const key = new Key(secret, false);
             await KeyStore.instance.put(key, encryptionKey);
             return key;
