@@ -87,11 +87,13 @@ export type ImportRequest = BasicRequest & {
     requestedKeyPaths: string[];
 };
 
-export type KeyResult = Array<{
+export type SingleKeyResult = {
     keyId: string;
     keyType: Nimiq.Secret.Type;
     addresses: Array<{ keyPath: string, address: Uint8Array }>;
-}>;
+};
+
+export type KeyResult = SingleKeyResult[];
 
 export type DeriveAddressRequest = SimpleRequest & {
     baseKeyPath: string

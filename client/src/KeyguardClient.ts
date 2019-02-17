@@ -37,8 +37,10 @@ export class KeyguardClient {
         return object;
     }
 
-    private static internalToPublic<T extends RpcResult>(result: any)
-        : InternalToPublic<T> {
+    private static internalToPublic(result: any): any {
+        if (result instanceof Array) {
+            return result.map((x) => KeyguardClient.internalToPublic(x));
+        }
         if (result && result.keyId) {
             result.keyId = `K${result.keyId}`;
         }
@@ -180,7 +182,7 @@ export class KeyguardClient {
     ): Promise<InternalToPublic<T2>> {
         const internalRequest = KeyguardClient.publicToInternal(request);
         const result = await behavior.request(this._endpoint, command, [ internalRequest ]);
-        return KeyguardClient.internalToPublic<T2>(result);
+        return KeyguardClient.internalToPublic(result);
     }
 
     private _onReject(error: any, id: number, state: any) {

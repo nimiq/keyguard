@@ -30,8 +30,8 @@ class ImportWords {
 
         /** @type {{entropy: Nimiq.Entropy?, privateKey: Nimiq.PrivateKey?}} */
         this._secrets = { entropy: null, privateKey: null };
-
-        /** @type {{entropy: Partial<KeyguardRequest.KeyResult>, privateKey: Partial<KeyguardRequest.KeyResult>}} */
+        // eslint-disable-next-line max-len
+        /** @type {{entropy: Partial<KeyguardRequest.SingleKeyResult>, privateKey: Partial<KeyguardRequest.SingleKeyResult>}} */
         this._keys = { entropy: {}, privateKey: {} };
 
         // Pages

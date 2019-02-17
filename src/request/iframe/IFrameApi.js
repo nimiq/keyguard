@@ -71,7 +71,7 @@ class IFrameApi {
         sessionStorage.removeItem(IFrameApi.SESSION_STORAGE_KEY_PREFIX + request.keyId);
         return {
             success: true,
-        }
+        };
     }
 
     /**
