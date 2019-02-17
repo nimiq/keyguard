@@ -52,14 +52,11 @@ self.addEventListener('activate', event => {
 
 // Intercept fetch
 self.addEventListener('fetch', event => {
-    // @ts-ignore Property 'request' does not exist on type 'Event'.ts
-    if (event.request.url.startsWith(self.location.origin)) {
-        // forward request
-        // @ts-ignore Property 'respondWith' does not exist on type 'Event'.ts,
-        // Property 'request' does not exist on type 'Event'.ts
-        event.respondWith(fetch(event.request, {
-            // omit cookie transmission
-            credentials: 'omit',
-        }));
-    }
+    // forward request
+    // @ts-ignore Property 'respondWith' does not exist on type 'Event'.ts,
+    // Property 'request' does not exist on type 'Event'.ts
+    event.respondWith(fetch(event.request, {
+        // omit cookie transmission
+        credentials: 'omit',
+    }));
 });
