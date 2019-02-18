@@ -34,7 +34,7 @@ const TRANSLATIONS = {
         'import-link-no-wallet': 'Don\'t have a wallet yet?',
         'import-heading-protect': 'Protect your wallet',
         'import-text-set-password': 'You can now set a password to encrypt your wallet on this device.',
-        'import-upload-login-file': 'Upload your LoginFile',
+        'import-upload-login-file': 'Upload your Login File',
         'import-unlock-account': 'Unlock your account',
         'import-create-account': 'Create new Account',
 
@@ -43,13 +43,13 @@ const TRANSLATIONS = {
         'import-file-heading-unlock': 'Unlock your Key File',
         'import-file-text-unprotected-keyfile': 'Your Key File is unprotected.',
 
-        'import-words-file-available': 'Using the Recovery Words creates a new LoginFile. '
+        'import-words-file-available': 'Using the Recovery Words creates a new Login File. '
                                      + 'Create a password to secure it.',
         'import-words-file-unavailable': 'Using the Recovery Words creates a new Account. '
                                        + 'Create a password to secure it.',
         'import-words-hint': 'Press Tab to Jump to the next field',
         'import-words-error': 'This is not a valid account. Typo?',
-        'import-words-download-loginfile': 'Download your LoginFile',
+        'import-words-download-loginfile': 'Download your Login File',
 
         'file-import-prompt': 'Drag here or click to upload',
         'file-import-click-hint': 'Or click to select a file.',
@@ -101,7 +101,7 @@ const TRANSLATIONS = {
         'identicon-selector-generate-new': 'Generate new',
         'identicon-selector-more-addresses': 'More addresses',
 
-        'download-loginfile-download': 'Download LoginFile',
+        'download-loginfile-download': 'Download Login File',
         'download-loginfile-tap-and-hold': 'Tap and hold image to download',
         'download-loginfile-continue': 'Continue',
 
@@ -118,9 +118,9 @@ const TRANSLATIONS = {
         'remove-key-heading': 'Don\'t lose access',
         'remove-key-intro-text': 'If you log out without saving your account, you will irretrievably '
                                + 'lose access to it!',
-        'remove-key-login-file': 'LoginFile',
-        'remove-key-login-file-question': 'Is your LoginFile savely stored and accessible?',
-        'remove-key-download-login-file': 'Download LoginFile',
+        'remove-key-login-file': 'Login File',
+        'remove-key-login-file-question': 'Is your Login File savely stored and accessible?',
+        'remove-key-download-login-file': 'Download Login File',
         'remove-key-recovery-words-question': 'Do you know where your Recovery Words are?',
         'remove-key-show-recovery-words': 'Create a backup',
         'remove-key-first-confirm': 'I am able to log in again',
@@ -177,7 +177,7 @@ const TRANSLATIONS = {
         'import-heading-protect': 'Wallet verschlüsseln',
         'import-text-set-password': 'Du kannst jetzt ein Passwort eingeben, um deine Wallet auf diesem '
                                   + 'Gerät zu verschlüsseln.',
-        'import-upload-login-file': 'Lade dein LoginFile hoch',
+        'import-upload-login-file': 'Lade dein Login File hoch',
         'import-unlock-account': 'Entsperre deinen Account',
         'import-create-account': 'Erstelle einen neuen Account',
 
@@ -194,7 +194,7 @@ const TRANSLATIONS = {
                                        + 'Setze ein Passwort um es zu schützen.',
         'import-words-hint': 'Mit Tab kannst du zum nächsten Feld springen',
         'import-words-error': 'Das ist kein gültiger Account. Schreibfehler?',
-        'import-words-download-loginfile': 'Lade dein LoginFile herunter',
+        'import-words-download-loginfile': 'Lade dein Login File herunter',
 
         'file-import-prompt': 'Ziehe deine Schlüsseldatei auf dieses Feld',
         'file-import-click-hint': 'Oder klicke um eine Datei auszuwählen.',

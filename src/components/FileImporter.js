@@ -101,7 +101,7 @@ class FileImporter extends Nimiq.Observable {
 
     _onQrError() {
         AnimationUtils.animate('shake', this.$el);
-        this.$errorMessage.textContent = 'Could not read LoginFile.';
+        this.$errorMessage.textContent = 'Could not read Login File.';
     }
 
     /**

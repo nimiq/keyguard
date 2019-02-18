@@ -181,13 +181,13 @@ class ImportWords {
                 sessionStorage.setItem(ImportApi.SESSION_STORAGE_KEY_PREFIX + key.id, secretString);
 
                 if (encryptionKey) {
-                    // Make the encrypted secret available for the LoginFile
+                    // Make the encrypted secret available for the Login File
                     this._encryptedSecret = await this._secrets.entropy.exportEncrypted(encryptionKey);
                 }
 
                 // TODO: The key is encrypted twice here:
                 //     1. Inside the KeyStore when storing it (put)
-                //     2. Again to get the encrypted secret for the LoginFile (exportEncrypted)
+                //     2. Again to get the encrypted secret for the Login File (exportEncrypted)
                 // Is it possible to encrypt once and use KeyStore.putPlain() instead?
             }
             if (this._secrets.privateKey) {

@@ -69,7 +69,7 @@ class DownloadLoginFile extends Nimiq.Observable {
 
             <button class="nq-button light-blue download-button">
                 <i class="nq-icon download"></i>
-                <span data-i18n="download-loginfile-download">Download LoginFile</span>
+                <span data-i18n="download-loginfile-download">Download Login File</span>
             </button>
             <span class="nq-label tap-and-hold" data-i18n="download-loginfile-tap-and-hold">Tap and hold image to download</span>
             <button class="nq-button light-blue continue" data-i18n="download-loginfile-continue">Continue</button>
@@ -99,7 +99,7 @@ class DownloadLoginFile extends Nimiq.Observable {
      * @returns {Promise<HTMLImageElement>}
      */
     async getImage() {
-        if (!this.file) throw new Errors.KeyguardError('LoginFile is not set, call setSecret() first');
+        if (!this.file) throw new Errors.KeyguardError('Login File is not set, call setSecret() first');
 
         const img = new Image();
         const promise = new Promise((resolve, reject) => {

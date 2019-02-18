@@ -17,7 +17,7 @@
     height: 11rem;
     position: absolute;
     left: calc(50% - 5.5rem);
-    top: 25.5rem; /* To lie over the wallet indicator on the LoginFile*/
+    top: 25.5rem; /* To lie over the wallet indicator on the Login File*/
     pointer-events: none;
     display: none;
     stroke: white;
