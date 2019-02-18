@@ -1,10 +1,10 @@
 /* global TopLevelApi */
 /* global RemoveKey */
 /* global Errors */
-/* global I18n */
 
 class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
+<<<<<<< HEAD
      * @param {Parsed<KeyguardRequest.RemoveKeyRequest>} request
      */
     async onRequest(request) {
@@ -14,6 +14,8 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     }
 
     /**
+=======
+>>>>>>> master
      * @param {KeyguardRequest.RemoveKeyRequest} request
      * @returns {Promise<Parsed<KeyguardRequest.RemoveKeyRequest>>}
      */
@@ -34,5 +36,9 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         parsedRequest.keyLabel = parsedLabel;
 
         return parsedRequest;
+    }
+
+    get Handler() {
+        return RemoveKey;
     }
 }

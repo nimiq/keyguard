@@ -1,18 +1,8 @@
 /* global TopLevelApi */
 /* global ChangePassphrase */
 /* global Errors */
-/* global I18n */
 
 class ChangePassphraseApi extends TopLevelApi { // eslint-disable-line no-unused-vars
-    /**
-     * @param {Parsed<KeyguardRequest.SimpleRequest>} request
-     */
-    async onRequest(request) {
-        const handler = new ChangePassphrase(request, this.resolve.bind(this), this.reject.bind(this));
-        this.setGlobalCloseButtonText(`${I18n.translatePhrase('back-to')} ${request.appName}`);
-        handler.run();
-    }
-
     /**
      * @param {KeyguardRequest.SimpleRequest} request
      * @returns {Promise<Parsed<KeyguardRequest.SimpleRequest>>}
@@ -28,5 +18,9 @@ class ChangePassphraseApi extends TopLevelApi { // eslint-disable-line no-unused
         parsedRequest.keyLabel = this.parseLabel(request.keyLabel);
 
         return parsedRequest;
+    }
+
+    get Handler() {
+        return ChangePassphrase;
     }
 }
