@@ -18,7 +18,7 @@ export class RequestBehavior {
         this._type = type;
     }
 
-    public async request (endpoint: string, command: KeyguardCommand, args: any[]): Promise<void> {
+    public async request(endpoint: string, command: KeyguardCommand, args: any[]): Promise<void> {
         throw new Error('Not implemented');
     }
 
