@@ -5,21 +5,6 @@
 
 class SignTransactionApi extends TopLevelApi {
     /**
-     * @param {ParsedSignTransactionRequest} request
-     */
-    async onRequest(request) {
-        const handler = new SignTransaction(request, this.resolve.bind(this), this.reject.bind(this));
-
-        if (request.layout === SignTransactionApi.Layouts.CHECKOUT) {
-            this.setGlobalCloseButtonText(I18n.translatePhrase('sign-tx-cancel-payment'));
-        } else {
-            this.setGlobalCloseButtonText(`${I18n.translatePhrase('back-to')} ${request.appName}`);
-        }
-
-        handler.run();
-    }
-
-    /**
      * Checks that the given layout is valid
      * @param {any} layout
      * @returns {any}
@@ -64,6 +49,19 @@ class SignTransactionApi extends TopLevelApi {
         }
 
         return parsedRequest;
+    }
+
+    /**
+     * @param {ParsedSignTransactionRequest} parsedRequest
+     */
+    async onBeforeRun(parsedRequest) {
+        if (parsedRequest.layout === SignTransactionApi.Layouts.CHECKOUT) {
+            this.setGlobalCloseButtonText(I18n.translatePhrase('sign-tx-cancel-payment'));
+        }
+    }
+
+    get Handler() {
+        return SignTransaction;
     }
 }
 

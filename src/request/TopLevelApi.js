@@ -63,7 +63,7 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
      * Method to be called by the Keyguard client via RPC
      *
      * @param {Rpc.State?} state
-     * @param {KeyguardRequest.KeyguardRequest} request
+     * @param {KeyguardRequest.Request} request
      */
     async request(state, request) {
         /**
@@ -135,30 +135,50 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
                 return false;
             });
 
-            this.onRequest(parsedRequest).catch(reject);
-            TopLevelApi.setLoading(false);
+            if (!this.Handler) {
+                reject(new Errors.KeyguardError('Handler undefined'));
+                return;
+            }
+
+            try {
+                const handler = new this.Handler(parsedRequest, resolve, reject);
+
+                this.onBeforeRun(parsedRequest);
+
+                this.setGlobalCloseButtonText(`${I18n.translatePhrase('back-to')} ${parsedRequest.appName}`);
+
+                handler.run();
+
+                TopLevelApi.setLoading(false);
+            } catch (error) {
+                reject(error);
+            }
         });
     }
 
     /**
      * Overwritten by each request's API class
      *
-     * @param {ParsedRequest} request
-     * @abstract
-     */
-    async onRequest(request) { // eslint-disable-line no-unused-vars
-        throw new Error('onRequest not implemented');
-    }
-
-    /**
-     * Overwritten by each request's API class
-     *
-     * @param {KeyguardRequest.KeyguardRequest} request
+     * @param {KeyguardRequest.Request} request
      * @returns {Promise<ParsedRequest>}
      * @abstract
      */
     async parseRequest(request) { // eslint-disable-line no-unused-vars
         throw new Error('parseRequest not implemented');
+    }
+
+    /** @type {Newable?} */
+    get Handler() {
+        return null;
+    }
+
+    /**
+     * Can be overwritten by a request's API class to excute code before the handler's run() is called
+     *
+     * @param {ParsedRequest} parsedRequest
+     */
+    async onBeforeRun(parsedRequest) { // eslint-disable-line no-unused-vars
+        // noop
     }
 
     /**
@@ -194,6 +214,7 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
         const $globalCloseText = (document.querySelector('#global-close-text'));
         /** @type {HTMLSpanElement} */
         const $button = ($globalCloseText.parentNode);
+        if (!$button.classList.contains('display-none')) return;
         $globalCloseText.textContent = buttonText;
         $button.addEventListener('click', () => this.reject(new Errors.RequestCanceled()));
         $button.classList.remove('display-none');

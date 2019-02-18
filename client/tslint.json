@@ -18,6 +18,7 @@
     "no-namespace": false,
     "max-classes-per-file": [3],
     "curly": [true, "ignore-same-line"],
-    "variable-name": [true, "ban-keywords", "check-format", "allow-leading-underscore"]
+    "variable-name": [true, "ban-keywords", "check-format", "allow-leading-underscore"],
+    "interface-over-type-literal": false
   }
 }
