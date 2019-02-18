@@ -119,8 +119,8 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
              * Import or Create (the only ones which don't have the keyInfo property)
              * or any request which has the keyInfo property and the encrypted flag set.
              */
-            if (!(/** @type {Parsed<KeyguardRequest.SimpleRequest>} */(parsedRequest).keyInfo)
-                || /** @type {Parsed<KeyguardRequest.SimpleRequest>} */(parsedRequest).keyInfo.encrypted) {
+            if (!(/** @type {any} */(parsedRequest).keyInfo)
+                || /** @type {any} */(parsedRequest).keyInfo.encrypted) {
                 Nimiq.CryptoWorker.getInstanceAsync();
             }
 
@@ -159,9 +159,10 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
 
     /**
      * Overwritten by each request's API class
+     * Note: There is a bug with typescript not parsing 'template {KeyguardRequest.RedirectRequest} T', so we use any.
      *
-     * @param {KeyguardRequest.Request} request
-     * @returns {Promise<Parsed<KeyguardRequest.Request>>}
+     * @param {any} request
+     * @returns {Promise<Parsed<any>>}
      * @abstract
      */
     async parseRequest(request) { // eslint-disable-line no-unused-vars
@@ -175,8 +176,8 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
 
     /**
      * Can be overwritten by a request's API class to excute code before the handler's run() is called
-     *
-     * @param {Parsed<KeyguardRequest.Request>} parsedRequest
+     * Note: There is a bug with typescript not parsing 'template {KeyguardRequest.RedirectRequest} T', so we use any.
+     * @param {Parsed<any>} parsedRequest
      */
     async onBeforeRun(parsedRequest) { // eslint-disable-line no-unused-vars
         // noop

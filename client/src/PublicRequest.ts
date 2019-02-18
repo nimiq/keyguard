@@ -116,7 +116,7 @@ export type ReleaseKeyRequest = {
     shouldBeRemoved: boolean,
 };
 
-export type TopLevelRequest = CreateRequest
+export type RedirectRequest = CreateRequest
     | ImportRequest
     | SimpleRequest
     | SignTransactionRequest
@@ -126,7 +126,7 @@ export type TopLevelRequest = CreateRequest
 
 export type IFrameRequest = EmptyRequest | DeriveAddressesRequest | ReleaseKeyRequest;
 
-export type Request = TopLevelRequest | IFrameRequest | SimpleResult;
+export type Request = RedirectRequest | IFrameRequest | SimpleResult;
 
 export type IFrameResult = ListResult
     | ListLegacyResult
@@ -139,7 +139,7 @@ export type RedirectResult = KeyResult
     | DeriveAddressResult
     | SimpleResult;
 
-export type RpcResult = RedirectResult | IFrameResult;
+export type Result = RedirectResult | IFrameResult;
 
 export type KeyguardError = {
     Types: {
