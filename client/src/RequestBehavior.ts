@@ -18,7 +18,7 @@ export class RequestBehavior {
         this._type = type;
     }
 
-    public async request(endpoint: string, command: KeyguardCommand, args: any[]): Promise<any> {
+    public async request (endpoint: string, command: KeyguardCommand, args: any[]): Promise<void> {
         throw new Error('Not implemented');
     }
 
@@ -47,7 +47,7 @@ export class RedirectRequestBehavior extends RequestBehavior {
         }
     }
 
-    public async request(endpoint: string, command: KeyguardCommand, args: any[]): Promise<any> {
+    public async request(endpoint: string, command: KeyguardCommand, args: any[]): Promise<void> {
         const url = RedirectRequestBehavior.getRequestUrl(endpoint, command);
         const allowedOrigin = RequestBehavior.getAllowedOrigin(endpoint);
 

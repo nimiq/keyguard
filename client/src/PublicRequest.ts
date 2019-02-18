@@ -129,14 +129,18 @@ export type IFrameRequest = EmptyRequest | DeriveAddressesRequest | ReleaseKeyRe
 
 export type Request = TopLevelRequest | IFrameRequest | SimpleResult;
 
-export type RpcResult = KeyResult
+export type IFrameResult = ListResult
+    | ListLegacyResult
+    | DeriveAddressesResult
+    | SimpleResult;
+
+export type RedirectResult = KeyResult
     | SignTransactionResult
     | SignMessageResult
     | DeriveAddressResult
-    | SimpleResult
-    | ListResult
-    | ListLegacyResult
-    | DeriveAddressesResult;
+    | SimpleResult;
+
+export type RpcResult = RedirectResult | IFrameResult;
 
 export type KeyguardError = {
     Types: {

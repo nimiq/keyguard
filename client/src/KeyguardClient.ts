@@ -3,11 +3,10 @@ import { RequestBehavior, RedirectRequestBehavior, IFrameRequestBehavior } from 
 import { KeyguardCommand } from './KeyguardCommand';
 import { Request, CreateRequest, ImportRequest, SimpleRequest, SignTransactionRequest, SignMessageRequest,
     DeriveAddressRequest, DeriveAddressesRequest, RemoveKeyRequest, ReleaseKeyRequest, EmptyRequest, RpcResult,
-    KeyResult, SignTransactionResult, SignMessageResult, DeriveAddressResult, DeriveAddressesResult, ListResult,
-    ListLegacyResult, SimpleResult } from './PublicRequest';
+    TopLevelRequest, IFrameRequest, IFrameResult, ListResult, SimpleResult, DeriveAddressesResult,
+    ListLegacyResult, RedirectResult} from './PublicRequest';
 import { PublicToInternal, InternalToPublic } from './InternalRequest';
 import Observable from './Observable';
-import Nimiq from '@nimiq/core-web';
 
 export class KeyguardClient {
     private static readonly DEFAULT_ENDPOINT =
@@ -37,7 +36,7 @@ export class KeyguardClient {
         return object;
     }
 
-    private static internalToPublic(result: any): any {
+    private static internalToPublic<T extends RpcResult>(result: any): any {
         if (result instanceof Array) {
             return result.map((x) => KeyguardClient.internalToPublic(x));
         }
@@ -53,18 +52,16 @@ export class KeyguardClient {
     private readonly _endpoint: string;
     private _redirectClient: RedirectRpcClient;
     private _observable: Observable;
-    private _defaultBehavior: RequestBehavior;
-    private _defaultIframeBehavior: RequestBehavior;
+    private _redirectBehavior: RedirectRequestBehavior;
+    private _iframeBehavior: IFrameRequestBehavior;
 
     constructor(
         endpoint = KeyguardClient.DEFAULT_ENDPOINT,
-        defaultBehavior?: RequestBehavior,
-        defaultIframeBehavior?: RequestBehavior,
         preserveRequests?: boolean,
     ) {
         this._endpoint = endpoint;
-        this._defaultBehavior = defaultBehavior || new RedirectRequestBehavior();
-        this._defaultIframeBehavior = defaultIframeBehavior || new IFrameRequestBehavior();
+        this._redirectBehavior = new RedirectRequestBehavior();
+        this._iframeBehavior = new IFrameRequestBehavior();
 
         // If this is a page-reload, allow location.origin as RPC origin
         const allowedOrigin = new URL(document.referrer).origin === window.location.origin
@@ -82,107 +79,100 @@ export class KeyguardClient {
         return this._redirectClient.init();
     }
 
-    public on(command: KeyguardCommand, resolve: (...args: any[]) => any, reject: (...args: any[]) => any) {
+    public on(
+        command: KeyguardCommand,
+        resolve: (result: any) => any,
+        reject: (...args: any[]) => any,
+    ) {
         this._observable.on(`${command}-resolve`, resolve);
         this._observable.on(`${command}-reject`, reject);
     }
 
     /* TOP-LEVEL REQUESTS */
 
-    public create(request: CreateRequest, requestBehavior = this._defaultBehavior): Promise<KeyResult> {
-        return this._request<CreateRequest, KeyResult> (requestBehavior, KeyguardCommand.CREATE, request);
+    public async create(request: CreateRequest): Promise<void> {
+        this._redirectRequest<CreateRequest> (KeyguardCommand.CREATE, request);
     }
 
-    public remove(request: RemoveKeyRequest, requestBehavior = this._defaultBehavior): Promise<SimpleResult> {
-        return this._request<RemoveKeyRequest, SimpleResult>(requestBehavior, KeyguardCommand.REMOVE, request);
+    public async remove(request: RemoveKeyRequest): Promise<void> {
+        this._redirectRequest<RemoveKeyRequest>(KeyguardCommand.REMOVE, request);
     }
 
-    public import(request: ImportRequest, requestBehavior = this._defaultBehavior): Promise<KeyResult> {
-        return this._request<ImportRequest, KeyResult> (requestBehavior, KeyguardCommand.IMPORT, request);
+    public async import(request: ImportRequest): Promise<void> {
+        return this._redirectRequest<ImportRequest>(KeyguardCommand.IMPORT, request);
     }
 
-    public async export(request: SimpleRequest, requestBehavior = this._defaultBehavior)
-        : Promise<SimpleResult> {
-        return this._request<SimpleRequest, SimpleResult>(requestBehavior, KeyguardCommand.EXPORT, request);
+    public async export(request: SimpleRequest): Promise<void> {
+        return this._redirectRequest<SimpleRequest>(KeyguardCommand.EXPORT, request);
     }
 
-    public async changePassphrase(request: SimpleRequest, requestBehavior = this._defaultBehavior)
-        : Promise<SimpleResult> {
-        return this._request<SimpleRequest, SimpleResult>(requestBehavior, KeyguardCommand.CHANGE_PASSPHRASE, request);
+    public async changePassphrase(request: SimpleRequest): Promise<void> {
+        return this._redirectRequest<SimpleRequest>(KeyguardCommand.CHANGE_PASSPHRASE, request);
     }
 
-    public async signTransaction(request: SignTransactionRequest, requestBehavior = this._defaultBehavior)
-        : Promise<SignTransactionResult> {
-        return this._request<SignTransactionRequest, SignTransactionResult>
-            (requestBehavior, KeyguardCommand.SIGN_TRANSACTION, request);
+    public async signTransaction(request: SignTransactionRequest): Promise<void> {
+        return this._redirectRequest<SignTransactionRequest>(KeyguardCommand.SIGN_TRANSACTION, request);
     }
 
-    public async signMessage(request: SignMessageRequest, requestBehavior = this._defaultBehavior)
-        : Promise<SignMessageResult> {
-        return this._request<SignMessageRequest, SignMessageResult>
-            (requestBehavior, KeyguardCommand.SIGN_MESSAGE, request);
+    public async signMessage(request: SignMessageRequest): Promise<void> {
+        return this._redirectRequest<SignMessageRequest>(KeyguardCommand.SIGN_MESSAGE, request);
     }
 
-    public async deriveAddress(request: DeriveAddressRequest, requestBehavior = this._defaultBehavior)
-        : Promise<DeriveAddressResult> {
-        return this._request<DeriveAddressRequest, DeriveAddressResult>
-            (requestBehavior, KeyguardCommand.DERIVE_ADDRESS, request);
+    public async deriveAddress(request: DeriveAddressRequest): Promise<void> {
+        return this._redirectRequest<DeriveAddressRequest>(KeyguardCommand.DERIVE_ADDRESS, request);
     }
 
     /* IFRAME REQUESTS */
 
-    public async list(requestBehavior = this._defaultIframeBehavior): Promise<ListResult> {
-        return this._request<EmptyRequest, ListResult>(requestBehavior, KeyguardCommand.LIST, null);
+    public async list(): Promise<ListResult> {
+        return this._iframeRequest<EmptyRequest, ListResult>(KeyguardCommand.LIST, null);
     }
 
-    public async hasKeys(requestBehavior = this._defaultIframeBehavior): Promise<boolean> {
-        const result = await this._request<EmptyRequest, SimpleResult>(requestBehavior, KeyguardCommand.HAS_KEYS, null);
-        return result.success;
+    public async hasKeys(): Promise<SimpleResult> {
+        return this._iframeRequest<EmptyRequest, SimpleResult>(KeyguardCommand.HAS_KEYS, null);
     }
 
-    public async deriveAddresses(keyId: string, paths: string[], requestBehavior = this._defaultIframeBehavior)
-        : Promise<Nimiq.SerialBuffer[]> {
-        return this._request<DeriveAddressesRequest, DeriveAddressesResult>
-            (requestBehavior, KeyguardCommand.DERIVE_ADDRESSES, { keyId, paths });
+    public async deriveAddresses(keyId: string, paths: string[]): Promise<DeriveAddressesResult> {
+        return this._iframeRequest<DeriveAddressesRequest, DeriveAddressesResult>
+            (KeyguardCommand.DERIVE_ADDRESSES, { keyId, paths });
     }
 
-    public async releaseKey(keyId: string, shouldBeRemoved = false, requestBehavior = this._defaultIframeBehavior)
-        : Promise<true> {
-        await this._request<ReleaseKeyRequest, SimpleResult>
-            (requestBehavior, KeyguardCommand.RELEASE_KEY, { keyId, shouldBeRemoved });
-        return true;
+    public async releaseKey(keyId: string, shouldBeRemoved = false): Promise<SimpleResult> {
+        return this._iframeRequest<ReleaseKeyRequest, SimpleResult>
+            (KeyguardCommand.RELEASE_KEY, { keyId, shouldBeRemoved });
     }
 
-    public async listLegacyAccounts(requestBehavior = this._defaultIframeBehavior)
-        : Promise<ListLegacyResult> {
-        return this._request<EmptyRequest, ListLegacyResult>
-            (requestBehavior, KeyguardCommand.LIST_LEGACY_ACCOUNTS, null);
+    public async listLegacyAccounts(): Promise<ListLegacyResult> {
+        return this._iframeRequest<EmptyRequest, ListLegacyResult>(KeyguardCommand.LIST_LEGACY_ACCOUNTS, null);
     }
 
-    public async hasLegacyAccounts(requestBehavior = this._defaultIframeBehavior)
-        : Promise<boolean> {
-        const result = await this._request<EmptyRequest, SimpleResult>
-            (requestBehavior, KeyguardCommand.HAS_LEGACY_ACCOUNTS, null);
-        return result.success;
+    public async hasLegacyAccounts(): Promise<SimpleResult> {
+        return await this._iframeRequest<EmptyRequest, SimpleResult>(KeyguardCommand.HAS_LEGACY_ACCOUNTS, null);
     }
 
-    public async migrateAccountsToKeys(requestBehavior = this._defaultIframeBehavior)
-        : Promise<boolean> {
-            const result = await this._request<EmptyRequest, SimpleResult>
-                (requestBehavior, KeyguardCommand.MIGRATE_ACCOUNTS_TO_KEYS, null);
-            return result.success;
+    public async migrateAccountsToKeys(): Promise<SimpleResult> {
+        return this._iframeRequest<EmptyRequest, SimpleResult>(KeyguardCommand.MIGRATE_ACCOUNTS_TO_KEYS, null);
     }
 
     /* PRIVATE METHODS */
 
-    private async _request<T1 extends Request, T2 extends RpcResult>(
-        behavior: RequestBehavior,
+    private async _redirectRequest<T extends TopLevelRequest>(
+        command: KeyguardCommand,
+        request: T,
+    ): Promise<void> {
+        const internalRequest = KeyguardClient.publicToInternal(request);
+        this._redirectBehavior.request(this._endpoint, command, [ internalRequest ]);
+        // return value of redirect call is received in _onResolve()
+    }
+
+    private async _iframeRequest<T1 extends IFrameRequest, T2 extends IFrameResult>(
         command: KeyguardCommand,
         request: T1,
-    ): Promise<InternalToPublic<T2>> {
+    ): Promise<T2> {
         const internalRequest = KeyguardClient.publicToInternal(request);
-        const result = await behavior.request(this._endpoint, command, [ internalRequest ]);
-        return KeyguardClient.internalToPublic(result);
+        const internalResult = this._iframeBehavior.request(this._endpoint, command, [ internalRequest ]);
+        const publicResult = KeyguardClient.internalToPublic(internalResult) as T2;
+        return publicResult;
     }
 
     private _onReject(error: any, id: number, state: any) {
@@ -195,13 +185,15 @@ export class KeyguardClient {
         this._observable.fire(`${command}-reject`, error, state);
     }
 
-    private _onResolve(result: any, id: number, state: any) {
+    private _onResolve<T extends RedirectResult>(internalResult: PublicToInternal<T>, id: number, state: any) {
         const command = state.__command;
         if (!command) {
             throw new Error('Invalid state after RPC request');
         }
         delete state.__command;
 
-        this._observable.fire(`${command}-resolve`, result, state);
+        const publicResult: T = KeyguardClient.internalToPublic(internalResult);
+
+        this._observable.fire(`${command}-resolve`, publicResult, state);
     }
 }
