@@ -4,18 +4,6 @@
 
 class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
-<<<<<<< HEAD
-     * @param {Parsed<KeyguardRequest.RemoveKeyRequest>} request
-     */
-    async onRequest(request) {
-        const removeKeyHandler = new RemoveKey(request, this.resolve.bind(this), this.reject.bind(this));
-        this.setGlobalCloseButtonText(`${I18n.translatePhrase('back-to')} ${request.appName}`);
-        removeKeyHandler.run();
-    }
-
-    /**
-=======
->>>>>>> master
      * @param {KeyguardRequest.RemoveKeyRequest} request
      * @returns {Promise<Parsed<KeyguardRequest.RemoveKeyRequest>>}
      */

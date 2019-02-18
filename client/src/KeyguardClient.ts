@@ -2,8 +2,8 @@ import { RedirectRpcClient } from '@nimiq/rpc';
 import { RequestBehavior, RedirectRequestBehavior, IFrameRequestBehavior } from './RequestBehavior';
 import { KeyguardCommand } from './KeyguardCommand';
 import { Request, CreateRequest, ImportRequest, SimpleRequest, SignTransactionRequest, SignMessageRequest,
-    DeriveAddressRequest, DeriveAddressesRequest, RemoveKeyRequest, ReleaseKeyRequest, EmptyRequest, RpcResult,
-    TopLevelRequest, IFrameRequest, IFrameResult, ListResult, SimpleResult, DeriveAddressesResult,
+    DeriveAddressRequest, DeriveAddressesRequest, RemoveKeyRequest, ReleaseKeyRequest, EmptyRequest,
+    RedirectRequest, IFrameRequest, IFrameResult, ListResult, SimpleResult, DeriveAddressesResult,
     ListLegacyResult, RedirectResult} from './PublicRequest';
 import { PublicToInternal, InternalToPublic } from './InternalRequest';
 import Observable from './Observable';
@@ -127,11 +127,11 @@ export class KeyguardClient {
     /* IFRAME REQUESTS */
 
     public async list(): Promise<ListResult> {
-        return this._iframeRequest<EmptyRequest, ListResult>(KeyguardCommand.LIST, null);
+        return this._iframeRequest<EmptyRequest, ListResult>(KeyguardCommand.LIST);
     }
 
     public async hasKeys(): Promise<SimpleResult> {
-        return this._iframeRequest<EmptyRequest, SimpleResult>(KeyguardCommand.HAS_KEYS, null);
+        return this._iframeRequest<EmptyRequest, SimpleResult>(KeyguardCommand.HAS_KEYS);
     }
 
     public async deriveAddresses(keyId: string, paths: string[]): Promise<DeriveAddressesResult> {
@@ -145,20 +145,20 @@ export class KeyguardClient {
     }
 
     public async listLegacyAccounts(): Promise<ListLegacyResult> {
-        return this._iframeRequest<EmptyRequest, ListLegacyResult>(KeyguardCommand.LIST_LEGACY_ACCOUNTS, null);
+        return this._iframeRequest<EmptyRequest, ListLegacyResult>(KeyguardCommand.LIST_LEGACY_ACCOUNTS);
     }
 
     public async hasLegacyAccounts(): Promise<SimpleResult> {
-        return await this._iframeRequest<EmptyRequest, SimpleResult>(KeyguardCommand.HAS_LEGACY_ACCOUNTS, null);
+        return await this._iframeRequest<EmptyRequest, SimpleResult>(KeyguardCommand.HAS_LEGACY_ACCOUNTS);
     }
 
     public async migrateAccountsToKeys(): Promise<SimpleResult> {
-        return this._iframeRequest<EmptyRequest, SimpleResult>(KeyguardCommand.MIGRATE_ACCOUNTS_TO_KEYS, null);
+        return this._iframeRequest<EmptyRequest, SimpleResult>(KeyguardCommand.MIGRATE_ACCOUNTS_TO_KEYS);
     }
 
     /* PRIVATE METHODS */
 
-    private async _redirectRequest<T extends TopLevelRequest>(
+    private async _redirectRequest<T extends RedirectRequest>(
         command: KeyguardCommand,
         request: T,
     ): Promise<void> {
@@ -169,10 +169,10 @@ export class KeyguardClient {
 
     private async _iframeRequest<T1 extends IFrameRequest, T2 extends IFrameResult>(
         command: KeyguardCommand,
-        request: T1,
+        request?: T1,
     ): Promise<T2> {
-        const internalRequest = KeyguardClient.publicToInternal(request);
-        const internalResult = this._iframeBehavior.request(this._endpoint, command, [ internalRequest ]);
+        const args = request ? [ KeyguardClient.publicToInternal(request) ] : [];
+        const internalResult = this._iframeBehavior.request(this._endpoint, command, args);
         const publicResult = KeyguardClient.internalToPublic(internalResult) as T2;
         return publicResult;
     }

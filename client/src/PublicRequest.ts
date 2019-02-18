@@ -126,7 +126,7 @@ export type RedirectRequest = CreateRequest
 
 export type IFrameRequest = EmptyRequest | DeriveAddressesRequest | ReleaseKeyRequest;
 
-export type Request = RedirectRequest | IFrameRequest | SimpleResult;
+export type Request = RedirectRequest | IFrameRequest;
 
 export type IFrameResult = ListResult
     | ListLegacyResult
