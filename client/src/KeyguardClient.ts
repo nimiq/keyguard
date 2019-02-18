@@ -36,7 +36,8 @@ export class KeyguardClient {
         return object;
     }
 
-    private static internalToPublic<T extends RpcResult>(result: any): any {
+    // Not really well typed. Return type gets any. Feel free to improve.
+    private static internalToPublic(result: any): InternalToPublic<typeof result> {
         if (result instanceof Array) {
             return result.map((x) => KeyguardClient.internalToPublic(x));
         }
@@ -57,10 +58,11 @@ export class KeyguardClient {
 
     constructor(
         endpoint = KeyguardClient.DEFAULT_ENDPOINT,
+        localState?: any,
         preserveRequests?: boolean,
     ) {
         this._endpoint = endpoint;
-        this._redirectBehavior = new RedirectRequestBehavior();
+        this._redirectBehavior = new RedirectRequestBehavior(undefined, localState);
         this._iframeBehavior = new IFrameRequestBehavior();
 
         // If this is a page-reload, allow location.origin as RPC origin
@@ -81,7 +83,7 @@ export class KeyguardClient {
 
     public on(
         command: KeyguardCommand,
-        resolve: (result: any) => any,
+        resolve: (result: any, state?: any) => any,
         reject: (...args: any[]) => any,
     ) {
         this._observable.on(`${command}-resolve`, resolve);
