@@ -149,7 +149,7 @@ export class KeyguardClient {
     }
 
     public async hasLegacyAccounts(): Promise<SimpleResult> {
-        return await this._iframeRequest<EmptyRequest, SimpleResult>(KeyguardCommand.HAS_LEGACY_ACCOUNTS);
+        return this._iframeRequest<EmptyRequest, SimpleResult>(KeyguardCommand.HAS_LEGACY_ACCOUNTS);
     }
 
     public async migrateAccountsToKeys(): Promise<SimpleResult> {
@@ -172,7 +172,7 @@ export class KeyguardClient {
         request?: T1,
     ): Promise<T2> {
         const args = request ? [ KeyguardClient.publicToInternal(request) ] : [];
-        const internalResult = this._iframeBehavior.request(this._endpoint, command, args);
+        const internalResult = await this._iframeBehavior.request(this._endpoint, command, args);
         const publicResult = KeyguardClient.internalToPublic(internalResult) as T2;
         return publicResult;
     }
