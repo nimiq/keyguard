@@ -5,6 +5,7 @@
 /* global I18n */
 /* global Nimiq */
 /* global RequestParser */
+/* global NoReferrerErrorPage */
 
 /**
  * A common parent class for pop-up requests.
@@ -47,6 +48,16 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
 
         I18n.initialize(window.TRANSLATIONS, 'en');
         I18n.translateDom();
+
+        // Show error page if we cannot verify origin of request
+        if (!document.referrer) {
+            const errorPage = new NoReferrerErrorPage();
+            /** @type {HTMLDivElement} */
+            const $target = (document.querySelector('#rotation-container') || document.querySelector('#app'));
+            $target.appendChild(errorPage.getElement());
+            window.location.hash = 'error';
+            TopLevelApi.setLoading(false);
+        }
     }
 
     /**
@@ -195,7 +206,6 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
     reject(error) {
         this._reject(error);
     }
-
 
     /**
      * @param {string} buttonText
