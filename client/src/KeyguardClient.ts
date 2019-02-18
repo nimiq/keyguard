@@ -80,12 +80,6 @@ export class KeyguardClient {
         return this._request(requestBehavior,  KeyguardCommand.SIGN_TRANSACTION, [request]);
     }
 
-    public async signMessage(request: KeyguardRequest.SignMessageRequest,
-                             requestBehavior = this._defaultBehavior)
-        : Promise<KeyguardRequest.SignMessageResult> {
-        return this._request(requestBehavior,  KeyguardCommand.SIGN_MESSAGE, [request]);
-    }
-
     public async deriveAddress(request: KeyguardRequest.DeriveAddressRequest,
                                requestBehavior = this._defaultBehavior)
         : Promise<KeyguardRequest.DeriveAddressResult> {
