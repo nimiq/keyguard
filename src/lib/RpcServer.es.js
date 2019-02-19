@@ -1,4 +1,3 @@
-/* global Base64 */
 /* global JSONUtils */
 
 /**
@@ -12,7 +11,8 @@
  *   https://github.com/nimiq/keyguard-next/commits/master/src/lib/RpcServer.es.js
  */
 
- /** @typedef {{origin: string, data: {id: number, command: string, args: any[]}, returnURL: string?, source?: string|window?}} Message */
+// eslint-disable-next-line max-len
+/** @typedef {{origin: string, data: {id: number, command: string, args: any[]}, returnURL: string?, source?: string|window?}} Message */
 
 const ResponseStatus = {
     OK: 'ok',
@@ -26,31 +26,25 @@ class UrlRpcEncoder {
      */
     static receiveRedirectCommand(url) {
         // Need referrer for origin check
-        if (!document.referrer)
-            return null;
+        if (!document.referrer) return null;
         // Parse query
         const params = new URLSearchParams(url.search);
         const referrer = new URL(document.referrer);
         // Ignore messages without a command
-        if (!params.has('command'))
-            return null;
+        if (!params.has('command')) return null;
         // Ignore messages without an ID
-        if (!params.has('id'))
-            return null;
+        if (!params.has('id')) return null;
         // Ignore messages without a valid return path
-        if (!params.has('returnURL'))
-            return null;
+        if (!params.has('returnURL')) return null;
         // Only allow returning to same origin
         const returnURL = new URL(/** @type {string} */ (params.get('returnURL')));
-        if (returnURL.origin !== referrer.origin)
-            return null;
+        if (returnURL.origin !== referrer.origin) return null;
         // Parse args
         let args = [];
         if (params.has('args')) {
             try {
                 args = JSONUtils.parse(/** @type {string} */ (params.get('args')));
-            }
-            catch (e) {
+            } catch (e) {
                 // Do nothing
             }
         }
@@ -122,8 +116,7 @@ class State {
      * @param {Message} message
      */
     constructor(message) {
-        if (!message.data.id)
-            throw Error('Missing id');
+        if (!message.data.id) throw Error('Missing id');
         this._origin = message.origin;
         this._id = message.data.id;
         this._postMessage = 'source' in message && !('returnURL' in message);
@@ -144,15 +137,12 @@ class State {
         if (this._postMessage) {
             if (this._source === window.opener) {
                 obj.source = 'opener';
-            }
-            else if (this._source === window.parent) {
+            } else if (this._source === window.parent) {
                 obj.source = 'parent';
-            }
-            else {
+            } else {
                 obj.source = null;
             }
-        }
-        else {
+        } else {
             obj.returnURL = this._returnURL;
         }
         return JSON.stringify(obj);
@@ -177,15 +167,12 @@ class State {
             if (this._source) {
                 if (this._source === 'opener') {
                     target = window.opener;
-                }
-                else if (this._source === 'parent') {
+                } else if (this._source === 'parent') {
                     target = window.parent;
-                }
-                else {
+                } else {
                     target = this._source;
                 }
-            }
-            else {
+            } else {
                 // Else guess
                 target = window.opener || window.parent;
             }
@@ -194,15 +181,14 @@ class State {
                 result,
                 id: this.id,
             }, this.origin);
-        }
-        else if (this._returnURL) {
+        } else if (this._returnURL) {
             // Send via top-level navigation
             window.location.href = UrlRpcEncoder.prepareRedirectReply(this, status, result);
         }
     }
 }
 
-class RpcServer {
+class RpcServer { // eslint-disable-line no-unused-vars
     /**
      * @param {State} state
      * @param {any} result
@@ -263,8 +249,7 @@ class RpcServer {
             const state = _state;
 
             // Cannot reply to a message that has no source window or return URL
-            if (!('source' in message) && !('returnURL' in message))
-                return;
+            if (!('source' in message) && !('returnURL' in message)) return;
             // Ignore messages without a command
             if (!('command' in state.data)) {
                 return;
@@ -289,18 +274,16 @@ class RpcServer {
             // otherwise we assume the handler to do the reply when appropriate.
             if (result instanceof Promise) {
                 result
-                    .then((finalResult) => {
-                    if (finalResult !== undefined) {
-                        RpcServer._ok(state, finalResult);
-                    }
-                })
-                    .catch((error) => RpcServer._error(state, error));
-            }
-            else if (result !== undefined) {
+                    .then(finalResult => {
+                        if (finalResult !== undefined) {
+                            RpcServer._ok(state, finalResult);
+                        }
+                    })
+                    .catch(error => RpcServer._error(state, error));
+            } else if (result !== undefined) {
                 RpcServer._ok(state, result);
             }
-        }
-        catch (error) {
+        } catch (error) {
             if (_state) {
                 RpcServer._error(_state, error);
             }
