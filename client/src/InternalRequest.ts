@@ -26,7 +26,6 @@ export type KeyResult = SingleKeyResult[];
 export type DeriveAddressRequest = PublicToInternal<Public.DeriveAddressRequest>;
 export type DeriveAddressesRequest = PublicToInternal<Public.DeriveAddressesRequest>;
 export type ReleaseKeyRequest = PublicToInternal<Public.ReleaseKeyRequest>;
-export type SignMessageRequest = PublicToInternal<Public.SignMessageRequest>;
 export type SignTransactionRequest = PublicToInternal<Public.SignTransactionRequest>;
 export type TopLevelRequest = PublicToInternal<Public.RedirectRequest>;
 export type IFrameRequest = PublicToInternal<Public.IFrameRequest>;

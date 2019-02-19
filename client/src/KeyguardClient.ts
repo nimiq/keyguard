@@ -1,10 +1,10 @@
 import { RedirectRpcClient } from '@nimiq/rpc';
 import { RequestBehavior, RedirectRequestBehavior, IFrameRequestBehavior } from './RequestBehavior';
 import { KeyguardCommand } from './KeyguardCommand';
-import { Request, CreateRequest, ImportRequest, SimpleRequest, SignTransactionRequest, SignMessageRequest,
-    DeriveAddressRequest, DeriveAddressesRequest, RemoveKeyRequest, ReleaseKeyRequest, EmptyRequest,
-    RedirectRequest, IFrameRequest, IFrameResult, ListResult, SimpleResult, DeriveAddressesResult,
-    ListLegacyResult, RedirectResult} from './PublicRequest';
+import { Request, CreateRequest, ImportRequest, SimpleRequest, SignTransactionRequest, DeriveAddressRequest,
+    DeriveAddressesRequest, RemoveKeyRequest, ReleaseKeyRequest, EmptyRequest, RedirectRequest,
+    IFrameRequest, IFrameResult, ListResult, SimpleResult, DeriveAddressesResult, ListLegacyResult,
+    RedirectResult} from './PublicRequest';
 import { PublicToInternal, InternalToPublic } from './InternalRequest';
 import Observable from './Observable';
 
