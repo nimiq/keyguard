@@ -28,15 +28,17 @@ class JsonUtils {
         if (value && value.hasOwnProperty
             && value.hasOwnProperty(JsonUtils.TYPE_SYMBOL)
             && value.hasOwnProperty(JsonUtils.VALUE_SYMBOL)) {
+            /* eslint-enable no-prototype-builtins */
             switch (value[JsonUtils.TYPE_SYMBOL]) {
-                case JsonUtils.UINT8_ARRAY:
-                    return Nimiq.BufferUtils.fromBase64(value[JsonUtils.VALUE_SYMBOL]);
+                case JsonUtils.ExtraJsonTypes.UINT8_ARRAY: {
+                    const buf = Nimiq.BufferUtils.fromBase64(value[JsonUtils.VALUE_SYMBOL]);
+                    return buf.subarray(0, buf.byteLength);
+                }
                 default:
                     throw new Errors.KeyguardError(`Unknown type ${value[JsonUtils.TYPE_SYMBOL]}`);
             }
         }
         return value;
-        /* eslint-enable no-prototype-builtins */
     }
 
     /**
@@ -46,19 +48,19 @@ class JsonUtils {
      */
     static _jsonifyType(key, value) {
         if (value instanceof Uint8Array) {
-            return JsonUtils._typedObject(JsonUtils.UINT8_ARRAY, Nimiq.BufferUtils.toBase64(value));
+            return JsonUtils._typedObject(JsonUtils.ExtraJsonTypes.UINT8_ARRAY, Nimiq.BufferUtils.toBase64(value));
         }
         return value;
     }
 
     /* eslint-disable-next-line valid-jsdoc */
     /**
-     * @param {string} type
+     * @param {number} type
      * @param {string} value
-     * @returns {{[x: string]: string}}
+     * @returns {{[x: string]: number|string}}
      */
     static _typedObject(type, value) {
-        /** @type {{[x: string]: string}} */
+        /** @type {{[x: string]: number|string}} */
         const obj = {};
         obj[JsonUtils.TYPE_SYMBOL] = type;
         obj[JsonUtils.VALUE_SYMBOL] = value;
@@ -68,4 +70,6 @@ class JsonUtils {
 
 JsonUtils.TYPE_SYMBOL = '__';
 JsonUtils.VALUE_SYMBOL = 'v';
-JsonUtils.UINT8_ARRAY = 'UINT8_ARRAY';
+JsonUtils.ExtraJsonTypes = {
+    UINT8_ARRAY: 0,
+};
