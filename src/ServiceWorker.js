@@ -13,14 +13,14 @@
 */
 
 /* eslint-disable no-restricted-globals */
-
-const PRECACHE = 'v1';
+// const PRECACHE = 'v1';
 
 // A list of local resources we always want to be cached.
-/** @type {string[]} */
-const PRECACHE_URLS = [];
+// /** @type {string[]} */
+// const PRECACHE_URLS = [];
 
 // The install handler takes care of precaching the resources we always need.
+/*
 self.addEventListener('install', event => {
     // @ts-ignore Property 'waitUntil' does not exist on type 'Event'.ts
     event.waitUntil((async () => {
@@ -30,6 +30,7 @@ self.addEventListener('install', event => {
         return self.skipWaiting();
     })());
 });
+*/
 
 /*
 // The activate handler takes care of cleaning up old caches.
@@ -48,11 +49,15 @@ self.addEventListener('activate', event => {
 
 // Intercept fetch
 self.addEventListener('fetch', event => {
-    // forward request
-    // @ts-ignore Property 'respondWith' does not exist on type 'Event'.ts,
-    // Property 'request' does not exist on type 'Event'.ts
-    event.respondWith(fetch(event.request, {
-        // omit cookie transmission
-        credentials: 'omit',
-    }));
+    // @ts-ignore Property 'request' does not exist on type 'Event'.ts
+    const requestHost = new URL(event.request.url).host;
+    if (requestHost === location.host) {
+        // forward request
+        // @ts-ignore Property 'respondWith' does not exist on type 'Event'.ts,
+        // Property 'request' does not exist on type 'Event'.ts
+        event.respondWith(fetch(event.request, {
+            // omit cookie transmission
+            credentials: 'omit',
+        }));
+    }
 });
