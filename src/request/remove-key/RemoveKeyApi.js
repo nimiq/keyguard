@@ -5,24 +5,6 @@
 class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
      * @param {KeyguardRequest.RemoveKeyRequest} request
-     */
-    async onRequest(request) {
-        const parsedRequest = await this.parseRequest(request);
-        const removeKeyHandler = new RemoveKey(parsedRequest, this.resolve.bind(this), this.reject.bind(this));
-
-        /** @type {HTMLElement} */
-        const $appName = (document.querySelector('#app-name'));
-        $appName.textContent = request.appName;
-        /** @type {HTMLButtonElement} */
-        const $cancelLink = ($appName.parentNode);
-        $cancelLink.classList.remove('display-none');
-        $cancelLink.addEventListener('click', () => this.reject(new Errors.RequestCanceled()));
-
-        removeKeyHandler.run();
-    }
-
-    /**
-     * @param {KeyguardRequest.RemoveKeyRequest} request
      * @returns {Promise<ParsedRemoveKeyRequest>}
      */
     async parseRequest(request) {
@@ -42,5 +24,9 @@ class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         parsedRequest.keyLabel = parsedLabel;
 
         return parsedRequest;
+    }
+
+    get Handler() {
+        return RemoveKey;
     }
 }

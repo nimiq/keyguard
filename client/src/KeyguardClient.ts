@@ -1,6 +1,7 @@
 import { RedirectRpcClient } from '@nimiq/rpc';
 import { RequestBehavior, RedirectRequestBehavior, IFrameRequestBehavior } from './RequestBehavior';
 import { KeyguardCommand } from './KeyguardCommand';
+import * as KeyguardRequest from './KeyguardRequest';
 import Observable from './Observable';
 
 export class KeyguardClient {
@@ -77,12 +78,6 @@ export class KeyguardClient {
                                  requestBehavior = this._defaultBehavior)
         : Promise<KeyguardRequest.SignTransactionResult> {
         return this._request(requestBehavior,  KeyguardCommand.SIGN_TRANSACTION, [request]);
-    }
-
-    public async signMessage(request: KeyguardRequest.SignMessageRequest,
-                             requestBehavior = this._defaultBehavior)
-        : Promise<KeyguardRequest.SignMessageResult> {
-        return this._request(requestBehavior,  KeyguardCommand.SIGN_MESSAGE, [request]);
     }
 
     public async deriveAddress(request: KeyguardRequest.DeriveAddressRequest,

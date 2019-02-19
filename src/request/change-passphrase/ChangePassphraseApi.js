@@ -1,30 +1,8 @@
-/* global Nimiq */
 /* global TopLevelApi */
 /* global ChangePassphrase */
 /* global Errors */
 
 class ChangePassphraseApi extends TopLevelApi { // eslint-disable-line no-unused-vars
-    /**
-     * @param {KeyguardRequest.SimpleRequest} request
-     */
-    async onRequest(request) {
-        const parsedRequest = await this.parseRequest(request);
-        const handler = new ChangePassphrase(parsedRequest, this.resolve.bind(this), this.reject.bind(this));
-
-        /** @type {HTMLElement} */
-        const $appName = (document.querySelector('#app-name'));
-        $appName.textContent = request.appName;
-        /** @type {HTMLButtonElement} */
-        const $cancelLink = ($appName.parentNode);
-        $cancelLink.classList.remove('display-none');
-        $cancelLink.addEventListener('click', () => this.reject(new Errors.RequestCanceled()));
-
-        handler.run();
-
-        // Async pre-load the crypto worker to reduce wait time at first decrypt attempt
-        Nimiq.CryptoWorker.getInstanceAsync();
-    }
-
     /**
      * @param {KeyguardRequest.SimpleRequest} request
      * @returns {Promise<ParsedSimpleRequest>}
@@ -40,5 +18,9 @@ class ChangePassphraseApi extends TopLevelApi { // eslint-disable-line no-unused
         parsedRequest.keyLabel = this.parseLabel(request.keyLabel);
 
         return parsedRequest;
+    }
+
+    get Handler() {
+        return ChangePassphrase;
     }
 }

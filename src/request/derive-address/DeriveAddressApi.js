@@ -6,24 +6,6 @@
 class DeriveAddressApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
      * @param {KeyguardRequest.DeriveAddressRequest} request
-     */
-    async onRequest(request) {
-        const parsedRequest = await this.parseRequest(request);
-        const handler = new DeriveAddress(parsedRequest, this.resolve.bind(this), this.reject.bind(this));
-
-        /** @type {HTMLElement} */
-        const $appName = (document.querySelector('#app-name'));
-        $appName.textContent = request.appName;
-        /** @type {HTMLButtonElement} */
-        const $cancelLink = ($appName.parentNode);
-        $cancelLink.classList.remove('display-none');
-        $cancelLink.addEventListener('click', () => this.reject(new Errors.RequestCanceled()));
-
-        handler.run();
-    }
-
-    /**
-     * @param {KeyguardRequest.DeriveAddressRequest} request
      * @returns {Promise<ParsedDeriveAddressRequest>}
      */
     async parseRequest(request) {
@@ -42,5 +24,9 @@ class DeriveAddressApi extends TopLevelApi { // eslint-disable-line no-unused-va
         parsedRequest.indicesToDerive = this.parseIndicesArray(request.indicesToDerive);
 
         return parsedRequest;
+    }
+
+    get Handler() {
+        return DeriveAddress;
     }
 }

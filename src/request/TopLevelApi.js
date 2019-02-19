@@ -3,7 +3,9 @@
 /* global KeyStore */
 /* global CookieJar */
 /* global I18n */
+/* global Nimiq */
 /* global RequestParser */
+/* global NoReferrerErrorPage */
 
 /**
  * A common parent class for pop-up requests.
@@ -28,6 +30,7 @@
  *  // Finally, start your API:
  *  runKeyguard(SignTransactionApi);
  * ```
+ * @abstract
  */
 class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
     constructor() {
@@ -45,13 +48,23 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
 
         I18n.initialize(window.TRANSLATIONS, 'en');
         I18n.translateDom();
+
+        // Show error page if we cannot verify origin of request
+        if (!document.referrer) {
+            const errorPage = new NoReferrerErrorPage();
+            /** @type {HTMLDivElement} */
+            const $target = (document.querySelector('#rotation-container') || document.querySelector('#app'));
+            $target.appendChild(errorPage.getElement());
+            window.location.hash = 'error';
+            TopLevelApi.setLoading(false);
+        }
     }
 
     /**
      * Method to be called by the Keyguard client via RPC
      *
      * @param {Rpc.State?} state
-     * @param {KeyguardRequest.KeyguardRequest} request
+     * @param {KeyguardRequest.Request} request
      */
     async request(state, request) {
         /**
@@ -89,9 +102,27 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
             }
         }
 
+        const parsedRequest = await this.parseRequest(request);
+
         return new Promise((resolve, reject) => {
             this._resolve = resolve;
             this._reject = reject;
+
+            if (!parsedRequest) { // should already be rejected here with an Errors.InvalidRequestError()
+                // this really should never happen
+                this.reject(new Errors.InvalidRequestError('Request was not successfully parsed'));
+                return;
+            }
+
+            /**
+             * Load the crypto worker only if needed. That is, requests who are either
+             * Import or Create (the only ones which don't have the keyInfo property)
+             * or any request which has the keyInfo property and the encrypted flag set.
+             */
+            if (!(/** @type {ParsedSimpleRequest} */(parsedRequest).keyInfo)
+                || /** @type {ParsedSimpleRequest} */(parsedRequest).keyInfo.encrypted) {
+                Nimiq.CryptoWorker.getInstanceAsync();
+            }
 
             window.addEventListener('unhandledrejection', event => {
                 const error = new Errors.UnclassifiedError(/** @type {PromiseRejectionEvent} */(event).reason);
@@ -105,19 +136,50 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
                 return false;
             });
 
-            window.location.hash = 'loading';
-            this.onRequest(request).catch(reject);
+            if (!this.Handler) {
+                reject(new Errors.KeyguardError('Handler undefined'));
+                return;
+            }
+
+            try {
+                const handler = new this.Handler(parsedRequest, resolve, reject);
+
+                this.onBeforeRun(parsedRequest);
+
+                this.setGlobalCloseButtonText(`${I18n.translatePhrase('back-to')} ${parsedRequest.appName}`);
+
+                handler.run();
+
+                TopLevelApi.setLoading(false);
+            } catch (error) {
+                reject(error);
+            }
         });
     }
 
     /**
      * Overwritten by each request's API class
      *
-     * @param {KeyguardRequest.KeyguardRequest} request
+     * @param {KeyguardRequest.Request} request
+     * @returns {Promise<ParsedRequest>}
      * @abstract
      */
-    async onRequest(request) { // eslint-disable-line no-unused-vars
-        throw new Error('Not implemented');
+    async parseRequest(request) { // eslint-disable-line no-unused-vars
+        throw new Error('parseRequest not implemented');
+    }
+
+    /** @type {Newable?} */
+    get Handler() {
+        return null;
+    }
+
+    /**
+     * Can be overwritten by a request's API class to excute code before the handler's run() is called
+     *
+     * @param {ParsedRequest} parsedRequest
+     */
+    async onBeforeRun(parsedRequest) { // eslint-disable-line no-unused-vars
+        // noop
     }
 
     /**
@@ -143,6 +205,20 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
      */
     reject(error) {
         this._reject(error);
+    }
+
+    /**
+     * @param {string} buttonText
+     */
+    setGlobalCloseButtonText(buttonText) {
+        /** @type {HTMLElement} */
+        const $globalCloseText = (document.querySelector('#global-close-text'));
+        /** @type {HTMLSpanElement} */
+        const $button = ($globalCloseText.parentNode);
+        if (!$button.classList.contains('display-none')) return;
+        $globalCloseText.textContent = buttonText;
+        $button.addEventListener('click', () => this.reject(new Errors.RequestCanceled()));
+        $button.classList.remove('display-none');
     }
 
     /**

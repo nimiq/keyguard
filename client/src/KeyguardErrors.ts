@@ -1,3 +1,5 @@
 import '../../src/lib/ErrorConstants.js';
+import { KeyguardError } from './KeyguardRequest';
 
-export const Errors = window.__keyguardErrorContainer.ErrorConstants!; // tslint:disable-line variable-name
+// tslint:disable-next-line:variable-name
+export const Errors: KeyguardError = window.__keyguardErrorContainer.ErrorConstants!;

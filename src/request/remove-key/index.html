@@ -27,6 +27,7 @@
     <script defer bundle-common src="../../lib/AccountStore.js"></script>
     <script defer bundle-common src="../../common.js"></script>
 
+    <script defer bundle-toplevel src="../../components/NoReferrerErrorPage.js"></script>
     <script defer bundle-toplevel src="../../components/PassphraseBox.js"></script>
     <script defer bundle-toplevel src="../../components/PassphraseInput.js"></script>
     <script defer bundle-toplevel src="../../lib/AnimationUtils.js"></script>
@@ -66,8 +67,7 @@
     <link rel="stylesheet" href="../export/Export.css">
     <link rel="stylesheet" href="./remove-key.css">
 </head>
-
-<body>
+<body class="loading">
     <div class="header-top">
         <div class="nimiq-app-name">
             <span class="nimiq-logo"></span>
@@ -132,7 +132,7 @@
 
         <button class="global-close nq-button-s display-none">
             <span class="nq-icon arrow-left"></span>
-            Back to <span id="app-name"></span>
+            <span id="global-close-text"></span>
         </button>
 
         <!-- Default and loading screen -->

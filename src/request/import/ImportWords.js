@@ -15,17 +15,18 @@
 /* global TopLevelApi */
 /* global Utf8Tools */
 
-class ImportWords extends FlippableHandler {
+class ImportWords {
     /**
      * @param {KeyguardRequest.ImportRequest} request
      * @param {Function} resolve
      * @param {Function} reject
      */
     constructor(request, resolve, reject) {
-        super();
         this._request = request;
         this._resolve = resolve;
         this._reject = reject;
+
+        FlippableHandler.init();
 
         /** @type {{entropy: Nimiq.Entropy?, privateKey: Nimiq.PrivateKey?}} */
         this._secrets = { entropy: null, privateKey: null };

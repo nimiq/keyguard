@@ -5,37 +5,6 @@
 
 class SignTransactionApi extends TopLevelApi {
     /**
-     * @param {KeyguardRequest.SignTransactionRequest} request
-     */
-    async onRequest(request) {
-        TopLevelApi.setLoading(true);
-        const parsedRequest = await this.parseRequest(request);
-
-        const handler = new SignTransaction(
-            parsedRequest,
-            this.resolve.bind(this),
-            this.reject.bind(this),
-        );
-
-        /** @type {HTMLElement} */
-        const $appName = (document.querySelector('#app-name'));
-        /** @type {HTMLSpanElement} */
-        const $cancelLinkText = ($appName.parentNode);
-        if (request.layout === SignTransactionApi.Layouts.CHECKOUT) {
-            $cancelLinkText.textContent = I18n.translatePhrase('sign-tx-cancel-payment');
-        } else {
-            $appName.textContent = request.appName;
-        }
-        /** @type {HTMLButtonElement} */
-        const $cancelLink = ($cancelLinkText.parentNode);
-        $cancelLink.classList.remove('display-none');
-        $cancelLink.addEventListener('click', () => this.reject(new Errors.RequestCanceled()));
-
-        handler.run();
-        TopLevelApi.setLoading(false);
-    }
-
-    /**
      * Checks that the given layout is valid
      * @param {any} layout
      * @returns {any}
@@ -80,6 +49,19 @@ class SignTransactionApi extends TopLevelApi {
         }
 
         return parsedRequest;
+    }
+
+    /**
+     * @param {ParsedSignTransactionRequest} parsedRequest
+     */
+    async onBeforeRun(parsedRequest) {
+        if (parsedRequest.layout === SignTransactionApi.Layouts.CHECKOUT) {
+            this.setGlobalCloseButtonText(I18n.translatePhrase('sign-tx-cancel-payment'));
+        }
+    }
+
+    get Handler() {
+        return SignTransaction;
     }
 }
 

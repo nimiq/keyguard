@@ -26,6 +26,7 @@
     <script defer bundle-common src="../../lib/AccountStore.js"></script>
     <script defer bundle-common src="../../common.js"></script>
 
+    <script defer bundle-toplevel src="../../components/NoReferrerErrorPage.js"></script>
     <script defer bundle-toplevel src="../../components/PassphraseBox.js"></script>
     <script defer bundle-toplevel src="../../components/PassphraseInput.js"></script>
     <script defer bundle-toplevel src="../../lib/AnimationUtils.js"></script>
@@ -55,7 +56,7 @@
     <link rel="stylesheet" href="../create/IdenticonSelector.css">
     <link rel="stylesheet" href="./DeriveAddress.css">
 </head>
-<body>
+<body class="loading">
     <div class="header-top">
         <div class="nimiq-app-name">
             <span class="nimiq-logo"></span>
@@ -70,7 +71,7 @@
 
             <div class="page-body nq-card-body">
                 <p class="nq-text nq-orange" data-i18n="derive-address-password-text">
-                    To add a new address, please unlock your account first.
+                    To add a new address, please[br]unlock your account first.
                 </p>
                 <div class="lock-container">
                     <div class="nq-icon locked"></div>
@@ -98,7 +99,7 @@
 
         <button class="global-close nq-button-s display-none">
             <span class="nq-icon arrow-left"></span>
-            Back to <span id="app-name"></span>
+            <span id="global-close-text"></span>
         </button>
 
         <div id="loading" class="page">

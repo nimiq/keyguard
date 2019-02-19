@@ -65,9 +65,9 @@ async function runKeyguard(RequestApiClass, options) { // eslint-disable-line no
     }
 
     // If user navigates back to loading screen, skip it
-    window.addEventListener('hashchange', ev => {
-        if (new URL(ev.newURL).hash === '#loading' && new URL(ev.oldURL).hash) {
-            window.history.go(-2);
+    window.addEventListener('hashchange', () => {
+        if (window.location.hash === '') {
+            window.history.back();
         }
     });
 

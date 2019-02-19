@@ -156,10 +156,6 @@ class SignTransaction {
     }
 
     run() {
-        // Async pre-load the crypto worker to reduce wait time at first decrypt attempt
-        if (this._request.keyInfo.encrypted) {
-            Nimiq.CryptoWorker.getInstanceAsync();
-        }
         // Go to start page
         window.location.hash = SignTransaction.Pages.CONFIRM_TRANSACTION;
 

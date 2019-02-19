@@ -98,7 +98,6 @@
 }
 
 #loading {
-    display: flex;
     flex-flow: column;
     justify-content: center;
     align-items: center;
@@ -119,7 +118,7 @@
 }
 
 .loading #loading {
-    display: flex !important;
+    display: flex;
     background-color: rgba(0, 0, 0, 0.4); /* darken background when used on top of pages */
 }
 
@@ -214,4 +213,9 @@
     min-height: calc(100vh - 11.625rem); /* window hight - header height */
     padding: 0 1rem;
     width: 100%;
+}
+
+#error {
+    display: flex;
+    justify-content: start;
 }
