@@ -66,17 +66,6 @@ export type SignTransactionRequest = SimpleRequest & TransactionInfo & {
 
 export type SignTransactionResult = SignatureResult;
 
-export type SignMessageRequest = SimpleRequest & {
-    keyPath: string
-    message: Uint8Array
-    signer: Uint8Array
-    signerLabel?: string,
-};
-
-export type SignMessageResult = SignatureResult & {
-    data: Uint8Array,
-};
-
 export type CreateRequest = BasicRequest & {
     defaultKeyPath: string;
 };
@@ -121,7 +110,6 @@ export type RedirectRequest = CreateRequest
     | SimpleRequest
     | SignTransactionRequest
     | DeriveAddressRequest
-    | SignMessageRequest
     | RemoveKeyRequest;
 
 export type IFrameRequest = EmptyRequest | DeriveAddressesRequest | ReleaseKeyRequest;
@@ -135,7 +123,6 @@ export type IFrameResult = ListResult
 
 export type RedirectResult = KeyResult
     | SignTransactionResult
-    | SignMessageResult
     | DeriveAddressResult
     | SimpleResult;
 

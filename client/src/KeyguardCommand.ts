@@ -5,7 +5,6 @@ export enum KeyguardCommand {
     EXPORT = 'export',
     CHANGE_PASSPHRASE = 'change-passphrase',
     SIGN_TRANSACTION = 'sign-transaction',
-    SIGN_MESSAGE = 'sign-message',
     DERIVE_ADDRESS = 'derive-address',
 
     // Iframe requests

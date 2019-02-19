@@ -116,10 +116,6 @@ export class KeyguardClient {
         return this._redirectRequest<SignTransactionRequest>(KeyguardCommand.SIGN_TRANSACTION, request);
     }
 
-    public async signMessage(request: SignMessageRequest): Promise<void> {
-        return this._redirectRequest<SignMessageRequest>(KeyguardCommand.SIGN_MESSAGE, request);
-    }
-
     public async deriveAddress(request: DeriveAddressRequest): Promise<void> {
         return this._redirectRequest<DeriveAddressRequest>(KeyguardCommand.DERIVE_ADDRESS, request);
     }
