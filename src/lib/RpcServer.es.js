@@ -104,15 +104,6 @@ class State {
     }
 
     /**
-     * @param {string} json
-     * @returns {State}
-     */
-    static fromJSON(json) {
-        const obj = JSONUtils.parse(json);
-        return new State(obj);
-    }
-
-    /**
      * @param {Message} message
      */
     constructor(message) {

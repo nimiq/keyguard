@@ -1,4 +1,4 @@
-/* global Base64 */
+/* global Nimiq */
 /* global Errors */
 
 class JSONUtils {
@@ -30,7 +30,7 @@ class JSONUtils {
             && value.hasOwnProperty(JSONUtils.VALUE_SYMBOL)) {
             switch (value[JSONUtils.TYPE_SYMBOL]) {
                 case JSONUtils.UINT8_ARRAY:
-                    return Base64.decode(value[JSONUtils.VALUE_SYMBOL]);
+                    return Nimiq.BufferUtils.fromBase64(value[JSONUtils.VALUE_SYMBOL]);
                 default:
                     throw new Errors.KeyguardError(`Unknown type ${value[JSONUtils.TYPE_SYMBOL]}`);
             }
@@ -46,7 +46,7 @@ class JSONUtils {
      */
     static _jsonifyType(key, value) {
         if (value instanceof Uint8Array) {
-            return JSONUtils._typedObject(JSONUtils.UINT8_ARRAY, Base64.encode(value));
+            return JSONUtils._typedObject(JSONUtils.UINT8_ARRAY, Nimiq.BufferUtils.toBase64(value));
         }
         return value;
     }
