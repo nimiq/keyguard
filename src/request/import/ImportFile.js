@@ -33,7 +33,7 @@ class ImportFile {
         /** @type {HTMLElement} */
         this.$unlockAccountPage = (document.getElementById(ImportFile.Pages.UNLOCK_ACCOUNT));
 
-        /** @type {HTMLDivElement} */
+        /** @type {HTMLLabelElement} */
         const $fileImport = (this.$importFilePage.querySelector('.file-import'));
         const fileImport = new FileImporter($fileImport, false);
 

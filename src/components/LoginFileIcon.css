@@ -4,6 +4,7 @@
     height: 20rem;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     align-items: center;
     border-radius: 1rem;
     border: 2px dashed rgba(31, 35, 72, 0.4); /* based on Nimiq Blue */

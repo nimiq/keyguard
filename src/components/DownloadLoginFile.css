@@ -2,12 +2,10 @@
     display: flex;
     flex-direction: column;
     text-decoration: none;
+    outline: none;
 }
 
 .download-loginfile .loginfile {
-    text-decoration: none;
-    color: inherit;
-    outline: none;
     height: 40rem;
     margin: auto;
 }
@@ -50,11 +48,11 @@
 }
 
 .download-loginfile.fallback-download .tap-and-hold,
-.download-loginfile.held-to-download .continue {
+.download-loginfile.long-touch-downloaded .continue {
     display: block;
 }
 
-.download-loginfile.held-to-download .tap-and-hold {
+.download-loginfile.long-touch-downloaded .tap-and-hold {
     display: none; /* needs to come _after_ "display: block" above to overwrite it */
 }
 

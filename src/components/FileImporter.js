@@ -6,7 +6,7 @@
 
 class FileImporter extends Nimiq.Observable {
     /**
-     * @param {HTMLDivElement} [$el]
+     * @param {HTMLLabelElement} [$el]
      * @param {boolean} [displayFile = true]
      */
     constructor($el, displayFile = true) {
@@ -25,7 +25,6 @@ class FileImporter extends Nimiq.Observable {
         this.$el.addEventListener('dragend', this._onDragEnd.bind(this));
         this.$el.addEventListener('drop', this._onFileDrop.bind(this));
 
-        this.$el.addEventListener('click', this._openFileInput.bind(this));
         this.$fileInput.addEventListener('change', e => this._onFileSelected(e));
 
         // Prevent dropping on window
@@ -34,11 +33,11 @@ class FileImporter extends Nimiq.Observable {
     }
 
     /**
-     * @param {HTMLDivElement} [$el]
-     * @returns {HTMLDivElement}
+     * @param {HTMLLabelElement} [$el]
+     * @returns {HTMLLabelElement}
      */
     static _createElement($el) {
-        $el = $el || document.createElement('div');
+        $el = $el || document.createElement('label');
         $el.classList.add('file-import');
 
         $el.innerHTML = `
@@ -59,10 +58,6 @@ class FileImporter extends Nimiq.Observable {
         return this.$el;
     }
 
-    _openFileInput() {
-        this.$fileInput.click();
-    }
-
     /**
      * @param {Event} event
      */
@@ -81,43 +76,42 @@ class FileImporter extends Nimiq.Observable {
 
         const fileReader = new FileReader();
         fileReader.onload = async event => {
-            // @ts-ignore Object is possibly 'null'. Property 'result' does not exist on type 'EventTarget'.
-            const qrCodeFound = await this._readFile(file, event.target.result);
             this.$fileInput.value = '';
-            if (!qrCodeFound) return;
+            /** @type {string} */
+            // @ts-ignore Object is possibly 'null'. Property 'result' does not exist on type 'EventTarget'.
+            const dataUrl = event.target.result;
+            const decoded = await this._decodeFile(file);
+
+            if (!decoded) {
+                AnimationUtils.animate('shake', this.$el);
+                this.$errorMessage.textContent = 'Could not read Login File.';
+                return;
+            }
 
             if (this._displayFile) {
                 // Set image in UI
                 const image = this.$el.querySelector('img') || document.createElement('img');
-                // @ts-ignore Object is possibly 'null'. Property 'result' does not exist on type 'EventTarget'.
-                image.src = event.target.result;
+                image.src = dataUrl;
                 this.$el.appendChild(image);
                 image.classList.remove('pop-down');
-                image.onload = () => { image.classList.add('pop-down'); };
+                image.onload = () => image.classList.add('pop-down');
             }
+
+            this.fire(FileImporter.Events.IMPORT, decoded, dataUrl);
         };
         fileReader.readAsDataURL(file);
     }
 
-    _onQrError() {
-        AnimationUtils.animate('shake', this.$el);
-        this.$errorMessage.textContent = 'Could not read Login File.';
-    }
-
     /**
      * @param {File} file
-     * @param {string} src
-     * @returns {Promise<boolean>}
+     * @returns {Promise<string?>}
      */
-    async _readFile(file, src) {
-        const qrPosition = LoginFile.calculateQrPosition();
+    async _decodeFile(file) {
         try {
-            const decoded = await QrScanner.scanImage(file, qrPosition, null, null, false, true);
-            this.fire(FileImporter.Events.IMPORT, decoded, src);
-            return true;
+            const qrPosition = LoginFile.calculateQrPosition();
+            return await QrScanner.scanImage(file, qrPosition, null, null, false, true);
         } catch (e) {
-            this._onQrError();
-            return false;
+            return null;
         }
     }
 

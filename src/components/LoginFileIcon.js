@@ -12,7 +12,6 @@ class LoginFileIcon { // eslint-disable-line no-unused-vars
 
         $el.innerHTML = `
             <div class="nq-icon lock"></div>
-            <div class="flex-grow"></div>
             <div class="nq-icon qr-code-icon"></div>
         `;
 

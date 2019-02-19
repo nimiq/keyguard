@@ -45,7 +45,7 @@
 
 .file-import input {
     position: absolute;
-    top: -10000px;
+    top: -1000rem; /* out of the viewport */
 }
 
 .file-import img {
