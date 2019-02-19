@@ -10,7 +10,7 @@
 
 class IFrameApi {
     /**
-     * @param {Rpc.State?} state
+     * @param {RpcState?} state
      * @returns {Promise<KeyguardRequest.KeyInfoObject[]>}
      */
     async list(state) {
@@ -19,7 +19,7 @@ class IFrameApi {
     }
 
     /**
-     * @param {Rpc.State?} state
+     * @param {RpcState?} state
      * @returns {Promise<boolean>}
      */
     async hasKeys(state) {
@@ -28,7 +28,7 @@ class IFrameApi {
     }
 
     /**
-     * @param {Rpc.State?} state
+     * @param {RpcState?} state
      * @param {string} keyId
      * @param {string[]} paths
      * @returns {Promise<Nimiq.SerialBuffer[]>}
@@ -46,7 +46,7 @@ class IFrameApi {
     }
 
     /**
-     * @param {Rpc.State?} state
+     * @param {RpcState?} state
      * @param {string} keyId
      * @param {boolean} shouldBeRemoved
      * @returns {boolean}
@@ -73,7 +73,7 @@ class IFrameApi {
     }
 
     /**
-     * @param {Rpc.State?} state
+     * @param {RpcState?} state
      * @returns {Promise<KeyguardRequest.LegacyKeyInfoObject[]>}
      * @deprecated
      */
@@ -87,7 +87,7 @@ class IFrameApi {
     }
 
     /**
-     * @param {Rpc.State?} state
+     * @param {RpcState?} state
      * @returns {Promise<boolean>}
      * @deprecated
      */
@@ -97,7 +97,7 @@ class IFrameApi {
     }
 
     /**
-     * @param {Rpc.State?} state
+     * @param {RpcState?} state
      * @returns {Promise<boolean>}
      * @deprecated
      */

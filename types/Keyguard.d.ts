@@ -10,7 +10,7 @@ interface Event {
 }
 
 interface Window {
-    rpcServer: Rpc.RpcServer
+    rpcServer: RpcServer
     KeyStore: any
     TRANSLATIONS: dict
     NIMIQ_IQONS_SVG_PATH?: string

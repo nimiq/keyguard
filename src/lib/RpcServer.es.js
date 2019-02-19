@@ -62,7 +62,7 @@ class UrlRpcEncoder {
     }
 
     /**
-     * @param {State} state
+     * @param {RpcState} state
      * @param {string} status
      * @param {any} result
      * @returns {string}
@@ -77,7 +77,7 @@ class UrlRpcEncoder {
     }
 }
 
-class State {
+class RpcState {
     /** @type {number} */
     get id() {
         return this._id;
@@ -181,7 +181,7 @@ class State {
 
 class RpcServer { // eslint-disable-line no-unused-vars
     /**
-     * @param {State} state
+     * @param {RpcState} state
      * @param {any} result
      */
     static _ok(state, result) {
@@ -189,7 +189,7 @@ class RpcServer { // eslint-disable-line no-unused-vars
     }
 
     /**
-     * @param {State} state
+     * @param {RpcState} state
      * @param {Error} error
      */
     static _error(state, error) {
@@ -236,7 +236,7 @@ class RpcServer { // eslint-disable-line no-unused-vars
     _receive(message) {
         let _state = null;
         try {
-            _state = new State(message);
+            _state = new RpcState(message);
             const state = _state;
 
             // Cannot reply to a message that has no source window or return URL
