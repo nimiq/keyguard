@@ -43,7 +43,7 @@ class UrlRpcEncoder {
         let args = [];
         if (params.has('args')) {
             try {
-                args = JSONUtils.parse(/** @type {string} */ (params.get('args')));
+                args = JsonUtils.parse(/** @type {string} */ (params.get('args')));
             } catch (e) {
                 // Do nothing
             }
@@ -70,7 +70,7 @@ class UrlRpcEncoder {
     static prepareRedirectReply(state, status, result) {
         const params = new URLSearchParams();
         params.set('status', status);
-        params.set('result', JSONUtils.stringify(result));
+        params.set('result', JsonUtils.stringify(result));
         params.set('id', state.id.toString());
         // TODO: what if it already includes a query string
         return `${state.returnURL}?${params.toString()}`;
