@@ -1,4 +1,4 @@
-/* global JSONUtils */
+/* global JsonUtils */
 
 /**
  * This file was generated from the @nimiq/rpc package source, with `RpcServer` being the only target.
