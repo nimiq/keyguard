@@ -5,8 +5,7 @@ interface Newable {
     new(...args: any[]): any
 }
 
-type DOMEvent = Event & {
-    target: Element
+interface Event {
     data: any
 }
 
