@@ -6,7 +6,7 @@ interface Newable {
 }
 
 interface Event {
-    data: any
+    readonly data: any
 }
 
 interface Window {
