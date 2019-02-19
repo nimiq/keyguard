@@ -23,12 +23,12 @@ const PRECACHE_URLS = [];
 // The install handler takes care of precaching the resources we always need.
 self.addEventListener('install', event => {
     // @ts-ignore Property 'waitUntil' does not exist on type 'Event'.ts
-    event.waitUntil(async () => {
+    event.waitUntil((async () => {
         const cache = await caches.open(PRECACHE);
-        cache.addAll(PRECACHE_URLS);
+        await cache.addAll(PRECACHE_URLS);
         // @ts-ignore Property 'skipWaiting' does not exist on type 'Window'.ts
         return self.skipWaiting();
-    });
+    })());
 });
 
 /*
@@ -36,13 +36,13 @@ self.addEventListener('install', event => {
 self.addEventListener('activate', event => {
     const currentCaches = [PRECACHE, RUNTIME];
     // @ts-ignore Property 'waitUntil' does not exist on type 'Event'.ts(2339)
-    event.waitUntil(async () => {
+    event.waitUntil((async () => {
         const cacheNames = await caches.keys();
         const cachesToDelete = cacheNames.filter(cacheName => currentCaches.indexOf(cacheName) === -1);
         await Promise.all(cachesToDelete.map(cacheToDelete => caches.delete(cacheToDelete)));
         // @ts-ignore Property 'clients' does not exist on type 'Window'.ts
         return self.clients.claim();
-    });
+    })());
 });
 */
 
