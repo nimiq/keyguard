@@ -33,15 +33,11 @@ class DownloadLoginFile extends Nimiq.Observable {
         this.$longTouchIndicator = (this.$el.querySelector('.long-touch-indicator'));
 
         this._longTouchTimeout = undefined;
-        this._blurTimeout = undefined;
-
-        this._onWindowBlur = this._onWindowBlur.bind(this);
-        this._onDownloadEnd = this._onDownloadEnd.bind(this);
 
         this.$el.addEventListener('mousedown', e => this._onMouseDown(e)); // also gets triggered after touchstart
         this.$loginfile.addEventListener('touchstart', () => this._onTouchStart());
         this.$loginfile.addEventListener('touchend', () => this._onTouchEnd());
-        $continueButton.addEventListener('click', this._onDownloadEnd);
+        $continueButton.addEventListener('click', this._onDownloadEnd.bind(this));
     }
 
     /**
@@ -100,9 +96,14 @@ class DownloadLoginFile extends Nimiq.Observable {
      */
     _setupDownload(href, filename) {
         if (this._supportsNativeDownload()) {
-            this._setupNativeDownload(href, filename);
+            // Setup native download
+            this.$el.href = href;
+            this.$el.download = filename;
         } else {
-            this._setupFallbackDownload();
+            // Setup fallback download
+            // Hack to make image downloadable on iOS via long tap.
+            this.$el.href = 'javascript:void(0);'; // eslint-disable-line no-script-url
+            this.$el.classList.add('fallback-download');
         }
     }
 
@@ -116,22 +117,6 @@ class DownloadLoginFile extends Nimiq.Observable {
     }
 
     /**
-     * @param {string} href
-     * @param {string} filename
-     */
-    _setupNativeDownload(href, filename) {
-        this.$el.href = href;
-        this.$el.download = filename;
-    }
-
-    _setupFallbackDownload() {
-        // Hack to make image downloadable on iOS via long tap.
-        this.$el.href = 'javascript:void(0);'; // eslint-disable-line no-script-url
-
-        this.$el.classList.add('fallback-download');
-    }
-
-    /**
      * @param {MouseEvent} event
      */
     _onMouseDown(event) {
@@ -139,28 +124,46 @@ class DownloadLoginFile extends Nimiq.Observable {
             if (!this._supportsNativeDownload()) return;
             this._onDownloadStart();
         } else if (event.button === 2) { // secondary button
-            window.addEventListener('blur', this._onWindowBlur);
+            this._onDownloadStart(true);
         }
     }
 
-    _onDownloadStart() {
-        // some browsers open a download dialog and blur the window focus, which we use as a hint for a download
-        window.addEventListener('blur', this._onWindowBlur);
-        // otherwise consider the download as successful after some time
-        this._blurTimeout = window.setTimeout(this._onDownloadEnd, 500);
+    async _onDownloadStart(fromContextMenu = false) {
+        // Cancel previous download listeners
+        if (this._cancelDownload) {
+            this._cancelDownload();
+        }
+        try {
+            // If the window gets blurred from opening a download dialog, consider the download finished when
+            // the window get's focused again. If no download dialog opens, consider the download successful
+            // after a short delay.
+            await new Promise((resolve, reject) => {
+                if (!fromContextMenu) {
+                    // Add delay timeout if not initiated from context menu.
+                    // ("Save as" always opens a dialog.)
+                    window.setTimeout(resolve, 500);
+                }
+                window.addEventListener('blur', resolve, { once: true });
+                this._cancelDownload = reject;
+            });
+
+            // If window gets blurred, wait for it to get focused again
+            if (!document.hasFocus()) {
+                await new Promise((resolve, reject) => {
+                    window.addEventListener('focus', resolve, { once: true });
+                    this._cancelDownload = reject;
+                });
+            }
+
+            this._onDownloadEnd();
+        } catch (e) {}
+        finally {
+            this._cancelDownload = null;
+        }
     }
 
     _onDownloadEnd() {
         this.fire(DownloadLoginFile.Events.DOWNLOADED);
-        window.removeEventListener('blur', this._onWindowBlur);
-        window.removeEventListener('focus', this._onDownloadEnd);
-        window.clearTimeout(this._blurTimeout);
-    }
-
-    _onWindowBlur() {
-        // wait for the window to refocus when the browser download dialog closes
-        window.addEventListener('focus', this._onDownloadEnd);
-        window.clearTimeout(this._blurTimeout);
     }
 
     _onTouchStart() {
