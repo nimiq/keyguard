@@ -32,6 +32,14 @@ replace_config_variable() {
     fi
 }
 
+# replace icon sprite URL in file $1
+replace_icon_sprite_url() {
+    OLD_PATH="..\/..\/..\/node_modules\/@nimiq\/style\/nimiq-style.icons.svg"
+    NEW_PATH="..\/..\/assets\/nimiq-style.icons.svg"
+
+    sed -i -e "s/$OLD_PATH/$NEW_PATH/g" $1
+}
+
 # ease configuration of allowed origin and network by adding quotes
 if [ "$KEYGUARD_ALLOWED_ORIGIN" != "" ]; then
     KEYGUARD_ALLOWED_ORIGIN="'$KEYGUARD_ALLOWED_ORIGIN'"
@@ -43,6 +51,7 @@ fi
 # Before writing any files, verify integrity of Nimiq lib
 output "🧐  Validating Nimiq Core files integrity"
 
+# For Nimiq Core v1.4.3
 hashsums=\
 "131abbc8c240d8c887bb48370f0c8d902d2a8f3a40ffb2aa629b98add599c9b6  node_modules/@nimiq/core-web/web-offline.js
  a658ca600c43789c8daff47578ea5758e7a1a2a5fee1b249e7bb5ce691d126cd  node_modules/@nimiq/core-web/worker-wasm.wasm
@@ -98,6 +107,7 @@ for DIR in src/request/*/ ; do
 
     replace_config_variable "CONFIG.ALLOWED_ORIGIN" "KEYGUARD_ALLOWED_ORIGIN" dist/request/$REQUEST/$JS_BUNDLE
     replace_config_variable "CONFIG.NETWORK" "KEYGUARD_NETWORK" dist/request/$REQUEST/$JS_BUNDLE
+    replace_icon_sprite_url dist/request/$REQUEST/$JS_BUNDLE
 
     # get all local css files included in request's index.html, which are not in a bundle
     LIST_CSS="$(grep '<link' $DIR/index.html | grep -v 'bundle-' | grep -v -E 'http://|https://' | cut -d\" -f4)"
@@ -158,7 +168,7 @@ done
 LIST_JS_COMMON=$(echo $LIST_JS_COMMON | tr " " "\n" | sort -ur) # sort common bundle reverse for nicer order
 LIST_JS_TOPLEVEL=$(echo $LIST_JS_TOPLEVEL | tr " " "\n" | sort -u)
 # for CSS the order is very important, so sorting is not possible, thus we have to put the list here manually
-LIST_CSS_TOPLEVEL="../../../node_modules/@nimiq/style/nimiq-style.min.css ../../../node_modules/@nimiq/style/nimiq-style-icons.min.css ../../nimiq-style.css ../../common.css ../../components/PassphraseInput.css ../../components/PassphraseBox.css"
+LIST_CSS_TOPLEVEL="../../../node_modules/@nimiq/style/nimiq-style.min.css ../../nimiq-style.css ../../common.css ../../components/PassphraseInput.css ../../components/PassphraseBox.css"
 
 # generate bundle files
 output "📦  Generating bundle files"
@@ -167,11 +177,13 @@ for url in $LIST_JS_COMMON; do
     cat src/request/create/$url >> dist/request/$JS_COMMON_BUNDLE
     replace_config_variable "CONFIG.ALLOWED_ORIGIN" "KEYGUARD_ALLOWED_ORIGIN" dist/request/$JS_COMMON_BUNDLE
     replace_config_variable "CONFIG.NETWORK" "KEYGUARD_NETWORK" dist/request/$JS_COMMON_BUNDLE
+    replace_icon_sprite_url dist/request/$JS_COMMON_BUNDLE
 done
 for url in $LIST_JS_TOPLEVEL; do
     cat src/request/create/$url >> dist/request/$JS_TOPLEVEL_BUNDLE
     replace_config_variable "CONFIG.ALLOWED_ORIGIN" "KEYGUARD_ALLOWED_ORIGIN" dist/request/$JS_TOPLEVEL_BUNDLE
     replace_config_variable "CONFIG.NETWORK" "KEYGUARD_NETWORK" dist/request/$JS_TOPLEVEL_BUNDLE
+    replace_icon_sprite_url dist/request/$JS_TOPLEVEL_BUNDLE
 done
 for url in $LIST_CSS_TOPLEVEL; do
     cat src/request/create/$url >> dist/request/$CSS_TOPLEVEL_BUNDLE
@@ -181,6 +193,7 @@ done
 output "🐑  Copying static assets"
 cp -rv src/assets/* dist/assets/
 cp -v src/lib/QrScannerWorker* dist/lib/
+cp -v node_modules/@nimiq/style/nimiq-style.icons.svg dist/assets/
 # copy service worker (which has to be in root to work)
 cp -v src/ServiceWorker.js dist
 
