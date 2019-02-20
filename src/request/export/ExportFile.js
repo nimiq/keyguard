@@ -109,7 +109,7 @@ class ExportFile extends Nimiq.Observable {
     setKey(key, isProtected) { // eslint-disable-line no-unused-vars
         this._key = key;
         if (key) {
-            this._downloadKeyfile.setSecret(new Uint8Array(0), key.deriveAddress('m/44\'/242\'/0\'/0\''));
+            this._downloadKeyfile.setEncryptedEntropy(new Uint8Array(0), key.deriveAddress('m/44\'/242\'/0\'/0\''));
             /** @type {HTMLElement} */(document.getElementById(ExportFile.Pages.EXPORT_FILE))
                 .classList.add('show-download');
         }

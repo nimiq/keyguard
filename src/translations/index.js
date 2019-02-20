@@ -38,10 +38,7 @@ const TRANSLATIONS = {
         'import-unlock-account': 'Unlock your account',
         'import-create-account': 'Create new Account',
 
-        'import-file-lost-file': 'Lost your Key File? You can recover your account with your 24 Recovery Words.',
         'import-file-button-words': 'Login with Recovery Words',
-        'import-file-heading-unlock': 'Unlock your Key File',
-        'import-file-text-unprotected-keyfile': 'Your Key File is unprotected.',
 
         'import-words-file-available': 'Using the Recovery Words creates a new Login File. '
                                      + 'Create a password to secure it.',
@@ -84,7 +81,7 @@ const TRANSLATIONS = {
         'passphrasebox-continue': 'Continue',
         'passphrasebox-log-in': 'Unlock',
         'passphrasebox-log-out': 'Confirm logout',
-        'passphrasebox-download': 'Download Key File',
+        'passphrasebox-download': 'Download Login File',
         'passphrasebox-confirm-tx': 'Confirm transaction',
         'passphrasebox-sign-msg': 'Sign message',
         'passphrasebox-password-strength-short': 'Enter at least 8 characters',
@@ -181,17 +178,12 @@ const TRANSLATIONS = {
         'import-unlock-account': 'Entsperre deinen Account',
         'import-create-account': 'Erstelle einen neuen Account',
 
-        'import-file-lost-file': 'Schlüsseldatei verloren? Du kannst deinen Account mit deinen 24 '
-                               + 'Wiederherstellungswörtern wiederherstellen',
         'import-file-button-words': 'Wiederherstellungswörter eingeben',
-        'import-file-heading-unlock': 'Entsperre deine Schlüsseldatei',
-        'import-file-text-unprotected-keyfile': 'Deine Schlüsseldatei ist ungeschützt.',
 
-
-        'import-words-file-available': 'Die Wiederherstellungswörter erzeugen ein neues Loginfile. '
-                                     + 'Setze ein Passwort um es zu schützen.',
+        'import-words-file-available': 'Die Wiederherstellungswörter erzeugen eine neue Login Datei. '
+                                     + 'Setze ein Passwort um sie zu schützen.',
         'import-words-file-unavailable': 'Die Wiederherstellungswörter erzeugen einen neuen Account. '
-                                       + 'Setze ein Passwort um es zu schützen.',
+                                       + 'Setze ein Passwort um ihn zu schützen.',
         'import-words-hint': 'Mit Tab kannst du zum nächsten Feld springen',
         'import-words-error': 'Das ist kein gültiger Account. Schreibfehler?',
         'import-words-download-loginfile': 'Lade dein Login File herunter',
@@ -230,7 +222,7 @@ const TRANSLATIONS = {
         'passphrasebox-continue': 'Weiter',
         'passphrasebox-log-in': 'Entsperren',
         'passphrasebox-log-out': 'Abmeldung bestätigen',
-        'passphrasebox-download': 'Schlüsseldatei herunterladen',
+        'passphrasebox-download': 'Login Datei herunterladen',
         'passphrasebox-confirm-tx': 'Überweisung bestätigen',
         'passphrasebox-sign-msg': 'Nachricht signieren',
         'passphrasebox-password-strength-short': 'Gib mindestens 8 Zeichen ein',
@@ -247,7 +239,7 @@ const TRANSLATIONS = {
         'identicon-selector-generate-new': 'Neu generieren',
         'identicon-selector-more-addresses': 'Mehr Adressen',
 
-        'download-loginfile-download': 'LoginDatei herunterladen',
+        'download-loginfile-download': 'Login Datei herunterladen',
         'download-loginfile-tap-and-hold': 'Zum Herunterladen Bild gedrückt halten',
         'download-loginfile-continue': 'Weiter',
 

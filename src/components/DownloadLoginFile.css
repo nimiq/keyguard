@@ -22,7 +22,7 @@
 }
 
 .download-loginfile .long-touch-indicator.animate {
-    animation: long-touch-indicator-animation .7s linear forwards;
+    animation: long-touch-indicator-animation 800ms linear forwards;
 }
 
 @keyframes long-touch-indicator-animation {
@@ -58,9 +58,8 @@
 
 .download-loginfile .nq-label {
     text-align: center;
-    text-transform: uppercase;
     margin: 6rem 0 2rem;
     font-size: 2rem;
     line-height: 1.25;
-    color: rgba(31, 35, 72, .5) !important; /* important is necessary for iOS */
+    color: rgba(31, 35, 72, .5) !important; /* important is necessary for iOS to overwrite <a> colors; based on Nimiq Blue */
 }

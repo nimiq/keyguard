@@ -83,7 +83,7 @@ class ImportWords {
         this._passwordSetter.on(PassphraseSetterBox.Events.ENTERED, () => {
             const color = Iqons.getBackgroundColorIndex(
                 new Nimiq.Address(
-                    /**
+                    /*
                      * this will either be unrelevant (UNKNOWN/PRIVATE_KEY) or correct (ENTROPY)
                      * as `LoginFileIcon.setFileUnavailable(true)` was called in the former
                      * and in the latter index 0 is the only index and contains the entropy
@@ -109,7 +109,10 @@ class ImportWords {
                  */
                 this._keys[0].addresses[0].address,
             );
-            downloadLoginFile.setSecret(/** @type {Nimiq.SerialBuffer} */ (this._encryptedSecret), firstAddress);
+            downloadLoginFile.setEncryptedEntropy(
+                /** @type {Nimiq.SerialBuffer} */ (this._encryptedSecret),
+                firstAddress,
+            );
 
             downloadLoginFile.on(DownloadLoginFile.Events.DOWNLOADED, () => {
                 this._resolve(this._keys);

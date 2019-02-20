@@ -8,10 +8,10 @@
 class DownloadLoginFile extends Nimiq.Observable {
     /**
      * @param {HTMLAnchorElement} [$el]
-     * @param {Uint8Array} [secret]
+     * @param {Uint8Array} [encryptedEntropy]
      * @param {Nimiq.Address} [firstAddress]
      */
-    constructor($el, secret, firstAddress) {
+    constructor($el, encryptedEntropy, firstAddress) {
         super();
 
         this.$el = DownloadLoginFile._createElement($el);
@@ -25,8 +25,8 @@ class DownloadLoginFile extends Nimiq.Observable {
         /** @type {HTMLButtonElement} */
         const $continueButton = (this.$el.querySelector('.continue'));
 
-        if (secret && firstAddress) {
-            this.setSecret(secret, firstAddress);
+        if (encryptedEntropy && firstAddress) {
+            this.setEncryptedEntropy(encryptedEntropy, firstAddress);
         }
 
         /** @type {SVGElement} */
@@ -82,16 +82,16 @@ class DownloadLoginFile extends Nimiq.Observable {
     }
 
     /**
-     * @param {Uint8Array} secret
+     * @param {Uint8Array} encryptedEntropy
      * @param {Nimiq.Address} firstAddress
      */
-    setSecret(secret, firstAddress) {
-        if (secret.byteLength !== KeyStore.ENCRYPTED_SECRET_SIZE) {
+    setEncryptedEntropy(encryptedEntropy, firstAddress) {
+        if (encryptedEntropy.byteLength !== KeyStore.ENCRYPTED_SECRET_SIZE) {
             throw new Errors.KeyguardError('Can only export encrypted Entropies');
         }
 
         const color = Iqons.getBackgroundColorIndex(firstAddress.toUserFriendlyAddress());
-        this.file = new LoginFile(Nimiq.BufferUtils.toBase64(secret), color);
+        this.file = new LoginFile(Nimiq.BufferUtils.toBase64(encryptedEntropy), color);
     }
 
     /**
@@ -122,8 +122,6 @@ class DownloadLoginFile extends Nimiq.Observable {
     _setupNativeDownload(href, filename) {
         this.$el.href = href;
         this.$el.download = filename;
-
-        this.$el.classList.remove('fallback-download');
     }
 
     _setupFallbackDownload() {
@@ -171,8 +169,7 @@ class DownloadLoginFile extends Nimiq.Observable {
         // If no native download is supported, show a hint to download by long tap
         // and restart the animation
         this.$longTouchIndicator.style.display = 'block';
-        this.$longTouchIndicator.classList.remove('animate');
-        window.setTimeout(() => this.$longTouchIndicator.classList.add('animate'), 0);
+        this.$longTouchIndicator.classList.add('animate');
 
         window.clearTimeout(this._longTouchTimeout);
         this._longTouchTimeout = window.setTimeout(
@@ -184,6 +181,7 @@ class DownloadLoginFile extends Nimiq.Observable {
     _onTouchEnd() {
         this._hideLongTouchIndicator();
         window.clearTimeout(this._longTouchTimeout);
+        this.$longTouchIndicator.classList.remove('animate');
     }
 
     _onLongTouchComplete() {
