@@ -22,7 +22,11 @@
 }
 
 .download-loginfile .long-touch-indicator.animate {
-    animation: long-touch-indicator-animation 800ms linear forwards;
+    /* The animation duration is not 800ms like the LONG_TOUCH_DURATION,
+       because testing revealed that then the indicator does not fill
+       up completely. With 700ms it fills up completely when the
+       pop-up menu is shown. */
+    animation: long-touch-indicator-animation 700ms linear forwards;
 }
 
 @keyframes long-touch-indicator-animation {

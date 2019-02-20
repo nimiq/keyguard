@@ -32,11 +32,8 @@ class DownloadLoginFile extends Nimiq.Observable {
         /** @type {SVGElement} */
         this.$longTouchIndicator = (this.$el.querySelector('.long-touch-indicator'));
 
-        this._longTouchTimeout = undefined;
-
-        this.$el.addEventListener('mousedown', e => this._onMouseDown(e)); // also gets triggered after touchstart
+        this.$el.addEventListener('mousedown', e => this._onMouseDown(e));
         this.$loginfile.addEventListener('touchstart', () => this._onTouchStart());
-        this.$loginfile.addEventListener('touchend', () => this._onTouchEnd());
         $continueButton.addEventListener('click', this._onDownloadEnd.bind(this));
     }
 
@@ -117,14 +114,21 @@ class DownloadLoginFile extends Nimiq.Observable {
     }
 
     /**
+     * Also gets triggered after touchstart.
+     *
      * @param {MouseEvent} event
      */
     _onMouseDown(event) {
         if (event.button === 0) { // primary button
             if (!this._supportsNativeDownload()) return;
             this._onDownloadStart();
-        } else if (event.button === 2) { // secondary button
-            this._onDownloadStart(true);
+        // } else if (event.button === 2) { // secondary button
+        //     // Big Problem with the secondary button listening:
+        //     // When user does right-click, but then does NOT save-as,
+        //     // then unfocues the window for whatever reason and then
+        //     // refocuses it, the download is considered finished
+        //     // and the request is returned.
+        //     this._onDownloadStart(true);
         }
     }
 
@@ -166,34 +170,27 @@ class DownloadLoginFile extends Nimiq.Observable {
         this.fire(DownloadLoginFile.Events.DOWNLOADED);
     }
 
-    _onTouchStart() {
+    async _onTouchStart() {
         if (this._supportsNativeDownload()) return;
 
-        // If no native download is supported, show a hint to download by long tap
+        // If no native download is supported, show the long-tap-indicator
         // and restart the animation
         this.$longTouchIndicator.style.display = 'block';
         this.$longTouchIndicator.classList.add('animate');
 
-        window.clearTimeout(this._longTouchTimeout);
-        this._longTouchTimeout = window.setTimeout(
-            () => this._onLongTouchComplete(),
-            DownloadLoginFile.LONG_TOUCH_DURATION,
-        );
-    }
+        try {
+            await new Promise((resolve, reject) => {
+                // Consider the long-touch successfull after LONG_TOUCH_DURATION
+                window.setTimeout(resolve, DownloadLoginFile.LONG_TOUCH_DURATION);
+                this.$loginfile.addEventListener('touchend', reject, { once: true });
+            });
 
-    _onTouchEnd() {
-        this._hideLongTouchIndicator();
-        window.clearTimeout(this._longTouchTimeout);
-        this.$longTouchIndicator.classList.remove('animate');
-    }
-
-    _onLongTouchComplete() {
-        this._hideLongTouchIndicator();
-        this.$el.classList.add('long-touch-downloaded');
-    }
-
-    _hideLongTouchIndicator() {
-        this.$longTouchIndicator.style.display = 'none';
+            this.$el.classList.add('long-touch-downloaded');
+        } catch (e) {}
+        finally {
+            this.$longTouchIndicator.style.display = 'none';
+            this.$longTouchIndicator.classList.remove('animate');
+        }
     }
 
     get file() {
@@ -218,4 +215,4 @@ DownloadLoginFile.Events = {
     DOWNLOADED: 'loginfile-downloaded',
 };
 
-DownloadLoginFile.LONG_TOUCH_DURATION = 800;
+DownloadLoginFile.LONG_TOUCH_DURATION = 800; // iOS Safari long-touch duration
