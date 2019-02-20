@@ -161,23 +161,25 @@ LIST_CSS_TOPLEVEL="../../../node_modules/@nimiq/style/nimiq-style.min.css ../../
 output "📦  Generating bundle files"
 # (since all urls are relative to request directories, we simply use the create request directory as the base)
 for url in $LIST_JS_COMMON; do
-    cat src/request/create/$url >> dist/request/$JS_COMMON_BUNDLE
+    cat src/request/create/$url >> dist/request/$JS_COMMON_BUNDLE || exit 1
     replace_config_variable "CONFIG.ALLOWED_ORIGIN" "KEYGUARD_ALLOWED_ORIGIN" dist/request/$JS_COMMON_BUNDLE
     replace_config_variable "CONFIG.NETWORK" "KEYGUARD_NETWORK" dist/request/$JS_COMMON_BUNDLE
 done
 for url in $LIST_JS_TOPLEVEL; do
-    cat src/request/create/$url >> dist/request/$JS_TOPLEVEL_BUNDLE
+    cat src/request/create/$url >> dist/request/$JS_TOPLEVEL_BUNDLE || exit 1
     replace_config_variable "CONFIG.ALLOWED_ORIGIN" "KEYGUARD_ALLOWED_ORIGIN" dist/request/$JS_TOPLEVEL_BUNDLE
     replace_config_variable "CONFIG.NETWORK" "KEYGUARD_NETWORK" dist/request/$JS_TOPLEVEL_BUNDLE
 done
 for url in $LIST_CSS_TOPLEVEL; do
-    cat src/request/create/$url >> dist/request/$CSS_TOPLEVEL_BUNDLE
+    cat src/request/create/$url >> dist/request/$CSS_TOPLEVEL_BUNDLE || exit 1
 done
 
 # copy assets
 output "🐑  Copying static assets"
 cp -rv src/assets/* dist/assets/
 cp -v src/lib/QrScannerWorker* dist/lib/
+# copy service worker (which has to be in root to work)
+cp -v src/ServiceWorker.js dist
 
 # copy Nimiq files
 output "‼️   Copying Nimiq files"

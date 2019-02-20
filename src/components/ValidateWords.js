@@ -174,12 +174,13 @@ class ValidateWords extends Nimiq.Observable {
     }
 
     /**
-     * @param {DOMEvent} e
+     * @param {Event} e
      * @private
      */
     _onClick(e) {
-        if (e.target && e.target.localName !== 'button') return;
-        this._onButtonPressed(/** @type {HTMLButtonElement} */ (e.target));
+        const target = /** @type {HTMLButtonElement} */ (e.target);
+        if (target && target.localName !== 'button') return;
+        this._onButtonPressed(target);
     }
 
     /**

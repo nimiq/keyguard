@@ -10,7 +10,7 @@
 
 class IFrameApi {
     /**
-     * @param {Rpc.State?} state
+     * @param {RpcState?} state
      * @returns {Promise<KeyguardRequest.KeyInfoObject[]>}
      */
     async list(state) {
@@ -19,7 +19,7 @@ class IFrameApi {
     }
 
     /**
-     * @param {Rpc.State?} state
+     * @param {RpcState?} state
      * @returns {Promise<KeyguardRequest.SimpleResult>}
      */
     async hasKeys(state) {
@@ -30,7 +30,7 @@ class IFrameApi {
     }
 
     /**
-     * @param {Rpc.State?} state
+     * @param {RpcState?} state
      * @param {KeyguardRequest.DeriveAddressesRequest} request
      * @returns {Promise<Nimiq.SerialBuffer[]>}
      */
@@ -47,7 +47,7 @@ class IFrameApi {
     }
 
     /**
-     * @param {Rpc.State?} state
+     * @param {RpcState?} state
      * @param {KeyguardRequest.ReleaseKeyRequest} request
      * @returns {KeyguardRequest.SimpleResult}
      */
@@ -75,7 +75,7 @@ class IFrameApi {
     }
 
     /**
-     * @param {Rpc.State?} state
+     * @param {RpcState?} state
      * @returns {Promise<KeyguardRequest.LegacyKeyInfoObject[]>}
      * @deprecated
      */
@@ -89,18 +89,20 @@ class IFrameApi {
     }
 
     /**
-     * @param {Rpc.State?} state
-     * @returns {Promise<boolean>}
+     * @param {RpcState?} state
+     * @returns {Promise<KeyguardRequest.SimpleResult>}
      * @deprecated
      */
     async hasLegacyAccounts(state) {
         const accounts = await this._getAccounts();
-        return accounts.length > 0;
+        return {
+            success: accounts.length > 0,
+        };
     }
 
     /**
-     * @param {Rpc.State?} state
-     * @returns {Promise<boolean>}
+     * @param {RpcState?} state
+     * @returns {Promise<KeyguardRequest.SimpleResult>}
      * @deprecated
      */
     async migrateAccountsToKeys(state) {
@@ -114,14 +116,14 @@ class IFrameApi {
         if (BrowserDetection.isIOS() || BrowserDetection.isSafari()) {
             // Set migrate flag cookie
             document.cookie = 'migrate=1;max-age=31536000';
-            return true;
+            return { success: true };
         }
 
         // Requires Nimiq lib to be loaded, to derive keyIds from legacy accounts' user-friendly addresses
         await loadNimiq();
 
         await KeyStore.instance.migrateAccountsToKeys();
-        return true;
+        return { success: true };
     }
 
     /**

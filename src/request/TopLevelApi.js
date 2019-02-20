@@ -63,8 +63,8 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
     /**
      * Method to be called by the Keyguard client via RPC
      *
-     * @param {Rpc.State?} state
-     * @param {any} request
+     * @param {RpcState?} state
+     * @param {unknown} request
      */
     async request(state, request) {
         /**

@@ -179,8 +179,8 @@ const Utils = {
     deleteDatabase: async dbName => {
         return new Promise((resolve, reject) => {
             const request = indexedDB.deleteDatabase(dbName);
-            request.onerror = () => reject;
-            request.onsuccess = resolve;
+            request.onerror = () => { reject() };
+            request.onsuccess = () => { resolve() };
             request.onblocked = () => {
                 // wait for open connections to get closed
                 setTimeout(() => reject(new Error('Can\'t delete database, there is still an open connection.')), 1000);
