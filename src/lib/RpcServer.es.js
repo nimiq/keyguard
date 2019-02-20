@@ -11,18 +11,23 @@
  *   https://github.com/nimiq/keyguard-next/commits/master/src/lib/RpcServer.es.js
  */
 
-// eslint-disable-next-line max-len
-/** @typedef {{origin: string, data: {id: number, command: string, args: any[]}, returnURL: string?, source?: string|window?}} Message */
+/**
+ * @typedef {'ok' | 'error'} ResponseStatus
+ * @typedef {{origin: string, data: object}} Message
+ * @typedef {{data: {id: number, status: ResponseStatus, result: any}}} ResponseMessage extends Message
+ * @typedef {{source: string}} PostMessage extends Message
+ * @typedef {{origin: string, data: {id: number, command: string, args: any[]}, returnURL: string}} RedirectRequest
+ */
 
 const ResponseStatus = {
-    OK: 'ok',
-    ERROR: 'error',
+    OK: /** @type {'ok'} */ ('ok'),
+    ERROR: /** @type {'error'} */ ('error'),
 };
 
 class UrlRpcEncoder {
     /**
      * @param {Location} url
-     * @returns {Message?}
+     * @returns {RedirectRequest?}
      */
     static receiveRedirectCommand(url) {
         // Need referrer for origin check
@@ -57,7 +62,7 @@ class UrlRpcEncoder {
                 command: /** @type {string} */ (params.get('command')),
                 args,
             },
-            returnURL: params.get('returnURL'),
+            returnURL: /** @type {string} */ (params.get('returnURL')),
         });
     }
 
@@ -98,13 +103,13 @@ class RpcState {
         return this._returnURL;
     }
 
-    /** @type {string|window?} */
+    /** @type {Window | MessagePort | ServiceWorker | null} */
     get source() {
         return this._source;
     }
 
     /**
-     * @param {Message} message
+     * @param {MessageEvent | RedirectRequest } message
      */
     constructor(message) {
         if (!message.data.id) throw Error('Missing id');
@@ -117,30 +122,7 @@ class RpcState {
     }
 
     /**
-     * @returns {string}
-     */
-    toJSON() {
-        /** @type {{origin: string, data: any, source?: string?, returnURL?: string?}} */
-        const obj = {
-            origin: this._origin,
-            data: this._data,
-        };
-        if (this._postMessage) {
-            if (this._source === window.opener) {
-                obj.source = 'opener';
-            } else if (this._source === window.parent) {
-                obj.source = 'parent';
-            } else {
-                obj.source = null;
-            }
-        } else {
-            obj.returnURL = this._returnURL;
-        }
-        return JSON.stringify(obj);
-    }
-
-    /**
-     * @param {string} status
+     * @param {ResponseStatus} status
      * @param {any} result
      */
     reply(status, result) {
@@ -154,15 +136,9 @@ class RpcState {
         if (this._postMessage) {
             // Send via postMessage (e.g., popup)
             let target;
-            // If source is given, choose accordingly
+            // If source is given, use it
             if (this._source) {
-                if (this._source === 'opener') {
-                    target = window.opener;
-                } else if (this._source === 'parent') {
-                    target = window.parent;
-                } else {
-                    target = this._source;
-                }
+                target = this._source;
             } else {
                 // Else guess
                 target = window.opener || window.parent;
@@ -231,7 +207,7 @@ class RpcServer { // eslint-disable-line no-unused-vars
     }
 
     /**
-     * @param {Message} message
+     * @param {MessageEvent | RedirectRequest} message
      */
     _receive(message) {
         let _state = null;
