@@ -178,6 +178,8 @@ done
 output "🐑  Copying static assets"
 cp -rv src/assets/* dist/assets/
 cp -v src/lib/QrScannerWorker* dist/lib/
+# copy service worker (which has to be in root to work)
+cp -v src/ServiceWorker.js dist
 
 # copy Nimiq files
 output "‼️   Copying Nimiq files"
