@@ -160,8 +160,9 @@ class DownloadLoginFile extends Nimiq.Observable {
             }
 
             this._onDownloadEnd();
-        } catch (e) {}
-        finally {
+        } catch (e) {
+            // do nothing
+        } finally {
             this._cancelDownload = null;
         }
     }
@@ -186,8 +187,9 @@ class DownloadLoginFile extends Nimiq.Observable {
             });
 
             this.$el.classList.add('long-touch-downloaded');
-        } catch (e) {}
-        finally {
+        } catch (e) {
+            // do nothing
+        } finally {
             this.$longTouchIndicator.style.display = 'none';
             this.$longTouchIndicator.classList.remove('animate');
         }
