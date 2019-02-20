@@ -83,6 +83,7 @@ class ImportWords {
         });
 
         this._passwordSetter.on(PassphraseSetterBox.Events.ENTERED, () => {
+            let colorClass = '';
             if (this._keys.entropy.addresses) {
                 const color = Iqons.getBackgroundColorIndex(
                     new Nimiq.Address(
@@ -91,8 +92,9 @@ class ImportWords {
                     ).toUserFriendlyAddress(),
                 );
                 const colorString = LoginFile.CONFIG[color].name;
-                this._loginFileIcon.lock(`nq-${colorString}-bg`);
+                colorClass = `nq-${colorString}-bg`;
             }
+            this._loginFileIcon.lock(colorClass);
         });
         this._passwordSetter.on(PassphraseSetterBox.Events.SUBMIT, async password => {
             await this._storeKeys(password);
@@ -183,6 +185,8 @@ class ImportWords {
      */
     _onRecoveryWordsComplete(mnemonic, mnemonicType) {
         this._secrets = { entropy: null, privateKey: null };
+        this._keys.entropy = {};
+        this._keys.privateKey = {};
 
         if (mnemonicType === Nimiq.MnemonicUtils.MnemonicType.BIP39
             || mnemonicType === Nimiq.MnemonicUtils.MnemonicType.UNKNOWN) {
