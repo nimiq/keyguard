@@ -55,7 +55,7 @@ class UrlRpcEncoder {
         }
         args = Array.isArray(args) ? args : [];
 
-        return ({
+        return {
             origin: referrer.origin,
             data: {
                 id: parseInt(/** @type {string} */ (params.get('id')), 10),
@@ -63,7 +63,7 @@ class UrlRpcEncoder {
                 args,
             },
             returnURL: /** @type {string} */ (params.get('returnURL')),
-        });
+        };
     }
 
     /**
@@ -218,9 +218,7 @@ class RpcServer { // eslint-disable-line no-unused-vars
             // Cannot reply to a message that has no source window or return URL
             if (!('source' in message) && !('returnURL' in message)) return;
             // Ignore messages without a command
-            if (!('command' in state.data)) {
-                return;
-            }
+            if (!('command' in state.data)) return;
             if (this._allowedOrigin !== '*' && message.origin !== this._allowedOrigin) {
                 throw new Error('Unauthorized');
             }
