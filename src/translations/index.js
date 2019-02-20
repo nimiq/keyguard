@@ -71,10 +71,6 @@ const TRANSLATIONS = {
         'sign-tx-pay-with': 'Pay with',
         'sign-tx-cancel-payment': 'Cancel payment',
 
-        'sign-msg-heading': 'Sign Message',
-        'sign-msg-text': 'Please enter your passphrase to sign the following message:',
-        'sign-msg-sign-with': 'Sign with',
-
         'passphrasebox-enter-passphrase': 'Enter your password',
         'passphrasebox-protect-keyfile': 'Protect your keyfile with a password',
         'passphrasebox-repeat-password': 'Repeat your password',
@@ -83,7 +79,6 @@ const TRANSLATIONS = {
         'passphrasebox-log-out': 'Confirm logout',
         'passphrasebox-download': 'Download Login File',
         'passphrasebox-confirm-tx': 'Confirm transaction',
-        'passphrasebox-sign-msg': 'Sign message',
         'passphrasebox-password-strength-short': 'Enter at least 8 characters',
         'passphrasebox-password-strength-weak': 'That password is too weak',
         'passphrasebox-password-strength-good': 'Ok, that is an average password',
@@ -134,6 +129,9 @@ const TRANSLATIONS = {
         'change-passphrase-heading': 'Change your password',
         'change-paragraph': 'Before entering your new password, you must first unlock your account.',
         'change-set-paragraph': 'Now please enter your new password and repeat it for confirmation.',
+
+        'error-no-referrer-heading': 'That went wrong :(',
+        'error-no-referrer-message': 'We could not verify the origin of your request. Please go back and try again.',
     },
     de: {
         _language: 'Deutsch',
@@ -212,10 +210,6 @@ const TRANSLATIONS = {
         'sign-tx-pay-with': 'Zahle mit',
         'sign-tx-cancel-payment': 'Zahlung abbrechen',
 
-        'sign-msg-heading': 'Nachricht signieren',
-        'sign-msg-text': 'Bitte gib deine Passphrase ein, um die folgende Nachricht zu signieren:',
-        'sign-msg-sign-with': 'Signieren mit',
-
         'passphrasebox-enter-passphrase': 'Gib dein Passwort ein',
         'passphrasebox-protect-keyfile': 'Sichere dein KeyFile mit einem Passwort',
         'passphrasebox-repeat-password': 'Wiederhole dein Passwort',
@@ -224,7 +218,6 @@ const TRANSLATIONS = {
         'passphrasebox-log-out': 'Abmeldung bestätigen',
         'passphrasebox-download': 'Login Datei herunterladen',
         'passphrasebox-confirm-tx': 'Überweisung bestätigen',
-        'passphrasebox-sign-msg': 'Nachricht signieren',
         'passphrasebox-password-strength-short': 'Gib mindestens 8 Zeichen ein',
         'passphrasebox-password-strength-weak': 'Dieses Passwort ist zu schwach',
         'passphrasebox-password-strength-good': 'Ok, das ist ein gutes Passwort',
@@ -276,6 +269,10 @@ const TRANSLATIONS = {
         'change-passphrase-heading': 'Ändere dein Passwort',
         'change-paragraph': 'Um dein Passwort zu ändern, musst du vorher deinen Account entschlüsseln.',
         'change-set-paragraph': 'Gib jetzt dein neues Passwort ein und wiederhole es danach, um es zu bestätigen.',
+
+        'error-no-referrer-heading': 'Das ging schief :(',
+        'error-no-referrer-message': 'Wir konnten nicht überprüfen, wo deine Anfrage herkommt. Bitte gehe zurück und '
+                                   + 'versuche es nochmal.',
     },
 };
 

@@ -214,3 +214,8 @@
     padding: 0 1rem;
     width: 100%;
 }
+
+#error {
+    display: flex;
+    justify-content: start;
+}

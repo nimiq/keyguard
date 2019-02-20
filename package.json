@@ -32,7 +32,7 @@
   },
   "homepage": "https://github.com/nimiq/keyguard-next#readme",
   "devDependencies": {
-    "@nimiq/core-web": "1.4.2",
+    "@nimiq/core-web": "1.4.3",
     "@nimiq/rpc": "^0.0.11",
     "@nimiq/style": "^0.4.3",
     "@types/jasmine": "^2.8.8",
@@ -50,6 +50,6 @@
     "karma-jasmine": "^1.1.2",
     "nyc": "^12.0.2",
     "tsc-watch": "^1.0.22",
-    "typescript": "^2.9.2"
+    "typescript": "^3.3.3"
   }
 }

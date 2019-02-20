@@ -5,6 +5,7 @@
 /* global I18n */
 /* global Nimiq */
 /* global RequestParser */
+/* global NoReferrerErrorPage */
 
 /**
  * A common parent class for pop-up requests.
@@ -47,6 +48,16 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
 
         I18n.initialize(window.TRANSLATIONS, 'en');
         I18n.translateDom();
+
+        // Show error page if we cannot verify origin of request
+        if (!document.referrer) {
+            const errorPage = new NoReferrerErrorPage();
+            /** @type {HTMLDivElement} */
+            const $target = (document.querySelector('#rotation-container') || document.querySelector('#app'));
+            $target.appendChild(errorPage.getElement());
+            window.location.hash = 'error';
+            TopLevelApi.setLoading(false);
+        }
     }
 
     /**
@@ -125,20 +136,25 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
                 return false;
             });
 
-            this.onRequest(parsedRequest).catch(reject);
-            this.setGlobalCloseButtonText(`${I18n.translatePhrase('back-to')} ${parsedRequest.appName}`);
-            TopLevelApi.setLoading(false);
-        });
-    }
+            if (!this.Handler) {
+                reject(new Errors.KeyguardError('Handler undefined'));
+                return;
+            }
 
-    /**
-     * Overwritten by each request's API class
-     *
-     * @param {ParsedRequest} request
-     * @abstract
-     */
-    async onRequest(request) { // eslint-disable-line no-unused-vars
-        throw new Error('onRequest not implemented');
+            try {
+                const handler = new this.Handler(parsedRequest, resolve, reject);
+
+                this.onBeforeRun(parsedRequest);
+
+                this.setGlobalCloseButtonText(`${I18n.translatePhrase('back-to')} ${parsedRequest.appName}`);
+
+                handler.run();
+
+                TopLevelApi.setLoading(false);
+            } catch (error) {
+                reject(error);
+            }
+        });
     }
 
     /**
@@ -150,6 +166,20 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
      */
     async parseRequest(request) { // eslint-disable-line no-unused-vars
         throw new Error('parseRequest not implemented');
+    }
+
+    /** @type {Newable?} */
+    get Handler() {
+        return null;
+    }
+
+    /**
+     * Can be overwritten by a request's API class to excute code before the handler's run() is called
+     *
+     * @param {ParsedRequest} parsedRequest
+     */
+    async onBeforeRun(parsedRequest) { // eslint-disable-line no-unused-vars
+        // noop
     }
 
     /**
@@ -176,7 +206,6 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
     reject(error) {
         this._reject(error);
     }
-
 
     /**
      * @param {string} buttonText
