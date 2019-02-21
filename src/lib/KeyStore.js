@@ -218,10 +218,10 @@ class KeyStore {
 
         if (BrowserDetection.isIOS() || BrowserDetection.isSafari()) {
             // Delete migrate cookie
-            document.cookie = 'migrate=0; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+            document.cookie = 'migrate=0; expires=Thu, 01 Jan 1970 00:00:01 GMT';
 
             // Delete accounts cookie
-            document.cookie = 'accounts=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+            document.cookie = 'accounts=; expires=Thu, 01 Jan 1970 00:00:01 GMT';
         }
     }
 

@@ -142,7 +142,7 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
             }
 
             try {
-                const handler = new this.Handler(parsedRequest, resolve, reject);
+                const handler = new this.Handler(parsedRequest, this.resolve.bind(this), reject);
 
                 this.onBeforeRun(parsedRequest);
 
