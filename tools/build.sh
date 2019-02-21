@@ -176,16 +176,20 @@ output "📦  Generating bundle files"
 # (since all urls are relative to request directories, we simply use the create request directory as the base)
 for url in $LIST_JS_COMMON; do
     cat src/request/create/$url >> dist/request/$JS_COMMON_BUNDLE
-    replace_config_variable "CONFIG.ALLOWED_ORIGIN" "KEYGUARD_ALLOWED_ORIGIN" dist/request/$JS_COMMON_BUNDLE
-    replace_config_variable "CONFIG.NETWORK" "KEYGUARD_NETWORK" dist/request/$JS_COMMON_BUNDLE
-    replace_icon_sprite_url dist/request/$JS_COMMON_BUNDLE
 done
+
+replace_config_variable "CONFIG.ALLOWED_ORIGIN" "KEYGUARD_ALLOWED_ORIGIN" dist/request/$JS_COMMON_BUNDLE
+replace_config_variable "CONFIG.NETWORK" "KEYGUARD_NETWORK" dist/request/$JS_COMMON_BUNDLE
+replace_icon_sprite_url dist/request/$JS_COMMON_BUNDLE
+
 for url in $LIST_JS_TOPLEVEL; do
     cat src/request/create/$url >> dist/request/$JS_TOPLEVEL_BUNDLE
-    replace_config_variable "CONFIG.ALLOWED_ORIGIN" "KEYGUARD_ALLOWED_ORIGIN" dist/request/$JS_TOPLEVEL_BUNDLE
-    replace_config_variable "CONFIG.NETWORK" "KEYGUARD_NETWORK" dist/request/$JS_TOPLEVEL_BUNDLE
-    replace_icon_sprite_url dist/request/$JS_TOPLEVEL_BUNDLE
 done
+
+replace_config_variable "CONFIG.ALLOWED_ORIGIN" "KEYGUARD_ALLOWED_ORIGIN" dist/request/$JS_TOPLEVEL_BUNDLE
+replace_config_variable "CONFIG.NETWORK" "KEYGUARD_NETWORK" dist/request/$JS_TOPLEVEL_BUNDLE
+replace_icon_sprite_url dist/request/$JS_TOPLEVEL_BUNDLE
+
 for url in $LIST_CSS_TOPLEVEL; do
     cat src/request/create/$url >> dist/request/$CSS_TOPLEVEL_BUNDLE
 done
