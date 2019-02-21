@@ -121,10 +121,8 @@ class DownloadLoginFile extends Nimiq.Observable {
     _onMouseDown(event) {
         /** @type {HTMLElement} */
         const target = (event.target);
-        if (target.matches('.continue')) {
-            this._onDownloadEnd();
-            return;
-        }
+        // A click on the Continue button is already covered by a 'click' handler.
+        if (target.matches('.continue')) return;
 
         if (event.button === 0) { // primary button
             if (!this._supportsNativeDownload()) return;
@@ -140,20 +138,21 @@ class DownloadLoginFile extends Nimiq.Observable {
             this._cancelDownload();
         }
         try {
-            // If the window gets blurred from opening a download dialog, consider the download finished when
-            // the window get's focused again. If no download dialog opens, consider the download successful
-            // after a short delay.
             await new Promise((resolve, reject) => {
                 if (!fromContextMenu) {
                     // Add delay timeout if not initiated from context menu.
                     // ("Save as" always opens a dialog.)
+
+                    // If no download dialog opens, consider the download successful
+                    // after a short delay.
                     window.setTimeout(resolve, 500);
                 }
                 window.addEventListener('blur', resolve, { once: true });
                 this._cancelDownload = reject;
             });
 
-            // If window gets blurred, wait for it to get focused again
+            // If window gets blurred, show 'Continue' button in interface and do not automatically
+            // consider the download successful.
             if (!document.hasFocus()) {
                 this.$el.classList.add('maybe-downloaded');
                 return;
