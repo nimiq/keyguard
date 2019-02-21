@@ -33,6 +33,7 @@ class DownloadLoginFile extends Nimiq.Observable {
         this.$longTouchIndicator = (this.$el.querySelector('.long-touch-indicator'));
 
         this.$el.addEventListener('mousedown', e => this._onMouseDown(e));
+        this.$el.addEventListener('mouseup', e => this._onMouseUp(e));
         this.$loginfile.addEventListener('touchstart', () => this._onTouchStart());
         $continueButton.addEventListener('click', this._onDownloadEnd.bind(this));
     }
@@ -124,11 +125,25 @@ class DownloadLoginFile extends Nimiq.Observable {
         // A click on the Continue button is already covered by a 'click' handler.
         if (target.matches('.continue')) return;
 
+        if (event.button === 2) { // secondary button
+            this._onDownloadStart(true);
+        }
+    }
+
+    /**
+     * Also gets triggered after touchstart.
+     *
+     * @param {MouseEvent} event
+     */
+    _onMouseUp(event) {
+        /** @type {HTMLElement} */
+        const target = (event.target);
+        // A click on the Continue button is already covered by a 'click' handler.
+        if (target.matches('.continue')) return;
+
         if (event.button === 0) { // primary button
             if (!this._supportsNativeDownload()) return;
             this._onDownloadStart();
-        } else if (event.button === 2) { // secondary button
-            this._onDownloadStart(true);
         }
     }
 
@@ -172,6 +187,7 @@ class DownloadLoginFile extends Nimiq.Observable {
     _onDownloadEnd(event) {
         if (event) {
             event.stopPropagation();
+            event.preventDefault();
         }
         this.fire(DownloadLoginFile.Events.DOWNLOADED);
     }
