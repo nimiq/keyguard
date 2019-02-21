@@ -35,8 +35,19 @@
     position: absolute;
     top: 0.25rem;
     left: 0;
-    width: 4rem;
-    height: 4rem;
+    width: 3rem;
+    height: 3rem;
     background-size: 3rem;
     cursor: pointer;
+    opacity: 0.5;
+    transition: opacity .3s ease;
+}
+
+.passphrase-input .eye-button:hover {
+    opacity: 1;
+}
+
+.passphrase-input .eye-button.not-visible .is-visible,
+.passphrase-input .eye-button.is-visible .not-visible {
+    display: none;
 }
