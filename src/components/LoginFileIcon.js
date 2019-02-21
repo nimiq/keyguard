@@ -10,6 +10,7 @@ class LoginFileIcon { // eslint-disable-line no-unused-vars
         $el = $el || document.createElement('div');
         $el.classList.add('nq-icon', 'login-file-icon');
 
+        /* eslint-disable max-len */
         $el.innerHTML = `
             <svg class="nq-icon lock">
                 <use class="lock-unlocked" xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-lock-unlocked"/>
@@ -17,6 +18,7 @@ class LoginFileIcon { // eslint-disable-line no-unused-vars
             </svg>
             <svg class="nq-icon qr-code"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-qr-code"/></svg>
         `;
+        /* eslint-enable max-len */
 
         this.$el = $el;
     }
