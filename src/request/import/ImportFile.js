@@ -144,7 +144,6 @@ class ImportFile {
     }
 
     /**
-     * TODO LoginFile
      * @param {string} passphrase
      * @returns {Promise<[Key, number]?>}
      */
