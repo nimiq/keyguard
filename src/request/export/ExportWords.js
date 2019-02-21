@@ -158,9 +158,7 @@ class ExportWords extends Nimiq.Observable {
         $el.classList.add('page', 'nq-card');
         $el.innerHTML = `
         <div class="page-header nq-card-header">
-            <a tabindex="0" class="page-header-back-button">
-                <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
-            </a>
+            <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
             <h1 data-i18n="recovery-words-title" class="nq-h1">Recovery Words</h1>
         </div>
 
@@ -188,9 +186,7 @@ class ExportWords extends Nimiq.Observable {
         $el.classList.add('page', 'nq-card');
         $el.innerHTML = `
         <div class="page-header nq-card-header">
-            <a tabindex="0" class="page-header-back-button">
-                <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
-            </a>
+            <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
             <h1 data-i18n="recovery-words-title" class="nq-h1">Recovery Words</h1>
         </div>
 
@@ -214,9 +210,7 @@ class ExportWords extends Nimiq.Observable {
         $el.classList.add('page', 'nq-card');
         $el.innerHTML = `
         <div class="page-header nq-card-header">
-            <a tabindex="0" class="page-header-back-button">
-                <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
-            </a>
+            <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
             <h1 data-i18n="create-heading-validate-backup" class="nq-h1">Validate your backup</h1>
         </div>
 
