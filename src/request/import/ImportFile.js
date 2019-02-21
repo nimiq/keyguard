@@ -157,7 +157,7 @@ class ImportFile {
 
             // If this code runs, the password was correct
             /** @type {HTMLElement} */
-            (this.$unlockAccountPage.querySelector('.lock-locked')).classList.add('lock-unlocked');
+            (this.$unlockAccountPage.querySelector('.lock-locked')).classList.replace('lock-locked', 'lock-unlocked');
 
             const key = new Key(secret, this._flags.hasPin);
             await KeyStore.instance.put(key, encryptionKey);
