@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Exit on first error
+set -e
+
 output() {
     echo "$(tput bold) $1$(tput sgr0)"
 }
@@ -161,17 +164,17 @@ LIST_CSS_TOPLEVEL="../../../node_modules/@nimiq/style/nimiq-style.min.css ../../
 output "📦  Generating bundle files"
 # (since all urls are relative to request directories, we simply use the create request directory as the base)
 for url in $LIST_JS_COMMON; do
-    cat src/request/create/$url >> dist/request/$JS_COMMON_BUNDLE || exit 1
+    cat src/request/create/$url >> dist/request/$JS_COMMON_BUNDLE
     replace_config_variable "CONFIG.ALLOWED_ORIGIN" "KEYGUARD_ALLOWED_ORIGIN" dist/request/$JS_COMMON_BUNDLE
     replace_config_variable "CONFIG.NETWORK" "KEYGUARD_NETWORK" dist/request/$JS_COMMON_BUNDLE
 done
 for url in $LIST_JS_TOPLEVEL; do
-    cat src/request/create/$url >> dist/request/$JS_TOPLEVEL_BUNDLE || exit 1
+    cat src/request/create/$url >> dist/request/$JS_TOPLEVEL_BUNDLE
     replace_config_variable "CONFIG.ALLOWED_ORIGIN" "KEYGUARD_ALLOWED_ORIGIN" dist/request/$JS_TOPLEVEL_BUNDLE
     replace_config_variable "CONFIG.NETWORK" "KEYGUARD_NETWORK" dist/request/$JS_TOPLEVEL_BUNDLE
 done
 for url in $LIST_CSS_TOPLEVEL; do
-    cat src/request/create/$url >> dist/request/$CSS_TOPLEVEL_BUNDLE || exit 1
+    cat src/request/create/$url >> dist/request/$CSS_TOPLEVEL_BUNDLE
 done
 
 # copy assets
