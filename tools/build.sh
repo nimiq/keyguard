@@ -162,6 +162,7 @@ for DIR in src/request/*/ ; do
     ' $DIR/index.html > dist/request/${REQUEST}/index.html
 
     replace_config_variable "..\/..\/..\/node_modules\/@nimiq\/core-web" "KEYGUARD_CDN" dist/request/${REQUEST}/index.html
+    replace_icon_sprite_url dist/request/${REQUEST}/index.html
 done
 
 # prepare bundle lists
