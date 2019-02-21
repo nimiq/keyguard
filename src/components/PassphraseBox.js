@@ -57,10 +57,10 @@ class PassphraseBox extends Nimiq.Observable {
         /** @type {{[i18nTag: string]: string}} */
         const buttonVersions = {
             'passphrasebox-continue': '<button class="submit" data-i18n="passphrasebox-continue">Continue</button>',
-            'passphrasebox-log-in': '<button class="submit" data-i18n="passphrasebox-log-in">Log in to your wallet</button>',
+            'passphrasebox-log-in': '<button class="submit" data-i18n="passphrasebox-log-in">Unlock</button>',
             'passphrasebox-log-out': '<button class="submit" data-i18n="passphrasebox-log-out">Confirm logout</button>',
             'passphrasebox-confirm-tx': '<button class="submit" data-i18n="passphrasebox-confirm-tx">Confirm transaction</button>',
-            'passphrasebox-download': '<button class="submit" data-i18n="passphrasebox-download">Download Key File</button>',
+            'passphrasebox-download': '<button class="submit" data-i18n="passphrasebox-download">Download Login File</button>',
         };
         /* eslint-enable max-len */
 
@@ -121,7 +121,7 @@ class PassphraseBox extends Nimiq.Observable {
      */
     _onInputChangeValidity(isValid) {
         this._isInputValid = isValid;
-        this.$el.classList.toggle('input-valid', isValid);
+        this.$el.classList.toggle('input-eligable', isValid);
     }
 
     /**

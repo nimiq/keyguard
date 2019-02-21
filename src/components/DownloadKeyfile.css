@@ -1,7 +1,0 @@
-.download-keyfile.protected .unprotected {
-    display: none;
-}
-
-.download-keyfile.unprotected .protected {
-    display: none;
-}

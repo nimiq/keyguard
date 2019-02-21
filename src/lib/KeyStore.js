@@ -154,6 +154,7 @@ class KeyStore {
      */
     async putPlain(keyRecord) {
         if (keyRecord.secret.byteLength !== KeyStore.ENCRYPTED_SECRET_SIZE
+            && keyRecord.secret.byteLength !== KeyStore.ENCRYPTED_SECRET_SIZE_V2 // Required for migration
             && keyRecord.secret.byteLength !== KeyStore.UNENCRYPTED_SECRET_SIZE) {
             throw new Errors.KeyguardError('KeyRecord.secret has invalid length');
         }

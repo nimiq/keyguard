@@ -2,7 +2,7 @@
 /* global Nimiq */
 /* global PassphraseBox */
 /* global KeyStore */
-/* global DownloadKeyfile */
+/* global DownloadLoginFile */
 /* global Errors */
 /* global Utf8Tools */
 /* global TopLevelApi */
@@ -31,7 +31,7 @@ class ExportFile extends Nimiq.Observable {
 
         /** @type {HTMLFormElement} */
         const $downloadKeyFilePassphraseBox = ($exportFilePage.querySelector('.passphrase-box'));
-        /** @type {HTMLFormElement} */
+        /** @type {HTMLAnchorElement} */
         const $downloadKeyFile = ($exportFilePage.querySelector('.download-key-file'));
 
         this._downloadKeyFilePassphraseBox = new PassphraseBox(
@@ -42,10 +42,10 @@ class ExportFile extends Nimiq.Observable {
                 hideCancel: true,
             },
         );
-        this._downloadKeyfile = new DownloadKeyfile($downloadKeyFile);
+        this._downloadKeyfile = new DownloadLoginFile($downloadKeyFile);
 
         this._downloadKeyFilePassphraseBox.on(PassphraseBox.Events.SUBMIT, this._passphraseSubmitted.bind(this));
-        this._downloadKeyfile.on(DownloadKeyfile.Events.DOWNLOADED, () => {
+        this._downloadKeyfile.on(DownloadLoginFile.Events.DOWNLOADED, () => {
             alert('Wallet Files are not yet implemented.');
             this._finish();
         });
@@ -106,11 +106,13 @@ class ExportFile extends Nimiq.Observable {
      * @param {Key | null} key
      * @param {boolean} isProtected
      */
-    setKey(key, isProtected) {
+    setKey(key, isProtected) { // eslint-disable-line no-unused-vars
         this._key = key;
-        this._downloadKeyfile.setSecret(new Uint8Array(0), isProtected); // TODO
-        /** @type {HTMLElement} */(document.getElementById(ExportFile.Pages.EXPORT_FILE))
-            .classList.toggle('show-download', this._key !== null);
+        if (key) {
+            this._downloadKeyfile.setEncryptedEntropy(new Uint8Array(0), key.deriveAddress('m/44\'/242\'/0\'/0\''));
+            /** @type {HTMLElement} */(document.getElementById(ExportFile.Pages.EXPORT_FILE))
+                .classList.add('show-download');
+        }
     }
 
     _finish() {
@@ -135,7 +137,7 @@ class ExportFile extends Nimiq.Observable {
                     <div class="nq-icon walletfile"></div>
                     <div class="nq-icon arrow-down"></div>
                 </div>
-                <div class="download-key-file"></div>
+                <a class="download-key-file"></a>
                 <button class="go-to-words hide-for-download nq-button-s" data-i18n="export-button-words">
                     Show Recovery Words
                 </button>

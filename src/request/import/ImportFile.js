@@ -2,7 +2,7 @@
 /* global Nimiq */
 /* global Key */
 /* global ImportWords */
-/* global FileImport */
+/* global FileImporter */
 /* global PassphraseBox */
 /* global ImportApi */
 /* global Errors */
@@ -22,15 +22,20 @@ class ImportFile {
         this._reject = reject;
 
         this._encryptedKey = new Nimiq.SerialBuffer(0);
+        this._flags = {
+            hasPin: false,
+        };
 
         this.importWordsHandler = new ImportWords(request, resolve, reject);
 
         /** @type {HTMLElement} */
         this.$importFilePage = (document.getElementById(ImportFile.Pages.IMPORT_FILE));
+        /** @type {HTMLElement} */
+        this.$unlockAccountPage = (document.getElementById(ImportFile.Pages.UNLOCK_ACCOUNT));
 
-        /** @type {HTMLDivElement} */
+        /** @type {HTMLLabelElement} */
         const $fileImport = (this.$importFilePage.querySelector('.file-import'));
-        const fileImport = new FileImport($fileImport);
+        const fileImport = new FileImporter($fileImport, false);
 
         /** @type {HTMLElement} */
         const $gotoWords = (this.$importFilePage.querySelector('#goto-words'));
@@ -41,8 +46,11 @@ class ImportFile {
             $gotoCreate.addEventListener('click', this._goToCreate.bind(this));
         }
 
+        /** @type {HTMLImageElement} */
+        this.$loginFileImage = (this.$unlockAccountPage.querySelector('.loginfile-image'));
+
         /** @type {HTMLFormElement} */
-        const $passphraseBox = (this.$importFilePage.querySelector('.passphrase-box'));
+        const $passphraseBox = (this.$unlockAccountPage.querySelector('.passphrase-box'));
         this.passphraseBox = new PassphraseBox(
             $passphraseBox,
             {
@@ -50,7 +58,7 @@ class ImportFile {
                 hideCancel: true,
             },
         );
-        fileImport.on(FileImport.Events.IMPORT, this._onFileImported.bind(this));
+        fileImport.on(FileImporter.Events.IMPORT, this._onFileImported.bind(this));
         this.passphraseBox.on(PassphraseBox.Events.SUBMIT, this._onPassphraseEntered.bind(this));
     }
 
@@ -60,20 +68,36 @@ class ImportFile {
 
     /**
      * @param {string} decoded
+     * @param {string} src
      */
-    _onFileImported(decoded) {
-        console.log(decoded);
-        // this._encryptedKey = decoded; // TODO LoginFile
+    _onFileImported(decoded, src) {
+        if (decoded.substr(0, 2) === '#2') {
+            // Imported file is a PIN-encrypted Account Access File
+            decoded = decoded.substr(2);
+            this._flags.hasPin = true;
+        }
+
+        this._encryptedKey = Nimiq.BufferUtils.fromBase64(decoded);
+
+        // Prepare next page
+        this.$loginFileImage.src = src;
+        const version = this._encryptedKey.readUint8();
+        // eslint-disable-next-line no-nested-ternary
+        this.passphraseBox.setMinLength(this._flags.hasPin ? 6 : version < 3 ? 10 : undefined);
         this.passphraseBox.reset();
-        this.$importFilePage.classList.add('enter-password');
+        this.$unlockAccountPage.classList.remove('animate');
+
+        // Go to next page
+        window.location.hash = ImportFile.Pages.UNLOCK_ACCOUNT;
+        setTimeout(() => this.$unlockAccountPage.classList.add('animate'), 0);
         if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
             this.passphraseBox.focus();
         }
     }
 
     /**
-     * TODO LoginFile
-     * @param {string?} passphrase
+     * @param {string} passphrase
+     * @returns {Promise<void>}
      */
     async _onPassphraseEntered(passphrase) {
         const key = await this._decryptAndStoreKey(passphrase);
@@ -118,50 +142,30 @@ class ImportFile {
     }
 
     /**
-     * TODO LoginFile
-     * @param {string?} passphrase
-     * @returns {Promise<?Key>}
+     * @param {string} passphrase
+     * @returns {Promise<Key?>}
      */
     async _decryptAndStoreKey(passphrase) {
         TopLevelApi.setLoading(true);
         try {
-            // Separating the processing of the encryptionKey (password) and the secret (key) is necessary
-            // to cover these scenarios:
-            //     1. Encrypted key file with password or PIN
-            //     2. Unencrypted key file and no new password set
-            //     3. Unencrypted key file and new password set
+            const encryptionKey = Utf8Tools.stringToUtf8ByteArray(passphrase);
 
-            /** @type {Nimiq.Entropy | Nimiq.PrivateKey} */
-            let secret;
-            let encryptionKey = null;
+            // Make sure read position is at 0 even after a wrong passphrase
+            this._encryptedKey.reset();
 
-            if (passphrase !== null) {
-                encryptionKey = Utf8Tools.stringToUtf8ByteArray(passphrase);
-            }
+            const secret = await Nimiq.Secret.fromEncrypted(this._encryptedKey, encryptionKey);
 
-            if (this._encryptedKey.byteLength === KeyStore.ENCRYPTED_SECRET_SIZE_V2
-                || this._encryptedKey.byteLength === KeyStore.ENCRYPTED_SECRET_SIZE) {
-                // Make sure read position is at 0 even after a wrong passphrase
-                this._encryptedKey.reset();
+            // If this code runs, the password was correct
+            /** @type {HTMLElement} */
+            (this.$unlockAccountPage.querySelector('.lock-locked')).classList.replace('lock-locked', 'lock-unlocked');
 
-                secret = await Nimiq.Secret.fromEncrypted(
-                    this._encryptedKey,
-                    /** @type {Uint8Array} */ (encryptionKey),
-                );
-            } else {
-                // Key File was not encrypted and the imported Uint8Array is the plain secret
-                secret = new Nimiq.Entropy(this._encryptedKey);
-            }
-
-            const key = new Key(secret, false);
-
-            await KeyStore.instance.put(key, encryptionKey || undefined);
-
+            const key = new Key(secret, this._flags.hasPin);
+            await KeyStore.instance.put(key, encryptionKey);
             return key;
         } catch (event) {
             console.error(event);
             TopLevelApi.setLoading(false);
-            return null;
+            return null; // Triggers onPassphraseIncorrect above
         }
     }
 
@@ -176,4 +180,5 @@ class ImportFile {
 
 ImportFile.Pages = {
     IMPORT_FILE: 'import-file',
+    UNLOCK_ACCOUNT: 'unlock-account',
 };
