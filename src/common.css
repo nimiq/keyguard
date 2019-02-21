@@ -171,9 +171,10 @@
     margin-bottom: 5rem;
 }
 
-.global-close .arrow-left {
+.global-close .nq-icon {
     vertical-align: top;
     margin-right: 0.25rem;
+    margin-top: 0.125rem;
 }
 
 .flex-grow {
