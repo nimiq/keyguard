@@ -47,16 +47,17 @@
 
 .download-loginfile .tap-and-hold,
 .download-loginfile .continue,
-.download-loginfile.fallback-download .download-button {
+.download-loginfile.fallback-download .download-button,
+.download-loginfile.maybe-downloaded .download-button {
     display: none;
 }
 
 .download-loginfile.fallback-download .tap-and-hold,
-.download-loginfile.long-touch-downloaded .continue {
+.download-loginfile.maybe-downloaded .continue {
     display: block;
 }
 
-.download-loginfile.long-touch-downloaded .tap-and-hold {
+.download-loginfile.maybe-downloaded .tap-and-hold {
     display: none; /* needs to come _after_ "display: block" above to overwrite it */
 }
 

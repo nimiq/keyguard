@@ -119,16 +119,18 @@ class DownloadLoginFile extends Nimiq.Observable {
      * @param {MouseEvent} event
      */
     _onMouseDown(event) {
+        /** @type {HTMLElement} */
+        const target = (event.target);
+        if (target.matches('.continue')) {
+            this._onDownloadEnd();
+            return;
+        }
+
         if (event.button === 0) { // primary button
             if (!this._supportsNativeDownload()) return;
             this._onDownloadStart();
-        // } else if (event.button === 2) { // secondary button
-        //     // Big Problem with the secondary button listening:
-        //     // When user does right-click, but then does NOT save-as,
-        //     // then unfocues the window for whatever reason and then
-        //     // refocuses it, the download is considered finished
-        //     // and the request is returned.
-        //     this._onDownloadStart(true);
+        } else if (event.button === 2) { // secondary button
+            this._onDownloadStart(true);
         }
     }
 
@@ -153,10 +155,8 @@ class DownloadLoginFile extends Nimiq.Observable {
 
             // If window gets blurred, wait for it to get focused again
             if (!document.hasFocus()) {
-                await new Promise((resolve, reject) => {
-                    window.addEventListener('focus', resolve, { once: true });
-                    this._cancelDownload = reject;
-                });
+                this.$el.classList.add('maybe-downloaded');
+                return;
             }
 
             this._onDownloadEnd();
@@ -167,7 +167,13 @@ class DownloadLoginFile extends Nimiq.Observable {
         }
     }
 
-    _onDownloadEnd() {
+    /**
+     * @param {MouseEvent} [event]
+     */
+    _onDownloadEnd(event) {
+        if (event) {
+            event.stopPropagation();
+        }
         this.fire(DownloadLoginFile.Events.DOWNLOADED);
     }
 
@@ -187,7 +193,7 @@ class DownloadLoginFile extends Nimiq.Observable {
                 this.$loginfile.addEventListener('touchend', reject, { once: true });
             });
 
-            this.$el.classList.add('long-touch-downloaded');
+            this.$el.classList.add('maybe-downloaded');
         } catch (e) {
             // do nothing
         } finally {
