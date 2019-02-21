@@ -1,42 +1,17 @@
 import * as Nimiq from '@nimiq/core-web';
 
-export type KeyInfoObject = {
-    id: string;
-    type: Nimiq.Secret.Type;
-    hasPin: boolean;
-};
-
-export type LegacyKeyInfoObject = KeyInfoObject & {
-    legacyAccount: { label: string, address: Uint8Array };
-};
-
-export type ListResult = KeyInfoObject[];
-
-export type ListLegacyResult = LegacyKeyInfoObject[];
-
-export type EmptyRequest = null;
-
+// Base types for Requests
 export type BasicRequest = {
     appName: string,
 };
 
-export type SimpleRequest = BasicRequest & {
-    keyId: string
-    keyLabel?: string,
-};
-
-export type SimpleResult = {
-    success: boolean,
-};
-
-export type RemoveKeyRequest = BasicRequest & {
-    keyId: string
-    keyLabel: string,
-};
-
-export type SignatureResult = {
-    publicKey: Uint8Array
-    signature: Uint8Array,
+export type SingleKeyResult = {
+    keyId: string;
+    keyType: Nimiq.Secret.Type;
+    addresses: Array<{
+        keyPath: string,
+        address: Uint8Array,
+    }>;
 };
 
 export type TransactionInfo = {
@@ -53,57 +28,57 @@ export type TransactionInfo = {
 
 export type SignTransactionRequestLayout = 'standard' | 'checkout' | 'cashlink';
 
-export type SignTransactionRequest = SimpleRequest & TransactionInfo & {
-    layout?: SignTransactionRequestLayout
-    shopOrigin?: string
-    shopLogoUrl?: string
+// Specific Requests
 
-    keyPath: string
-
-    senderLabel?: string
-    recipientLabel?: string,
-};
-
-export type SignTransactionResult = SignatureResult;
-
-export type CreateRequest = BasicRequest & {
-    defaultKeyPath: string;
-};
-
-export type ImportRequest = BasicRequest & {
-    defaultKeyPath: string;
-    requestedKeyPaths: string[];
-};
-
-export type SingleKeyResult = {
-    keyId: string;
-    keyType: Nimiq.Secret.Type;
-    addresses: Array<{ keyPath: string, address: Uint8Array }>;
-};
-
-export type KeyResult = SingleKeyResult[];
+export type CreateRequest = BasicRequest & { defaultKeyPath: string };
 
 export type DeriveAddressRequest = SimpleRequest & {
     baseKeyPath: string
     indicesToDerive: string[],
 };
 
-export type DeriveAddressResult = {
-    keyPath: string
-    address: Uint8Array,
-};
-
-export type DeriveAddressesResult = Nimiq.SerialBuffer[];
-
 export type DeriveAddressesRequest = {
     keyId: string,
     paths: string[],
+};
+
+export type EmptyRequest = null;
+
+export type ImportRequest = BasicRequest & {
+    defaultKeyPath: string,
+    requestedKeyPaths: string[],
 };
 
 export type ReleaseKeyRequest = {
     keyId: string,
     shouldBeRemoved: boolean,
 };
+
+export type RemoveKeyRequest = BasicRequest & {
+    keyId: string,
+    keyLabel: string,
+};
+
+export type SignatureResult = {
+    publicKey: Uint8Array,
+    signature: Uint8Array,
+};
+
+export type SimpleRequest = BasicRequest & {
+    keyId: string,
+    keyLabel?: string,
+};
+
+export type SignTransactionRequest = SimpleRequest & TransactionInfo & {
+    keyPath: string,
+    layout?: SignTransactionRequestLayout,
+    recipientLabel?: string,
+    senderLabel?: string,
+    shopOrigin?: string,
+    shopLogoUrl?: string,
+};
+
+// Request unions
 
 export type RedirectRequest = CreateRequest
     | ImportRequest
@@ -116,6 +91,37 @@ export type IFrameRequest = EmptyRequest | DeriveAddressesRequest | ReleaseKeyRe
 
 export type Request = RedirectRequest | IFrameRequest;
 
+// Base types for Results
+
+export type KeyInfoObject = {
+    id: string;
+    type: Nimiq.Secret.Type;
+    hasPin: boolean;
+};
+
+export type LegacyKeyInfoObject = KeyInfoObject & {
+    legacyAccount: {
+        label: string,
+        address: Uint8Array,
+    };
+};
+
+// Specific Results
+
+export type DeriveAddressResult = {
+    address: Uint8Array,
+    keyPath: string,
+};
+
+export type DeriveAddressesResult = Nimiq.SerialBuffer[];
+export type KeyResult = SingleKeyResult[];
+export type ListResult = KeyInfoObject[];
+export type ListLegacyResult = LegacyKeyInfoObject[];
+export type SignTransactionResult = SignatureResult;
+export type SimpleResult = { success: boolean };
+
+// Result unions
+
 export type IFrameResult = ListResult
     | ListLegacyResult
     | DeriveAddressesResult
@@ -127,6 +133,8 @@ export type RedirectResult = KeyResult
     | SimpleResult;
 
 export type Result = RedirectResult | IFrameResult;
+
+// Error constants
 
 export type KeyguardError = {
     Types: {

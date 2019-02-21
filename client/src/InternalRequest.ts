@@ -17,17 +17,20 @@ export type InternalToPublic<T> = T extends { keyId: number }
 
 export * from './PublicRequest';
 
-export type KeyInfoObject = PublicToInternal<Public.KeyInfoObject>;
-export type LegacyKeyInfoObject = PublicToInternal<Public.LegacyKeyInfoObject>;
-export type SimpleRequest = PublicToInternal<Public.SimpleRequest>;
-export type RemoveKeyRequest = PublicToInternal<Public.RemoveKeyRequest>;
-export type SingleKeyResult = PublicToInternal<Public.SingleKeyResult>;
-export type KeyResult = SingleKeyResult[];
 export type DeriveAddressRequest = PublicToInternal<Public.DeriveAddressRequest>;
 export type DeriveAddressesRequest = PublicToInternal<Public.DeriveAddressesRequest>;
+export type RemoveKeyRequest = PublicToInternal<Public.RemoveKeyRequest>;
 export type ReleaseKeyRequest = PublicToInternal<Public.ReleaseKeyRequest>;
+export type SimpleRequest = PublicToInternal<Public.SimpleRequest>;
 export type SignTransactionRequest = PublicToInternal<Public.SignTransactionRequest>;
-export type TopLevelRequest = PublicToInternal<Public.RedirectRequest>;
+
 export type IFrameRequest = PublicToInternal<Public.IFrameRequest>;
-export type Request = PublicToInternal<Public.Request>;
+export type TopLevelRequest = PublicToInternal<Public.RedirectRequest>;
+
+export type KeyInfoObject = PublicToInternal<Public.KeyInfoObject>;
+export type LegacyKeyInfoObject = PublicToInternal<Public.LegacyKeyInfoObject>;
+export type SingleKeyResult = PublicToInternal<Public.SingleKeyResult>;
+export type KeyResult = SingleKeyResult[];
+
 export type Result = PublicToInternal<Public.Result>;
+export type Request = PublicToInternal<Public.Request>;

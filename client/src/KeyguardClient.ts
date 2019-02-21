@@ -1,11 +1,39 @@
 import { RedirectRpcClient } from '@nimiq/rpc';
-import { RequestBehavior, RedirectRequestBehavior, IFrameRequestBehavior } from './RequestBehavior';
+
+import {
+    RequestBehavior,
+    RedirectRequestBehavior,
+    IFrameRequestBehavior,
+} from './RequestBehavior';
+
 import { KeyguardCommand } from './KeyguardCommand';
-import { Request, CreateRequest, ImportRequest, SimpleRequest, SignTransactionRequest, DeriveAddressRequest,
-    DeriveAddressesRequest, RemoveKeyRequest, ReleaseKeyRequest, EmptyRequest, RedirectRequest,
-    IFrameRequest, IFrameResult, ListResult, SimpleResult, DeriveAddressesResult, ListLegacyResult,
-    RedirectResult} from './PublicRequest';
-import { PublicToInternal, InternalToPublic } from './InternalRequest';
+
+import {
+    CreateRequest,
+    DeriveAddressRequest,
+    DeriveAddressesRequest,
+    EmptyRequest,
+    ImportRequest,
+    RedirectRequest,
+    RemoveKeyRequest,
+    ReleaseKeyRequest,
+    SignTransactionRequest,
+    SimpleRequest,
+    IFrameRequest,
+    Request,
+    DeriveAddressesResult,
+    ListLegacyResult,
+    ListResult,
+    SimpleResult,
+    IFrameResult,
+    RedirectResult,
+} from './PublicRequest';
+
+import {
+    InternalToPublic,
+    PublicToInternal,
+} from './InternalRequest';
+
 import Observable from './Observable';
 
 export class KeyguardClient {
@@ -15,14 +43,11 @@ export class KeyguardClient {
         : `${location.protocol}//${location.hostname}:8000/src`;
 
     private static parseId(id: string) {
-        if (id.substr(0, 1) !== 'K') {
-            throw new Error('keyId must start with K');
+        if (id.substr(0, 1) === 'K') {
+            const parsedId = parseInt(id.substr(1), 10);
+            if (!isNaN(parsedId)) return parsedId;
         }
-        const parsedId = parseInt(id.substr(1), 10);
-        if (isNaN(parsedId)) {
-            throw new Error('keyId cannot be parsed');
-        }
-        return parsedId;
+        throw new Error('keyId cannot be parsed');
     }
 
     private static publicToInternal<T extends Request>(object: any)
