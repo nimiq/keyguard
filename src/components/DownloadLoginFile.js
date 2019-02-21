@@ -183,6 +183,7 @@ class DownloadLoginFile extends Nimiq.Observable {
             await new Promise((resolve, reject) => {
                 // Consider the long-touch successfull after LONG_TOUCH_DURATION
                 window.setTimeout(resolve, DownloadLoginFile.LONG_TOUCH_DURATION);
+                this.$loginfile.addEventListener('touchstart', reject, { once: true }); // Second finger cancels overlay
                 this.$loginfile.addEventListener('touchend', reject, { once: true });
             });
 
