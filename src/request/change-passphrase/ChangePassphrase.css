@@ -1,11 +1,8 @@
-.walletfile-locked {
+.page#enter-passphrase .lock-locked {
     display: block;
-    width: 9rem;
-    height: 11.75rem;
+    width: 8rem;
+    height: 11.52875rem;
     margin: auto;
-    margin-top: 4rem;
-}
-
-.page-footer {
-    padding: 1rem;
+    margin-top: 8rem;
+    opacity: 0.4;
 }
