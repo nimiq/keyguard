@@ -7,7 +7,7 @@
     margin-top: -3rem;
     padding-bottom: 3rem;
     margin-bottom: -3rem;
-    transition: 0.6s;
+    transition: transform 0.6s;
     transform-style: preserve-3d;
     will-change: transform;
 }

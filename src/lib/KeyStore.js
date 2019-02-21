@@ -168,6 +168,7 @@ class KeyStore {
      */
     async putPlain(keyRecord) {
         if (keyRecord.secret.byteLength !== KeyStore.ENCRYPTED_SECRET_SIZE
+            && keyRecord.secret.byteLength !== KeyStore.ENCRYPTED_SECRET_SIZE_V2 // Required for migration
             && keyRecord.secret.byteLength !== KeyStore.UNENCRYPTED_SECRET_SIZE) {
             throw new Errors.KeyguardError('KeyRecord.secret has invalid length');
         }
@@ -233,10 +234,10 @@ class KeyStore {
 
         if (BrowserDetection.isIOS() || BrowserDetection.isSafari()) {
             // Delete migrate cookie
-            document.cookie = 'migrate=0; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+            document.cookie = 'migrate=0; expires=Thu, 01 Jan 1970 00:00:01 GMT';
 
             // Delete accounts cookie
-            document.cookie = 'accounts=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+            document.cookie = 'accounts=; expires=Thu, 01 Jan 1970 00:00:01 GMT';
         }
     }
 

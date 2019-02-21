@@ -40,11 +40,11 @@
     <script defer src="../../lib/AutoComplete.js"></script>
     <script defer src="../../lib/Iqons.js"></script>
     <script defer src="../../lib/QrScanner.js"></script>
-    <script defer src="../../components/DownloadKeyfile.js"></script>
     <script defer src="../../lib/LoginFile.js"></script>
     <script defer src="../../lib/PasswordStrength.js"></script>
     <script defer src="../../lib/QrEncoder.js"></script>
-    <script defer src="../../components/FileImport.js"></script>
+    <script defer src="../../components/DownloadLoginFile.js"></script>
+    <script defer src="../../components/FileImporter.js"></script>
     <script defer src="../../components/FlippableHandler.js"></script>
     <script defer src="../../components/LoginFileIcon.js"></script>
     <script defer src="../../components/PassphraseSetterBox.js"></script>
@@ -65,10 +65,11 @@
     <link rel="stylesheet" bundle-toplevel href="../../components/PassphraseInput.css">
     <link rel="stylesheet" bundle-toplevel href="../../components/PassphraseBox.css">
 
-    <link rel="stylesheet" href="../../components/FileImport.css">
+    <link rel="stylesheet" href="../../components/FileImporter.css">
     <link rel="stylesheet" href="../../components/FlippableHandler.css">
     <link rel="stylesheet" href="../../components/LoginFileIcon.css">
     <link rel="stylesheet" href="../../components/RecoveryWords.css">
+    <link rel="stylesheet" href="../../components/DownloadLoginFile.css">
     <link rel="stylesheet" href="./Import.css">
 </head>
 <body class="loading">
@@ -90,7 +91,7 @@
 
                 <div class="page-body nq-card-body">
                     <div class="recovery-words"></div>
-                    <p class="nq-label inverted" data-i18n="import-words-hint">Press Tab to Jump to the next field</p>
+                    <p class="nq-label input-hint" data-i18n="import-words-hint">Press Tab to Jump to the next field</p>
                     <p class="nq-label nq-red" data-i18n="import-words-error">This is not a valid account. Typo?</p>
                 </div>
             </form>
@@ -103,7 +104,7 @@
                 </div>
 
                 <div class="page-body nq-card-body">
-                    <p data-i18n="import-words-file-available" class="nq-light-blue nq-text login-file-available">Using the Recovery Words creates a new LoginFile. Create a password to secure it.</p>
+                    <p data-i18n="import-words-file-available" class="nq-light-blue nq-text login-file-available">Using the Recovery Words creates a new Login File. Create a password to secure it.</p>
                     <p data-i18n="import-words-file-unavailable" class="nq-light-blue nq-text login-file-unavailable">Using the Recovery Words creates a new Account. Create a password to secure it.</p>
                     <div class="flex-grow"></div>
                     <div class="nq-icon login-file-icon"></div>
@@ -118,28 +119,21 @@
             <div id="download-file" class="page nq-card">
                 <div class="page-header nq-card-header">
                     <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
-                    <h1 class="nq-h1" data-i18n="downloadkeyfile-download">Download Login File</h1>
+                    <h1 class="nq-h1" data-i18n="import-words-download-loginfile">Download your Login File</h1>
                 </div>
 
                 <div class="page-body nq-card-body">
-                    <div class="file"></div>
-                </div>
-
-                <div class="page-footer">
-                    <button data-i18n="downloadkeyfile-download" class="nq-button light-blue download-login-file">
-                        Download LoginFile
-                    </button>
+                    <a class="download-loginfile"></a>
                 </div>
             </div>
 
             <div id="import-file" class="page nq-card">
                 <div class="page-header nq-card-header">
-                    <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
                     <h1 data-i18n="import-upload-login-file" class="nq-h1">Upload your Login File</h1>
                 </div>
 
                 <div class="page-body nq-card-body">
-                    <div class="file-import"></div>
+                    <label class="file-import"></label>
                 </div>
 
                 <div class="page-footer">
@@ -149,6 +143,21 @@
                     <a class="nq-text-s nq-blue" id="goto-create" href="#">
                         <span data-i18n="import-create-account">Create new Account</span><i class="nq-icon chevron-right"></i>
                     </a>
+                </div>
+            </div>
+
+            <div id="unlock-account" class="page nq-card">
+                <div class="page-header nq-card-header">
+                    <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
+                    <h1 data-i18n="import-unlock-account" class="nq-h1">Unlock your account</h1>
+                </div>
+
+                <div class="page-body nq-card-body">
+                    <img class="loginfile-image">
+                </div>
+
+                <div class="page-footer">
+                    <i class="nq-icon lock-locked"></i>
                     <form class="passphrase-box"></form>
                 </div>
             </div>

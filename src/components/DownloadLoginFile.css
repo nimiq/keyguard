@@ -1,0 +1,70 @@
+.download-loginfile {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    outline: none;
+}
+
+.download-loginfile .loginfile {
+    height: 40rem;
+    margin: auto;
+}
+
+.download-loginfile .long-touch-indicator {
+    width: 11rem;
+    height: 11rem;
+    position: absolute;
+    left: calc(50% - 5.5rem);
+    top: 25.5rem; /* To lie over the wallet indicator on the Login File*/
+    pointer-events: none;
+    display: none;
+    stroke: white;
+}
+
+.download-loginfile .long-touch-indicator.animate {
+    /* The animation duration is not 800ms like the LONG_TOUCH_DURATION,
+       because testing revealed that then the indicator does not fill
+       up completely. With 700ms it fills up completely when the
+       pop-up menu is shown. */
+    animation: long-touch-indicator-animation 700ms linear forwards;
+}
+
+@keyframes long-touch-indicator-animation {
+    from {
+        stroke-dashoffset: 100.5;
+        stroke: rgba(255, 255, 255, 0.6);
+    }
+}
+
+.download-loginfile button {
+    margin-top: 4rem;
+    margin-bottom: 0;
+}
+
+.download-loginfile .nq-icon.download {
+    background-image: url('data:image/svg+xml,<svg width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15.36 11.38a.83.83 0 0 0-.59-1.42h-3.31a.2.2 0 0 1-.2-.2V1.24a1.25 1.25 0 1 0-2.5 0v8.5c0 .12-.1.2-.22.2H5.23a.83.83 0 0 0-.59 1.43l4.77 4.77c.33.33.86.33 1.18 0l4.77-4.77zM16.02 18.75c0-.69-.55-1.25-1.25-1.25H5.23a1.25 1.25 0 1 0 0 2.5h9.54c.7 0 1.25-.56 1.25-1.25z" fill="white"/></svg>');
+}
+
+.download-loginfile .tap-and-hold,
+.download-loginfile .continue,
+.download-loginfile.fallback-download .download-button,
+.download-loginfile.maybe-downloaded .download-button {
+    display: none;
+}
+
+.download-loginfile.fallback-download .tap-and-hold,
+.download-loginfile.maybe-downloaded .continue {
+    display: block;
+}
+
+.download-loginfile.maybe-downloaded .tap-and-hold {
+    display: none; /* needs to come _after_ "display: block" above to overwrite it */
+}
+
+.download-loginfile .nq-label {
+    text-align: center;
+    margin: 6rem 0 2rem;
+    font-size: 2rem;
+    line-height: 1.25;
+    color: rgba(31, 35, 72, .5) !important; /* important is necessary for iOS to overwrite <a> colors; based on Nimiq Blue */
+}

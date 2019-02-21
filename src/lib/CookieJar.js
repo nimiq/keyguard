@@ -7,7 +7,7 @@ class CookieJar { // eslint-disable-line no-unused-vars
     static fill(keys) {
         const maxAge = 60 * 60 * 24 * 365;
         const encodedKeys = this._encodeCookie(keys);
-        document.cookie = `k=${encodedKeys};max-age=${maxAge.toString()};Secure;SameSite=strict`;
+        document.cookie = `k=${encodedKeys};max-age=${maxAge.toString()};Secure;SameSite=strict;Path=/`;
     }
 
     /**
