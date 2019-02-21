@@ -41,8 +41,9 @@
     <script defer src="../../lib/Iqons.js"></script>
     <script defer src="../../lib/QrEncoder.js"></script>
     <script defer src="../../lib/LoginFile.js"></script>
-    <script defer src="../../components/PrivacyWarning.js"></script>
+    <script defer src="../../components/ProgressIndicator.js"></script>
     <script defer src="../../components/DownloadLoginFile.js"></script>
+    <script defer src="../../components/FlippableHandler.js"></script>
     <script defer src="../../components/RecoveryWords.js"></script>
     <script defer src="../../components/RecoveryWordsInputField.js"></script>
     <script defer src="../../components/ValidateWords.js"></script>
@@ -63,10 +64,11 @@
     <link rel="stylesheet" bundle-toplevel href="../../components/PassphraseBox.css">
 
     <link rel="stylesheet" href="../../components/DownloadLoginFile.css">
+    <link rel="stylesheet" href="../../components/FlippableHandler.css">
+    <link rel="stylesheet" href="../../components/ProgressIndicator.css">
     <link rel="stylesheet" href="../../components/RecoveryWords.css">
     <link rel="stylesheet" href="../../components/RecoveryWordsInputField.css">
     <link rel="stylesheet" href="../../components/ValidateWords.css">
-    <link rel="stylesheet" href="../../components/PrivacyAgent.css">
     <link rel="stylesheet" href="Export.css">
 </head>
 <body class="loading">
@@ -77,14 +79,68 @@
     </div>
     <div id="app">
 
-        <div id="loading" class="page">
-            <div class="loading-animation"></div>
+        <div id="rotation-container">
+            <div id="create-backup" class="page nq-card">
+                <div class="page-body nq-card-body">
+                    <ul>
+                        <li class="checked">Set Password</li>
+                        <li class="checked">Save LoginFile</li>
+                        <li>Create Backup</li>
+                    </ul>
+                    <h2 class="nq-h2">Take 5 minutes for a backup</h2>
+                    <p class="nq-text-s">
+                        Write down 24 words to truly secure your account.<br/>
+                        There is no other password recovery.
+                    </p>
+                </div>
+                <div class="page-footer">
+                    <button data-i18n="export-create-backup" class="nq-button create-backup light-blue">Create backup</button>
+                    <a class="skip-words nq-text-s">
+                        <span data-i18n="passphrasebox-password-skip">Skip for now</span>
+                        <i class="nq-icon chevron-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div id="no-recovery" class="page nq-card flipped nq-blue-bg">
+                <div class="page-header nq-card-header">
+                    <div class="progress-indicator"></div>
+                    <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
+                    <h1 data-i18n="recovery-words-title" class="nq-h1">There is no password recovery</h1>
+                </div>
+
+                <div class="page-body nq-card-body">
+                    <p class=nq-orange>
+                        The Recovery Words are the ONLY way to<br/>
+                        restore your account in case you lose your<br/>
+                        LoginFile or password.
+                    </p>
+                    <div class="flex-grow"></div>
+                    <ul class="nq-list">
+                        <li class="nq-icon icon-offline">Keep your Words offline, don’t enter them anywhere but in the Nimiq Safe.</li>
+                        <li class="nq-icon icon-copy">Create a copy and store it in a safe place: family’s house, bank locker etc.</li>
+                        <li class="nq-icon icon-fire">Mind water and fire, use a sealed box to keep your Recovery Words safe.</li>
+                    </ul>
+                </div>
+
+                <div class="page-footer">
+                    <form class="passphrase-box"></form>
+                    <a class="skip-words nq-text-s">
+                        <span data-i18n="passphrasebox-password-skip">Skip for now</span>
+                        <i class="nq-icon chevron-right"></i>
+                    </a>
+                </div>
+            </div>
         </div>
 
         <button class="global-close nq-button-s display-none">
             <span class="nq-icon arrow-left"></span>
             <span id="global-close-text"></span>
         </button>
+
+        <div id="loading" class="page">
+            <div class="loading-animation"></div>
+        </div>
 
     </div>
 </body>

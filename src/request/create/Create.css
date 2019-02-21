@@ -25,12 +25,6 @@
     padding-top: 5.5rem;
 }
 
-.page-header .progress-indicator {
-    position: absolute;
-    left: 0;
-    top: 0;
-}
-
 .page-header .page-header-back-button {
     top: 5.5rem;
 }

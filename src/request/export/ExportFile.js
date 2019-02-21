@@ -61,11 +61,14 @@ class ExportFile extends Nimiq.Observable {
     }
 
     run() {
+        /*
         this._downloadKeyFilePassphraseBox.reset();
         window.location.hash = ExportFile.Pages.EXPORT_FILE;
         if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
             this._downloadKeyFilePassphraseBox.focus();
         }
+        */
+        this._resolve();
     }
 
     /**
@@ -92,7 +95,7 @@ class ExportFile extends Nimiq.Observable {
             return;
         }
 
-        this.setKey(key, this._request.keyInfo.encrypted);
+        this.setKey(key);
         this.fire(ExportFile.Events.KEY_CHANGED, {
             key,
             isProtected: this._request.keyInfo.encrypted,
@@ -104,15 +107,11 @@ class ExportFile extends Nimiq.Observable {
      * used to set the key if already decrypted elsewhere. This will disable the passphrase requirement.
      * Set to null to reenable passphrase requirement.
      * @param {Key | null} key
-     * @param {boolean} isProtected
      */
-    setKey(key, isProtected) { // eslint-disable-line no-unused-vars
+    setKey(key) {
         this._key = key;
-        if (key) {
-            this._downloadKeyfile.setEncryptedEntropy(new Uint8Array(0), key.deriveAddress('m/44\'/242\'/0\'/0\''));
-            /** @type {HTMLElement} */(document.getElementById(ExportFile.Pages.EXPORT_FILE))
-                .classList.add('show-download');
-        }
+        /** @type {HTMLElement} */(document.getElementById(ExportFile.Pages.EXPORT_FILE))
+            .classList.toggle('show-download', this._key !== null);
     }
 
     _finish() {
