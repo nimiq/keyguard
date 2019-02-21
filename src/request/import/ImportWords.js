@@ -135,7 +135,7 @@ class ImportWords {
                     'earth', 'sketch', 'motor', 'short',
                     'make', 'exact', 'diary', 'broccoli',
                     'frost', 'disorder', 'pave', 'wrestle',
-                    'broken', 'mercy', 'crime', 'car',
+                    'broken', 'mercy', 'crime', 'dismiss',
                 ],
                 [
                     'spare', 'ribbon', 'onion', 'drift',
