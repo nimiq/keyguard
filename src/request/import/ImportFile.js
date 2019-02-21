@@ -100,13 +100,11 @@ class ImportFile {
      * @returns {Promise<void>}
      */
     async _onPassphraseEntered(passphrase) {
-        const decryptAndstoreResult = await this._decryptAndStoreKey(passphrase);
-        if (!decryptAndstoreResult) {
+        const key = await this._decryptAndStoreKey(passphrase);
+        if (!key) {
             this.passphraseBox.onPassphraseIncorrect();
             return;
         }
-
-        const [key, newId] = decryptAndstoreResult;
 
         /** @type {{keyPath: string, address: Uint8Array}[]} */
         const addresses = [];
@@ -135,7 +133,7 @@ class ImportFile {
 
         /** @type {KeyguardRequest.KeyResult} */
         const result = [{
-            keyId: newId,
+            keyId: /** @type {number} */ (key.id),
             keyType: key.type,
             addresses,
         }];
@@ -145,7 +143,7 @@ class ImportFile {
 
     /**
      * @param {string} passphrase
-     * @returns {Promise<[Key, number]?>}
+     * @returns {Promise<Key?>}
      */
     async _decryptAndStoreKey(passphrase) {
         TopLevelApi.setLoading(true);
@@ -163,7 +161,8 @@ class ImportFile {
 
             const key = new Key(secret, this._flags.hasPin);
             const newId = await KeyStore.instance.put(key, encryptionKey);
-            return [key, newId];
+            key.id = newId;
+            return key;
         } catch (event) {
             console.error(event);
             TopLevelApi.setLoading(false);
