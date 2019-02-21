@@ -92,32 +92,32 @@ export class KeyguardClient {
 
     /* TOP-LEVEL REQUESTS */
 
-    public async create(request: CreateRequest): Promise<void> {
+    public create(request: CreateRequest) {
         this._redirectRequest<CreateRequest> (KeyguardCommand.CREATE, request);
     }
 
-    public async remove(request: RemoveKeyRequest): Promise<void> {
+    public remove(request: RemoveKeyRequest) {
         this._redirectRequest<RemoveKeyRequest>(KeyguardCommand.REMOVE, request);
     }
 
-    public async import(request: ImportRequest): Promise<void> {
-        return this._redirectRequest<ImportRequest>(KeyguardCommand.IMPORT, request);
+    public import(request: ImportRequest) {
+        this._redirectRequest<ImportRequest>(KeyguardCommand.IMPORT, request);
     }
 
-    public async export(request: SimpleRequest): Promise<void> {
-        return this._redirectRequest<SimpleRequest>(KeyguardCommand.EXPORT, request);
+    public export(request: SimpleRequest) {
+        this._redirectRequest<SimpleRequest>(KeyguardCommand.EXPORT, request);
     }
 
-    public async changePassphrase(request: SimpleRequest): Promise<void> {
-        return this._redirectRequest<SimpleRequest>(KeyguardCommand.CHANGE_PASSPHRASE, request);
+    public changePassphrase(request: SimpleRequest) {
+        this._redirectRequest<SimpleRequest>(KeyguardCommand.CHANGE_PASSPHRASE, request);
     }
 
-    public async signTransaction(request: SignTransactionRequest): Promise<void> {
-        return this._redirectRequest<SignTransactionRequest>(KeyguardCommand.SIGN_TRANSACTION, request);
+    public signTransaction(request: SignTransactionRequest) {
+        this._redirectRequest<SignTransactionRequest>(KeyguardCommand.SIGN_TRANSACTION, request);
     }
 
-    public async deriveAddress(request: DeriveAddressRequest): Promise<void> {
-        return this._redirectRequest<DeriveAddressRequest>(KeyguardCommand.DERIVE_ADDRESS, request);
+    public deriveAddress(request: DeriveAddressRequest) {
+        this._redirectRequest<DeriveAddressRequest>(KeyguardCommand.DERIVE_ADDRESS, request);
     }
 
     /* IFRAME REQUESTS */
@@ -157,7 +157,7 @@ export class KeyguardClient {
     private async _redirectRequest<T extends RedirectRequest>(
         command: KeyguardCommand,
         request: T,
-    ): Promise<void> {
+    ) {
         const internalRequest = KeyguardClient.publicToInternal(request);
         this._redirectBehavior.request(this._endpoint, command, [ internalRequest ]);
         // return value of redirect call is received in _onResolve()

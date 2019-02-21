@@ -56,32 +56,31 @@ const keyInfos = [
     ),
 ];
 
-const cookieKeyInfos = keyInfos.map(/** @param {KeyInfo} x */x => new KeyInfo(x.id, x.type, true, x.hasPin));
+const cookieKeyInfos = keyInfos.map(x => new KeyInfo(x.id, x.type, true, x.hasPin));
 
-const keyInfoObjects = keyInfos.map(/** @param {KeyInfo} x */x => 
-    ({
-        id: x.id,
-        type: x.type,
-        hasPin: x.hasPin
-    }));
+const keyInfoObjects = keyInfos.map(x => ({
+    id: x.id,
+    type: x.type,
+    hasPin: x.hasPin,
+}));
 
 const _purposeIdBuf = new Nimiq.SerialBuffer(4);
 _purposeIdBuf.writeUint32(Nimiq.Entropy.PURPOSE_ID);
 const _purposeIdArray = Array.from(_purposeIdBuf.subarray(0, 4));
 
 const keyRecords = () => [
-    Object.assign({}, {
+    {
         type: keyInfoObjects[0].type,
         hasPin: keyInfoObjects[0].hasPin,
         secret: encryptedKeys[0],
-        hash: hashes()[0]
-    }),
-    Object.assign({}, {
+        hash: hashes()[0],
+    },
+    {
         type: keyInfoObjects[1].type,
         hasPin: keyInfoObjects[1].hasPin,
         secret: new Uint8Array(_purposeIdArray.concat(Array.from(Dummy.keys[1]))),
-        hash: Dummy.hashes()[1]
-    }),
+        hash: Dummy.hashes()[1],
+    },
 ];
 
 /** @type {() => StoredKeyRecord[]} */
@@ -95,7 +94,7 @@ const deprecatedAccountInfos = [
     },
 ];
 
-const deprecatedAccountCookie = [
+const deprecatedAccountCookies = [
     {
         address: 'NQ71 CT4K 7R9R EHSB 7HY9 TSTP XNRQ L2RK 8U4U',
         type: 'high',
@@ -107,7 +106,7 @@ const deprecatedAccountRecords = [
     Object.assign({}, deprecatedAccountInfos[0], { encryptedKeyPair: encryptedKeys[0] }),
 ];
 
-const deprecatedAccount2KeyInfoObject = [{
+const deprecatedAccount2KeyInfoObjects = [{
     id: 1,
     type: Nimiq.Secret.Type.PRIVATE_KEY,
     hasPin: false,
@@ -120,7 +119,7 @@ const deprecatedAccount2KeyInfoObject = [{
 const keyInfoCookieEncoded = '101,202';
 
 /** @type {string} */
-const cookie = `k=${keyInfoCookieEncoded};accounts=${JSON.stringify(deprecatedAccountCookie)};some=thing;`;
+const cookie = `k=${keyInfoCookieEncoded};accounts=${JSON.stringify(deprecatedAccountCookies)};some=thing;`;
 
 const DUMMY_ACCOUNT_DATABASE_NAME = 'keyguard-dummy-account-database';
 const DUMMY_KEY_DATABASE_NAME = 'keyguard-dummy-key-database';
@@ -219,7 +218,7 @@ const Dummy = {
     encryptionPassword,
     encryptionPassword2,
     keyInfoObjects,
-    deprecatedAccount2KeyInfoObject,
+    deprecatedAccount2KeyInfoObjects,
     DUMMY_ACCOUNT_DATABASE_NAME,
     DUMMY_KEY_DATABASE_NAME,
     deprecatedAccountRecords

@@ -24,9 +24,7 @@ class IFrameApi {
      */
     async hasKeys(state) {
         const keyInfos = await this._getKeys();
-        return {
-            success: keyInfos.length > 0,
-        };
+        return { success: keyInfos.length > 0 };
     }
 
     /**
@@ -70,9 +68,7 @@ class IFrameApi {
             }
         }
         sessionStorage.removeItem(IFrameApi.SESSION_STORAGE_KEY_PREFIX + request.keyId);
-        return {
-            success: true,
-        };
+        return { success: true };
     }
 
     /**
@@ -96,9 +92,7 @@ class IFrameApi {
      */
     async hasLegacyAccounts(state) {
         const accounts = await this._getAccounts();
-        return {
-            success: accounts.length > 0,
-        };
+        return { success: accounts.length > 0 };
     }
 
     /**
