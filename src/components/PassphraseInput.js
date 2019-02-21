@@ -40,7 +40,7 @@ class PassphraseInput extends Nimiq.Observable {
                 <div class="input-wrapper">
                     <input class="password" type="password" placeholder="Enter password">
                 </div>
-                <svg class="nq-icon eye-button not-visible">
+                <svg class="nq-icon eye-button">
                     <use class="not-visible" xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-view-off"/>
                     <use class="is-visible"  xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-view"/>
                 </svg>
@@ -88,8 +88,7 @@ class PassphraseInput extends Nimiq.Observable {
             ? becomeVisible
             : this.$input.getAttribute('type') === 'password';
         this.$input.setAttribute('type', becomeVisible ? 'text' : 'password');
-        this.$eyeButton.classList.toggle('is-visible', becomeVisible);
-        this.$eyeButton.classList.toggle('not-visible', !becomeVisible);
+        this.$eyeButton.classList.toggle('visible', becomeVisible);
     }
 
     _onInputChanged() {

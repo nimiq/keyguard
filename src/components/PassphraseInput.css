@@ -47,7 +47,7 @@
     opacity: 1;
 }
 
-.passphrase-input .eye-button.not-visible .is-visible,
-.passphrase-input .eye-button.is-visible .not-visible {
+.passphrase-input .eye-button:not(.visible) .is-visible,
+.passphrase-input .eye-button.visible .not-visible {
     display: none;
 }

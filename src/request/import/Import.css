@@ -26,8 +26,7 @@
     transition: transform .3s, opacity .3s;
 }
 
-.page#unlock-account .nq-icon.lock-locked,
-.page#unlock-account .nq-icon.lock-unlocked {
+.page#unlock-account .lock {
     width: 100%;
     position: absolute;
     left: 0;
@@ -35,6 +34,11 @@
     height: 11.5rem;
     opacity: 0;
     transition: opacity .4s .3s;
+}
+
+.page#unlock-account .lock:not(.unlocked) .lock-unlocked,
+.page#unlock-account .lock.unlocked .lock-locked {
+    display: none;
 }
 
 .page#unlock-account .page-footer .passphrase-box {
@@ -58,8 +62,7 @@
     opacity: 1;
 }
 
-.page#unlock-account.animate .nq-icon.lock-locked,
-.page#unlock-account.animate .nq-icon.lock-unlocked {
+.page#unlock-account.animate .nq-icon.lock {
     opacity: 0.4;
 }
 
@@ -137,6 +140,11 @@ a#goto-create:focus {
 .page#set-password:not(.login-file-available) .login-file-available {
     display: none;
 }
+
+.page#set-password .login-file-icon {
+    margin: auto;
+}
+
 .page#set-password .page-footer {
     padding: 0.625rem;
 }
@@ -145,12 +153,4 @@ a#goto-create:focus {
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-}
-
-/* To be moved into @nimiq/style */
-.nq-icon.lock-locked {
-    background-image: url('data:image/svg+xml,<svg width="32" height="47" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M29.5 22.512V12.96C29.5 5.802 23.456 0 16 0S2.5 5.802 2.5 12.96v9.552c-4.26 6.43-2.966 14.887 3.041 19.868 6.007 4.982 14.911 4.982 20.918 0 6.008-4.981 7.302-13.438 3.041-19.868zM16 34.56c-2.209 0-4-1.72-4-3.84s1.791-3.84 4-3.84c2.21 0 4 1.72 4 3.84s-1.79 3.84-4 3.84zm8.027-17.653a.952.952 0 0 0 .473-.816V12.96c0-4.507-3.805-8.16-8.5-8.16-4.694 0-8.5 3.653-8.5 8.16v3.131c0 .332.179.641.473.816.294.175.661.192.971.045a16.437 16.437 0 0 1 14.112 0c.31.147.677.13.971-.045z" fill="%231F2348"/></svg>');
-}
-.nq-icon.lock-unlocked {
-    background-image: url('data:image/svg+xml,<svg width="33" height="47" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M30.5 12.96v9.552c3.93 5.944 3.165 13.69-1.859 18.818-5.024 5.129-13.03 6.337-19.451 2.935-6.421-3.401-9.625-10.548-7.783-17.363C3.248 20.087 9.667 15.336 17 15.36c2.449 0 4.864.545 7.056 1.592.31.147.677.13.971-.045a.952.952 0 0 0 .473-.816V12.96c0-4.507-3.805-8.16-8.5-8.16-4.694 0-8.5 3.653-8.5 8.16 0 1.325-1.12 2.4-2.5 2.4s-2.5-1.074-2.5-2.4C3.5 5.802 9.544 0 17 0s13.5 5.802 13.5 12.96zM13 30.72c0 2.12 1.79 3.84 4 3.84s4-1.72 4-3.84-1.79-3.84-4-3.84-4 1.72-4 3.84z" fill="%231F2348"/></svg>');
 }
