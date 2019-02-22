@@ -108,8 +108,8 @@ export class KeyguardClient {
 
     public on(
         command: KeyguardCommand,
-        resolve: (result: any, state?: any) => any,
-        reject: (...args: any[]) => any,
+        resolve: (result: RedirectResult, state?: any) => any,
+        reject: (error: Error) => any,
     ) {
         this._observable.on(`${command}-resolve`, resolve);
         this._observable.on(`${command}-reject`, reject);
