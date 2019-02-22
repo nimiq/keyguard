@@ -212,7 +212,7 @@ class ImportWords {
                     keyType: Nimiq.Secret.Type.PRIVATE_KEY,
                     addresses: [{
                         keyPath: Constants.LEGACY_DERIVATION_PATH,
-                        address: key.deriveAddress('').serialize(),
+                        address: key.deriveAddress(Constants.LEGACY_DERIVATION_PATH).serialize(),
                     }],
                 };
                 this._keyResults.push(result);
