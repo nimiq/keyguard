@@ -143,6 +143,10 @@ export class KeyguardClient {
         this._redirectRequest<DeriveAddressRequest>(KeyguardCommand.DERIVE_ADDRESS, request);
     }
 
+    public signMessage(request: SignMessageRequest) {
+        this._redirectRequest<SignMessageRequest>(KeyguardCommand.SIGN_MESSAGE, request);
+    }
+
     /* IFRAME REQUESTS */
 
     public async list(): Promise<ListResult> {
