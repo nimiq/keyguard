@@ -10,6 +10,7 @@ describe('IframeApi', () => {
 
     beforeEach(() => {
         spyOn(CookieJar, 'eat').and.callThrough();
+        spyOn(CookieJar, 'eatDeprecated').and.callThrough();
         spyOn(AccountStore.instance, 'list').and.callThrough();
         spyOn(KeyStore.instance, 'list').and.callThrough();
         spyOn(KeyStore.instance, 'migrateAccountsToKeys').and.callThrough();
@@ -21,10 +22,10 @@ describe('IframeApi', () => {
 
         const listedAccounts = await iframeApi.listLegacyAccounts(null);
 
-        expect(CookieJar.eat).toHaveBeenCalledWith(true);
+        expect(CookieJar.eatDeprecated).toHaveBeenCalled();
         expect(AccountStore.instance.list).not.toHaveBeenCalled();
         expect(KeyStore.instance.list).not.toHaveBeenCalled();
-        expect(listedAccounts).toEqual(Dummy.deprecatedAccount2KeyInfoObject);
+        expect(listedAccounts).toEqual(Dummy.deprecatedAccount2KeyInfoObjects);
     });
 
     it('can list key info from cookies on iOS', async () => {
@@ -32,7 +33,7 @@ describe('IframeApi', () => {
 
         const listedKeys = await iframeApi.list(null);
 
-        expect(CookieJar.eat).toHaveBeenCalledWith();
+        expect(CookieJar.eat).toHaveBeenCalled();
         expect(AccountStore.instance.list).not.toHaveBeenCalled();
         expect(KeyStore.instance.list).not.toHaveBeenCalled();
         expect(listedKeys).toEqual(Dummy.keyInfoObjects);
@@ -47,7 +48,7 @@ describe('IframeApi', () => {
         expect(CookieJar.eat).not.toHaveBeenCalled();
         expect(AccountStore.instance.list).toHaveBeenCalled();
         expect(KeyStore.instance.list).not.toHaveBeenCalled();
-        expect(listedAccounts).toEqual(Dummy.deprecatedAccount2KeyInfoObject);
+        expect(listedAccounts).toEqual(Dummy.deprecatedAccount2KeyInfoObjects);
 
         await Dummy.Utils.deleteDummyAccountStore();
     });
@@ -88,8 +89,12 @@ describe('IframeApi', () => {
         expect(KeyStore.instance.migrateAccountsToKeys).toHaveBeenCalled();
 
         // check that keys have been copied correctly
-        const key1 = await KeyStore.instance._get(Dummy.keyInfos[0].id);
-        expect(key1).toEqual(Dummy.keyRecords[0]);
+        const ids = (await KeyStore.instance.list()).map(record => record.id);
+        for (let id of ids) {
+            const keyRecord = await KeyStore.instance._get(id);
+            const expectedKeyRecord = /** @type {StoredKeyRecord} */(Dummy.storedKeyRecords().find(record => record.id === id));
+            expect(keyRecord).toEqual(expectedKeyRecord);
+        }
 
         await Promise.all([
             Dummy.Utils.deleteDummyAccountStore(),

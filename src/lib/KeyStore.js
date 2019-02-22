@@ -33,7 +33,7 @@ class KeyStore {
     }
 
     constructor() {
-        /** @type {?Promise<IDBDatabase>} */
+        /** @type {Promise<IDBDatabase>?} */
         this._dbPromise = null;
     }
 
@@ -56,6 +56,13 @@ class KeyStore {
                     // Version 1 is the first version of the database.
                     db.createObjectStore(KeyStore.DB_KEY_STORE_NAME, { keyPath: 'id' });
                 }
+
+                if (event.oldVersion < 2) {
+                    // Version 2 changes the key id calculation, thus we drop and recreate the whole database.
+                    // (Version 1 was only in use in testnet)
+                    db.deleteObjectStore(KeyStore.DB_KEY_STORE_NAME);
+                    db.createObjectStore(KeyStore.DB_KEY_STORE_NAME, { keyPath: 'id', autoIncrement: true });
+                }
             };
         });
 
@@ -63,12 +70,12 @@ class KeyStore {
     }
 
     /**
-     * @param {string} id
+     * @param {number} id
      * @param {Uint8Array} [passphrase]
-     * @returns {Promise<?Key>}
+     * @returns {Promise<Key?>}
      */
     async get(id, passphrase) {
-        /** @type {?KeyRecord} */
+        /** @type {KeyRecord?} */
         const keyRecord = await this._get(id);
         if (!keyRecord) {
             return null;
@@ -82,7 +89,7 @@ class KeyStore {
                 ? new Nimiq.PrivateKey(keyRecord.secret.subarray(4)) // The first 4 bytes are the purposeID
                 : new Nimiq.Entropy(keyRecord.secret.subarray(4));
 
-            return new Key(secret, keyRecord.hasPin);
+            return new Key(secret, keyRecord.hasPin, id);
         }
 
         if (!passphrase) {
@@ -90,22 +97,22 @@ class KeyStore {
         }
 
         const secret = await Nimiq.Secret.fromEncrypted(new Nimiq.SerialBuffer(keyRecord.secret), passphrase);
-        return new Key(secret, keyRecord.hasPin);
+        return new Key(secret, keyRecord.hasPin, id);
     }
 
     /**
-     * @param {string} id
-     * @returns {Promise<?KeyInfo>}
+     * @param {number} id
+     * @returns {Promise<KeyInfo?>}
      */
     async getInfo(id) {
-        /** @type {?KeyRecord} */
+        /** @type {StoredKeyRecord?} */
         const keyRecord = await this._get(id);
         return keyRecord ? KeyInfo.fromObject(keyRecord, KeyStore.isEncrypted(keyRecord)) : null;
     }
 
     /**
-     * @param {string} id
-     * @returns {Promise<?KeyRecord>}
+     * @param {number} id
+     * @returns {Promise<StoredKeyRecord?>}
      * @private
      */
     async _get(id) {
@@ -118,9 +125,11 @@ class KeyStore {
     /**
      * @param {Key} key
      * @param {Uint8Array} [passphrase]
-     * @returns {Promise<void>}
+     * @returns {Promise<number>}
      */
     async put(key, passphrase) {
+        const keys = await this._listRecords();
+
         /** @type {Nimiq.SerialBuffer} */
         let buffer;
         if (passphrase) {
@@ -139,18 +148,23 @@ class KeyStore {
         }
 
         const keyRecord = /** @type {KeyRecord} */ {
-            id: key.id,
             type: key.type,
             hasPin: key.hasPin,
             secret: buffer.subarray(0, buffer.byteLength),
+            hash: key.hash,
         };
+
+        const existingKey = keys.find(k => k.hash === key.hash);
+        if (existingKey) {
+            Object.assign(keyRecord, { id: existingKey.id });
+        }
 
         return this.putPlain(keyRecord);
     }
 
     /**
      * @param {KeyRecord} keyRecord
-     * @returns {Promise<void>}
+     * @returns {Promise<number>}
      */
     async putPlain(keyRecord) {
         if (keyRecord.secret.byteLength !== KeyStore.ENCRYPTED_SECRET_SIZE
@@ -161,11 +175,17 @@ class KeyStore {
         const db = await this.connect();
         const transaction = db.transaction([KeyStore.DB_KEY_STORE_NAME], 'readwrite');
         const request = transaction.objectStore(KeyStore.DB_KEY_STORE_NAME).put(keyRecord);
-        return KeyStore._requestToPromise(request, transaction);
+
+        const dbKey = await KeyStore._requestToPromise(request, transaction);
+
+        /** @type {number} */
+        const newId = (dbKey.valueOf());
+
+        return newId;
     }
 
     /**
-     * @param {string} id
+     * @param {number} id
      * @returns {Promise<void>}
      */
     async remove(id) {
@@ -179,12 +199,7 @@ class KeyStore {
      * @returns {Promise<KeyInfo[]>}
      */
     async list() {
-        const db = await this.connect();
-        const request = db.transaction([KeyStore.DB_KEY_STORE_NAME], 'readonly')
-            .objectStore(KeyStore.DB_KEY_STORE_NAME)
-            .openCursor();
-
-        const results = /** KeyRecord[] */ await KeyStore._readAllFromCursor(request);
+        const results = await this._listRecords();
         return results.map(keyRecord => KeyInfo.fromObject(keyRecord, KeyStore.isEncrypted(keyRecord)));
     }
 
@@ -211,7 +226,7 @@ class KeyStore {
      */
     async migrateAccountsToKeys() {
         const accounts = await AccountStore.instance.dangerousListPlain();
-        const keysRecords = /** @type {KeyRecord[]} */ (KeyStore.accounts2Keys(accounts));
+        const keysRecords = KeyStore._accountRecords2KeyRecords(accounts);
         await Promise.all(keysRecords.map(keyRecord => this.putPlain(keyRecord)));
 
         // FIXME Uncomment after/for testing (and also adapt KeyStore.spec.js)
@@ -226,52 +241,63 @@ class KeyStore {
         }
     }
 
-    // eslint-disable-next-line valid-jsdoc
     /**
-     * @param {(AccountInfo|AccountRecord)[]} accounts
-     * @param {boolean} [withAccount]
-     * @returns {KeyguardRequest.KeyInfoObject[]|KeyguardRequest.LegacyKeyInfoObject[]|KeyRecord[]}
+     * @param {AccountRecord[]} accounts
+     * @returns {KeyRecord[]}
      */
-    static accounts2Keys(accounts, withAccount) {
+    static _accountRecords2KeyRecords(accounts) {
         return accounts.map(account => {
             const address = Nimiq.Address.fromUserFriendlyAddress(account.userFriendlyAddress);
-            const legacyKeyId = Key.deriveId(address.serialize());
+            const legacyKeyHash = Key.deriveHash(address.serialize());
 
-            /** @type {KeyguardRequest.KeyInfoObject} */
-            const keyObject = {
-                id: legacyKeyId,
-                type: 1, // Nimiq.Secret.Type.PRIVATE_KEY
+            return {
+                hash: legacyKeyHash,
+                type: Nimiq.Secret.Type.PRIVATE_KEY,
                 hasPin: account.type === 'low',
+                secret: account.encryptedKeyPair,
+            };
+        });
+    }
+
+    /**
+     * @param {AccountInfo[]} accounts
+     * @returns {KeyguardRequest.LegacyKeyInfoObject[]}
+     */
+    static accountInfos2KeyInfos(accounts) {
+        return accounts.map((account, index) => {
+            const address = Nimiq.Address.fromUserFriendlyAddress(account.userFriendlyAddress);
+
+            /** @type {KeyguardRequest.LegacyKeyInfoObject} */
+            const legacyKeyObject = {
+                id: index + 1,
+                type: Nimiq.Secret.Type.PRIVATE_KEY,
+                hasPin: account.type === 'low',
+                legacyAccount: {
+                    label: account.label,
+                    address: address.serialize(),
+                },
             };
 
-            if (withAccount) {
-                /** @type {KeyguardRequest.LegacyKeyInfoObject} */
-                const legacyKeyObject = Object.assign({}, keyObject, {
-                    legacyAccount: {
-                        label: account.label,
-                        address: address.serialize(),
-                    },
-                });
-
-                return legacyKeyObject;
-            }
-
-            if (/** @type {AccountRecord} */ (account).encryptedKeyPair) {
-                /** @type {KeyRecord} */
-                const keyRecord = Object.assign({}, keyObject, {
-                    secret: /** @type {AccountRecord} */ (account).encryptedKeyPair,
-                });
-                return keyRecord;
-            }
-
-            return keyObject;
+            return legacyKeyObject;
         });
+    }
+
+    /**
+     * @returns {Promise<StoredKeyRecord[]>}
+     */
+    async _listRecords() {
+        const db = await this.connect();
+        const request = db.transaction([KeyStore.DB_KEY_STORE_NAME], 'readonly')
+            .objectStore(KeyStore.DB_KEY_STORE_NAME)
+            .openCursor();
+
+        return KeyStore._readAllFromCursor(request);
     }
 
     /**
      * @param {IDBRequest} request
      * @param {IDBTransaction} transaction
-     * @returns {Promise<*>}
+     * @returns {Promise<any>}
      * @private
      */
     static async _requestToPromise(request, transaction) {
@@ -298,12 +324,12 @@ class KeyStore {
 
     /**
      * @param {IDBRequest} request
-     * @returns {Promise<KeyRecord[]>}
+     * @returns {Promise<StoredKeyRecord[]>}
      * @private
      */
     static _readAllFromCursor(request) {
         return new Promise((resolve, reject) => {
-            /** @type {KeyRecord[]} */
+            /** @type {StoredKeyRecord[]} */
             const results = [];
             request.onsuccess = () => {
                 const cursor = request.result;
@@ -318,10 +344,10 @@ class KeyStore {
         });
     }
 }
-/** @type {?KeyStore} */
+/** @type {KeyStore?} */
 KeyStore._instance = null;
 
-KeyStore.DB_VERSION = 1;
+KeyStore.DB_VERSION = 2;
 KeyStore.DB_NAME = 'nimiq-keyguard';
 KeyStore.DB_KEY_STORE_NAME = 'keys';
 

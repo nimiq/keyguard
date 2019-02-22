@@ -8,7 +8,7 @@
 
 class DeriveAddress {
     /**
-     * @param {ParsedDeriveAddressRequest} request
+     * @param {Parsed<KeyguardRequest.DeriveAddressRequest>} request
      * @param {Function} resolve
      * @param {Function} reject
      */

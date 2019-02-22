@@ -6,7 +6,7 @@
 class DeriveAddressApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
      * @param {KeyguardRequest.DeriveAddressRequest} request
-     * @returns {Promise<ParsedDeriveAddressRequest>}
+     * @returns {Promise<Parsed<KeyguardRequest.DeriveAddressRequest>>}
      */
     async parseRequest(request) {
         if (!request) {

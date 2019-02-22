@@ -27,25 +27,23 @@ describe('KeyStore', () => {
             KeyStore.instance._get(Dummy.keyInfos[0].id),
             KeyStore.instance._get(Dummy.keyInfos[1].id),
         ]);
-        expect(key1).toEqual(Dummy.keyRecords[0]);
-        expect(key2).toEqual(Dummy.keyRecords[1]);
+        expect(key1).toEqual(Dummy.storedKeyRecords()[0]);
+        expect(key2).toEqual(Dummy.storedKeyRecords()[1]);
     });
 
     it('can get and decrypt keys', async () => {
-        const [key1, key2] = await Promise.all([
+        const keys = await Promise.all([
             KeyStore.instance.get(Dummy.keyInfos[0].id, Nimiq.BufferUtils.fromAscii(Dummy.encryptionPassword)),
             KeyStore.instance.get(Dummy.keyInfos[1].id),
         ]);
-        if (!key1 || !key2) throw new Error();
-        expect(key1.id).toEqual(Dummy.keyInfos[0].id);
-        expect(key1.type).toEqual(Dummy.keyInfos[0].type);
-        expect(key1.secret).toEqual(Dummy.secrets[0]);
-        expect(key1.hasPin).toEqual(Dummy.keyInfos[0].hasPin);
 
-        expect(key2.id).toEqual(Dummy.keyInfos[1].id);
-        expect(key2.type).toEqual(Dummy.keyInfos[1].type);
-        expect(key2.secret).toEqual(Dummy.secrets[1]);
-        expect(key2.hasPin).toEqual(Dummy.keyInfos[1].hasPin);
+        for (let [i, key] of keys.entries()) {
+            if (!key) throw new Error(`Key with id ${Dummy.keyInfos[i].id} not found!`);
+            expect(key.id).toEqual(Dummy.keyInfos[i].id);
+            expect(key.type).toEqual(Dummy.keyInfos[i].type);
+            expect(key.secret).toEqual(Dummy.secrets[i]);
+            expect(key.hasPin).toEqual(Dummy.keyInfos[i].hasPin);
+        }
     });
 
     it('can list keys', async () => {
@@ -83,11 +81,11 @@ describe('KeyStore', () => {
         expect(currentKeys.length).toBe(0);
 
         // add an encrypted key
-        const passphrase = Nimiq.BufferUtils.fromAscii(Dummy.encryptionPassword);
+        const password = Nimiq.BufferUtils.fromAscii(Dummy.encryptionPassword);
         await KeyStore.instance.put(new Key(
             Dummy.secrets[0],
             Dummy.keyInfos[0].hasPin,
-        ), passphrase);
+        ), password);
         currentKeys = await KeyStore.instance.list();
         expect(currentKeys.length).toBe(1);
 
@@ -101,7 +99,7 @@ describe('KeyStore', () => {
 
         // check that the keys have been stored correctly
         const [key1, key2] = await Promise.all([
-            KeyStore.instance.get(Dummy.keyInfos[0].id, passphrase),
+            KeyStore.instance.get(Dummy.keyInfos[0].id, password),
             KeyStore.instance.get(Dummy.keyInfos[1].id),
         ]);
         if (!key1 || !key2) throw new Error();
@@ -126,7 +124,7 @@ describe('KeyStore', () => {
 
         expect(cookieSet).toBe(false);
         const key1 = await KeyStore.instance._get(Dummy.keyInfos[0].id);
-        expect(key1).toEqual(Dummy.keyRecords[0]);
+        expect(key1).toEqual(Dummy.storedKeyRecords()[0]);
 
         // TODO: Expect Accounts DB to be deleted
 
@@ -157,11 +155,64 @@ describe('KeyStore', () => {
 
         expect(migrationCookieDeleted && accountsCookieDeleted).toBe(true);
         const key1 = await KeyStore.instance._get(Dummy.keyInfos[0].id);
-        expect(key1).toEqual(Dummy.keyRecords[0]);
+        expect(key1).toEqual(Dummy.storedKeyRecords()[0]);
 
         // TODO: Expect Accounts DB to not be deleted
 
         await Dummy.Utils.deleteDummyAccountStore();
+    });
+
+    it('doesn\'t store same key twice', async () => {
+        // first clear database
+        await Dummy.Utils.deleteDummyKeyStore();
+
+        const password1 = Nimiq.BufferUtils.fromAscii(Dummy.encryptionPassword);
+        const password2 = Nimiq.BufferUtils.fromAscii(Dummy.encryptionPassword2);
+
+        let currentKeys = await KeyStore.instance.list();
+        expect(currentKeys.length).toBe(0); // Just to be sure
+
+        // add key
+        await KeyStore.instance.put(new Key(Dummy.secrets[1]), password1);
+        currentKeys = await KeyStore.instance.list();
+        expect(currentKeys.length).toBe(1);
+
+        // add key again
+        await KeyStore.instance.put(new Key(Dummy.secrets[1]), password1);
+        currentKeys = await KeyStore.instance.list();
+        expect(currentKeys.length).toBe(1);
+
+        // add key again with different password
+        await KeyStore.instance.put(new Key(Dummy.secrets[1]), password2);
+        currentKeys = await KeyStore.instance.list();
+        expect(currentKeys.length).toBe(1);
+
+        // same for legacy keys
+        await KeyStore.instance.put(new Key(Dummy.secrets[0]), password1);
+        currentKeys = await KeyStore.instance.list();
+        expect(currentKeys.length).toBe(2);
+
+        // add key again
+        await KeyStore.instance.put(new Key(Dummy.secrets[0]), password1);
+        currentKeys = await KeyStore.instance.list();
+        expect(currentKeys.length).toBe(2);
+
+         // add key again with different password
+        await KeyStore.instance.put(new Key(Dummy.secrets[0]), password2);
+        currentKeys = await KeyStore.instance.list();
+        expect(currentKeys.length).toBe(2);
+    });
+
+    it('returns existing id when storing existing key', async () => {
+        // first clear database
+        await Dummy.Utils.deleteDummyKeyStore();
+
+        const password = Nimiq.BufferUtils.fromAscii(Dummy.encryptionPassword);
+
+        // add key
+        const id1 = await KeyStore.instance.put(new Key(Dummy.secrets[1]), password);
+        const id2 = await KeyStore.instance.put(new Key(Dummy.secrets[1]), password);
+        expect(id1).toBe(id2);
     });
 
     // TODO: can migrate accounts on iOS when migration cookie is set

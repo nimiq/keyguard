@@ -11,38 +11,40 @@ class CookieJar { // eslint-disable-line no-unused-vars
     }
 
     /**
-     * @param {boolean} [listDeprecatedAccounts] - @deprecated Only for database migration
-     * @returns {KeyInfo[] | AccountInfo[]}
+     * @returns {KeyInfo[]}
      */
-    static eat(listDeprecatedAccounts) {
-        // Legacy cookie
-        if (listDeprecatedAccounts) {
-            const match = document.cookie.match(new RegExp('accounts=([^;]+)'));
-            if (match && match[1]) {
-                const decoded = decodeURIComponent(match[1]);
-                const cookieAccounts = JSON.parse(decoded);
-
-                // Map from cookie format to AccountInfo format
-                return cookieAccounts.map(
-                    /**
-                     * @param {any} acc
-                     * @returns {AccountInfo}
-                     */
-                    acc => ({
-                        userFriendlyAddress: acc.address,
-                        type: acc.type,
-                        label: acc.label,
-                    }),
-                );
-            }
-            return [];
-        }
-
+    static eat() {
         const match = document.cookie.match(new RegExp('k=([^;]+)'));
         if (match && match[1]) {
             return this._decodeCookie(match[1]);
         }
 
+        return [];
+    }
+
+    /**
+     * @deprecated Only for database migration
+     * @returns {AccountInfo[]}
+     */
+    static eatDeprecated() {
+        const match = document.cookie.match(new RegExp('accounts=([^;]+)'));
+        if (match && match[1]) {
+            const decoded = decodeURIComponent(match[1]);
+            const cookieAccounts = JSON.parse(decoded);
+
+            // Map from cookie format to AccountInfo format
+            return cookieAccounts.map(
+                /**
+                 * @param {any} acc
+                 * @returns {AccountInfo}
+                 */
+                acc => ({
+                    userFriendlyAddress: acc.address,
+                    type: acc.type,
+                    label: acc.label,
+                }),
+            );
+        }
         return [];
     }
 
@@ -55,7 +57,7 @@ class CookieJar { // eslint-disable-line no-unused-vars
             keyInfo => `${keyInfo.type}`
                      + `${keyInfo.hasPin ? 1 : 0}`
                      + `${keyInfo.id}`,
-        ).join('');
+        ).join(',');
     }
 
     /**
@@ -65,15 +67,12 @@ class CookieJar { // eslint-disable-line no-unused-vars
     static _decodeCookie(str) {
         if (!str) return [];
 
-        if (str.length % 14 !== 0) throw new Error('Malformed cookie');
-
-        const keys = str.match(/.{14}/g);
-        if (!keys) return [];
+        const keys = str.split(',');
 
         return keys.map(key => {
             const type = /** @type {Nimiq.Secret.Type} */ (parseInt(key[0], 10));
             const hasPin = key[1] === '1';
-            const id = key.substr(2);
+            const id = parseInt(key.substr(2), 10);
             return new KeyInfo(id, type, true, hasPin);
             // Cookies are only eaten during IframeApi.list(), in which the KeyInfo is
             // converted into a KeyguardRequest.KeyInfoObject, loosing the 'encrypted' status flag.

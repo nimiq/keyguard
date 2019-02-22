@@ -22,7 +22,7 @@ class SignTransactionApi extends TopLevelApi {
 
     /**
      * @param {KeyguardRequest.SignTransactionRequest} request
-     * @returns {Promise<ParsedSignTransactionRequest>}
+     * @returns {Promise<Parsed<KeyguardRequest.SignTransactionRequest>>}
      */
     async parseRequest(request) {
         if (!request) {
@@ -52,7 +52,7 @@ class SignTransactionApi extends TopLevelApi {
     }
 
     /**
-     * @param {ParsedSignTransactionRequest} parsedRequest
+     * @param {Parsed<KeyguardRequest.SignTransactionRequest>} parsedRequest
      */
     async onBeforeRun(parsedRequest) {
         if (parsedRequest.layout === SignTransactionApi.Layouts.CHECKOUT) {

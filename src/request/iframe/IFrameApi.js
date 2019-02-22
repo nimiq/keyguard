@@ -20,21 +20,20 @@ class IFrameApi {
 
     /**
      * @param {RpcState?} state
-     * @returns {Promise<boolean>}
+     * @returns {Promise<KeyguardRequest.SimpleResult>}
      */
     async hasKeys(state) {
         const keyInfos = await this._getKeys();
-        return keyInfos.length > 0;
+        return { success: keyInfos.length > 0 };
     }
 
     /**
      * @param {RpcState?} state
-     * @param {string} keyId
-     * @param {string[]} paths
+     * @param {KeyguardRequest.DeriveAddressesRequest} request
      * @returns {Promise<Nimiq.SerialBuffer[]>}
      */
-    async deriveAddresses(state, keyId, paths) {
-        const storedEntropy = sessionStorage.getItem(IFrameApi.SESSION_STORAGE_KEY_PREFIX + keyId);
+    async deriveAddresses(state, request) {
+        const storedEntropy = sessionStorage.getItem(IFrameApi.SESSION_STORAGE_KEY_PREFIX + request.keyId);
         if (!storedEntropy) throw new Errors.KeyNotFoundError();
 
         await loadNimiq();
@@ -42,35 +41,34 @@ class IFrameApi {
         const entropy = new Nimiq.Entropy(Nimiq.BufferUtils.fromBase64(storedEntropy));
         const master = entropy.toExtendedPrivateKey();
 
-        return paths.map(path => master.derivePath(path).toAddress().serialize());
+        return request.paths.map(path => master.derivePath(path).toAddress().serialize());
     }
 
     /**
      * @param {RpcState?} state
-     * @param {string} keyId
-     * @param {boolean} shouldBeRemoved
-     * @returns {boolean}
+     * @param {KeyguardRequest.ReleaseKeyRequest} request
+     * @returns {KeyguardRequest.SimpleResult}
      */
-    releaseKey(state, keyId, shouldBeRemoved) {
-        if (shouldBeRemoved && sessionStorage.getItem(IFrameApi.SESSION_STORAGE_KEY_PREFIX + keyId)) {
+    releaseKey(state, request) {
+        if (request.shouldBeRemoved && sessionStorage.getItem(IFrameApi.SESSION_STORAGE_KEY_PREFIX + request.keyId)) {
             if (BrowserDetection.isIOS() || BrowserDetection.isSafari()) {
                 const match = document.cookie.match(new RegExp('removeKey=([^;]+)'));
-                /** @type {string[]} */
+                /** @type {number[]} */
                 let removeKeyArray;
                 if (match && match[1]) {
                     removeKeyArray = JSON.parse(match[1]);
                 } else {
                     removeKeyArray = [];
                 }
-                removeKeyArray.push(keyId);
+                removeKeyArray.push(request.keyId);
                 document.cookie = `removeKey=${JSON.stringify(removeKeyArray)};max-age=31536000;`
                                 + 'Secure;SameSite=strict;Path=/';
             } else {
-                KeyStore.instance.remove(keyId);
+                KeyStore.instance.remove(request.keyId);
             }
         }
-        sessionStorage.removeItem(IFrameApi.SESSION_STORAGE_KEY_PREFIX + keyId);
-        return true;
+        sessionStorage.removeItem(IFrameApi.SESSION_STORAGE_KEY_PREFIX + request.keyId);
+        return { success: true };
     }
 
     /**
@@ -84,22 +82,22 @@ class IFrameApi {
 
         // Convert to KeyInfoObjects
         await loadNimiq();
-        return /** @type {KeyguardRequest.LegacyKeyInfoObject[]} */ (KeyStore.accounts2Keys(accounts, true));
+        return KeyStore.accountInfos2KeyInfos(accounts);
     }
 
     /**
      * @param {RpcState?} state
-     * @returns {Promise<boolean>}
+     * @returns {Promise<KeyguardRequest.SimpleResult>}
      * @deprecated
      */
     async hasLegacyAccounts(state) {
         const accounts = await this._getAccounts();
-        return accounts.length > 0;
+        return { success: accounts.length > 0 };
     }
 
     /**
      * @param {RpcState?} state
-     * @returns {Promise<boolean>}
+     * @returns {Promise<KeyguardRequest.SimpleResult>}
      * @deprecated
      */
     async migrateAccountsToKeys(state) {
@@ -113,14 +111,14 @@ class IFrameApi {
         if (BrowserDetection.isIOS() || BrowserDetection.isSafari()) {
             // Set migrate flag cookie
             document.cookie = 'migrate=1;max-age=31536000;Secure;SameSite=strict;Path=/';
-            return true;
+            return { success: true };
         }
 
         // Requires Nimiq lib to be loaded, to derive keyIds from legacy accounts' user-friendly addresses
         await loadNimiq();
 
         await KeyStore.instance.migrateAccountsToKeys();
-        return true;
+        return { success: true };
     }
 
     /**
@@ -128,7 +126,7 @@ class IFrameApi {
      */
     async _getAccounts() {
         if (BrowserDetection.isIOS() || BrowserDetection.isSafari()) {
-            return /** @type {AccountInfo[]} */ (CookieJar.eat(true));
+            return CookieJar.eatDeprecated();
         }
 
         return AccountStore.instance.list();
@@ -139,7 +137,7 @@ class IFrameApi {
      */
     async _getKeys() {
         if (BrowserDetection.isIOS() || BrowserDetection.isSafari()) {
-            return /** @type {KeyInfo[]} */ (CookieJar.eat());
+            return CookieJar.eat();
         }
 
         return KeyStore.instance.list();

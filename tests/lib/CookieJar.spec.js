@@ -13,14 +13,15 @@ describe('CookieJar', () => {
 
     it('can be filled with key info', () => {
         spyOnProperty(document, 'cookie', 'set').and.callFake((/** @type {string} */ cookie) => {
-            expect(cookie.includes(`k=${Dummy.keyInfoCookieEncoded}`)).toBe(true);
+            const cookieValue = cookie.split(';')[0];
+            expect(cookieValue).toEqual(`k=${Dummy.keyInfoCookieEncoded}`);
         });
         CookieJar.fill(Dummy.keyInfos);
     });
 
     it('can be eaten from', () => {
         spyOnProperty(document, 'cookie', 'get').and.returnValue(Dummy.cookie);
-        const deprecatedAccountInfo = CookieJar.eat(/*listDeprecatedAccounts*/ true);
+        const deprecatedAccountInfo = CookieJar.eatDeprecated();
         expect(deprecatedAccountInfo).toEqual(Dummy.deprecatedAccountInfos);
         const keyInfo = CookieJar.eat();
         expect(keyInfo).toEqual(Dummy.cookieKeyInfos);

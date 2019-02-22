@@ -5,17 +5,19 @@ class Key {
      * @param {Uint8Array} input
      * @returns {string}
      */
-    static deriveId(input) {
-        return Nimiq.BufferUtils.toHex(Nimiq.Hash.blake2b(input).subarray(0, 6));
+    static deriveHash(input) {
+        return Nimiq.BufferUtils.toHex(Nimiq.Hash.blake2b(input).subarray(0, 32));
     }
 
     /**
      * @param {Nimiq.Entropy|Nimiq.PrivateKey} secret
      * @param {boolean} [hasPin]
+     * @param {number?} [id]
      */
-    constructor(secret, hasPin = false) {
+    constructor(secret, hasPin = false, id = null) {
         this._secret = secret;
         this._hasPin = hasPin;
+        this._id = id;
     }
 
     /**
@@ -93,6 +95,20 @@ class Key {
     }
 
     /**
+     * @param {number?} id
+     */
+    set id(id) {
+        this._id = id;
+    }
+
+    /**
+     * @type {number?}
+     */
+    get id() {
+        return this._id;
+    }
+
+    /**
      * @type {Nimiq.Entropy|Nimiq.PrivateKey}
      */
     get secret() {
@@ -121,11 +137,11 @@ class Key {
     /**
      * @type {string}
      */
-    get id() {
+    get hash() {
         const input = this._secret instanceof Nimiq.Entropy
             ? this._secret.serialize()
             : Nimiq.PublicKey.derive(this._secret).toAddress().serialize();
-        return Key.deriveId(input);
+        return Key.deriveHash(input);
     }
 }
 

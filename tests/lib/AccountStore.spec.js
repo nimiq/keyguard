@@ -1,5 +1,6 @@
 /* global Dummy */
 /* global AccountStore */
+
 describe('AccountStore', () => {
     beforeEach(async () => Dummy.Utils.createDummyAccountStore());
     afterEach(async () => Dummy.Utils.deleteDummyAccountStore());

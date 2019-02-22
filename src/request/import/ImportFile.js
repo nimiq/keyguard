@@ -131,9 +131,9 @@ class ImportFile {
             return;
         }
 
-        /** @type {KeyguardRequest.KeyResult[]} */
+        /** @type {KeyguardRequest.KeyResult} */
         const result = [{
-            keyId: key.id,
+            keyId: /** @type {number} */ (key.id),
             keyType: key.type,
             addresses,
         }];
@@ -160,7 +160,8 @@ class ImportFile {
             (this.$unlockAccountPage.querySelector('.lock-locked')).classList.replace('lock-locked', 'lock-unlocked');
 
             const key = new Key(secret, this._flags.hasPin);
-            await KeyStore.instance.put(key, encryptionKey);
+            const newId = await KeyStore.instance.put(key, encryptionKey);
+            key.id = newId;
             return key;
         } catch (event) {
             console.error(event);

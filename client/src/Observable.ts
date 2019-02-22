@@ -6,13 +6,13 @@ export default class Observable {
         return '*';
     }
 
-    protected _listeners: Map<string, Array<() => void>>;
+    protected _listeners: Map<string, Array<(...args: any) => any>>;
 
     constructor() {
         this._listeners = new Map();
     }
 
-    public on(type: string, callback: () => void): number {
+    public on<T>(type: string, callback: (arg: T) => any): number {
         if (!this._listeners.has(type)) {
             this._listeners.set(type, [callback]);
             return 0;

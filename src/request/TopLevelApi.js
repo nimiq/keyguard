@@ -64,7 +64,7 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
      * Method to be called by the Keyguard client via RPC
      *
      * @param {RpcState?} state
-     * @param {KeyguardRequest.Request} request
+     * @param {unknown} request
      */
     async request(state, request) {
         /**
@@ -88,7 +88,7 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
                 const match = document.cookie.match(new RegExp('removeKey=([^;]+)'));
                 if (match && match[1]) {
                     try {
-                        /** @type {string[]} */
+                        /** @type {number[]} */
                         const removeKeyArray = JSON.parse(match[1]);
                         removeKeyArray.forEach(keyId => {
                             KeyStore.instance.remove(keyId);
@@ -119,8 +119,8 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
              * Import or Create (the only ones which don't have the keyInfo property)
              * or any request which has the keyInfo property and the encrypted flag set.
              */
-            if (!(/** @type {ParsedSimpleRequest} */(parsedRequest).keyInfo)
-                || /** @type {ParsedSimpleRequest} */(parsedRequest).keyInfo.encrypted) {
+            if (!(/** @type {any} */(parsedRequest).keyInfo)
+                || /** @type {any} */(parsedRequest).keyInfo.encrypted) {
                 Nimiq.CryptoWorker.getInstanceAsync();
             }
 
@@ -159,9 +159,10 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
 
     /**
      * Overwritten by each request's API class
+     * Note: There is a bug with typescript not parsing 'template {KeyguardRequest.RedirectRequest} T', so we use any.
      *
-     * @param {KeyguardRequest.Request} request
-     * @returns {Promise<ParsedRequest>}
+     * @param {any} request
+     * @returns {Promise<Parsed<any>>}
      * @abstract
      */
     async parseRequest(request) { // eslint-disable-line no-unused-vars
@@ -175,8 +176,8 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
 
     /**
      * Can be overwritten by a request's API class to excute code before the handler's run() is called
-     *
-     * @param {ParsedRequest} parsedRequest
+     * Note: There is a bug with typescript not parsing 'template {KeyguardRequest.RedirectRequest} T', so we use any.
+     * @param {Parsed<any>} parsedRequest
      */
     async onBeforeRun(parsedRequest) { // eslint-disable-line no-unused-vars
         // noop

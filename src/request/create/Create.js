@@ -97,13 +97,13 @@ class Create {
         TopLevelApi.setLoading(true);
         const key = new Key(this._selectedEntropy);
         const password = this._password.length > 0 ? Utf8Tools.stringToUtf8ByteArray(this._password) : undefined;
-        await KeyStore.instance.put(key, password);
+        const newId = await KeyStore.instance.put(key, password);
 
         const keyPath = request.defaultKeyPath;
 
-        /** @type {KeyguardRequest.KeyResult[]} */
+        /** @type {KeyguardRequest.KeyResult} */
         const result = [{
-            keyId: key.id,
+            keyId: newId,
             keyType: key.type,
             addresses: [{
                 address: key.deriveAddress(keyPath).serialize(),
