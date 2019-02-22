@@ -72,8 +72,6 @@ const TRANSLATIONS = {
         'sign-tx-cancel-payment': 'Cancel payment',
 
         'sign-msg-heading': 'Sign Message',
-        'sign-msg-text': 'Please enter your passphrase to sign the following message:',
-        'sign-msg-sign-with': 'Sign with',
 
         'passphrasebox-enter-passphrase': 'Enter your password',
         'passphrasebox-protect-keyfile': 'Protect your keyfile with a password',
@@ -216,8 +214,6 @@ const TRANSLATIONS = {
         'sign-tx-cancel-payment': 'Zahlung abbrechen',
 
         'sign-msg-heading': 'Nachricht signieren',
-        'sign-msg-text': 'Bitte gib deine Passphrase ein, um die folgende Nachricht zu signieren:',
-        'sign-msg-sign-with': 'Signieren mit',
 
         'passphrasebox-enter-passphrase': 'Gib dein Passwort ein',
         'passphrasebox-protect-keyfile': 'Sichere dein KeyFile mit einem Passwort',
