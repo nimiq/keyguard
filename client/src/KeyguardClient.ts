@@ -18,6 +18,7 @@ import {
     RemoveKeyRequest,
     ReleaseKeyRequest,
     SignTransactionRequest,
+    SignMessageRequest,
     SimpleRequest,
     IFrameRequest,
     Request,
