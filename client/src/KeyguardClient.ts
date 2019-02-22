@@ -55,9 +55,6 @@ export class KeyguardClient {
         if (object && object.keyId) {
             object.keyId = KeyguardClient.parseId(object.keyId);
         }
-        if (object && object.id) {
-            object.id = KeyguardClient.parseId(object.id);
-        }
         return object;
     }
 
@@ -69,6 +66,7 @@ export class KeyguardClient {
         if (result && result.keyId) {
             result.keyId = `K${result.keyId}`;
         }
+        // For ListResult and LegacyListResult
         if (result && result.id) {
             result.id = `K${result.id}`;
         }
