@@ -22,6 +22,7 @@ export type DeriveAddressesRequest = PublicToInternal<Public.DeriveAddressesRequ
 export type RemoveKeyRequest = PublicToInternal<Public.RemoveKeyRequest>;
 export type ReleaseKeyRequest = PublicToInternal<Public.ReleaseKeyRequest>;
 export type SimpleRequest = PublicToInternal<Public.SimpleRequest>;
+export type SignMessageRequest = PublicToInternal<Public.SignMessageRequest>;
 export type SignTransactionRequest = PublicToInternal<Public.SignTransactionRequest>;
 
 export type IFrameRequest = PublicToInternal<Public.IFrameRequest>;

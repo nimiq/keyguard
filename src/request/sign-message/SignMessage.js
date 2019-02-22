@@ -10,7 +10,7 @@
 
 class SignMessage {
     /**
-     * @param {ParsedSignMessageRequest} request
+     * @param {Parsed<KeyguardRequest.SignMessageRequest>} request
      * @param {Function} resolve
      * @param {Function} reject
      */
@@ -67,7 +67,7 @@ class SignMessage {
     }
 
     /**
-     * @param {ParsedSignMessageRequest} request
+     * @param {Parsed<KeyguardRequest.SignMessageRequest>} request
      * @param {Function} resolve
      * @param {Function} reject
      * @param {string} [passphrase]
@@ -103,7 +103,7 @@ class SignMessage {
         // Validate that derived address is the same as the request's 'signer' address
         const derivedAddress = publicKey.toAddress();
         if (!derivedAddress.equals(request.signer)) {
-            reject(new Errors.KeyguardError('Provided keyPath does not refer to provided signer address'));
+            reject(new Errors.KeyguardError('Provided keyPath does derive to provided signer address'));
             return;
         }
 
