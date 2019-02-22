@@ -31,8 +31,8 @@ class ImportWords {
         /** @type {{entropy: Nimiq.Entropy?, privateKey: Nimiq.PrivateKey?}} */
         this._secrets = { entropy: null, privateKey: null };
         // eslint-disable-next-line max-len
-        /** @type {{entropy: Partial<KeyguardRequest.SingleKeyResult>, privateKey: Partial<KeyguardRequest.SingleKeyResult>}} */
-        this._keyResults = { entropy: {}, privateKey: {} };
+        /** @type {KeyguardRequest.KeyResult} */
+        this._keyResults = [];
         /** @type {Nimiq.SerialBuffer?} */
         this._encryptedSecret = null;
 
@@ -68,8 +68,7 @@ class ImportWords {
         });
         this._recoveryWords.on(RecoveryWords.Events.INCOMPLETE, () => {
             this._secrets = { entropy: null, privateKey: null };
-            this._keyResults.entropy = {};
-            this._keyResults.privateKey = {};
+            this._keyResults = [];
         });
         this._recoveryWords.on(RecoveryWords.Events.INVALID, () => $words.classList.add('invalid-words'));
         $words.querySelectorAll('input').forEach(
@@ -84,11 +83,12 @@ class ImportWords {
 
         this._passwordSetter.on(PassphraseSetterBox.Events.ENTERED, () => {
             let colorClass = '';
-            if (this._keyResults.entropy.addresses) {
+            if (this._secrets.entropy) {
+                const key = new Key(this._secrets.entropy, false);
                 const color = Iqons.getBackgroundColorIndex(
                     new Nimiq.Address(
                         // use color of first address as loginFile color
-                        this._keyResults.entropy.addresses[0].address,
+                        key.deriveAddress('m/44\'/242\'/0\'/0\'').serialize(),
                     ).toUserFriendlyAddress(),
                 );
                 const colorString = LoginFile.CONFIG[color].name;
@@ -105,10 +105,10 @@ class ImportWords {
             }
 
             // Prepare LoginFile for download
-            /** @type {KeyguardRequest.SingleKeyResult} */
-            const entropyResult = (this._keyResults.entropy);
+
+            const key = new Key(/** @type {Nimiq.Entropy} */(this._secrets.entropy), false);
             const firstAddress = new Nimiq.Address(
-                entropyResult.addresses[0].address,
+                key.deriveAddress('m/44\'/242\'/0\'/0\'').serialize(),
             );
             downloadLoginFile.setEncryptedEntropy(
                 /** @type {Nimiq.SerialBuffer} */ (this._encryptedSecret),
@@ -180,7 +180,17 @@ class ImportWords {
         try {
             if (this._secrets.entropy) {
                 const key = new Key(this._secrets.entropy, false);
-                this._keyResults.entropy.keyId = await KeyStore.instance.put(key, encryptionKey || undefined);
+                /** @type {{keyPath: string, address: Uint8Array}[]} */
+                const addresses = this._request.requestedKeyPaths.map(keyPath => ({
+                    keyPath,
+                    address: key.deriveAddress(keyPath).serialize(),
+                }));
+                this._keyResults.push({
+                    keyId: await KeyStore.instance.put(key, encryptionKey || undefined),
+                    keyType: Nimiq.Secret.Type.ENTROPY,
+                    addresses,
+                });
+                // this._keyResults.entropy.keyId = await KeyStore.instance.put(key, encryptionKey || undefined);
                 const secretString = Nimiq.BufferUtils.toBase64(key.secret.serialize());
                 sessionStorage.setItem(ImportApi.SESSION_STORAGE_KEY_PREFIX + key.id, secretString);
 
@@ -196,7 +206,14 @@ class ImportWords {
             }
             if (this._secrets.privateKey) {
                 const key = new Key(this._secrets.privateKey, false);
-                this._keyResults.privateKey.keyId = await KeyStore.instance.put(key, encryptionKey || undefined);
+                this._keyResults.push({
+                    keyId: await KeyStore.instance.put(key, encryptionKey || undefined),
+                    keyType: Nimiq.Secret.Type.PRIVATE_KEY,
+                    addresses: [{
+                        keyPath: Constants.LEGACY_DERIVATION_PATH,
+                        address: key.deriveAddress('').serialize(),
+                    }],
+                });
             } else {
                 TopLevelApi.setLoading(false);
             }
@@ -214,23 +231,12 @@ class ImportWords {
      */
     _onRecoveryWordsComplete(mnemonic, mnemonicType) {
         this._secrets = { entropy: null, privateKey: null };
-        this._keyResults.entropy = {};
-        this._keyResults.privateKey = {};
+        this._keyResults = [];
 
         if (mnemonicType === Nimiq.MnemonicUtils.MnemonicType.BIP39
             || mnemonicType === Nimiq.MnemonicUtils.MnemonicType.UNKNOWN) {
             this._fileAvailable = true;
             this._secrets.entropy = Nimiq.MnemonicUtils.mnemonicToEntropy(mnemonic);
-            const key = new Key(this._secrets.entropy, false);
-            /** @type {{keyPath: string, address: Uint8Array}[]} */
-            const addresses = this._request.requestedKeyPaths.map(keyPath => ({
-                keyPath,
-                address: key.deriveAddress(keyPath).serialize(),
-            }));
-            this._keyResults.entropy = {
-                keyType: Nimiq.Secret.Type.ENTROPY,
-                addresses,
-            };
         }
 
         if (mnemonicType === Nimiq.MnemonicUtils.MnemonicType.LEGACY
@@ -238,17 +244,9 @@ class ImportWords {
             this._fileAvailable = false;
             const entropy = Nimiq.MnemonicUtils.legacyMnemonicToEntropy(mnemonic);
             this._secrets.privateKey = new Nimiq.PrivateKey(entropy.serialize());
-            const key = new Key(this._secrets.privateKey, false);
-            this._keyResults.privateKey = {
-                keyType: Nimiq.Secret.Type.PRIVATE_KEY,
-                addresses: [{
-                    keyPath: Constants.LEGACY_DERIVATION_PATH,
-                    address: key.deriveAddress('').serialize(),
-                }],
-            };
         }
 
-        if (!this._keyResults.entropy.addresses && !this._keyResults.privateKey.addresses) {
+        if (!this._secrets.entropy && !this._secrets.privateKey) {
             // no mnemonicType was matched.
             this._reject(new Errors.KeyguardError('Invalid mnemonic type'));
             return;
