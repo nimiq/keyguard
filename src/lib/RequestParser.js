@@ -171,10 +171,9 @@ class RequestParser { // eslint-disable-line no-unused-vars
     parseMessage(message) {
         if (typeof message === 'string') message = Utf8Tools.stringToUtf8ByteArray(message);
         if (!(message instanceof Uint8Array)) {
-            throw new Errors.InvalidRequestError('message must be a String or Uint8Array');
+            throw new Errors.InvalidRequestError('message must be a string or Uint8Array');
         }
-        if (message.length < 255) return message;
-        throw new Errors.InvalidRequestError('message must not exceed 255 bytes');
+        return message;
     }
 
     /**

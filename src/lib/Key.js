@@ -49,16 +49,12 @@ class Key {
 
     /**
      * @param {string} path
-     * @param {Uint8Array} message - A byte array (max 255 bytes)
+     * @param {Uint8Array} message - A byte array
      * @returns {{signature: Nimiq.Signature, data: Uint8Array}}
      */
     signMessage(path, message) {
         const msgBytes = new Nimiq.SerialBuffer(message);
-        const msgLength = msgBytes.length;
-
-        if (msgLength > 255) {
-            throw new Error('Message must not exceed 255 bytes');
-        }
+        const msgLength = msgBytes.byteLength;
 
         /**
          * Adding a prefix to the message makes the calculated signature recognisable as
@@ -66,16 +62,11 @@ class Key {
          * sign arbitrary data (e.g. a transaction) and use the signature to impersonate
          * the victim. (https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sign)
          */
-        const dataLength = 1 // prefixBytes length
-            + Key.MSG_PREFIX_LENGTH
-            + 1 // msgBytes length
-            + msgLength;
+        const dataLength = Key.MSG_PREFIX_LENGTH + msgLength;
 
         // Construct buffer
         const data = new Nimiq.SerialBuffer(dataLength);
-        data.writeUint8(Key.MSG_PREFIX_LENGTH);
         data.write(new Nimiq.SerialBuffer(Nimiq.BufferUtils.fromAscii(Key.MSG_PREFIX)));
-        data.writeUint8(msgLength);
         data.write(msgBytes);
 
         const signature = this.sign(path, data);
