@@ -46,7 +46,7 @@ class SignMessage {
             hideInput: !request.keyInfo.encrypted,
             buttonI18nTag: 'passphrasebox-sign-msg',
             minLength: request.keyInfo.hasPin ? 6 : undefined,
-            // hideCancel: true,
+            hideCancel: true,
         });
 
         this._passphraseBox.on(

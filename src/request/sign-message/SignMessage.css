@@ -1,12 +1,16 @@
 .page#sign-message .page-body {
-
+    display: flex;
+    flex-direction: column;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-bottom: 0;
 }
 
 .account {
     display: flex;
     flex-direction: row;
     align-items: center;
-    margin: 2rem 3rem;
+    padding: 3rem 2rem;
 }
 
 .account .identicon {
@@ -22,10 +26,19 @@
     justify-content: space-between;
     flex-grow: 1;
     font-size: 2rem;
+    max-width: calc(100% - 5.625rem - 2rem); /* .identicon width and margin-right */
 }
 
 .account .label {
     font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.account .label-right {
+    opacity: 0.7;
+    margin-left: 2rem;
 }
 
 #message {
@@ -37,6 +50,7 @@
     border-radius: 0.5rem;
     outline: none;
     width: 100%;
+    padding: 1.5rem;
     flex-grow: 1;
     resize: none;
     font-family: 'Fira Mono', monospace;
