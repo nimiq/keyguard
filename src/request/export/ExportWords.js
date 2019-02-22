@@ -32,13 +32,11 @@ class ExportWords extends Nimiq.Observable {
 
         // pages
         /** @type {HTMLElement} */
-        this._$noRecovery = (document.getElementById(ExportWords.Pages.NO_RECOVERY));
+        this._$noRecovery = (document.getElementById(ExportWords.Pages.RECOVERY_WORDS_INTRO));
         /** @type {HTMLElement} */
-        const $recoveryWordsPage = document.getElementById(ExportWords.Pages.SHOW_WORDS)
-                                || this._buildRecoveryWords();
+        const $recoveryWordsPage = (document.getElementById(ExportWords.Pages.SHOW_WORDS));
         /** @type {HTMLElement} */
-        const $validateWordsPage = document.getElementById(ExportWords.Pages.VALIDATE_WORDS)
-                                || this._buildValidateWords();
+        const $validateWordsPage = (document.getElementById(ExportWords.Pages.VALIDATE_WORDS));
 
 
         // elements
@@ -84,12 +82,11 @@ class ExportWords extends Nimiq.Observable {
             window.location.hash = ExportWords.Pages.VALIDATE_WORDS;
         });
         this._validateWords.on(ValidateWords.Events.VALIDATED, () => this._resolve({ success: true }));
-        // this._validateWords.on(ValidateWords.Events.BACK, this._goToShowWords.bind(this));
         this._validateWords.on(ValidateWords.Events.SKIP, () => this._resolve({ success: true }));
     }
 
     run() {
-        window.location.hash = ExportWords.Pages.NO_RECOVERY;
+        window.location.hash = ExportWords.Pages.RECOVERY_WORDS_INTRO;
     }
 
     /**
@@ -121,10 +118,7 @@ class ExportWords extends Nimiq.Observable {
         }
 
         this.setKey(key);
-        this.fire(ExportWords.Events.KEY_CHANGED, {
-            key,
-            isProtected: this._request.keyInfo.encrypted,
-        });
+        this.fire(ExportWords.Events.KEY_CHANGED, key, passphraseBuffer);
         window.location.hash = ExportWords.Pages.SHOW_WORDS;
         TopLevelApi.setLoading(false);
     }
@@ -133,78 +127,30 @@ class ExportWords extends Nimiq.Observable {
      * Used to set the key if already decrypted elsewhere. This will disable the passphrase requirement.
      * Set to null to re-enable passphrase requirement.
      * @param {Key | null} key
+     * @param {Uint8Array} [password]
      */
-    setKey(key) {
+    setKey(key, password) { // eslint-disable-line no-unused-vars
         this._key = key;
         let words = [''];
         if (this._key !== null) {
-            if (this._key.secret instanceof Nimiq.PrivateKey) {
+            if (this._key._secret instanceof Nimiq.PrivateKey) {
                 words = Nimiq.MnemonicUtils.entropyToLegacyMnemonic(this._key.secret.serialize());
             } else if (this._key.secret instanceof Nimiq.Entropy) {
                 words = Nimiq.MnemonicUtils.entropyToMnemonic(this._key.secret);
             } else {
                 this._reject(new Errors.KeyguardError('Unknown mnemonic type'));
+                return;
             }
         }
+
         this._recoveryWords.setWords(words);
         this._validateWords.setWords(words);
         this._$noRecovery.classList.toggle('key-active', this._key !== null);
     }
-
-    _buildRecoveryWords() {
-        const $el = document.createElement('div');
-        $el.id = ExportWords.Pages.SHOW_WORDS;
-        $el.classList.add('page', 'nq-card', 'flipped', 'nq-blue-bg');
-        $el.innerHTML = `
-        <div class="page-header nq-card-header">
-            <div class="progress-indicator"></div>
-            <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
-            <h1 data-i18n="recovery-words-title" class="nq-h1">Write these 24 words on a piece of paper.</h1>
-        </div>
-
-        <div class="page-body nq-card-body">
-            <p class="nq-orange">Anyone with these words can access your wallet! Keep them save.</p>
-            <div class="recovery-words"></div>
-        </div>
-
-        <div class="page-footer">
-            <button class="to-validate-words nq-button light-blue" data-i18n="continue">Continue</button>
-            <a href="#" class="skip-words nq-link nq-text-s nq-blue">
-                <span data-i18n="passphrasebox-password-skip">Skip for now</span>
-                <i class="nq-icon chevron-right"></i>
-            </a>
-        </div>
-        `;
-        /** @type {HTMLElement} */
-        const $app = (document.getElementById('rotation-container'));
-        $app.insertBefore($el, $app.children[1]);
-        return $el;
-    }
-
-    _buildValidateWords() {
-        const $el = document.createElement('div');
-        $el.id = ExportWords.Pages.VALIDATE_WORDS;
-        $el.classList.add('page', 'nq-card', 'flipped', 'nq-blue-bg');
-        $el.innerHTML = `
-        <div class="page-header nq-card-header">
-            <div class="progress-indicator"></div>
-            <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
-            <h1 data-i18n="create-heading-validate-backup" class="nq-h1">Validate your backup</h1>
-        </div>
-
-        <div class="page-body nq-card-body">
-            <div class="validate-words"></div>
-        </div>
-        `;
-        /** @type {HTMLElement} */
-        const $app = (document.getElementById('rotation-container'));
-        $app.insertBefore($el, $app.children[1]);
-        return $el;
-    }
 }
 
 ExportWords.Pages = {
-    NO_RECOVERY: 'no-recovery',
+    RECOVERY_WORDS_INTRO: 'recovery-words-intro',
     SHOW_WORDS: 'recovery-words',
     VALIDATE_WORDS: 'validate-words',
 };

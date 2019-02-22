@@ -126,12 +126,14 @@ const TRANSLATIONS = {
         'validate-words-23-hint': 'What is the 23rd word?',
         'validate-words-24-hint': 'What is the 24th word?',
 
-        'export-file-heading': 'Download Key File',
+        'export-file-heading': 'Download Login File',
+        'export-file-intro-heading': 'Save your Account',
         'export-button-words': 'Show Recovery Words',
-        'export-button-file': 'Download Wallet File',
+        'export-button-file': 'Download Login File',
         'export-finish': 'Finish Export',
         'export-more-options-heading': 'More export options',
         'export-create-backup': 'Create backup',
+        'export-continue-to-login-file': 'Continue to Login File',
 
         'remove-key-heading': 'Don\'t lose access',
         'remove-key-intro-text': 'If you log out without saving your account, you will irretrievably '
@@ -292,11 +294,13 @@ const TRANSLATIONS = {
         'validate-words-24-hint': 'Was ist das 34te Wort?',
 
         'export-file-heading': 'Schlüsseldatei herunterladen',
+        'export-file-intro-heading': 'Sichere deinen Account',
         'export-button-words': 'Wiederherstellungswörter anzeigen',
         'export-button-file': 'Schlüsseldatei herunterladen',
         'export-finish': 'Export abschließen',
         'export-more-options-heading': 'Zusätzliche Export Optionen',
         'export-create-backup': 'Backup erstellen',
+        'export-continue-to-login-file': 'Weiter zum Login File',
 
         'remove-key-heading': 'Verliere deinen Zugang nicht',
         'remove-key-intro-text': 'Falls du dich ausloggst, ohne dein Konto zu sichern, wirst du unwiderruflich'

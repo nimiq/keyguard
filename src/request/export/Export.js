@@ -1,7 +1,8 @@
 /* global ExportFile */
 /* global ExportWords */
+/* global Nimiq */
 
-class Export {
+class Export { // eslint-disable-line no-unused-vars
     /**
      * If a complete page is missing it will be created.
      * However these pages wil be the default pages which usually don't match the applications requirements.
@@ -28,24 +29,23 @@ class Export {
             this._fileExportSuccessful.bind(this),
             this._reject.bind(this));
 
-        /** @type {HTMLDivElement} */
-        const $createBackup = (document.getElementById(Export.Page.CREATE_BACKUP));
-        /** @type {HTMLButtonElement} */
-        const $createBackupButton = ($createBackup.querySelector('.create-backup'));
-
-        this._exportFileHandler.on(ExportFile.Events.KEY_CHANGED, key => this._exportWordsHandler.setKey(key));
-        this._exportWordsHandler.on(ExportWords.Events.KEY_CHANGED, key => this._exportFileHandler.setKey(key));
-
-        $createBackupButton.addEventListener('click', () => this._exportWordsHandler.run());
+        this._exportFileHandler.on(ExportFile.Events.KEY_CHANGED,
+            (key, password) => this._exportWordsHandler.setKey(key, password));
+        this._exportWordsHandler.on(ExportWords.Events.KEY_CHANGED,
+            (key, password) => this._exportFileHandler.setKey(key, password));
     }
 
     run() {
-        this._fileExportSuccessful();
+        if (this._request.keyInfo.type === Nimiq.Secret.Type.ENTROPY) {
+            this._exportFileHandler.run();
+        } else {
+            this._exportWordsHandler.run();
+        }
     }
 
     _fileExportSuccessful() {
         this.exported.file = true;
-        window.location.hash = Export.Page.CREATE_BACKUP;
+        this._exportWordsHandler.run();
     }
 
     /**
@@ -57,6 +57,3 @@ class Export {
         this._resolve(this.exported);
     }
 }
-Export.Page = {
-    CREATE_BACKUP: 'create-backup',
-};

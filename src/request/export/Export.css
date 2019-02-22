@@ -84,16 +84,23 @@ li.nq-icon.icon-offline::before {
     mask-image: linear-gradient(0deg , rgba(255,255,255,0), rgba(255,255,255, 1) 20%, rgba(255,255,255,1) 80%, rgba(255,255,255,0));
 }
 
-.page#no-recovery p,
-.page#recovery-words p {
+.page#recovery-words-intro p,
+.page#recovery-words-intro p {
     text-align: center;
     margin-bottom: 1rem;
 }
 
-.page#no-recovery .nq-card-body {
+.page#recovery-words-intro .nq-card-body {
     padding-bottom: 0;
+    padding-top: 0;
 }
 
+.page#login-file-unlock .nq-card-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+}
 
 .passphrase-box:not(.hide-input) + .skip-words {
     position: absolute;

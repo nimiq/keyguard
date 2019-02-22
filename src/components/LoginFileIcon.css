@@ -10,7 +10,7 @@
     border: 2px dashed rgba(31, 35, 72, 0.4); /* based on Nimiq Blue */
 }
 
-.login-file-icon.locked,
+.login-file-icon.locked:not(.no-color),
 .login-file-icon.file-unavailable {
     border: 0px;
 }
