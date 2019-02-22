@@ -79,12 +79,12 @@ export type SignTransactionRequest = SimpleRequest & TransactionInfo & {
 };
 
 export type SignMessageRequest = SimpleRequest & {
-    keyPath: string
-    message: Uint8Array
+    keyPath: string,
+    message: Uint8Array | string,
     // `signer` is the address, because Keyguard would otherwise only be able to display it after decryption.
     // The Keyguard validates that the `keyPath` generates this address, before signing the message.
-    signer: Uint8Array
-    signerLabel?: string,
+    signer: Uint8Array,
+    signerLabel: string,
 };
 
 export type SignMessageResult = SignatureResult & {

@@ -55,16 +55,19 @@ class RequestParser { // eslint-disable-line no-unused-vars
 
     /**
      * @param {any} label
+     * @param {boolean} [allowEmpty = true]
      * @returns {string | undefined}
      */
-    parseLabel(label) {
+    parseLabel(label, allowEmpty = true) {
         if (!label) {
+            if (!allowEmpty) throw new Errors.InvalidRequestError('Label must not be empty');
             return undefined;
         }
         if (typeof label !== 'string') {
             throw new Errors.InvalidRequestError('Label must be a string');
         }
         if (label.length === 0) {
+            if (!allowEmpty) throw new Errors.InvalidRequestError('Label must not be empty');
             return undefined;
         }
         return label;

@@ -43,7 +43,7 @@
     <script defer src="index.js"></script>
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Muli:400,600,700">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono&text=0123456789ABCDEFGHJKLMNPQRSTUVXY">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono">
 
     <link rel="stylesheet" bundle-toplevel href="../../../node_modules/@nimiq/style/nimiq-style.min.css">
     <link rel="stylesheet" bundle-toplevel href="../../../node_modules/@nimiq/style/nimiq-style-icons.min.css">
@@ -62,29 +62,24 @@
     </div>
 
     <div id="app">
-        <div id="authorize" class="page nq-card">
+        <div id="sign-message" class="page nq-card">
             <div class="page-header nq-card-header">
                 <h1 data-i18n="sign-msg-heading" class="nq-h1">Sign Message</h1>
             </div>
 
             <div class="page-body nq-card-body">
-                <p data-i18n="sign-msg-text" class="nq-text">Please enter your passphrase to sign the following message:</p>
-            </div>
+                <textarea id="message" readonly="readonly"></textarea>
 
-            <textarea id="message" readonly="readonly"></textarea>
-
-            <div class="signer-section">
-                <span data-i18n="sign-msg-sign-with" class="nq-label">Sign with</span>
                 <div class="account">
                     <div class="identicon" id="signer-identicon"></div>
                     <div class="account-text">
-                        <div class="label display-none" id="signer-label"></div>
-                        <div class="address" id="signer-address"></div>
+                        <div class="label" id="signer-label"></div>
+                        <span>Signer</span>
                     </div>
                 </div>
             </div>
 
-            <div class="page-footer">
+            <div class="page-footer nq-card-footer">
                 <form id="passphrase-box"></form>
             </div>
         </div>
