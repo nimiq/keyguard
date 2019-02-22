@@ -88,7 +88,7 @@ class ImportWords {
                 const color = Iqons.getBackgroundColorIndex(
                     new Nimiq.Address(
                         // use color of first address as loginFile color
-                        key.deriveAddress('m/44\'/242\'/0\'/0\'').serialize(),
+                        key.deriveAddress(Constants.DEFAULT_DERIVATION_PATH).serialize(),
                     ).toUserFriendlyAddress(),
                 );
                 const colorString = LoginFile.CONFIG[color].name;
@@ -108,7 +108,7 @@ class ImportWords {
 
             const key = new Key(/** @type {Nimiq.Entropy} */(this._secrets.entropy), false);
             const firstAddress = new Nimiq.Address(
-                key.deriveAddress('m/44\'/242\'/0\'/0\'').serialize(),
+                key.deriveAddress(Constants.DEFAULT_DERIVATION_PATH).serialize(),
             );
             downloadLoginFile.setEncryptedEntropy(
                 /** @type {Nimiq.SerialBuffer} */ (this._encryptedSecret),
@@ -186,7 +186,6 @@ class ImportWords {
                     address: key.deriveAddress(keyPath).serialize(),
                 }));
 
-                /** @type {KeyguardRequest.SingleKeyResult?} */
                 const result = {
                     keyId: await KeyStore.instance.put(key, encryptionKey || undefined),
                     keyType: Nimiq.Secret.Type.ENTROPY,
@@ -217,8 +216,6 @@ class ImportWords {
                     }],
                 };
                 this._keyResults.push(result);
-                const secretString = Nimiq.BufferUtils.toBase64(key.secret.serialize());
-                sessionStorage.setItem(ImportApi.SESSION_STORAGE_KEY_PREFIX + result.keyId, secretString);
             } else {
                 TopLevelApi.setLoading(false);
             }
