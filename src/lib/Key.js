@@ -71,7 +71,10 @@ class Key {
 
         const signature = this.sign(path, data);
 
-        return { signature, data };
+        return {
+            signature,
+            data: data.subarray(0, data.byteLength),
+        };
     }
 
     /**
