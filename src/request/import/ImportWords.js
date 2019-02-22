@@ -185,14 +185,16 @@ class ImportWords {
                     keyPath,
                     address: key.deriveAddress(keyPath).serialize(),
                 }));
-                this._keyResults.push({
+
+                /** @type {KeyguardRequest.SingleKeyResult?} */
+                const result = {
                     keyId: await KeyStore.instance.put(key, encryptionKey || undefined),
                     keyType: Nimiq.Secret.Type.ENTROPY,
                     addresses,
-                });
-                // this._keyResults.entropy.keyId = await KeyStore.instance.put(key, encryptionKey || undefined);
+                };
+                this._keyResults.push(result);
                 const secretString = Nimiq.BufferUtils.toBase64(key.secret.serialize());
-                sessionStorage.setItem(ImportApi.SESSION_STORAGE_KEY_PREFIX + key.id, secretString);
+                sessionStorage.setItem(ImportApi.SESSION_STORAGE_KEY_PREFIX + result.keyId, secretString);
 
                 if (encryptionKey) {
                     // Make the encrypted secret available for the Login File
@@ -206,14 +208,17 @@ class ImportWords {
             }
             if (this._secrets.privateKey) {
                 const key = new Key(this._secrets.privateKey, false);
-                this._keyResults.push({
+                const result = {
                     keyId: await KeyStore.instance.put(key, encryptionKey || undefined),
                     keyType: Nimiq.Secret.Type.PRIVATE_KEY,
                     addresses: [{
                         keyPath: Constants.LEGACY_DERIVATION_PATH,
                         address: key.deriveAddress('').serialize(),
                     }],
-                });
+                };
+                this._keyResults.push(result);
+                const secretString = Nimiq.BufferUtils.toBase64(key.secret.serialize());
+                sessionStorage.setItem(ImportApi.SESSION_STORAGE_KEY_PREFIX + result.keyId, secretString);
             } else {
                 TopLevelApi.setLoading(false);
             }
