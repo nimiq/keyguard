@@ -43,11 +43,11 @@ class ExportFile extends Nimiq.Observable {
         /** @type {HTMLDivElement} */
         const $keyFileIcon = ($unlockFilePage.querySelector('.login-file-icon'));
         /** @type {HTMLFormElement} */
-        const $passwordBox = ($unlockFilePage.querySelector('.passphrase-box'));
+        const $passwordBox = ($unlockFilePage.querySelector('.passpassword-box'));
         /** @type {HTMLAnchorElement} */
         const $downloadKeyFile = ($unlockFilePage.querySelector('.download-key-file'));
         /** @type {HTMLFormElement} */
-        const $passwordSetterBox = ($setPasswordPage.querySelector('.passphrase-setter-box'));
+        const $passwordSetterBox = ($setPasswordPage.querySelector('.passpassword-setter-box'));
         /** @type {HTMLAnchorElement} */
         const $downloadLoginFile = ($downloadFilePage.querySelector('.download-loginfile'));
 
@@ -91,7 +91,7 @@ class ExportFile extends Nimiq.Observable {
         });
 
         this._passwordBox.on(PassphraseBox.Events.SUBMIT, async password => {
-            await this._passphraseSubmitted(password);
+            await this._passwordSubmitted(password);
         });
 
         this._passwordSetterBox.on(PassphraseSetterBox.Events.ENTERED,
@@ -118,15 +118,22 @@ class ExportFile extends Nimiq.Observable {
     }
 
     /**
-     * @param {string} phrase
+     * @param {string} password
      */
-    async _passphraseSubmitted(phrase) {
+    async _passwordSubmitted(password) {
         TopLevelApi.setLoading(true);
-        const passphraseBuffer = phrase ? Utf8Tools.stringToUtf8ByteArray(phrase) : undefined;
+
+        let passwordBuffer;
+        if (this._password) {
+            passwordBuffer = this._password;
+        } else if (password) {
+            passwordBuffer = Utf8Tools.stringToUtf8ByteArray(password);
+        }
+
         /** @type {Key?} */
         let key = null;
         try {
-            key = await KeyStore.instance.get(this._request.keyInfo.id, passphraseBuffer);
+            key = await KeyStore.instance.get(this._request.keyInfo.id, passwordBuffer);
         } catch (e) {
             if (e.message === 'Invalid key') {
                 TopLevelApi.setLoading(false);
@@ -141,17 +148,17 @@ class ExportFile extends Nimiq.Observable {
             return;
         }
 
-        this.setKey(key, passphraseBuffer);
-        this.fire(ExportFile.Events.KEY_CHANGED, key, phrase);
+        this.setKey(key, passwordBuffer);
+        this.fire(ExportFile.Events.KEY_CHANGED, key, passwordBuffer);
         TopLevelApi.setLoading(false);
         await this._goToLoginFileDownload();
     }
 
     /**
      *
-     * @param {string} phrase
+     * @param {string} password
      */
-    async _setPassword(phrase) {
+    async _setPassword(password) {
         if (!this._key) {
             // this really should not happen
             this._reject(new Errors.KeyguardError('KeyId not set'));
@@ -160,7 +167,10 @@ class ExportFile extends Nimiq.Observable {
 
         this._key.hasPin = false;
 
-        this._password = phrase ? Utf8Tools.stringToUtf8ByteArray(phrase) : undefined;
+        this._password = password ? Utf8Tools.stringToUtf8ByteArray(password) : undefined;
+        if (this._password) {
+            this._passwordBox.hideInput(true);
+        }
 
         await KeyStore.instance.put(this._key, this._password);
         await this._goToLoginFileDownload();
@@ -191,8 +201,8 @@ class ExportFile extends Nimiq.Observable {
     }
 
     /**
-     * used to set the key if already decrypted elsewhere. This will disable the passphrase requirement.
-     * Set to null to reenable passphrase requirement.
+     * used to set the key if already decrypted elsewhere. This will disable the passpassword requirement.
+     * Set to null to reenable passpassword requirement.
      * @param {Key | null} key
      * @param {Uint8Array} [password]
      */

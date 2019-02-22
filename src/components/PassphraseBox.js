@@ -139,6 +139,15 @@ class PassphraseBox extends Nimiq.Observable {
     _onCancel() {
         this.fire(PassphraseBox.Events.CANCEL);
     }
+
+    /**
+     *
+     * @param {boolean} hidden
+     */
+    hideInput(hidden) {
+        this.options.hideInput = hidden;
+        this.$el.classList.add('hide-input');
+    }
 }
 
 PassphraseBox.Events = {

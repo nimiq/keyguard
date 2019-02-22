@@ -90,18 +90,23 @@ class ExportWords extends Nimiq.Observable {
     }
 
     /**
-     * @param {string} phrase
+     * @param {string} password
      */
-    async _passphraseSubmitted(phrase) {
+    async _passphraseSubmitted(password) {
         TopLevelApi.setLoading(true);
 
-        const passphraseBuffer = phrase ? Utf8Tools.stringToUtf8ByteArray(phrase) : undefined;
+        let passwordBuffer;
+        if (this._password) {
+            passwordBuffer = this._password;
+        } else if (password) {
+            passwordBuffer = Utf8Tools.stringToUtf8ByteArray(password);
+        }
 
         /** @type {Key?} */
         let key = null;
 
         try {
-            key = await KeyStore.instance.get(this._request.keyInfo.id, passphraseBuffer);
+            key = await KeyStore.instance.get(this._request.keyInfo.id, passwordBuffer);
         } catch (e) {
             if (e.message === 'Invalid key') {
                 this._wordsPasswordBox.onPassphraseIncorrect();
@@ -118,7 +123,7 @@ class ExportWords extends Nimiq.Observable {
         }
 
         this.setKey(key);
-        this.fire(ExportWords.Events.KEY_CHANGED, key, passphraseBuffer);
+        this.fire(ExportWords.Events.KEY_CHANGED, key, passwordBuffer);
         window.location.hash = ExportWords.Pages.SHOW_WORDS;
         TopLevelApi.setLoading(false);
     }
@@ -140,6 +145,12 @@ class ExportWords extends Nimiq.Observable {
             } else {
                 this._reject(new Errors.KeyguardError('Unknown mnemonic type'));
                 return;
+            }
+
+            if (password) {
+                this._wordsPasswordBox.hideInput(true);
+                this._wordsPasswordBox.getElement().classList.remove('nq-light-blue-bg');
+                this._password = password;
             }
         }
 
