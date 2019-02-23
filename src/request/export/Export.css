@@ -25,6 +25,10 @@ li.nq-icon > svg {
     padding-bottom: 1rem;
 }
 
+.page#recovery-words {
+    height: 70.5rem; /* 564px */
+}
+
 .page#recovery-words .page-body {
     display: flex;
     flex-direction: column;
@@ -153,5 +157,5 @@ li.nq-icon > svg {
 }
 
 .nq-text.nq-light-blue {
-    color: var(--nimiq-light-blue); /* to be removed after .nq-text has less priority than .nq-light-blue
+    color: var(--nimiq-light-blue); /* to be removed after .nq-text has less priority than .nq-light-blue */
 }

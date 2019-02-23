@@ -31,7 +31,7 @@
     display: none;
     width: 100%;
     max-width: 52.5rem; /* 420px */
-    height: 70.5rem; /* 564px */
+    min-height: 70.5rem; /* 564px */
     flex-direction: column;
     flex-shrink: 0;
     margin-top: 0;

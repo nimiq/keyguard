@@ -15,7 +15,6 @@
 .recovery-words .words-container .word-section {
     display: flex;
     flex-wrap: wrap;
-    margin: 3rem -.5rem
 }
 
 .recovery-words .word {
@@ -23,10 +22,13 @@
     display: flex;
     flex: 1 0 25%;
     position: relative;
-    background-color: rgba(255, 255, 255, 0.1);
     height: 5rem;
     line-height: 5rem;
     border-radius: 0.5rem;
+}
+
+.recovery-words .word.complete {
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 .recovery-words .word .word-number {
