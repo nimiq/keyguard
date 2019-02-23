@@ -13,6 +13,7 @@
 /* global LoginFile */
 
 class ChangePassword {
+    // eslint-disable-next-line valid-jsdoc
     /**
      * @param {Parsed<KeyguardRequest.SimpleRequest>} request
      * @param {(result: KeyguardRequest.SimpleResult) => void} resolve
@@ -24,6 +25,7 @@ class ChangePassword {
         this._reject = reject;
 
         /** @type {Key} */
+        // eslint-disable-next-line no-unused-expressions
         this._key;
 
         // Pages
@@ -49,6 +51,10 @@ class ChangePassword {
         this._loginFileIcon = new LoginFileIcon($loginFileIcon);
         const downloadLoginFile = new DownloadLoginFile($downloadLoginFile);
 
+        if (this._request.keyInfo.type === Nimiq.Secret.Type.PRIVATE_KEY) {
+            this._loginFileIcon.setFileUnavailable(true);
+        }
+
         this._passwordGetter = new PassphraseBox($passwordGetter, {
             buttonI18nTag: 'passphrasebox-continue',
             minLength: this._request.keyInfo.hasPin ? 6 : undefined,
@@ -56,6 +62,7 @@ class ChangePassword {
             hideInput: !this._request.keyInfo.encrypted,
         });
 
+        // eslint-disable-next-line no-new
         new ProgressIndicator(
             document.querySelector(`#${ChangePassword.Pages.ENTER_PASSWORD} .progress-indicator`),
             4,
@@ -66,6 +73,7 @@ class ChangePassword {
             4,
             2,
         );
+        // eslint-disable-next-line no-new
         new ProgressIndicator(
             document.querySelector(`#${ChangePassword.Pages.DOWNLOAD_FILE} .progress-indicator`),
             4,
@@ -92,8 +100,10 @@ class ChangePassword {
             this._progressIndicator.setStep(3);
         });
 
-        this._passwordSetter.on(PassphraseSetterBox.Events.SUBMIT, async password => {
-            await KeyStore.instance.put(this._key, password);
+        this._passwordSetter.on(PassphraseSetterBox.Events.SUBMIT, /** @param {string} password */ async password => {
+            const passwordBytes = Utf8Tools.stringToUtf8ByteArray(password);
+
+            await KeyStore.instance.put(this._key, passwordBytes);
 
             if (this._key.secret instanceof Nimiq.PrivateKey) {
                 this._resolve({ success: true });
@@ -105,8 +115,6 @@ class ChangePassword {
             const firstAddress = new Nimiq.Address(
                 this._key.deriveAddress(Constants.DEFAULT_DERIVATION_PATH).serialize(),
             );
-
-            const passwordBytes = Utf8Tools.stringToUtf8ByteArray(password);
 
             const encryptedEntropy = await this._key.secret.exportEncrypted(passwordBytes);
 

@@ -127,11 +127,12 @@ const TRANSLATIONS = {
         'derive-address-heading-choose-identicon': 'Choose a new address',
 
         'change-password-heading': 'Confirm old password',
-        'change-password-paragraph': 'Changing the password will create a new Login File that replaces the current one.',
-        'change-password-set-paragraph': 'Now please enter your new password and repeat it for confirmation.',
+        'change-password-paragraph': 'Changing the password will create a new Login File that replaces the '
+                                   + 'current one.',
         'change-password-info-item-1': 'All old Login Files still work with their old passwords.',
-        'change-password-info-item-2': 'If a Login File was compromised: Please create a new account and transfer all funds.',
-        'change-password-download-login-file': 'Download your new Login File',
+        'change-password-info-item-2': 'If a Login File was compromised: Please create a new account and transfer '
+                                     + 'all funds.',
+        'change-password-download-login-file': 'Download new Login File',
         'change-password-set-password-heading': 'Create a new password',
         'change-password-set-password-text': 'Secure your new Login File',
 
@@ -216,12 +217,12 @@ const TRANSLATIONS = {
         'sign-tx-cancel-payment': 'Zahlung abbrechen',
 
         'passphrasebox-enter-passphrase': 'Gib dein Passwort ein',
-        'passphrasebox-protect-keyfile': 'Sichere dein KeyFile mit einem Passwort',
+        'passphrasebox-protect-keyfile': 'Sichere deine Logindatei mit einem Passwort',
         'passphrasebox-repeat-password': 'Wiederhole dein Passwort',
         'passphrasebox-continue': 'Weiter',
         'passphrasebox-log-in': 'Entsperren',
         'passphrasebox-log-out': 'Abmeldung bestätigen',
-        'passphrasebox-download': 'Login Datei herunterladen',
+        'passphrasebox-download': 'Logindatei herunterladen',
         'passphrasebox-confirm-tx': 'Überweisung bestätigen',
         'passphrasebox-password-strength-short': 'Gib mindestens 8 Zeichen ein',
         'passphrasebox-password-strength-weak': 'Dieses Passwort ist zu schwach',
@@ -249,14 +250,14 @@ const TRANSLATIONS = {
         'export-button-words': 'Wiederherstellungswörter anzeigen',
         'export-button-file': 'Schlüsseldatei herunterladen',
         'export-finish': 'Export abschließen',
-        'export-more-options-heading': 'Zusätzliche Export Optionen',
+        'export-more-options-heading': 'Zusätzliche Exportoptionen',
 
         'remove-key-heading': 'Verliere deinen Zugang nicht',
         'remove-key-intro-text': 'Falls du dich ausloggst, ohne dein Konto zu sichern, wirst du unwiderruflich'
                                + 'den Zugriff darauf verlieren. ',
-        'remove-key-login-file': 'LoginDatei',
-        'remove-key-login-file-question': 'Ist deine LoginDatei sicher gespeichert und zugänglich?',
-        'remove-key-download-login-file': 'LoginDatei herunterladen',
+        'remove-key-login-file': 'Logindatei',
+        'remove-key-login-file-question': 'Ist deine Logindatei sicher gespeichert und zugänglich?',
+        'remove-key-download-login-file': 'Logindatei herunterladen',
         'remove-key-recovery-words-question': 'Weißt du, wo sich deine Wiederherstellungswörter befinden?',
         'remove-key-show-recovery-words': 'Sicherung anlegen',
         'remove-key-enter-label-1': 'Gib',
@@ -271,9 +272,15 @@ const TRANSLATIONS = {
         'derive-address-heading-choose-identicon': 'Wähle deinen Konto-Avatar',
         'derive-address-text-select-avatar': 'Wähle einen Avatar für deinen neuen Account aus der Auswahl unten.',
 
-        'change-passphrase-heading': 'Ändere dein Passwort',
-        'change-paragraph': 'Um dein Passwort zu ändern, musst du vorher deinen Account entschlüsseln.',
-        'change-set-paragraph': 'Gib jetzt dein neues Passwort ein und wiederhole es danach, um es zu bestätigen.',
+        'change-password-heading': 'Altes Passwort bestätigen',
+        'change-password-paragraph': 'Die Passwortänderung wird eine neue Logindatei erstellen, welche die bisherige '
+                                   + 'ersetzt.',
+        'change-password-info-item-1': 'Alle alten Logindateien funktionieren weiterhin mit ihrem alten Passwort.',
+        'change-password-info-item-2': 'Wenn eine Logindatei kompromittiert wurde: Erstelle einen neuen Account und '
+                                     + 'übertrage alle NIM.',
+        'change-password-download-login-file': 'Neue Logindatei herunterladen',
+        'change-password-set-password-heading': 'Neues Passwort setzen',
+        'change-password-set-password-text': 'Sichere deine neue Logindatei',
 
         'error-no-referrer-heading': 'Das ging schief :(',
         'error-no-referrer-message': 'Wir konnten nicht überprüfen, wo deine Anfrage herkommt. Bitte gehe zurück und '
