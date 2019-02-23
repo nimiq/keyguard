@@ -30,6 +30,8 @@ class PassphraseSetterBox extends Nimiq.Observable {
 
         /** @type {HTMLElement} */
         (this.$el.querySelector('.password-skip')).addEventListener('click', () => this._onSkip());
+
+        this._onInputChangeValidity(false);
     }
 
     /**

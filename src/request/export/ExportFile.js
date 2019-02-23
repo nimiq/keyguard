@@ -1,5 +1,7 @@
 /* global Constants */
+/* global Iqons */
 /* global LoginFileIcon */
+/* global LoginFile */
 /* global Nimiq */
 /* global PassphraseBox */
 /* global PassphraseSetterBox */
@@ -41,18 +43,15 @@ class ExportFile extends Nimiq.Observable {
         /** @type {HTMLButtonElement} */
         const $fileButton = ($exportFileIntroPage.querySelector('.login-file'));
         /** @type {HTMLDivElement} */
-        const $keyFileIcon = ($unlockFilePage.querySelector('.login-file-icon'));
+        const $loginFileIcon = ($setPasswordPage.querySelector('.login-file-icon'));
         /** @type {HTMLFormElement} */
-        const $passwordBox = ($unlockFilePage.querySelector('.passpassword-box'));
+        const $passwordBox = ($unlockFilePage.querySelector('.password-box'));
         /** @type {HTMLAnchorElement} */
         const $downloadKeyFile = ($unlockFilePage.querySelector('.download-key-file'));
         /** @type {HTMLFormElement} */
-        const $passwordSetterBox = ($setPasswordPage.querySelector('.passpassword-setter-box'));
+        const $passwordSetterBox = ($setPasswordPage.querySelector('.password-setter-box'));
         /** @type {HTMLAnchorElement} */
         const $downloadLoginFile = ($downloadFilePage.querySelector('.download-loginfile'));
-
-        this._keyFileIcon = new LoginFileIcon($keyFileIcon);
-        this._keyFileIcon.lock();
 
         this._passwordBox = new PassphraseBox(
             $passwordBox, {
@@ -64,6 +63,7 @@ class ExportFile extends Nimiq.Observable {
         );
         this._downloadKeyfile = new DownloadLoginFile($downloadKeyFile);
         this._passwordSetterBox = new PassphraseSetterBox($passwordSetterBox);
+        this._loginFileIcon = new LoginFileIcon($loginFileIcon);
         this._downloadLoginFile = new DownloadLoginFile($downloadLoginFile);
 
         /* eslint-disable no-new */
@@ -74,8 +74,12 @@ class ExportFile extends Nimiq.Observable {
         /* eslint-enable no-new */
 
         $fileButton.addEventListener('click', async () => {
-            if (this._request.keyInfo.encrypted) {
-                window.location.hash = ExportFile.Pages.LOGIN_FILE_UNLOCK;
+            if (this._request.keyInfo.encrypted || (this._key && this._password)) {
+                if (this._key && this._password) {
+                    await this._passwordSubmitted('');
+                } else {
+                    window.location.hash = ExportFile.Pages.LOGIN_FILE_UNLOCK;
+                }
             } else {
                 TopLevelApi.setLoading(true);
                 try {
@@ -94,10 +98,21 @@ class ExportFile extends Nimiq.Observable {
             await this._passwordSubmitted(password);
         });
 
-        this._passwordSetterBox.on(PassphraseSetterBox.Events.ENTERED,
-            () => $setPasswordPage.classList.add('repeat-password'));
-        this._passwordSetterBox.on(PassphraseSetterBox.Events.NOT_EQUAL,
-            () => $setPasswordPage.classList.remove('repeat-password'));
+        this._passwordSetterBox.on(PassphraseSetterBox.Events.ENTERED, () => {
+            $setPasswordPage.classList.add('repeat-password');
+            let colorClass = '';
+            const color = Iqons.getBackgroundColorIndex(
+                /** @type {Key} */(this._key).defaultAddress.toUserFriendlyAddress(),
+            );
+            const colorString = LoginFile.CONFIG[color].name;
+            colorClass = `nq-${colorString}-bg`;
+
+            this._loginFileIcon.lock(colorClass);
+        });
+        this._passwordSetterBox.on(PassphraseSetterBox.Events.NOT_EQUAL, () => {
+            $setPasswordPage.classList.remove('repeat-password');
+            this._loginFileIcon.unlock();
+        });
         this._passwordSetterBox.on(PassphraseSetterBox.Events.SUBMIT, async password => {
             await this._setPassword(password);
         });
@@ -166,28 +181,20 @@ class ExportFile extends Nimiq.Observable {
         }
 
         this._key.hasPin = false;
-
         this._password = password ? Utf8Tools.stringToUtf8ByteArray(password) : undefined;
-        if (this._password) {
-            this._passwordBox.hideInput(true);
-        }
-
         await KeyStore.instance.put(this._key, this._password);
+
+        this.fire(ExportFile.Events.KEY_CHANGED, this._key, this._password);
         await this._goToLoginFileDownload();
     }
 
-
     async _goToLoginFileDownload() {
         if (this._password && this._key && this._key.secret instanceof Nimiq.Entropy) {
-            const firstAddress = new Nimiq.Address(
-                this._key.deriveAddress(Constants.DEFAULT_DERIVATION_PATH).serialize(),
-            );
-
             const encryptedSecret = await this._key.secret.exportEncrypted(this._password);
 
             this._downloadLoginFile.setEncryptedEntropy(
                 /** @type {Nimiq.SerialBuffer} */ (encryptedSecret),
-                firstAddress,
+                this._key.defaultAddress,
             );
 
             this._downloadLoginFile.on(DownloadLoginFile.Events.DOWNLOADED, () => {
@@ -208,7 +215,10 @@ class ExportFile extends Nimiq.Observable {
      */
     setKey(key, password) {
         this._key = key;
-        this._password = password;
+        if (password) {
+            this._passwordBox.hideInput(true);
+            this._password = password;
+        }
     }
 }
 

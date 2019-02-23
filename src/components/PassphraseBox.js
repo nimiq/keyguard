@@ -141,12 +141,15 @@ class PassphraseBox extends Nimiq.Observable {
     }
 
     /**
-     *
      * @param {boolean} hidden
      */
     hideInput(hidden) {
         this.options.hideInput = hidden;
-        this.$el.classList.add('hide-input');
+        this.$el.classList.toggle('hide-input', hidden);
+        /** @type {HTMLElement} */
+        (this.$el).classList.toggle(`nq-${this.options.bgColor}-bg`, !hidden);
+        /** @type {HTMLElement} */
+        (this.$el.querySelector('button.submit')).classList.toggle('inverse', !hidden);
     }
 }
 

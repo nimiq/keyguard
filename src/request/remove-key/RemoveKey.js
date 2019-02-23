@@ -51,9 +51,9 @@ class RemoveKey {
         });
 
         this._exportFileHandler.on(ExportFile.Events.KEY_CHANGED,
-            e => this._exportWordsHandler.setKey(e.key));
+            (key, password) => this._exportWordsHandler.setKey(key, password));
         this._exportWordsHandler.on(ExportWords.Events.KEY_CHANGED,
-            e => this._exportFileHandler.setKey(e.key));
+            (key, password) => this._exportFileHandler.setKey(key, password));
     }
 
     run() {

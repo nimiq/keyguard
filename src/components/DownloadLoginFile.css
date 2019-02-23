@@ -3,6 +3,7 @@
     flex-direction: column;
     text-decoration: none;
     outline: none;
+    flex-grow: 1;
 }
 
 .download-loginfile .loginfile {

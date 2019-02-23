@@ -1,3 +1,5 @@
+/* global Nimiq */
+
 // eslint-disable-next-line no-unused-vars
 class KeyInfo {
     /**
@@ -5,8 +7,9 @@ class KeyInfo {
      * @param {Nimiq.Secret.Type} type
      * @param {boolean} encrypted
      * @param {boolean} hasPin
+     * @param {Uint8Array} defaultAddress
      */
-    constructor(id, type, encrypted, hasPin) {
+    constructor(id, type, encrypted, hasPin, defaultAddress) {
         /** @private */
         this._id = id;
         /** @private */
@@ -15,6 +18,8 @@ class KeyInfo {
         this._encrypted = encrypted;
         /** @private */
         this._hasPin = hasPin;
+        /** @private */
+        this._defaultAddress = new Nimiq.Address(defaultAddress);
     }
 
     /**
@@ -45,6 +50,11 @@ class KeyInfo {
         return this._hasPin;
     }
 
+    /** @type {Nimiq.Address} */
+    get defaultAddress() {
+        return this._defaultAddress;
+    }
+
     /**
      * @returns {KeyguardRequest.KeyInfoObject}
      */
@@ -59,9 +69,10 @@ class KeyInfo {
     /**
      * @param {KeyguardRequest.KeyInfoObject} obj
      * @param {boolean} encrypted
+     * @param {Uint8Array} defaultAddress
      * @returns {KeyInfo}
      */
-    static fromObject(obj, encrypted) {
-        return new KeyInfo(obj.id, obj.type, encrypted, obj.hasPin);
+    static fromObject(obj, encrypted, defaultAddress) {
+        return new KeyInfo(obj.id, obj.type, encrypted, obj.hasPin, defaultAddress);
     }
 }

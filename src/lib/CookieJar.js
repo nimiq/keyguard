@@ -73,7 +73,7 @@ class CookieJar { // eslint-disable-line no-unused-vars
             const type = /** @type {Nimiq.Secret.Type} */ (parseInt(key[0], 10));
             const hasPin = key[1] === '1';
             const id = parseInt(key.substr(2), 10);
-            return new KeyInfo(id, type, true, hasPin);
+            return new KeyInfo(id, type, true, hasPin, new Uint8Array(20));
             // Cookies are only eaten during IframeApi.list(), in which the KeyInfo is
             // converted into a KeyguardRequest.KeyInfoObject, loosing the 'encrypted' status flag.
             // Thus it does not matter what we pass to the KeyInfo contructor here for that flag.

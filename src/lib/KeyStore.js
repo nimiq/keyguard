@@ -1,3 +1,4 @@
+/* global Constants */
 /* global Nimiq */
 /* global Key */
 /* global KeyInfo */
@@ -107,7 +108,9 @@ class KeyStore {
     async getInfo(id) {
         /** @type {StoredKeyRecord?} */
         const keyRecord = await this._get(id);
-        return keyRecord ? KeyInfo.fromObject(keyRecord, KeyStore.isEncrypted(keyRecord)) : null;
+        return keyRecord
+            ? KeyInfo.fromObject(keyRecord, KeyStore.isEncrypted(keyRecord), keyRecord.defaultAddress)
+            : null;
     }
 
     /**
@@ -152,6 +155,7 @@ class KeyStore {
             hasPin: key.hasPin,
             secret: buffer.subarray(0, buffer.byteLength),
             hash: key.hash,
+            defaultAddress: key.deriveAddress(Constants.DEFAULT_DERIVATION_PATH).serialize(),
         };
 
         const existingKey = keys.find(k => k.hash === key.hash);
@@ -200,7 +204,9 @@ class KeyStore {
      */
     async list() {
         const results = await this._listRecords();
-        return results.map(keyRecord => KeyInfo.fromObject(keyRecord, KeyStore.isEncrypted(keyRecord)));
+        return results.map(
+            keyRecord => KeyInfo.fromObject(keyRecord, KeyStore.isEncrypted(keyRecord), keyRecord.defaultAddress),
+        );
     }
 
     /**
@@ -255,6 +261,7 @@ class KeyStore {
                 type: Nimiq.Secret.Type.PRIVATE_KEY,
                 hasPin: account.type === 'low',
                 secret: account.encryptedKeyPair,
+                defaultAddress: address.serialize(),
             };
         });
     }

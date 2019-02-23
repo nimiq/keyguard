@@ -122,7 +122,7 @@ class ExportWords extends Nimiq.Observable {
             return;
         }
 
-        this.setKey(key);
+        this.setKey(key, passwordBuffer);
         this.fire(ExportWords.Events.KEY_CHANGED, key, passwordBuffer);
         window.location.hash = ExportWords.Pages.SHOW_WORDS;
         TopLevelApi.setLoading(false);
@@ -149,7 +149,6 @@ class ExportWords extends Nimiq.Observable {
 
             if (password) {
                 this._wordsPasswordBox.hideInput(true);
-                this._wordsPasswordBox.getElement().classList.remove('nq-light-blue-bg');
                 this._password = password;
             }
         }

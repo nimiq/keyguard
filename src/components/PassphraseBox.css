@@ -1,6 +1,6 @@
 .passphrase-box {
     position: relative;
-    padding-top: 5.5rem;
+    padding: 5.5rem 1.25rem 1.25rem;
 }
 
 .passphrase-box .cancel {
@@ -53,7 +53,7 @@
 
 .passphrase-box .submit {
     margin-top: -8rem;
-    margin-bottom: 0.625rem;
+    margin-bottom: 0.75rem;
     opacity: 0;
     transition: opacity 150ms;
     pointer-events: none;
@@ -95,10 +95,6 @@
     transition-delay: 150ms;
 }
 
-.passphrase-box .password-skip {
-    transition: opacity 300ms;
-}
-
 .passphrase-box .password-strength.shake {
     color: var(--nimiq-red);
 }
@@ -109,10 +105,14 @@
 }
 
 .passphrase-box .password-skip {
+    transition: opacity 300ms;
     cursor: pointer;
     display: block;
     font-size: 1.625rem;
     transition: opacity .3s ease;
+    position: absolute;
+    bottom: 1rem;
+    width: calc(100% - 2.5rem);
 }
 
 .passphrase-box .password-skip .nq-icon {

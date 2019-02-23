@@ -128,6 +128,7 @@ const TRANSLATIONS = {
 
         'export-file-heading': 'Download Login File',
         'export-file-intro-heading': 'Save your Account',
+        'export-words-intro-heading': 'There is no password recovery!',
         'export-button-words': 'Show Recovery Words',
         'export-button-file': 'Download Login File',
         'export-finish': 'Finish Export',
@@ -295,6 +296,7 @@ const TRANSLATIONS = {
 
         'export-file-heading': 'Schlüsseldatei herunterladen',
         'export-file-intro-heading': 'Sichere deinen Account',
+        'export-words-intro-heading': 'Es gibt keine Passwort Wiederherstellung',
         'export-button-words': 'Wiederherstellungswörter anzeigen',
         'export-button-file': 'Schlüsseldatei herunterladen',
         'export-finish': 'Export abschließen',
