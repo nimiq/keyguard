@@ -66,6 +66,7 @@
     "karma.conf.js",
     "demos",
     "instrumented",
-    "coverage"
+    "coverage",
+    "src/lib/QrScannerWorker.js"
   ]
 }

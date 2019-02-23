@@ -197,7 +197,7 @@ done
 # copy assets
 output "🐑  Copying static assets"
 cp -rv src/assets/* dist/assets/
-cp -v src/lib/QrScannerWorker* dist/lib/
+cp -v src/lib/QrScannerWorker.js dist/lib/
 cp -v node_modules/@nimiq/style/nimiq-style.icons.svg dist/assets/
 # copy service worker (which has to be in root to work)
 cp -v src/ServiceWorker.js dist

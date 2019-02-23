@@ -71,45 +71,41 @@ class FileImporter extends Nimiq.Observable {
     /**
      * @param {File} file
      */
-    _handleFile(file) {
+    async _handleFile(file) {
         this.$errorMessage.textContent = '';
+        this.$fileInput.value = '';
 
-        const fileReader = new FileReader();
-        fileReader.onload = async event => {
-            this.$fileInput.value = '';
-            /** @type {string} */
-            // @ts-ignore Object is possibly 'null'. Property 'result' does not exist on type 'EventTarget'.
-            const dataUrl = event.target.result;
-            const decoded = await this._decodeFile(file);
+        const url = URL.createObjectURL(file);
+        const image = this.$el.querySelector('img') || document.createElement('img');
+        image.classList.remove('pop-down'); // reset image style in case it was already used in UI
+        image.src = url;
+        const decoded = await this._readQrCode(image);
 
-            if (!decoded) {
-                AnimationUtils.animate('shake', this.$el);
-                this.$errorMessage.textContent = 'Could not read Login File.';
-                return;
-            }
+        if (!decoded) {
+            AnimationUtils.animate('shake', this.$el);
+            this.$errorMessage.textContent = 'Could not read Login File.';
+            return;
+        }
 
-            if (this._displayFile) {
-                // Set image in UI
-                const image = this.$el.querySelector('img') || document.createElement('img');
-                image.src = dataUrl;
-                this.$el.appendChild(image);
-                image.classList.remove('pop-down');
-                image.onload = () => image.classList.add('pop-down');
-            }
+        if (this._displayFile) {
+            // Show image in UI
+            this.$el.appendChild(image);
+            image.classList.add('pop-down');
+        }
 
-            this.fire(FileImporter.Events.IMPORT, decoded, dataUrl);
-        };
-        fileReader.readAsDataURL(file);
+        this.fire(FileImporter.Events.IMPORT, decoded, url);
+
+        URL.revokeObjectURL(url);
     }
 
     /**
-     * @param {File} file
+     * @param {HTMLImageElement} image
      * @returns {Promise<string?>}
      */
-    async _decodeFile(file) {
+    async _readQrCode(image) {
         try {
             const qrPosition = LoginFile.calculateQrPosition();
-            return await QrScanner.scanImage(file, qrPosition, null, null, false, true);
+            return await QrScanner.scanImage(image, qrPosition, null, null, true);
         } catch (e) {
             return null;
         }
@@ -118,7 +114,7 @@ class FileImporter extends Nimiq.Observable {
     /**
      * @param {DragEvent} event
      */
-    async _onFileDrop(event) {
+    _onFileDrop(event) {
         event.stopPropagation();
         event.preventDefault();
         if (!event.dataTransfer || !event.dataTransfer.files || !event.dataTransfer.files.length) return;
