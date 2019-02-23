@@ -126,9 +126,14 @@ const TRANSLATIONS = {
         'derive-address-password-text': 'To add a new address, please[br]unlock your account first.',
         'derive-address-heading-choose-identicon': 'Choose a new address',
 
-        'change-passphrase-heading': 'Change your password',
-        'change-paragraph': 'Before entering your new password, you must first unlock your account.',
-        'change-set-paragraph': 'Now please enter your new password and repeat it for confirmation.',
+        'change-password-heading': 'Confirm old password',
+        'change-password-paragraph': 'Changing the password will create a new Login File that replaces the current one.',
+        'change-password-set-paragraph': 'Now please enter your new password and repeat it for confirmation.',
+        'change-password-info-item-1': 'All old Login Files still work with their old passwords.',
+        'change-password-info-item-2': 'If a Login File was compromised: Please create a new account and transfer all funds.',
+        'change-password-download-login-file': 'Download your new login file',
+        'change-password-set-password-heading': 'Create a new password',
+        'change-password-set-password-text': 'Secure your new LoginFile',
 
         'error-no-referrer-heading': 'That went wrong :(',
         'error-no-referrer-message': 'We could not verify the origin of your request. Please go back and try again.',

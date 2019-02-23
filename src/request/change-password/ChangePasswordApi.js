@@ -1,8 +1,8 @@
 /* global TopLevelApi */
-/* global ChangePassphrase */
+/* global ChangePassword */
 /* global Errors */
 
-class ChangePassphraseApi extends TopLevelApi { // eslint-disable-line no-unused-vars
+class ChangePasswordApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
      * @param {KeyguardRequest.SimpleRequest} request
      * @returns {Promise<Parsed<KeyguardRequest.SimpleRequest>>}
@@ -21,6 +21,6 @@ class ChangePassphraseApi extends TopLevelApi { // eslint-disable-line no-unused
     }
 
     get Handler() {
-        return ChangePassphrase;
+        return ChangePassword;
     }
 }

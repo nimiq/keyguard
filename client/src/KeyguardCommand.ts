@@ -3,7 +3,7 @@ export enum KeyguardCommand {
     REMOVE = 'remove-key',
     IMPORT = 'import',
     EXPORT = 'export',
-    CHANGE_PASSPHRASE = 'change-passphrase',
+    CHANGE_PASSWORD = 'change-password',
     SIGN_TRANSACTION = 'sign-transaction',
     DERIVE_ADDRESS = 'derive-address',
 
