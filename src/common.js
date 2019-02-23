@@ -3,6 +3,11 @@
 /* global Errors */
 /* global Constants */
 
+/**
+ * @callback reject
+ * @param {Error} error
+ */
+
 /** @type {Promise<void>?} */
 let __nimiqLoaded = null;
 

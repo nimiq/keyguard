@@ -12,12 +12,16 @@
 /* global Iqons */
 /* global LoginFile */
 
+/**
+ * @callback resolve
+ * @param {KeyguardRequest.SimpleResult} result
+ */
+
 class ChangePassword {
-    // eslint-disable-next-line valid-jsdoc
     /**
      * @param {Parsed<KeyguardRequest.SimpleRequest>} request
-     * @param {(result: KeyguardRequest.SimpleResult) => void} resolve
-     * @param {(error: Error) => void} reject
+     * @param {resolve} resolve
+     * @param {reject} reject
      */
     constructor(request, resolve, reject) {
         this._resolve = resolve;
