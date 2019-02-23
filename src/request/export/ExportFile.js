@@ -100,13 +100,13 @@ class ExportFile extends Nimiq.Observable {
 
         this._passwordSetterBox.on(PassphraseSetterBox.Events.ENTERED, () => {
             $setPasswordPage.classList.add('repeat-password');
+
             let colorClass = '';
             const color = Iqons.getBackgroundColorIndex(
                 /** @type {Key} */(this._key).defaultAddress.toUserFriendlyAddress(),
             );
             const colorString = LoginFile.CONFIG[color].name;
             colorClass = `nq-${colorString}-bg`;
-
             this._loginFileIcon.lock(colorClass);
         });
         this._passwordSetterBox.on(PassphraseSetterBox.Events.NOT_EQUAL, () => {

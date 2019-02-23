@@ -57,7 +57,6 @@ class PassphraseSetterBox extends Nimiq.Observable {
             <button class="submit" data-i18n="passphrasebox-continue">Continue</button>
 
             <a tabindex="0" class="password-skip nq-text-s"><span data-i18n="passphrasebox-password-skip">Skip for now</span> <i class="nq-icon chevron-right"></i></a>
-
         `;
         /* eslint-enable max-len */
 

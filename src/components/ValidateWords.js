@@ -123,8 +123,10 @@ class ValidateWords extends Nimiq.Observable {
      * @private
      */
     _setContent(round) {
+        this.$el.querySelectorAll('.blink-green').forEach(button => button.classList.remove('blink-green'));
         this.$el.querySelectorAll('.green').forEach(button => button.classList.remove('green'));
         this.$el.querySelectorAll('.red').forEach(button => button.classList.remove('red'));
+        this.$el.querySelectorAll('.shake').forEach(button => button.classList.remove('shake'));
         const wordList = this._generateWords(this._requiredWords[round]);
         this._setWordList(wordList);
         const targetIndex = this._requiredWords[round] + 1;
@@ -194,7 +196,7 @@ class ValidateWords extends Nimiq.Observable {
             // wrong choice
             ValidateWords._showAsWrong($button);
             const correctButtonIndex = this._wordList.indexOf(this._targetWord);
-            ValidateWords._showAsCorrect(this.$buttons[correctButtonIndex]);
+            ValidateWords._showAsCorrect(this.$buttons[correctButtonIndex], false);
             setTimeout(() => this.reset(), 820);
         } else {
             // correct choice
@@ -214,10 +216,15 @@ class ValidateWords extends Nimiq.Observable {
 
     /**
      * @param {HTMLButtonElement} $button
+     * @param {boolean} [clicked]
      * @private
      */
-    static _showAsCorrect($button) {
-        $button.classList.add('blink-green');
+    static _showAsCorrect($button, clicked = true) {
+        if (clicked) {
+            $button.classList.add('green');
+        } else {
+            $button.classList.add('blink-green');
+        }
     }
 }
 

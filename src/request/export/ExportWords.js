@@ -38,7 +38,6 @@ class ExportWords extends Nimiq.Observable {
         /** @type {HTMLElement} */
         const $validateWordsPage = (document.getElementById(ExportWords.Pages.VALIDATE_WORDS));
 
-
         // elements
         /** @type {HTMLLinkElement} */
         const $noRecoverySkip = (this._$noRecovery.querySelector('.skip-words'));
