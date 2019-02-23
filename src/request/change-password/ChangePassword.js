@@ -51,10 +51,6 @@ class ChangePassword {
         this._loginFileIcon = new LoginFileIcon($loginFileIcon);
         const downloadLoginFile = new DownloadLoginFile($downloadLoginFile);
 
-        if (this._request.keyInfo.type === Nimiq.Secret.Type.PRIVATE_KEY) {
-            this._loginFileIcon.setFileUnavailable(true);
-        }
-
         this._passwordGetter = new PassphraseBox($passwordGetter, {
             buttonI18nTag: 'passphrasebox-continue',
             minLength: this._request.keyInfo.hasPin ? 6 : undefined,
@@ -62,6 +58,14 @@ class ChangePassword {
             hideInput: !this._request.keyInfo.encrypted,
         });
 
+        // Adapt to type of secret
+        if (this._request.keyInfo.type === Nimiq.Secret.Type.PRIVATE_KEY) {
+            this._loginFileIcon.setFileUnavailable(true);
+            /** @type {HTMLDivElement} */ (this.$enterPassword.querySelector('.nq-text')).classList.add('display-none');
+            /** @type {HTMLDivElement} */ (this.$setPassword.querySelector('.nq-text')).classList.add('hidden');
+        }
+
+        // Progress Indicators
         // eslint-disable-next-line no-new
         new ProgressIndicator(
             document.querySelector(`#${ChangePassword.Pages.ENTER_PASSWORD} .progress-indicator`),
