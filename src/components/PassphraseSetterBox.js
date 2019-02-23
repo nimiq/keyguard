@@ -12,6 +12,7 @@ class PassphraseSetterBox extends Nimiq.Observable {
     constructor($el, options = {}) {
         const defaults = {
             bgColor: 'light-blue',
+            hideSkip: false,
         };
 
         super();
@@ -28,8 +29,10 @@ class PassphraseSetterBox extends Nimiq.Observable {
 
         this.$el.addEventListener('submit', event => this._onSubmit(event));
 
-        /** @type {HTMLElement} */
-        (this.$el.querySelector('.password-skip')).addEventListener('click', () => this._onSkip());
+        if (!options.hideSkip) {
+            /** @type {HTMLElement} */
+            (this.$el.querySelector('.password-skip')).addEventListener('click', () => this._onSkip());
+        }
     }
 
     /**
@@ -60,6 +63,10 @@ class PassphraseSetterBox extends Nimiq.Observable {
 
         /** @type {HTMLButtonElement} */
         ($el.querySelector('button.submit')).classList.add('nq-button', 'inverse', options.bgColor);
+
+        if (options.hideSkip) {
+            ($el.removeChild(/** @type {HTMLAnchorElement} */($el.querySelector('.password-skip'))));
+        }
 
         I18n.translateDom($el);
         return $el;

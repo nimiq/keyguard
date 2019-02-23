@@ -1,3 +1,4 @@
+/* global Nimiq */
 /* global Constants */
 /* global PassphraseBox */
 /* global PassphraseSetterBox */
@@ -8,6 +9,8 @@
 /* global DownloadLoginFile */
 /* global LoginFileIcon */
 /* global ProgressIndicator */
+/* global Iqons */
+/* global LoginFile */
 
 class ChangePassword {
     /**
@@ -20,9 +23,8 @@ class ChangePassword {
         this._request = request;
         this._reject = reject;
 
-        /** @type {Key | null} */
-        this._key = null;
-        this._passphrase = '';
+        /** @type {Key} */
+        this._key;
 
         // Pages
         /** @type {HTMLFormElement} */
@@ -36,14 +38,14 @@ class ChangePassword {
         /** @type {HTMLFormElement} */
         const $passwordGetter = (this.$enterPassword.querySelector('.password-box'));
         /** @type {HTMLFormElement} */
-        const $passwordSetter = (this.$setPassword.querySelector('.passphrase-setter-box'));
+        const $passwordSetter = (this.$setPassword.querySelector('.password-setter-box'));
         /** @type {HTMLDivElement} */
         const $loginFileIcon = (this.$setPassword.querySelector('.login-file-icon'));
         /** @type {HTMLAnchorElement} */
         const $downloadLoginFile = ($downloadFile.querySelector('.download-login-file'));
 
         // Components
-        this._passwordSetter = new PassphraseSetterBox($passwordSetter);
+        this._passwordSetter = new PassphraseSetterBox($passwordSetter, { hideSkip: true });
         this._loginFileIcon = new LoginFileIcon($loginFileIcon);
         const downloadLoginFile = new DownloadLoginFile($downloadLoginFile);
 
@@ -51,6 +53,7 @@ class ChangePassword {
             buttonI18nTag: 'passphrasebox-continue',
             minLength: this._request.keyInfo.hasPin ? 6 : undefined,
             hideCancel: true,
+            hideInput: !this._request.keyInfo.encrypted,
         });
 
         new ProgressIndicator(
@@ -63,13 +66,64 @@ class ChangePassword {
             4,
             2,
         );
+        new ProgressIndicator(
+            document.querySelector(`#${ChangePassword.Pages.DOWNLOAD_FILE} .progress-indicator`),
+            4,
+            4,
+        );
 
         // Events
 
-        this._passwordGetter.on(PassphraseBox.Events.SUBMIT, this._passphraseSubmitted.bind(this));
+        this._passwordGetter.on(PassphraseBox.Events.SUBMIT, this._unlock.bind(this));
+
+        this._passwordSetter.on(PassphraseSetterBox.Events.ENTERED, () => {
+            let colorClass = '';
+            if (this._key.secret instanceof Nimiq.Entropy) {
+                const color = Iqons.getBackgroundColorIndex(
+                    new Nimiq.Address(
+                        // use color of first address as loginFile color
+                        this._key.deriveAddress(Constants.DEFAULT_DERIVATION_PATH).serialize(),
+                    ).toUserFriendlyAddress(),
+                );
+                const colorString = LoginFile.CONFIG[color].name;
+                colorClass = `nq-${colorString}-bg`;
+            }
+            this._loginFileIcon.lock(colorClass);
+            this._progressIndicator.setStep(3);
+        });
+
+        this._passwordSetter.on(PassphraseSetterBox.Events.SUBMIT, async password => {
+            await KeyStore.instance.put(this._key, password);
+
+            if (this._key.secret instanceof Nimiq.PrivateKey) {
+                this._resolve({ success: true });
+                return;
+            }
+
+            // Prepare Login File for download
+
+            const firstAddress = new Nimiq.Address(
+                this._key.deriveAddress(Constants.DEFAULT_DERIVATION_PATH).serialize(),
+            );
+
+            const passwordBytes = Utf8Tools.stringToUtf8ByteArray(password);
+
+            const encryptedEntropy = await this._key.secret.exportEncrypted(passwordBytes);
+
+            downloadLoginFile.setEncryptedEntropy(
+                /** @type {Nimiq.SerialBuffer} */ (encryptedEntropy),
+                firstAddress,
+            );
+
+            downloadLoginFile.on(DownloadLoginFile.Events.DOWNLOADED, () => {
+                this._resolve({ success: true });
+            });
+            window.location.hash = ChangePassword.Pages.DOWNLOAD_FILE;
+        });
+        this._passwordSetter.on(PassphraseSetterBox.Events.NOT_EQUAL, () => this._loginFileIcon.unlock());
     }
 
-    run() {
+    async run() {
         this._passwordGetter.reset();
         window.location.hash = ChangePassword.Pages.ENTER_PASSWORD;
         if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
@@ -78,15 +132,15 @@ class ChangePassword {
     }
 
     /**
-     * @param {string} phrase
+     * @param {string} password
      */
-    async _passphraseSubmitted(phrase) {
+    async _unlock(password) {
         TopLevelApi.setLoading(true);
-        const passphrase = phrase ? Utf8Tools.stringToUtf8ByteArray(phrase) : undefined;
+        const passwordBytes = password ? Utf8Tools.stringToUtf8ByteArray(password) : undefined;
         /** @type {Key?} */
         let key = null;
         try {
-            key = await KeyStore.instance.get(this._request.keyInfo.id, passphrase);
+            key = await KeyStore.instance.get(this._request.keyInfo.id, passwordBytes);
         } catch (e) {
             if (e.message === 'Invalid key') {
                 TopLevelApi.setLoading(false);

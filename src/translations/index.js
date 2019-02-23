@@ -131,9 +131,9 @@ const TRANSLATIONS = {
         'change-password-set-paragraph': 'Now please enter your new password and repeat it for confirmation.',
         'change-password-info-item-1': 'All old Login Files still work with their old passwords.',
         'change-password-info-item-2': 'If a Login File was compromised: Please create a new account and transfer all funds.',
-        'change-password-download-login-file': 'Download your new login file',
+        'change-password-download-login-file': 'Download your new Login File',
         'change-password-set-password-heading': 'Create a new password',
-        'change-password-set-password-text': 'Secure your new LoginFile',
+        'change-password-set-password-text': 'Secure your new Login File',
 
         'error-no-referrer-heading': 'That went wrong :(',
         'error-no-referrer-message': 'We could not verify the origin of your request. Please go back and try again.',
