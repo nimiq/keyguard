@@ -13,14 +13,14 @@
 /* global LoginFile */
 
 /**
- * @callback resolve
+ * @callback ChangePassword.resolve
  * @param {KeyguardRequest.SimpleResult} result
  */
 
 class ChangePassword {
     /**
      * @param {Parsed<KeyguardRequest.SimpleRequest>} request
-     * @param {resolve} resolve
+     * @param {ChangePassword.resolve} resolve
      * @param {reject} reject
      */
     constructor(request, resolve, reject) {
