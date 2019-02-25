@@ -99,21 +99,11 @@ class ExportFile extends Nimiq.Observable {
         });
 
         this._passwordSetterBox.on(PassphraseSetterBox.Events.ENTERED, async () => {
-            try {
-                this._key = await KeyStore.instance.get(this._request.keyInfo.id);
-            } catch (error) {
-                this._reject(new Errors.KeyNotFoundError());
-            }
-
-            if (!this._key) {
-                this._reject(new Errors.KeyNotFoundError());
-            }
-
             $setPasswordPage.classList.add('repeat-password');
 
             let colorClass = '';
             const color = Iqons.getBackgroundColorIndex(
-                /** @type {Key} */(this._key).defaultAddress.toUserFriendlyAddress(),
+                this._request.keyInfo.defaultAddress.toUserFriendlyAddress(),
             );
             const colorString = LoginFile.CONFIG[color].name;
             colorClass = `nq-${colorString}-bg`;
