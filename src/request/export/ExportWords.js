@@ -138,11 +138,11 @@ class ExportWords extends Nimiq.Observable {
      * @param {Key | null} key
      * @param {Uint8Array} [password]
      */
-    setKey(key, password) { // eslint-disable-line no-unused-vars
+    setKey(key, password) {
         this._key = key;
         let words = [''];
         if (this._key !== null) {
-            if (this._key._secret instanceof Nimiq.PrivateKey) {
+            if (this._key.secret instanceof Nimiq.PrivateKey) {
                 words = Nimiq.MnemonicUtils.entropyToLegacyMnemonic(this._key.secret.serialize());
             } else if (this._key.secret instanceof Nimiq.Entropy) {
                 words = Nimiq.MnemonicUtils.entropyToMnemonic(this._key.secret);
