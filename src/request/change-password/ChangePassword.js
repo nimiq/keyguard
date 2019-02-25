@@ -92,7 +92,7 @@ class ChangePassword {
 
         this._passwordGetter.on(PassphraseBox.Events.SUBMIT, this._unlock.bind(this));
         this._passwordSetter.on(PassphraseSetterBox.Events.ENTERED, this._prepare.bind(this));
-        this._passwordSetter.on(PassphraseSetterBox.Events.SUBMIT, this._finish.bind(this));
+        this._passwordSetter.on(PassphraseSetterBox.Events.SUBMIT, this._commitChangeAndOfferLoginFile.bind(this));
         this._passwordSetter.on(PassphraseSetterBox.Events.NOT_EQUAL, () => this._loginFileIcon.unlock());
     }
 
@@ -105,6 +105,7 @@ class ChangePassword {
     }
 
     /**
+     * Called when the user enters his old password (or just clicks 'continue') to unlock his account.
      * @param {string} oldPassword
      */
     async _unlock(oldPassword) {
@@ -136,6 +137,10 @@ class ChangePassword {
         TopLevelApi.setLoading(false);
     }
 
+
+    /**
+     * Called after new password was entered first time.
+     */
     async _prepare() {
         let colorClass = '';
         if (this.key.secret instanceof Nimiq.Entropy) {
@@ -153,14 +158,17 @@ class ChangePassword {
     }
 
     /**
+     * Called after new password was entered second time.
      * @param {string} newPassword
      */
-    async _finish(newPassword) {
+    async _commitChangeAndOfferLoginFile(newPassword) {
+        TopLevelApi.setLoading(true);
         const passwordBytes = Utf8Tools.stringToUtf8ByteArray(newPassword);
 
         await KeyStore.instance.put(this.key, passwordBytes);
 
         if (this.key.secret instanceof Nimiq.PrivateKey) {
+            // Login File not available for legacy accounts
             this._resolve({ success: true });
             return;
         }
@@ -182,6 +190,7 @@ class ChangePassword {
             this._resolve({ success: true });
         });
         window.location.hash = ChangePassword.Pages.DOWNLOAD_FILE;
+        TopLevelApi.setLoading(false);
     }
 
     /**
