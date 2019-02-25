@@ -50,8 +50,6 @@
     <script defer src="index.js"></script>
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Muli:400,600,700">
-    <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css?family=Fira+Mono&text=0123456789ABCDEFGHJKLMNPQRSTUVXY">
 
     <link rel="stylesheet" bundle-toplevel href="../../../node_modules/@nimiq/style/nimiq-style.min.css">
     <link rel="stylesheet" bundle-toplevel href="../../../node_modules/@nimiq/style/nimiq-style-icons.min.css">
@@ -74,8 +72,6 @@
     </div>
 
     <div id="app">
-        <div class="flex-grow"></div>
-
         <!-- Enter Passphrase -->
         <div id="enter-password" class="page nq-card">
             <div class="page-header nq-card-header">
@@ -122,9 +118,7 @@
 
             <div class="page-body nq-card-body">
                 <p data-i18n='change-password-set-password-text' class="nq-light-blue nq-text center">Secure your new Login File.</p>
-                <div class="flex-grow"></div>
                 <div class="nq-icon login-file-icon"></div>
-                <div class="flex-grow"></div>
             </div>
 
             <div class="page-footer nq-card-footer">
@@ -144,28 +138,10 @@
             </div>
         </div>
 
-        <div id="unlock-account" class="page nq-card">
-            <div class="page-header nq-card-header">
-                <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
-                <h1 data-i18n="import-unlock-account" class="nq-h1">Unlock your account</h1>
-            </div>
-
-            <div class="page-body nq-card-body">
-                <img class="loginfile-image">
-            </div>
-
-            <div class="page-footer nq-card-footer">
-                <i class="nq-icon lock-locked"></i>
-                <form class="password-box"></form>
-            </div>
-        </div>
-
         <button class="global-close nq-button-s display-none">
             <span class="nq-icon arrow-left"></span>
             <span id="global-close-text"></span>
         </button>
-
-        <div class="flex-grow"></div>
 
         <div id="loading" class="page">
             <div class="loading-animation"></div>

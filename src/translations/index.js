@@ -250,7 +250,7 @@ const TRANSLATIONS = {
         'export-button-words': 'Wiederherstellungswörter anzeigen',
         'export-button-file': 'Schlüsseldatei herunterladen',
         'export-finish': 'Export abschließen',
-        'export-more-options-heading': 'Zusätzliche Exportoptionen',
+        'export-more-options-heading': 'Zusätzliche Export Optionen',
 
         'remove-key-heading': 'Verliere deinen Zugang nicht',
         'remove-key-intro-text': 'Falls du dich ausloggst, ohne dein Konto zu sichern, wirst du unwiderruflich'
