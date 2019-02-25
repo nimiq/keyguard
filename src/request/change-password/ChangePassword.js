@@ -92,7 +92,7 @@ class ChangePassword {
 
         this._passwordGetter.on(PassphraseBox.Events.SUBMIT, this._unlock.bind(this));
         this._passwordSetter.on(PassphraseSetterBox.Events.ENTERED, this._prepare.bind(this));
-        this._passwordSetter.on( PassphraseSetterBox.Events.SUBMIT, this._finish.bind(this));
+        this._passwordSetter.on(PassphraseSetterBox.Events.SUBMIT, this._finish.bind(this));
         this._passwordSetter.on(PassphraseSetterBox.Events.NOT_EQUAL, () => this._loginFileIcon.unlock());
     }
 
@@ -158,33 +158,33 @@ class ChangePassword {
     async _finish(newPassword) {
         const passwordBytes = Utf8Tools.stringToUtf8ByteArray(newPassword);
 
-            await KeyStore.instance.put(this.key, passwordBytes);
+        await KeyStore.instance.put(this.key, passwordBytes);
 
-            if (this.key.secret instanceof Nimiq.PrivateKey) {
-                this._resolve({ success: true });
-                return;
-            }
+        if (this.key.secret instanceof Nimiq.PrivateKey) {
+            this._resolve({ success: true });
+            return;
+        }
 
-            // Prepare Login File for download
+        // Prepare Login File for download
 
-            const firstAddress = new Nimiq.Address(
-                this.key.deriveAddress(Constants.DEFAULT_DERIVATION_PATH).serialize(),
-            );
+        const firstAddress = new Nimiq.Address(
+            this.key.deriveAddress(Constants.DEFAULT_DERIVATION_PATH).serialize(),
+        );
 
-            const encryptedEntropy = await this.key.secret.exportEncrypted(passwordBytes);
+        const encryptedEntropy = await this.key.secret.exportEncrypted(passwordBytes);
 
-            this._downloadLoginFile.setEncryptedEntropy(
-                /** @type {Nimiq.SerialBuffer} */ (encryptedEntropy),
-                firstAddress,
-            );
+        this._downloadLoginFile.setEncryptedEntropy(
+            /** @type {Nimiq.SerialBuffer} */(encryptedEntropy),
+            firstAddress,
+        );
 
-            this._downloadLoginFile.on(DownloadLoginFile.Events.DOWNLOADED, () => {
-                this._resolve({ success: true });
-            });
-            window.location.hash = ChangePassword.Pages.DOWNLOAD_FILE;
+        this._downloadLoginFile.on(DownloadLoginFile.Events.DOWNLOADED, () => {
+            this._resolve({ success: true });
+        });
+        window.location.hash = ChangePassword.Pages.DOWNLOAD_FILE;
     }
 
-    /** 
+    /**
      * @returns {Key}
      */
 
