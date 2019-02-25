@@ -24,8 +24,8 @@ class ExportFile extends Nimiq.Observable {
     constructor(request, resolve, reject) {
         super();
 
-        this._resolve = resolve;
         this._request = request;
+        this._resolve = resolve;
         this._reject = reject;
 
         /** @type {Key | null} */
@@ -74,22 +74,22 @@ class ExportFile extends Nimiq.Observable {
         /* eslint-enable no-new */
 
         $fileButton.addEventListener('click', async () => {
-            if (this._request.keyInfo.encrypted || (this._key && this._password)) {
+            if (this._request.keyInfo.encrypted) {
                 if (this._key && this._password) {
                     await this._passwordSubmitted('');
                 } else {
+                    this._passwordBox.reset();
                     window.location.hash = ExportFile.Pages.LOGIN_FILE_UNLOCK;
+                    if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
+                        this._passwordBox.focus();
+                    }
                 }
             } else {
-                TopLevelApi.setLoading(true);
-                try {
-                    const key = await KeyStore.instance.get(this._request.keyInfo.id);
-                    this.fire(ExportFile.Events.KEY_CHANGED, key);
-                    this.setKey(key);
-                    window.location.hash = ExportFile.Pages.LOGIN_FILE_SET_PASSWORD;
-                    TopLevelApi.setLoading(false);
-                } catch (error) {
-                    this._reject(new Errors.KeyNotFoundError());
+                this._passwordSetterBox.reset();
+                this._loginFileIcon.unlock();
+                window.location.hash = ExportFile.Pages.LOGIN_FILE_SET_PASSWORD;
+                if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
+                    this._passwordSetterBox.focus();
                 }
             }
         });
@@ -98,7 +98,17 @@ class ExportFile extends Nimiq.Observable {
             await this._passwordSubmitted(password);
         });
 
-        this._passwordSetterBox.on(PassphraseSetterBox.Events.ENTERED, () => {
+        this._passwordSetterBox.on(PassphraseSetterBox.Events.ENTERED, async () => {
+            try {
+                this._key = await KeyStore.instance.get(this._request.keyInfo.id);
+            } catch (error) {
+                this._reject(new Errors.KeyNotFoundError());
+            }
+
+            if (!this._key) {
+                this._reject(new Errors.KeyNotFoundError());
+            }
+
             $setPasswordPage.classList.add('repeat-password');
 
             let colorClass = '';
@@ -115,16 +125,6 @@ class ExportFile extends Nimiq.Observable {
         });
         this._passwordSetterBox.on(PassphraseSetterBox.Events.SUBMIT, async password => {
             await this._setPassword(password);
-        });
-
-        window.addEventListener('hashchange', event => {
-            const newUrl = new URL(event.newURL);
-            if (newUrl.hash === `#${ExportFile.Pages.LOGIN_FILE_UNLOCK}`) {
-                this._passwordBox.reset();
-                if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
-                    this._passwordBox.focus();
-                }
-            }
         });
     }
 
@@ -165,8 +165,9 @@ class ExportFile extends Nimiq.Observable {
 
         this.setKey(key, passwordBuffer);
         this.fire(ExportFile.Events.KEY_CHANGED, key, passwordBuffer);
-        TopLevelApi.setLoading(false);
         await this._goToLoginFileDownload();
+
+        TopLevelApi.setLoading(false);
     }
 
     /**
@@ -174,8 +175,8 @@ class ExportFile extends Nimiq.Observable {
      * @param {string} password
      */
     async _setPassword(password) {
-        if (!this._key) {
-            // this really should not happen
+        if (!this._key || !this._key.id) {
+            // this should never happen
             this._reject(new Errors.KeyguardError('KeyId not set'));
             return;
         }
@@ -183,6 +184,13 @@ class ExportFile extends Nimiq.Observable {
         this._key.hasPin = false;
         this._password = password ? Utf8Tools.stringToUtf8ByteArray(password) : undefined;
         await KeyStore.instance.put(this._key, this._password);
+
+        const keyInfo = await KeyStore.instance.getInfo(this._key.id);
+        if (!keyInfo) {
+            this._reject(new Errors.KeyNotFoundError());
+            return;
+        }
+        this._request.keyInfo = keyInfo;
 
         this.fire(ExportFile.Events.KEY_CHANGED, this._key, this._password);
         await this._goToLoginFileDownload();
@@ -208,8 +216,10 @@ class ExportFile extends Nimiq.Observable {
     }
 
     /**
-     * used to set the key if already decrypted elsewhere. This will disable the passpassword requirement.
-     * Set to null to reenable passpassword requirement.
+     * Used to set the key if already decrypted elsewhere. This will disable the password requirement
+     * for use cases where the unencrypted key is needed. In case the encrypted key is needed, the password
+     * must also be provided to bypass its requirement.
+     * Set to null to reenable password requirement.
      * @param {Key | null} key
      * @param {Uint8Array} [password]
      */
