@@ -60,7 +60,7 @@
     transition: opacity .3s ease, left .3s ease;
 }
 
-.page-header-back-button svg {
+.page-header-back-button .nq-icon {
     width: 100%;
     height: 100%;
 }

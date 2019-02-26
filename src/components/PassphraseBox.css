@@ -16,7 +16,7 @@
     transition: opacity .3s ease;
 }
 
-.passphrase-box .cancel svg {
+.passphrase-box .cancel .nq-icon {
     width: 100%;
     height: 100%;
 }
