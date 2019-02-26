@@ -2,6 +2,11 @@
 /* global ExportWords */
 /* global Nimiq */
 
+/**
+ * @callback Export.resolve
+ * @param {KeyguardRequest.ExportResult} result
+ */
+
 class Export { // eslint-disable-line no-unused-vars
     /**
      * If a complete page is missing it will be created.
@@ -9,8 +14,8 @@ class Export { // eslint-disable-line no-unused-vars
      * Refer to the corresponsing _buildMoreExportOptions as well as
      * the Build functions of ExportWords and ExportFile to see the general Structure.
      * @param {Parsed<KeyguardRequest.ExportRequest>} request
-     * @param {Function} resolve
-     * @param {Function} reject
+     * @param {Export.resolve} resolve
+     * @param {reject} reject
      */
     constructor(request, resolve, reject) {
         this._resolve = resolve;
@@ -45,7 +50,7 @@ class Export { // eslint-disable-line no-unused-vars
 
     /**
      *
-     * @param {{success: boolean}} fileResult
+     * @param {KeyguardRequest.SimpleResult} fileResult
      */
     _fileExportSuccessful(fileResult) {
         this.exported.file = fileResult.success;
@@ -54,7 +59,7 @@ class Export { // eslint-disable-line no-unused-vars
 
     /**
      *
-     * @param {{success: boolean}} wordsResult
+     * @param {KeyguardRequest.SimpleResult} wordsResult
      */
     _wordsExportSuccessful(wordsResult) {
         this.exported.words = wordsResult.success;

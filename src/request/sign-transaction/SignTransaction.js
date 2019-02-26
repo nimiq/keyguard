@@ -7,11 +7,16 @@
 /* global TopLevelApi */
 /* global AddressInfo */
 
+/**
+ * @callback SignTransaction.resolve
+ * @param {KeyguardRequest.SignTransactionResult} result
+ */
+
 class SignTransaction {
     /**
      * @param {Parsed<KeyguardRequest.SignTransactionRequest>} request
-     * @param {Function} resolve
-     * @param {Function} reject
+     * @param {SignTransaction.resolve} resolve
+     * @param {reject} reject
      */
     constructor(request, resolve, reject) {
         this._request = request;
@@ -119,8 +124,8 @@ class SignTransaction {
 
     /**
      * @param {Parsed<KeyguardRequest.SignTransactionRequest>} request
-     * @param {Function} resolve
-     * @param {Function} reject
+     * @param {SignTransaction.resolve} resolve
+     * @param {reject} reject
      * @param {string} [passphrase]
      * @returns {Promise<void>}
      * @private
@@ -148,7 +153,9 @@ class SignTransaction {
 
         const publicKey = key.derivePublicKey(request.keyPath);
         const signature = key.sign(request.keyPath, request.transaction.serializeContent());
-        const result = /** @type {SignTransactionResult} */ {
+
+        /** @type {KeyguardRequest.SignTransactionResult} */
+        const result = {
             publicKey: publicKey.serialize(),
             signature: signature.serialize(),
         };
