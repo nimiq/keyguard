@@ -71,6 +71,8 @@ const TRANSLATIONS = {
         'sign-tx-pay-with': 'Pay with',
         'sign-tx-cancel-payment': 'Cancel payment',
 
+        'sign-msg-heading': 'Sign Message',
+
         'passphrasebox-enter-passphrase': 'Enter your password',
         'passphrasebox-protect-keyfile': 'Protect your keyfile with a password',
         'passphrasebox-repeat-password': 'Repeat your password',
@@ -79,6 +81,7 @@ const TRANSLATIONS = {
         'passphrasebox-log-out': 'Confirm logout',
         'passphrasebox-download': 'Download Login File',
         'passphrasebox-confirm-tx': 'Confirm transaction',
+        'passphrasebox-sign-msg': 'Sign message',
         'passphrasebox-password-strength-short': 'Enter at least 8 characters',
         'passphrasebox-password-strength-weak': 'That password is too weak',
         'passphrasebox-password-strength-good': 'Ok, that is an average password',
@@ -210,6 +213,8 @@ const TRANSLATIONS = {
         'sign-tx-pay-with': 'Zahle mit',
         'sign-tx-cancel-payment': 'Zahlung abbrechen',
 
+        'sign-msg-heading': 'Nachricht signieren',
+
         'passphrasebox-enter-passphrase': 'Gib dein Passwort ein',
         'passphrasebox-protect-keyfile': 'Sichere dein KeyFile mit einem Passwort',
         'passphrasebox-repeat-password': 'Wiederhole dein Passwort',
@@ -218,6 +223,7 @@ const TRANSLATIONS = {
         'passphrasebox-log-out': 'Abmeldung bestätigen',
         'passphrasebox-download': 'Login Datei herunterladen',
         'passphrasebox-confirm-tx': 'Überweisung bestätigen',
+        'passphrasebox-sign-msg': 'Nachricht signieren',
         'passphrasebox-password-strength-short': 'Gib mindestens 8 Zeichen ein',
         'passphrasebox-password-strength-weak': 'Dieses Passwort ist zu schwach',
         'passphrasebox-password-strength-good': 'Ok, das ist ein gutes Passwort',

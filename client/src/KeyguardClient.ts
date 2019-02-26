@@ -18,6 +18,7 @@ import {
     RemoveKeyRequest,
     ReleaseKeyRequest,
     SignTransactionRequest,
+    SignMessageRequest,
     SimpleRequest,
     IFrameRequest,
     Request,
@@ -141,6 +142,10 @@ export class KeyguardClient {
 
     public deriveAddress(request: DeriveAddressRequest) {
         this._redirectRequest<DeriveAddressRequest>(KeyguardCommand.DERIVE_ADDRESS, request);
+    }
+
+    public signMessage(request: SignMessageRequest) {
+        this._redirectRequest<SignMessageRequest>(KeyguardCommand.SIGN_MESSAGE, request);
     }
 
     /* IFRAME REQUESTS */
