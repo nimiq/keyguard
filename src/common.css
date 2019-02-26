@@ -32,7 +32,7 @@
     width: 100%;
     max-width: 52.5rem; /* 420px */
     min-height: 70.5rem; /* 564px */
-     /**
+    /**
      * A max-height of 77.5rem is what is set in the Accounts Manager,
      * but some pages in the Keyguard are higher (like the Identicon
      * Selector in the create request, thus leading to an ugly scroll

@@ -33,7 +33,7 @@ class ExportWords extends Nimiq.Observable {
 
         // pages
         /** @type {HTMLElement} */
-        this._$noRecovery = (document.getElementById(ExportWords.Pages.RECOVERY_WORDS_INTRO));
+        this._$noRecoveryPage = (document.getElementById(ExportWords.Pages.RECOVERY_WORDS_INTRO));
         /** @type {HTMLElement} */
         const $recoveryWordsPage = (document.getElementById(ExportWords.Pages.SHOW_WORDS));
         /** @type {HTMLElement} */
@@ -41,9 +41,9 @@ class ExportWords extends Nimiq.Observable {
 
         // elements
         /** @type {HTMLLinkElement} */
-        const $noRecoverySkip = (this._$noRecovery.querySelector('.skip-words'));
+        const $noRecoverySkip = (this._$noRecoveryPage.querySelector('.skip-words'));
         /** @type {HTMLFormElement} */
-        const $wordsPasswordBox = (this._$noRecovery.querySelector('.passphrase-box'));
+        const $wordsPasswordBox = (this._$noRecoveryPage.querySelector('.passphrase-box'));
         /** @type {HTMLElement} */
         const $recoveryWords = ($recoveryWordsPage.querySelector('.recovery-words'));
         /** @type {HTMLLinkElement} */
@@ -62,7 +62,7 @@ class ExportWords extends Nimiq.Observable {
         this._recoveryWords = new RecoveryWords($recoveryWords, false);
         this._validateWords = new ValidateWords($validateWords);
         /* eslint-disable no-new */
-        new ProgressIndicator(this._$noRecovery.querySelector('.progress-indicator'), 3, 1);
+        new ProgressIndicator(this._$noRecoveryPage.querySelector('.progress-indicator'), 3, 1);
         new ProgressIndicator($recoveryWordsPage.querySelector('.progress-indicator'), 3, 2);
         new ProgressIndicator($validateWordsPage.querySelector('.progress-indicator'), 3, 3);
         /* eslint-enable no-new */
@@ -94,40 +94,40 @@ class ExportWords extends Nimiq.Observable {
     }
 
     /**
-     * @param {string} password
+     * @param {string} [password]
      */
     async _passphraseSubmitted(password) {
         TopLevelApi.setLoading(true);
 
-        let passwordBuffer;
-        if (this._password) {
-            passwordBuffer = this._password;
-        } else if (password) {
-            passwordBuffer = Utf8Tools.stringToUtf8ByteArray(password);
-        }
-
         /** @type {Key?} */
         let key = null;
 
-        try {
-            key = await KeyStore.instance.get(this._request.keyInfo.id, passwordBuffer);
-        } catch (e) {
-            if (e.message === 'Invalid key') {
-                this._wordsPasswordBox.onPassphraseIncorrect();
-                TopLevelApi.setLoading(false);
+        if (this._key) {
+            key = this._key;
+            password = this._password;
+        } else {
+            const passwordBuffer = password ? Utf8Tools.stringToUtf8ByteArray(password) : undefined;
+
+            try {
+                key = await KeyStore.instance.get(this._request.keyInfo.id, passwordBuffer);
+            } catch (e) {
+                if (e.message === 'Invalid key') {
+                    this._wordsPasswordBox.onPassphraseIncorrect();
+                    TopLevelApi.setLoading(false);
+                    return;
+                }
+                this._reject(new Errors.CoreError(e));
                 return;
             }
-            this._reject(new Errors.CoreError(e));
-            return;
+
+            if (!key) {
+                this._reject(new Errors.KeyNotFoundError());
+                return;
+            }
+            this.fire(ExportWords.Events.KEY_CHANGED, key, password);
         }
 
-        if (!key) {
-            this._reject(new Errors.KeyNotFoundError());
-            return;
-        }
-
-        this.setKey(key, passwordBuffer);
-        this.fire(ExportWords.Events.KEY_CHANGED, key, passwordBuffer);
+        this.setKey(key, password);
         window.location.hash = ExportWords.Pages.SHOW_WORDS;
         TopLevelApi.setLoading(false);
     }
@@ -135,8 +135,8 @@ class ExportWords extends Nimiq.Observable {
     /**
      * Used to set the key if already decrypted elsewhere. This will disable the passphrase requirement.
      * Set to null to re-enable passphrase requirement.
-     * @param {Key | null} key
-     * @param {Uint8Array} [password]
+     * @param {Key?} key
+     * @param {string} [password]
      */
     setKey(key, password) {
         this._key = key;
@@ -147,7 +147,7 @@ class ExportWords extends Nimiq.Observable {
             } else if (this._key.secret instanceof Nimiq.Entropy) {
                 words = Nimiq.MnemonicUtils.entropyToMnemonic(this._key.secret);
             } else {
-                this._reject(new Errors.KeyguardError('Unknown mnemonic type'));
+                this._reject(new Errors.KeyguardError('Unknown secret type'));
                 return;
             }
 
@@ -159,7 +159,6 @@ class ExportWords extends Nimiq.Observable {
 
         this._recoveryWords.setWords(words);
         this._validateWords.setWords(words);
-        this._$noRecovery.classList.toggle('key-active', this._key !== null);
     }
 }
 

@@ -43,6 +43,10 @@ class KeyInfo {
         return this._encrypted;
     }
 
+    set encrypted(encrypted) {
+        this._encrypted = encrypted;
+    }
+
     /**
      * @type {boolean}
      */

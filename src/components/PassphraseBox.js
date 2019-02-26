@@ -96,7 +96,9 @@ class PassphraseBox extends Nimiq.Observable {
     }
 
     focus() {
-        this._passphraseInput.focus();
+        if (!this.options.hideInput) {
+            this._passphraseInput.focus();
+        }
     }
 
     reset() {

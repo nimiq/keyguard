@@ -1,4 +1,4 @@
-li.nq-icon {
+ul.nq-list li {
     width: auto;
     height: auto;
     display: flex;
@@ -7,7 +7,7 @@ li.nq-icon {
     margin-bottom: 2rem;
 }
 
-li.nq-icon > svg {
+ul.nq-list li > .nq-icon {
     position: absolute;
     display: flex;
     background-size: cover;
@@ -21,7 +21,6 @@ li.nq-icon > svg {
 .page#validate-words .page-body {
     display: flex;
     flex-direction: column;
-    flex-grow: 1;
     padding-bottom: 1rem;
 }
 
@@ -55,7 +54,7 @@ li.nq-icon > svg {
     justify-content: space-evenly;
 }
 
-.page#recovery-words-intro li.nq-icon > svg {
+.page#recovery-words-intro li > .nq-icon {
     color: var(--nimiq-orange);
 }
 
@@ -65,6 +64,7 @@ li.nq-icon > svg {
     align-items: center;
     justify-content: space-around;
 }
+
 .page#login-file-unlock .nq-card-body .nq-icon {
     width: 8rem;
     height: auto;
@@ -83,7 +83,7 @@ li.nq-icon > svg {
     text-align: center;
 }
 
-.page#login-file-intro li.nq-icon > svg {
+.page#login-file-intro li > .nq-icon {
     opacity: 0.3;
 }
 
@@ -148,8 +148,4 @@ li.nq-icon > svg {
 .skip-words:hover .nq-icon,
 .skip-words:focus .nq-icon {
     transform: translate3D(-0.25rem, 0, 0);
-}
-
-.nq-text.nq-light-blue {
-    color: var(--nimiq-light-blue); /* to be removed after .nq-text has less priority than .nq-light-blue */
 }

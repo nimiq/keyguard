@@ -1,4 +1,3 @@
-/* global Constants */
 /* global Nimiq */
 /* global Key */
 /* global KeyInfo */
@@ -155,7 +154,7 @@ class KeyStore {
             hasPin: key.hasPin,
             secret: buffer.subarray(0, buffer.byteLength),
             hash: key.hash,
-            defaultAddress: key.deriveAddress(Constants.DEFAULT_DERIVATION_PATH).serialize(),
+            defaultAddress: key.defaultAddress.serialize(),
         };
 
         const existingKey = keys.find(k => k.hash === key.hash);

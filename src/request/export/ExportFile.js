@@ -46,8 +46,6 @@ class ExportFile extends Nimiq.Observable {
         const $loginFileIcon = ($setPasswordPage.querySelector('.login-file-icon'));
         /** @type {HTMLFormElement} */
         const $passwordBox = ($unlockFilePage.querySelector('.password-box'));
-        /** @type {HTMLAnchorElement} */
-        const $downloadKeyFile = ($unlockFilePage.querySelector('.download-key-file'));
         /** @type {HTMLFormElement} */
         const $passwordSetterBox = ($setPasswordPage.querySelector('.password-setter-box'));
         /** @type {HTMLAnchorElement} */
@@ -61,7 +59,6 @@ class ExportFile extends Nimiq.Observable {
                 hideCancel: true,
             },
         );
-        this._downloadKeyfile = new DownloadLoginFile($downloadKeyFile);
         this._passwordSetterBox = new PassphraseSetterBox($passwordSetterBox);
         this._loginFileIcon = new LoginFileIcon($loginFileIcon);
         this._downloadLoginFile = new DownloadLoginFile($downloadLoginFile);
@@ -76,7 +73,7 @@ class ExportFile extends Nimiq.Observable {
         $fileButton.addEventListener('click', async () => {
             if (this._request.keyInfo.encrypted) {
                 if (this._key && this._password) {
-                    await this._passwordSubmitted('');
+                    await this._passwordSubmitted(this._password);
                 } else {
                     this._passwordBox.reset();
                     window.location.hash = ExportFile.Pages.LOGIN_FILE_UNLOCK;
@@ -95,7 +92,11 @@ class ExportFile extends Nimiq.Observable {
         });
 
         this._passwordBox.on(PassphraseBox.Events.SUBMIT, async password => {
-            await this._passwordSubmitted(password);
+            if (this._key && this._password) {
+                await this._passwordSubmitted(this._password);
+            } else {
+                await this._passwordSubmitted(password);
+            }
         });
 
         this._passwordSetterBox.on(PassphraseSetterBox.Events.ENTERED, async () => {
@@ -128,12 +129,7 @@ class ExportFile extends Nimiq.Observable {
     async _passwordSubmitted(password) {
         TopLevelApi.setLoading(true);
 
-        let passwordBuffer;
-        if (this._password) {
-            passwordBuffer = this._password;
-        } else if (password) {
-            passwordBuffer = Utf8Tools.stringToUtf8ByteArray(password);
-        }
+        const passwordBuffer = password ? Utf8Tools.stringToUtf8ByteArray(password) : undefined;
 
         /** @type {Key?} */
         let key = null;
@@ -153,8 +149,8 @@ class ExportFile extends Nimiq.Observable {
             return;
         }
 
-        this.setKey(key, passwordBuffer);
-        this.fire(ExportFile.Events.KEY_CHANGED, key, passwordBuffer);
+        this.setKey(key, password);
+        this.fire(ExportFile.Events.KEY_CHANGED, key, password);
         await this._goToLoginFileDownload();
 
         TopLevelApi.setLoading(false);
@@ -171,24 +167,19 @@ class ExportFile extends Nimiq.Observable {
             return;
         }
 
-        this._key.hasPin = false;
-        this._password = password ? Utf8Tools.stringToUtf8ByteArray(password) : undefined;
-        await KeyStore.instance.put(this._key, this._password);
+        const passwordBuffer = password ? Utf8Tools.stringToUtf8ByteArray(password) : undefined;
+        await KeyStore.instance.put(this._key, passwordBuffer);
 
-        const keyInfo = await KeyStore.instance.getInfo(this._key.id);
-        if (!keyInfo) {
-            this._reject(new Errors.KeyNotFoundError());
-            return;
-        }
-        this._request.keyInfo = keyInfo;
+        this._request.keyInfo.encrypted = true;
 
-        this.fire(ExportFile.Events.KEY_CHANGED, this._key, this._password);
+        this.fire(ExportFile.Events.KEY_CHANGED, this._key, password);
         await this._goToLoginFileDownload();
     }
 
     async _goToLoginFileDownload() {
         if (this._password && this._key && this._key.secret instanceof Nimiq.Entropy) {
-            const encryptedSecret = await this._key.secret.exportEncrypted(this._password);
+            const passwordBuffer = Utf8Tools.stringToUtf8ByteArray(this._password);
+            const encryptedSecret = await this._key.secret.exportEncrypted(passwordBuffer);
 
             this._downloadLoginFile.setEncryptedEntropy(
                 /** @type {Nimiq.SerialBuffer} */ (encryptedSecret),
@@ -201,7 +192,7 @@ class ExportFile extends Nimiq.Observable {
 
             window.location.hash = ExportFile.Pages.LOGIN_FILE_DOWNLOAD;
         } else {
-            this._reject(new Errors.KeyguardError('key or password missing'));
+            this._reject(new Errors.KeyguardError('Key or password missing'));
         }
     }
 
@@ -210,8 +201,8 @@ class ExportFile extends Nimiq.Observable {
      * for use cases where the unencrypted key is needed. In case the encrypted key is needed, the password
      * must also be provided to bypass its requirement.
      * Set to null to reenable password requirement.
-     * @param {Key | null} key
-     * @param {Uint8Array} [password]
+     * @param {Key?} key
+     * @param {string} [password]
      */
     setKey(key, password) {
         this._key = key;
