@@ -70,7 +70,7 @@ class RecoveryWords extends Nimiq.Observable {
 
                 const $wordNumber = document.createElement('span');
                 $wordNumber.classList.add('word-number');
-                $wordNumber.innerText = `${i <= 8 ? '0' : ''}${i + 1}`;
+                $wordNumber.textContent = `${i <= 8 ? '0' : ''}${i + 1}`;
 
                 const word = document.createElement('div');
                 word.classList.add('word', 'complete');
