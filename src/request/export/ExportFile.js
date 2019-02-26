@@ -166,9 +166,23 @@ class ExportFile extends Nimiq.Observable {
      * @param {string} password
      */
     async _setPassword(password) {
+        TopLevelApi.setLoading(true);
+
         if (!this._key || !this._key.id) {
-            // this should never happen
-            this._reject(new Errors.KeyguardError('KeyId not set'));
+            try {
+                this._key = await KeyStore.instance.get(this._request.keyInfo.id);
+            } catch (e) {
+                if (e.message === 'Invalid key') {
+                    TopLevelApi.setLoading(false);
+                    this._passwordBox.onPassphraseIncorrect();
+                    return;
+                }
+                this._reject(new Errors.CoreError(e));
+                return;
+            }
+        }
+        if (!this._key) {
+            this._reject(new Errors.KeyNotFoundError());
             return;
         }
 
@@ -177,8 +191,11 @@ class ExportFile extends Nimiq.Observable {
 
         this._request.keyInfo.encrypted = true;
 
+        this._password = password;
         this.fire(ExportFile.Events.KEY_CHANGED, this._key, password);
         await this._goToLoginFileDownload();
+
+        TopLevelApi.setLoading(false);
     }
 
     async _goToLoginFileDownload() {
