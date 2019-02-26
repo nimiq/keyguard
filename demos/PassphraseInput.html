@@ -10,20 +10,28 @@
     <h2>Passphrase Setter</h2>
 </div>
 
-<div id="passphrase-getter-container">
+<div id="passphrase-getter-container" style="display: none;">
     <h2>Passphrase Getter</h2>
 </div>
 
 <link href="../src/nimiq-style.css" rel="stylesheet">
+<link href="../node_modules/@nimiq/style/nimiq-style.min.css" rel="stylesheet">
+<link href="../src/common.css" rel="stylesheet">
 <link href="../src/components/PassphraseInput.css" rel="stylesheet">
+<link href="../src/components/PassphraseBox.css" rel="stylesheet">
 
 <script type="text/javascript" src="../node_modules/@nimiq/core-web/web-offline.js"></script>
 <script type="text/javascript" src="../src/lib/I18n.js"></script>
 <script type="text/javascript" src="../src/translations/index.js"></script>
+<script type="text/javascript" src="../src/lib/PasswordStrength.js"></script>
 <script type="text/javascript" src="../src/components/PassphraseInput.js"></script>
+<script type="text/javascript" src="../src/components/PassphraseBox.js"></script>
+<script type="text/javascript" src="../src/components/PassphraseSetterBox.js"></script>
 <script type="text/javascript">
-    const passphraseSetter = new PassphraseInput(true);
-    const passphraseGetter = new PassphraseInput();
+    I18n.initialize(window.TRANSLATIONS, 'en');
+    const passphraseSetter = new PassphraseSetterBox();
+    const passphraseGetter = new PassphraseBox();
+
     const passphraseSetterContainer = document.getElementById('passphrase-setter-container');
     const passphraseGetterContainer = document.getElementById('passphrase-getter-container');
     passphraseGetterContainer.style.display = 'none';
@@ -32,17 +40,22 @@
     passphraseGetterContainer.appendChild(passphraseGetter.getElement());
 
     let chosenPassphrase;
-    passphraseSetter.on(PassphraseInput.Events.PASSPHRASE_ENTERED, passphrase => {
+    passphraseSetter.on(PassphraseSetterBox.Events.SUBMIT, passphrase => {
         chosenPassphrase = passphrase;
         passphraseGetterContainer.style.display = 'block';
+        passphraseGetter.focus();
     });
-    passphraseGetter.on(PassphraseInput.Events.PASSPHRASE_ENTERED, passphrase => {
+    passphraseSetter.on(PassphraseSetterBox.Events.SKIP, passphrase => {
+        // passphraseGetter.hideInput(true);
+        passphraseGetterContainer.style.display = 'block';
+    });
+    passphraseGetter.on(PassphraseBox.Events.SUBMIT, passphrase => {
         if (passphrase === chosenPassphrase) {
             passphraseGetter.reset();
-            alert('Yippie, Pass Phrase was correct.');
+            alert('Yippie, password was correct :)');
         } else {
             passphraseGetter.onPassphraseIncorrect();
-            alert('Pass Phrase was wrong.');
+            alert('Password was wrong :(');
         }
     });
 

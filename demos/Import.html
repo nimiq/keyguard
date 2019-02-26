@@ -9,24 +9,28 @@
 <link href="../src/nimiq-style.css" rel="stylesheet">
 
 <div>
-    <button id="import-words">Import from words</button>
-    <button id="import-file">Import from file</button>
+    <button id="import">Import</button>
+    <br><br>
+    <textarea id="result" rows=20 cols=60></textarea>
 </div>
 
 <script>
-    document.querySelector('#import-words').addEventListener('click', () => requestImport('words'));
-    document.querySelector('#import-file').addEventListener('click', () => requestImport('file'));
+    document.querySelector('#import').addEventListener('click', () => requestImport());
 
-    async function requestImport(type) {
-        const keyguard = window.open(`../src/request/import-${type}/`, 'keyguard');
+    async function requestImport() {
+        const keyguard = window.open(`../src/request/import/`, 'CreateDemo',
+            `left=${window.innerWidth / 2 - 350},top=75,width=700,height=850,location=yes,dependent=yes`);
         const rpc = new Rpc.PostMessageRpcClient(keyguard, '*');
         await rpc.init();
 
         try {
             const result = await rpc.call('request', {
-                defaultKeyPath: "m/242'/0'/0'"
+                appName: 'Import Demo',
+                defaultKeyPath: "m/44'/242'/0'/0'",
+                requestedKeyPaths: ["m/44'/242'/0'/0'"],
             });
-            console.log('Keyguard result', result);
+            document.getElementById('result').value = 'Keyguard result: ' + JSON.stringify(result);
+            console.log('Keyguard result:', result);
         } catch (e) {
             console.error(e);
         }

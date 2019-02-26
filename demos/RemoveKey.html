@@ -12,36 +12,35 @@
 <body>
 
 <div>
-    <button>Remove Key API</button>
-    password: 1234567890
+    <button>Remove Key</button>
 </div>
 
 <script>
     (async () => {
-        // Because the mocked KeyStore.prototype.get function below is defined in this
-        // window's scope, Nimiq also needs to be defined and initialized here
         await Nimiq.WasmHelper.doImportBrowser();
-        Nimiq.GenesisConfig.test();
+        // Nimiq.GenesisConfig.test();
     })();
 
     document.querySelector('button').addEventListener('click', async () => {
-        const keyguard = window.open('../src/request/remove-key/');
+        const keyguard = window.open('../src/request/remove-key/', 'CreateDemo',
+            `left=${window.innerWidth / 2 - 350},top=75,width=700,height=850,location=yes,dependent=yes`);
         const rpc = new Rpc.PostMessageRpcClient(keyguard, '*');
         await rpc.init();
 
-        const secret = Nimiq.Entropy.generate().serialize();
-        const key = new Key(secret, Key.Type.BIP39);
+        const secret = Nimiq.Entropy.generate();
+        const key = new Key(secret);
         const passphrase = Nimiq.BufferUtils.fromAscii('1234567890');
-        await KeyStore.instance.put(key, passphrase);
+        const id = await KeyStore.instance.put(key, passphrase);
 
-        const delRequest = {
-            keyId: key.id,
-            keyLabel: "Main Login"
+        const removeRequest = {
+            appName: 'Remove Demo',
+            keyId: id,
+            keyLabel: 'My Demo Account',
         };
 
         try {
-            const result = await rpc.call('request', delRequest);
-            document.body.appendChild(document.createTextNode(`Result: Key removed: ${result}; `));
+            const result = await rpc.call('request', removeRequest);
+            document.body.appendChild(document.createTextNode(`Result: ${JSON.stringify(result)}; `));
         } catch (e) {
             document.body.appendChild(document.createTextNode(`Error: ${e.message || e}; `));
         }
