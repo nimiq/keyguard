@@ -59,7 +59,6 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono&text=0123456789ABCDEFGHJKLMNPQRSTUVXY">
 
     <link rel="stylesheet" bundle-toplevel href="../../../node_modules/@nimiq/style/nimiq-style.min.css">
-    <link rel="stylesheet" bundle-toplevel href="../../../node_modules/@nimiq/style/nimiq-style-icons.min.css">
     <link rel="stylesheet" bundle-toplevel href="../../nimiq-style.css">
     <link rel="stylesheet" bundle-toplevel href="../../common.css">
     <link rel="stylesheet" bundle-toplevel href="../../components/PassphraseInput.css">
@@ -71,6 +70,8 @@
     <link rel="stylesheet" href="../../components/RecoveryWords.css">
     <link rel="stylesheet" href="../../components/DownloadLoginFile.css">
     <link rel="stylesheet" href="./Import.css">
+
+    <link rel="preload" href="../../lib/QrScannerWorker.js" as="worker">
 </head>
 <body class="loading">
     <div class="header-top">
@@ -85,7 +86,9 @@
             <!-- enter recovery words -->
             <form id="recovery-words" class="page nq-card flipped nq-blue-bg">
                 <div class="page-header nq-card-header">
-                    <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
+                    <a tabindex="0" class="page-header-back-button">
+                        <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
+                    </a>
                     <h1 data-i18n="import-heading-enter-recovery-words" class="nq-h1">Enter Recovery Words</h1>
                 </div>
 
@@ -99,16 +102,16 @@
             <!-- Set Passphrase -->
             <div id="set-password" class="page nq-card">
                 <div class="page-header nq-card-header">
-                    <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
+                    <a tabindex="0" class="page-header-back-button">
+                        <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
+                    </a>
                     <h1 class="nq-h1" data-i18n="create-heading-create-password">Create a password</h1>
                 </div>
 
                 <div class="page-body nq-card-body">
                     <p data-i18n="import-words-file-available" class="nq-light-blue nq-text login-file-available">Using the Recovery Words creates a new Login File. Create a password to secure it.</p>
                     <p data-i18n="import-words-file-unavailable" class="nq-light-blue nq-text login-file-unavailable">Using the Recovery Words creates a new Account. Create a password to secure it.</p>
-                    <div class="flex-grow"></div>
-                    <div class="nq-icon login-file-icon"></div>
-                    <div class="flex-grow"></div>
+                    <div class="login-file-icon"></div>
                 </div>
 
                 <div class="page-footer">
@@ -118,7 +121,9 @@
 
             <div id="download-file" class="page nq-card">
                 <div class="page-header nq-card-header">
-                    <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
+                    <a tabindex="0" class="page-header-back-button">
+                        <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
+                    </a>
                     <h1 class="nq-h1" data-i18n="import-words-download-loginfile">Download your Login File</h1>
                 </div>
 
@@ -141,14 +146,17 @@
                         Login with Recovery Words
                     </button>
                     <a class="nq-text-s nq-blue" id="goto-create" href="#">
-                        <span data-i18n="import-create-account">Create new Account</span><i class="nq-icon chevron-right"></i>
+                        <span data-i18n="import-create-account">Create new Account</span>
+                        <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-caret-right-small"/></svg>
                     </a>
                 </div>
             </div>
 
             <div id="unlock-account" class="page nq-card">
                 <div class="page-header nq-card-header">
-                    <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
+                    <a tabindex="0" class="page-header-back-button">
+                        <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
+                    </a>
                     <h1 data-i18n="import-unlock-account" class="nq-h1">Unlock your account</h1>
                 </div>
 
@@ -157,14 +165,17 @@
                 </div>
 
                 <div class="page-footer">
-                    <i class="nq-icon lock-locked"></i>
+                    <svg class="nq-icon lock">
+                        <use class="lock-locked" xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-lock-locked"/>
+                        <use class="lock-unlocked" xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-lock-unlocked"/>
+                    </svg>
                     <form class="passphrase-box"></form>
                 </div>
             </div>
         </div>
 
         <button class="global-close nq-button-s display-none">
-            <span class="nq-icon arrow-left"></span>
+            <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left-small"/></svg>
             <span id="global-close-text"></span>
         </button>
 

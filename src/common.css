@@ -57,12 +57,17 @@
     left: 4rem;
     cursor: pointer;
     opacity: 0.4;
-    transition: opacity .3s ease, left .4s ease;
+    transition: opacity .3s ease, left .3s ease;
+}
+
+.page-header-back-button .nq-icon {
+    width: 100%;
+    height: 100%;
 }
 
 .page-header-back-button:hover,
 .page-header-back-button:focus {
-    opacity: .7; /* TODO Ideally, we could change the color to --nimiq-light-blue on :focus instead, but this works for now */
+    opacity: 1;
     left: 3.625rem;
     outline: none;
 }
@@ -77,10 +82,10 @@
     content: '';
     display: block;
     position: absolute;
-    left: -2rem;
-    top: -2rem;
-    right: -2rem;
-    bottom: -2rem;
+    left: -1.5rem;
+    top: -1.5rem;
+    right: -1.5rem;
+    bottom: -1.5rem;
 }
 
 .page-body {
@@ -171,9 +176,10 @@
     margin-bottom: 5rem;
 }
 
-.global-close .arrow-left {
+.global-close .nq-icon {
     vertical-align: top;
     margin-right: 0.25rem;
+    margin-top: 0.125rem;
 }
 
 .actionbox {

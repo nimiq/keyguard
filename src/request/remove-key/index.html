@@ -61,7 +61,6 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono&text=0123456789ABCDEFGHJKLMNPQRSTUVXY">
 
     <link rel="stylesheet" bundle-toplevel href="../../../node_modules/@nimiq/style/nimiq-style.min.css">
-    <link rel="stylesheet" bundle-toplevel href="../../../node_modules/@nimiq/style/nimiq-style-icons.min.css">
     <link rel="stylesheet" bundle-toplevel href="../../nimiq-style.css">
     <link rel="stylesheet" bundle-toplevel href="../../common.css">
     <link rel="stylesheet" bundle-toplevel href="../../components/PassphraseInput.css">
@@ -89,10 +88,12 @@
             <!-- Remove key-->
             <div class="page nq-card" id="remove-key">
 
-                <div class="page-header nq-card-header">
-                    <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
-                    <h1 data-i18n="remove-key-heading" class="nq-h1">Don't lose access</h1>
-                </div>
+            <div class="page-header nq-card-header">
+                <a tabindex="0" class="page-header-back-button">
+                    <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
+                </a>
+                <h1 data-i18n="remove-key-heading" class="nq-h1">Don't lose access</h1>
+            </div>
 
                 <div class="page-body nq-card-body">
                     <div class="row center">
@@ -340,9 +341,7 @@
         </div>
 
         <button class="global-close nq-button-s display-none">
-            <svg class="nq-icon">
-                <use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left-small"/>
-            </svg>
+            <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left-small"/></svg>
             <span id="global-close-text"></span>
         </button>
 

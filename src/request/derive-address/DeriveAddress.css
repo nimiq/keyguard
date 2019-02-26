@@ -15,11 +15,10 @@
     flex-grow: 1;
 }
 
-.nq-icon.locked {
+.page#unlock .nq-icon.locked {
     width: 8rem;
     height: 11.52875rem;
     flex-shrink: 0;
-    background-image: url('data:image/svg+xml,<svg width="66" height="93" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M60 45V26C60 12 48 0 33 0S6 12 6 26v19c-9 13-6 30 6 40s30 10 42 0 15-27 6-40zM33 69c-4 0-8-3-8-8 0-4 4-7 8-7s8 3 8 7c0 5-4 8-8 8zm16-35l1-2v-6c0-9-8-16-17-16s-17 7-17 16v6l1 2h2c9-4 19-4 28 0h2z" fill="%231F2348"/></svg>');
     opacity: 0.4;
 }
 

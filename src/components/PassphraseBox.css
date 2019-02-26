@@ -7,22 +7,28 @@
     position: absolute;
     right: 1.25rem;
     top: 1.25rem;
-    opacity: 0.8;
-    width: 3.25rem;
-    height: 3.25rem;
+    opacity: 0.5;
+    width: 3rem;
+    height: 3rem;
     background-size: 3.75rem;
     z-index: 100;
     cursor: pointer;
+    transition: opacity .3s ease;
+}
+
+.passphrase-box .cancel .nq-icon {
+    width: 100%;
+    height: 100%;
 }
 
 .passphrase-box .cancel::after {
     content: '';
     display: block;
     position: absolute;
-    left: -2rem;
-    top: -2rem;
-    right: -2rem;
-    bottom: -2rem;
+    left: -1.5rem;
+    top: -1.5rem;
+    right: -1.5rem;
+    bottom: -1.5rem;
 }
 
 .passphrase-box .cancel:hover {
@@ -67,7 +73,7 @@
 }
 
 .passphrase-box.hide-cancel .cancel {
-    display:none;
+    display: none;
 }
 
 .passphrase-box .prompt {
@@ -116,10 +122,8 @@
 }
 
 .passphrase-box .password-skip .nq-icon {
-    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" color="white" viewBox="0 0 10 17"><polygon fill="currentColor" points="1.43,17 0,15.58 7.13,8.5 0,1.42 1.43,0 10,8.5 "/></svg>');
-    margin-left: 0.5rem;
-    height: 0.875rem;
-    width: 0.875rem;
+    font-size: 1.375rem;
+    margin-bottom: -0.125rem;
     transition: transform .3s ease;
 }
 
@@ -151,11 +155,4 @@
 .passphrase-box .passphrase-input .eye-button {
     top: 1.5rem;
     left: 2rem;
-    opacity: .5;
-    transition: opacity .3s ease;
-}
-
-.passphrase-box .passphrase-input .eye-button:hover,
-.passphrase-box .passphrase-input .eye-button:focus {
-    opacity: 1;
 }

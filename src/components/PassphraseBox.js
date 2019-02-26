@@ -68,7 +68,11 @@ class PassphraseBox extends Nimiq.Observable {
         if (!buttonVersions[options.buttonI18nTag]) throw new Error('PassphraseBox button i18n tag not defined');
 
         $el.innerHTML = `
-            <a class="cancel nq-icon cancel-circle-white"></a>
+            <a class="cancel">
+                <svg class="nq-icon">
+                    <use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-close"/>
+                </svg>
+            </a>
             <div class="prompt nq-text-s" data-i18n="passphrasebox-enter-passphrase">Enter your password</div>
             <div passphrase-input></div>
             ${buttonVersions[options.buttonI18nTag]}
