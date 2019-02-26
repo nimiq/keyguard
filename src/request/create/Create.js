@@ -8,11 +8,16 @@
 /* global TopLevelApi */
 /* global Identicon */
 
+/**
+ * @callback Create.resolve
+ * @param {KeyguardRequest.KeyResult} result
+ */
+
 class Create {
     /**
      * @param {KeyguardRequest.CreateRequest} request
-     * @param {Function} resolve
-     * @param {Function} reject
+     * @param {Create.resolve} resolve
+     * @param {reject} reject
      */
     constructor(request, resolve, reject) {
         this._resolve = resolve;

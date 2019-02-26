@@ -8,11 +8,16 @@
 /* global Errors */
 /* global TopLevelApi */
 
+/**
+ * @callback SignMessage.resolve
+ * @param {KeyguardRequest.SignMessageResult} result
+ */
+
 class SignMessage {
     /**
      * @param {Parsed<KeyguardRequest.SignMessageRequest>} request
-     * @param {Function} resolve
-     * @param {Function} reject
+     * @param {SignMessage.resolve} resolve
+     * @param {reject} reject
      */
     constructor(request, resolve, reject) {
         /** @type {HTMLDivElement} */
@@ -57,8 +62,8 @@ class SignMessage {
 
     /**
      * @param {Parsed<KeyguardRequest.SignMessageRequest>} request
-     * @param {Function} resolve
-     * @param {Function} reject
+     * @param {SignMessage.resolve} resolve
+     * @param {reject} reject
      * @param {string} [passphrase]
      * @returns {Promise<void>}
      * @private
@@ -98,11 +103,12 @@ class SignMessage {
 
         const signingResult = key.signMessage(request.keyPath, request.message);
 
-        const result = /** @type {KeyguardRequest.SignMessageResult} */ ({
+        /** @type {KeyguardRequest.SignMessageResult} */
+        const result = {
             publicKey: publicKey.serialize(),
             signature: signingResult.signature.serialize(),
             data: signingResult.data,
-        });
+        };
         resolve(result);
     }
 

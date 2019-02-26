@@ -6,11 +6,16 @@
 /* global Utf8Tools */
 /* global TopLevelApi */
 
+/**
+ * @callback DeriveAddress.resolve
+ * @param {KeyguardRequest.DeriveAddressResult} result
+ */
+
 class DeriveAddress {
     /**
      * @param {Parsed<KeyguardRequest.DeriveAddressRequest>} request
-     * @param {Function} resolve
-     * @param {Function} reject
+     * @param {DeriveAddress.resolve} resolve
+     * @param {reject} reject
      */
     constructor(request, resolve, reject) {
         this._request = request;

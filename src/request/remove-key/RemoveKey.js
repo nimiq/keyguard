@@ -4,11 +4,16 @@
 /* global TopLevelApi */
 /* global Constants */
 
+/**
+ * @callback RemoveKey.resolve
+ * @param {KeyguardRequest.SimpleResult} result
+ */
+
 class RemoveKey {
     /**
      * @param {Parsed<KeyguardRequest.RemoveKeyRequest>} request
-     * @param {Function} resolve
-     * @param {Function} reject
+     * @param {RemoveKey.resolve} resolve
+     * @param {reject} reject
      */
     constructor(request, resolve, reject) {
         this._resolve = resolve;

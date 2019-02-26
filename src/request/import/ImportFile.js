@@ -10,11 +10,16 @@
 /* global Utf8Tools */
 /* global KeyStore */
 
+/**
+ * @callback ImportFile.resolve
+ * @param {KeyguardRequest.KeyResult} result
+ */
+
 class ImportFile {
     /**
      * @param {KeyguardRequest.ImportRequest} request
-     * @param {Function} resolve
-     * @param {Function} reject
+     * @param {ImportFile.resolve} resolve
+     * @param {reject} reject
      */
     constructor(request, resolve, reject) {
         this._request = request;

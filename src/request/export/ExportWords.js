@@ -10,14 +10,19 @@
 /* global Utf8Tools */
 /* global TopLevelApi */
 
+/**
+ * @callback ExportWords.resolve
+ * @param {KeyguardRequest.SimpleResult} result
+ */
+
 class ExportWords extends Nimiq.Observable {
     /**
      * if a complete page is missing it will be created.
      * However these pages wil be the default pages which usually don't match the applications requirements.
      * Refer to the corresponsing _build(Privcy | RecoveryWords | ValidateWords) to see the general Structure.
      * @param {Parsed<KeyguardRequest.SimpleRequest>} request
-     * @param {Function} resolve
-     * @param {Function} reject
+     * @param {ExportWords.resolve} resolve
+     * @param {reject} reject
      */
     constructor(request, resolve, reject) {
         super();

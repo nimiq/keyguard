@@ -15,11 +15,16 @@
 /* global TopLevelApi */
 /* global Utf8Tools */
 
+/**
+ * @callback ImportWords.resolve
+ * @param {KeyguardRequest.KeyResult} result
+ */
+
 class ImportWords {
     /**
      * @param {KeyguardRequest.ImportRequest} request
-     * @param {Function} resolve
-     * @param {Function} reject
+     * @param {ImportWords.resolve} resolve
+     * @param {reject} reject
      */
     constructor(request, resolve, reject) {
         this._request = request;
