@@ -68,6 +68,8 @@ describe('IframeApi', () => {
     });
 
     it('can migrate by setting the migration flag on iOS', async () => {
+        await Dummy.Utils.createDummyAccountStore();
+
         let cookieSet = false;
         spyOn(BrowserDetection, 'isIOS').and.returnValue(true);
         spyOnProperty(document, 'cookie', 'set').and.callFake((/** @type {string} */ cookie) => {
@@ -79,11 +81,19 @@ describe('IframeApi', () => {
 
         expect(cookieSet).toBe(true);
         expect(KeyStore.instance.migrateAccountsToKeys).not.toHaveBeenCalled();
+
+        const accountsDbAfter = await AccountStore.instance.connect();
+        expect(accountsDbAfter).not.toBe(null);
+
+        Dummy.Utils.deleteDummyAccountStore();
     });
 
     it('can migrate by copying keys from deprecated accounts on non-iOS', async () => {
         await Dummy.Utils.createDummyAccountStore();
         spyOn(BrowserDetection, 'isIOS').and.returnValue(false);
+
+        const accountsDbBefore = await AccountStore.instance.connect();
+        expect(accountsDbBefore).not.toBe(null);
 
         await iframeApi.migrateAccountsToKeys(null);
         expect(KeyStore.instance.migrateAccountsToKeys).toHaveBeenCalled();
@@ -95,6 +105,9 @@ describe('IframeApi', () => {
             const expectedKeyRecord = /** @type {StoredKeyRecord} */(Dummy.storedKeyRecords().find(record => record.id === id));
             expect(keyRecord).toEqual(expectedKeyRecord);
         }
+
+        const accountsDb = await AccountStore.instance.connect();
+        expect(accountsDb).toBe(null);
 
         await Promise.all([
             Dummy.Utils.deleteDummyAccountStore(),

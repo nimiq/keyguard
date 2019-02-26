@@ -113,6 +113,10 @@ describe('KeyStore', () => {
             Dummy.Utils.deleteDummyKeyStore(),
             Dummy.Utils.createDummyAccountStore(),
         ]);
+
+        const accountsDbBefore = await AccountStore.instance.connect();
+        expect(accountsDbBefore).not.toBe(null);
+
         spyOn(BrowserDetection, 'isIOS').and.returnValue(false);
 
         let cookieSet = false;
@@ -126,7 +130,8 @@ describe('KeyStore', () => {
         const key1 = await KeyStore.instance._get(Dummy.keyInfos()[0].id);
         expect(key1).toEqual(Dummy.storedKeyRecords()[0]);
 
-        // TODO: Expect Accounts DB to be deleted
+        const accountsDbAfter = await AccountStore.instance.connect();
+        expect(accountsDbAfter).toBe(null);
 
         await Dummy.Utils.deleteDummyAccountStore();
     });
@@ -137,6 +142,10 @@ describe('KeyStore', () => {
             Dummy.Utils.deleteDummyKeyStore(),
             Dummy.Utils.createDummyAccountStore(),
         ]);
+
+        const accountsDbBefore = await AccountStore.instance.connect();
+        expect(accountsDbBefore).not.toBe(null);
+
         spyOn(BrowserDetection, 'isIOS').and.returnValue(true);
 
         let migrationCookieDeleted = false,
@@ -157,7 +166,8 @@ describe('KeyStore', () => {
         const key1 = await KeyStore.instance._get(Dummy.keyInfos()[0].id);
         expect(key1).toEqual(Dummy.storedKeyRecords()[0]);
 
-        // TODO: Expect Accounts DB to not be deleted
+        const accountsDb = await AccountStore.instance.connect();
+        expect(accountsDb).toBe(null);
 
         await Dummy.Utils.deleteDummyAccountStore();
     });

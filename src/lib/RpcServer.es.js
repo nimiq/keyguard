@@ -73,12 +73,13 @@ class UrlRpcEncoder {
      * @returns {string}
      */
     static prepareRedirectReply(state, status, result) {
-        const params = new URLSearchParams();
+        const returnUrl = new URL(/** @type {string} */ (state.returnURL));
+        const params = returnUrl.searchParams;
         params.set('status', status);
         params.set('result', JsonUtils.stringify(result));
         params.set('id', state.id.toString());
-        // TODO: what if it already includes a query string
-        return `${state.returnURL}?${params.toString()}`;
+
+        return returnUrl.href;
     }
 }
 
