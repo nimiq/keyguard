@@ -125,9 +125,9 @@ class ExportWords extends Nimiq.Observable {
                 return;
             }
             this.fire(ExportWords.Events.KEY_CHANGED, key, password);
+            this.setKey(key, password);
         }
 
-        this.setKey(key, password);
         window.location.hash = ExportWords.Pages.SHOW_WORDS;
         TopLevelApi.setLoading(false);
     }
