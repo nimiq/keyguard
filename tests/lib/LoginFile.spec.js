@@ -30,8 +30,8 @@ describe('LoginFile', () => {
 
         const qrPosition = LoginFile.calculateQrPosition();
 
-        QrScanner.WORKER_PATH = '/base/src/lib/QrScannerWorker.min.js';
-        const decoded = await QrScanner.scanImage($img, qrPosition, null, null, false, true);
+        QrScanner.WORKER_PATH = '/base/src/lib/QrScannerWorker.js';
+        const decoded = await QrScanner.scanImage($img, qrPosition, null, null, true);
         expect(decoded).toEqual(serializedKey);
     });
 });
