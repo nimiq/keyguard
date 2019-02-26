@@ -12,71 +12,78 @@
 <div>
     <button class="bip39">Export Words (BIP39)</button>
     <button class="legacy">Export Words (Legacy)</button>
+    <br>The password is 1234567890.
+    <br><br>
+    <textarea id="result" rows=20 cols=60></textarea>
 </div>
 
 <script>
     (async () => {
-        // Because the mocked KeyStore.prototype.get function below is defined in this
-        // window's scope, Nimiq also needs to be defined and initialized here
-        await Nimiq.WasmHelper.doImportBrowser();
-        Nimiq.GenesisConfig.test();
+        // await Nimiq.WasmHelper.doImportBrowser();
+        // Nimiq.GenesisConfig.test();
     })();
 
     document.querySelector('.bip39').addEventListener('click', async () => {
 
-        const keyguard = window.open('../src/request/export-words/');
+        const keyguard = window.open('../src/request/export/', 'CreateDemo',
+            `left=${window.innerWidth / 2 - 350},top=100,width=700,height=800,location=yes,dependent=yes`);
 
         // We need this check because we call the rpcServer object directly and not via RPC Client
         function checkIfKeyguardReady(resolve) {
             if (keyguard.rpcServer !== undefined) {
                 resolve();
             } else {
-                self.setTimeout(() => checkIfKeyguardReady(resolve), 25);
+                self.setTimeout(() => checkIfKeyguardReady(resolve), 100);
             }
         }
 
         await new Promise(res => checkIfKeyguardReady(res));
 
-        const secret = Nimiq.Entropy.generate().serialize();
-        const key = new Key(secret, Key.Type.BIP39);
+        const entropy = Nimiq.Entropy.generate();
+        const key = new Key(entropy);
         const passphrase = Nimiq.BufferUtils.fromAscii('1234567890');
         await keyguard.KeyStore.instance.put(key, passphrase);
 
         const exportRequest = {
+            appName: 'Export Demo',
             keyId: key.id,
-            keyLabel: "Main Login"
         };
 
         const result = await keyguard.rpcServer.request(exportRequest);
+        document.getElementById('result').value = 'Keyguard result: ' + JSON.stringify(result);
+        console.log('Keyguard result:', result);
         keyguard.close();
     });
 
     document.querySelector('.legacy').addEventListener('click', async () => {
 
-        const keyguard = window.open('../src/request/export-words/');
+        const keyguard = window.open('../src/request/export/', 'CreateDemo',
+            `left=${window.innerWidth / 2 - 350},top=100,width=700,height=800,location=yes,dependent=yes`);
 
         // We need this check because we call the rpcServer object directly and not via RPC Client
         function checkIfKeyguardReady(resolve) {
             if (keyguard.rpcServer !== undefined) {
                 resolve();
             } else {
-                self.setTimeout(() => checkIfKeyguardReady(resolve), 25);
+                self.setTimeout(() => checkIfKeyguardReady(resolve), 100);
             }
         }
 
         await new Promise(res => checkIfKeyguardReady(res));
 
-        const secret = Nimiq.Entropy.generate().serialize();
-        const key = new Key(secret, Key.Type.LEGACY);
+        const secret = Nimiq.PrivateKey.generate();
+        const key = new Key(secret);
         const passphrase = Nimiq.BufferUtils.fromAscii('1234567890');
         await keyguard.KeyStore.instance.put(key, passphrase);
 
         const exportRequest = {
+            appName: 'Export Demo',
             keyId: key.id,
-            keyLabel: "Main Login"
         };
 
         const result = await keyguard.rpcServer.request(exportRequest);
+        document.getElementById('result').value = 'Keyguard result: ' + JSON.stringify(result);
+        console.log('Keyguard result:', result);
         keyguard.close();
     });
 </script>

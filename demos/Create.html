@@ -10,21 +10,26 @@
 
 <div>
     <button>Create Account</button>
+    <br><br>
+    <textarea id="result" rows=20 cols=60></textarea>
 </div>
 
 <script>
     document.querySelector('button').addEventListener('click', async () => {
-        const keyguard = window.open('../src/request/create/');
+        const keyguard = window.open('../src/request/create/', 'CreateDemo',
+            `left=${window.innerWidth / 2 - 350},top=75,width=700,height=850,location=yes,dependent=yes`);
         const rpc = new Rpc.PostMessageRpcClient(keyguard, '*');
         await rpc.init();
 
         try {
             const result = await rpc.call('request', {
-                defaultKeyPath: "m/242'/0'/0'"
+                appName: 'Create Demo',
+                defaultKeyPath: "m/44'/242'/0'/0'",
             });
-            console.log('Keyguard result', result);
+            document.getElementById('result').value = 'Keyguard result: ' + JSON.stringify(result);
+            console.log('Keyguard result:', result);
         } catch (e) {
-            console.error(e);
+            alert(e.message);
         }
 
         keyguard.close();
