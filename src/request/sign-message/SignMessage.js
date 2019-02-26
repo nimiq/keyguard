@@ -68,11 +68,10 @@ class SignMessage {
 
         const passphraseBuf = passphrase ? Utf8Tools.stringToUtf8ByteArray(passphrase) : undefined;
 
-        /** @type {Key | null} */
+        /** @type {Key?} */
         let key = null;
         try {
-            /** @type {Key} */ // Request parsing already validates that the key exists
-            key = (await KeyStore.instance.get(request.keyInfo.id, passphraseBuf));
+            key = await KeyStore.instance.get(request.keyInfo.id, passphraseBuf);
         } catch (e) {
             if (e.message === 'Invalid key') {
                 TopLevelApi.setLoading(false);
@@ -80,6 +79,11 @@ class SignMessage {
                 return;
             }
             reject(new Errors.CoreError(e));
+            return;
+        }
+
+        if (!key) {
+            reject(new Errors.KeyNotFoundError());
             return;
         }
 
