@@ -52,7 +52,6 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Muli:400,600,700">
 
     <link rel="stylesheet" bundle-toplevel href="../../../node_modules/@nimiq/style/nimiq-style.min.css">
-    <link rel="stylesheet" bundle-toplevel href="../../../node_modules/@nimiq/style/nimiq-style-icons.min.css">
     <link rel="stylesheet" bundle-toplevel href="../../nimiq-style.css">
     <link rel="stylesheet" bundle-toplevel href="../../common.css">
     <link rel="stylesheet" bundle-toplevel href="../../components/PassphraseInput.css">
@@ -72,11 +71,13 @@
     </div>
 
     <div id="app">
-        <!-- Enter Passphrase -->
+        <!-- Enter Password -->
         <div id="enter-password" class="page nq-card">
             <div class="page-header nq-card-header">
                 <div class="progress-indicator"></div>
-                <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
+                <a tabindex="0" class="page-header-back-button">
+                    <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
+                </a>
                 <h1 data-i18n="change-password-heading" class="nq-h1">Confirm old password</h1>
             </div>
 
@@ -86,17 +87,13 @@
                 </p>
 
                 <div class="row">
-                    <div class="key-container">
-                        <img src="../../assets/keys.svg">
-                    </div>
+                    <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-keys"/></svg>
                     <div data-i18n="change-password-info-item-1">
                         All old Login Files still work with their old passwords.
                     </div>
                 </div>
                 <div class="row">
-                    <div class="shredder-container">
-                        <img src="../../assets/shredder.svg">
-                    </div>
+                    <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-shredder"/></svg>
                     <div data-i18n="change-password-info-item-2">
                         If a Login File was compromised: Please create a new account and transfer all funds.
                     </div>
@@ -108,17 +105,19 @@
             </div>
         </div>
 
-        <!-- Set Passphrase -->
+        <!-- Set Password -->
         <div id="set-password" class="page nq-card">
             <div class="page-header nq-card-header">
                 <div class="progress-indicator"></div>
-                <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
+                <a tabindex="0" class="page-header-back-button">
+                    <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
+                </a>
                 <h1 class="nq-h1" data-i18n="change-password-set-password-heading">Create a new password</h1>
             </div>
 
             <div class="page-body nq-card-body">
                 <p data-i18n='change-password-set-password-text' class="nq-light-blue nq-text center">Secure your new Login File.</p>
-                <div class="nq-icon login-file-icon"></div>
+                <div class="login-file-icon"></div>
             </div>
 
             <div class="page-footer nq-card-footer">
@@ -129,7 +128,9 @@
         <div id="download-file" class="page nq-card">
             <div class="page-header nq-card-header">
                 <div class="progress-indicator"></div>
-                <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
+                <a tabindex="0" class="page-header-back-button">
+                    <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
+                </a>
                 <h1 class="nq-h1" data-i18n="change-password-download-login-file">Download new Login File</h1>
             </div>
 
@@ -139,7 +140,7 @@
         </div>
 
         <button class="global-close nq-button-s display-none">
-            <span class="nq-icon arrow-left"></span>
+            <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left-small"/></svg>
             <span id="global-close-text"></span>
         </button>
 
