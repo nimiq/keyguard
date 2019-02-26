@@ -52,7 +52,12 @@ class PassphraseSetterBox extends Nimiq.Observable {
 
             <div passphrase-input></div>
 
-            <a tabindex="0" class="password-skip nq-text-s"><span data-i18n="passphrasebox-password-skip">Skip for now</span> <i class="nq-icon chevron-right"></i></a>
+            <a tabindex="0" class="password-skip nq-text-s">
+                <span data-i18n="passphrasebox-password-skip">Skip for now</span>
+                <svg class="nq-icon">
+                    <use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-caret-right-small"/>
+                </svg>
+            </a>
 
             <button class="submit" data-i18n="passphrasebox-continue">Continue</button>
         `;

@@ -63,7 +63,7 @@ class DownloadLoginFile extends Nimiq.Observable {
             </svg>
 
             <button class="nq-button light-blue download-button">
-                <i class="nq-icon download"></i>
+                <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-download"/></svg>
                 <span data-i18n="download-loginfile-download">Download Login File</span>
             </button>
             <span class="nq-label tap-and-hold" data-i18n="download-loginfile-tap-and-hold">Tap and hold image to download</span>

@@ -47,7 +47,6 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono&text=0123456789ABCDEFGHJKLMNPQRSTUVXY">
 
     <link rel="stylesheet" bundle-toplevel href="../../../node_modules/@nimiq/style/nimiq-style.min.css">
-    <link rel="stylesheet" bundle-toplevel href="../../../node_modules/@nimiq/style/nimiq-style-icons.min.css">
     <link rel="stylesheet" bundle-toplevel href="../../nimiq-style.css">
     <link rel="stylesheet" bundle-toplevel href="../../common.css">
     <link rel="stylesheet" bundle-toplevel href="../../components/PassphraseInput.css">
@@ -75,17 +74,19 @@
                 <p data-i18n="change-paragraph" class="nq-text">
                     Before entering your new password, you must first unlock your account.
                 </p>
-                <div class="nq-icon walletfile-locked"></div>
+                <svg class="nq-icon lock"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-lock-locked"/></svg>
             </div>
 
-            <div class="page-footer">
+            <div class="page-footer nq-card-footer">
                 <form class="passphrase-box"></form>
             </div>
         </div>
 
         <div id="set-passphrase" class="page nq-card">
             <div class="page-header nq-card-header">
-                <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
+                <a tabindex="0" class="page-header-back-button">
+                    <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
+                </a>
                 <h1 data-i18n="change-passphrase-heading" class="nq-h1">Change your password</h1>
             </div>
 
@@ -95,14 +96,14 @@
                 </p>
             </div>
 
-            <div class="page-footer">
+            <div class="page-footer nq-card-footer">
                 <form class="passphrase-box"></form>
             </div>
         </div>
 
 
         <button class="global-close nq-button-s display-none">
-            <span class="nq-icon arrow-left"></span>
+            <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left-small"/></svg>
             <span id="global-close-text"></span>
         </button>
 
