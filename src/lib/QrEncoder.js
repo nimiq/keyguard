@@ -503,7 +503,7 @@ QrEncoder.vendor_qrcode = (function () {
                 for (let col = _moduleCount - 1; col > 0; col -= 2) {
                     if (col == 6) col -= 1;
 
-                    while (true) {
+                    while (true) { // eslint-disable-line no-constant-condition
                         for (let c = 0; c < 2; c += 1) {
                             if (/** @type {(boolean|null)[][]} */ (_modules)[row][col - c] == null) {
                                 let dark = false;
@@ -636,7 +636,7 @@ QrEncoder.vendor_qrcode = (function () {
                 }
 
                 // padding
-                while (true) {
+                while (true) { // eslint-disable-line no-constant-condition
                     if (buffer.getLengthInBits() >= totalDataCount * 8) {
                         break;
                     }
@@ -1125,7 +1125,7 @@ QrEncoder.vendor_qrcode = (function () {
         //---------------------------------------------------------------------
 
         var QRRSBlock = (function () {
-            // TODO is it possible to generate this block with JS in let kB?
+            // TODO is it possible to generate this block with JS in less kB?
             const RS_BLOCK_TABLE = [
 
                 // L

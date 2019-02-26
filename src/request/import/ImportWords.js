@@ -200,7 +200,8 @@ class ImportWords {
                     this._encryptedSecret = await this._secrets.entropy.exportEncrypted(encryptionKey);
                 }
 
-                // TODO: The key is encrypted twice here:
+                // Possible performance improvement:
+                // The key is encrypted twice here:
                 //     1. Inside the KeyStore when storing it (put)
                 //     2. Again to get the encrypted secret for the Login File (exportEncrypted)
                 // Is it possible to encrypt once and use KeyStore.putPlain() instead?

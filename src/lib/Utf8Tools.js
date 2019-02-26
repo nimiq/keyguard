@@ -10,13 +10,21 @@
  * https://lemire.me/blog/2018/05/09/how-quickly-can-you-check-that-a-string-is-valid-unicode-utf-8/
  */
 
+// TODO: Remove fallbacks when TextEncoder/TextDecoder are sufficiently supported
+
 class Utf8Tools { // eslint-disable-line no-unused-vars
     /**
      * @param {string} str
      * @returns {Uint8Array}
      */
     static stringToUtf8ByteArray(str) {
-        // TODO: Use native implementations if/when available
+        if (typeof TextEncoder !== 'undefined') {
+            // @ts-ignore (Expected 0 arguments, but got 1.)
+            const encoder = new TextEncoder('utf-8'); // The encoding is a legacy argument.
+            return encoder.encode(str);
+        }
+
+        // Fallback for unsupported TextEncoder
         const out = [];
         let p = 0;
         for (let i = 0; i < str.length; i++) {
@@ -49,7 +57,12 @@ class Utf8Tools { // eslint-disable-line no-unused-vars
      * @returns {string}
      */
     static utf8ByteArrayToString(bytes) {
-        // TODO: Use native implementations if/when available
+        if (typeof TextDecoder !== 'undefined') {
+            const decoder = new TextDecoder('utf-8');
+            return decoder.decode(bytes);
+        }
+
+        // Fallback for unsupported TextDecoder
         const out = [];
         let pos = 0;
         let c = 0;
@@ -82,6 +95,18 @@ class Utf8Tools { // eslint-disable-line no-unused-vars
      * @returns {boolean}
      */
     static isValidUtf8(bytes) {
+        if (typeof TextDecoder !== 'undefined') {
+            const decoder = new TextDecoder('utf-8', { fatal: true });
+            try {
+                decoder.decode(bytes);
+                return true;
+            }
+            catch (error) {
+                return false;
+            }
+        }
+
+        // Fallback for unsupported TextDecoder
         let i = 0;
 
         while (i < bytes.length) {

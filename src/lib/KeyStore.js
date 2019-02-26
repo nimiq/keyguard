@@ -82,11 +82,17 @@ class KeyStore {
         }
 
         if (!KeyStore.isEncrypted(keyRecord)) {
-            // TODO: Compare stored type with purposeID to make sure?
-            //       What would the error handling look like?
+            // Compare stored type with purposeID to make sure
+            const purposeId = new Nimiq.SerialBuffer(keyRecord.secret).readUint32();
+            const expectedPurposeId = keyRecord.type === Nimiq.Secret.Type.PRIVATE_KEY
+                ? Nimiq.PrivateKey.PURPOSE_ID
+                : Nimiq.Entropy.PURPOSE_ID;
+            if (purposeId !== expectedPurposeId) {
+                throw new Errors.KeyguardError('Stored type does not match secret\'s purposeId');
+            }
 
             const secret = keyRecord.type === Nimiq.Secret.Type.PRIVATE_KEY
-                ? new Nimiq.PrivateKey(keyRecord.secret.subarray(4)) // The first 4 bytes are the purposeID
+                ? new Nimiq.PrivateKey(keyRecord.secret.subarray(4)) // The first 4 bytes are the purposeId
                 : new Nimiq.Entropy(keyRecord.secret.subarray(4));
 
             return new Key(secret, keyRecord.hasPin, id);
@@ -229,8 +235,7 @@ class KeyStore {
         const keysRecords = KeyStore._accountRecords2KeyRecords(accounts);
         await Promise.all(keysRecords.map(keyRecord => this.putPlain(keyRecord)));
 
-        // FIXME Uncomment after/for testing (and also adapt KeyStore.spec.js)
-        // await AccountStore.instance.drop();
+        await AccountStore.instance.drop();
 
         if (BrowserDetection.isIOS() || BrowserDetection.isSafari()) {
             // Delete migrate cookie
