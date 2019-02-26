@@ -36,10 +36,13 @@
     flex-grow: 0;
     margin: 0 1rem;
     color: rgba(255, 255, 255, 0.3);
+    font-size: 1.75rem;
 }
+
 .recovery-words .word .word-content {
     display: flex;
     flex-grow: 1;
+    font-size: 2rem;
 }
 
 .recovery-words input[type="text"] {
