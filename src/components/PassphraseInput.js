@@ -34,14 +34,19 @@ class PassphraseInput extends Nimiq.Observable {
         $el = $el || document.createElement('form');
         $el.classList.add('passphrase-input');
 
+        /* eslint-disable max-len */
         $el.innerHTML = `
             <div class="input-container">
                 <div class="input-wrapper">
                     <input class="password" type="password" placeholder="Enter password">
                 </div>
-                <span class="nq-icon eye eye-button"/>
+                <svg class="nq-icon eye-button">
+                    <use class="not-visible" xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-view-off"/>
+                    <use class="is-visible"  xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-view"/>
+                </svg>
             </div>
         `;
+        /* eslint-enable max-len */
 
         I18n.translateDom($el);
         return $el;
@@ -83,8 +88,7 @@ class PassphraseInput extends Nimiq.Observable {
             ? becomeVisible
             : this.$input.getAttribute('type') === 'password';
         this.$input.setAttribute('type', becomeVisible ? 'text' : 'password');
-        this.$eyeButton.classList.toggle('eye-off', becomeVisible);
-        this.$eyeButton.classList.toggle('eye', !becomeVisible);
+        this.$eyeButton.classList.toggle('visible', becomeVisible);
     }
 
     _onInputChanged() {

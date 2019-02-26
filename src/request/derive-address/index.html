@@ -48,7 +48,6 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono&text=0123456789ABCDEFGHJKLMNPQRSTUVXY">
 
     <link rel="stylesheet" bundle-toplevel href="../../../node_modules/@nimiq/style/nimiq-style.min.css">
-    <link rel="stylesheet" bundle-toplevel href="../../../node_modules/@nimiq/style/nimiq-style-icons.min.css">
     <link rel="stylesheet" bundle-toplevel href="../../nimiq-style.css">
     <link rel="stylesheet" bundle-toplevel href="../../common.css">
     <link rel="stylesheet" bundle-toplevel href="../../components/PassphraseInput.css">
@@ -75,7 +74,7 @@
                     To add a new address, please[br]unlock your account first.
                 </p>
                 <div class="lock-container">
-                    <div class="nq-icon locked"></div>
+                    <svg class="nq-icon locked"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-lock-locked"/></svg>
                 </div>
             </div>
 
@@ -99,7 +98,7 @@
         </div>
 
         <button class="global-close nq-button-s display-none">
-            <span class="nq-icon arrow-left"></span>
+            <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left-small"/></svg>
             <span id="global-close-text"></span>
         </button>
 

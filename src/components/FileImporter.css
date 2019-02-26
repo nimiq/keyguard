@@ -55,14 +55,19 @@
     left: -1rem;
     width: calc(100% + 2rem);
     height: auto;
-    transform: scale(1.05);
-    opacity: 0.2;
-    transition: transform .3s, opacity .3s;
+    display: none;
 }
 
 .file-import img.pop-down {
-    transform: scale(1);
-    opacity: 1;
+    display: block;
+    animation: login-file-pop-down .3s;
+}
+
+@keyframes login-file-pop-down {
+    from {
+        opacity: .2;
+        transform: scale(1.05);
+    }
 }
 
 .qr-code {
