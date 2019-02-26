@@ -9,9 +9,6 @@ ul.nq-list li {
 
 ul.nq-list li > .nq-icon {
     position: absolute;
-    display: flex;
-    background-size: cover;
-    background-repeat: no-repeat;
     height: 4rem;
     width: 4rem;
     left: -4rem;
