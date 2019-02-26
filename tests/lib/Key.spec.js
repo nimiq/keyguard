@@ -7,27 +7,35 @@ describe('Key', () => {
         const key = new Key(Dummy.secrets[0]);
         const pubkey = Nimiq.PublicKey.derive(Dummy.secrets[0]);
         const data = Nimiq.BufferUtils.fromAscii('hello');
+        const signedData = Nimiq.BufferUtils.fromAscii('Nimiq Signed Message: hello');
 
-        const signature1 = key.sign('m', data);
-        expect(signature1.verify(pubkey, data)).toBe(true);
+        const signature1 = key.signMessage('m', data);
+        expect(signature1.data).toEqual(signedData);
+        expect(signature1.signature.verify(pubkey, signedData)).toBe(true);
 
-        const signature2 = key.sign('m/0\'', data);
-        expect(signature2.verify(pubkey, data)).toBe(true);
+        const signature2 = key.signMessage('m/0\'', data);
+        expect(signature2.data).toEqual(signedData);
+        expect(signature2.signature.verify(pubkey, signedData)).toBe(true);
 
         expect(signature1).toEqual(signature2);
     });
 
     it('can sign a message (BIP39)', () => {
         const key = new Key(Dummy.secrets[1]);
-        const data = Nimiq.BufferUtils.fromAscii('hello');
+        const data = new Nimiq.SerialBuffer([1, 2, 3, 4, 5]);
+        const signedData = new Uint8Array(
+            Array.from(Nimiq.BufferUtils.fromAscii('Nimiq Signed Message: ')).concat([1, 2, 3, 4, 5]),
+        );
 
-        const pubkey1 = key.derivePublicKey('m');
-        const signature1 = key.sign('m', data);
-        expect(signature1.verify(pubkey1, data)).toBe(true);
+        const pubkey1 = key.derivePublicKey('m/0\'');
+        const signature1 = key.signMessage('m/0\'', data);
+        expect(signature1.data).toEqual(signedData);
+        expect(signature1.signature.verify(pubkey1, signedData)).toBe(true);
 
-        const pubkey2 = key.derivePublicKey('m/0\'');
-        const signature2 = key.sign('m/0\'', data);
-        expect(signature2.verify(pubkey2, data)).toBe(true);
+        const pubkey2 = key.derivePublicKey('m/0\'/0\'');
+        const signature2 = key.signMessage('m/0\'/0\'', data);
+        expect(signature2.data).toEqual(signedData);
+        expect(signature2.signature.verify(pubkey2, signedData)).toBe(true);
 
         expect(signature1).not.toEqual(signature2);
     });
