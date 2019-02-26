@@ -12,6 +12,10 @@
     will-change: transform;
 }
 
+#rotation-container.disable-transition {
+    transition: none;
+}
+
 #rotation-container > .page.flipped,
 #rotation-container.flipped {
     transform: rotateY(180deg);
