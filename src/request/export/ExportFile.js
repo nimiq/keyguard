@@ -42,6 +42,7 @@ class ExportFile extends Nimiq.Observable {
 
         /** @type {HTMLButtonElement} */
         const $fileButton = ($exportFileIntroPage.querySelector('.login-file'));
+        const $goToRecoveryWords = ($exportFileIntroPage.querySelector('.go-to-words'));
         /** @type {HTMLDivElement} */
         const $loginFileIcon = ($setPasswordPage.querySelector('.login-file-icon'));
         /** @type {HTMLFormElement} */
@@ -69,6 +70,10 @@ class ExportFile extends Nimiq.Observable {
         new ProgressIndicator($setPasswordPage.querySelector('.progress-indicator'), 3, 2);
         new ProgressIndicator($downloadFilePage.querySelector('.progress-indicator'), 3, 3);
         /* eslint-enable no-new */
+
+        if ($goToRecoveryWords) {
+            $goToRecoveryWords.addEventListener('click', () => this._resolve({ success: false }));
+        }
 
         $fileButton.addEventListener('click', async () => {
             if (this._request.keyInfo.encrypted) {

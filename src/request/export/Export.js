@@ -43,8 +43,12 @@ class Export { // eslint-disable-line no-unused-vars
         }
     }
 
-    _fileExportSuccessful() {
-        this.exported.file = true;
+    /**
+     *
+     * @param {{success: boolean}} fileResult
+     */
+    _fileExportSuccessful(fileResult) {
+        this.exported.file = fileResult.success;
         this._exportWordsHandler.run();
     }
 
