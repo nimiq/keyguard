@@ -132,12 +132,14 @@ const TRANSLATIONS = {
         'change-password-heading': 'Confirm old password',
         'change-password-paragraph': 'Changing the password will create a new Login File that replaces the '
                                    + 'current one.',
+        'change-password-paragraph-legacy': 'Changing the password only has an effect on this device.',
         'change-password-info-item-1': 'All old Login Files still work with their old passwords.',
         'change-password-info-item-2': 'If a Login File was compromised: Please create a new account and transfer '
                                      + 'all funds.',
         'change-password-download-login-file': 'Download new Login File',
         'change-password-set-password-heading': 'Create a new password',
-        'change-password-set-password-text': 'Secure your new Login File',
+        'change-password-set-password-text': 'Secure your new Login File.',
+        'change-password-set-password-text-legacy': 'Secure your Account.',
 
         'error-no-referrer-heading': 'That went wrong :(',
         'error-no-referrer-message': 'We could not verify the origin of your request. Please go back and try again.',
@@ -281,12 +283,14 @@ const TRANSLATIONS = {
         'change-password-heading': 'Altes Passwort bestätigen',
         'change-password-paragraph': 'Die Passwortänderung wird eine neue Logindatei erstellen, welche die bisherige '
                                    + 'ersetzt.',
+        'change-password-paragraph-legacy': 'Die Passwordänderung wird nur für dieses Gerät wirksam.',
         'change-password-info-item-1': 'Alle alten Logindateien funktionieren weiterhin mit ihrem alten Passwort.',
         'change-password-info-item-2': 'Wenn eine Logindatei kompromittiert wurde: Erstelle einen neuen Account und '
                                      + 'übertrage alle NIM.',
         'change-password-download-login-file': 'Neue Logindatei herunterladen',
         'change-password-set-password-heading': 'Neues Passwort setzen',
-        'change-password-set-password-text': 'Sichere deine neue Logindatei',
+        'change-password-set-password-text': 'Sichere deine neue Logindatei.',
+        'change-password-set-password-text-legacy': 'Sichere deinen Account.',
 
         'error-no-referrer-heading': 'Das ging schief :(',
         'error-no-referrer-message': 'Wir konnten nicht überprüfen, wo deine Anfrage herkommt. Bitte gehe zurück und '

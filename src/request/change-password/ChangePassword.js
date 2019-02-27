@@ -64,8 +64,8 @@ class ChangePassword {
         // Adapt to type of secret
         if (this._request.keyInfo.type === Nimiq.Secret.Type.PRIVATE_KEY) {
             this._loginFileIcon.setFileUnavailable(true);
-            /** @type {HTMLDivElement} */ ($enterPassword.querySelector('.nq-text')).classList.add('display-none');
-            /** @type {HTMLDivElement} */ ($setPassword.querySelector('.nq-text')).classList.add('hidden');
+            /** @type {HTMLDivElement} */
+            (document.getElementById('app')).classList.add('legacy-key');
         }
 
         // Progress Indicators
