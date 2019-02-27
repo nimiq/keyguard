@@ -2,7 +2,7 @@
 /* global FlippableHandler */
 /* global Nimiq */
 /* global RecoveryWords */
-/* global PassphraseBox */
+/* global PasswordBox */
 /* global ProgressIndicator */
 /* global ValidateWords */
 /* global KeyStore */
@@ -48,7 +48,7 @@ class ExportWords extends Nimiq.Observable {
         /** @type {HTMLLinkElement} */
         const $noRecoverySkip = (this._$noRecoveryPage.querySelector('.skip-words'));
         /** @type {HTMLFormElement} */
-        const $wordsPasswordBox = (this._$noRecoveryPage.querySelector('.passphrase-box'));
+        const $wordsPasswordBox = (this._$noRecoveryPage.querySelector('.password-box'));
         /** @type {HTMLElement} */
         const $recoveryWords = ($recoveryWordsPage.querySelector('.recovery-words'));
         /** @type {HTMLLinkElement} */
@@ -59,8 +59,8 @@ class ExportWords extends Nimiq.Observable {
         const $validateWords = ($validateWordsPage.querySelector('.validate-words'));
 
         // components
-        this._wordsPasswordBox = new PassphraseBox($wordsPasswordBox, {
-            buttonI18nTag: 'passphrasebox-show-words',
+        this._wordsPasswordBox = new PasswordBox($wordsPasswordBox, {
+            buttonI18nTag: 'passwordbox-show-words',
             hideInput: !request.keyInfo.encrypted || !!this._key,
             hideCancel: true,
         });
@@ -81,7 +81,7 @@ class ExportWords extends Nimiq.Observable {
             event.preventDefault();
             this._resolve({ success: true });
         });
-        this._wordsPasswordBox.on(PassphraseBox.Events.SUBMIT, this._passphraseSubmitted.bind(this));
+        this._wordsPasswordBox.on(PasswordBox.Events.SUBMIT, this._passwordSubmitted.bind(this));
         $recoveryWordsContinue.addEventListener('click', () => {
             this._validateWords.reset();
             window.location.hash = ExportWords.Pages.VALIDATE_WORDS;
@@ -101,7 +101,7 @@ class ExportWords extends Nimiq.Observable {
     /**
      * @param {string} [password]
      */
-    async _passphraseSubmitted(password) {
+    async _passwordSubmitted(password) {
         TopLevelApi.setLoading(true);
 
         /** @type {Key?} */
@@ -117,7 +117,7 @@ class ExportWords extends Nimiq.Observable {
                 key = await KeyStore.instance.get(this._request.keyInfo.id, passwordBuffer);
             } catch (e) {
                 if (e.message === 'Invalid key') {
-                    this._wordsPasswordBox.onPassphraseIncorrect();
+                    this._wordsPasswordBox.onPasswordIncorrect();
                     TopLevelApi.setLoading(false);
                     return;
                 }
@@ -138,8 +138,8 @@ class ExportWords extends Nimiq.Observable {
     }
 
     /**
-     * Used to set the key if already decrypted elsewhere. This will disable the passphrase requirement.
-     * Set to null to re-enable passphrase requirement.
+     * Used to set the key if already decrypted elsewhere. This will disable the password requirement.
+     * Set to null to re-enable password requirement.
      * @param {Key?} key
      * @param {string} [password]
      */

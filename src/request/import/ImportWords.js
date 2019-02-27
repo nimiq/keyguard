@@ -9,8 +9,8 @@
 /* global LoginFile */
 /* global LoginFileIcon */
 /* global Nimiq */
-/* global PassphraseInput */
-/* global PassphraseSetterBox */
+/* global PasswordInput */
+/* global PasswordSetterBox */
 /* global RecoveryWords */
 /* global TopLevelApi */
 /* global Utf8Tools */
@@ -53,7 +53,7 @@ class ImportWords {
         /** @type {HTMLFormElement} */
         const $recoveryWords = ($words.querySelector('.recovery-words'));
         /** @type {HTMLFormElement} */
-        const $passwordSetter = (this.$setPassword.querySelector('.passphrase-setter-box'));
+        const $passwordSetter = (this.$setPassword.querySelector('.password-setter-box'));
         /** @type {HTMLDivElement} */
         const $loginFileIcon = (this.$setPassword.querySelector('.login-file-icon'));
         /** @type {HTMLAnchorElement} */
@@ -61,7 +61,7 @@ class ImportWords {
 
         // Components
         this._recoveryWords = new RecoveryWords($recoveryWords, true);
-        this._passwordSetter = new PassphraseSetterBox($passwordSetter);
+        this._passwordSetter = new PasswordSetterBox($passwordSetter);
         this._loginFileIcon = new LoginFileIcon($loginFileIcon);
         const downloadLoginFile = new DownloadLoginFile($downloadLoginFile);
 
@@ -86,7 +86,7 @@ class ImportWords {
             }
         });
 
-        this._passwordSetter.on(PassphraseSetterBox.Events.ENTERED, () => {
+        this._passwordSetter.on(PasswordSetterBox.Events.ENTERED, () => {
             let colorClass = '';
             if (this._secrets.entropy) {
                 const key = new Key(this._secrets.entropy, false);
@@ -98,7 +98,7 @@ class ImportWords {
             }
             this._loginFileIcon.lock(colorClass);
         });
-        this._passwordSetter.on(PassphraseSetterBox.Events.SUBMIT, async password => {
+        this._passwordSetter.on(PasswordSetterBox.Events.SUBMIT, async password => {
             await this._storeKeys(password);
 
             if (!this._fileAvailable) {
@@ -120,8 +120,8 @@ class ImportWords {
             });
             window.location.hash = ImportWords.Pages.DOWNLOAD_LOGINFILE;
         });
-        this._passwordSetter.on(PassphraseSetterBox.Events.NOT_EQUAL, () => this._loginFileIcon.unlock());
-        this._passwordSetter.on(PassphraseSetterBox.Events.SKIP, async () => {
+        this._passwordSetter.on(PasswordSetterBox.Events.NOT_EQUAL, () => this._loginFileIcon.unlock());
+        this._passwordSetter.on(PasswordSetterBox.Events.SKIP, async () => {
             await this._storeKeys();
             this._resolve(this._keyResults);
         });
@@ -129,7 +129,7 @@ class ImportWords {
         // TODO remove test words
         // @ts-ignore (Property 'test' does not exist on type 'Window'.)
         window.test = (n = 0) => {
-            const testPassphrases = [
+            const testPasswords = [
                 [
                     'curtain', 'cancel', 'tackle', 'always',
                     'draft', 'fade', 'alarm', 'flip',
@@ -155,7 +155,7 @@ class ImportWords {
                 }, index * 50);
             }
             this._recoveryWords.$fields.forEach((field, index) => {
-                putWord(field, testPassphrases[n][index], index);
+                putWord(field, testPasswords[n][index], index);
             });
         };
         // @ts-ignore ('possible null' and 'test is unknown')
@@ -174,7 +174,7 @@ class ImportWords {
     async _storeKeys(password = '') {
         TopLevelApi.setLoading(true);
         let encryptionKey = null;
-        if (password && password.length >= PassphraseInput.DEFAULT_MIN_LENGTH) {
+        if (password && password.length >= PasswordInput.DEFAULT_MIN_LENGTH) {
             encryptionKey = Utf8Tools.stringToUtf8ByteArray(password);
         }
         try {
@@ -228,7 +228,7 @@ class ImportWords {
     }
 
     /**
-     * Store key and request passphrase
+     * Store key and request password
      * @param {Array<string>} mnemonic
      * @param {number?} mnemonicType
      */

@@ -1,8 +1,8 @@
 /* global Nimiq */
 /* global I18n */
-/* global PassphraseInput */
+/* global PasswordInput */
 
-class PassphraseBox extends Nimiq.Observable {
+class PasswordBox extends Nimiq.Observable {
     // eslint-disable-next-line valid-jsdoc, max-len
     /** @param {{bgColor?: string, hideInput?: boolean, buttonI18nTag?: string, minLength?: number, hideCancel?: boolean}} [options]
      *  @param {?HTMLFormElement} $el
@@ -11,8 +11,8 @@ class PassphraseBox extends Nimiq.Observable {
         const defaults = {
             bgColor: 'light-blue',
             hideInput: false,
-            buttonI18nTag: 'passphrasebox-confirm-tx',
-            minLength: PassphraseInput.DEFAULT_MIN_LENGTH,
+            buttonI18nTag: 'passwordbox-confirm-tx',
+            minLength: PasswordInput.DEFAULT_MIN_LENGTH,
             hideCancel: false,
         };
 
@@ -22,13 +22,13 @@ class PassphraseBox extends Nimiq.Observable {
         /** @type {{bgColor: string, hideInput: boolean, buttonI18nTag: string, minLength: number, hideCancel: boolean}} */
         this.options = Object.assign(defaults, options);
 
-        this.$el = PassphraseBox._createElement($el, this.options);
+        this.$el = PasswordBox._createElement($el, this.options);
 
         this.$el.classList.toggle('hide-input', this.options.hideInput);
         this.$el.classList.toggle('hide-cancel', this.options.hideCancel);
 
-        this._passphraseInput = new PassphraseInput(this.$el.querySelector('[passphrase-input]'));
-        this._passphraseInput.on(PassphraseInput.Events.VALID, isValid => this._onInputChangeValidity(isValid));
+        this._passwordInput = new PasswordInput(this.$el.querySelector('[password-input]'));
+        this._passwordInput.on(PasswordInput.Events.VALID, isValid => this._onInputChangeValidity(isValid));
 
         this.setMinLength(this.options.minLength);
 
@@ -47,26 +47,26 @@ class PassphraseBox extends Nimiq.Observable {
      */
     static _createElement($el, options) {
         $el = $el || document.createElement('form');
-        $el.classList.add('passphrase-box', 'actionbox');
+        $el.classList.add('password-box', 'actionbox');
         if (!options.hideInput) $el.classList.add(`nq-${options.bgColor}-bg`);
 
-        // To enable i18n validation with the dynamic nature of the passphrase box's contents,
+        // To enable i18n validation with the dynamic nature of the password box's contents,
         // all possible i18n tags and texts have to be specified here in the below format to
         // enable the validator to find them with its regular expression.
         /* eslint-disable max-len */
         /** @type {{[i18nTag: string]: string}} */
         const buttonVersions = {
-            'passphrasebox-continue': '<button class="submit" data-i18n="passphrasebox-continue">Continue</button>',
-            'passphrasebox-log-in': '<button class="submit" data-i18n="passphrasebox-log-in">Unlock</button>',
-            'passphrasebox-log-out': '<button class="submit" data-i18n="passphrasebox-log-out">Confirm logout</button>',
-            'passphrasebox-confirm-tx': '<button class="submit" data-i18n="passphrasebox-confirm-tx">Confirm transaction</button>',
-            'passphrasebox-download': '<button class="submit" data-i18n="passphrasebox-download">Download Login File</button>',
-            'passphrasebox-show-words': '<button class="submit" data-i18n="passphrasebox-show-words">Show recovery words</button>',
-            'passphrasebox-sign-msg': '<button class="submit" data-i18n="passphrasebox-sign-msg">Sign message</button>',
+            'passwordbox-continue': '<button class="submit" data-i18n="passwordbox-continue">Continue</button>',
+            'passwordbox-log-in': '<button class="submit" data-i18n="passwordbox-log-in">Unlock</button>',
+            'passwordbox-log-out': '<button class="submit" data-i18n="passwordbox-log-out">Confirm logout</button>',
+            'passwordbox-confirm-tx': '<button class="submit" data-i18n="passwordbox-confirm-tx">Confirm transaction</button>',
+            'passwordbox-download': '<button class="submit" data-i18n="passwordbox-download">Download Login File</button>',
+            'passwordbox-show-words': '<button class="submit" data-i18n="passwordbox-show-words">Show recovery words</button>',
+            'passwordbox-sign-msg': '<button class="submit" data-i18n="passwordbox-sign-msg">Sign message</button>',
         };
         /* eslint-enable max-len */
 
-        if (!buttonVersions[options.buttonI18nTag]) throw new Error('PassphraseBox button i18n tag not defined');
+        if (!buttonVersions[options.buttonI18nTag]) throw new Error('PasswordBox button i18n tag not defined');
 
         $el.innerHTML = `
             <a class="cancel">
@@ -74,8 +74,8 @@ class PassphraseBox extends Nimiq.Observable {
                     <use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-close"/>
                 </svg>
             </a>
-            <div class="prompt nq-text-s" data-i18n="passphrasebox-enter-passphrase">Enter your password</div>
-            <div passphrase-input></div>
+            <div class="prompt nq-text-s" data-i18n="passwordbox-enter-password">Enter your password</div>
+            <div password-input></div>
             ${buttonVersions[options.buttonI18nTag]}
         `;
 
@@ -102,26 +102,26 @@ class PassphraseBox extends Nimiq.Observable {
 
     focus() {
         if (!this.options.hideInput) {
-            this._passphraseInput.focus();
+            this._passwordInput.focus();
         }
     }
 
     reset() {
-        this._passphraseInput.reset();
+        this._passwordInput.reset();
     }
 
     /**
      * @param {number} [minLength]
      */
     setMinLength(minLength) {
-        this._passphraseInput.setMinLength(minLength);
+        this._passwordInput.setMinLength(minLength);
     }
 
     /**
      * @returns {Promise<void>}
      */
-    async onPassphraseIncorrect() {
-        return this._passphraseInput.onPassphraseIncorrect();
+    async onPasswordIncorrect() {
+        return this._passwordInput.onPasswordIncorrect();
     }
 
     /**
@@ -139,12 +139,12 @@ class PassphraseBox extends Nimiq.Observable {
         event.preventDefault();
         if (!this.options.hideInput && !this._isInputValid) return;
 
-        const passphrase = !this.options.hideInput ? this._passphraseInput.text : undefined;
-        this.fire(PassphraseBox.Events.SUBMIT, passphrase);
+        const password = !this.options.hideInput ? this._passwordInput.text : undefined;
+        this.fire(PasswordBox.Events.SUBMIT, password);
     }
 
     _onCancel() {
-        this.fire(PassphraseBox.Events.CANCEL);
+        this.fire(PasswordBox.Events.CANCEL);
     }
 
     /**
@@ -159,7 +159,7 @@ class PassphraseBox extends Nimiq.Observable {
     }
 }
 
-PassphraseBox.Events = {
-    SUBMIT: 'passphrasebox-submit',
-    CANCEL: 'passphrasebox-cancel',
+PasswordBox.Events = {
+    SUBMIT: 'passwordbox-submit',
+    CANCEL: 'passwordbox-cancel',
 };

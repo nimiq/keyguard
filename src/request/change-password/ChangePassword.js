@@ -1,7 +1,7 @@
 /* global Nimiq */
 /* global Constants */
-/* global PassphraseBox */
-/* global PassphraseSetterBox */
+/* global PasswordBox */
+/* global PasswordSetterBox */
 /* global KeyStore */
 /* global Errors */
 /* global Utf8Tools */
@@ -50,12 +50,12 @@ class ChangePassword {
         const $downloadLoginFile = ($downloadFile.querySelector('.download-login-file'));
 
         // Components
-        this._passwordSetter = new PassphraseSetterBox($passwordSetter);
+        this._passwordSetter = new PasswordSetterBox($passwordSetter);
         this._loginFileIcon = new LoginFileIcon($loginFileIcon);
         this._downloadLoginFile = new DownloadLoginFile($downloadLoginFile);
 
-        this._passwordGetter = new PassphraseBox($passwordGetter, {
-            buttonI18nTag: 'passphrasebox-continue',
+        this._passwordGetter = new PasswordBox($passwordGetter, {
+            buttonI18nTag: 'passwordbox-continue',
             minLength: this._request.keyInfo.hasPin ? 6 : undefined,
             hideCancel: true,
             hideInput: !this._request.keyInfo.encrypted,
@@ -90,11 +90,11 @@ class ChangePassword {
 
         // Events
 
-        this._passwordGetter.on(PassphraseBox.Events.SUBMIT, this._unlock.bind(this));
-        this._passwordSetter.on(PassphraseSetterBox.Events.ENTERED, this._prepare.bind(this));
-        this._passwordSetter.on(PassphraseSetterBox.Events.SUBMIT, this._commitChangeAndOfferLoginFile.bind(this));
-        this._passwordSetter.on(PassphraseSetterBox.Events.SKIP, this._commitChangeAndOfferLoginFile.bind(this));
-        this._passwordSetter.on(PassphraseSetterBox.Events.NOT_EQUAL, () => this._loginFileIcon.unlock());
+        this._passwordGetter.on(PasswordBox.Events.SUBMIT, this._unlock.bind(this));
+        this._passwordSetter.on(PasswordSetterBox.Events.ENTERED, this._prepare.bind(this));
+        this._passwordSetter.on(PasswordSetterBox.Events.SUBMIT, this._commitChangeAndOfferLoginFile.bind(this));
+        this._passwordSetter.on(PasswordSetterBox.Events.SKIP, this._commitChangeAndOfferLoginFile.bind(this));
+        this._passwordSetter.on(PasswordSetterBox.Events.NOT_EQUAL, () => this._loginFileIcon.unlock());
 
         this._downloadLoginFile.on(DownloadLoginFile.Events.DOWNLOADED, () => {
             this._resolve({ success: true });
@@ -123,7 +123,7 @@ class ChangePassword {
         } catch (e) {
             if (e.message === 'Invalid key') {
                 TopLevelApi.setLoading(false);
-                this._passwordGetter.onPassphraseIncorrect();
+                this._passwordGetter.onPasswordIncorrect();
                 return;
             }
             this._reject(new Errors.CoreError(e));

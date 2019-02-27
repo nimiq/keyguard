@@ -2,7 +2,7 @@
 /* global Nimiq */
 /* global KeyStore */
 /* global Identicon */
-/* global PassphraseBox */
+/* global PasswordBox */
 /* global Utf8Tools */
 /* global KeyStore */
 /* global Errors */
@@ -44,19 +44,19 @@ class SignMessage {
         new Identicon(signerAddress, $signerIdenticon); // eslint-disable-line no-new
         $signerLabel.textContent = request.signerLabel;
 
-        // Set up passphrase box
+        // Set up password box
         /** @type {HTMLFormElement} */
-        const $passphraseBox = (document.querySelector('#passphrase-box'));
-        this._passphraseBox = new PassphraseBox($passphraseBox, {
+        const $passwordBox = (document.querySelector('#password-box'));
+        this._passwordBox = new PasswordBox($passwordBox, {
             hideInput: !request.keyInfo.encrypted,
-            buttonI18nTag: 'passphrasebox-sign-msg',
+            buttonI18nTag: 'passwordbox-sign-msg',
             minLength: request.keyInfo.hasPin ? 6 : undefined,
             hideCancel: true,
         });
 
-        this._passphraseBox.on(
-            PassphraseBox.Events.SUBMIT,
-            passphrase => this._onConfirm(request, resolve, reject, passphrase),
+        this._passwordBox.on(
+            PasswordBox.Events.SUBMIT,
+            password => this._onConfirm(request, resolve, reject, password),
         );
     }
 
@@ -64,23 +64,23 @@ class SignMessage {
      * @param {Parsed<KeyguardRequest.SignMessageRequest>} request
      * @param {SignMessage.resolve} resolve
      * @param {reject} reject
-     * @param {string} [passphrase]
+     * @param {string} [password]
      * @returns {Promise<void>}
      * @private
      */
-    async _onConfirm(request, resolve, reject, passphrase) {
+    async _onConfirm(request, resolve, reject, password) {
         TopLevelApi.setLoading(true);
 
-        const passphraseBuf = passphrase ? Utf8Tools.stringToUtf8ByteArray(passphrase) : undefined;
+        const passwordBuf = password ? Utf8Tools.stringToUtf8ByteArray(password) : undefined;
 
         /** @type {Key?} */
         let key = null;
         try {
-            key = await KeyStore.instance.get(request.keyInfo.id, passphraseBuf);
+            key = await KeyStore.instance.get(request.keyInfo.id, passwordBuf);
         } catch (e) {
             if (e.message === 'Invalid key') {
                 TopLevelApi.setLoading(false);
-                this._passphraseBox.onPassphraseIncorrect();
+                this._passwordBox.onPasswordIncorrect();
                 return;
             }
             reject(new Errors.CoreError(e));
@@ -116,7 +116,7 @@ class SignMessage {
         // Go to start page
         window.location.hash = SignMessage.Pages.SIGN_MESSAGE;
         if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
-            this._passphraseBox.focus();
+            this._passwordBox.focus();
         }
     }
 }

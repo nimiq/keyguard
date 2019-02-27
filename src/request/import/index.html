@@ -28,8 +28,8 @@
     <script defer bundle-common src="../../common.js"></script>
 
     <script defer bundle-toplevel src="../../components/NoReferrerErrorPage.js"></script>
-    <script defer bundle-toplevel src="../../components/PassphraseBox.js"></script>
-    <script defer bundle-toplevel src="../../components/PassphraseInput.js"></script>
+    <script defer bundle-toplevel src="../../components/PasswordBox.js"></script>
+    <script defer bundle-toplevel src="../../components/PasswordInput.js"></script>
     <script defer bundle-toplevel src="../../lib/AnimationUtils.js"></script>
     <script defer bundle-toplevel src="../../lib/I18n.js"></script>
     <script defer bundle-toplevel src="../../lib/RequestParser.js"></script>
@@ -47,7 +47,7 @@
     <script defer src="../../components/FileImporter.js"></script>
     <script defer src="../../components/FlippableHandler.js"></script>
     <script defer src="../../components/LoginFileIcon.js"></script>
-    <script defer src="../../components/PassphraseSetterBox.js"></script>
+    <script defer src="../../components/PasswordSetterBox.js"></script>
     <script defer src="../../components/RecoveryWords.js"></script>
     <script defer src="../../components/RecoveryWordsInputField.js"></script>
     <script defer src="ImportFile.js"></script>
@@ -61,8 +61,8 @@
     <link rel="stylesheet" bundle-toplevel href="../../../node_modules/@nimiq/style/nimiq-style.min.css">
     <link rel="stylesheet" bundle-toplevel href="../../nimiq-style.css">
     <link rel="stylesheet" bundle-toplevel href="../../common.css">
-    <link rel="stylesheet" bundle-toplevel href="../../components/PassphraseInput.css">
-    <link rel="stylesheet" bundle-toplevel href="../../components/PassphraseBox.css">
+    <link rel="stylesheet" bundle-toplevel href="../../components/PasswordInput.css">
+    <link rel="stylesheet" bundle-toplevel href="../../components/PasswordBox.css">
 
     <link rel="stylesheet" href="../../components/FileImporter.css">
     <link rel="stylesheet" href="../../components/FlippableHandler.css">
@@ -99,7 +99,7 @@
                 </div>
             </form>
 
-            <!-- Set Passphrase -->
+            <!-- Set Password -->
             <div id="set-password" class="page nq-card">
                 <div class="page-header nq-card-header">
                     <a tabindex="0" class="page-header-back-button">
@@ -115,7 +115,7 @@
                 </div>
 
                 <div class="page-footer">
-                    <form class="passphrase-setter-box"></form>
+                    <form class="password-setter-box"></form>
                 </div>
             </div>
 
@@ -169,7 +169,7 @@
                         <use class="lock-locked" xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-lock-locked"/>
                         <use class="lock-unlocked" xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-lock-unlocked"/>
                     </svg>
-                    <form class="passphrase-box"></form>
+                    <form class="password-box"></form>
                 </div>
             </div>
         </div>

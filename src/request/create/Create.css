@@ -1,4 +1,4 @@
-.page#set-passphrase .page-body,
+.page#set-password .page-body,
 .page#choose-identicon .page-body {
     position: relative;
     display:flex;
@@ -6,14 +6,14 @@
     align-items: center;
 }
 
-.page#set-passphrase .page-body h2,
+.page#set-password .page-body h2,
 .page#choose-identicon .page-body h2 {
     text-align: center;
     font-weight: normal;
 }
 
-.page#set-passphrase.repeat-password .hide-on-repetition,
-.page#set-passphrase:not(.repeat-password) .show-on-repetition  {
+.page#set-password.repeat-password .hide-on-repetition,
+.page#set-password:not(.repeat-password) .show-on-repetition  {
     display: none;
 }
 

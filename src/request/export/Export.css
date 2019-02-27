@@ -121,13 +121,13 @@ ul.nq-list li > .nq-icon {
     padding-bottom: 3rem;
 }
 
-.passphrase-box:not(.hide-input) + .skip-words {
+.password-box:not(.hide-input) + .skip-words {
     position: absolute;
     width: calc(100% - 2rem);
     bottom: 2.25rem;
 }
 
-.passphrase-box:not(.hide-input).input-eligable + .skip-words {
+.password-box:not(.hide-input).input-eligable + .skip-words {
     display: none;
 }
 

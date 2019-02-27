@@ -3,7 +3,7 @@
 /* global Key */
 /* global ImportWords */
 /* global FileImporter */
-/* global PassphraseBox */
+/* global PasswordBox */
 /* global ImportApi */
 /* global Errors */
 /* global TopLevelApi */
@@ -55,16 +55,16 @@ class ImportFile {
         this.$loginFileImage = (this.$unlockAccountPage.querySelector('.loginfile-image'));
 
         /** @type {HTMLFormElement} */
-        const $passphraseBox = (this.$unlockAccountPage.querySelector('.passphrase-box'));
-        this.passphraseBox = new PassphraseBox(
-            $passphraseBox,
+        const $passwordBox = (this.$unlockAccountPage.querySelector('.password-box'));
+        this.passwordBox = new PasswordBox(
+            $passwordBox,
             {
-                buttonI18nTag: 'passphrasebox-log-in',
+                buttonI18nTag: 'passwordbox-log-in',
                 hideCancel: true,
             },
         );
         fileImport.on(FileImporter.Events.IMPORT, this._onFileImported.bind(this));
-        this.passphraseBox.on(PassphraseBox.Events.SUBMIT, this._onPassphraseEntered.bind(this));
+        this.passwordBox.on(PasswordBox.Events.SUBMIT, this._onPasswordEntered.bind(this));
     }
 
     run() {
@@ -88,35 +88,35 @@ class ImportFile {
         this.$loginFileImage.src = src;
         const version = this._encryptedKey.readUint8();
         // eslint-disable-next-line no-nested-ternary
-        this.passphraseBox.setMinLength(this._flags.hasPin ? 6 : version < 3 ? 10 : undefined);
-        this.passphraseBox.reset();
+        this.passwordBox.setMinLength(this._flags.hasPin ? 6 : version < 3 ? 10 : undefined);
+        this.passwordBox.reset();
         this.$unlockAccountPage.classList.remove('animate');
 
         // Go to next page
         window.location.hash = ImportFile.Pages.UNLOCK_ACCOUNT;
         setTimeout(() => this.$unlockAccountPage.classList.add('animate'), 0);
         if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
-            this.passphraseBox.focus();
+            this.passwordBox.focus();
         }
     }
 
     /**
-     * @param {string} passphrase
+     * @param {string} password
      * @returns {Promise<void>}
      */
-    async _onPassphraseEntered(passphrase) {
+    async _onPasswordEntered(password) {
         /** @type {Key?} */
         let key;
 
         try {
-            key = await this._decryptAndStoreKey(passphrase);
+            key = await this._decryptAndStoreKey(password);
         } catch (error) {
-            this.passphraseBox.onPassphraseIncorrect();
+            this.passwordBox.onPasswordIncorrect();
             return;
         }
 
         if (!key) {
-            this.passphraseBox.onPassphraseIncorrect();
+            this.passwordBox.onPasswordIncorrect();
             return;
         }
 
@@ -156,15 +156,15 @@ class ImportFile {
     }
 
     /**
-     * @param {string} passphrase
+     * @param {string} password
      * @returns {Promise<Key?>}
      */
-    async _decryptAndStoreKey(passphrase) {
+    async _decryptAndStoreKey(password) {
         TopLevelApi.setLoading(true);
         try {
-            const encryptionKey = Utf8Tools.stringToUtf8ByteArray(passphrase);
+            const encryptionKey = Utf8Tools.stringToUtf8ByteArray(password);
 
-            // Make sure read position is at 0 even after a wrong passphrase
+            // Make sure read position is at 0 even after a wrong password
             this._encryptedKey.reset();
 
             const secret = await Nimiq.Secret.fromEncrypted(this._encryptedKey, encryptionKey);
@@ -180,7 +180,7 @@ class ImportFile {
         } catch (event) {
             console.error(event);
             TopLevelApi.setLoading(false);
-            return null; // Triggers onPassphraseIncorrect above
+            return null; // Triggers onPasswordIncorrect above
         }
     }
 

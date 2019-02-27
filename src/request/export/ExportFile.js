@@ -3,8 +3,8 @@
 /* global LoginFileIcon */
 /* global LoginFile */
 /* global Nimiq */
-/* global PassphraseBox */
-/* global PassphraseSetterBox */
+/* global PasswordBox */
+/* global PasswordSetterBox */
 /* global ProgressIndicator */
 /* global KeyStore */
 /* global DownloadLoginFile */
@@ -57,15 +57,15 @@ class ExportFile extends Nimiq.Observable {
         /** @type {HTMLAnchorElement} */
         const $downloadLoginFile = ($downloadFilePage.querySelector('.download-loginfile'));
 
-        this._passwordBox = new PassphraseBox(
+        this._passwordBox = new PasswordBox(
             $passwordBox, {
-                buttonI18nTag: 'passphrasebox-download',
+                buttonI18nTag: 'passwordbox-download',
                 hideInput: !this._request.keyInfo.encrypted,
                 minLength: this._request.keyInfo.hasPin ? 6 : undefined,
                 hideCancel: true,
             },
         );
-        this._passwordSetterBox = new PassphraseSetterBox(
+        this._passwordSetterBox = new PasswordSetterBox(
             $passwordSetterBox, {
                 hideSkip: true,
             },
@@ -105,7 +105,7 @@ class ExportFile extends Nimiq.Observable {
             }
         });
 
-        this._passwordBox.on(PassphraseBox.Events.SUBMIT, async password => {
+        this._passwordBox.on(PasswordBox.Events.SUBMIT, async password => {
             if (this._key && this._password) {
                 await this._passwordSubmitted(this._password);
             } else {
@@ -113,7 +113,7 @@ class ExportFile extends Nimiq.Observable {
             }
         });
 
-        this._passwordSetterBox.on(PassphraseSetterBox.Events.ENTERED, async () => {
+        this._passwordSetterBox.on(PasswordSetterBox.Events.ENTERED, async () => {
             $setPasswordPage.classList.add('repeat-password');
 
             let colorClass = '';
@@ -124,11 +124,11 @@ class ExportFile extends Nimiq.Observable {
             colorClass = `nq-${colorString}-bg`;
             this._loginFileIcon.lock(colorClass);
         });
-        this._passwordSetterBox.on(PassphraseSetterBox.Events.NOT_EQUAL, () => {
+        this._passwordSetterBox.on(PasswordSetterBox.Events.NOT_EQUAL, () => {
             $setPasswordPage.classList.remove('repeat-password');
             this._loginFileIcon.unlock();
         });
-        this._passwordSetterBox.on(PassphraseSetterBox.Events.SUBMIT, async password => {
+        this._passwordSetterBox.on(PasswordSetterBox.Events.SUBMIT, async password => {
             await this._setPassword(password);
         });
     }
@@ -152,7 +152,7 @@ class ExportFile extends Nimiq.Observable {
         } catch (e) {
             if (e.message === 'Invalid key') {
                 TopLevelApi.setLoading(false);
-                this._passwordBox.onPassphraseIncorrect();
+                this._passwordBox.onPasswordIncorrect();
                 return;
             }
             this._reject(new Errors.CoreError(e));
@@ -183,7 +183,7 @@ class ExportFile extends Nimiq.Observable {
             } catch (e) {
                 if (e.message === 'Invalid key') {
                     TopLevelApi.setLoading(false);
-                    this._passwordBox.onPassphraseIncorrect();
+                    this._passwordBox.onPasswordIncorrect();
                     return;
                 }
                 this._reject(new Errors.CoreError(e));
