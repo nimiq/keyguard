@@ -129,7 +129,7 @@ class PasswordBox extends Nimiq.Observable {
      */
     _onInputChangeValidity(isValid) {
         this._isInputValid = isValid;
-        this.$el.classList.toggle('input-eligable', isValid);
+        this.$el.classList.toggle('input-eligible', isValid);
     }
 
     /**
