@@ -12,6 +12,7 @@ class PassphraseSetterBox extends Nimiq.Observable {
     constructor($el, options = {}) {
         const defaults = {
             bgColor: 'light-blue',
+            hideSkip: false,
         };
 
         super();
@@ -28,8 +29,10 @@ class PassphraseSetterBox extends Nimiq.Observable {
 
         this.$el.addEventListener('submit', event => this._onSubmit(event));
 
-        /** @type {HTMLElement} */
-        (this.$el.querySelector('.password-skip')).addEventListener('click', () => this._onSkip());
+        if (!options.hideSkip) {
+            /** @type {HTMLElement} */
+            (this.$el.querySelector('.password-skip')).addEventListener('click', () => this._onSkip());
+        }
 
         this._onInputChangeValidity(false);
     }
@@ -56,12 +59,14 @@ class PassphraseSetterBox extends Nimiq.Observable {
 
             <button class="submit" data-i18n="passphrasebox-continue">Continue</button>
 
-            <a tabindex="0" class="password-skip nq-text-s">
-                <span data-i18n="passphrasebox-password-skip">Skip for now</span>
-                <svg class="nq-icon">
-                    <use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-caret-right-small"/>
-                </svg>
-            </a>
+            ${options.hideSkip ? '' : `
+                <a tabindex="0" class="password-skip nq-text-s">
+                    <span data-i18n="passphrasebox-password-skip">Skip for now</span>
+                    <svg class="nq-icon">
+                        <use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-caret-right-small"/>
+                    </svg>
+                </a>
+            `}
         `;
         /* eslint-enable max-len */
 

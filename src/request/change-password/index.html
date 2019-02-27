@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy"
-          content="default-src 'self' 'unsafe-eval';
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-eval';
           img-src http: https: blob: data:;
           child-src 'self' blob:;
           style-src 'self' https://fonts.googleapis.com;
@@ -37,14 +37,19 @@
     <script defer bundle-toplevel src="../TopLevelApi.js"></script>
     <script defer bundle-toplevel src="../../translations/index.js"></script>
 
+    <script defer src="../../lib/Iqons.js"></script>
+    <script defer src="../../lib/LoginFile.js"></script>
     <script defer src="../../lib/PasswordStrength.js"></script>
+    <script defer src="../../lib/QrEncoder.js"></script>
+    <script defer src="../../components/DownloadLoginFile.js"></script>
+    <script defer src="../../components/LoginFileIcon.js"></script>
+    <script defer src="../../components/ProgressIndicator.js"></script>
     <script defer src="../../components/PassphraseSetterBox.js"></script>
-    <script defer src="ChangePassphrase.js"></script>
-    <script defer src="ChangePassphraseApi.js"></script>
+    <script defer src="ChangePassword.js"></script>
+    <script defer src="ChangePasswordApi.js"></script>
     <script defer src="index.js"></script>
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Muli:400,600,700">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono&text=0123456789ABCDEFGHJKLMNPQRSTUVXY">
 
     <link rel="stylesheet" bundle-toplevel href="../../../node_modules/@nimiq/style/nimiq-style.min.css">
     <link rel="stylesheet" bundle-toplevel href="../../nimiq-style.css">
@@ -52,8 +57,12 @@
     <link rel="stylesheet" bundle-toplevel href="../../components/PassphraseInput.css">
     <link rel="stylesheet" bundle-toplevel href="../../components/PassphraseBox.css">
 
-    <link rel="stylesheet" href="./ChangePassphrase.css">
+    <link rel="stylesheet" href="../../components/DownloadLoginFile.css">
+    <link rel="stylesheet" href="../../components/LoginFileIcon.css">
+    <link rel="stylesheet" href="../../components/ProgressIndicator.css">
+    <link rel="stylesheet" href="./ChangePassword.css">
 </head>
+
 <body class="loading">
     <div class="header-top">
         <div class="nimiq-app-name">
@@ -62,52 +71,82 @@
     </div>
 
     <div id="app">
-        <div class="flex-grow"></div>
-
-        <!-- Enter Passphrase -->
-        <div id="enter-passphrase" class="page nq-card">
+        <!-- Enter Password -->
+        <div id="enter-password" class="page nq-card">
             <div class="page-header nq-card-header">
-                <h1 data-i18n="change-passphrase-heading" class="nq-h1">Change your password</h1>
-            </div>
-
-            <div class="page-body nq-card-body">
-                <p data-i18n="change-paragraph" class="nq-text">
-                    Before entering your new password, you must first unlock your account.
-                </p>
-                <svg class="nq-icon lock"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-lock-locked"/></svg>
-            </div>
-
-            <div class="page-footer nq-card-footer">
-                <form class="passphrase-box"></form>
-            </div>
-        </div>
-
-        <div id="set-passphrase" class="page nq-card">
-            <div class="page-header nq-card-header">
+                <div class="progress-indicator"></div>
                 <a tabindex="0" class="page-header-back-button">
                     <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
                 </a>
-                <h1 data-i18n="change-passphrase-heading" class="nq-h1">Change your password</h1>
+                <h1 data-i18n="change-password-heading" class="nq-h1">Confirm old password</h1>
             </div>
 
             <div class="page-body nq-card-body">
-                <p data-i18n="change-set-paragraph" class="nq-text">
-                    Now please enter your new password and repeat it for confirmation.
+                <p data-i18n="change-password-paragraph" class="nq-text nq-orange center warning">
+                    Changing the password will create a new Login File that replaces the current one.
                 </p>
+                <p data-i18n="change-password-paragraph-legacy" class="nq-text nq-orange center warning legacy">
+                    Changing the password only has an effect on this device.
+                </p>
+
+                <div class="row">
+                    <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-keys"/></svg>
+                    <div data-i18n="change-password-info-item-1">
+                        All old Login Files still work with their old passwords.
+                    </div>
+                </div>
+                <div class="row">
+                    <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-shredder"/></svg>
+                    <div data-i18n="change-password-info-item-2">
+                        If a Login File was compromised: Please create a new account and transfer all funds.
+                    </div>
+                </div>
             </div>
 
             <div class="page-footer nq-card-footer">
-                <form class="passphrase-box"></form>
+                <form class="password-box"></form>
             </div>
         </div>
 
+        <!-- Set Password -->
+        <div id="set-password" class="page nq-card">
+            <div class="page-header nq-card-header">
+                <div class="progress-indicator"></div>
+                <a tabindex="0" class="page-header-back-button">
+                    <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
+                </a>
+                <h1 class="nq-h1" data-i18n="change-password-set-password-heading">Create a new password</h1>
+            </div>
+
+            <div class="page-body nq-card-body">
+                <p data-i18n='change-password-set-password-text' class="nq-light-blue nq-text center hint">Secure your new Login File.</p>
+                <p data-i18n='change-password-set-password-text-legacy' class="nq-light-blue nq-text center hint legacy">Secure your Account.</p>
+                <div class="login-file-icon"></div>
+            </div>
+
+            <div class="page-footer nq-card-footer">
+                <form class="password-setter-box"></form>
+            </div>
+        </div>
+
+        <div id="download-file" class="page nq-card">
+            <div class="page-header nq-card-header">
+                <div class="progress-indicator"></div>
+                <a tabindex="0" class="page-header-back-button">
+                    <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
+                </a>
+                <h1 class="nq-h1" data-i18n="change-password-download-login-file">Download new Login File</h1>
+            </div>
+
+            <div class="page-body nq-card-body">
+                <a class="download-login-file"></a>
+            </div>
+        </div>
 
         <button class="global-close nq-button-s display-none">
             <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left-small"/></svg>
             <span id="global-close-text"></span>
         </button>
-
-        <div class="flex-grow"></div>
 
         <div id="loading" class="page">
             <div class="loading-animation"></div>

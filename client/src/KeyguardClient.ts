@@ -132,8 +132,8 @@ export class KeyguardClient {
         this._redirectRequest<SimpleRequest>(KeyguardCommand.EXPORT, request);
     }
 
-    public changePassphrase(request: SimpleRequest) {
-        this._redirectRequest<SimpleRequest>(KeyguardCommand.CHANGE_PASSPHRASE, request);
+    public changePassword(request: SimpleRequest) {
+        this._redirectRequest<SimpleRequest>(KeyguardCommand.CHANGE_PASSWORD, request);
     }
 
     public signTransaction(request: SignTransactionRequest) {
