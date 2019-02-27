@@ -22,7 +22,7 @@
  *      }
  *
  *      get Handler() {
- *          // Should return the class that should be instantiated as the request's handler
+ *          // Should return the class that should be instantiated as the request's primary handler
  *      }
  *
  *      async onBeforeRun(parsedRequest) {
