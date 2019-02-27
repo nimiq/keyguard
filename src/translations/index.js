@@ -19,8 +19,12 @@ const TRANSLATIONS = {
         'recovery-words-title': 'Write these 24 words on a piece of paper.',
         'recovery-words-input-label': 'Recovery Words',
         'recovery-words-input-field-placeholder': 'word #',
-        'recovery-words-explanation': 'The following words will grant you access to your wallet even if your '
-                                    + 'Wallet File is lost.',
+        'recovery-words-intro-text': 'The Recovery Words are the ONLY way to restore '
+                                   + 'your account in case you lose your LoginFile or password.',
+        'recovery-words-intro-offline': 'Keep your Words offline, don’t enter them anywhere but in the Nimiq Safe.',
+        'recovery-words-intro-copy': 'Create a copy and store it in a safe place: family’s house, bank locker etc.',
+        'recovery-words-intro-safety': 'Mind water and fire, use a sealed box to keep your Recovery Words safe.',
+        'recovery-words-text': 'Anyone with these words can access your wallet! Keep them save.',
         'recovery-words-storing': 'Write these words on a piece of paper and store them at a safe, offline place.',
         'recovery-words-continue-to-words': 'Continue to Recovery Words',
 
@@ -131,7 +135,11 @@ const TRANSLATIONS = {
 
         'export-file-heading': 'Download Login File',
         'export-file-intro-heading': 'Save your Account',
+        'export-file-intro-blue-text': 'Your Login File grants access to your Account. '
+                                     + 'Only you can access it. Download and save it.',
+        'export-file-intro-orange-text': 'Never share it. Don\'t Lose it.',
         'export-words-intro-heading': 'There is no password recovery!',
+        'go-to-recovery-words': 'Go to Recovery Words',
         'export-button-words': 'Show Recovery Words',
         'export-button-file': 'Download Login File',
         'export-finish': 'Finish Export',
@@ -185,9 +193,15 @@ const TRANSLATIONS = {
         'recovery-words-title': 'Schreibe diese 24 Wörter auf ein Papier.',
         'recovery-words-input-label': 'Wiederherstellungswörter',
         'recovery-words-input-field-placeholder': 'Wort ',
-        'recovery-words-explanation': 'Es gibt wirklich keine Passwort-Wiederherstellung. Die folgenden Wörter '
-                                    + 'sind ein Backup von deiner Schlüsseldatei und werden dir Zugang zu deiner '
-                                    + 'Wallet gewähren, auch wenn deine Schlüsseldatei verloren ist.',
+        'recovery-words-intro-text': 'Die Wiederherstellungswörter sind der EINZIGE Weg Zugriff zu '
+                                   + 'deinem Account zu erlangen, falls das Login File verloren geht.',
+        'recovery-words-intro-offline': 'Behalte deine Wiederherstellungswörter offline und '
+                                        + 'gib sie nur im Nimiq Safe ein.',
+        'recovery-words-intro-copy': 'Erstelle eine Kopie und verwahre sie an einem sicheren Ort: '
+                                   + 'Dem Haus deiner Familie, Bankschließfach, etc.',
+        'recovery-words-intro-safety': 'Schütze dich vor Wasser und Feuer und benutze eine verschlossene Kiste um '
+                                     + 'deine Wiederherstellungswörter zu verwahren.',
+        'recovery-words-text': 'Jeder im Besitz dieser Wörter kann auf deinen Account zugreifen. Verwahre sie sicher.',
         'recovery-words-storing': 'Schreibe diese Wörter auf ein Stück Papier und verwahre es an einem sicheren, '
                                 + 'analogen Ort.',
         'recovery-words-continue-to-words': 'Weiter zu den Wiederherstellungswörtern',
@@ -301,7 +315,11 @@ const TRANSLATIONS = {
 
         'export-file-heading': 'Schlüsseldatei herunterladen',
         'export-file-intro-heading': 'Sichere deinen Account',
+        'export-file-intro-blue-text': 'Dein Login File gewährt Zugang zu deinem Account. '
+                                    + 'Nur du kannst darauf zugreifen. Lade es runter und speichere es.',
+        'export-file-intro-orange-text': 'Teile es mit niemandem. Verliere es nicht.',
         'export-words-intro-heading': 'Es gibt keine Passwortwiederherstellung',
+        'go-to-recovery-words': 'Zu den Wiederherstellungswörtern',
         'export-button-words': 'Wiederherstellungswörter anzeigen',
         'export-button-file': 'Schlüsseldatei herunterladen',
         'export-finish': 'Export abschließen',
