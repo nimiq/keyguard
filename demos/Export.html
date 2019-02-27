@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Export | Keyguard Demo</title>
+</head>
+<body>
+<link href="../src/nimiq-style.css" rel="stylesheet">
+<script src="../node_modules/@nimiq/core-web/web-offline.js"></script>
+<script src="../src/lib/Constants.js"></script>
+<script src="../src/lib/Key.js"></script>
+<script src="../src/lib/KeyStore.js"></script>
+<script src="../node_modules/@nimiq/rpc/dist/rpc.umd.js"></script>
+
+<div>
+    <button class="bip39">Export (BIP39)</button>
+    <button class="legacy">Export (Legacy)</button>
+    <button class="unencrypted">Export (unencrypted)</button>
+    <br>The password is 1234567890.
+    <br><br>
+    <textarea id="result" rows=20 cols=60></textarea>
+</div>
+
+<script>
+    (async () => {
+        await Nimiq.WasmHelper.doImportBrowser();
+        Nimiq.GenesisConfig.test();
+    })();
+
+    document.querySelector('.bip39').addEventListener('click', async () => {
+        const entropy = Nimiq.Entropy.generate();
+        const key = new Key(entropy);
+        const passphrase = Nimiq.BufferUtils.fromAscii('1234567890');
+        const id = await KeyStore.instance.put(key, passphrase);
+
+        const exportRequest = {
+            appName: 'Export Demo',
+            keyId: id,
+        };
+
+        exportPopup(exportRequest);
+    });
+
+    document.querySelector('.legacy').addEventListener('click', async () => {
+        const secret = Nimiq.PrivateKey.generate();
+        const key = new Key(secret);
+        const passphrase = Nimiq.BufferUtils.fromAscii('1234567890');
+        const id = await KeyStore.instance.put(key, passphrase);
+
+        const exportRequest = {
+            appName: 'Export Demo',
+            keyId: id,
+        };
+
+        exportPopup(exportRequest);
+    });
+
+    document.querySelector('.unencrypted').addEventListener('click', async () => {
+        const secret = Nimiq.Entropy.generate();
+        const key = new Key(secret);
+        const id = await KeyStore.instance.put(key);
+
+        const exportRequest = {
+            appName: 'Export Demo',
+            keyId: id,
+        };
+
+        exportPopup(exportRequest);
+    });
+
+
+    async function exportPopup(request) {
+        const keyguard = window.open('../src/request/export/', 'Export Demo',
+            `left=${window.innerWidth / 2 - 350},top=75,width=700,height=850,location=yes,dependent=yes`);
+        const rpc = new Rpc.PostMessageRpcClient(keyguard, '*');
+        await rpc.init();
+
+        try {
+            const result = await rpc.call('request', request);
+            console.log('Keyguard result:', result);
+            document.querySelector('#result').textContent = JSON.stringify(result);
+        } catch (e) {
+            console.error('Keyguard error', e);
+            document.querySelector('#result').textContent = `Error: ${e.message || e}`;
+        }
+
+        keyguard.close();
+        KeyStore.instance.remove(request.keyId);
+    }
+</script>
+
+</body>
+</html>
