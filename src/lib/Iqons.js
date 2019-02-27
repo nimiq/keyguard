@@ -1,3 +1,5 @@
+/* global IqonHash */
+
 class Iqons {
     /* Public API */
 
@@ -6,7 +8,7 @@ class Iqons {
      * @returns {Promise<string>}
      */
     static async svg(text) {
-        const hash = this._hash(text);
+        const hash = IqonHash.hash(text);
         return this._svgTemplate(
             parseInt(hash[0], 10),
             parseInt(hash[2], 10),
@@ -53,15 +55,6 @@ class Iqons {
      */
     static placeholderToDataUrl(color, strokeWidth) {
         return `data:image/svg+xml;base64,${btoa(this.placeholder(color, strokeWidth))}`;
-    }
-
-    /**
-     * @param {string} address
-     * @returns {number}
-     */
-    static getBackgroundColorIndex(address) {
-        const hash = this._hash(address);
-        return parseInt(hash[2], 10);
     }
 
     /* Private API */
@@ -226,33 +219,6 @@ class Iqons {
         let fullIndex = index.toString();
         if (index < 10) fullIndex = `0${fullIndex}`;
         return fullIndex;
-    }
-
-    /**
-     * @param {string} text
-     * @returns {string}
-     */
-    static _hash(text) {
-        return (`${text
-            .split('')
-            .map(c => Number(c.charCodeAt(0)) + 3)
-            .reduce((a, e) => a * (1 - a) * this._chaosHash(e), 0.5)}`)
-            .split('')
-            .reduce((a, e) => e + a, '')
-            .substr(4, 17);
-    }
-
-    /**
-     * @param {number} number
-     * @returns {number}
-     */
-    static _chaosHash(number) {
-        const k = 3.569956786876;
-        let an = 1 / number;
-        for (let i = 0; i < 100; i++) {
-            an = (1 - an) * an * k;
-        }
-        return an;
     }
 
     /**
