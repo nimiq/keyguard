@@ -1,6 +1,6 @@
 /* global Constants */
 /* global DerivedIdenticonSelector */
-/* global PassphraseBox */
+/* global PasswordBox */
 /* global KeyStore */
 /* global Errors */
 /* global Utf8Tools */
@@ -23,24 +23,24 @@ class DeriveAddress {
         this._reject = reject;
 
         /** @type {HTMLFormElement} */
-        const $passphraseBox = (document.querySelector('.passphrase-box'));
+        const $passwordBox = (document.querySelector('.password-box'));
 
         /** @type {HTMLDivElement} */
         const $identiconSelector = (document.querySelector('.identicon-selector'));
 
         // Create components
 
-        this._passphraseBox = new PassphraseBox($passphraseBox, {
+        this._passwordBox = new PasswordBox($passwordBox, {
             hideInput: !request.keyInfo.encrypted,
-            buttonI18nTag: 'passphrasebox-continue',
+            buttonI18nTag: 'passwordbox-continue',
             hideCancel: true,
         });
         this._identiconSelector = new DerivedIdenticonSelector($identiconSelector);
 
         // Wire up logic
 
-        this._passphraseBox.on(
-            PassphraseBox.Events.SUBMIT,
+        this._passwordBox.on(
+            PasswordBox.Events.SUBMIT,
             async /** @param {string|undefined} password */ password => {
                 if (!(await this._onPasswordEntered(password))) return;
                 window.location.hash = DeriveAddress.Pages.CHOOSE_IDENTICON;
@@ -84,7 +84,7 @@ class DeriveAddress {
         } catch (e) {
             if (e.message === 'Invalid key') {
                 TopLevelApi.setLoading(false);
-                this._passphraseBox.onPassphraseIncorrect();
+                this._passwordBox.onPasswordIncorrect();
                 return false;
             }
             this._reject(new Errors.CoreError(e));
@@ -107,7 +107,7 @@ class DeriveAddress {
         if (this._request.keyInfo.encrypted) {
             window.location.hash = DeriveAddress.Pages.UNLOCK;
             if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
-                this._passphraseBox.focus();
+                this._passwordBox.focus();
             }
         } else {
             await this._onPasswordEntered();

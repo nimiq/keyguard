@@ -1,6 +1,6 @@
 /* global Constants */
 /* global IdenticonSelector */
-/* global PassphraseSetterBox */
+/* global PasswordSetterBox */
 /* global Key */
 /* global KeyStore */
 /* global ProgressIndicator */
@@ -29,10 +29,10 @@ class Create {
         this.$identiconSelector = (document.querySelector('.identicon-selector'));
 
         /** @type {HTMLFormElement} */
-        const $setPassphrase = (document.querySelector('.passphrase-box'));
+        const $setPassword = (document.querySelector('.password-box'));
 
         /** @type {HTMLFormElement} */
-        this.$setPassphrasePage = (document.getElementById('set-passphrase'));
+        this.$setPasswordPage = (document.getElementById('set-password'));
 
         /** @type {HTMLFormElement} */
         this.$walletIdentifier = (document.querySelector('.wallet-identifier'));
@@ -40,12 +40,12 @@ class Create {
         // Create components
 
         this._identiconSelector = new IdenticonSelector(this.$identiconSelector, request.defaultKeyPath);
-        this._passphraseSetter = new PassphraseSetterBox($setPassphrase);
+        this._passwordSetter = new PasswordSetterBox($setPassword);
         // Set up progress indicators
         /* eslint-disable-next-line no-new */
         new ProgressIndicator(document.querySelector(`#${Create.Pages.CHOOSE_IDENTICON} .progress-indicator`), 3, 1);
         this.progressIndicator = new ProgressIndicator(
-            document.querySelector(`#${Create.Pages.SET_PASSPHRASE} .progress-indicator`),
+            document.querySelector(`#${Create.Pages.SET_PASSWORD} .progress-indicator`),
             3,
             2,
         );
@@ -60,37 +60,37 @@ class Create {
             */
             (entropy, address) => {
                 this._selectedEntropy = entropy;
-                window.location.hash = Create.Pages.SET_PASSPHRASE;
+                window.location.hash = Create.Pages.SET_PASSWORD;
                 // eslint-disable-next-line no-new
                 new Identicon(
                     address,
                     /** @type {HTMLDivElement} */(this.$walletIdentifier.querySelector('.identicon')),
                 );
                 this.progressIndicator.setStep(2);
-                this._passphraseSetter.reset();
+                this._passwordSetter.reset();
                 if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
-                    this._passphraseSetter.focus();
+                    this._passwordSetter.focus();
                 }
             },
         );
 
-        this._passphraseSetter.on(PassphraseSetterBox.Events.SUBMIT, /** @param {string} password */ password => {
+        this._passwordSetter.on(PasswordSetterBox.Events.SUBMIT, /** @param {string} password */ password => {
             this._password = password;
             this.finish(request);
         });
 
-        this._passphraseSetter.on(PassphraseSetterBox.Events.SKIP, () => {
+        this._passwordSetter.on(PasswordSetterBox.Events.SKIP, () => {
             this.progressIndicator.setStep(3);
             this.finish(request);
         });
 
-        this._passphraseSetter.on(PassphraseSetterBox.Events.ENTERED, () => {
-            this.$setPassphrasePage.classList.add('repeat-password');
+        this._passwordSetter.on(PasswordSetterBox.Events.ENTERED, () => {
+            this.$setPasswordPage.classList.add('repeat-password');
             this.progressIndicator.setStep(3);
         });
 
-        this._passphraseSetter.on(PassphraseSetterBox.Events.NOT_EQUAL, () => {
-            this.$setPassphrasePage.classList.remove('repeat-password');
+        this._passwordSetter.on(PasswordSetterBox.Events.NOT_EQUAL, () => {
+            this.$setPasswordPage.classList.remove('repeat-password');
             this.progressIndicator.setStep(2);
         });
     } // constructor
@@ -128,5 +128,5 @@ class Create {
 
 Create.Pages = {
     CHOOSE_IDENTICON: 'choose-identicon',
-    SET_PASSPHRASE: 'set-passphrase',
+    SET_PASSWORD: 'set-password',
 };

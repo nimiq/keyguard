@@ -1,10 +1,10 @@
 /* global Nimiq */
 /* global I18n */
-/* global PassphraseInput */
+/* global PasswordInput */
 /* global AnimationUtils */
 /* global PasswordStrength */
 
-class PassphraseSetterBox extends Nimiq.Observable {
+class PasswordSetterBox extends Nimiq.Observable {
     /**
      * @param {?HTMLFormElement} $el
      * @param {object} [options]
@@ -22,10 +22,10 @@ class PassphraseSetterBox extends Nimiq.Observable {
         /** @type {object} */
         this.options = Object.assign(defaults, options);
 
-        this.$el = PassphraseSetterBox._createElement($el, this.options);
+        this.$el = PasswordSetterBox._createElement($el, this.options);
 
-        this._passphraseInput = new PassphraseInput(this.$el.querySelector('[passphrase-input]'));
-        this._passphraseInput.on(PassphraseInput.Events.VALID, isValid => this._onInputChangeValidity(isValid));
+        this._passwordInput = new PasswordInput(this.$el.querySelector('[password-input]'));
+        this._passwordInput.on(PasswordInput.Events.VALID, isValid => this._onInputChangeValidity(isValid));
 
         this.$el.addEventListener('submit', event => this._onSubmit(event));
 
@@ -44,24 +44,24 @@ class PassphraseSetterBox extends Nimiq.Observable {
      */
     static _createElement($el, options) {
         $el = $el || document.createElement('form');
-        $el.classList.add('passphrase-box', 'actionbox', 'setter', `nq-${options.bgColor}-bg`);
+        $el.classList.add('password-box', 'actionbox', 'setter', `nq-${options.bgColor}-bg`);
 
         /* eslint-disable max-len */
         $el.innerHTML = `
-            <div class="password-strength strength-short  nq-text-s" data-i18n="passphrasebox-password-strength-short" >Enter at least 8 characters</div>
-            <div class="password-strength strength-weak   nq-text-s" data-i18n="passphrasebox-password-strength-weak"  >That password is too weak</div>
-            <div class="password-strength strength-good   nq-text-s" data-i18n="passphrasebox-password-strength-good"  >Ok, that is an average password</div>
-            <div class="password-strength strength-strong nq-text-s" data-i18n="passphrasebox-password-strength-strong">Great, that is a strong password</div>
-            <div class="password-strength strength-secure nq-text-s" data-i18n="passphrasebox-password-strength-secure">Super, that is a secure password</div>
-            <div class="repeat-password nq-text-s" data-i18n="passphrasebox-repeat-password">Repeat your password</div>
+            <div class="password-strength strength-short  nq-text-s" data-i18n="passwordbox-password-strength-short" >Enter at least 8 characters</div>
+            <div class="password-strength strength-weak   nq-text-s" data-i18n="passwordbox-password-strength-weak"  >That password is too weak</div>
+            <div class="password-strength strength-good   nq-text-s" data-i18n="passwordbox-password-strength-good"  >Ok, that is an average password</div>
+            <div class="password-strength strength-strong nq-text-s" data-i18n="passwordbox-password-strength-strong">Great, that is a strong password</div>
+            <div class="password-strength strength-secure nq-text-s" data-i18n="passwordbox-password-strength-secure">Super, that is a secure password</div>
+            <div class="repeat-password nq-text-s" data-i18n="passwordbox-repeat-password">Repeat your password</div>
 
-            <div passphrase-input></div>
+            <div password-input></div>
 
-            <button class="submit" data-i18n="passphrasebox-continue">Continue</button>
+            <button class="submit" data-i18n="passwordbox-continue">Continue</button>
 
             ${options.hideSkip ? '' : `
                 <a tabindex="0" class="password-skip nq-text-s">
-                    <span data-i18n="passphrasebox-password-skip">Skip for now</span>
+                    <span data-i18n="passwordbox-password-skip">Skip for now</span>
                     <svg class="nq-icon">
                         <use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-caret-right-small"/>
                     </svg>
@@ -88,17 +88,17 @@ class PassphraseSetterBox extends Nimiq.Observable {
     }
 
     focus() {
-        this._passphraseInput.focus();
+        this._passwordInput.focus();
     }
 
     /**
-     * @param {boolean} [isWrongPassphrase]
+     * @param {boolean} [isWrongPassword]
      */
-    async reset(isWrongPassphrase) {
+    async reset(isWrongPassword) {
         this._password = '';
 
-        if (isWrongPassphrase) await this._passphraseInput.onPassphraseIncorrect();
-        else this._passphraseInput.reset();
+        if (isWrongPassword) await this._passwordInput.onPasswordIncorrect();
+        else this._passwordInput.reset();
 
         this.$el.classList.remove('repeat');
     }
@@ -106,7 +106,7 @@ class PassphraseSetterBox extends Nimiq.Observable {
     /**
      * @returns {Promise<void>}
      */
-    async onPassphraseIneligable() {
+    async onPasswordIneligable() {
         // We have to shake both possible too-weak notices
         const $hintTooShort = /** @type {HTMLElement} */ (this.$el.querySelector('.password-strength.strength-short'));
         const $hintWeak = /** @type {HTMLElement} */ (this.$el.querySelector('.password-strength.strength-weak'));
@@ -121,12 +121,12 @@ class PassphraseSetterBox extends Nimiq.Observable {
      * @param {boolean} isValid
      */
     _onInputChangeValidity(isValid) {
-        if (this._password && this._passphraseInput.text === this._password) {
-            this.fire(PassphraseSetterBox.Events.SUBMIT, this._password);
+        if (this._password && this._passwordInput.text === this._password) {
+            this.fire(PasswordSetterBox.Events.SUBMIT, this._password);
             return;
         }
 
-        const score = PasswordStrength.strength(this._passphraseInput.text);
+        const score = PasswordStrength.strength(this._passwordInput.text);
 
         this.$el.classList.toggle('input-eligable', isValid && score >= PasswordStrength.Score.MINIMUM);
 
@@ -144,8 +144,8 @@ class PassphraseSetterBox extends Nimiq.Observable {
     }
 
     _isEligablePassword() {
-        const password = this._passphraseInput.text;
-        if (password.length < PassphraseInput.DEFAULT_MIN_LENGTH) return false;
+        const password = this._passwordInput.text;
+        if (password.length < PasswordInput.DEFAULT_MIN_LENGTH) return false;
         return PasswordStrength.strength(password) >= PasswordStrength.Score.MINIMUM;
     }
 
@@ -155,33 +155,33 @@ class PassphraseSetterBox extends Nimiq.Observable {
     _onSubmit(event) {
         event.preventDefault();
         if (!this._isEligablePassword()) {
-            this.onPassphraseIneligable();
+            this.onPasswordIneligable();
             return;
         }
         if (!this._password) {
-            this._password = this._passphraseInput.text;
-            this._passphraseInput.reset();
+            this._password = this._passwordInput.text;
+            this._passwordInput.reset();
             this.$el.classList.add('repeat');
-            this.fire(PassphraseSetterBox.Events.ENTERED);
+            this.fire(PasswordSetterBox.Events.ENTERED);
             return;
         }
-        if (this._password !== this._passphraseInput.text) {
+        if (this._password !== this._passwordInput.text) {
             this.reset(true);
-            this.fire(PassphraseSetterBox.Events.NOT_EQUAL);
+            this.fire(PasswordSetterBox.Events.NOT_EQUAL);
             return;
         }
-        this.fire(PassphraseSetterBox.Events.SUBMIT, this._password);
+        this.fire(PasswordSetterBox.Events.SUBMIT, this._password);
         this.reset();
     }
 
     _onSkip() {
-        this.fire(PassphraseSetterBox.Events.SKIP);
+        this.fire(PasswordSetterBox.Events.SKIP);
     }
 }
 
-PassphraseSetterBox.Events = {
-    SUBMIT: 'passphrasebox-submit',
-    ENTERED: 'passphrasebox-entered',
-    NOT_EQUAL: 'passphrasebox-not-equal',
-    SKIP: 'passphrasebox-skip',
+PasswordSetterBox.Events = {
+    SUBMIT: 'passwordbox-submit',
+    ENTERED: 'passwordbox-entered',
+    NOT_EQUAL: 'passwordbox-not-equal',
+    SKIP: 'passwordbox-skip',
 };

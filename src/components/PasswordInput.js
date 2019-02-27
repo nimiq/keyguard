@@ -2,15 +2,15 @@
 /* global AnimationUtils */
 /* global I18n */
 
-class PassphraseInput extends Nimiq.Observable {
+class PasswordInput extends Nimiq.Observable {
     /**
      * @param {?HTMLElement} $el
      * @param {string} placeholder
      */
     constructor($el, placeholder = '••••••••') {
         super();
-        this._minLength = PassphraseInput.DEFAULT_MIN_LENGTH;
-        this.$el = PassphraseInput._createElement($el);
+        this._minLength = PasswordInput.DEFAULT_MIN_LENGTH;
+        this.$el = PasswordInput._createElement($el);
 
         this.$input = /** @type {HTMLInputElement} */ (this.$el.querySelector('input.password'));
         this.$eyeButton = /** @type {HTMLElement} */ (this.$el.querySelector('.eye-button'));
@@ -32,7 +32,7 @@ class PassphraseInput extends Nimiq.Observable {
      */
     static _createElement($el) {
         $el = $el || document.createElement('form');
-        $el.classList.add('passphrase-input');
+        $el.classList.add('password-input');
 
         /* eslint-disable max-len */
         $el.innerHTML = `
@@ -77,7 +77,7 @@ class PassphraseInput extends Nimiq.Observable {
         this._onInputChanged();
     }
 
-    async onPassphraseIncorrect() {
+    async onPasswordIncorrect() {
         await AnimationUtils.animate('shake', this.$input);
         this.reset();
     }
@@ -92,10 +92,10 @@ class PassphraseInput extends Nimiq.Observable {
     }
 
     _onInputChanged() {
-        const passphraseLength = this.$input.value.length;
-        this.valid = passphraseLength >= this._minLength;
+        const passwordLength = this.$input.value.length;
+        this.valid = passwordLength >= this._minLength;
 
-        this.fire(PassphraseInput.Events.VALID, this.valid);
+        this.fire(PasswordInput.Events.VALID, this.valid);
     }
 
     /**
@@ -109,12 +109,12 @@ class PassphraseInput extends Nimiq.Observable {
      * @param {number} [minLength]
      */
     setMinLength(minLength) {
-        this._minLength = minLength || PassphraseInput.DEFAULT_MIN_LENGTH;
+        this._minLength = minLength || PasswordInput.DEFAULT_MIN_LENGTH;
     }
 }
 
-PassphraseInput.Events = {
-    VALID: 'passphraseinput-valid',
+PasswordInput.Events = {
+    VALID: 'passwordinput-valid',
 };
 
-PassphraseInput.DEFAULT_MIN_LENGTH = 8;
+PasswordInput.DEFAULT_MIN_LENGTH = 8;

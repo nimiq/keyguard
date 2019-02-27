@@ -71,10 +71,10 @@ class KeyStore {
 
     /**
      * @param {number} id
-     * @param {Uint8Array} [passphrase]
+     * @param {Uint8Array} [password]
      * @returns {Promise<Key?>}
      */
-    async get(id, passphrase) {
+    async get(id, password) {
         /** @type {KeyRecord?} */
         const keyRecord = await this._get(id);
         if (!keyRecord) {
@@ -98,11 +98,11 @@ class KeyStore {
             return new Key(secret, keyRecord.hasPin, id);
         }
 
-        if (!passphrase) {
-            throw new Error('Passphrase required');
+        if (!password) {
+            throw new Error('Password required');
         }
 
-        const secret = await Nimiq.Secret.fromEncrypted(new Nimiq.SerialBuffer(keyRecord.secret), passphrase);
+        const secret = await Nimiq.Secret.fromEncrypted(new Nimiq.SerialBuffer(keyRecord.secret), password);
         return new Key(secret, keyRecord.hasPin, id);
     }
 
@@ -132,16 +132,16 @@ class KeyStore {
 
     /**
      * @param {Key} key
-     * @param {Uint8Array} [passphrase]
+     * @param {Uint8Array} [password]
      * @returns {Promise<number>}
      */
-    async put(key, passphrase) {
+    async put(key, password) {
         const keys = await this._listRecords();
 
         /** @type {Nimiq.SerialBuffer} */
         let buffer;
-        if (passphrase) {
-            buffer = await key.secret.exportEncrypted(passphrase);
+        if (password) {
+            buffer = await key.secret.exportEncrypted(password);
         } else {
             buffer = new Nimiq.SerialBuffer(KeyStore.UNENCRYPTED_SECRET_SIZE);
 
