@@ -82,7 +82,7 @@ class KeyStore {
         }
 
         if (!KeyStore.isEncrypted(keyRecord)) {
-            // Compare stored type with purposeID to make sure
+            // Compare stored type with purposeID to make sure there was no storage error.
             const purposeId = new Nimiq.SerialBuffer(keyRecord.secret).readUint32();
             const expectedPurposeId = keyRecord.type === Nimiq.Secret.Type.PRIVATE_KEY
                 ? Nimiq.PrivateKey.PURPOSE_ID
