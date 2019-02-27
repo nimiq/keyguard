@@ -8,7 +8,7 @@ class Export { // eslint-disable-line no-unused-vars
      * However these pages wil be the default pages which usually don't match the applications requirements.
      * Refer to the corresponsing _buildMoreExportOptions as well as
      * the Build functions of ExportWords and ExportFile to see the general Structure.
-     * @param {Parsed<KeyguardRequest.SimpleRequest>} request
+     * @param {Parsed<KeyguardRequest.ExportRequest>} request
      * @param {Function} resolve
      * @param {Function} reject
      */
@@ -36,7 +36,7 @@ class Export { // eslint-disable-line no-unused-vars
     }
 
     run() {
-        if (this._request.keyInfo.type === Nimiq.Secret.Type.ENTROPY) {
+        if (!this._request.skipFile || this._request.keyInfo.type === Nimiq.Secret.Type.ENTROPY) {
             this._exportFileHandler.run();
         } else {
             this._exportWordsHandler.run();
