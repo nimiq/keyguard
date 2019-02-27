@@ -229,7 +229,7 @@ const TRANSLATIONS = {
         'validate-words-21-hint': 'Was ist das 21. Wort?',
         'validate-words-22-hint': 'Was ist das 22. Wort?',
         'validate-words-23-hint': 'Was ist das 23. Wort?',
-        'validate-words-24-hint': 'Was ist das 34. Wort?',
+        'validate-words-24-hint': 'Was ist das 24. Wort?',
 
         'export-file-heading': 'Login File herunterladen',
         'export-file-intro-heading': 'Sichere deinen Account',
