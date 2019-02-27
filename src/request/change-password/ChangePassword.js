@@ -50,7 +50,7 @@ class ChangePassword {
         const $downloadLoginFile = ($downloadFile.querySelector('.download-login-file'));
 
         // Components
-        this._passwordSetter = new PassphraseSetterBox($passwordSetter, { hideSkip: true });
+        this._passwordSetter = new PassphraseSetterBox($passwordSetter);
         this._loginFileIcon = new LoginFileIcon($loginFileIcon);
         this._downloadLoginFile = new DownloadLoginFile($downloadLoginFile);
 
@@ -93,7 +93,12 @@ class ChangePassword {
         this._passwordGetter.on(PassphraseBox.Events.SUBMIT, this._unlock.bind(this));
         this._passwordSetter.on(PassphraseSetterBox.Events.ENTERED, this._prepare.bind(this));
         this._passwordSetter.on(PassphraseSetterBox.Events.SUBMIT, this._commitChangeAndOfferLoginFile.bind(this));
+        this._passwordSetter.on(PassphraseSetterBox.Events.SKIP, this._commitChangeAndOfferLoginFile.bind(this));
         this._passwordSetter.on(PassphraseSetterBox.Events.NOT_EQUAL, () => this._loginFileIcon.unlock());
+
+        this._downloadLoginFile.on(DownloadLoginFile.Events.DOWNLOADED, () => {
+            this._resolve({ success: true });
+        });
     }
 
     async run() {
@@ -159,16 +164,16 @@ class ChangePassword {
 
     /**
      * Called after new password was entered second time.
-     * @param {string} newPassword
+     * @param {string} [newPassword]
      */
     async _commitChangeAndOfferLoginFile(newPassword) {
         TopLevelApi.setLoading(true);
-        const passwordBytes = Utf8Tools.stringToUtf8ByteArray(newPassword);
+        const passwordBytes = newPassword ? Utf8Tools.stringToUtf8ByteArray(newPassword) : undefined;
 
         await KeyStore.instance.put(this.key, passwordBytes);
 
-        if (this.key.secret instanceof Nimiq.PrivateKey) {
-            // Login File not available for legacy accounts
+        if (this.key.secret instanceof Nimiq.PrivateKey || !passwordBytes) {
+            // Login File not available for legacy accounts or unencrypted entropies
             this._resolve({ success: true });
             return;
         }
@@ -186,9 +191,6 @@ class ChangePassword {
             firstAddress,
         );
 
-        this._downloadLoginFile.on(DownloadLoginFile.Events.DOWNLOADED, () => {
-            this._resolve({ success: true });
-        });
         window.location.hash = ChangePassword.Pages.DOWNLOAD_FILE;
         TopLevelApi.setLoading(false);
     }
