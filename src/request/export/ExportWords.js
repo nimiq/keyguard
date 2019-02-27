@@ -1,8 +1,9 @@
 /* global Constants */
+/* global FlippableHandler */
 /* global Nimiq */
-/* global PrivacyWarning */
 /* global RecoveryWords */
 /* global PassphraseBox */
+/* global ProgressIndicator */
 /* global ValidateWords */
 /* global KeyStore */
 /* global Errors */
@@ -21,94 +22,112 @@ class ExportWords extends Nimiq.Observable {
     constructor(request, resolve, reject) {
         super();
 
-        this._resolve = resolve;
         this._request = request;
+        this._resolve = resolve;
         this._reject = reject;
+
+        FlippableHandler.init();
+
         /** @type {Key | null} */
         this._key = null;
 
+        // pages
         /** @type {HTMLElement} */
-        const $privacyPage = document.getElementById(ExportWords.Pages.PRIVACY)
-                          || this._buildPrivacy();
+        this._$noRecoveryPage = (document.getElementById(ExportWords.Pages.RECOVERY_WORDS_INTRO));
+        /** @type {HTMLElement} */
+        const $recoveryWordsPage = (document.getElementById(ExportWords.Pages.SHOW_WORDS));
+        /** @type {HTMLElement} */
+        const $validateWordsPage = (document.getElementById(ExportWords.Pages.VALIDATE_WORDS));
 
-        /** @type {HTMLElement} */
-        const $recoveryWordsPage = document.getElementById(ExportWords.Pages.SHOW_WORDS)
-                                || this._buildRecoveryWords();
-        /** @type {HTMLElement} */
-        const $validateWordsPage = document.getElementById(ExportWords.Pages.VALIDATE_WORDS)
-                                || this._buildValidateWords();
-
-        /** @type {HTMLElement} */
-        const $privacyWarning = ($privacyPage.querySelector('.privacy-warning'));
+        // elements
+        /** @type {HTMLLinkElement} */
+        const $noRecoverySkip = (this._$noRecoveryPage.querySelector('.skip-words'));
         /** @type {HTMLFormElement} */
-        const $privacyWarningPassphraseBox = ($privacyPage.querySelector('.passphrase-box'));
-        /** @type {HTMLButtonElement} */
-        const $privacyWarningButton = ($privacyPage.querySelector('button'));
-
+        const $wordsPasswordBox = (this._$noRecoveryPage.querySelector('.passphrase-box'));
         /** @type {HTMLElement} */
         const $recoveryWords = ($recoveryWordsPage.querySelector('.recovery-words'));
+        /** @type {HTMLLinkElement} */
+        const $recoveryWordsSkip = ($recoveryWordsPage.querySelector('.skip-words'));
         /** @type {HTMLButtonElement} */
-        const $recoveryWordsButton = ($recoveryWordsPage.querySelector('button'));
+        const $recoveryWordsContinue = ($recoveryWordsPage.querySelector('button'));
         /** @type {HTMLElement} */
         const $validateWords = ($validateWordsPage.querySelector('.validate-words'));
 
-        new PrivacyWarning($privacyWarning); // eslint-disable-line no-new
-        this._privacyWarningPassphraseBox = new PassphraseBox(
-            $privacyWarningPassphraseBox, {
-                buttonI18nTag: 'passphrasebox-continue',
-                hideInput: !this._request.keyInfo.encrypted,
-                minLength: this._request.keyInfo.hasPin ? 6 : undefined,
-                hideCancel: true,
-            },
-        );
+        // components
+        this._wordsPasswordBox = new PassphraseBox($wordsPasswordBox, {
+            buttonI18nTag: 'passphrasebox-show-words',
+            hideInput: !request.keyInfo.encrypted || !!this._key,
+            hideCancel: true,
+        });
         this._recoveryWords = new RecoveryWords($recoveryWords, false);
         this._validateWords = new ValidateWords($validateWords);
+        /* eslint-disable no-new */
+        new ProgressIndicator(this._$noRecoveryPage.querySelector('.progress-indicator'), 3, 1);
+        new ProgressIndicator($recoveryWordsPage.querySelector('.progress-indicator'), 3, 2);
+        new ProgressIndicator($validateWordsPage.querySelector('.progress-indicator'), 3, 3);
+        /* eslint-enable no-new */
 
-        $privacyWarningButton.addEventListener('click', this._goToShowWords.bind(this));
-        $recoveryWordsButton.addEventListener('click', this._goToValidateWords.bind(this));
-        this._privacyWarningPassphraseBox.on(PassphraseBox.Events.SUBMIT, this._passphraseSubmitted.bind(this));
-        this._validateWords.on(ValidateWords.Events.VALIDATED, this._finish.bind(this));
-        this._validateWords.on(ValidateWords.Events.BACK, this._goToShowWords.bind(this));
-        this._validateWords.on(ValidateWords.Events.SKIP, this._finish.bind(this));
+        // events
+        $noRecoverySkip.addEventListener('click', event => {
+            event.preventDefault();
+            this._resolve({ success: false });
+        });
+        $recoveryWordsSkip.addEventListener('click', event => {
+            event.preventDefault();
+            this._resolve({ success: true });
+        });
+        this._wordsPasswordBox.on(PassphraseBox.Events.SUBMIT, this._passphraseSubmitted.bind(this));
+        $recoveryWordsContinue.addEventListener('click', () => {
+            this._validateWords.reset();
+            window.location.hash = ExportWords.Pages.VALIDATE_WORDS;
+        });
+        this._validateWords.on(ValidateWords.Events.VALIDATED, () => this._resolve({ success: true }));
+        this._validateWords.on(ValidateWords.Events.SKIP, () => this._resolve({ success: true }));
     }
 
     run() {
-        this._privacyWarningPassphraseBox.reset();
-        window.location.hash = ExportWords.Pages.PRIVACY;
+        this._wordsPasswordBox.reset();
+        window.location.hash = ExportWords.Pages.RECOVERY_WORDS_INTRO;
         if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
-            this._privacyWarningPassphraseBox.focus();
+            this._wordsPasswordBox.focus();
         }
     }
 
     /**
-     * @param {string} phrase
+     * @param {string} [password]
      */
-    async _passphraseSubmitted(phrase) {
+    async _passphraseSubmitted(password) {
         TopLevelApi.setLoading(true);
-        const passphraseBuffer = phrase ? Utf8Tools.stringToUtf8ByteArray(phrase) : undefined;
+
         /** @type {Key?} */
         let key = null;
-        try {
-            key = await KeyStore.instance.get(this._request.keyInfo.id, passphraseBuffer);
-        } catch (e) {
-            if (e.message === 'Invalid key') {
-                TopLevelApi.setLoading(false);
-                this._privacyWarningPassphraseBox.onPassphraseIncorrect();
+
+        if (this._key) {
+            key = this._key;
+            password = this._password;
+        } else {
+            const passwordBuffer = password ? Utf8Tools.stringToUtf8ByteArray(password) : undefined;
+
+            try {
+                key = await KeyStore.instance.get(this._request.keyInfo.id, passwordBuffer);
+            } catch (e) {
+                if (e.message === 'Invalid key') {
+                    this._wordsPasswordBox.onPassphraseIncorrect();
+                    TopLevelApi.setLoading(false);
+                    return;
+                }
+                this._reject(new Errors.CoreError(e));
                 return;
             }
-            this._reject(new Errors.CoreError(e));
-            return;
-        }
-        if (!key) {
-            this._reject(new Errors.KeyNotFoundError());
-            return;
+
+            if (!key) {
+                this._reject(new Errors.KeyNotFoundError());
+                return;
+            }
+            this.fire(ExportWords.Events.KEY_CHANGED, key, password);
+            this.setKey(key, password);
         }
 
-        this.setKey(key);
-        this.fire(ExportWords.Events.KEY_CHANGED, {
-            key,
-            isProtected: this._request.keyInfo.encrypted,
-        });
         window.location.hash = ExportWords.Pages.SHOW_WORDS;
         TopLevelApi.setLoading(false);
     }
@@ -116,9 +135,10 @@ class ExportWords extends Nimiq.Observable {
     /**
      * Used to set the key if already decrypted elsewhere. This will disable the passphrase requirement.
      * Set to null to re-enable passphrase requirement.
-     * @param {Key | null} key
+     * @param {Key?} key
+     * @param {string} [password]
      */
-    setKey(key) {
+    setKey(key, password) {
         this._key = key;
         let words = [''];
         if (this._key !== null) {
@@ -127,106 +147,23 @@ class ExportWords extends Nimiq.Observable {
             } else if (this._key.secret instanceof Nimiq.Entropy) {
                 words = Nimiq.MnemonicUtils.entropyToMnemonic(this._key.secret);
             } else {
-                this._reject(new Errors.KeyguardError('Unknown mnemonic type'));
+                this._reject(new Errors.KeyguardError('Unknown secret type'));
+                return;
+            }
+
+            if (password) {
+                this._wordsPasswordBox.hideInput(true);
+                this._password = password;
             }
         }
+
         this._recoveryWords.setWords(words);
         this._validateWords.setWords(words);
-        /** @type {HTMLElement} */(document.getElementById(ExportWords.Pages.PRIVACY))
-            .classList.toggle('key-active', this._key !== null);
-    }
-
-    _goToValidateWords() {
-        this._validateWords.reset();
-        window.location.hash = ExportWords.Pages.VALIDATE_WORDS;
-    }
-
-    _goToShowWords() {
-        window.location.hash = ExportWords.Pages.SHOW_WORDS;
-    }
-
-    _finish() {
-        const result = {
-            success: true,
-        };
-        this._resolve(result);
-    }
-
-    _buildPrivacy() {
-        const $el = document.createElement('div');
-        $el.id = ExportWords.Pages.PRIVACY;
-        $el.classList.add('page', 'nq-card');
-        $el.innerHTML = `
-        <div class="page-header nq-card-header">
-            <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
-            <h1 data-i18n="recovery-words-title" class="nq-h1">Recovery Words</h1>
-        </div>
-
-        <div class="page-body nq-card-body">
-            <div class="privacy-agent">
-                <div class="privacy-warning"></div>
-            </div>
-            <div class="flex-grow"></div>
-        </div>
-
-        <div class="page-footer">
-            <button data-i18n="recovery-words-continue-to-words" class="nq-button">Continue to Recovery Words</button>
-            <form class="passphrase-box hide-if-key-active"></form>
-        </div>
-        `;
-        /** @type {HTMLElement} */
-        const $app = (document.getElementById('app'));
-        $app.insertBefore($el, $app.children[1]);
-        return $el;
-    }
-
-    _buildRecoveryWords() {
-        const $el = document.createElement('div');
-        $el.id = ExportWords.Pages.SHOW_WORDS;
-        $el.classList.add('page', 'nq-card');
-        $el.innerHTML = `
-        <div class="page-header nq-card-header">
-            <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
-            <h1 data-i18n="recovery-words-title" class="nq-h1">Recovery Words</h1>
-        </div>
-
-        <div class="page-body nq-card-body">
-            <div class="recovery-words"></div>
-        </div>
-
-        <div class="page-footer">
-            <button class="to-validate-words nq-button" data-i18n="continue">Continue</button>
-        </div>
-        `;
-        /** @type {HTMLElement} */
-        const $app = (document.getElementById('app'));
-        $app.insertBefore($el, $app.children[1]);
-        return $el;
-    }
-
-    _buildValidateWords() {
-        const $el = document.createElement('div');
-        $el.id = ExportWords.Pages.VALIDATE_WORDS;
-        $el.classList.add('page', 'nq-card');
-        $el.innerHTML = `
-        <div class="page-header nq-card-header">
-            <a tabindex="0" class="page-header-back-button nq-icon arrow-left"></a>
-            <h1 data-i18n="create-heading-validate-backup" class="nq-h1">Validate your backup</h1>
-        </div>
-
-        <div class="page-body nq-card-body">
-            <div class="validate-words"></div>
-        </div>
-        `;
-        /** @type {HTMLElement} */
-        const $app = (document.getElementById('app'));
-        $app.insertBefore($el, $app.children[1]);
-        return $el;
     }
 }
 
 ExportWords.Pages = {
-    PRIVACY: 'privacy',
+    RECOVERY_WORDS_INTRO: 'recovery-words-intro',
     SHOW_WORDS: 'recovery-words',
     VALIDATE_WORDS: 'validate-words',
 };

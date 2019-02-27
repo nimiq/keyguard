@@ -41,24 +41,26 @@ const hashes = () => secrets.map(secret => {
 const encryptionPassword = 'password';
 const encryptionPassword2 = 'password2';
 
-const keyInfos = [
+const keyInfos = () => [
     new KeyInfo(
         1,
         Nimiq.Secret.Type.PRIVATE_KEY,
         true,
         false,
+        Nimiq.PublicKey.derive(new Nimiq.PrivateKey(keys[0])).toAddress().serialize().subarray(0, 20),
     ),
     new KeyInfo(
         2,
         Nimiq.Secret.Type.ENTROPY,
         false,
         false,
+        (new Nimiq.Entropy(keys[1])).toExtendedPrivateKey().derivePath(Constants.DEFAULT_DERIVATION_PATH).toAddress().serialize().subarray(0, 20),
     ),
 ];
 
-const cookieKeyInfos = keyInfos.map(x => new KeyInfo(x.id, x.type, true, x.hasPin));
+const cookieKeyInfos = () => keyInfos().map(x => new KeyInfo(x.id, x.type, true, x.hasPin, new Uint8Array(20)));
 
-const keyInfoObjects = keyInfos.map(x => ({
+const keyInfoObjects = () => keyInfos().map(x => ({
     id: x.id,
     type: x.type,
     hasPin: x.hasPin,
@@ -68,18 +70,21 @@ const _purposeIdBuf = new Nimiq.SerialBuffer(4);
 _purposeIdBuf.writeUint32(Nimiq.Entropy.PURPOSE_ID);
 const _purposeIdArray = Array.from(_purposeIdBuf.subarray(0, 4));
 
+/** @type {() => KeyRecord[]} */
 const keyRecords = () => [
     {
-        type: keyInfoObjects[0].type,
-        hasPin: keyInfoObjects[0].hasPin,
+        type: keyInfoObjects()[0].type,
+        hasPin: keyInfoObjects()[0].hasPin,
         secret: encryptedKeys[0],
         hash: hashes()[0],
+        defaultAddress: keyInfos()[0].defaultAddress.serialize().subarray(0, 20),
     },
     {
-        type: keyInfoObjects[1].type,
-        hasPin: keyInfoObjects[1].hasPin,
-        secret: new Uint8Array(_purposeIdArray.concat(Array.from(Dummy.keys[1]))),
-        hash: Dummy.hashes()[1],
+        type: keyInfoObjects()[1].type,
+        hasPin: keyInfoObjects()[1].hasPin,
+        secret: new Uint8Array(_purposeIdArray.concat(Array.from(keys[1]))),
+        hash: hashes()[1],
+        defaultAddress: keyInfos()[1].defaultAddress.serialize().subarray(0, 20),
     },
 ];
 

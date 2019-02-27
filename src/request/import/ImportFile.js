@@ -100,7 +100,16 @@ class ImportFile {
      * @returns {Promise<void>}
      */
     async _onPassphraseEntered(passphrase) {
-        const key = await this._decryptAndStoreKey(passphrase);
+        /** @type {Key?} */
+        let key;
+
+        try {
+            key = await this._decryptAndStoreKey(passphrase);
+        } catch (error) {
+            this.passphraseBox.onPassphraseIncorrect();
+            return;
+        }
+
         if (!key) {
             this.passphraseBox.onPassphraseIncorrect();
             return;
@@ -119,7 +128,7 @@ class ImportFile {
             (this._request).requestedKeyPaths.forEach(keyPath => {
                 addresses.push({
                     keyPath,
-                    address: key.deriveAddress(keyPath).serialize(),
+                    address: /** @type {Key} */(key).deriveAddress(keyPath).serialize(),
                 });
             });
 

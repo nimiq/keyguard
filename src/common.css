@@ -182,10 +182,6 @@
     margin-top: 0.125rem;
 }
 
-.flex-grow {
-    flex-grow: 1;
-}
-
 .actionbox {
     width: 100%;
     padding: 1.25rem;

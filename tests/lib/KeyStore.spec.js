@@ -24,8 +24,8 @@ describe('KeyStore', () => {
 
     it('can get plain keys', async () => {
         const [key1, key2] = await Promise.all([
-            KeyStore.instance._get(Dummy.keyInfos[0].id),
-            KeyStore.instance._get(Dummy.keyInfos[1].id),
+            KeyStore.instance._get(Dummy.keyInfos()[0].id),
+            KeyStore.instance._get(Dummy.keyInfos()[1].id),
         ]);
         expect(key1).toEqual(Dummy.storedKeyRecords()[0]);
         expect(key2).toEqual(Dummy.storedKeyRecords()[1]);
@@ -33,41 +33,41 @@ describe('KeyStore', () => {
 
     it('can get and decrypt keys', async () => {
         const keys = await Promise.all([
-            KeyStore.instance.get(Dummy.keyInfos[0].id, Nimiq.BufferUtils.fromAscii(Dummy.encryptionPassword)),
-            KeyStore.instance.get(Dummy.keyInfos[1].id),
+            KeyStore.instance.get(Dummy.keyInfos()[0].id, Nimiq.BufferUtils.fromAscii(Dummy.encryptionPassword)),
+            KeyStore.instance.get(Dummy.keyInfos()[1].id),
         ]);
 
         for (let [i, key] of keys.entries()) {
-            if (!key) throw new Error(`Key with id ${Dummy.keyInfos[i].id} not found!`);
-            expect(key.id).toEqual(Dummy.keyInfos[i].id);
-            expect(key.type).toEqual(Dummy.keyInfos[i].type);
+            if (!key) throw new Error(`Key with id ${Dummy.keyInfos()[i].id} not found!`);
+            expect(key.id).toEqual(Dummy.keyInfos()[i].id);
+            expect(key.type).toEqual(Dummy.keyInfos()[i].type);
             expect(key.secret).toEqual(Dummy.secrets[i]);
-            expect(key.hasPin).toEqual(Dummy.keyInfos[i].hasPin);
+            expect(key.hasPin).toEqual(Dummy.keyInfos()[i].hasPin);
         }
     });
 
     it('can list keys', async () => {
         const keyInfos = await KeyStore.instance.list();
-        expect(keyInfos).toEqual(Dummy.keyInfos);
+        expect(keyInfos).toEqual(Dummy.keyInfos());
     });
 
     it('can remove keys', async () => {
         let currentKeys = await KeyStore.instance.list();
-        expect(currentKeys).toEqual(Dummy.keyInfos);
+        expect(currentKeys).toEqual(Dummy.keyInfos());
 
-        await KeyStore.instance.remove(Dummy.keyInfos[0].id);
+        await KeyStore.instance.remove(Dummy.keyInfos()[0].id);
         currentKeys = await KeyStore.instance.list();
         expect(currentKeys.length).toBe(1);
-        expect(currentKeys[0].id).not.toBe(Dummy.keyInfos[0].id);
+        expect(currentKeys[0].id).not.toBe(Dummy.keyInfos()[0].id);
 
-        await KeyStore.instance.remove(Dummy.keyInfos[1].id);
+        await KeyStore.instance.remove(Dummy.keyInfos()[1].id);
         currentKeys = await KeyStore.instance.list();
         expect(currentKeys.length).toBe(0);
 
         // check that we can't get a removed key by address
         const removedKeys = await Promise.all([
-            KeyStore.instance._get(Dummy.keyInfos[0].id),
-            KeyStore.instance._get(Dummy.keyInfos[1].id),
+            KeyStore.instance._get(Dummy.keyInfos()[0].id),
+            KeyStore.instance._get(Dummy.keyInfos()[1].id),
         ]);
         expect(removedKeys[0]).toBeUndefined();
         expect(removedKeys[1]).toBeUndefined();
@@ -84,7 +84,7 @@ describe('KeyStore', () => {
         const password = Nimiq.BufferUtils.fromAscii(Dummy.encryptionPassword);
         await KeyStore.instance.put(new Key(
             Dummy.secrets[0],
-            Dummy.keyInfos[0].hasPin,
+            Dummy.keyInfos()[0].hasPin,
         ), password);
         currentKeys = await KeyStore.instance.list();
         expect(currentKeys.length).toBe(1);
@@ -92,15 +92,15 @@ describe('KeyStore', () => {
         // add a plain key
         await KeyStore.instance.put(new Key(
             Dummy.secrets[1],
-            Dummy.keyInfos[1].hasPin,
+            Dummy.keyInfos()[1].hasPin,
         ));
         currentKeys = await KeyStore.instance.list();
-        expect(currentKeys).toEqual(Dummy.keyInfos);
+        expect(currentKeys).toEqual(Dummy.keyInfos());
 
         // check that the keys have been stored correctly
         const [key1, key2] = await Promise.all([
-            KeyStore.instance.get(Dummy.keyInfos[0].id, password),
-            KeyStore.instance.get(Dummy.keyInfos[1].id),
+            KeyStore.instance.get(Dummy.keyInfos()[0].id, password),
+            KeyStore.instance.get(Dummy.keyInfos()[1].id),
         ]);
         if (!key1 || !key2) throw new Error();
         expect(key1.secret.equals(Dummy.secrets[0])).toBe(true);
@@ -123,7 +123,7 @@ describe('KeyStore', () => {
         await KeyStore.instance.migrateAccountsToKeys();
 
         expect(cookieSet).toBe(false);
-        const key1 = await KeyStore.instance._get(Dummy.keyInfos[0].id);
+        const key1 = await KeyStore.instance._get(Dummy.keyInfos()[0].id);
         expect(key1).toEqual(Dummy.storedKeyRecords()[0]);
 
         // TODO: Expect Accounts DB to be deleted
@@ -154,7 +154,7 @@ describe('KeyStore', () => {
         await KeyStore.instance.migrateAccountsToKeys();
 
         expect(migrationCookieDeleted && accountsCookieDeleted).toBe(true);
-        const key1 = await KeyStore.instance._get(Dummy.keyInfos[0].id);
+        const key1 = await KeyStore.instance._get(Dummy.keyInfos()[0].id);
         expect(key1).toEqual(Dummy.storedKeyRecords()[0]);
 
         // TODO: Expect Accounts DB to not be deleted

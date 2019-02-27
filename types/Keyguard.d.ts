@@ -40,6 +40,7 @@ type KeyRecord = {
     hasPin: boolean
     secret: Uint8Array
     hash: string
+    defaultAddress: Uint8Array
 }
 
 type StoredKeyRecord = KeyRecord & {

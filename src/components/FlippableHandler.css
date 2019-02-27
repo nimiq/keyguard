@@ -12,13 +12,13 @@
     will-change: transform;
 }
 
+#rotation-container.disable-transition {
+    transition: none;
+}
+
 #rotation-container > .page.flipped,
 #rotation-container.flipped {
     transform: rotateY(180deg);
-}
-
-#rotation-container > .page.flipped .page-header-back-button {
-    color: white;
 }
 
 #rotation-container > .page {
@@ -38,9 +38,4 @@
 
 #rotation-container > .page:target {
     z-index: 3;
-}
-
-.nq-card.nq-blue-bg {
-    background-image: var(--nimiq-blue-bg);
-    color: white;
 }

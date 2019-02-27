@@ -36,7 +36,7 @@ describe('IframeApi', () => {
         expect(CookieJar.eat).toHaveBeenCalled();
         expect(AccountStore.instance.list).not.toHaveBeenCalled();
         expect(KeyStore.instance.list).not.toHaveBeenCalled();
-        expect(listedKeys).toEqual(Dummy.keyInfoObjects);
+        expect(listedKeys).toEqual(Dummy.keyInfoObjects());
     });
 
     it('can list deprecated accounts from AccountStore on non-iOS', async () => {
@@ -62,7 +62,7 @@ describe('IframeApi', () => {
         expect(CookieJar.eat).not.toHaveBeenCalled();
         expect(AccountStore.instance.list).not.toHaveBeenCalled();
         expect(KeyStore.instance.list).toHaveBeenCalled();
-        expect(listedKeyObjects).toEqual(Dummy.keyInfoObjects);
+        expect(listedKeyObjects).toEqual(Dummy.keyInfoObjects());
 
         await Dummy.Utils.deleteDummyKeyStore();
     });

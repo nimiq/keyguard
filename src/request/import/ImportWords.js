@@ -86,10 +86,7 @@ class ImportWords {
             if (this._secrets.entropy) {
                 const key = new Key(this._secrets.entropy, false);
                 const color = Iqons.getBackgroundColorIndex(
-                    new Nimiq.Address(
-                        // use color of first address as loginFile color
-                        key.deriveAddress(Constants.DEFAULT_DERIVATION_PATH).serialize(),
-                    ).toUserFriendlyAddress(),
+                    key.defaultAddress.toUserFriendlyAddress(),
                 );
                 const colorString = LoginFile.CONFIG[color].name;
                 colorClass = `nq-${colorString}-bg`;
@@ -107,12 +104,10 @@ class ImportWords {
             // Prepare LoginFile for download
 
             const key = new Key(/** @type {Nimiq.Entropy} */(this._secrets.entropy), false);
-            const firstAddress = new Nimiq.Address(
-                key.deriveAddress(Constants.DEFAULT_DERIVATION_PATH).serialize(),
-            );
+
             downloadLoginFile.setEncryptedEntropy(
                 /** @type {Nimiq.SerialBuffer} */ (this._encryptedSecret),
-                firstAddress,
+                key.defaultAddress,
             );
 
             downloadLoginFile.on(DownloadLoginFile.Events.DOWNLOADED, () => {
