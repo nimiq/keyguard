@@ -1,6 +1,11 @@
 /* global Constants */
+/* global Iqons */
+/* global LoginFileIcon */
+/* global LoginFile */
 /* global Nimiq */
 /* global PassphraseBox */
+/* global PassphraseSetterBox */
+/* global ProgressIndicator */
 /* global KeyStore */
 /* global DownloadLoginFile */
 /* global Errors */
@@ -19,69 +24,126 @@ class ExportFile extends Nimiq.Observable {
     constructor(request, resolve, reject) {
         super();
 
-        this._resolve = resolve;
         this._request = request;
+        this._resolve = resolve;
         this._reject = reject;
+
         /** @type {Key | null} */
         this._key = null;
 
         /** @type {HTMLElement} */
-        const $exportFilePage = document.getElementById(ExportFile.Pages.EXPORT_FILE)
-                             || this._buildExportFile();
+        const $exportFileIntroPage = (document.getElementById(ExportFile.Pages.LOGIN_FILE_INTRO));
+        /** @type {HTMLElement} */
+        const $unlockFilePage = (document.getElementById(ExportFile.Pages.LOGIN_FILE_UNLOCK));
+        /** @type {HTMLElement} */
+        const $setPasswordPage = (document.getElementById(ExportFile.Pages.LOGIN_FILE_SET_PASSWORD));
+        /** @type {HTMLElement} */
+        const $downloadFilePage = (document.getElementById(ExportFile.Pages.LOGIN_FILE_DOWNLOAD));
 
+        /** @type {HTMLButtonElement} */
+        const $fileButton = ($exportFileIntroPage.querySelector('.login-file'));
+        const $goToRecoveryWords = ($exportFileIntroPage.querySelector('.go-to-words'));
+        /** @type {HTMLDivElement} */
+        const $loginFileIcon = ($setPasswordPage.querySelector('.login-file-icon'));
         /** @type {HTMLFormElement} */
-        const $downloadKeyFilePassphraseBox = ($exportFilePage.querySelector('.passphrase-box'));
+        const $passwordBox = ($unlockFilePage.querySelector('.password-box'));
+        /** @type {HTMLFormElement} */
+        const $passwordSetterBox = ($setPasswordPage.querySelector('.password-setter-box'));
         /** @type {HTMLAnchorElement} */
-        const $downloadKeyFile = ($exportFilePage.querySelector('.download-key-file'));
+        const $downloadLoginFile = ($downloadFilePage.querySelector('.download-loginfile'));
 
-        this._downloadKeyFilePassphraseBox = new PassphraseBox(
-            $downloadKeyFilePassphraseBox, {
+        this._passwordBox = new PassphraseBox(
+            $passwordBox, {
                 buttonI18nTag: 'passphrasebox-download',
                 hideInput: !this._request.keyInfo.encrypted,
                 minLength: this._request.keyInfo.hasPin ? 6 : undefined,
                 hideCancel: true,
             },
         );
-        this._downloadKeyfile = new DownloadLoginFile($downloadKeyFile);
+        this._passwordSetterBox = new PassphraseSetterBox($passwordSetterBox);
+        this._loginFileIcon = new LoginFileIcon($loginFileIcon);
+        this._downloadLoginFile = new DownloadLoginFile($downloadLoginFile);
 
-        this._downloadKeyFilePassphraseBox.on(PassphraseBox.Events.SUBMIT, this._passphraseSubmitted.bind(this));
-        this._downloadKeyfile.on(DownloadLoginFile.Events.DOWNLOADED, () => {
-            alert('Wallet Files are not yet implemented.');
-            this._finish();
-        });
-        window.addEventListener('hashchange', event => {
-            const newUrl = new URL(event.newURL);
-            if (newUrl.hash === `#${ExportFile.Pages.EXPORT_FILE}`) {
-                this._downloadKeyFilePassphraseBox.reset();
+        /* eslint-disable no-new */
+        new ProgressIndicator($exportFileIntroPage.querySelector('.progress-indicator'), 3, 1);
+        new ProgressIndicator($unlockFilePage.querySelector('.progress-indicator'), 3, 2);
+        new ProgressIndicator($setPasswordPage.querySelector('.progress-indicator'), 3, 2);
+        new ProgressIndicator($downloadFilePage.querySelector('.progress-indicator'), 3, 3);
+        /* eslint-enable no-new */
+
+        if ($goToRecoveryWords) {
+            $goToRecoveryWords.addEventListener('click', () => this._resolve({ success: false }));
+        }
+
+        $fileButton.addEventListener('click', async () => {
+            if (this._request.keyInfo.encrypted) {
+                if (this._key && this._password) {
+                    await this._passwordSubmitted(this._password);
+                } else {
+                    this._passwordBox.reset();
+                    window.location.hash = ExportFile.Pages.LOGIN_FILE_UNLOCK;
+                    if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
+                        this._passwordBox.focus();
+                    }
+                }
+            } else {
+                this._passwordSetterBox.reset();
+                this._loginFileIcon.unlock();
+                window.location.hash = ExportFile.Pages.LOGIN_FILE_SET_PASSWORD;
                 if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
-                    this._downloadKeyFilePassphraseBox.focus();
+                    this._passwordSetterBox.focus();
                 }
             }
+        });
+
+        this._passwordBox.on(PassphraseBox.Events.SUBMIT, async password => {
+            if (this._key && this._password) {
+                await this._passwordSubmitted(this._password);
+            } else {
+                await this._passwordSubmitted(password);
+            }
+        });
+
+        this._passwordSetterBox.on(PassphraseSetterBox.Events.ENTERED, async () => {
+            $setPasswordPage.classList.add('repeat-password');
+
+            let colorClass = '';
+            const color = Iqons.getBackgroundColorIndex(
+                this._request.keyInfo.defaultAddress.toUserFriendlyAddress(),
+            );
+            const colorString = LoginFile.CONFIG[color].name;
+            colorClass = `nq-${colorString}-bg`;
+            this._loginFileIcon.lock(colorClass);
+        });
+        this._passwordSetterBox.on(PassphraseSetterBox.Events.NOT_EQUAL, () => {
+            $setPasswordPage.classList.remove('repeat-password');
+            this._loginFileIcon.unlock();
+        });
+        this._passwordSetterBox.on(PassphraseSetterBox.Events.SUBMIT, async password => {
+            await this._setPassword(password);
         });
     }
 
     run() {
-        this._downloadKeyFilePassphraseBox.reset();
-        window.location.hash = ExportFile.Pages.EXPORT_FILE;
-        if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
-            this._downloadKeyFilePassphraseBox.focus();
-        }
+        window.location.hash = ExportFile.Pages.LOGIN_FILE_INTRO;
     }
 
     /**
-     * @param {string} phrase
+     * @param {string} password
      */
-    async _passphraseSubmitted(phrase) {
+    async _passwordSubmitted(password) {
         TopLevelApi.setLoading(true);
-        const passphraseBuffer = phrase ? Utf8Tools.stringToUtf8ByteArray(phrase) : undefined;
+
+        const passwordBuffer = password ? Utf8Tools.stringToUtf8ByteArray(password) : undefined;
+
         /** @type {Key?} */
         let key = null;
         try {
-            key = await KeyStore.instance.get(this._request.keyInfo.id, passphraseBuffer);
+            key = await KeyStore.instance.get(this._request.keyInfo.id, passwordBuffer);
         } catch (e) {
             if (e.message === 'Invalid key') {
                 TopLevelApi.setLoading(false);
-                this._downloadKeyFilePassphraseBox.onPassphraseIncorrect();
+                this._passwordBox.onPassphraseIncorrect();
                 return;
             }
             this._reject(new Errors.CoreError(e));
@@ -92,71 +154,92 @@ class ExportFile extends Nimiq.Observable {
             return;
         }
 
-        this.setKey(key, this._request.keyInfo.encrypted);
-        this.fire(ExportFile.Events.KEY_CHANGED, {
-            key,
-            isProtected: this._request.keyInfo.encrypted,
-        });
+        this.setKey(key, password);
+        this.fire(ExportFile.Events.KEY_CHANGED, key, password);
+        await this._goToLoginFileDownload();
+
         TopLevelApi.setLoading(false);
     }
 
     /**
-     * used to set the key if already decrypted elsewhere. This will disable the passphrase requirement.
-     * Set to null to reenable passphrase requirement.
-     * @param {Key | null} key
-     * @param {boolean} isProtected
+     *
+     * @param {string} password
      */
-    setKey(key, isProtected) { // eslint-disable-line no-unused-vars
-        this._key = key;
-        if (key) {
-            this._downloadKeyfile.setEncryptedEntropy(new Uint8Array(0), key.deriveAddress('m/44\'/242\'/0\'/0\''));
-            /** @type {HTMLElement} */(document.getElementById(ExportFile.Pages.EXPORT_FILE))
-                .classList.add('show-download');
+    async _setPassword(password) {
+        TopLevelApi.setLoading(true);
+
+        if (!this._key || !this._key.id) {
+            try {
+                this._key = await KeyStore.instance.get(this._request.keyInfo.id);
+            } catch (e) {
+                if (e.message === 'Invalid key') {
+                    TopLevelApi.setLoading(false);
+                    this._passwordBox.onPassphraseIncorrect();
+                    return;
+                }
+                this._reject(new Errors.CoreError(e));
+                return;
+            }
+        }
+        if (!this._key) {
+            this._reject(new Errors.KeyNotFoundError());
+            return;
+        }
+
+        const passwordBuffer = password ? Utf8Tools.stringToUtf8ByteArray(password) : undefined;
+        await KeyStore.instance.put(this._key, passwordBuffer);
+
+        this._request.keyInfo.encrypted = true;
+
+        this._password = password;
+        this.fire(ExportFile.Events.KEY_CHANGED, this._key, password);
+        await this._goToLoginFileDownload();
+
+        TopLevelApi.setLoading(false);
+    }
+
+    async _goToLoginFileDownload() {
+        if (this._password && this._key && this._key.secret instanceof Nimiq.Entropy) {
+            const passwordBuffer = Utf8Tools.stringToUtf8ByteArray(this._password);
+            const encryptedSecret = await this._key.secret.exportEncrypted(passwordBuffer);
+
+            this._downloadLoginFile.setEncryptedEntropy(
+                /** @type {Nimiq.SerialBuffer} */ (encryptedSecret),
+                this._key.defaultAddress,
+            );
+
+            this._downloadLoginFile.on(DownloadLoginFile.Events.DOWNLOADED, () => {
+                this._resolve({ success: true });
+            });
+
+            window.location.hash = ExportFile.Pages.LOGIN_FILE_DOWNLOAD;
+        } else {
+            this._reject(new Errors.KeyguardError('Key or password missing'));
         }
     }
 
-    _finish() {
-        const result = {
-            success: true,
-        };
-        this._resolve(result);
-    }
-
-    _buildExportFile() {
-        const $el = document.createElement('div');
-        $el.id = ExportFile.Pages.EXPORT_FILE;
-        $el.classList.add('page', 'nq-card');
-        $el.innerHTML = `
-            <div class="page-header nq-card-header">
-                <h1 data-i18n="export-file-heading" class="nq-h1">Download Key File</h1>
-            </div>
-
-            <div class="page-body nq-card-body">
-                <div class="flex-grow"></div>
-                <div class="download-icon hide-for-download">
-                    <div class="nq-icon walletfile"></div>
-                    <div class="nq-icon arrow-down"></div>
-                </div>
-                <a class="download-key-file"></a>
-                <button class="go-to-words hide-for-download nq-button-s" data-i18n="export-button-words">
-                    Show Recovery Words
-                </button>
-                <div class="flex-grow"></div>
-            </div>
-
-            <div class="page-footer hide-for-download">
-                <form class="passphrase-box"></form>
-            </div>
-        `;
-        /** @type {HTMLElement} */
-        const $app = (document.getElementById('app'));
-        $app.insertBefore($el, $app.children[1]);
-        return $el;
+    /**
+     * Used to set the key if already decrypted elsewhere. This will disable the password requirement
+     * for use cases where the unencrypted key is needed. In case the encrypted key is needed, the password
+     * must also be provided to bypass its requirement.
+     * Set to null to reenable password requirement.
+     * @param {Key?} key
+     * @param {string} [password]
+     */
+    setKey(key, password) {
+        this._key = key;
+        if (password) {
+            this._passwordBox.hideInput(true);
+            this._password = password;
+        }
     }
 }
 
 ExportFile.Pages = {
-    EXPORT_FILE: 'download-key-file',
+    LOGIN_FILE_INTRO: 'login-file-intro',
+    LOGIN_FILE_SET_PASSWORD: 'login-file-set-password',
+    LOGIN_FILE_UNLOCK: 'login-file-unlock',
+    LOGIN_FILE_DOWNLOAD: 'login-file-download',
 };
 
 ExportFile.Events = {

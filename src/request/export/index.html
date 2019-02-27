@@ -39,10 +39,14 @@
 
     <script defer src="../../lib/AutoComplete.js"></script>
     <script defer src="../../lib/Iqons.js"></script>
+    <script defer src="../../lib/PasswordStrength.js"></script>
     <script defer src="../../lib/QrEncoder.js"></script>
     <script defer src="../../lib/LoginFile.js"></script>
-    <script defer src="../../components/PrivacyWarning.js"></script>
+    <script defer src="../../components/ProgressIndicator.js"></script>
     <script defer src="../../components/DownloadLoginFile.js"></script>
+    <script defer src="../../components/FlippableHandler.js"></script>
+    <script defer src="../../components/LoginFileIcon.js"></script>
+    <script defer src="../../components/PassphraseSetterBox.js"></script>
     <script defer src="../../components/RecoveryWords.js"></script>
     <script defer src="../../components/RecoveryWordsInputField.js"></script>
     <script defer src="../../components/ValidateWords.js"></script>
@@ -62,10 +66,12 @@
     <link rel="stylesheet" bundle-toplevel href="../../components/PassphraseBox.css">
 
     <link rel="stylesheet" href="../../components/DownloadLoginFile.css">
+    <link rel="stylesheet" href="../../components/FlippableHandler.css">
+    <link rel="stylesheet" href="../../components/LoginFileIcon.css">
+    <link rel="stylesheet" href="../../components/ProgressIndicator.css">
     <link rel="stylesheet" href="../../components/RecoveryWords.css">
     <link rel="stylesheet" href="../../components/RecoveryWordsInputField.css">
     <link rel="stylesheet" href="../../components/ValidateWords.css">
-    <link rel="stylesheet" href="../../components/PrivacyAgent.css">
     <link rel="stylesheet" href="Export.css">
 </head>
 <body class="loading">
@@ -76,14 +82,215 @@
     </div>
     <div id="app">
 
-        <div id="loading" class="page">
-            <div class="loading-animation"></div>
+        <div id="rotation-container">
+
+            <div id="recovery-words-intro" class="page nq-card flipped nq-blue-bg">
+                <div class="page-header nq-card-header">
+                    <div class="progress-indicator"></div>
+                    <a tabindex="0" class="page-header-back-button">
+                        <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
+                    </a>
+                    <h1 data-i18n="export-words-intro-heading" class="nq-h1">There is no password recovery!</h1>
+                </div>
+
+                <div class="page-body nq-card-body">
+                    <p class="nq-orange" data-i18n="recovery-words-intro-text">
+                        The Recovery Words are the ONLY way to
+                        restore your account in case you lose your
+                        LoginFile or password.
+                    </p>
+                    <ul class="nq-list">
+                        <li>
+                            <svg class="nq-icon">
+                                <use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-paper-edit"/>
+                            </svg>
+                            <span data-i18n="recovery-words-intro-offline">
+                                Keep your Words offline, don’t enter them anywhere but in the Nimiq Safe.
+                            </span>
+                        </li>
+                        <li>
+                            <svg class="nq-icon">
+                                <use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-copy"/>
+                            </svg>
+                            <span data-i18n="recovery-words-intro-copy">
+                                Create a copy and store it in a safe place: family’s house, bank locker etc.
+                            </span>
+                        </li>
+                        <li>
+                            <svg class="nq-icon">
+                                <use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-fire"/>
+                            </svg>
+                            <span data-i18n="recovery-words-intro-safety">
+                                Mind water and fire, use a sealed box to keep your Recovery Words safe.
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="page-footer">
+                    <form class="passphrase-box"></form>
+                    <a class="skip-words nq-text-s">
+                        <span data-i18n="passphrasebox-password-skip">Skip for now</span>
+                        <svg class="nq-icon">
+                            <use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-caret-right-small"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <div id="validate-words" class="page nq-card flipped nq-blue-bg">
+                <div class="page-header nq-card-header">
+                    <div class="progress-indicator"></div>
+                    <a tabindex="0" class="page-header-back-button">
+                        <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
+                    </a>
+                    <h1 data-i18n="create-heading-validate-backup" class="nq-h1">Validate your backup</h1>
+                </div>
+
+                <div class="page-body nq-card-body">
+                    <div class="validate-words"></div>
+                </div>
+            </div>
+
+            <div id="recovery-words" class="page nq-card flipped nq-blue-bg">
+                <div class="page-header nq-card-header">
+                    <div class="progress-indicator"></div>
+                    <a tabindex="0" class="page-header-back-button">
+                        <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
+                    </a>
+                    <h1 data-i18n="recovery-words-title" class="nq-h1">Write these 24 words on a piece of paper.</h1>
+                </div>
+
+                <div class="page-body nq-card-body">
+                    <p class="nq-text nq-orange" data-i18n="recovery-words-text">Anyone with these words can access your wallet! Keep them save.</p>
+                    <div class="recovery-words"></div>
+                </div>
+
+                <div class="page-footer">
+                    <button class="to-validate-words nq-button light-blue" data-i18n="continue">Continue</button>
+                    <a href="#" class="skip-words nq-link nq-text-s nq-blue">
+                        <span data-i18n="passphrasebox-password-skip">Skip for now</span>
+                        <svg class="nq-icon">
+                            <use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-caret-right-small"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <div id="login-file-intro" class="page nq-card">
+                <div class="page-header nq-card-header">
+                    <div class="progress-indicator"></div>
+                    <a tabindex="0" class="page-header-back-button">
+                        <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
+                    </a>
+                    <h1 data-i18n="export-file-intro-heading" class="nq-h1">Save your Account</h1>
+                </div>
+
+                <div class="page-body nq-card-body">
+                    <p class="nq-light-blue nq-text flex-grow" data-i18n="export-file-intro-blue-text">
+                        Your Login File grants access to your Account.
+                        Only you can access it. Download and save it.
+                    </p>
+                    <ul class="nq-list">
+                        <li>
+                            <svg class="nq-icon">
+                                <use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-browser-login"/>
+                            </svg>
+                            <span>
+                                Your Login File is stored in your browser.<br/>
+                                Deleting it logs you out of your Account.
+                            </span>
+                        </li>
+                        <li>
+                            <svg class="nq-icon">
+                                <use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-skull"/>
+                            </svg>
+                            <span>
+                                It is part of your browser’s storage and<br/>
+                                might be deleted by accident.
+                            </span>
+                        </li>
+                        <li>
+                            <svg class="nq-icon">
+                                <use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-login"/>
+                            </svg>
+                            <span>
+                                Use it to log in to your Account on other<br/>
+                                browsers and devices.
+                            </span>
+                        </li>
+                    </ul>
+                    <p class="nq-orange flex-grow" data-i18n="export-file-intro-orange-text">Never share it. Don't Lose it.</p>
+                    <button class="nq-button-s go-to-words" data-i18n="go-to-recovery-words">Go to Recovery Words</button>
+                </div>
+
+                <div class="page-footer">
+                    <button data-i18n="export-continue-to-login-file" class="nq-button login-file light-blue">Continue to Login File</button>
+                </div>
+            </div>
+
+            <div id="login-file-set-password" class="page nq-card">
+                <div class="page-header nq-card-header">
+                    <div class="progress-indicator"></div>
+                    <a tabindex="0" class="page-header-back-button">
+                        <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
+                    </a>
+                    <h1 data-i18n="create-heading-create-password" class="nq-h1">Create a Password</h1>
+                    <h1 data-i18n="create-heading-repeat-password" class="nq-h1 repeat">Confirm your password</h1>
+                </div>
+
+                <div class="page-body nq-card-body">
+                        <div class="login-file-icon"></div>
+                </div>
+
+                <div class="page-footer">
+                    <form class="password-setter-box"></form>
+                </div>
+            </div>
+
+            <div id="login-file-unlock" class="page nq-card">
+                <div class="page-header nq-card-header">
+                    <div class="progress-indicator"></div>
+                    <a tabindex="0" class="page-header-back-button">
+                        <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
+                    </a>
+                    <h1 data-i18n="export-file-heading" class="nq-h1">Download Login File</h1>
+                </div>
+
+                <div class="page-body nq-card-body">
+                    <svg class="nq-icon">
+                        <use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-lock-locked"/>
+                    </svg>
+                </div>
+
+                <div class="page-footer">
+                    <form class="password-box"></form>
+                </div>
+            </div>
+
+            <div id="login-file-download" class="page nq-card">
+                <div class="page-header nq-card-header">
+                    <div class="progress-indicator"></div>
+                    <a tabindex="0" class="page-header-back-button">
+                        <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
+                    </a>
+                    <h1 class="nq-h1" data-i18n="import-words-download-loginfile">Download your Login File</h1>
+                </div>
+
+                <div class="page-body nq-card-body">
+                    <a class="download-loginfile"></a>
+                </div>
+            </div>
         </div>
 
         <button class="global-close nq-button-s display-none">
             <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left-small"/></svg>
             <span id="global-close-text"></span>
         </button>
+
+        <div id="loading" class="page">
+            <div class="loading-animation"></div>
+        </div>
 
     </div>
 </body>

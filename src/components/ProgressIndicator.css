@@ -3,6 +3,9 @@
     display: flex;
     flex-direction: row;
     padding: 0.5rem;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
 .progress-indicator .indicator {
@@ -11,6 +14,10 @@
     border-radius: 0.25rem;
     background: #e5e5e5;
     margin: 0.5rem;
+}
+
+.nq-card-header .progress-indicator ~ * {
+    margin-top: 1rem;
 }
 
 .progress-indicator[data-step="1"] .step-1,

@@ -22,6 +22,15 @@ class FlippableHandler {
                         window.setTimeout(() => $oldEl.classList.remove('display-flex'), 300);
                         $rotationContainer.classList.toggle('flipped', $newEl.classList.contains(classname));
                     }
+                } else if (newHash) {
+                    const $newEl = document.querySelector(newHash);
+                    if ($newEl && $newEl.classList.contains(classname)) {
+                        $rotationContainer.classList.add('disable-transition');
+                        window.setTimeout(() => {
+                            $rotationContainer.classList.toggle('flipped', $newEl.classList.contains(classname));
+                            window.setTimeout(() => $rotationContainer.classList.remove('disable-transition'), 10);
+                        }, 0);
+                    }
                 }
             });
             FlippableHandler.flippableHandlerInitialised = true;

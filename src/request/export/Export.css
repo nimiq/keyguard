@@ -1,50 +1,134 @@
-button.go-to-words,
-button.go-to-file {
-    display: block;
-    margin: 4rem auto 0;
+ul.nq-list li {
+    width: auto;
+    height: auto;
+    display: flex;
+    position: relative;
+    padding-left: 2rem;
+    margin-bottom: 2rem;
 }
 
-.page#download-key-file.show-download .hide-for-download {
-    display: none;
+ul.nq-list li > .nq-icon {
+    position: absolute;
+    height: 5rem;
+    width: 5rem;
+    left: -5rem;
+    top: 0.5rem;
 }
 
-.page#download-key-file:not(.show-download) .download-key-file {
-    display: none;
+
+.page#recovery-words-intro .page-header .nq-h1,
+.page#recovery-words .page-header .nq-h1 {
+    max-width: 80%;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-.page#download-key-file .download-icon {
-    align-self: center;
+.page#validate-words .page-body {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 1rem;
 }
 
-.page#download-key-file .walletfile,
-.page#download-key-file .arrow-down {
-    display: block;
-    margin: auto;
+.page#recovery-words {
+    height: 70.5rem; /* 564px */
 }
 
-.page#download-key-file .walletfile {
-    width: 9rem;
-    height: 11.75rem;
-    width: 100%;
+.page#recovery-words .page-body {
+    display: flex;
+    flex-direction: column;
+    padding-top: 0;
+    padding-bottom: 0;
 }
 
-.page#download-key-file .arrow-down {
-    width: 3rem;
-    height: 3rem;
-    opacity: 0.3;
-    margin-top: 1rem;
-}
-
-.page#privacy.key-active .hide-if-key-active {
-    display: none;
-}
-
-.page#privacy:not(.key-active) .page-footer button:not(.submit) {
-    display: none;
+.page#recovery-words .nq-text {
+    text-align: center;
+    color: var(--nimiq-orange); /* Can be removed when CSS specificity is fixed in nimiq-styles */
+    margin-bottom: 0;
 }
 
 .page#recovery-words .recovery-words {
     margin: 0;
+    position: relative;
+    margin: 0 -1.5rem -3rem;
+    padding: 3rem 0;
+    -webkit-mask-image: linear-gradient(0deg , rgba(255,255,255,0), rgba(255,255,255, 1) 20%, rgba(255,255,255,1) 80%, rgba(255,255,255,0));
+    mask-image: linear-gradient(0deg , rgba(255,255,255,0), rgba(255,255,255, 1) 20%, rgba(255,255,255,1) 80%, rgba(255,255,255,0));
+}
+
+.page#recovery-words-intro p {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.page#recovery-words-intro .nq-card-body {
+    padding-bottom: 0;
+    padding-top: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+
+.page#recovery-words-intro li > .nq-icon {
+    color: var(--nimiq-orange);
+}
+
+.page#login-file-unlock .nq-card-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.page#login-file-unlock .nq-card-body .nq-icon {
+    width: 8rem;
+    height: auto;
+    opacity: 0.3;
+}
+
+.page#login-file-intro .nq-card-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 0;
+}
+
+.page#login-file-intro p {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin-top: 0;
+}
+
+.page#login-file-intro li > .nq-icon {
+    opacity: 0.3;
+}
+
+.page#login-file-set-password:not(.repeat-password) .nq-h1.repeat,
+.page#login-file-set-password.repeat-password .nq-h1:not(.repeat) {
+    display: none;
+}
+
+.page#login-file-set-password .page-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.page#login-file-download .page-body {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 3rem;
+}
+
+.passphrase-box:not(.hide-input) + .skip-words {
+    position: absolute;
+    width: calc(100% - 2rem);
+    bottom: 2.25rem;
+}
+
+.passphrase-box:not(.hide-input).input-eligable + .skip-words {
+    display: none;
 }
 
 .page#validate-words .validate-words .word-list {
@@ -55,4 +139,29 @@ button.go-to-file {
     padding: 1rem;
 }
 
+.skip-words {
+    cursor: pointer;
+    display: block;
+    text-align: center;
+    font-size: 1.625rem;
+    transition: opacity .3s ease;
+}
 
+.skip .nq-icon,
+.skip-words .nq-icon {
+    margin-left: 0.5rem;
+    height: 0.875rem;
+    width: 0.875rem;
+    transition: transform .3s ease;
+}
+
+.skip-words:hover,
+.skip-words:focus {
+    outline: none;
+    opacity: 0.7;
+}
+
+.skip-words:hover .nq-icon,
+.skip-words:focus .nq-icon {
+    transform: translate3D(-0.25rem, 0, 0);
+}

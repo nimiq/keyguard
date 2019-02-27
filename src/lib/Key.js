@@ -1,3 +1,4 @@
+/* global Constants */
 /* global Nimiq */
 
 class Key {
@@ -18,6 +19,7 @@ class Key {
         this._secret = secret;
         this._hasPin = hasPin;
         this._id = id;
+        this._defaultAddress = this.deriveAddress(Constants.DEFAULT_DERIVATION_PATH);
     }
 
     /**
@@ -126,6 +128,10 @@ class Key {
     set hasPin(hasPin) {
         /** @type {boolean} */ // Annotation required for Typescript
         this._hasPin = hasPin;
+    }
+
+    get defaultAddress() {
+        return this._defaultAddress;
     }
 
     /**

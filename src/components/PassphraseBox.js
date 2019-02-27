@@ -61,6 +61,7 @@ class PassphraseBox extends Nimiq.Observable {
             'passphrasebox-log-out': '<button class="submit" data-i18n="passphrasebox-log-out">Confirm logout</button>',
             'passphrasebox-confirm-tx': '<button class="submit" data-i18n="passphrasebox-confirm-tx">Confirm transaction</button>',
             'passphrasebox-download': '<button class="submit" data-i18n="passphrasebox-download">Download Login File</button>',
+            'passphrasebox-show-words': '<button class="submit" data-i18n="passphrasebox-show-words">Show recovery words</button>',
             'passphrasebox-sign-msg': '<button class="submit" data-i18n="passphrasebox-sign-msg">Sign message</button>',
         };
         /* eslint-enable max-len */
@@ -100,7 +101,9 @@ class PassphraseBox extends Nimiq.Observable {
     }
 
     focus() {
-        this._passphraseInput.focus();
+        if (!this.options.hideInput) {
+            this._passphraseInput.focus();
+        }
     }
 
     reset() {
@@ -142,6 +145,17 @@ class PassphraseBox extends Nimiq.Observable {
 
     _onCancel() {
         this.fire(PassphraseBox.Events.CANCEL);
+    }
+
+    /**
+     * @param {boolean} hidden
+     */
+    hideInput(hidden) {
+        this.options.hideInput = hidden;
+        this.$el.classList.toggle('hide-input', hidden);
+        this.$el.classList.toggle(`nq-${this.options.bgColor}-bg`, !hidden);
+        /** @type {HTMLElement} */
+        (this.$el.querySelector('button.submit')).classList.toggle('inverse', !hidden);
     }
 }
 
