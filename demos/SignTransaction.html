@@ -52,30 +52,10 @@
 
 <script>
     (async () => {
-        await Nimiq.WasmHelper.doImportBrowser();
+        await Nimiq.WasmHelper.doImport();
         Nimiq.GenesisConfig.test();
         Nimiq.CryptoWorker.getInstanceAsync();
     })();
-
-    // const client = new KeyguardClient();
-    // client.on(KeyguardClient.Command.SIGN_TRANSACTION, (result, state) => {
-    //     console.log('Keyguard result', result);
-    //     console.log('State', state);
-
-    //     document.querySelector('#result').textContent = 'TX signed';
-    //     if (state.keyId) {
-    //         KeyStore.instance.remove(state.keyId);
-    //     }
-    // }, (error, state) => {
-    //     console.error('Keyguard error', error);
-    //     console.log('State', state);
-
-    //     document.querySelector('#result').textContent = `Error: ${error.message || error}`;
-    //     if (state.keyId) {
-    //         KeyStore.instance.remove(state.keyId);
-    //     }
-    // });
-    // client.init();
 
     // document.querySelector('button#redirect').addEventListener('click', async () => {
     //     signTransactionRedirect(await generateRequest());
@@ -119,7 +99,7 @@
     // }
 
     async function signTransactionPopup(txRequest) {
-        const keyguard = window.open('../src/request/sign-transaction/', 'CreateDemo',
+        const keyguard = window.open('../src/request/sign-transaction/', 'SignTx Demo',
             `left=${window.innerWidth / 2 - 350},top=75,width=700,height=850,location=yes,dependent=yes`);
         const rpc = new Rpc.PostMessageRpcClient(keyguard, '*');
         await rpc.init();

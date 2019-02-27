@@ -18,7 +18,7 @@
     document.querySelector('#import').addEventListener('click', () => requestImport());
 
     async function requestImport() {
-        const keyguard = window.open(`../src/request/import/`, 'CreateDemo',
+        const keyguard = window.open(`../src/request/import/`, 'Export Demo',
             `left=${window.innerWidth / 2 - 350},top=75,width=700,height=850,location=yes,dependent=yes`);
         const rpc = new Rpc.PostMessageRpcClient(keyguard, '*');
         await rpc.init();
