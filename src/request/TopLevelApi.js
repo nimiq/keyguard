@@ -11,19 +11,24 @@
  * A common parent class for pop-up requests.
  *
  * Usage:
- * Inherit this class in your popup request API class:
+ * Inherit this class in your popup request API class and define two properties:
  * ```
  *  class SignTransactionApi extends TopLevelApi {
+ *      async parseRequest(request) {
+ *          // This method receives the raw internal request and is expected to
+ *          // return a parsed request of the same type, using the parsing methods
+ *          // inherited from the RequestParser class.
+ *          // Throwing an InvalidRequestError means parsing has failed.
+ *      }
  *
- *      // Define the onRequest method to receive the client's request object:
- *      onRequest(request) {
- *          // do something...
+ *      get Handler() {
+ *          // Should return the class that should be instantiated as the request's handler
+ *      }
  *
- *          // When done, call this.resolve() with the result object
- *          this.resolve(result);
- *
- *          // Or this.reject() with an error
- *          this.reject(error);
+ *      async onBeforeRun(parsedRequest) {
+ *          // This optional method receives the parsed request just before the
+ *          // global close button text is set and the handler is run.
+ *          // The return value is not used.
  *      }
  *  }
  *
@@ -104,7 +109,7 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
 
         const parsedRequest = await this.parseRequest(request);
 
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             this._resolve = resolve;
             this._reject = reject;
 
@@ -144,7 +149,7 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
             try {
                 const handler = new this.Handler(parsedRequest, this.resolve.bind(this), reject);
 
-                this.onBeforeRun(parsedRequest);
+                await this.onBeforeRun(parsedRequest);
 
                 this.setGlobalCloseButtonText(`${I18n.translatePhrase('back-to')} ${parsedRequest.appName}`);
 
