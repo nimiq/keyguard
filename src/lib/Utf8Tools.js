@@ -19,8 +19,7 @@ class Utf8Tools { // eslint-disable-line no-unused-vars
      */
     static stringToUtf8ByteArray(str) {
         if (typeof TextEncoder !== 'undefined') {
-            // @ts-ignore (Expected 0 arguments, but got 1.)
-            const encoder = new TextEncoder('utf-8'); // The encoding is a legacy argument.
+            const encoder = new TextEncoder(); // utf-8 is the default
             return encoder.encode(str);
         }
 
