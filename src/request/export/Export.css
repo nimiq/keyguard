@@ -127,7 +127,7 @@ ul.nq-list li > .nq-icon {
     bottom: 2.25rem;
 }
 
-.password-box:not(.hide-input).input-eligable + .skip-words {
+.password-box:not(.hide-input).input-eligible + .skip-words {
     display: none;
 }
 

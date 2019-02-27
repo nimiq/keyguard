@@ -106,7 +106,7 @@ class PasswordSetterBox extends Nimiq.Observable {
     /**
      * @returns {Promise<void>}
      */
-    async onPasswordIneligable() {
+    async onPasswordIneligible() {
         // We have to shake both possible too-weak notices
         const $hintTooShort = /** @type {HTMLElement} */ (this.$el.querySelector('.password-strength.strength-short'));
         const $hintWeak = /** @type {HTMLElement} */ (this.$el.querySelector('.password-strength.strength-weak'));
@@ -128,7 +128,7 @@ class PasswordSetterBox extends Nimiq.Observable {
 
         const score = PasswordStrength.strength(this._passwordInput.text);
 
-        this.$el.classList.toggle('input-eligable', isValid && score >= PasswordStrength.Score.MINIMUM);
+        this.$el.classList.toggle('input-eligible', isValid && score >= PasswordStrength.Score.MINIMUM);
 
         this.$el.classList.toggle('strength-short', !isValid);
         this.$el.classList.toggle('strength-weak', isValid && score < PasswordStrength.Score.MINIMUM);
@@ -143,7 +143,7 @@ class PasswordSetterBox extends Nimiq.Observable {
         this.$el.classList.toggle('strength-secure', isValid && score >= PasswordStrength.Score.SECURE);
     }
 
-    _isEligablePassword() {
+    _isEligiblePassword() {
         const password = this._passwordInput.text;
         if (password.length < PasswordInput.DEFAULT_MIN_LENGTH) return false;
         return PasswordStrength.strength(password) >= PasswordStrength.Score.MINIMUM;
@@ -154,8 +154,8 @@ class PasswordSetterBox extends Nimiq.Observable {
      */
     _onSubmit(event) {
         event.preventDefault();
-        if (!this._isEligablePassword()) {
-            this.onPasswordIneligable();
+        if (!this._isEligiblePassword()) {
+            this.onPasswordIneligible();
             return;
         }
         if (!this._password) {
