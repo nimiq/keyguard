@@ -1,13 +1,12 @@
-/* global Constants */
 /* global Identicon */
 
-class AddressInfo { // eslint-disable-line no-unused-vars
+class AddressInfo {
     /**
      * @param {{ userFriendlyAddress: string, label: string?, imageUrl: URL?, accountLabel: string?}} addressInfo
      */
     constructor(addressInfo) {
         if (addressInfo.imageUrl && !document.getElementById('nimiq-rounded-hexagon')) {
-            document.body.insertAdjacentHTML('beforeend', Constants.HEXAGON_CLIP_PATH);
+            document.body.insertAdjacentHTML('beforeend', AddressInfo.HEXAGON_CLIP_PATH);
         }
         this._addressInfo = addressInfo;
     }
@@ -69,3 +68,15 @@ class AddressInfo { // eslint-disable-line no-unused-vars
         }
     }
 }
+
+/* eslint-disable max-len */
+AddressInfo.HEXAGON_CLIP_PATH = `
+    <svg width="0" height="0" viewBox="0 0 146 146">
+        <defs>
+            <clipPath id="nimiq-rounded-hexagon" clipPathUnits="objectBoundingBox">
+                <path d="M.302.055A.106.106 0 0 0 .21.108l-.196.34a.106.106 0 0 0 0 .105l.196.34a.106.106 0 0 0 .092.052h.392c.038 0 .073-.02.092-.053l.196-.34a.106.106 0 0 0 0-.105L.786.107A.106.106 0 0 0 .694.056z">
+                </path>
+            </clipPath>
+        </defs>
+    </svg>`;
+/* eslint-enable max-len */
