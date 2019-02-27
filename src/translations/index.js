@@ -1,32 +1,17 @@
 const TRANSLATIONS = {
     en: {
         _language: 'English',
-        loading: 'Loading...',
         continue: 'Continue',
 
         'back-to': 'Back to',
 
-        'passphrase-strength': 'Strength',
-        'passphrase-placeholder': 'Enter password',
-        'passphrase-repeat-placeholder': 'Repeat password',
-
-        'privacy-warning-heading': 'Are you being watched?',
-        'privacy-warning-text': 'Now is the perfect time to assess your surroundings. '
-                              + 'Nearby windows? Hidden cameras? Shoulder spies? '
-                              + 'Anyone with your backup phrase can access and spend your NIM.',
-        'privacy-agent-continue': 'Continue',
-
         'recovery-words-title': 'Write these 24 words on a piece of paper.',
-        'recovery-words-input-label': 'Recovery Words',
-        'recovery-words-input-field-placeholder': 'word #',
         'recovery-words-intro-text': 'The Recovery Words are the ONLY way to restore '
                                    + 'your account in case you lose your LoginFile or password.',
         'recovery-words-intro-offline': 'Keep your Words offline, don’t enter them anywhere but in the Nimiq Safe.',
         'recovery-words-intro-copy': 'Create a copy and store it in a safe place: family’s house, bank locker etc.',
         'recovery-words-intro-safety': 'Mind water and fire, use a sealed box to keep your Recovery Words safe.',
         'recovery-words-text': 'Anyone with these words can access your wallet! Keep them save.',
-        'recovery-words-storing': 'Write these words on a piece of paper and store them at a safe, offline place.',
-        'recovery-words-continue-to-words': 'Continue to Recovery Words',
 
         'create-heading-choose-identicon': 'Choose an avatar',
         'create-heading-create-password': 'Create a password',
@@ -35,9 +20,6 @@ const TRANSLATIONS = {
         'create-wallet-desc': 'This is your Account with your first Address in it.',
 
         'import-heading-enter-recovery-words': 'Enter Recovery Words',
-        'import-link-no-wallet': 'Don\'t have a wallet yet?',
-        'import-heading-protect': 'Protect your wallet',
-        'import-text-set-password': 'You can now set a password to encrypt your wallet on this device.',
         'import-upload-login-file': 'Upload your Login File',
         'import-unlock-account': 'Unlock your account',
         'import-create-account': 'Create new Account',
@@ -53,32 +35,16 @@ const TRANSLATIONS = {
         'import-words-download-loginfile': 'Download your Login File',
 
         'file-import-prompt': 'Drag here or click to upload',
-        'file-import-click-hint': 'Or click to select a file.',
-
-        'enter-recovery-words-heading': 'Import from recovery words',
-        'enter-recovery-words-enter-words': 'Please enter your 24 recovery words.',
-
-        'choose-key-type-heading': 'Choose key type',
-        'choose-key-type-text': 'We couldn\'t determine the type of your key. Please select it below.',
-        'choose-key-type-or': 'or',
-        'choose-key-type-legacy-address-heading': 'Single address',
-        'choose-key-type-legacy-address-info': 'Created before xx/xx/2018',
-        'choose-key-type-bip39-address-heading': 'Multiple addresses',
-        'choose-key-type-bip39-address-info': 'Created after xx/xx/2018',
 
         'sign-tx-heading-tx': 'Confirm Transaction',
         'sign-tx-heading-checkout': 'Verify Payment',
         'sign-tx-includes': 'includes',
         'sign-tx-fee': 'fee',
-        'sign-tx-youre-sending': 'You\'re sending',
-        'sign-tx-to': 'to',
-        'sign-tx-pay-with': 'Pay with',
         'sign-tx-cancel-payment': 'Cancel payment',
 
         'sign-msg-heading': 'Sign Message',
 
         'passphrasebox-enter-passphrase': 'Enter your password',
-        'passphrasebox-protect-keyfile': 'Protect your keyfile with a password',
         'passphrasebox-repeat-password': 'Repeat your password',
         'passphrasebox-continue': 'Continue',
         'passphrasebox-log-in': 'Unlock',
@@ -92,12 +58,9 @@ const TRANSLATIONS = {
         'passphrasebox-password-strength-good': 'Ok, that is an average password',
         'passphrasebox-password-strength-strong': 'Great, that is a strong password',
         'passphrasebox-password-strength-secure': 'Super, that is a secure password',
-        'passphrasebox-password-hint': 'Your password should have at least 8 characters.',
         'passphrasebox-password-skip': 'Skip for now',
 
         'identicon-selector-loading': 'Mixing colors',
-        'identicon-selector-button-select': 'Select',
-        'identicon-selector-link-back': 'Back',
         'identicon-selector-generate-new': 'Generate new',
         'identicon-selector-more-addresses': 'More addresses',
 
@@ -106,8 +69,6 @@ const TRANSLATIONS = {
         'download-loginfile-continue': 'Continue',
 
         'validate-words-text': 'Please select the correct word from your list of recovery words.',
-        'validate-words-back': 'Back to words',
-        'validate-words-skip': 'Skip validation for now',
         'validate-words-1-hint': 'What is the 1st word?',
         'validate-words-2-hint': 'What is the 2nd word?',
         'validate-words-3-hint': 'What is the 3rd word?',
@@ -140,26 +101,18 @@ const TRANSLATIONS = {
         'export-file-intro-orange-text': 'Never share it. Don\'t Lose it.',
         'export-words-intro-heading': 'There is no password recovery!',
         'go-to-recovery-words': 'Go to Recovery Words',
-        'export-button-words': 'Show Recovery Words',
-        'export-button-file': 'Download Login File',
-        'export-finish': 'Finish Export',
-        'export-create-backup': 'Create backup',
         'export-continue-to-login-file': 'Continue to Login File',
 
         'remove-key-heading': 'Don\'t lose access',
         'remove-key-intro-text': 'If you log out without saving your account, you will irretrievably '
                                + 'lose access to it!',
-        'remove-key-login-file': 'Login File',
         'remove-key-login-file-question': 'Is your Login File savely stored and accessible?',
         'remove-key-download-login-file': 'Download Login File',
         'remove-key-recovery-words-question': 'Do you know where your Recovery Words are?',
         'remove-key-show-recovery-words': 'Create a backup',
-        'remove-key-first-confirm': 'I am able to log in again',
         'remove-key-enter-label-1': 'Type',
         'remove-key-enter-label-2': 'to log out.',
         'remove-key-final-confirm': 'Log out',
-        'remove-key-recovery-words': 'Recovery Words',
-        'remove-key-back': 'Back to logout',
 
         'derive-address-heading-password': 'Unlock your account',
         'derive-address-password-text': 'To add a new address, please[br]unlock your account first.',
@@ -182,25 +135,11 @@ const TRANSLATIONS = {
     },
     de: {
         _language: 'Deutsch',
-        loading: 'Wird geladen...',
         continue: 'Weiter',
 
         'back-to': 'Zurück zu',
 
-        'passphrase-strength': 'Stärke',
-        'passphrase-placeholder': 'Passwort eingeben',
-        'passphrase-repeat-placeholder': 'Passwort wiederholen',
-
-        'privacy-warning-heading': 'Wirst du beobachtet?',
-        'privacy-warning-text': 'Jetzt ist eine gute Zeit um sich umzuschauen. Gibt es Fenster in der Nähe? '
-                              + 'Versteckte Kameras? Jemand der über deine Schulter schaut? '
-                              + 'Jeder der deine Wiederherstellungswörter hat, kann auf deine NIM zugreifen '
-                              + 'und sie ausgeben.',
-        'privacy-agent-continue': 'Weiter',
-
         'recovery-words-title': 'Schreibe diese 24 Wörter auf ein Papier.',
-        'recovery-words-input-label': 'Wiederherstellungswörter',
-        'recovery-words-input-field-placeholder': 'Wort ',
         'recovery-words-intro-text': 'Die Wiederherstellungswörter sind der EINZIGE Weg Zugriff zu '
                                    + 'deinem Account zu erlangen, falls das Login File verloren geht.',
         'recovery-words-intro-offline': 'Behalte deine Wiederherstellungswörter offline und '
@@ -210,9 +149,6 @@ const TRANSLATIONS = {
         'recovery-words-intro-safety': 'Schütze dich vor Wasser und Feuer und benutze eine verschlossene Kiste um '
                                      + 'deine Wiederherstellungswörter zu verwahren.',
         'recovery-words-text': 'Jeder im Besitz dieser Wörter kann auf deinen Account zugreifen. Verwahre sie sicher.',
-        'recovery-words-storing': 'Schreibe diese Wörter auf ein Stück Papier und verwahre es an einem sicheren, '
-                                + 'analogen Ort.',
-        'recovery-words-continue-to-words': 'Weiter zu den Wiederherstellungswörtern',
 
         'create-heading-choose-identicon': 'Wähle deinen Konto-Avatar',
         'create-heading-create-password': 'Erstelle ein Passwort',
@@ -221,10 +157,6 @@ const TRANSLATIONS = {
         'create-wallet-desc': 'Das ist dein Account mit deiner ersten Addresse.',
 
         'import-heading-enter-recovery-words': 'Wiederherstellungswörter eingeben',
-        'import-link-no-wallet': 'Du hast noch keine Wallet?',
-        'import-heading-protect': 'Wallet verschlüsseln',
-        'import-text-set-password': 'Du kannst jetzt ein Passwort eingeben, um deine Wallet auf diesem '
-                                  + 'Gerät zu verschlüsseln.',
         'import-upload-login-file': 'Lade dein Login File hoch',
         'import-unlock-account': 'Entsperre deinen Account',
         'import-create-account': 'Erstelle einen neuen Account',
@@ -240,33 +172,16 @@ const TRANSLATIONS = {
         'import-words-download-loginfile': 'Lade dein Login File herunter',
 
         'file-import-prompt': 'Ziehe deine Schlüsseldatei auf dieses Feld',
-        'file-import-click-hint': 'Oder klicke um eine Datei auszuwählen.',
-
-        'enter-recovery-words-heading': 'Mit Wiederherstellungswörtern importieren',
-        'enter-recovery-words-enter-words': 'Bitte gib deine 24 Wiederherstellungswörter ein.',
-
-        'choose-key-type-heading': 'Schlüsseltyp wählen',
-        'choose-key-type-text': 'Wir konnten den Typ deines Schlüssels nicht automatisch ermitteln. '
-                              + 'Bitte wähle ihn unten aus.',
-        'choose-key-type-or': 'oder',
-        'choose-key-type-legacy-address-heading': 'Einzelne Adresse',
-        'choose-key-type-legacy-address-info': 'Erstellt vor xx.xx.2018',
-        'choose-key-type-bip39-address-heading': 'Mehrere Adressen',
-        'choose-key-type-bip39-address-info': 'Erstellt nach xx.xx.2018',
 
         'sign-tx-heading-tx': 'Überweisung bestätigen',
         'sign-tx-heading-checkout': 'Zahlung bestätigen',
         'sign-tx-includes': 'inklusive',
         'sign-tx-fee': 'Gebühr',
-        'sign-tx-youre-sending': 'Du sendest',
-        'sign-tx-to': 'an',
-        'sign-tx-pay-with': 'Zahle mit',
         'sign-tx-cancel-payment': 'Zahlung abbrechen',
 
         'sign-msg-heading': 'Nachricht signieren',
 
         'passphrasebox-enter-passphrase': 'Gib dein Passwort ein',
-        'passphrasebox-protect-keyfile': 'Sichere deine Logindatei mit einem Passwort',
         'passphrasebox-repeat-password': 'Wiederhole dein Passwort',
         'passphrasebox-continue': 'Weiter',
         'passphrasebox-log-in': 'Entsperren',
@@ -280,12 +195,9 @@ const TRANSLATIONS = {
         'passphrasebox-password-strength-good': 'Ok, das ist ein gutes Passwort',
         'passphrasebox-password-strength-strong': 'Gut, das ist ein starkes Passwort',
         'passphrasebox-password-strength-secure': 'Super, das ist ein sicheres Passwort',
-        'passphrasebox-password-hint': 'Dein Passwort muss mindestens 8 Zeichen haben.',
         'passphrasebox-password-skip': 'Erstmal überspringen',
 
         'identicon-selector-loading': 'Mische Farben',
-        'identicon-selector-button-select': 'Auswählen',
-        'identicon-selector-link-back': 'Zurück',
         'identicon-selector-generate-new': 'Neu generieren',
         'identicon-selector-more-addresses': 'Mehr Adressen',
 
@@ -294,8 +206,6 @@ const TRANSLATIONS = {
         'download-loginfile-continue': 'Weiter',
 
         'validate-words-text': 'Bitte wähle das richtige Wort aus deiner Liste von Wiederherstellungswörtern aus.',
-        'validate-words-back': 'Zurück zu den Wörtern',
-        'validate-words-skip': 'Überprüfung erstmal überspringen',
         'validate-words-1-hint': 'Was ist das 1. Wort?',
         'validate-words-2-hint': 'Was ist das 2. Wort?',
         'validate-words-3-hint': 'Was ist das 3. Wort?',
@@ -328,16 +238,11 @@ const TRANSLATIONS = {
         'export-file-intro-orange-text': 'Teile es mit niemandem. Verliere es nicht.',
         'export-words-intro-heading': 'Es gibt keine Passwortwiederherstellung',
         'go-to-recovery-words': 'Zu den Wiederherstellungswörtern',
-        'export-button-words': 'Wiederherstellungswörter anzeigen',
-        'export-button-file': 'Schlüsseldatei herunterladen',
-        'export-finish': 'Export abschließen',
-        'export-create-backup': 'Backup erstellen',
         'export-continue-to-login-file': 'Weiter zum Login File',
 
         'remove-key-heading': 'Verliere deinen Zugang nicht',
         'remove-key-intro-text': 'Falls du dich ausloggst, ohne dein Konto zu sichern, wirst du unwiderruflich'
                                + 'den Zugriff darauf verlieren. ',
-        'remove-key-login-file': 'Logindatei',
         'remove-key-login-file-question': 'Ist deine Logindatei sicher gespeichert und zugänglich?',
         'remove-key-download-login-file': 'Logindatei herunterladen',
         'remove-key-recovery-words-question': 'Weißt du, wo sich deine Wiederherstellungswörter befinden?',
@@ -345,8 +250,6 @@ const TRANSLATIONS = {
         'remove-key-enter-label-1': 'Gib',
         'remove-key-enter-label-2': 'ein, um dich auszuloggen.',
         'remove-key-final-confirm': 'Ausloggen',
-        'remove-key-recovery-words': 'Wiederherstellungswörter',
-        'remove-key-back': 'Zurück zum logout',
 
         'derive-address-heading-password': 'Entschlüssele deinen Account',
         'derive-address-password-text': 'Bitte gib dein Passwort ein um deinem Account eine weitere Adresse '

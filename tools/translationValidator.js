@@ -61,7 +61,12 @@ localizedFiles.forEach(filePath => {
 
 const DICT = require('../src/translations/index.js');
 
-// console.log(DICT);
+const unusedDICT = Object.assign({}, DICT.en);
+
+// remove 24 validate words beforehand, as they are used as dynamic templatestrings.
+for (let index = 1; index < 25; index++) {
+    delete unusedDICT[`validate-words-${index}-hint`];
+}
 
 let allLanguagesComplete = true;
 
@@ -79,6 +84,8 @@ Object.keys(DICT).forEach(lang => {
             const inDict = langDict[key].replace('/\n/g', '').replace(/\s+/g, ' ');
             const inRef = REF_DICT[key] && REF_DICT[key].replace('/\n/g', '').replace(/\s+/g, ' ');
 
+            delete unusedDICT[key];
+
             if (inRef !== false && inDict !== inRef) {
                 console.error(
                     '\x1b[33m%s\x1b[0m',
@@ -94,5 +101,13 @@ Object.keys(DICT).forEach(lang => {
         allLanguagesComplete = false;
     }
 });
+
+if (Object.keys(unusedDICT).length) {
+    console.error(
+        '\x1b[33m%s\x1b[0m',
+        'WARN: Unused in DOM:',
+        unusedDICT,
+    );
+}
 
 if (!allLanguagesComplete) process.exit(1);

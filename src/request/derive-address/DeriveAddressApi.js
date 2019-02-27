@@ -17,7 +17,7 @@ class DeriveAddressApi extends TopLevelApi { // eslint-disable-line no-unused-va
         parsedRequest.appName = this.parseAppName(request.appName);
         parsedRequest.keyInfo = await this.parseKeyId(request.keyId);
         if (parsedRequest.keyInfo.type === Nimiq.Secret.Type.PRIVATE_KEY) {
-            throw new Errors.InvalidRequestError('Cannot derive addresses for single-account wallets');
+            throw new Errors.InvalidRequestError('Cannot derive addresses for single-address accounts');
         }
         parsedRequest.keyLabel = this.parseLabel(request.keyLabel);
         parsedRequest.baseKeyPath = this.parsePath(request.baseKeyPath, 'baseKeyPath');
