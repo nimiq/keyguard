@@ -36,10 +36,10 @@ class Export { // eslint-disable-line no-unused-vars
     }
 
     run() {
-        if (!this._request.skipFile || this._request.keyInfo.type === Nimiq.Secret.Type.ENTROPY) {
-            this._exportFileHandler.run();
-        } else {
+        if (this._request.skipFile || this._request.keyInfo.type === Nimiq.Secret.Type.PRIVATE_KEY) {
             this._exportWordsHandler.run();
+        } else {
+            this._exportFileHandler.run();
         }
     }
 
