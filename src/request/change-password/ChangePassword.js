@@ -9,7 +9,7 @@
 /* global DownloadLoginFile */
 /* global LoginFileIcon */
 /* global ProgressIndicator */
-/* global Iqons */
+/* global IqonHash */
 /* global LoginFile */
 
 /**
@@ -149,7 +149,7 @@ class ChangePassword {
     async _prepare() {
         let colorClass = '';
         if (this.key.secret instanceof Nimiq.Entropy) {
-            const color = Iqons.getBackgroundColorIndex(
+            const color = IqonHash.getBackgroundColorIndex(
                 new Nimiq.Address(
                     // use color of first address as loginFile color
                     this.key.deriveAddress(Constants.DEFAULT_DERIVATION_PATH).serialize(),

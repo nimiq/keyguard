@@ -3,7 +3,7 @@
 /* global LoginFile */
 /* global KeyStore */
 /* global Errors */
-/* global Iqons */
+/* global IqonHash */
 
 class DownloadLoginFile extends Nimiq.Observable {
     /**
@@ -84,7 +84,7 @@ class DownloadLoginFile extends Nimiq.Observable {
             throw new Errors.KeyguardError('Can only export encrypted Entropies');
         }
 
-        const color = Iqons.getBackgroundColorIndex(firstAddress.toUserFriendlyAddress());
+        const color = IqonHash.getBackgroundColorIndex(firstAddress.toUserFriendlyAddress());
         this.file = new LoginFile(Nimiq.BufferUtils.toBase64(encryptedEntropy), color);
     }
 

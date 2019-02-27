@@ -1,5 +1,5 @@
 /* global Constants */
-/* global Iqons */
+/* global IqonHash */
 /* global LoginFileIcon */
 /* global LoginFile */
 /* global Nimiq */
@@ -117,7 +117,7 @@ class ExportFile extends Nimiq.Observable {
             $setPasswordPage.classList.add('repeat-password');
 
             let colorClass = '';
-            const color = Iqons.getBackgroundColorIndex(
+            const color = IqonHash.getBackgroundColorIndex(
                 this._request.keyInfo.defaultAddress.toUserFriendlyAddress(),
             );
             const colorString = LoginFile.CONFIG[color].name;
