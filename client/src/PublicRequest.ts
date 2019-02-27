@@ -69,6 +69,15 @@ export type SimpleRequest = BasicRequest & {
     keyLabel?: string,
 };
 
+export type ExportRequest = SimpleRequest & {
+    skipFile?: boolean,
+};
+
+export type ExportResult = {
+    file: boolean,
+    words: boolean,
+};
+
 export type SignTransactionRequest = SimpleRequest & TransactionInfo & {
     keyPath: string,
     layout?: SignTransactionRequestLayout,

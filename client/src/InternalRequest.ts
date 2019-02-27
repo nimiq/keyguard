@@ -19,6 +19,7 @@ export * from './PublicRequest';
 
 export type DeriveAddressRequest = PublicToInternal<Public.DeriveAddressRequest>;
 export type DeriveAddressesRequest = PublicToInternal<Public.DeriveAddressesRequest>;
+export type ExportRequest = PublicToInternal<Public.ExportRequest>;
 export type RemoveKeyRequest = PublicToInternal<Public.RemoveKeyRequest>;
 export type ReleaseKeyRequest = PublicToInternal<Public.ReleaseKeyRequest>;
 export type SimpleRequest = PublicToInternal<Public.SimpleRequest>;

@@ -28,6 +28,7 @@ import {
     SimpleResult,
     IFrameResult,
     RedirectResult,
+    ExportRequest,
 } from './PublicRequest';
 
 import {
@@ -128,8 +129,8 @@ export class KeyguardClient {
         this._redirectRequest<ImportRequest>(KeyguardCommand.IMPORT, request);
     }
 
-    public export(request: SimpleRequest) {
-        this._redirectRequest<SimpleRequest>(KeyguardCommand.EXPORT, request);
+    public export(request: ExportRequest) {
+        this._redirectRequest<ExportRequest>(KeyguardCommand.EXPORT, request);
     }
 
     public changePassword(request: SimpleRequest) {
