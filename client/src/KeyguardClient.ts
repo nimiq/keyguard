@@ -40,8 +40,8 @@ import Observable from './Observable';
 
 export class KeyguardClient {
     private static readonly DEFAULT_ENDPOINT =
-        window.location.origin === 'https://accounts.nimiq.com' ? 'https://keyguard-next.nimiq.com'
-        : window.location.origin === 'https://accounts.nimiq-testnet.com' ? 'https://keyguard-next.nimiq-testnet.com'
+        window.location.origin === 'https://accounts.nimiq.com' ? 'https://keyguard.nimiq.com'
+        : window.location.origin === 'https://accounts.nimiq-testnet.com' ? 'https://keyguard.nimiq-testnet.com'
         : `${location.protocol}//${location.hostname}:8000/src`;
 
     private static parseId(id: string) {
