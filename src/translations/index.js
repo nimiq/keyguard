@@ -7,28 +7,28 @@ const TRANSLATIONS = {
 
         'recovery-words-title': 'Write these 24 words on a piece of paper.',
         'recovery-words-intro-text': 'The Recovery Words are the ONLY way to restore '
-                                   + 'your account in case you lose your LoginFile or password.',
+                                   + 'your account in case you lose your Login File or password.',
         'recovery-words-intro-offline': 'Keep your Words offline, don’t enter them anywhere but in the Nimiq Safe.',
         'recovery-words-intro-copy': 'Create a copy and store it in a safe place: family’s house, bank locker etc.',
         'recovery-words-intro-safety': 'Mind water and fire, use a sealed box to keep your Recovery Words safe.',
-        'recovery-words-text': 'Anyone with these words can access your wallet! Keep them save.',
+        'recovery-words-text': 'Anyone with these words can access your account! Keep them save.',
 
         'create-heading-choose-identicon': 'Choose an avatar',
         'create-heading-create-password': 'Create a password',
         'create-heading-repeat-password': 'Confirm your password',
         'create-heading-validate-backup': 'Validate your backup',
-        'create-wallet-desc': 'This is your Account with your first Address in it.',
+        'create-wallet-desc': 'This is your account with your first address in it.',
 
         'import-heading-enter-recovery-words': 'Enter Recovery Words',
         'import-upload-login-file': 'Upload your Login File',
         'import-unlock-account': 'Unlock your account',
-        'import-create-account': 'Create new Account',
+        'import-create-account': 'Create new account',
 
         'import-file-button-words': 'Login with Recovery Words',
 
         'import-words-file-available': 'Using the Recovery Words creates a new Login File. '
                                      + 'Create a password to secure it.',
-        'import-words-file-unavailable': 'Using the Recovery Words creates a new Account. '
+        'import-words-file-unavailable': 'Using the Recovery Words creates a new account. '
                                        + 'Create a password to secure it.',
         'import-words-hint': 'Press Tab to Jump to the next field',
         'import-words-error': 'This is not a valid account. Typo?',
@@ -95,8 +95,8 @@ const TRANSLATIONS = {
         'validate-words-24-hint': 'What is the 24th word?',
 
         'export-file-heading': 'Download Login File',
-        'export-file-intro-heading': 'Save your Account',
-        'export-file-intro-blue-text': 'Your Login File grants access to your Account. '
+        'export-file-intro-heading': 'Save your account',
+        'export-file-intro-blue-text': 'Your Login File grants access to your account. '
                                      + 'Only you can access it. Download and save it.',
         'export-file-intro-orange-text': 'Never share it. Don\'t Lose it.',
         'export-words-intro-heading': 'There is no password recovery!',
@@ -128,7 +128,7 @@ const TRANSLATIONS = {
         'change-password-download-login-file': 'Download new Login File',
         'change-password-set-password-heading': 'Create a new password',
         'change-password-set-password-text': 'Secure your new Login File.',
-        'change-password-set-password-text-legacy': 'Secure your Account.',
+        'change-password-set-password-text-legacy': 'Secure your account.',
 
         'error-no-referrer-heading': 'That went wrong :(',
         'error-no-referrer-message': 'We could not verify the origin of your request. Please go back and try again.',
@@ -163,7 +163,7 @@ const TRANSLATIONS = {
 
         'import-file-button-words': 'Wiederherstellungswörter eingeben',
 
-        'import-words-file-available': 'Die Wiederherstellungswörter erzeugen eine neue Login Datei. '
+        'import-words-file-available': 'Die Wiederherstellungswörter erzeugen eine neue Login File. '
                                      + 'Setze ein Passwort um sie zu schützen.',
         'import-words-file-unavailable': 'Die Wiederherstellungswörter erzeugen einen neuen Account. '
                                        + 'Setze ein Passwort um ihn zu schützen.',
@@ -171,7 +171,7 @@ const TRANSLATIONS = {
         'import-words-error': 'Das ist kein gültiger Account. Schreibfehler?',
         'import-words-download-loginfile': 'Lade dein Login File herunter',
 
-        'file-import-prompt': 'Ziehe deine Schlüsseldatei auf dieses Feld',
+        'file-import-prompt': 'Ziehe dein Login File auf dieses Feld',
 
         'sign-tx-heading-tx': 'Überweisung bestätigen',
         'sign-tx-heading-checkout': 'Zahlung bestätigen',
@@ -186,7 +186,7 @@ const TRANSLATIONS = {
         'passphrasebox-continue': 'Weiter',
         'passphrasebox-log-in': 'Entsperren',
         'passphrasebox-log-out': 'Abmeldung bestätigen',
-        'passphrasebox-download': 'Logindatei herunterladen',
+        'passphrasebox-download': 'Login File herunterladen',
         'passphrasebox-confirm-tx': 'Überweisung bestätigen',
         'passphrasebox-show-words': 'Wiederherstellungswörter anzeigen',
         'passphrasebox-sign-msg': 'Nachricht signieren',
@@ -201,7 +201,7 @@ const TRANSLATIONS = {
         'identicon-selector-generate-new': 'Neu generieren',
         'identicon-selector-more-addresses': 'Mehr Adressen',
 
-        'download-loginfile-download': 'Login Datei herunterladen',
+        'download-loginfile-download': 'Login File herunterladen',
         'download-loginfile-tap-and-hold': 'Zum Herunterladen Bild gedrückt halten',
         'download-loginfile-continue': 'Weiter',
 
@@ -231,7 +231,7 @@ const TRANSLATIONS = {
         'validate-words-23-hint': 'Was ist das 23. Wort?',
         'validate-words-24-hint': 'Was ist das 34. Wort?',
 
-        'export-file-heading': 'Schlüsseldatei herunterladen',
+        'export-file-heading': 'Login File herunterladen',
         'export-file-intro-heading': 'Sichere deinen Account',
         'export-file-intro-blue-text': 'Dein Login File gewährt Zugang zu deinem Account. '
                                     + 'Nur du kannst darauf zugreifen. Lade es runter und speichere es.',
@@ -243,8 +243,8 @@ const TRANSLATIONS = {
         'remove-key-heading': 'Verliere deinen Zugang nicht',
         'remove-key-intro-text': 'Falls du dich ausloggst, ohne dein Konto zu sichern, wirst du unwiderruflich'
                                + 'den Zugriff darauf verlieren. ',
-        'remove-key-login-file-question': 'Ist deine Logindatei sicher gespeichert und zugänglich?',
-        'remove-key-download-login-file': 'Logindatei herunterladen',
+        'remove-key-login-file-question': 'Ist dein Login File sicher gespeichert und zugänglich?',
+        'remove-key-download-login-file': 'Login File herunterladen',
         'remove-key-recovery-words-question': 'Weißt du, wo sich deine Wiederherstellungswörter befinden?',
         'remove-key-show-recovery-words': 'Sicherung anlegen',
         'remove-key-enter-label-1': 'Gib',
@@ -258,15 +258,15 @@ const TRANSLATIONS = {
         'derive-address-text-select-avatar': 'Wähle einen Avatar für deinen neuen Account aus der Auswahl unten.',
 
         'change-password-heading': 'Altes Passwort bestätigen',
-        'change-password-paragraph': 'Die Passwortänderung wird eine neue Logindatei erstellen, welche die bisherige '
+        'change-password-paragraph': 'Die Passwortänderung wird ein neues Login File erstellen, welches das bisherige '
                                    + 'ersetzt.',
         'change-password-paragraph-legacy': 'Die Passwordänderung wird nur für dieses Gerät wirksam.',
-        'change-password-info-item-1': 'Alle alten Logindateien funktionieren weiterhin mit ihrem alten Passwort.',
-        'change-password-info-item-2': 'Wenn eine Logindatei kompromittiert wurde: Erstelle einen neuen Account und '
+        'change-password-info-item-1': 'Alle alten Login Files funktionieren weiterhin mit ihrem alten Passwort.',
+        'change-password-info-item-2': 'Wenn ein Login File kompromittiert wurde: Erstelle einen neuen Account und '
                                      + 'übertrage alle NIM.',
-        'change-password-download-login-file': 'Neue Logindatei herunterladen',
+        'change-password-download-login-file': 'Neues Login File herunterladen',
         'change-password-set-password-heading': 'Neues Passwort setzen',
-        'change-password-set-password-text': 'Sichere deine neue Logindatei.',
+        'change-password-set-password-text': 'Sichere dein neues Login File.',
         'change-password-set-password-text-legacy': 'Sichere deinen Account.',
 
         'error-no-referrer-heading': 'Das ging schief :(',
