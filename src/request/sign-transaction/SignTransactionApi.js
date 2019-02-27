@@ -5,22 +5,6 @@
 
 class SignTransactionApi extends TopLevelApi {
     /**
-     * Checks that the given layout is valid
-     * @param {any} layout
-     * @returns {any}
-     */
-    parseLayout(layout) {
-        if (!layout) {
-            return SignTransactionApi.Layouts.STANDARD;
-        }
-        // @ts-ignore (Property 'values' does not exist on type 'ObjectConstructor'.)
-        if (Object.values(SignTransactionApi.Layouts).indexOf(layout) === -1) {
-            throw new Errors.InvalidRequestError('Invalid selected layout');
-        }
-        return layout;
-    }
-
-    /**
      * @param {KeyguardRequest.SignTransactionRequest} request
      * @returns {Promise<Parsed<KeyguardRequest.SignTransactionRequest>>}
      */
@@ -52,16 +36,32 @@ class SignTransactionApi extends TopLevelApi {
     }
 
     /**
+     * Checks that the given layout is valid
+     * @param {any} layout
+     * @returns {any}
+     */
+    parseLayout(layout) {
+        if (!layout) {
+            return SignTransactionApi.Layouts.STANDARD;
+        }
+        // @ts-ignore (Property 'values' does not exist on type 'ObjectConstructor'.)
+        if (Object.values(SignTransactionApi.Layouts).indexOf(layout) === -1) {
+            throw new Errors.InvalidRequestError('Invalid selected layout');
+        }
+        return layout;
+    }
+
+    get Handler() {
+        return SignTransaction;
+    }
+
+    /**
      * @param {Parsed<KeyguardRequest.SignTransactionRequest>} parsedRequest
      */
     async onBeforeRun(parsedRequest) {
         if (parsedRequest.layout === SignTransactionApi.Layouts.CHECKOUT) {
             this.setGlobalCloseButtonText(I18n.translatePhrase('sign-tx-cancel-payment'));
         }
-    }
-
-    get Handler() {
-        return SignTransaction;
     }
 }
 
