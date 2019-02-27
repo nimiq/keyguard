@@ -3,7 +3,7 @@
 /* global Errors */
 /* global FlippableHandler */
 /* global ImportApi */
-/* global Iqons */
+/* global IqonHash */
 /* global Key */
 /* global KeyStore */
 /* global LoginFile */
@@ -90,7 +90,7 @@ class ImportWords {
             let colorClass = '';
             if (this._secrets.entropy) {
                 const key = new Key(this._secrets.entropy, false);
-                const color = Iqons.getBackgroundColorIndex(
+                const color = IqonHash.getBackgroundColorIndex(
                     key.defaultAddress.toUserFriendlyAddress(),
                 );
                 const colorString = LoginFile.CONFIG[color].name;

@@ -1,4 +1,4 @@
-class IqonHash {
+class IqonHash { /* eslint-disable-line no-unused-vars */
     /**
      * @param {string} address
      * @returns {number}
@@ -53,12 +53,14 @@ class IqonHash {
      * @param {string} string
      * @param {number} maxLength
      * @param {string} fillString
+     * @returns {string}
      */
     static _padEnd(string, maxLength, fillString) {
-        if (!!String.prototype.padEnd) return string.padEnd(maxLength, fillString);
-        else {
-            while (string.length < maxLength) string += fillString;
-            return string.substring(0, Math.max(string.length, maxLength));
+        if (String.prototype.padEnd) return string.padEnd(maxLength, fillString);
+
+        while (string.length < maxLength) {
+            string += fillString;
         }
+        return string.substring(0, Math.max(string.length, maxLength));
     }
 }
