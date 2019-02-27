@@ -11,9 +11,9 @@ describe('IframeApi', () => {
     beforeEach(() => {
         spyOn(CookieJar, 'eat').and.callThrough();
         spyOn(CookieJar, 'eatDeprecated').and.callThrough();
-        spyOn(AccountStore.instance, 'list').and.callThrough();
-        spyOn(KeyStore.instance, 'list').and.callThrough();
-        spyOn(KeyStore.instance, 'migrateAccountsToKeys').and.callThrough();
+        spyOn(AccountStore.prototype, 'list').and.callThrough();
+        spyOn(KeyStore.prototype, 'list').and.callThrough();
+        spyOn(KeyStore.prototype, 'migrateAccountsToKeys').and.callThrough();
         spyOnProperty(document, 'cookie', 'get').and.returnValue(Dummy.cookie);
     });
 
