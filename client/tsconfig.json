@@ -14,8 +14,7 @@
     "declaration": true,
     "declarationDir": "./dist/src/",
     "lib": [
-      "es2015",
-      "es6",
+      "es2017",
       "dom",
       "dom.iterable",
       "scripthost"
