@@ -12,6 +12,8 @@ export type SingleKeyResult = {
         keyPath: string,
         address: Uint8Array,
     }>;
+    fileExported: boolean;
+    wordsExported: boolean;
 };
 
 export type TransactionInfo = {
