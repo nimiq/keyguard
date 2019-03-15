@@ -76,8 +76,8 @@ export type ExportRequest = SimpleRequest & {
 };
 
 export type ExportResult = {
-    file: boolean,
-    words: boolean,
+    fileExported: boolean,
+    wordsExported: boolean,
 };
 
 export type SignTransactionRequest = SimpleRequest & TransactionInfo & {
