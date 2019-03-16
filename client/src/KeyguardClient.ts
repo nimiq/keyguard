@@ -83,11 +83,12 @@ export class KeyguardClient {
 
     constructor(
         endpoint = KeyguardClient.DEFAULT_ENDPOINT,
+        returnURL?: string,
         localState?: any,
         preserveRequests?: boolean,
     ) {
         this._endpoint = endpoint;
-        this._redirectBehavior = new RedirectRequestBehavior(undefined, localState);
+        this._redirectBehavior = new RedirectRequestBehavior(returnURL, localState);
         this._iframeBehavior = new IFrameRequestBehavior();
 
         // If this is a page-reload, allow location.origin as RPC origin
