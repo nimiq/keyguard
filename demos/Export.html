@@ -30,8 +30,8 @@
     document.querySelector('.bip39').addEventListener('click', async () => {
         const entropy = Nimiq.Entropy.generate();
         const key = new Key(entropy);
-        const passphrase = Nimiq.BufferUtils.fromAscii('1234567890');
-        const id = await KeyStore.instance.put(key, passphrase);
+        const password = Nimiq.BufferUtils.fromAscii('1234567890');
+        const id = await KeyStore.instance.put(key, password);
 
         const exportRequest = {
             appName: 'Export Demo',
@@ -44,8 +44,8 @@
     document.querySelector('.legacy').addEventListener('click', async () => {
         const secret = Nimiq.PrivateKey.generate();
         const key = new Key(secret);
-        const passphrase = Nimiq.BufferUtils.fromAscii('1234567890');
-        const id = await KeyStore.instance.put(key, passphrase);
+        const password = Nimiq.BufferUtils.fromAscii('1234567890');
+        const id = await KeyStore.instance.put(key, password);
 
         const exportRequest = {
             appName: 'Export Demo',
