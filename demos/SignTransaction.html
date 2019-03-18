@@ -5,6 +5,7 @@
     <title>SignTransaction | Keyguard Demo</title>
     <link href="../src/nimiq-style.css" rel="stylesheet">
     <script src="../node_modules/@nimiq/core-web/web-offline.js"></script>
+    <script src="../src/lib/Constants.js"></script>
     <script src="../src/lib/Key.js"></script>
     <script src="../src/lib/KeyStore.js"></script>
     <script src="../node_modules/@nimiq/rpc/dist/rpc.umd.js"></script>
@@ -29,7 +30,7 @@
 
 <form class="center">
     <div class="row">
-        <label>Transaction fee (satoshi)</label>
+        <label>Transaction fee (luna)</label>
         <input id="fee" value="0">
     </div>
 
@@ -39,8 +40,8 @@
     </div>
 
     <div class="row">
-        <label>Key passphrase</label>
-        <input id="passphrase" value="1234567890">
+        <label>Key password</label>
+        <input id="password" value="1234567890">
     </div>
 
 
@@ -68,13 +69,13 @@
     async function generateRequest() {
         const txFee = parseInt(document.querySelector('#fee').value) || 0;
         const txData = document.querySelector('#data').value || '';
-        const keyPassphrase = document.querySelector('#passphrase').value || '';
+        const keyPassword = document.querySelector('#password').value || '';
 
         // Generate a random key and put it into the KeyStore.
         const secret = Nimiq.Entropy.generate();
         const key = new Key(secret);
-        const passphrase = keyPassphrase ? Nimiq.BufferUtils.fromAscii(keyPassphrase) : undefined;
-        const id = await KeyStore.instance.put(key, passphrase);
+        const password = keyPassword ? Nimiq.BufferUtils.fromAscii(keyPassword) : undefined;
+        const id = await KeyStore.instance.put(key, password);
 
         const path = "m/0'/0'";
         return {

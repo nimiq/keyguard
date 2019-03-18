@@ -5,6 +5,7 @@
     <title>Remove Key | Keyguard Demo</title>
     <link href="../src/nimiq-style.css" rel="stylesheet">
     <script src="../node_modules/@nimiq/core-web/web-offline.js"></script>
+    <script src="../src/lib/Constants.js"></script>
     <script src="../src/lib/Key.js"></script>
     <script src="../src/lib/KeyStore.js"></script>
     <script src="../node_modules/@nimiq/rpc/dist/rpc.umd.js"></script>
@@ -29,8 +30,8 @@
 
         const secret = Nimiq.Entropy.generate();
         const key = new Key(secret);
-        const passphrase = Nimiq.BufferUtils.fromAscii('1234567890');
-        const id = await KeyStore.instance.put(key, passphrase);
+        const password = Nimiq.BufferUtils.fromAscii('1234567890');
+        const id = await KeyStore.instance.put(key, password);
 
         const removeRequest = {
             appName: 'Remove Demo',
