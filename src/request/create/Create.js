@@ -114,6 +114,8 @@ class Create {
                 address: key.deriveAddress(keyPath).serialize(),
                 keyPath,
             }],
+            fileExported: false,
+            wordsExported: false,
         }];
 
         this._resolve(result);

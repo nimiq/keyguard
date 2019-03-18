@@ -150,6 +150,8 @@ class ImportFile {
             keyId: /** @type {number} */ (key.id),
             keyType: key.type,
             addresses,
+            fileExported: true,
+            wordsExported: false,
         }];
 
         this._resolve(result);

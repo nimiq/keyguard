@@ -23,8 +23,8 @@ class Export { // eslint-disable-line no-unused-vars
         this._reject = reject;
 
         this.exported = {
-            words: false,
-            file: false,
+            wordsExported: false,
+            fileExported: false,
         };
 
         this._exportWordsHandler = new ExportWords(request,
@@ -53,7 +53,7 @@ class Export { // eslint-disable-line no-unused-vars
      * @param {KeyguardRequest.SimpleResult} fileResult
      */
     _fileExportSuccessful(fileResult) {
-        this.exported.file = fileResult.success;
+        this.exported.fileExported = fileResult.success;
         this._exportWordsHandler.run();
     }
 
@@ -62,7 +62,7 @@ class Export { // eslint-disable-line no-unused-vars
      * @param {KeyguardRequest.SimpleResult} wordsResult
      */
     _wordsExportSuccessful(wordsResult) {
-        this.exported.words = wordsResult.success;
+        this.exported.wordsExported = wordsResult.success;
         this._resolve(this.exported);
     }
 }
