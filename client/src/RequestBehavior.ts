@@ -1,5 +1,6 @@
-import {RedirectRpcClient, PostMessageRpcClient} from '@nimiq/rpc';
+import { RedirectRpcClient, PostMessageRpcClient } from '@nimiq/rpc';
 import { KeyguardCommand } from './KeyguardCommand';
+import { ObjectType } from './PublicRequest';
 
 enum BehaviorType {
     REDIRECT,
@@ -33,9 +34,9 @@ export class RedirectRequestBehavior extends RequestBehavior {
     }
 
     private readonly _returnUrl: string;
-    private readonly _localState: any;
+    private readonly _localState: ObjectType|null;
 
-    constructor(returnUrl?: string, localState?: object) {
+    constructor(returnUrl?: string, localState?: ObjectType|null) {
         super(BehaviorType.REDIRECT);
         const location = window.location;
         this._returnUrl = returnUrl || `${location.origin}${location.pathname}`;

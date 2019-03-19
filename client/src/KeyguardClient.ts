@@ -29,6 +29,7 @@ import {
     IFrameResult,
     RedirectResult,
     ExportRequest,
+    ObjectType,
 } from './PublicRequest';
 
 import {
@@ -87,7 +88,7 @@ export class KeyguardClient {
     constructor(
         endpoint = KeyguardClient.DEFAULT_ENDPOINT,
         returnURL?: string,
-        localState?: any,
+        localState?: ObjectType|null,
         preserveRequests?: boolean,
     ) {
         this._endpoint = endpoint;
@@ -112,8 +113,8 @@ export class KeyguardClient {
 
     public on(
         command: KeyguardCommand,
-        resolve: (result: RedirectResult, state?: any) => any,
-        reject: (error: Error, state?: any) => any,
+        resolve: (result: RedirectResult, state?: ObjectType|null) => any,
+        reject: (error: Error, state?: ObjectType|null) => any,
     ) {
         this._observable.on(`${command}-resolve`, resolve);
         this._observable.on(`${command}-reject`, reject);
