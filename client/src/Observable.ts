@@ -51,7 +51,7 @@ export default class Observable {
                 if (isNaN(key)) continue;
 
                 const listener = listeners[key];
-                const res = listener.apply(null, arguments);
+                const res = listener.apply(null, [...arguments]);
                 if (res instanceof Promise) promises.push(res);
             }
         }
@@ -65,7 +65,7 @@ export default class Observable {
             let callback;
             if (type === Observable.WILDCARD) {
                 callback = function(this: Observable) {
-                    this.fire.apply(this, arguments);
+                    this.fire.apply(this, [...arguments] as [string, ...any[]]);
                 };
             } else {
                 callback = function(this: Observable) {

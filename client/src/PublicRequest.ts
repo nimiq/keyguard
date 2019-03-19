@@ -1,5 +1,9 @@
 import * as Nimiq from '@nimiq/core-web';
 
+export type ObjectType = {
+    [key: string]: any;
+};
+
 // Base types for Requests
 export type BasicRequest = {
     appName: string,

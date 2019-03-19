@@ -29,6 +29,7 @@ import {
     IFrameResult,
     RedirectResult,
     ExportRequest,
+    ObjectType,
 } from './PublicRequest';
 
 import {
@@ -87,7 +88,7 @@ export class KeyguardClient {
     constructor(
         endpoint = KeyguardClient.DEFAULT_ENDPOINT,
         returnURL?: string,
-        localState?: any,
+        localState?: ObjectType|null,
         preserveRequests?: boolean,
     ) {
         this._endpoint = endpoint;
@@ -112,8 +113,8 @@ export class KeyguardClient {
 
     public on(
         command: KeyguardCommand,
-        resolve: (result: RedirectResult, state?: any) => any,
-        reject: (error: Error, state?: any) => any,
+        resolve: (result: RedirectResult, state?: ObjectType|null) => any,
+        reject: (error: Error, state?: ObjectType|null) => any,
     ) {
         this._observable.on(`${command}-resolve`, resolve);
         this._observable.on(`${command}-reject`, reject);
@@ -206,25 +207,34 @@ export class KeyguardClient {
         return publicResult;
     }
 
-    private _onReject(error: any, id: number, state: any) {
-        const command = state.__command;
-        if (!command) {
-            throw new Error('Invalid state after RPC request');
-        }
-        delete state.__command;
-
-        this._observable.fire(`${command}-reject`, error, state);
+    private _onReject(
+        error: any,
+        id?: number,
+        state?: ObjectType|null,
+     ) {
+        const [parsedState, command] = this._parseState(state);
+        this._observable.fire(`${command}-reject`, error, parsedState);
     }
 
-    private _onResolve<T extends RedirectResult>(internalResult: PublicToInternal<T>, id: number, state: any) {
-        const command = state.__command;
-        if (!command) {
-            throw new Error('Invalid state after RPC request');
-        }
-        delete state.__command;
-
+    private _onResolve<T extends RedirectResult>(
+        internalResult: PublicToInternal<T>,
+        id?: number,
+        state?: ObjectType|null,
+    ) {
+        const [parsedState, command] = this._parseState(state);
         const publicResult: T | null = KeyguardClient.internalToPublic(internalResult);
 
-        this._observable.fire(`${command}-resolve`, publicResult, state);
+        this._observable.fire(`${command}-resolve`, publicResult, parsedState);
+    }
+
+    private _parseState(state?: ObjectType|null) {
+        if (state) {
+            const command = state.__command;
+            if (command) {
+                delete state.__command;
+                return [state, command];
+            }
+        }
+        throw new Error('Invalid state after RPC request');
     }
 }
