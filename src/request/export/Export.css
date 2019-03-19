@@ -47,6 +47,7 @@ ul.nq-list li > .nq-icon {
 }
 
 .page#recovery-words .recovery-words {
+    max-height: 100%;
     margin: 0;
     position: relative;
     margin: 0 -1.5rem -3rem;
