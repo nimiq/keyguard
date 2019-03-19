@@ -116,6 +116,9 @@ class ImportWords {
             );
 
             downloadLoginFile.on(DownloadLoginFile.Events.DOWNLOADED, () => {
+                for (let i = 0; i < this._keyResults.length; i++) {
+                    this._keyResults[i].fileExported = true;
+                }
                 this._resolve(this._keyResults);
             });
             window.location.hash = ImportWords.Pages.DOWNLOAD_LOGINFILE;
@@ -180,18 +183,23 @@ class ImportWords {
         try {
             if (this._secrets.entropy) {
                 const key = new Key(this._secrets.entropy, false);
+
                 /** @type {{keyPath: string, address: Uint8Array}[]} */
                 const addresses = this._request.requestedKeyPaths.map(keyPath => ({
                     keyPath,
                     address: key.deriveAddress(keyPath).serialize(),
                 }));
 
+                /** @type {KeyguardRequest.SingleKeyResult} */
                 const result = {
                     keyId: await KeyStore.instance.put(key, encryptionKey || undefined),
                     keyType: Nimiq.Secret.Type.ENTROPY,
                     addresses,
+                    fileExported: false,
+                    wordsExported: true,
                 };
                 this._keyResults.push(result);
+
                 const secretString = Nimiq.BufferUtils.toBase64(key.secret.serialize());
                 sessionStorage.setItem(ImportApi.SESSION_STORAGE_KEY_PREFIX + result.keyId, secretString);
 
@@ -208,6 +216,8 @@ class ImportWords {
             }
             if (this._secrets.privateKey) {
                 const key = new Key(this._secrets.privateKey, false);
+
+                /** @type {KeyguardRequest.SingleKeyResult} */
                 const result = {
                     keyId: await KeyStore.instance.put(key, encryptionKey || undefined),
                     keyType: Nimiq.Secret.Type.PRIVATE_KEY,
@@ -215,6 +225,8 @@ class ImportWords {
                         keyPath: Constants.LEGACY_DERIVATION_PATH,
                         address: key.deriveAddress(Constants.LEGACY_DERIVATION_PATH).serialize(),
                     }],
+                    fileExported: false,
+                    wordsExported: true,
                 };
                 this._keyResults.push(result);
             } else {

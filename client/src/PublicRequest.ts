@@ -12,6 +12,8 @@ export type SingleKeyResult = {
         keyPath: string,
         address: Uint8Array,
     }>;
+    fileExported: boolean;
+    wordsExported: boolean;
 };
 
 export type TransactionInfo = {
@@ -74,8 +76,8 @@ export type ExportRequest = SimpleRequest & {
 };
 
 export type ExportResult = {
-    file: boolean,
-    words: boolean,
+    fileExported: boolean,
+    wordsExported: boolean,
 };
 
 export type SignTransactionRequest = SimpleRequest & TransactionInfo & {

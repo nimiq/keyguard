@@ -52,27 +52,30 @@ export class KeyguardClient {
         throw new Error('keyId cannot be parsed');
     }
 
-    private static publicToInternal<T extends Request>(object: any)
-        : PublicToInternal<T> {
-        if (object && object.keyId) {
-            object.keyId = KeyguardClient.parseId(object.keyId);
+    private static publicToInternal<T extends Request>(object: any): PublicToInternal<T> | null {
+        if (!object) return null;
+        const newObject = Object.assign({}, object) as any;
+        if (object.keyId) {
+            newObject.keyId = KeyguardClient.parseId(object.keyId);
         }
-        return object;
+        return newObject;
     }
 
     // Not really well typed. Return type gets any. Feel free to improve.
-    private static internalToPublic(result: any): InternalToPublic<typeof result> {
+    private static internalToPublic(result: any): InternalToPublic<typeof result> | null {
+        if (!result) return null;
         if (result instanceof Array) {
             return result.map((x) => KeyguardClient.internalToPublic(x));
         }
-        if (result && result.keyId) {
-            result.keyId = `K${result.keyId}`;
+        const newResult = Object.assign({}, result) as any;
+        if (result.keyId) {
+            newResult.keyId = `K${result.keyId}`;
         }
         // For ListResult and LegacyListResult
-        if (result && result.id) {
-            result.id = `K${result.id}`;
+        if (result.id) {
+            newResult.id = `K${result.id}`;
         }
-        return result;
+        return newResult;
     }
 
     private readonly _endpoint: string;
@@ -83,11 +86,12 @@ export class KeyguardClient {
 
     constructor(
         endpoint = KeyguardClient.DEFAULT_ENDPOINT,
+        returnURL?: string,
         localState?: any,
         preserveRequests?: boolean,
     ) {
         this._endpoint = endpoint;
-        this._redirectBehavior = new RedirectRequestBehavior(undefined, localState);
+        this._redirectBehavior = new RedirectRequestBehavior(returnURL, localState);
         this._iframeBehavior = new IFrameRequestBehavior();
 
         // If this is a page-reload, allow location.origin as RPC origin
@@ -229,7 +233,8 @@ export class KeyguardClient {
         state?: string | null,
     ) {
         const [parsedState, command] = this.parseState(state);
-        const publicResult: T = KeyguardClient.internalToPublic(internalResult);
+        const publicResult: T | null = KeyguardClient.internalToPublic(internalResult);
+
         this._observable.fire(`${command}-resolve`, publicResult, parsedState);
     }
 }
