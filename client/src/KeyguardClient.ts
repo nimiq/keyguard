@@ -207,23 +207,12 @@ export class KeyguardClient {
         return publicResult;
     }
 
-    private parseState(state?: ObjectType|null) {
-        if (state) {
-            const command = state.__command;
-            if (command) {
-                delete state.__command;
-                return [state, command];
-            }
-        }
-        throw new Error('Invalid state after RPC request');
-    }
-
     private _onReject(
         error: any,
         id?: number,
         state?: ObjectType|null,
      ) {
-        const [parsedState, command] = this.parseState(state);
+        const [parsedState, command] = this._parseState(state);
         this._observable.fire(`${command}-reject`, error, parsedState);
     }
 
@@ -232,9 +221,20 @@ export class KeyguardClient {
         id?: number,
         state?: ObjectType|null,
     ) {
-        const [parsedState, command] = this.parseState(state);
+        const [parsedState, command] = this._parseState(state);
         const publicResult: T | null = KeyguardClient.internalToPublic(internalResult);
 
         this._observable.fire(`${command}-resolve`, publicResult, parsedState);
+    }
+
+    private _parseState(state?: ObjectType|null) {
+        if (state) {
+            const command = state.__command;
+            if (command) {
+                delete state.__command;
+                return [state, command];
+            }
+        }
+        throw new Error('Invalid state after RPC request');
     }
 }
