@@ -42,11 +42,6 @@ export class RedirectRequestBehavior extends RequestBehavior {
         this._returnUrl = returnUrl || `${location.origin}${location.pathname}`;
         this._localState = localState || {};
 
-        // Reject local state which is not an object
-        if (typeof this._localState !== 'object') {
-            throw new Error('Invalid localState: Must be an object');
-        }
-
         // Reject local state with reserved property.
         if (typeof this._localState.__command !== 'undefined') {
             throw new Error('Invalid localState: Property \'__command\' is reserved');

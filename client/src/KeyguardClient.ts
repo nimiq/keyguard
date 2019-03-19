@@ -207,8 +207,8 @@ export class KeyguardClient {
         return publicResult;
     }
 
-    private parseState(state?: any ) {
-        if (typeof state === 'object') {
+    private parseState(state?: ObjectType|null) {
+        if (state) {
             const command = state.__command;
             if (command) {
                 delete state.__command;
@@ -221,7 +221,7 @@ export class KeyguardClient {
     private _onReject(
         error: any,
         id?: number,
-        state?: any,
+        state?: ObjectType|null,
      ) {
         const [parsedState, command] = this.parseState(state);
         this._observable.fire(`${command}-reject`, error, parsedState);
@@ -230,7 +230,7 @@ export class KeyguardClient {
     private _onResolve<T extends RedirectResult>(
         internalResult: PublicToInternal<T>,
         id?: number,
-        state?: any,
+        state?: ObjectType|null,
     ) {
         const [parsedState, command] = this.parseState(state);
         const publicResult: T | null = KeyguardClient.internalToPublic(internalResult);
