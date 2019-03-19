@@ -65,11 +65,7 @@ export default class Observable {
             let callback;
             if (type === Observable.WILDCARD) {
                 callback = function(this: Observable) {
-                    const args = arguments;
-                    if (typeof args === 'object' && args && typeof args[0] === 'string') {
-                        const argsArray = [ ...arguments ];
-                        this.fire.apply(this, [argsArray[0], ...argsArray.slice(1)]);
-                    }
+                    this.fire.apply(this, [...arguments] as [string, ...any[]]);
                 };
             } else {
                 callback = function(this: Observable) {
