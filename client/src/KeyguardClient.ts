@@ -63,20 +63,18 @@ export class KeyguardClient {
     }
 
     // Not really well typed. Return type gets any. Feel free to improve.
-    private static internalToPublic(result: any): InternalToPublic<typeof result> | null {
-        if (!result) return null;
+    private static internalToPublic(result: any): InternalToPublic<typeof result> {
         if (result instanceof Array) {
             return result.map((x) => KeyguardClient.internalToPublic(x));
         }
-        const newResult = Object.assign({}, result) as any;
-        if (result.keyId) {
-            newResult.keyId = `K${result.keyId}`;
+        if (result && result.keyId) {
+            result.keyId = `K${result.keyId}`;
         }
         // For ListResult and LegacyListResult
-        if (result.id) {
-            newResult.id = `K${result.id}`;
+        if (result && result.id) {
+            result.id = `K${result.id}`;
         }
-        return newResult;
+        return result;
     }
 
     private readonly _endpoint: string;
@@ -203,8 +201,7 @@ export class KeyguardClient {
     ): Promise<T2> {
         const args = request ? [ KeyguardClient.publicToInternal(request) ] : [];
         const internalResult = await this._iframeBehavior.request(this._endpoint, command, args);
-        const publicResult = KeyguardClient.internalToPublic(internalResult) as T2;
-        return publicResult;
+        return KeyguardClient.internalToPublic(internalResult) as T2;
     }
 
     private _onReject(
@@ -222,7 +219,7 @@ export class KeyguardClient {
         state?: ObjectType|null,
     ) {
         const [parsedState, command] = this._parseState(state);
-        const publicResult: T | null = KeyguardClient.internalToPublic(internalResult);
+        const publicResult: T = KeyguardClient.internalToPublic(internalResult);
 
         this._observable.fire(`${command}-resolve`, publicResult, parsedState);
     }
