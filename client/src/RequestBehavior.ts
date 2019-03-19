@@ -35,11 +35,16 @@ export class RedirectRequestBehavior extends RequestBehavior {
     private readonly _returnUrl: string;
     private readonly _localState: any;
 
-    constructor(returnUrl?: string, localState?: any) {
+    constructor(returnUrl?: string, localState?: object) {
         super(BehaviorType.REDIRECT);
         const location = window.location;
         this._returnUrl = returnUrl || `${location.origin}${location.pathname}`;
         this._localState = localState || {};
+
+        // Reject local state which is not an object
+        if (typeof this._localState !== 'object') {
+            throw new Error('Invalid localState: Must be an object');
+        }
 
         // Reject local state with reserved property.
         if (typeof this._localState.__command !== 'undefined') {
@@ -54,7 +59,7 @@ export class RedirectRequestBehavior extends RequestBehavior {
         const client = new RedirectRpcClient(url, allowedOrigin);
 
         const state = Object.assign({ __command: command }, this._localState);
-        client.callAndSaveLocalState(this._returnUrl, JSON.stringify(state), 'request', ...args);
+        client.callAndSaveLocalState(this._returnUrl, state, 'request', ...args);
     }
 }
 
