@@ -100,7 +100,7 @@ const TRANSLATIONS = {
                                      + 'Only you can access it. Download and save it.',
         'export-file-intro-orange-text': 'Never share it. Don\'t Lose it.',
         'export-words-intro-heading': 'There is no password recovery!',
-        'go-to-recovery-words': 'Go to Recovery Words',
+        'go-to-recovery-words': 'Create backup',
         'export-continue-to-login-file': 'Continue to Login File',
 
         'remove-key-heading': 'Don\'t lose access',
@@ -237,7 +237,7 @@ const TRANSLATIONS = {
                                     + 'Nur du kannst darauf zugreifen. Lade es runter und speichere es.',
         'export-file-intro-orange-text': 'Teile es mit niemandem. Verliere es nicht.',
         'export-words-intro-heading': 'Es gibt keine Passwortwiederherstellung',
-        'go-to-recovery-words': 'Zu den Wiederherstellungswörtern',
+        'go-to-recovery-words': 'Erstelle ein Backup',
         'export-continue-to-login-file': 'Weiter zum Login File',
 
         'remove-key-heading': 'Verliere deinen Zugang nicht',

@@ -4,8 +4,8 @@
 
 class ExportApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
-     * @param {KeyguardRequest.SimpleRequest} request
-     * @returns {Promise<Parsed<KeyguardRequest.SimpleRequest>>}
+     * @param {KeyguardRequest.ExportRequest} request
+     * @returns {Promise<Parsed<KeyguardRequest.ExportRequest>>}
      */
     async parseRequest(request) {
         if (!request) {
@@ -16,7 +16,8 @@ class ExportApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         parsedRequest.appName = this.parseAppName(request.appName);
         parsedRequest.keyInfo = await this.parseKeyId(request.keyId);
         parsedRequest.keyLabel = this.parseLabel(request.keyLabel);
-        // parsedRequest.usedKeyPaths = this.parsePathsArray(request.usedKeyPaths, 'usedKeyPaths');
+        parsedRequest.fileOnly = request.fileOnly;
+        parsedRequest.wordsOnly = request.wordsOnly;
 
         return parsedRequest;
     }

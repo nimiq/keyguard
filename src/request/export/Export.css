@@ -122,6 +122,64 @@ ul.nq-list li > .nq-icon {
     padding-bottom: 3rem;
 }
 
+.page#login-file-success #close-request {
+    position: absolute;
+    right: 2rem;
+    top: 2rem;
+    opacity: 0.16;
+    border: 0rem;
+    background: transparent;
+    padding: 0;
+    transition: opacity .3s ease;
+}
+
+.page#login-file-success .page-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.page#login-file-success #close-request svg {
+    width: 3rem;
+    height: 3rem;
+}
+
+.page#login-file-success ul {
+    list-style-type: none;
+    font-size: 3rem;
+    line-height: 7rem;
+    font-weight: 600;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    justify-content: center;
+    color: rgba(31, 35, 72, .4); /* based on --nimiq-blue */
+}
+
+.page#login-file-success .bullet-point {
+    display: inline-block;
+    width: 3rem;
+    position: relative;
+}
+
+.page#login-file-success .bullet-point::before {
+    content: '\25cf';
+    position: absolute;
+    top: -1.5rem;
+    left: 1rem;
+    font-size: 1.5rem;
+}
+
+.page#login-file-success h1 {
+    margin: 0;
+}
+
+.page#login-file-success p {
+    text-align: center;
+}
+
 .password-box:not(.hide-input) + .skip-words {
     position: absolute;
     width: calc(100% - 2rem);
