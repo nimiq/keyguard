@@ -22,7 +22,7 @@ class ExportFile extends Nimiq.Observable {
      * if a complete page is missing it will be created.
      * However these pages wil be the default pages which usually don't match the applications requirements.
      * Refer to the corresponsing _build(Privcy | RecoveryWords | ValidateWords) to see the general Structure.
-     * @param {Parsed<KeyguardRequest.SimpleRequest>} request
+     * @param {Parsed<KeyguardRequest.ExportRequest>} request
      * @param {ExportFile.resolve} resolve
      * @param {reject} reject
      */
@@ -72,6 +72,9 @@ class ExportFile extends Nimiq.Observable {
         );
         this._loginFileIcon = new LoginFileIcon($loginFileIcon);
         this._downloadLoginFile = new DownloadLoginFile($downloadLoginFile);
+        this._downloadLoginFile.createDummyFile(
+            this._request.keyInfo._defaultAddress,
+        );
 
         /* eslint-disable no-new */
         new ProgressIndicator($exportFileIntroPage.querySelector('.progress-indicator'), 3, 1);

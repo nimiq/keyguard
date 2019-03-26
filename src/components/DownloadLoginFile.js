@@ -89,6 +89,14 @@ class DownloadLoginFile extends Nimiq.Observable {
     }
 
     /**
+     * @param {Nimiq.Address} firstAddress
+     */
+    createDummyFile(firstAddress) {
+        const color = IqonHash.getBackgroundColorIndex(firstAddress.toUserFriendlyAddress());
+        this.file = new LoginFile(Nimiq.BufferUtils.toBase64(new Uint8Array(0)), color);
+    }
+
+    /**
      * @param {string} href
      * @param {string} filename
      */

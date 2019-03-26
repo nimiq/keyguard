@@ -1,7 +1,5 @@
 /* global ExportFile */
 /* global ExportWords */
-/* global IqonHash */
-/* global LoginFile */
 /* global Nimiq */
 
 
@@ -82,13 +80,6 @@ class Export {
         if (this._request.fileOnly) {
             this._resolve(this.exported);
         } else {
-            let colorClass = '';
-            const color = IqonHash.getBackgroundColorIndex(
-                this._request.keyInfo.defaultAddress.toUserFriendlyAddress(),
-            );
-            const colorString = LoginFile.CONFIG[color].name;
-            colorClass = `login-file-${colorString}-account`;
-            this._fileSuccessPage.classList.add(colorClass);
             window.location.hash = Export.Pages.LOGIN_FILE_SUCCESS;
         }
     }

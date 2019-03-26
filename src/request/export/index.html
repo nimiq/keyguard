@@ -167,7 +167,7 @@
                 </div>
 
                 <div class="page-footer">
-                    <button class="to-validate-words nq-button light-blue" data-i18n="continue">Continue</button>
+                    <button class="to-validate-words nq-button light-blue" data-i18n="recovery-words-validate">validate words</button>
                     <a href="#" class="skip-words nq-link nq-text-s nq-blue">
                         <span data-i18n="passwordbox-password-skip">Skip for now</span>
                         <svg class="nq-icon">
@@ -188,40 +188,35 @@
 
                 <div class="page-body nq-card-body">
                     <p class="nq-light-blue nq-text flex-grow" data-i18n="export-file-intro-blue-text">
-                        Your Login File grants access to your account.
-                        Only you can access it. Download and save it.
+                        Your Login File grants access to your account. Download and save it.
                     </p>
                     <ul class="nq-list">
                         <li>
                             <svg class="nq-icon">
                                 <use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-browser-login"/>
                             </svg>
-                            <span>
-                                Your Login File is stored in your browser.<br/>
-                                Deleting it logs you out of your Account.
+                            <span data-i18n="export-file-intro-browser">
+                                Your Account is stored in your browser.
                             </span>
                         </li>
                         <li>
                             <svg class="nq-icon">
                                 <use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-skull"/>
                             </svg>
-                            <span>
-                                It is part of your browser’s storage and<br/>
-                                might be deleted by accident.
+                            <span data-i18n="export-file-intro-accident">
+                                As a part of your browser’s data it might be deleted by accident.
                             </span>
                         </li>
                         <li>
                             <svg class="nq-icon">
                                 <use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-login"/>
                             </svg>
-                            <span>
-                                Use it to log in to your Account on other<br/>
-                                browsers and devices.
+                            <span data-i18n="export-file-intro-download-file">
+                                Download a Login File to stay save and to login to other browsers and devices.
                             </span>
                         </li>
                     </ul>
                     <p class="nq-orange flex-grow" data-i18n="export-file-intro-orange-text">Never share it. Don't Lose it.</p>
-                    <button class="nq-button-s go-to-words" data-i18n="go-to-recovery-words">Go to Recovery Words</button>
                 </div>
 
                 <div class="page-footer">
@@ -254,7 +249,7 @@
                     <a tabindex="0" class="page-header-back-button">
                         <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
                     </a>
-                    <h1 data-i18n="export-file-heading" class="nq-h1">Download Login File</h1>
+                    <h1 data-i18n="export-file-heading" class="nq-h1">Unlock your Login File</h1>
                 </div>
 
                 <div class="page-body nq-card-body">
@@ -265,20 +260,6 @@
 
                 <div class="page-footer">
                     <form class="password-box"></form>
-                </div>
-            </div>
-
-            <div id="login-file-download" class="page nq-card">
-                <div class="page-header nq-card-header">
-                    <div class="progress-indicator"></div>
-                    <a tabindex="0" class="page-header-back-button">
-                        <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
-                    </a>
-                    <h1 class="nq-h1" data-i18n="import-words-download-loginfile">Download your Login File</h1>
-                </div>
-
-                <div class="page-body nq-card-body">
-                    <a class="download-loginfile"></a>
                 </div>
             </div>
 
@@ -317,6 +298,20 @@
                             <use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-caret-right-small"/>
                         </svg>
                     </a>
+                </div>
+            </div>
+
+            <div id="login-file-download" class="page nq-card">
+                <div class="page-header nq-card-header">
+                    <div class="progress-indicator"></div>
+                    <a tabindex="0" class="page-header-back-button">
+                        <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
+                    </a>
+                    <h1 class="nq-h1" data-i18n="import-words-download-loginfile">Download your Login File</h1>
+                </div>
+
+                <div class="page-body nq-card-body">
+                    <a class="download-loginfile"></a>
                 </div>
             </div>
         </div>

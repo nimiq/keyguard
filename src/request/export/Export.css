@@ -122,6 +122,49 @@ ul.nq-list li > .nq-icon {
     padding-bottom: 3rem;
 }
 
+.page#login-file-download {
+    transition: filter .4s;
+    display: flex;
+    -webkit-filter: blur(0px);
+    -moz-filter: blur(0px);
+    -o-filter: blur(0px);
+    -ms-filter: blur(0px);
+    filter: blur(0px);
+}
+
+.page#login-file-unlock:target ~ .page#login-file-download,
+.page#login-file-success:target ~ .page#login-file-download {
+    display: flex;
+    -webkit-filter: blur(20px);
+    -moz-filter: blur(20px);
+    -o-filter: blur(20px);
+    -ms-filter: blur(20px);
+    filter: blur(20px);
+}
+
+.page#login-file-unlock:target ~ .page#login-file-download .page-header,
+.page#login-file-unlock:target ~ .page#login-file-download .page-footer,
+.page#login-file-success:target ~ .page#login-file-download .page-header,
+.page#login-file-success:target ~ .page#login-file-download button {
+    transition: opacity .2s;
+    opacity: 0;
+}
+
+
+.page#login-file-success {
+    transition: opacity .4s;
+    opacity: 0;
+}
+
+.page#login-file-success:target {
+    opacity: 1;
+}
+
+.page#login-file-unlock,
+.page#login-file-success {
+    background-color: rgb( 255, 255, 255, .8);
+}
+
 .page#login-file-success #close-request {
     position: absolute;
     right: 2rem;

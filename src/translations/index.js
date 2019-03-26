@@ -12,6 +12,7 @@ const TRANSLATIONS = {
         'recovery-words-intro-copy': 'Create a copy and store it in a safe place: family’s house, bank locker etc.',
         'recovery-words-intro-safety': 'Mind water and fire, use a sealed box to keep your Recovery Words safe.',
         'recovery-words-text': 'Anyone with these words can access your account! Keep them save.',
+        'recovery-words-validate': 'validate words',
 
         'create-heading-choose-identicon': 'Choose an avatar',
         'create-heading-create-password': 'Create a password',
@@ -94,10 +95,14 @@ const TRANSLATIONS = {
         'validate-words-23-hint': 'What is the 23rd word?',
         'validate-words-24-hint': 'What is the 24th word?',
 
-        'export-file-heading': 'Download Login File',
+        'export-file-heading': 'Unlock your Login File',
         'export-file-intro-heading': 'Save your account',
         'export-file-intro-blue-text': 'Your Login File grants access to your account. '
-                                     + 'Only you can access it. Download and save it.',
+                                     + 'Download and save it.',
+        'export-file-intro-browser': 'Your Account is stored in your browser.',
+        'export-file-intro-accident': 'As a part of your browser’s data it might be deleted by accident.',
+        'export-file-intro-download-file': 'Download a Login File to stay save and to login to other browsers '
+                                         + 'and devices.',
         'export-file-intro-orange-text': 'Never share it. Don\'t Lose it.',
         'export-words-intro-heading': 'There is no password recovery!',
         'go-to-recovery-words': 'Create backup',
@@ -149,6 +154,7 @@ const TRANSLATIONS = {
         'recovery-words-intro-safety': 'Schütze dich vor Wasser und Feuer und benutze eine verschlossene Kiste um '
                                      + 'deine Wiederherstellungswörter zu verwahren.',
         'recovery-words-text': 'Jeder im Besitz dieser Wörter kann auf deinen Account zugreifen. Verwahre sie sicher.',
+        'recovery-words-validate': 'Wörter überprüfen',
 
         'create-heading-choose-identicon': 'Wähle deinen Konto-Avatar',
         'create-heading-create-password': 'Erstelle ein Passwort',
@@ -231,10 +237,14 @@ const TRANSLATIONS = {
         'validate-words-23-hint': 'Was ist das 23. Wort?',
         'validate-words-24-hint': 'Was ist das 24. Wort?',
 
-        'export-file-heading': 'Login File herunterladen',
+        'export-file-heading': 'Login File entsperren',
         'export-file-intro-heading': 'Sichere deinen Account',
         'export-file-intro-blue-text': 'Dein Login File gewährt Zugang zu deinem Account. '
-                                    + 'Nur du kannst darauf zugreifen. Lade es runter und speichere es.',
+                                     + 'Lade es runter und speichere es.',
+        'export-file-intro-browser': 'Dein Account ist in deinem Browser gespeichert.',
+        'export-file-intro-accident': 'Als Teil deiner Browserdatan könnten sie versehentlich gelöscht werden.',
+        'export-file-intro-download-file': 'Lade zur Sicherheit ein Login File runter und um dich damit in anderen '
+                                         + 'Browsern und Geräten anzumelden.',
         'export-file-intro-orange-text': 'Teile es mit niemandem. Verliere es nicht.',
         'export-words-intro-heading': 'Es gibt keine Passwortwiederherstellung',
         'go-to-recovery-words': 'Erstelle ein Backup',
