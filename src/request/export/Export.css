@@ -123,7 +123,17 @@ ul.nq-list li > .nq-icon {
 }
 
 .page#login-file-download {
-    transition: filter .4s;
+    transition: filter .4s, z-index .4s;
+    z-index: 42;
+    display: flex;
+    -webkit-filter: blur(20px);
+    -moz-filter: blur(20px);
+    -o-filter: blur(20px);
+    -ms-filter: blur(20px);
+    filter: blur(20px);
+}
+
+.page#login-file-download:target {
     display: flex;
     -webkit-filter: blur(0px);
     -moz-filter: blur(0px);
@@ -135,11 +145,6 @@ ul.nq-list li > .nq-icon {
 .page#login-file-unlock:target ~ .page#login-file-download,
 .page#login-file-success:target ~ .page#login-file-download {
     display: flex;
-    -webkit-filter: blur(20px);
-    -moz-filter: blur(20px);
-    -o-filter: blur(20px);
-    -ms-filter: blur(20px);
-    filter: blur(20px);
 }
 
 .page#login-file-unlock:target ~ .page#login-file-download .page-header,
