@@ -27,8 +27,9 @@
     overflow: hidden;
 }
 
-.display-flex {
+#rotation-container > .page.display-flex {
     display: flex;
+    z-index: 3;
 }
 
 #rotation-container > .page:not(.flipped) {
