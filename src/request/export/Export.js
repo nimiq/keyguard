@@ -35,6 +35,16 @@ class Export {
             this._fileExportSuccessful.bind(this),
             this._reject.bind(this));
 
+        if (this._request.wordsOnly) {
+            /** @type {HTMLElement} */
+            (/** @type {HTMLElement} */ (document.getElementById(ExportWords.Pages.RECOVERY_WORDS_INTRO))
+                .querySelector('.page-header-back-button')).classList.add('display-none');
+        } else {
+            /** @type {HTMLElement} */
+            (/** @type {HTMLElement} */ (document.getElementById(ExportFile.Pages.LOGIN_FILE_INTRO))
+                .querySelector('.page-header-back-button')).classList.add('display-none');
+        }
+
         /** @type {HTMLDivElement} */
         this._fileSuccessPage = (document.getElementById(Export.Pages.LOGIN_FILE_SUCCESS));
 
