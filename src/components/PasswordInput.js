@@ -1,6 +1,7 @@
 /* global Nimiq */
 /* global AnimationUtils */
 /* global I18n */
+/* global TemplateTags */
 
 class PasswordInput extends Nimiq.Observable {
     /**
@@ -35,7 +36,7 @@ class PasswordInput extends Nimiq.Observable {
         $el.classList.add('password-input');
 
         /* eslint-disable max-len */
-        $el.innerHTML = `
+        $el.innerHTML = TemplateTags.noVariables`
             <div class="input-container">
                 <div class="input-wrapper">
                     <input class="password" type="password" placeholder="Enter password">

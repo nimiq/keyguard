@@ -2,6 +2,7 @@
 /* global I18n */
 /* global RecoveryWordsInputField */
 /* global AnimationUtils */
+/* global TemplateTags */
 
 class RecoveryWords extends Nimiq.Observable {
     /**
@@ -43,7 +44,7 @@ class RecoveryWords extends Nimiq.Observable {
         $el = $el || document.createElement('div');
         $el.classList.add('recovery-words');
 
-        $el.innerHTML = `
+        $el.innerHTML = TemplateTags.noVariables`
             <div class="words-container">
                 <div class="word-section"></div>
             </div>
@@ -70,7 +71,7 @@ class RecoveryWords extends Nimiq.Observable {
 
                 const $wordNumber = document.createElement('span');
                 $wordNumber.classList.add('word-number');
-                $wordNumber.textContent = `${i <= 8 ? '0' : ''}${i + 1}`;
+                $wordNumber.textContent = `${i < 9 ? '0' : ''}${i + 1}`;
 
                 const word = document.createElement('div');
                 word.classList.add('word', 'complete');

@@ -13,10 +13,11 @@ class IqonHash { /* eslint-disable-line no-unused-vars */
      * @returns {string}
      */
     static hash(text) {
-        const fullHash = (`${text
+        const fullHash = text
             .split('')
             .map(c => Number(c.charCodeAt(0)) + 3)
-            .reduce((a, e) => a * (1 - a) * this._chaosHash(e), 0.5)}`)
+            .reduce((a, e) => a * (1 - a) * this._chaosHash(e), 0.5)
+            .toString()
             .split('')
             .reduce((a, e) => e + a, '');
 

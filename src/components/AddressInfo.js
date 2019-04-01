@@ -1,4 +1,5 @@
 /* global Identicon */
+/* global TemplateTags */
 
 class AddressInfo {
     /**
@@ -70,7 +71,7 @@ class AddressInfo {
 }
 
 /* eslint-disable max-len */
-AddressInfo.HEXAGON_CLIP_PATH = `
+AddressInfo.HEXAGON_CLIP_PATH = TemplateTags.noVariables`
     <svg width="0" height="0" viewBox="0 0 146 146">
         <defs>
             <clipPath id="nimiq-rounded-hexagon" clipPathUnits="objectBoundingBox">

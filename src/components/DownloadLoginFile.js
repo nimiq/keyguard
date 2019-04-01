@@ -4,6 +4,7 @@
 /* global KeyStore */
 /* global Errors */
 /* global IqonHash */
+/* global TemplateTags */
 
 class DownloadLoginFile extends Nimiq.Observable {
     /**
@@ -47,7 +48,7 @@ class DownloadLoginFile extends Nimiq.Observable {
         $el.classList.add('download-loginfile');
 
         /* eslint-disable max-len */
-        $el.innerHTML = `
+        $el.innerHTML = TemplateTags.noVariables`
             <img class="loginfile" src=""></img>
 
             <svg class="long-touch-indicator" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
