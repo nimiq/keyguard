@@ -5,6 +5,8 @@ ul.nq-list li {
     position: relative;
     padding-left: 2rem;
     margin-bottom: 2rem;
+    min-height: 5rem;
+    align-items: center;
 }
 
 ul.nq-list li > .nq-icon {
