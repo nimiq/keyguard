@@ -6,7 +6,7 @@ class TemplateTags {
      * @param {T} variableCount
      *
      */
-    static hasVariables(variableCount) {
+    static hasVars(variableCount) {
         return (
             /** @type {TemplateStringsArray} */ strings,
             /** @type {(string | number)[] & { length: T }} */ ...expressions
@@ -25,4 +25,4 @@ class TemplateTags {
     }
 }
 
-TemplateTags.noVariables = TemplateTags.hasVariables(0);
+TemplateTags.noVars = TemplateTags.hasVars(0);

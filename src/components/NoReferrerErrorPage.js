@@ -22,7 +22,7 @@ class NoReferrerErrorPage { // eslint-disable-line no-unused-vars
         $element.classList.add('page');
         $element.id = 'error';
 
-        $element.innerHTML = TemplateTags.noVariables`
+        $element.innerHTML = TemplateTags.noVars`
             <h1 class="nq-h1" data-i18n="error-no-referrer-heading">That went wrong :(</h1>
             <div data-i18n="error-no-referrer-message">
                 We could not verify the origin of your request. Please go back and try again.

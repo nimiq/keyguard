@@ -44,7 +44,7 @@ class RecoveryWords extends Nimiq.Observable {
         $el = $el || document.createElement('div');
         $el.classList.add('recovery-words');
 
-        $el.innerHTML = TemplateTags.noVariables`
+        $el.innerHTML = TemplateTags.noVars`
             <div class="words-container">
                 <div class="word-section"></div>
             </div>

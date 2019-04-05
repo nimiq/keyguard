@@ -13,7 +13,7 @@ class LoginFileIcon { // eslint-disable-line no-unused-vars
         $el.classList.add('nq-icon', 'login-file-icon');
 
         /* eslint-disable max-len */
-        $el.innerHTML = TemplateTags.noVariables`
+        $el.innerHTML = TemplateTags.noVars`
             <svg class="nq-icon lock">
                 <use class="lock-unlocked" xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-lock-unlocked"/>
                 <use class="lock-locked" xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-lock-locked"/>

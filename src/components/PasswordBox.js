@@ -69,7 +69,7 @@ class PasswordBox extends Nimiq.Observable {
 
         if (!buttonVersions[options.buttonI18nTag]) throw new Error('PasswordBox button i18n tag not defined');
 
-        $el.innerHTML = TemplateTags.hasVariables(1)`
+        $el.innerHTML = TemplateTags.hasVars(1)`
             <a class="cancel">
                 <svg class="nq-icon">
                     <use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-close"/>

@@ -40,7 +40,7 @@ class DerivedIdenticonSelector extends Nimiq.Observable {
         $el = $el || document.createElement('div');
         $el.classList.add('identicon-selector');
 
-        $el.innerHTML = TemplateTags.noVariables`
+        $el.innerHTML = TemplateTags.noVars`
             <div class="identicons">
                 <div class="loading center">
                     <div class="loading-animation"></div>

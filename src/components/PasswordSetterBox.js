@@ -48,7 +48,7 @@ class PasswordSetterBox extends Nimiq.Observable {
         $el.classList.add('password-box', 'actionbox', 'setter', `nq-${options.bgColor}-bg`);
 
         /* eslint-disable max-len */
-        $el.innerHTML = TemplateTags.hasVariables(1)`
+        $el.innerHTML = TemplateTags.hasVars(1)`
             <div class="password-strength strength-short  nq-text-s" data-i18n="passwordbox-password-strength-short" >Enter at least 8 characters</div>
             <div class="password-strength strength-weak   nq-text-s" data-i18n="passwordbox-password-strength-weak"  >That password is too weak</div>
             <div class="password-strength strength-good   nq-text-s" data-i18n="passwordbox-password-strength-good"  >Ok, that is an average password</div>
@@ -60,7 +60,7 @@ class PasswordSetterBox extends Nimiq.Observable {
 
             <button class="submit" data-i18n="passwordbox-continue">Continue</button>
 
-            ${options.hideSkip ? '' : TemplateTags.noVariables`
+            ${options.hideSkip ? '' : TemplateTags.noVars`
                 <a tabindex="0" class="password-skip nq-text-s">
                     <span data-i18n="passwordbox-password-skip">Skip for now</span>
                     <svg class="nq-icon">
