@@ -25,7 +25,7 @@ describe('IframeApi', () => {
         expect(CookieJar.eatDeprecated).toHaveBeenCalled();
         expect(AccountStore.instance.list).not.toHaveBeenCalled();
         expect(KeyStore.instance.list).not.toHaveBeenCalled();
-        expect(listedAccounts).toEqual(Dummy.deprecatedAccount2KeyInfoObjects);
+        expect(listedAccounts).toEqual(Dummy.deprecatedAccount2KeyInfoObjects());
     });
 
     it('can list key info from cookies on iOS', async () => {
@@ -48,7 +48,7 @@ describe('IframeApi', () => {
         expect(CookieJar.eat).not.toHaveBeenCalled();
         expect(AccountStore.instance.list).toHaveBeenCalled();
         expect(KeyStore.instance.list).not.toHaveBeenCalled();
-        expect(listedAccounts).toEqual(Dummy.deprecatedAccount2KeyInfoObjects);
+        expect(listedAccounts).toEqual(Dummy.deprecatedAccount2KeyInfoObjects());
 
         await Dummy.Utils.deleteDummyAccountStore();
     });
@@ -62,7 +62,7 @@ describe('IframeApi', () => {
         expect(CookieJar.eat).not.toHaveBeenCalled();
         expect(AccountStore.instance.list).not.toHaveBeenCalled();
         expect(KeyStore.instance.list).toHaveBeenCalled();
-        expect(listedKeyObjects).toEqual(Dummy.keyInfoObjects());
+        expect(listedKeyObjects).toEqual(Dummy.keyInfoObjects().reverse());
 
         await Dummy.Utils.deleteDummyKeyStore();
     });
@@ -100,9 +100,10 @@ describe('IframeApi', () => {
 
         // check that keys have been copied correctly
         const ids = (await KeyStore.instance.list()).map(record => record.id);
+        console.log(ids);
         for (let id of ids) {
             const keyRecord = await KeyStore.instance._get(id);
-            const expectedKeyRecord = /** @type {StoredKeyRecord} */(Dummy.storedKeyRecords().find(record => record.id === id));
+            const expectedKeyRecord = /** @type {KeyRecord} */(Dummy.keyRecords().find(record => record.id === id));
             expect(keyRecord).toEqual(expectedKeyRecord);
         }
 

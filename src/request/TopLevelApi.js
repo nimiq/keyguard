@@ -93,7 +93,7 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
                 const match = document.cookie.match(new RegExp('removeKey=([^;]+)'));
                 if (match && match[1]) {
                     try {
-                        /** @type {number[]} */
+                        /** @type {string[]} */
                         const removeKeyArray = JSON.parse(match[1]);
                         removeKeyArray.forEach(keyId => {
                             KeyStore.instance.remove(keyId);
