@@ -94,24 +94,25 @@ class Utf8Tools { // eslint-disable-line no-unused-vars
      * @returns {boolean}
      */
     static isValidUtf8(bytes) {
-        if (typeof TextDecoder !== 'undefined') {
-            const decoder = new TextDecoder('utf-8', { fatal: true });
-            try {
-                decoder.decode(bytes);
-                return true;
-            }
-            catch (error) {
-                return false;
-            }
-        }
+        // We cannot use the build-in TextDecoder to check for validity, as we need to
+        // also filter out control characters, which are valid UTF8.
 
-        // Fallback for unsupported TextDecoder
         let i = 0;
 
         while (i < bytes.length) {
             const first = bytes[i]; // The byte
 
-            if (first <= 0x7F) ++i; // Is valid single-byte (ASCII)
+            const controlCharsWhitelist = [
+                0x09, /* horizontal tab (\t) */
+                0x0A, /* line feed (\n) */
+                0x0D, /* carriage return (\r) */
+            ];
+
+            if (first <= 0x7F) { // Possible one-byte
+                if (controlCharsWhitelist.indexOf(first) > -1) ++i;
+                else if (first >= 0x20 /* space */ && first <= 0x7E /* tilde */) ++i; // Only allow non-control chars
+                else break;
+            }
 
             else if (first >= 0xC2 && first <= 0xDF) { // Possible two-byte
                 const second = bytes[++i];

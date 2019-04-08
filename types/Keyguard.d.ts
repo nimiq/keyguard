@@ -62,7 +62,7 @@ type Parsed<T extends KeyguardRequest.Request> =
         & { layout: KeyguardRequest.SignTransactionRequestLayout } :
     T extends KeyguardRequest.SignMessageRequest ? Transform<Transform<KeyId2KeyInfo<KeyguardRequest.SignMessageRequest>,
         'signer', { signer: Nimiq.Address }>,
-        'message', { message: Uint8Array }> :
+        'message', { message: Uint8Array | string }> :
     T extends KeyguardRequest.SimpleRequest
         | KeyguardRequest.DeriveAddressRequest
         | KeyguardRequest.RemoveKeyRequest ? KeyId2KeyInfo<T> : T;

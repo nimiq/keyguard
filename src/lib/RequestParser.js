@@ -169,11 +169,15 @@ class RequestParser { // eslint-disable-line no-unused-vars
 
     /**
      * @param {any} message
-     * @returns {Uint8Array}
+     * @returns {string | Uint8Array}
      */
     parseMessage(message) {
-        if (typeof message === 'string') message = Utf8Tools.stringToUtf8ByteArray(message);
-        if (!(message instanceof Uint8Array)) {
+        if (typeof message === 'string') {
+            const messageBytes = Utf8Tools.stringToUtf8ByteArray(message);
+            if (!Utf8Tools.isValidUtf8(messageBytes)) {
+                throw new Errors.InvalidRequestError('message cannot include control characters');
+            }
+        } else if (!(message instanceof Uint8Array)) {
             throw new Errors.InvalidRequestError('message must be a string or Uint8Array');
         }
         return message;
