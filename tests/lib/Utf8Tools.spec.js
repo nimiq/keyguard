@@ -41,6 +41,11 @@ describe('Utf8Tools', function() {
                 isValid: false,
                 decoded: '48656c6c6f0020576f726c6421',
             },
+            {
+                data: new Uint8Array(Nimiq.BufferUtils.fromBase64('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACgAAAAAAAAAAAAAAASoAAAA=')),
+                isValid: false,
+                decoded: '0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a0000000000000000000000012a000000',
+            },
         ];
 
         for (const vector of vectors) {
