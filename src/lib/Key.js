@@ -149,3 +149,9 @@ class Key {
 
 Key.MSG_PREFIX = 'Nimiq Signed Message:\n';
 Key.MSG_PREFIX_LENGTH = 0x16; // 22
+
+
+// 'export' to client via side effects
+window.__messageSigningPrefix = {
+    MSG_PREFIX: Key.MSG_PREFIX,
+};
