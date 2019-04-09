@@ -8,45 +8,33 @@ output() {
 }
 
 # execute config file given as parameter; default to testnet
-CONFIG_FILE=testnet
+BUILD=testnet
 if [ "$1" != "" ]; then
-    CONFIG_FILE="$1"
+    BUILD="$1"
 fi
 
-if [ ! -f config/$CONFIG_FILE.conf ]; then
-    output "💥  Config file './config/$CONFIG_FILE.conf' not found!"
+if [ ! -f src/config/config.$BUILD.js ]; then
+    output "💥  Config file './src/config/config.$BUILD.js' not found!"
     exit 1
 fi
 
-output "🎩  Using config file config/$CONFIG_FILE.conf"
-source config/$CONFIG_FILE.conf
-
-# replace string $1 by environment variable $2 in file $3
-replace_config_variable() {
-    VARNAME="$2"
-
-    VALUE=$(echo "${!VARNAME}")
-
-    if [ "$VALUE" != "" ]; then
-        sed -i -e "s/$1/$VALUE/g" $3
-    fi
-}
+output "🎩  Using config file src/config/config.$BUILD.js"
 
 # replace icon sprite URL in file $1
 replace_icon_sprite_url() {
     OLD_PATH="..\/..\/..\/node_modules\/@nimiq\/style\/nimiq-style.icons.svg"
-    NEW_PATH="..\/..\/assets\/nimiq-style.icons.svg"
+    NEW_PATH="\/assets\/nimiq-style.icons.svg"
 
     sed -i -e "s/$OLD_PATH/$NEW_PATH/g" $1
 }
 
-# ease configuration of allowed origin and network by adding quotes
-if [ "$KEYGUARD_ALLOWED_ORIGIN" != "" ]; then
-    KEYGUARD_ALLOWED_ORIGIN="'$KEYGUARD_ALLOWED_ORIGIN'"
-fi
-if [ "$KEYGUARD_NETWORK" != "" ]; then
-    KEYGUARD_NETWORK="'$KEYGUARD_NETWORK'"
-fi
+# replace core lib URL in file $1
+replace_core_lib_url() {
+    OLD_PATH="..\/..\/..\/node_modules\/@nimiq\/core-web"
+    NEW_PATH="\/assets\/nimiq"
+
+    sed -i -e "s/$OLD_PATH/$NEW_PATH/g" $1
+}
 
 # Before writing any files, verify integrity of Nimiq lib
 output "🧐  Validating Nimiq Core files integrity"
@@ -97,16 +85,15 @@ for DIR in src/request/*/ ; do
     # create directory for request
     mkdir dist/request/$REQUEST
 
-    # get all local js files included in request's index.html, which are not in a bundle
-    LIST_JS="$(grep '<script' $DIR/index.html | grep -v 'bundle-' | grep -v -E 'web-offline.js' | cut -d\" -f2)"
+    # get all local js files included in request's index.html, which are not in a bundle, a config file
+    LIST_JS="$(grep '<script' $DIR/index.html | grep -v 'bundle-' | grep -v 'config' | grep -v -E 'web-offline.js' | cut -d\" -f2)"
 
     # concat them
     for url in $LIST_JS; do
         cat $DIR/$url >> dist/request/$REQUEST/$JS_BUNDLE
     done
 
-    replace_config_variable "CONFIG.ALLOWED_ORIGIN" "KEYGUARD_ALLOWED_ORIGIN" dist/request/$REQUEST/$JS_BUNDLE
-    replace_config_variable "CONFIG.NETWORK" "KEYGUARD_NETWORK" dist/request/$REQUEST/$JS_BUNDLE
+    replace_core_lib_url dist/request/${REQUEST}/$JS_BUNDLE
     replace_icon_sprite_url dist/request/$REQUEST/$JS_BUNDLE
 
     # get all local css files included in request's index.html, which are not in a bundle
@@ -161,7 +148,7 @@ for DIR in src/request/*/ ; do
         { print }
     ' $DIR/index.html > dist/request/${REQUEST}/index.html
 
-    replace_config_variable "..\/..\/..\/node_modules\/@nimiq\/core-web" "KEYGUARD_CDN" dist/request/${REQUEST}/index.html
+    replace_core_lib_url dist/request/${REQUEST}/index.html
     replace_icon_sprite_url dist/request/${REQUEST}/index.html
 done
 
@@ -173,21 +160,21 @@ LIST_CSS_TOPLEVEL="../../../node_modules/@nimiq/style/nimiq-style.min.css ../../
 
 # generate bundle files
 output "📦  Generating bundle files"
+# put config first
+cat src/config/config.$BUILD.js >> dist/request/$JS_COMMON_BUNDLE
 # (since all urls are relative to request directories, we simply use the create request directory as the base)
 for url in $LIST_JS_COMMON; do
     cat src/request/create/$url >> dist/request/$JS_COMMON_BUNDLE
 done
 
-replace_config_variable "CONFIG.ALLOWED_ORIGIN" "KEYGUARD_ALLOWED_ORIGIN" dist/request/$JS_COMMON_BUNDLE
-replace_config_variable "CONFIG.NETWORK" "KEYGUARD_NETWORK" dist/request/$JS_COMMON_BUNDLE
+replace_core_lib_url dist/request/$JS_COMMON_BUNDLE
 replace_icon_sprite_url dist/request/$JS_COMMON_BUNDLE
 
 for url in $LIST_JS_TOPLEVEL; do
     cat src/request/create/$url >> dist/request/$JS_TOPLEVEL_BUNDLE
 done
 
-replace_config_variable "CONFIG.ALLOWED_ORIGIN" "KEYGUARD_ALLOWED_ORIGIN" dist/request/$JS_TOPLEVEL_BUNDLE
-replace_config_variable "CONFIG.NETWORK" "KEYGUARD_NETWORK" dist/request/$JS_TOPLEVEL_BUNDLE
+replace_core_lib_url dist/request/$JS_TOPLEVEL_BUNDLE
 replace_icon_sprite_url dist/request/$JS_TOPLEVEL_BUNDLE
 
 for url in $LIST_CSS_TOPLEVEL; do

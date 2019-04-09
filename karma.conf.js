@@ -20,12 +20,13 @@ module.exports = function (/** @type {any} */ config) {
             {'pattern': 'node_modules/@nimiq/core-web/worker.js', included: false},
             'src/lib/*.js', // Force load of lib files before components and common.js
             'src/**/*js',
-            'tests/**/*.spec.js'
+            'tests/**/*.spec.js',
         ],
 
-        // avoid calling runKeyguard
+        // avoid calling runKeyguard, only include local config
         exclude: [
-            'src/request/**/index.js'
+            'src/request/**/index.js',
+            'src/config/config.!(local).js',
         ],
 
 

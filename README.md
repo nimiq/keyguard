@@ -60,16 +60,11 @@ Note that it is mostly not necessary to run the build script for development pur
 
 ## Configuration
 
-You can configure the following values by either environment variables or configuration files:
-- KEYGUARD_ALLOWED_ORIGIN: The origin from which requests are accepted. '*' allows all origins. Be aware that slashes have to be masked by `\`. Defaults to 'https://accounts.nimiq-testnet.com'.
-- KEYGUARD_CDN: The CDN (content delivery network) from which the core library is served. Defaults to '/assets/nimiq'.
-- KEYGUARD_NETWORK: The network to connect with. Use Constants.NETWORK constants. Defaults to Constants.NETWORK.TEST.
+You can configure the following values by configuration files located in folder `src/config`:
+- ALLOWED_ORIGIN: The origin from which requests are accepted. '*' allows all origins.
+- NETWORK: The network to connect with. Use Constants.NETWORK constants.
 
-The best way is to use a configuration file, which has to be placed in the `config` folder, and pass its name as an argument to the build script. `yarn build local` uses `local.conf`. Some sample files are provided.
-
-If you have a CI (Continuous Integration) which builds on your webserver, you can also set those values in your server's configuration via environment variables. Please refer to your server's configuration, e.g. [https://httpd.apache.org/docs/2.4/env.html] for Apache.
-
-In any case, please note that those settings are compile-time, so you have to rebuild to update them.
+The config file used for unbuilt code is `config.local.js`. The build script uses `config.testnet.js` by default. To use a different file (especially useful for deployment), pass its name as an argument to the build script. `yarn build mainnet` uses `config.mainnet.js`.
 
 ## I18n usage
 
