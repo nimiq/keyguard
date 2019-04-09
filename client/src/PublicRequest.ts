@@ -102,10 +102,6 @@ export type SignMessageRequest = SimpleRequest & {
     signerLabel: string,
 };
 
-export type SignMessageResult = SignatureResult & {
-    data: Uint8Array,
-};
-
 // Request unions
 
 export type RedirectRequest = CreateRequest

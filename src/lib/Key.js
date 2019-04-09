@@ -52,7 +52,7 @@ class Key {
     /**
      * @param {string} path
      * @param {Uint8Array} message - A byte array
-     * @returns {{signature: Nimiq.Signature, data: Uint8Array}}
+     * @returns {Nimiq.Signature}
      */
     signMessage(path, message) {
         const msgBytes = new Nimiq.SerialBuffer(message);
@@ -71,12 +71,7 @@ class Key {
         data.write(new Nimiq.SerialBuffer(Nimiq.BufferUtils.fromAscii(Key.MSG_PREFIX)));
         data.write(msgBytes);
 
-        const signature = this.sign(path, data);
-
-        return {
-            signature,
-            data: data.subarray(0, data.byteLength),
-        };
+        return this.sign(path, data);
     }
 
     /**

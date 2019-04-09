@@ -10,7 +10,7 @@
 
 /**
  * @callback SignMessage.resolve
- * @param {KeyguardRequest.SignMessageResult} result
+ * @param {KeyguardRequest.SignatureResult} result
  */
 
 class SignMessage {
@@ -108,13 +108,13 @@ class SignMessage {
         } else {
             messageBytes = request.message;
         }
-        const signingResult = key.signMessage(request.keyPath, messageBytes);
 
-        /** @type {KeyguardRequest.SignMessageResult} */
+        const signature = key.signMessage(request.keyPath, messageBytes);
+
+        /** @type {KeyguardRequest.SignatureResult} */
         const result = {
             publicKey: publicKey.serialize(),
-            signature: signingResult.signature.serialize(),
-            data: signingResult.data,
+            signature: signature.serialize(),
         };
         resolve(result);
     }
