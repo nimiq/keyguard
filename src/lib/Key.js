@@ -1,7 +1,8 @@
 /* global Constants */
 /* global Nimiq */
+/* global SignMessageConstants */
 
-class Key {
+class Key { /* eslint-disable-line no-unused-vars */
     /**
      * @param {Uint8Array} input
      * @returns {string}
@@ -55,6 +56,9 @@ class Key {
      * @returns {Nimiq.Signature}
      */
     signMessage(path, message) {
+        const prefix = SignMessageConstants.SIGN_MSG_PREFIX;
+        const prefixLength = prefix.length;
+
         const msgBytes = new Nimiq.SerialBuffer(message);
         const msgLength = msgBytes.byteLength;
         const msgLengthString = msgLength.toString(10);
@@ -65,12 +69,12 @@ class Key {
          * request can sign arbitrary data (e.g. a transaction) and use the signature to
          * impersonate the victim. (https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sign)
          */
-        const dataLength = /* prefix length */ 1 + Key.MSG_PREFIX_LENGTH + msgLengthString.length + msgLength;
+        const dataLength = /* prefix length */ 1 + prefixLength + msgLengthString.length + msgLength;
 
         // Construct buffer
         const data = new Nimiq.SerialBuffer(dataLength);
-        data.writeUint8(Key.MSG_PREFIX_LENGTH);
-        data.write(Nimiq.BufferUtils.fromAscii(Key.MSG_PREFIX));
+        data.writeUint8(prefixLength);
+        data.write(Nimiq.BufferUtils.fromAscii(prefix));
         data.write(Nimiq.BufferUtils.fromAscii(msgLengthString));
         data.write(msgBytes);
 
@@ -146,12 +150,3 @@ class Key {
         return Key.deriveHash(input);
     }
 }
-
-Key.MSG_PREFIX = 'Nimiq Signed Message:\n';
-Key.MSG_PREFIX_LENGTH = 0x16; // 22
-
-
-// 'export' to client via side effects
-window.__messageSigningPrefix = {
-    MSG_PREFIX: Key.MSG_PREFIX,
-};

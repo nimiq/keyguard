@@ -236,5 +236,7 @@ export class KeyguardClient {
     }
 }
 
+import '../../src/lib/SignMessageConstants.js';
+
 // tslint:disable-next-line:variable-name
 export const MSG_PREFIX = window.__messageSigningPrefix.MSG_PREFIX;
