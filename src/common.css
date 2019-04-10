@@ -108,44 +108,101 @@
     align-items: center;
     position: fixed;
     left: 0;
-    top: 0;
+    top: 11rem; /* approximate header height */
     right: 0;
     bottom: 0;
     width: 100vw;
     max-width: 100vw;
-    height: 100vh;
-    min-height: 100vh;
+    height: calc(100vh - 11rem);
+    background: var(--nimiq-gray);
     z-index: 1;
 }
 
-.page:target ~ #loading {
-    display: none;
+#loading > .loading-spinner {
+    margin-top: -11rem;
 }
 
 .loading #loading {
     display: flex;
-    background-color: rgba(0, 0, 0, 0.4); /* darken background when used on top of pages */
 }
 
 .loading .page:target {
-    opacity: 0.3;
     pointer-events: none;
 }
 
-.loading-animation {
-    opacity: 1;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64"><style>@keyframes a{to{transform:rotate(240deg) translateZ(0);}}%23circle{animation:2s a infinite linear;transform:rotate(-120deg) translateZ(0);transform-origin:center;}</style><defs><clipPath id="hexClip"><path clip-rule="evenodd" d="m 19.492188,3.5 c -2.483154,0 -4.79003,1.305009 -6.052735,3.4355469 l -0.002,0.00586 L 0.95117188,28.273438 c -1.26789485,2.139296 -1.26723215,4.811597 0,6.951171 3.3126e-4,5.6e-4 -3.3144e-4,0.0014 0,0.002 L 13.445312,56.519531 C 14.687911,58.687188 17.009035,60 19.492188,60 h 24.998046 c 2.483153,0 4.790031,-1.305005 6.052735,-3.435547 l 0.002,-0.0039 12.509766,-21.324219 c 1.256479,-2.146209 1.262705,-4.814832 0,-6.953125 l -0.002,-0.0039 -12.488281,-21.3378908 -0.0039,-0.00586 C 49.297843,4.8050087 46.990967,3.5 44.507812,3.5 Z m 0,4 h 25.015624 c 1.079826,0 2.07379,0.5695833 2.611329,1.4765625 l 12.486328,21.3320315 0.0039,0.0039 c 0.532016,0.897661 0.53608,1.976651 -0.0059,2.902344 l -12.501954,21.308594 -0.0039,0.002 C 46.559616,55.430236 45.568604,56 44.490234,56 H 19.492188 c -1.079826,0 -2.057986,-0.56139 -2.578126,-1.46875 l -0.0039,-0.0098 -12.5156248,-21.332031 -0.00195,-0.002 c -0.5320157,-0.897661 -0.5320157,-1.977339 0,-2.875 l 0.00195,-0.0039 L 16.880859,8.9765625 C 17.418399,8.069583 18.412363,7.5 19.492188,7.5 Z"/></clipPath></defs><path fill-rule="evenodd" d="m 19.492188,3.5 c -2.483154,0 -4.79003,1.305009 -6.052735,3.4355469 l -0.002,0.00586 L 0.95117188,28.273438 c -1.26789485,2.139296 -1.26723215,4.811597 0,6.951171 3.3126e-4,5.6e-4 -3.3144e-4,0.0014 0,0.002 L 13.445312,56.519531 C 14.687911,58.687188 17.009035,60 19.492188,60 h 24.998046 c 2.483153,0 4.790031,-1.305005 6.052735,-3.435547 l 0.002,-0.0039 12.509766,-21.324219 c 1.256479,-2.146209 1.262705,-4.814832 0,-6.953125 l -0.002,-0.0039 -12.488281,-21.3378908 -0.0039,-0.00586 C 49.297843,4.8050087 46.990967,3.5 44.507812,3.5 Z m 0,4 h 25.015624 c 1.079826,0 2.07379,0.5695833 2.611329,1.4765625 l 12.486328,21.3320315 0.0039,0.0039 c 0.532016,0.897661 0.53608,1.976651 -0.0059,2.902344 l -12.501954,21.308594 -0.0039,0.002 C 46.559616,55.430236 45.568604,56 44.490234,56 H 19.492188 c -1.079826,0 -2.057986,-0.56139 -2.578126,-1.46875 l -0.0039,-0.0098 -12.5156248,-21.332031 -0.00195,-0.002 c -0.5320157,-0.897661 -0.5320157,-1.977339 0,-2.875 l 0.00195,-0.0039 L 16.880859,8.9765625 C 17.418399,8.069583 18.412363,7.5 19.492188,7.5 Z" fill="%23fff" opacity=".2"/><g clip-path="url(%23hexClip)"><circle id="circle" cx="32" cy="32" r="16" fill="none" stroke-width="32" stroke="%231DE9B6" stroke-dasharray="16.666 84.666"/></g></svg>');
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: 9rem;
-    z-index: 1;
-    display: block;
-    height: 9rem;
-    width: 10rem;
+.page-footer > .loading-spinner {
+    position: absolute;
+    z-index: -1;
+    visibility: hidden;
+    color: white;
+    left: calc(50% - 3.375rem);
+    margin-top: 3rem; /* 2rem button margin + 1 rem to center */
 }
 
-.loading-animation + h2 {
-    padding-top: 2rem;
+.password-box .loading-spinner {
+    position: absolute;
+    z-index: -1;
+    visibility: hidden;
+    left: calc(50% - 3.375rem);
+    bottom: calc(50% - 3.125rem);
+}
+
+.password-box.hide-input .loading-spinner {
+    bottom: 3rem;
+}
+
+body.loading .page-footer > .loading-spinner {
+    visibility: visible;
+    z-index: 1;
+}
+
+body.loading .password-box.hide-input button,
+body.loading .page-footer > .loading-spinner + button {
+    color:transparent;
+}
+
+.password-box.hide-input .loading-spinner {
+    color: white;
+}
+
+body.loading .password-box > * {
+    visibility: hidden
+}
+
+body.loading .page:target .password-box.hide-input > button,
+body.loading .page:target .password-box > .loading-spinner {
+    visibility: visible;
+    z-index: 1;
+}
+
+.big-hex {
+    stroke-dashoffset: -40.5;
+    animation: big-hex 4s cubic-bezier(0.76, 0.29, 0.29, 0.76) infinite;
+}
+
+.small-hex {
+    stroke-dashoffset: 13;
+    animation: small-hex 4s cubic-bezier(0.76, 0.29, 0.29, 0.76) infinite;
+}
+
+@keyframes small-hex {
+    0%   { stroke-dashoffset: 13 }
+    17%  { stroke-dashoffset: 38.42 }
+    33%  { stroke-dashoffset: 63.84 }
+    50%  { stroke-dashoffset: 89.25 }
+    67%  { stroke-dashoffset: 114.66 }
+    83%  { stroke-dashoffset: 140.08 }
+    100% { stroke-dashoffset: 165.5 }
+}
+
+@keyframes big-hex {
+    0%   { stroke-dashoffset: -40.5 }
+    17%  { stroke-dashoffset: -15.08 }
+    33%  { stroke-dashoffset: 10.33 }
+    50%  { stroke-dashoffset: 35.75 }
+    67%  { stroke-dashoffset: 61.17 }
+    83%  { stroke-dashoffset: 86.58 }
+    100% { stroke-dashoffset: 112 }
 }
 
 .identicon img {

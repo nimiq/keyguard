@@ -77,6 +77,9 @@ class PasswordBox extends Nimiq.Observable {
             <div class="prompt nq-text-s" data-i18n="passwordbox-enter-password">Enter your password</div>
             <div password-input></div>
             ${buttonVersions[options.buttonI18nTag]}
+            <svg height="48" width="54" color="inherit" class="loading-spinner">
+                <use xlink:href="#loading-spinner" />
+            </svg>
         `;
 
         /** @type {HTMLButtonElement} */
