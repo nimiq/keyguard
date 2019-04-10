@@ -1,5 +1,6 @@
 /* global Constants */
 /* global IqonHash */
+/* global Key */
 /* global LoginFileIcon */
 /* global LoginFile */
 /* global Nimiq */
@@ -61,7 +62,7 @@ class ExportFile extends Nimiq.Observable {
             $passwordBox, {
                 buttonI18nTag: 'passwordbox-download',
                 hideInput: !this._request.keyInfo.encrypted,
-                minLength: this._request.keyInfo.hasPin ? 6 : undefined,
+                minLength: this._request.keyInfo.hasPin ? Key.PIN_LENGTH : undefined,
                 hideCancel: true,
             },
         );

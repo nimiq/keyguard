@@ -1,5 +1,6 @@
 /* global Constants */
 /* global Nimiq */
+/* global Key */
 /* global KeyStore */
 /* global PasswordBox */
 /* global Errors */
@@ -95,7 +96,7 @@ class SignTransaction {
         this._passwordBox = new PasswordBox($passwordBox, {
             hideInput: !request.keyInfo.encrypted,
             buttonI18nTag: 'passwordbox-confirm-tx',
-            minLength: request.keyInfo.hasPin ? 6 : undefined,
+            minLength: request.keyInfo.hasPin ? Key.PIN_LENGTH : undefined,
             hideCancel: true,
         });
 
