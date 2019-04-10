@@ -1,5 +1,5 @@
 const SignMessageConstants = {
-    SIGN_MSG_PREFIX: 'Nimiq Signed Message:\n',
+    SIGN_MSG_PREFIX: '\x16Nimiq Signed Message:\n',
 };
 
 // 'export' to client via side effects

@@ -56,12 +56,8 @@ class Key { /* eslint-disable-line no-unused-vars */
      * @returns {Nimiq.Signature}
      */
     signMessage(path, message) {
-        const prefix = SignMessageConstants.SIGN_MSG_PREFIX;
-        const prefixLength = prefix.length;
-
-        const msgBytes = new Nimiq.SerialBuffer(message);
-        const msgLength = msgBytes.byteLength;
-        const msgLengthString = msgLength.toString(10);
+        const msgLength = message.byteLength;
+        const msgLengthAsString = msgLength.toString(10);
 
         /**
          * Adding a prefix to the message makes the calculated signature recognisable as
@@ -69,17 +65,17 @@ class Key { /* eslint-disable-line no-unused-vars */
          * request can sign arbitrary data (e.g. a transaction) and use the signature to
          * impersonate the victim. (https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sign)
          */
-        const dataLength = /* prefix length */ 1 + prefixLength + msgLengthString.length + msgLength;
+        const dataLength = SignMessageConstants.SIGN_MSG_PREFIX.length
+                         + msgLengthAsString.length
+                         + msgLength;
 
         // Construct buffer
         const data = new Nimiq.SerialBuffer(dataLength);
-        data.writeUint8(prefixLength);
-        data.write(Nimiq.BufferUtils.fromAscii(prefix));
-        data.write(Nimiq.BufferUtils.fromAscii(msgLengthString));
-        data.write(msgBytes);
+        data.write(Nimiq.BufferUtils.fromAscii(SignMessageConstants.SIGN_MSG_PREFIX));
+        data.write(Nimiq.BufferUtils.fromAscii(msgLengthAsString));
+        data.write(message);
 
-        // Hash data before signing
-        // (uses SHA256, because it is the widest available)
+        // Hash data before signing (uses SHA256, because it is the widest available)
         const hash = Nimiq.Hash.computeSha256(data);
 
         return this.sign(path, hash);
