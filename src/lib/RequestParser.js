@@ -168,6 +168,10 @@ class RequestParser { // eslint-disable-line no-unused-vars
     }
 
     /**
+     * When passed in as a string, the message is parsed as a string and checked for
+     * control characters. When passed in as an Uint8Array, the message is handled as
+     * binary data and only ever displayed as HEX.
+     *
      * @param {any} message
      * @returns {string | Uint8Array}
      */
