@@ -36,18 +36,19 @@ class ExportFile extends Nimiq.Observable {
         /** @type {Key | null} */
         this._key = null;
 
+        this._keyAlreadySet = false;
+
         /** @type {HTMLElement} */
-        const $exportFileIntroPage = (document.getElementById(ExportFile.Pages.LOGIN_FILE_INTRO));
+        this.$exportFileIntroPage = (document.getElementById(ExportFile.Pages.LOGIN_FILE_INTRO));
         /** @type {HTMLElement} */
         const $unlockFilePage = (document.getElementById(ExportFile.Pages.LOGIN_FILE_UNLOCK));
         /** @type {HTMLElement} */
         const $setPasswordPage = (document.getElementById(ExportFile.Pages.LOGIN_FILE_SET_PASSWORD));
         /** @type {HTMLElement} */
-        const $downloadFilePage = (document.getElementById(ExportFile.Pages.LOGIN_FILE_DOWNLOAD));
+        this.$downloadFilePage = (document.getElementById(ExportFile.Pages.LOGIN_FILE_DOWNLOAD));
 
         /** @type {HTMLButtonElement} */
-        const $fileButton = ($exportFileIntroPage.querySelector('.login-file'));
-        const $goToRecoveryWords = ($exportFileIntroPage.querySelector('.go-to-words'));
+        const $fileButton = (this.$exportFileIntroPage.querySelector('.login-file'));
         /** @type {HTMLDivElement} */
         const $loginFileIcon = ($setPasswordPage.querySelector('.login-file-icon'));
         /** @type {HTMLFormElement} */
@@ -55,7 +56,7 @@ class ExportFile extends Nimiq.Observable {
         /** @type {HTMLFormElement} */
         const $passwordSetterBox = ($setPasswordPage.querySelector('.password-setter-box'));
         /** @type {HTMLAnchorElement} */
-        const $downloadLoginFile = ($downloadFilePage.querySelector('.download-loginfile'));
+        const $downloadLoginFile = (this.$downloadFilePage.querySelector('.download-loginfile'));
 
         this._passwordBox = new PasswordBox(
             $passwordBox, {
@@ -77,19 +78,15 @@ class ExportFile extends Nimiq.Observable {
         );
 
         /* eslint-disable no-new */
-        new ProgressIndicator($exportFileIntroPage.querySelector('.progress-indicator'), 3, 1);
+        new ProgressIndicator(this.$exportFileIntroPage.querySelector('.progress-indicator'), 3, 1);
         new ProgressIndicator($unlockFilePage.querySelector('.progress-indicator'), 3, 2);
         new ProgressIndicator($setPasswordPage.querySelector('.progress-indicator'), 3, 2);
-        new ProgressIndicator($downloadFilePage.querySelector('.progress-indicator'), 3, 3);
+        new ProgressIndicator(this.$downloadFilePage.querySelector('.progress-indicator'), 3, 3);
         /* eslint-enable no-new */
-
-        if ($goToRecoveryWords) {
-            $goToRecoveryWords.addEventListener('click', () => this._resolve({ success: false }));
-        }
 
         $fileButton.addEventListener('click', async () => {
             if (this._request.keyInfo.encrypted) {
-                if (this._key && this._password) {
+                if (this._keyAlreadySet && this._key && this._password) {
                     await this._passwordSubmitted(this._password);
                 } else {
                     this._passwordBox.reset();
@@ -166,7 +163,8 @@ class ExportFile extends Nimiq.Observable {
             return;
         }
 
-        this.setKey(key, password);
+        this._key = key;
+        this._password = password;
         this.fire(ExportFile.Events.KEY_CHANGED, key, password);
         await this._goToLoginFileDownload();
 
@@ -240,9 +238,18 @@ class ExportFile extends Nimiq.Observable {
      */
     setKey(key, password) {
         this._key = key;
+        this._password = password;
         if (password) {
-            this._passwordBox.hideInput(true);
-            this._password = password;
+            /* eslint-disable no-new */
+            new ProgressIndicator(this.$exportFileIntroPage.querySelector('.progress-indicator'), 2, 1);
+            new ProgressIndicator(this.$downloadFilePage.querySelector('.progress-indicator'), 2, 2);
+            this._keyAlreadySet = true;
+            /* eslint-enable no-new */
+        } else {
+            /* eslint-disable no-new */
+            new ProgressIndicator(this.$exportFileIntroPage.querySelector('.progress-indicator'), 3, 1);
+            new ProgressIndicator(this.$downloadFilePage.querySelector('.progress-indicator'), 3, 3);
+            /* eslint-enable no-new */
         }
     }
 }

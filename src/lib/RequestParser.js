@@ -220,6 +220,7 @@ class RequestParser { // eslint-disable-line no-unused-vars
 
     /**
      * @param {any} value
+     * @returns {boolean}
      */
     parseBoolean(value) {
         return !!value;

@@ -232,7 +232,7 @@ class TopLevelApi extends RequestParser {
      */
     static setLoading(showLoading) {
         const loadingButton = document.body.querySelector('.page:target .loading-spinner');
-        if(loadingButton) {
+        if (loadingButton) {
             /** @type {HTMLElement} */
             (document.getElementById(TopLevelApi.Pages.LOADING)).classList.add('display-none');
         } else {

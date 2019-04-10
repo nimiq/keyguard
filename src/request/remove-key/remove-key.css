@@ -97,11 +97,6 @@
     align-items: center;
 }
 
-.page#remove-key #remove-key-label-confirm:hover {
-    transform: scale(1.02) perspective(1px);
-    box-shadow: 0 0.5rem 3rem rgba(0,0,0,.15);
-}
-
 .page#remove-key #remove-key-label-confirm div {
     margin-top: 1.4rem;
     flex-grow: 1;
