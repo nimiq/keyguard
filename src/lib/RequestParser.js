@@ -70,6 +70,9 @@ class RequestParser { // eslint-disable-line no-unused-vars
             if (!allowEmpty) throw new Errors.InvalidRequestError('Label must not be empty');
             return undefined;
         }
+        if (label.length > 63) {
+            throw new Errors.InvalidRequestError('Label must not exceed 63 bytes');
+        }
         return label;
     }
 
@@ -139,7 +142,21 @@ class RequestParser { // eslint-disable-line no-unused-vars
         }
 
         const flags = object.flags || Nimiq.Transaction.Flag.NONE;
-        const data = object.data || new Uint8Array(0);
+
+        const data = object.data ? this.parseMessage(object.data) : new Uint8Array(0);
+        if (flags === Nimiq.Transaction.Flag.NONE && data.length > 64) {
+            throw new Errors.InvalidRequestError('Data must not exceed 64 bytes');
+        }
+        if (flags === Nimiq.Transaction.Flag.CONTRACT_CREATION
+                && data.length !== 78 // HTLC
+                && data.length !== 24 // Vesting
+                && data.length !== 36 // Vesting
+                && data.length !== 44) { // Vesting
+            throw new Errors.InvalidRequestError(
+                'Contract creation data must equal 78 bytes for HTLC and 24, 36, or 44 bytes for vesting contracts',
+            );
+        }
+
         return new Nimiq.ExtendedTransaction(
             sender,
             senderType,
