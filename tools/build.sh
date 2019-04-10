@@ -85,15 +85,14 @@ for DIR in src/request/*/ ; do
     # create directory for request
     mkdir dist/request/$REQUEST
 
-    # get all local js files included in request's index.html, which are not in a bundle, a config file
-    LIST_JS="$(grep '<script' $DIR/index.html | grep -v 'bundle-' | grep -v 'config' | grep -v -E 'web-offline.js' | cut -d\" -f2)"
+    # get all local js files included in request's index.html, which are not in a bundle and not marked as manual
+    LIST_JS="$(grep '<script' $DIR/index.html | grep -v 'bundle-' | grep -v -E 'manual' | cut -d\" -f2)"
 
     # concat them
     for url in $LIST_JS; do
         cat $DIR/$url >> dist/request/$REQUEST/$JS_BUNDLE
     done
 
-    replace_core_lib_url dist/request/${REQUEST}/$JS_BUNDLE
     replace_icon_sprite_url dist/request/$REQUEST/$JS_BUNDLE
 
     # get all local css files included in request's index.html, which are not in a bundle
@@ -160,21 +159,20 @@ LIST_CSS_TOPLEVEL="../../../node_modules/@nimiq/style/nimiq-style.min.css ../../
 
 # generate bundle files
 output "📦  Generating bundle files"
-# put config first
+# put constants and config first
+cat src/lib/Constants.js >> dist/request/$JS_COMMON_BUNDLE
 cat src/config/config.$BUILD.js >> dist/request/$JS_COMMON_BUNDLE
 # (since all urls are relative to request directories, we simply use the create request directory as the base)
 for url in $LIST_JS_COMMON; do
     cat src/request/create/$url >> dist/request/$JS_COMMON_BUNDLE
 done
 
-replace_core_lib_url dist/request/$JS_COMMON_BUNDLE
 replace_icon_sprite_url dist/request/$JS_COMMON_BUNDLE
 
 for url in $LIST_JS_TOPLEVEL; do
     cat src/request/create/$url >> dist/request/$JS_TOPLEVEL_BUNDLE
 done
 
-replace_core_lib_url dist/request/$JS_TOPLEVEL_BUNDLE
 replace_icon_sprite_url dist/request/$JS_TOPLEVEL_BUNDLE
 
 for url in $LIST_CSS_TOPLEVEL; do

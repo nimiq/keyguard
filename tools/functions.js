@@ -88,7 +88,7 @@ function findDependencies(startFile, class2Path, deps) {
 
         deps.push(dep);
 
-        if (dep === 'Nimiq' || dep === 'CONFIG') return;
+        if (dep === 'Nimiq') return;
 
         const depPath = class2Path.get(dep);
         if (!depPath) throw new Error(`Unknown dependency ${dep} referenced from ${startFile}`);
