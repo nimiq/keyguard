@@ -19,8 +19,8 @@ class ExportApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         if (request.fileOnly && request.wordsOnly) {
             throw new Errors.InvalidRequestError('fileOnly and wordsOnly can not both be set to true.');
         }
-        parsedRequest.fileOnly = request.fileOnly;
-        parsedRequest.wordsOnly = request.wordsOnly;
+        parsedRequest.fileOnly = this.parseBoolean(request.fileOnly);
+        parsedRequest.wordsOnly = this.parseBoolean(request.wordsOnly);
 
         return parsedRequest;
     }
