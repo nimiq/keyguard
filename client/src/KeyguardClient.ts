@@ -39,14 +39,6 @@ export class KeyguardClient {
         : window.location.origin === 'https://accounts.nimiq-testnet.com' ? 'https://keyguard.nimiq-testnet.com'
         : `${location.protocol}//${location.hostname}:8000/src`;
 
-    private static parseId(id: string) {
-        if (id.substr(0, 1) === 'K') {
-            const parsedId = parseInt(id.substr(1), 10);
-            if (!isNaN(parsedId)) return parsedId;
-        }
-        throw new Error('keyId cannot be parsed');
-    }
-
     private readonly _endpoint: string;
     private _redirectClient: RedirectRpcClient;
     private _observable: Observable;
