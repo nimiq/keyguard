@@ -147,3 +147,4 @@ class Key {
 
 Key.MSG_PREFIX = 'Nimiq Signed Message: ';
 Key.MSG_PREFIX_LENGTH = 22;
+Key.PIN_LENGTH = 6;

@@ -1,5 +1,6 @@
 /* global Constants */
 /* global Nimiq */
+/* global Key */
 /* global KeyStore */
 /* global Identicon */
 /* global PasswordBox */
@@ -50,7 +51,7 @@ class SignMessage {
         this._passwordBox = new PasswordBox($passwordBox, {
             hideInput: !request.keyInfo.encrypted,
             buttonI18nTag: 'passwordbox-sign-msg',
-            minLength: request.keyInfo.hasPin ? 6 : undefined,
+            minLength: request.keyInfo.hasPin ? Key.PIN_LENGTH : undefined,
             hideCancel: true,
         });
 
