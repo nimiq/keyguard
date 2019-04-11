@@ -70,7 +70,7 @@ class RequestParser { // eslint-disable-line no-unused-vars
             if (!allowEmpty) throw new Errors.InvalidRequestError('Label must not be empty');
             return undefined;
         }
-        if (label.length > 63) {
+        if (Utf8Tools.stringToUtf8ByteArray(label).length > 63) {
             throw new Errors.InvalidRequestError('Label must not exceed 63 bytes');
         }
         return label;
