@@ -17,7 +17,7 @@ const TRANSLATIONS = {
         'create-heading-create-password': 'Create a password',
         'create-heading-repeat-password': 'Confirm your password',
         'create-heading-validate-backup': 'Validate your backup',
-        'create-wallet-desc': 'This is your account with your first address in it.',
+        'create-wallet-desc': 'This is your new account with its first address.',
 
         'import-heading-enter-recovery-words': 'Enter Recovery Words',
         'import-upload-login-file': 'Upload your Login File',
@@ -154,7 +154,7 @@ const TRANSLATIONS = {
         'create-heading-create-password': 'Erstelle ein Passwort',
         'create-heading-repeat-password': 'Bestätige dein Passwort',
         'create-heading-validate-backup': 'Überprüfe dein Backup',
-        'create-wallet-desc': 'Das ist dein Account mit deiner ersten Addresse.',
+        'create-wallet-desc': 'Das ist dein neuer Account mit seiner ersten Addresse.',
 
         'import-heading-enter-recovery-words': 'Wiederherstellungswörter eingeben',
         'import-upload-login-file': 'Lade dein Login File hoch',

@@ -2,7 +2,7 @@
 /* global Nimiq */
 /* global SignMessageConstants */
 
-class Key { /* eslint-disable-line no-unused-vars */
+class Key {
     /**
      * @param {Uint8Array} input
      * @returns {string}
@@ -146,3 +146,5 @@ class Key { /* eslint-disable-line no-unused-vars */
         return Key.deriveHash(input);
     }
 }
+
+Key.PIN_LENGTH = 6;
