@@ -114,6 +114,7 @@
     width: 100vw;
     max-width: 100vw;
     height: calc(100vh - 11rem);
+    min-height: calc(100vh - 11rem);
     background: var(--nimiq-gray);
     z-index: 1;
 }
@@ -132,7 +133,6 @@
 
 .page-footer > .loading-spinner {
     position: absolute;
-    z-index: -1;
     visibility: hidden;
     color: white;
     left: calc(50% - 3.375rem);
@@ -141,19 +141,13 @@
 
 .password-box .loading-spinner {
     position: absolute;
-    z-index: -1;
     visibility: hidden;
     left: calc(50% - 3.375rem);
     bottom: calc(50% - 3.125rem);
 }
 
 .password-box.hide-input .loading-spinner {
-    bottom: 3rem;
-}
-
-body.loading .page-footer > .loading-spinner {
-    visibility: visible;
-    z-index: 1;
+    bottom: 3rem;  /* 2rem button margin + 1 rem to center */
 }
 
 body.loading .password-box.hide-input button,
@@ -169,10 +163,10 @@ body.loading .password-box > * {
     visibility: hidden
 }
 
+body.loading .page:target .page-footer > .loading-spinner,
 body.loading .page:target .password-box.hide-input > button,
 body.loading .page:target .password-box > .loading-spinner {
     visibility: visible;
-    z-index: 1;
 }
 
 .big-hex {

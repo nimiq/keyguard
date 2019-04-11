@@ -229,10 +229,8 @@ class ExportFile extends Nimiq.Observable {
     }
 
     /**
-     * Used to set the key if already decrypted elsewhere. This will disable the password requirement
-     * for use cases where the unencrypted key is needed. In case the encrypted key is needed, the password
-     * must also be provided to bypass its requirement.
-     * Set to null to reenable password requirement.
+     * Used to set the key and the password if already decrypted elsewhere.
+     * It will disable the login-file-unlock page entirely and update the progress-indicator.
      * @param {Key?} key
      * @param {string} [password]
      */
@@ -243,13 +241,14 @@ class ExportFile extends Nimiq.Observable {
             /* eslint-disable no-new */
             new ProgressIndicator(this.$exportFileIntroPage.querySelector('.progress-indicator'), 2, 1);
             new ProgressIndicator(this.$downloadFilePage.querySelector('.progress-indicator'), 2, 2);
-            this._keyAlreadySet = true;
             /* eslint-enable no-new */
+            this._keyAlreadySet = true;
         } else {
             /* eslint-disable no-new */
             new ProgressIndicator(this.$exportFileIntroPage.querySelector('.progress-indicator'), 3, 1);
             new ProgressIndicator(this.$downloadFilePage.querySelector('.progress-indicator'), 3, 3);
             /* eslint-enable no-new */
+            this._keyAlreadySet = false;
         }
     }
 }

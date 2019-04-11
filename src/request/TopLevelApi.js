@@ -231,8 +231,8 @@ class TopLevelApi extends RequestParser {
      * @param {boolean} showLoading
      */
     static setLoading(showLoading) {
-        const loadingButton = document.body.querySelector('.page:target .loading-spinner');
-        if (loadingButton) {
+        const loadingSpinner = document.body.querySelector('.page:target .loading-spinner');
+        if (loadingSpinner) {
             /** @type {HTMLElement} */
             (document.getElementById(TopLevelApi.Pages.LOADING)).classList.add('display-none');
         } else {

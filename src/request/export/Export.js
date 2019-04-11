@@ -2,7 +2,6 @@
 /* global ExportWords */
 /* global Nimiq */
 
-
 /**
  * @callback Export.resolve
  * @param {KeyguardRequest.ExportResult} result

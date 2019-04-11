@@ -16,11 +16,11 @@ class ExportApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         parsedRequest.appName = this.parseAppName(request.appName);
         parsedRequest.keyInfo = await this.parseKeyId(request.keyId);
         parsedRequest.keyLabel = this.parseLabel(request.keyLabel);
-        if (request.fileOnly && request.wordsOnly) {
-            throw new Errors.InvalidRequestError('fileOnly and wordsOnly can not both be set to true.');
-        }
         parsedRequest.fileOnly = this.parseBoolean(request.fileOnly);
         parsedRequest.wordsOnly = this.parseBoolean(request.wordsOnly);
+        if (parsedRequest.fileOnly && parsedRequest.wordsOnly) {
+            throw new Errors.InvalidRequestError('fileOnly and wordsOnly can not both be set to true.');
+        }
 
         return parsedRequest;
     }

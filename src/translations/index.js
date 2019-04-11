@@ -104,6 +104,12 @@ const TRANSLATIONS = {
         'export-file-intro-download-file': 'Download a Login File to stay save and to login to other browsers '
                                          + 'and devices.',
         'export-file-intro-orange-text': 'Never share it. Don\'t Lose it.',
+        'export-file-success-set-password': 'Set password',
+        'export-file-success-save-file': 'Save Login File',
+        'export-file-success-create-backup': 'Create backup',
+        'export-file-success-heading': 'Take 5 minutes for a backup',
+        'export-file-success-words-intro': 'There is no ‘forgot password’ option. '
+                                         + 'Write down 24 words to create a secure backup.',
         'export-words-intro-heading': 'There is no password recovery!',
         'go-to-recovery-words': 'Create backup',
         'export-continue-to-login-file': 'Continue to Login File',
@@ -246,6 +252,12 @@ const TRANSLATIONS = {
         'export-file-intro-download-file': 'Lade zur Sicherheit ein Login File runter und um dich damit in anderen '
                                          + 'Browsern und Geräten anzumelden.',
         'export-file-intro-orange-text': 'Teile es mit niemandem. Verliere es nicht.',
+        'export-file-success-set-password': 'Passwort gesetzt',
+        'export-file-success-save-file': 'Login File gespeichert',
+        'export-file-success-create-backup': 'Backup erstellt',
+        'export-file-success-heading': 'Nimm dir 5 Minuten Zeit für ein Backup',
+        'export-file-success-words-intro': 'Es gibt keine Möglichkeit der Passwortwiederherstellung. '
+                                         + 'Schreib dir 24 Wörter auf um ein sicheres Backup zu erstellen.',
         'export-words-intro-heading': 'Es gibt keine Passwortwiederherstellung',
         'go-to-recovery-words': 'Erstelle ein Backup',
         'export-continue-to-login-file': 'Weiter zum Login File',
