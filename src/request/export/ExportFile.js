@@ -106,11 +106,7 @@ class ExportFile extends Nimiq.Observable {
         });
 
         this._passwordBox.on(PasswordBox.Events.SUBMIT, async password => {
-            if (this._key && this._password) {
-                await this._passwordSubmitted(this._password);
-            } else {
                 await this._passwordSubmitted(password);
-            }
         });
 
         this._passwordSetterBox.on(PasswordSetterBox.Events.ENTERED, async () => {
