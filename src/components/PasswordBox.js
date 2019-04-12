@@ -145,6 +145,7 @@ class PasswordBox extends Nimiq.Observable {
 
         const password = !this.options.hideInput ? this._passwordInput.text : undefined;
         this.fire(PasswordBox.Events.SUBMIT, password);
+        this._passwordInput.reset();
     }
 
     _onCancel() {

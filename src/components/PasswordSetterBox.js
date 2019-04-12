@@ -1,8 +1,10 @@
+/* global Constants */
 /* global Nimiq */
 /* global I18n */
 /* global PasswordInput */
 /* global AnimationUtils */
 /* global PasswordStrength */
+/* global TopLevelApi */
 /* global TemplateTags */
 
 class PasswordSetterBox extends Nimiq.Observable {
@@ -58,7 +60,7 @@ class PasswordSetterBox extends Nimiq.Observable {
 
             <div password-input></div>
 
-            <button class="submit" data-i18n="passwordbox-continue">Continue</button>
+            <button class="submit" data-i18n="passwordbox-repeat">Repeat password</button>
 
             ${options.hideSkip ? '' : TemplateTags.noVars`
                 <a tabindex="0" class="password-skip nq-text-s">
@@ -107,18 +109,9 @@ class PasswordSetterBox extends Nimiq.Observable {
         this.$el.classList.remove('repeat');
     }
 
-    /**
-     * @returns {Promise<void>}
-     */
     async onPasswordIneligible() {
-        // We have to shake both possible too-weak notices
         const $hintTooShort = /** @type {HTMLElement} */ (this.$el.querySelector('.password-strength.strength-short'));
-        const $hintWeak = /** @type {HTMLElement} */ (this.$el.querySelector('.password-strength.strength-weak'));
-
-        await Promise.all([
-            AnimationUtils.animate('shake', $hintTooShort),
-            AnimationUtils.animate('shake', $hintWeak),
-        ]);
+        await AnimationUtils.animate('shake', $hintTooShort);
     }
 
     /**
@@ -126,13 +119,23 @@ class PasswordSetterBox extends Nimiq.Observable {
      */
     _onInputChangeValidity(isValid) {
         if (this._password && this._passwordInput.text === this._password) {
-            this.fire(PasswordSetterBox.Events.SUBMIT, this._password);
+            this._samePasswordTimout = window.setTimeout(
+                () => {
+                    this.fire(PasswordSetterBox.Events.SUBMIT, this._password);
+                    this._passwordInput.reset();
+                },
+                400,
+            );
             return;
+        }
+        if (this._samePasswordTimout) {
+            window.clearTimeout(this._samePasswordTimout);
+            this._samePasswordTimout = null;
         }
 
         const score = PasswordStrength.strength(this._passwordInput.text);
 
-        this.$el.classList.toggle('input-eligible', isValid && score >= PasswordStrength.Score.MINIMUM);
+        this.$el.classList.toggle('input-eligible', isValid && !this._password);
 
         this.$el.classList.toggle('strength-short', !isValid);
         this.$el.classList.toggle('strength-weak', isValid && score < PasswordStrength.Score.MINIMUM);
@@ -148,15 +151,14 @@ class PasswordSetterBox extends Nimiq.Observable {
     }
 
     _isEligiblePassword() {
-        const password = this._passwordInput.text;
-        if (password.length < PasswordInput.DEFAULT_MIN_LENGTH) return false;
-        return PasswordStrength.strength(password) >= PasswordStrength.Score.MINIMUM;
+        if (this._passwordInput.text.length < PasswordInput.DEFAULT_MIN_LENGTH) return false;
+        return true;
     }
 
     /**
      * @param {Event} event
      */
-    _onSubmit(event) {
+    async _onSubmit(event) {
         event.preventDefault();
         if (!this._isEligiblePassword()) {
             this.onPasswordIneligible();
@@ -167,25 +169,24 @@ class PasswordSetterBox extends Nimiq.Observable {
             this._passwordInput.reset();
             this.$el.classList.add('repeat');
             this.fire(PasswordSetterBox.Events.ENTERED);
+            if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
+                this._passwordInput.focus();
+            }
             return;
         }
         if (this._password !== this._passwordInput.text) {
-            this.reset(true);
-            this.fire(PasswordSetterBox.Events.NOT_EQUAL);
-            return;
+            await AnimationUtils.animate('shake', this._passwordInput.$el);
         }
-        this.fire(PasswordSetterBox.Events.SUBMIT, this._password);
-        this.reset();
     }
 
     _onSkip() {
         this.fire(PasswordSetterBox.Events.SKIP);
+        this.reset();
     }
 }
 
 PasswordSetterBox.Events = {
     SUBMIT: 'passwordbox-submit',
     ENTERED: 'passwordbox-entered',
-    NOT_EQUAL: 'passwordbox-not-equal',
     SKIP: 'passwordbox-skip',
 };

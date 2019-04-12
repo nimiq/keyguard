@@ -47,6 +47,8 @@ class ChangePassword {
         const $passwordSetter = ($setPassword.querySelector('.password-setter-box'));
         /** @type {HTMLDivElement} */
         const $loginFileIcon = ($setPassword.querySelector('.login-file-icon'));
+        /** @type {HTMLLinkElement} */
+        this.$setPasswordBackButton = ($setPassword.querySelector('a.page-header-back-button'));
         /** @type {HTMLAnchorElement} */
         const $downloadLoginFile = ($downloadFile.querySelector('.download-login-file'));
 
@@ -95,7 +97,6 @@ class ChangePassword {
         this._passwordSetter.on(PasswordSetterBox.Events.ENTERED, this._prepare.bind(this));
         this._passwordSetter.on(PasswordSetterBox.Events.SUBMIT, this._commitChangeAndOfferLoginFile.bind(this));
         this._passwordSetter.on(PasswordSetterBox.Events.SKIP, this._commitChangeAndOfferLoginFile.bind(this));
-        this._passwordSetter.on(PasswordSetterBox.Events.NOT_EQUAL, () => this._loginFileIcon.unlock());
 
         this._downloadLoginFile.on(DownloadLoginFile.Events.DOWNLOADED, () => {
             this._resolve({ success: true });
@@ -107,6 +108,20 @@ class ChangePassword {
         window.location.hash = ChangePassword.Pages.ENTER_PASSWORD;
         if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
             this._passwordGetter.focus();
+        }
+    }
+
+    /**
+     *
+     * @param {Event} event
+     */
+    backToEnterPassword(event) {
+        event.stopPropagation();
+        this._progressIndicator.setStep(2);
+        this._passwordSetter.reset();
+        this._loginFileIcon.unlock();
+        if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
+            this._passwordSetter.focus();
         }
     }
 
@@ -161,6 +176,7 @@ class ChangePassword {
         }
         this._loginFileIcon.lock(colorClass);
         this._progressIndicator.setStep(3);
+        this.$setPasswordBackButton.addEventListener('click', this.backToEnterPassword.bind(this), { once: true });
     }
 
     /**

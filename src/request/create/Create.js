@@ -37,6 +37,9 @@ class Create {
         /** @type {HTMLFormElement} */
         this.$walletIdentifier = (document.querySelector('.wallet-identifier'));
 
+        /** @type {HTMLLinkElement} */
+        this.$setPasswordBackButton = (this.$setPasswordPage.querySelector('a.page-header-back-button'));
+
         // Create components
 
         this._identiconSelector = new IdenticonSelector(this.$identiconSelector, request.defaultKeyPath);
@@ -87,13 +90,23 @@ class Create {
         this._passwordSetter.on(PasswordSetterBox.Events.ENTERED, () => {
             this.$setPasswordPage.classList.add('repeat-password');
             this.progressIndicator.setStep(3);
-        });
-
-        this._passwordSetter.on(PasswordSetterBox.Events.NOT_EQUAL, () => {
-            this.$setPasswordPage.classList.remove('repeat-password');
-            this.progressIndicator.setStep(2);
+            this.$setPasswordBackButton.addEventListener('click', this.backToEnterPassword.bind(this), { once: true });
         });
     } // constructor
+
+
+    /**
+     *
+     * @param {Event} event
+     */
+    backToEnterPassword(event) {
+        event.stopPropagation();
+        this.progressIndicator.setStep(2);
+        this._passwordSetter.reset();
+        if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
+            this._passwordSetter.focus();
+        }
+    }
 
     /**
      * @param {KeyguardRequest.CreateRequest} request

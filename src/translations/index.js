@@ -47,6 +47,7 @@ const TRANSLATIONS = {
 
         'passwordbox-enter-password': 'Enter your password',
         'passwordbox-repeat-password': 'Repeat your password',
+        'passwordbox-repeat': 'Repeat password',
         'passwordbox-continue': 'Continue',
         'passwordbox-log-in': 'Unlock',
         'passwordbox-log-out': 'Confirm logout',
@@ -195,6 +196,7 @@ const TRANSLATIONS = {
 
         'passwordbox-enter-password': 'Gib dein Passwort ein',
         'passwordbox-repeat-password': 'Wiederhole dein Passwort',
+        'passwordbox-repeat': 'Passwort wiederholen',
         'passwordbox-continue': 'Weiter',
         'passwordbox-log-in': 'Entsperren',
         'passwordbox-log-out': 'Abmeldung bestätigen',

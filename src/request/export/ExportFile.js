@@ -52,6 +52,8 @@ class ExportFile extends Nimiq.Observable {
         const $loginFileIcon = ($setPasswordPage.querySelector('.login-file-icon'));
         /** @type {HTMLFormElement} */
         const $passwordBox = ($unlockFilePage.querySelector('.password-box'));
+        /** @type {HTMLLinkElement} */
+        this.$setPasswordBackButton = ($setPasswordPage.querySelector('a.page-header-back-button'));
         /** @type {HTMLFormElement} */
         const $passwordSetterBox = ($setPasswordPage.querySelector('.password-setter-box'));
         /** @type {HTMLAnchorElement} */
@@ -75,10 +77,15 @@ class ExportFile extends Nimiq.Observable {
         this._downloadLoginFile.createDummyFile(this._request.keyInfo.defaultAddress);
 
         /* eslint-disable no-new */
-        new ProgressIndicator(this.$exportFileIntroPage.querySelector('.progress-indicator'), 3, 1);
+        new ProgressIndicator(this.$exportFileIntroPage.querySelector('.progress-indicator'),
+            this._request.keyInfo.encrypted ? 3 : 4,
+            1);
         new ProgressIndicator($unlockFilePage.querySelector('.progress-indicator'), 3, 2);
-        new ProgressIndicator($setPasswordPage.querySelector('.progress-indicator'), 3, 2);
-        new ProgressIndicator(this.$downloadFilePage.querySelector('.progress-indicator'), 3, 3);
+        this._progressIndicator = new ProgressIndicator($setPasswordPage.querySelector('.progress-indicator'), 4, 2);
+        new ProgressIndicator(this.$downloadFilePage.querySelector('.progress-indicator'),
+            this._request.keyInfo.encrypted ? 3 : 4,
+            this._request.keyInfo.encrypted ? 3 : 4);
+
         /* eslint-enable no-new */
 
         $fileButton.addEventListener('click', async () => {
@@ -95,6 +102,7 @@ class ExportFile extends Nimiq.Observable {
             } else {
                 this._passwordSetterBox.reset();
                 this._loginFileIcon.unlock();
+                this._progressIndicator.setStep(2);
                 window.location.hash = ExportFile.Pages.LOGIN_FILE_SET_PASSWORD;
                 if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
                     this._passwordSetterBox.focus();
@@ -116,11 +124,10 @@ class ExportFile extends Nimiq.Observable {
             const colorString = LoginFile.CONFIG[color].name;
             colorClass = `nq-${colorString}-bg`;
             this._loginFileIcon.lock(colorClass);
+            this._progressIndicator.setStep(3);
+            this.$setPasswordBackButton.addEventListener('click', this.backToEnterPassword.bind(this), { once: true });
         });
-        this._passwordSetterBox.on(PasswordSetterBox.Events.NOT_EQUAL, () => {
-            $setPasswordPage.classList.remove('repeat-password');
-            this._loginFileIcon.unlock();
-        });
+
         this._passwordSetterBox.on(PasswordSetterBox.Events.SUBMIT, async password => {
             await this._setPassword(password);
         });
@@ -128,6 +135,20 @@ class ExportFile extends Nimiq.Observable {
 
     run() {
         window.location.hash = ExportFile.Pages.LOGIN_FILE_INTRO;
+    }
+
+    /**
+     *
+     * @param {Event} event
+     */
+    backToEnterPassword(event) {
+        event.stopPropagation();
+        this._progressIndicator.setStep(2);
+        this._passwordSetterBox.reset();
+        this._loginFileIcon.unlock();
+        if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
+            this._passwordSetterBox.focus();
+        }
     }
 
     /**
@@ -162,7 +183,8 @@ class ExportFile extends Nimiq.Observable {
     }
 
     /**
-     *
+     * Sets a user entered password. Does NOT update this._key._encrypted in order for the request to remain
+     * as is and not change to a 2 or 3 step process afterwards
      * @param {string} password
      */
     async _setPassword(password) {
@@ -189,8 +211,6 @@ class ExportFile extends Nimiq.Observable {
 
         const passwordBuffer = password ? Utf8Tools.stringToUtf8ByteArray(password) : undefined;
         await KeyStore.instance.put(key, passwordBuffer);
-
-        this._request.keyInfo.encrypted = true;
 
         this.fire(ExportFile.Events.KEY_CHANGED, this._key, password);
         await this._goToLoginFileDownload(key, password);
@@ -236,10 +256,15 @@ class ExportFile extends Nimiq.Observable {
             new ProgressIndicator(this.$exportFileIntroPage.querySelector('.progress-indicator'), 2, 1);
             new ProgressIndicator(this.$downloadFilePage.querySelector('.progress-indicator'), 2, 2);
             /* eslint-enable no-new */
-        } else {
+        } else if (this._request.keyInfo.encrypted) {
             /* eslint-disable no-new */
             new ProgressIndicator(this.$exportFileIntroPage.querySelector('.progress-indicator'), 3, 1);
             new ProgressIndicator(this.$downloadFilePage.querySelector('.progress-indicator'), 3, 3);
+            /* eslint-enable no-new */
+        } else {
+            /* eslint-disable no-new */
+            new ProgressIndicator(this.$exportFileIntroPage.querySelector('.progress-indicator'), 4, 1);
+            new ProgressIndicator(this.$downloadFilePage.querySelector('.progress-indicator'), 4, 4);
             /* eslint-enable no-new */
         }
     }

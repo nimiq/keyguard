@@ -52,6 +52,8 @@ class ImportWords {
         // Elements
         /** @type {HTMLFormElement} */
         const $recoveryWords = ($words.querySelector('.recovery-words'));
+        /** @type {HTMLLinkElement} */
+        this.$setPasswordBackButton = (this.$setPassword.querySelector('a.page-header-back-button'));
         /** @type {HTMLFormElement} */
         const $passwordSetter = (this.$setPassword.querySelector('.password-setter-box'));
         /** @type {HTMLDivElement} */
@@ -97,6 +99,7 @@ class ImportWords {
                 colorClass = `nq-${colorString}-bg`;
             }
             this._loginFileIcon.lock(colorClass);
+            this.$setPasswordBackButton.addEventListener('click', this.backToEnterPassword.bind(this), { once: true });
         });
         this._passwordSetter.on(PasswordSetterBox.Events.SUBMIT, async password => {
             await this._storeKeys(password);
@@ -123,7 +126,7 @@ class ImportWords {
             });
             window.location.hash = ImportWords.Pages.DOWNLOAD_LOGINFILE;
         });
-        this._passwordSetter.on(PasswordSetterBox.Events.NOT_EQUAL, () => this._loginFileIcon.unlock());
+
         this._passwordSetter.on(PasswordSetterBox.Events.SKIP, async () => {
             await this._storeKeys();
             this._resolve(this._keyResults);
@@ -168,6 +171,19 @@ class ImportWords {
     run() {
         this._recoveryWords.setWords(new Array(24));
         window.location.hash = ImportWords.Pages.ENTER_WORDS;
+    }
+
+    /**
+     *
+     * @param {Event} event
+     */
+    backToEnterPassword(event) {
+        event.stopPropagation();
+        this._passwordSetter.reset();
+        this._loginFileIcon.unlock();
+        if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
+            this._passwordSetter.focus();
+        }
     }
 
     /**
