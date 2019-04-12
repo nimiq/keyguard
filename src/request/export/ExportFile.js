@@ -71,9 +71,7 @@ class ExportFile extends Nimiq.Observable {
         );
         this._loginFileIcon = new LoginFileIcon($loginFileIcon);
         this._downloadLoginFile = new DownloadLoginFile($downloadLoginFile);
-        this._downloadLoginFile.createDummyFile(
-            this._request.keyInfo._defaultAddress,
-        );
+        this._downloadLoginFile.createDummyFile(this._request.keyInfo.defaultAddress);
 
         /* eslint-disable no-new */
         new ProgressIndicator(this.$exportFileIntroPage.querySelector('.progress-indicator'), 3, 1);

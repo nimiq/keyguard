@@ -231,6 +231,7 @@ class TopLevelApi extends RequestParser {
      * @param {boolean} showLoading
      */
     static setLoading(showLoading) {
+        // Check if a loading spinner element is available somewhere on the current page
         const loadingSpinner = document.body.querySelector('.page:target .loading-spinner');
         if (loadingSpinner) {
             /** @type {HTMLElement} */

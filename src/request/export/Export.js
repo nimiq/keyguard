@@ -34,14 +34,14 @@ class Export {
             this._fileExportSuccessful.bind(this),
             this._reject.bind(this));
 
+        /** @type {HTMLElement} */
+        (document.querySelector(`#${ExportFile.Pages.LOGIN_FILE_INTRO} .page-header-back-button`))
+            .classList.add('display-none');
+
         if (this._request.wordsOnly || this._request.keyInfo.type === Nimiq.Secret.Type.PRIVATE_KEY) {
             /** @type {HTMLElement} */
-            (/** @type {HTMLElement} */ (document.getElementById(ExportWords.Pages.RECOVERY_WORDS_INTRO))
-                .querySelector('.page-header-back-button')).classList.add('display-none');
-        } else {
-            /** @type {HTMLElement} */
-            (/** @type {HTMLElement} */ (document.getElementById(ExportFile.Pages.LOGIN_FILE_INTRO))
-                .querySelector('.page-header-back-button')).classList.add('display-none');
+            (document.querySelector(`#${ExportWords.Pages.RECOVERY_WORDS_INTRO} .page-header-back-button`))
+                .classList.add('display-none');
         }
 
         /** @type {HTMLDivElement} */
