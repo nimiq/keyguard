@@ -165,10 +165,11 @@ ul.nq-list li > .nq-icon {
     background-color: rgb( 255, 255, 255, .0); /* transparent white */
 }
 
-.page#login-file-success #close-request {
+.page#login-file-success .page-header-back-button {
     position: absolute;
     right: 2rem;
     top: 2rem;
+    left: auto;
     opacity: 0.16;
     border: 0rem;
     background: transparent;
@@ -176,15 +177,19 @@ ul.nq-list li > .nq-icon {
     transition: opacity .3s ease;
 }
 
+.page#login-file-success .page-header-back-button:hover {
+    opacity: 0.25;
+}
+
+.page#login-file-success .page-header-back-button svg {
+    width: 3rem;
+    height: 3rem;
+}
+
 .page#login-file-success .page-body {
     display: flex;
     flex-direction: column;
     align-items: center;
-}
-
-.page#login-file-success #close-request svg {
-    width: 3rem;
-    height: 3rem;
 }
 
 .page#login-file-success ul {

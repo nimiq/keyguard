@@ -47,12 +47,6 @@ class Export {
         /** @type {HTMLDivElement} */
         this._fileSuccessPage = (document.getElementById(Export.Pages.LOGIN_FILE_SUCCESS));
 
-        /** @type {HTMLButtonElement} */
-        const closeRequestButton = (this._fileSuccessPage.querySelector('button'));
-        closeRequestButton.addEventListener('click', () => {
-            window.history.back();
-        });
-
         /** @type {HTMLLinkElement} */
         const skipWordsButton = (this._fileSuccessPage.querySelector('.skip-words'));
         skipWordsButton.addEventListener('click', e => {
