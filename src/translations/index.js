@@ -12,7 +12,7 @@ const TRANSLATIONS = {
         'recovery-words-intro-copy': 'Create a copy and store it in a safe place: family’s house, bank locker etc.',
         'recovery-words-intro-safety': 'Mind water and fire, use a sealed box to keep your Recovery Words safe.',
         'recovery-words-text': 'Anyone with these words can access your account! Keep them save.',
-        'recovery-words-validate': 'validate words',
+        'recovery-words-validate': 'Validate words',
 
         'create-heading-choose-identicon': 'Choose an avatar',
         'create-heading-create-password': 'Create a password',
@@ -100,7 +100,7 @@ const TRANSLATIONS = {
         'export-file-intro-blue-text': 'Your Login File grants access to your account. '
                                      + 'Download and save it.',
         'export-file-intro-browser': 'Your Account is stored in your browser.',
-        'export-file-intro-accident': 'As a part of your browser’s data it might be deleted by accident.',
+        'export-file-intro-accident': 'As a part of your browser\'s data it might be deleted by accident.',
         'export-file-intro-download-file': 'Download a Login File to stay save and to login to other browsers '
                                          + 'and devices.',
         'export-file-intro-orange-text': 'Never share it. Don\'t Lose it.',
@@ -108,7 +108,7 @@ const TRANSLATIONS = {
         'export-file-success-save-file': 'Save Login File',
         'export-file-success-create-backup': 'Create backup',
         'export-file-success-heading': 'Take 5 minutes for a backup',
-        'export-file-success-words-intro': 'There is no ‘forgot password’ option. '
+        'export-file-success-words-intro': 'There is no \'forgot password\' option. '
                                          + 'Write down 24 words to create a secure backup.',
         'export-words-intro-heading': 'There is no password recovery!',
         'go-to-recovery-words': 'Create backup',
