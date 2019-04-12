@@ -34,7 +34,7 @@ class Export {
             this._fileExportSuccessful.bind(this),
             this._reject.bind(this));
 
-        if (this._request.wordsOnly) {
+        if (this._request.wordsOnly || this._request.keyInfo.type === Nimiq.Secret.Type.PRIVATE_KEY) {
             /** @type {HTMLElement} */
             (/** @type {HTMLElement} */ (document.getElementById(ExportWords.Pages.RECOVERY_WORDS_INTRO))
                 .querySelector('.page-header-back-button')).classList.add('display-none');
