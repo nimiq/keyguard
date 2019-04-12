@@ -167,6 +167,7 @@ body.loading .page:target .page-footer > .loading-spinner,
 body.loading .page:target .password-box.hide-input > button,
 body.loading .page:target .password-box > .loading-spinner {
     visibility: visible;
+    z-index: 1;
 }
 
 .big-hex {
