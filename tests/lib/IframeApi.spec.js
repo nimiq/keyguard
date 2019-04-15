@@ -62,7 +62,7 @@ describe('IframeApi', () => {
         expect(CookieJar.eat).not.toHaveBeenCalled();
         expect(AccountStore.instance.list).not.toHaveBeenCalled();
         expect(KeyStore.instance.list).toHaveBeenCalled();
-        expect(listedKeyObjects).toEqual(Dummy.keyInfoObjects().reverse());
+        expect(listedKeyObjects).toEqual(Dummy.keyInfoObjects());
 
         await Dummy.Utils.deleteDummyKeyStore();
     });
