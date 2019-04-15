@@ -8,18 +8,18 @@ class Key {
      * @returns {string}
      */
     static deriveHash(input) {
-        return Nimiq.BufferUtils.toHex(Nimiq.Hash.blake2b(input).subarray(0, 32));
+        return Nimiq.Hash.blake2b(input).toBase64();
     }
 
     /**
      * @param {Nimiq.Entropy|Nimiq.PrivateKey} secret
      * @param {boolean} [hasPin]
-     * @param {number?} [id]
      */
-    constructor(secret, hasPin = false, id = null) {
+    constructor(secret, hasPin = false) {
         this._secret = secret;
         this._hasPin = hasPin;
-        this._id = id;
+        /** @type {string?} */
+        this._id = null;
         this._defaultAddress = this.deriveAddress(Constants.DEFAULT_DERIVATION_PATH);
     }
 
@@ -93,16 +93,12 @@ class Key {
     }
 
     /**
-     * @param {number?} id
-     */
-    set id(id) {
-        this._id = id;
-    }
-
-    /**
-     * @type {number?}
+     * @type {string}
      */
     get id() {
+        if (!this._id) {
+            this._id = this.hash;
+        }
         return this._id;
     }
 
@@ -140,6 +136,8 @@ class Key {
      * @type {string}
      */
     get hash() {
+        // Private keys use the address as input, as during migration of legacy accounts
+        // their entropy or public key is not known, as it is stored encrypted.
         const input = this._secret instanceof Nimiq.Entropy
             ? this._secret.serialize()
             : Nimiq.PublicKey.derive(this._secret).toAddress().serialize();

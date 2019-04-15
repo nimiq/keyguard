@@ -27,8 +27,8 @@ describe('KeyStore', () => {
             KeyStore.instance._get(Dummy.keyInfos()[0].id),
             KeyStore.instance._get(Dummy.keyInfos()[1].id),
         ]);
-        expect(key1).toEqual(Dummy.storedKeyRecords()[0]);
-        expect(key2).toEqual(Dummy.storedKeyRecords()[1]);
+        expect(key1).toEqual(Dummy.keyRecords()[0]);
+        expect(key2).toEqual(Dummy.keyRecords()[1]);
     });
 
     it('can get and decrypt keys', async () => {
@@ -48,12 +48,12 @@ describe('KeyStore', () => {
 
     it('can list keys', async () => {
         const keyInfos = await KeyStore.instance.list();
-        expect(keyInfos).toEqual(Dummy.keyInfos());
+        expect(keyInfos).toEqual(Dummy.keyInfos().reverse());
     });
 
     it('can remove keys', async () => {
         let currentKeys = await KeyStore.instance.list();
-        expect(currentKeys).toEqual(Dummy.keyInfos());
+        expect(currentKeys).toEqual(Dummy.keyInfos().reverse());
 
         await KeyStore.instance.remove(Dummy.keyInfos()[0].id);
         currentKeys = await KeyStore.instance.list();
@@ -95,7 +95,7 @@ describe('KeyStore', () => {
             Dummy.keyInfos()[1].hasPin,
         ));
         currentKeys = await KeyStore.instance.list();
-        expect(currentKeys).toEqual(Dummy.keyInfos());
+        expect(currentKeys).toEqual(Dummy.keyInfos().reverse());
 
         // check that the keys have been stored correctly
         const [key1, key2] = await Promise.all([
@@ -128,7 +128,7 @@ describe('KeyStore', () => {
 
         expect(cookieSet).toBe(false);
         const key1 = await KeyStore.instance._get(Dummy.keyInfos()[0].id);
-        expect(key1).toEqual(Dummy.storedKeyRecords()[0]);
+        expect(key1).toEqual(Dummy.keyRecords()[0]);
 
         const accountsDbAfter = await AccountStore.instance.connect();
         expect(accountsDbAfter).toBe(null);
@@ -164,7 +164,7 @@ describe('KeyStore', () => {
 
         expect(migrationCookieDeleted && accountsCookieDeleted).toBe(true);
         const key1 = await KeyStore.instance._get(Dummy.keyInfos()[0].id);
-        expect(key1).toEqual(Dummy.storedKeyRecords()[0]);
+        expect(key1).toEqual(Dummy.keyRecords()[0]);
 
         const accountsDb = await AccountStore.instance.connect();
         expect(accountsDb).toBe(null);

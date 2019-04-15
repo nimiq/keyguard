@@ -59,28 +59,28 @@ describe('RequestParser', () => {
         } catch(e) {
             error = e;
         }
-        expect(error).toEqual(new Errors.InvalidRequestError('keyId must be a number'));
+        expect(error).toEqual(new Errors.InvalidRequestError('keyId must be a string'));
 
         try {
             const x = await requestParser.parseKeyId({keyId:75});
         } catch(e) {
             error = e;
         }
-        expect(error).toEqual(new Errors.InvalidRequestError('keyId must be a number'));
+        expect(error).toEqual(new Errors.InvalidRequestError('keyId must be a string'));
 
         try {
             const x = await requestParser.parseKeyId(99999);
         } catch(e) {
             error = e;
         }
-        expect(error).toEqual(new Errors.KeyNotFoundError());
+        expect(error).toEqual(new Errors.InvalidRequestError('keyId must be a string'));
 
         try {
-            const x = await requestParser.parseKeyId('5');
+            const x = await requestParser.parseKeyId('string');
         } catch(e) {
             error = e;
         }
-        expect(error).toEqual(new Errors.InvalidRequestError('keyId must be a number'));
+        expect(error).toEqual(new Errors.KeyNotFoundError());
 
         const parsedKeyInfo = await requestParser.parseKeyId(Dummy.keyInfos()[0].id);
         expect(parsedKeyInfo).toEqual(Dummy.keyInfos()[0]);

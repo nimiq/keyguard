@@ -21,7 +21,6 @@ import {
     SignMessageRequest,
     SimpleRequest,
     IFrameRequest,
-    Request,
     DeriveAddressesResult,
     ListLegacyResult,
     ListResult,
@@ -32,11 +31,6 @@ import {
     ObjectType,
 } from './PublicRequest';
 
-import {
-    InternalToPublic,
-    PublicToInternal,
-} from './InternalRequest';
-
 import Observable from './Observable';
 
 export class KeyguardClient {
@@ -44,38 +38,6 @@ export class KeyguardClient {
         window.location.origin === 'https://accounts.nimiq.com' ? 'https://keyguard.nimiq.com'
         : window.location.origin === 'https://accounts.nimiq-testnet.com' ? 'https://keyguard.nimiq-testnet.com'
         : `${location.protocol}//${location.hostname}:8000/src`;
-
-    private static parseId(id: string) {
-        if (id.substr(0, 1) === 'K') {
-            const parsedId = parseInt(id.substr(1), 10);
-            if (!isNaN(parsedId)) return parsedId;
-        }
-        throw new Error('keyId cannot be parsed');
-    }
-
-    private static publicToInternal<T extends Request>(object: any): PublicToInternal<T> | null {
-        if (!object) return null;
-        const newObject = Object.assign({}, object) as any;
-        if (object.keyId) {
-            newObject.keyId = KeyguardClient.parseId(object.keyId);
-        }
-        return newObject;
-    }
-
-    // Not really well typed. Return type gets any. Feel free to improve.
-    private static internalToPublic(result: any): InternalToPublic<typeof result> {
-        if (result instanceof Array) {
-            return result.map((x) => KeyguardClient.internalToPublic(x));
-        }
-        if (result && result.keyId) {
-            result.keyId = `K${result.keyId}`;
-        }
-        // For ListResult and LegacyListResult
-        if (result && result.id) {
-            result.id = `K${result.id}`;
-        }
-        return result;
-    }
 
     private readonly _endpoint: string;
     private _redirectClient: RedirectRpcClient;
@@ -190,8 +152,7 @@ export class KeyguardClient {
         command: KeyguardCommand,
         request: T,
     ) {
-        const internalRequest = KeyguardClient.publicToInternal(request);
-        this._redirectBehavior.request(this._endpoint, command, [ internalRequest ]);
+        this._redirectBehavior.request(this._endpoint, command, [ request ]);
         // return value of redirect call is received in _onResolve()
     }
 
@@ -199,9 +160,8 @@ export class KeyguardClient {
         command: KeyguardCommand,
         request?: T1,
     ): Promise<T2> {
-        const args = request ? [ KeyguardClient.publicToInternal(request) ] : [];
-        const internalResult = await this._iframeBehavior.request(this._endpoint, command, args);
-        return KeyguardClient.internalToPublic(internalResult) as T2;
+        const args = request ? [request] : [];
+        return this._iframeBehavior.request(this._endpoint, command, args);
     }
 
     private _onReject(
@@ -214,14 +174,12 @@ export class KeyguardClient {
     }
 
     private _onResolve<T extends RedirectResult>(
-        internalResult: PublicToInternal<T>,
+        result: T,
         id?: number,
         state?: ObjectType|null,
     ) {
         const [parsedState, command] = this._parseState(state);
-        const publicResult: T = KeyguardClient.internalToPublic(internalResult);
-
-        this._observable.fire(`${command}-resolve`, publicResult, parsedState);
+        this._observable.fire(`${command}-resolve`, result, parsedState);
     }
 
     private _parseState(state?: ObjectType|null) {

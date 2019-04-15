@@ -38,7 +38,7 @@ const hashes = () => {
             ? secret.serialize()
             : Nimiq.PublicKey.derive(secret).toAddress().serialize();
 
-        return Nimiq.Hash.blake2b(input).toHex();
+        return Nimiq.Hash.blake2b(input).toBase64();
     }));
 };
 
@@ -47,18 +47,18 @@ const encryptionPassword2 = 'password2';
 
 const keyInfos = () => [
     new KeyInfo(
-        1,
+        hashes()[0],
         Nimiq.Secret.Type.PRIVATE_KEY,
         true,
         false,
-        Nimiq.PublicKey.derive(new Nimiq.PrivateKey(keys[0])).toAddress().serialize().subarray(0, 20),
+        new Uint8Array(Nimiq.PublicKey.derive(new Nimiq.PrivateKey(keys[0])).toAddress().serialize()),
     ),
     new KeyInfo(
-        2,
+        hashes()[1],
         Nimiq.Secret.Type.ENTROPY,
         false,
         false,
-        (new Nimiq.Entropy(keys[1])).toExtendedPrivateKey().derivePath(Constants.DEFAULT_DERIVATION_PATH).toAddress().serialize().subarray(0, 20),
+        new Uint8Array(new Nimiq.Entropy(keys[1]).toExtendedPrivateKey().derivePath(Constants.DEFAULT_DERIVATION_PATH).toAddress().serialize()),
     ),
 ];
 
@@ -77,23 +77,20 @@ const _purposeIdArray = Array.from(_purposeIdBuf.subarray(0, 4));
 /** @type {() => KeyRecord[]} */
 const keyRecords = () => [
     {
+        id: hashes()[0],
         type: keyInfoObjects()[0].type,
         hasPin: keyInfoObjects()[0].hasPin,
         secret: encryptedKeys[0],
-        hash: hashes()[0],
         defaultAddress: keyInfos()[0].defaultAddress.serialize().subarray(0, 20),
     },
     {
+        id: hashes()[1],
         type: keyInfoObjects()[1].type,
         hasPin: keyInfoObjects()[1].hasPin,
         secret: new Uint8Array(_purposeIdArray.concat(Array.from(keys[1]))),
-        hash: hashes()[1],
         defaultAddress: keyInfos()[1].defaultAddress.serialize().subarray(0, 20),
     },
 ];
-
-/** @type {() => StoredKeyRecord[]} */
-const storedKeyRecords = () => keyRecords().map((record, i) => Object.assign({}, record, { id: i + 1 }));
 
 const deprecatedAccountInfos = [
     {
@@ -115,8 +112,8 @@ const deprecatedAccountRecords = [
     Object.assign({}, deprecatedAccountInfos[0], { encryptedKeyPair: encryptedKeys[0] }),
 ];
 
-const deprecatedAccount2KeyInfoObjects = [{
-    id: 1,
+const deprecatedAccount2KeyInfoObjects = () => [{
+    id: hashes()[0],
     type: Nimiq.Secret.Type.PRIVATE_KEY,
     hasPin: false,
     legacyAccount: {
@@ -125,7 +122,7 @@ const deprecatedAccount2KeyInfoObjects = [{
     },
 }];
 
-const keyInfoCookieEncoded = '101,202';
+const keyInfoCookieEncoded = '10LsYVUikGJA5z8p37+LqkH3EZ5opDz2zQRT1r8cGJ8dE=,2071U/NKd5KzeimvyflGLYku6JfI9Mms2wGxWoCLmx9+0=';
 
 /** @type {string} */
 const cookie = `k=${keyInfoCookieEncoded};accounts=${JSON.stringify(deprecatedAccountCookies)};some=thing;`;
@@ -220,7 +217,6 @@ const Dummy = {
     keyInfos,
     cookieKeyInfos,
     keyRecords,
-    storedKeyRecords,
     keyInfoCookieEncoded,
     deprecatedAccountInfos,
     cookie,
