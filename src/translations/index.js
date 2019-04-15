@@ -12,12 +12,13 @@ const TRANSLATIONS = {
         'recovery-words-intro-copy': 'Create a copy and store it in a safe place: family’s house, bank locker etc.',
         'recovery-words-intro-safety': 'Mind water and fire, use a sealed box to keep your Recovery Words safe.',
         'recovery-words-text': 'Anyone with these words can access your account! Keep them save.',
+        'recovery-words-validate': 'Validate words',
 
         'create-heading-choose-identicon': 'Choose an avatar',
         'create-heading-create-password': 'Create a password',
         'create-heading-repeat-password': 'Confirm your password',
         'create-heading-validate-backup': 'Validate your backup',
-        'create-wallet-desc': 'This is your account with your first address in it.',
+        'create-wallet-desc': 'This is your new account with its first address.',
 
         'import-heading-enter-recovery-words': 'Enter Recovery Words',
         'import-upload-login-file': 'Upload your Login File',
@@ -94,13 +95,23 @@ const TRANSLATIONS = {
         'validate-words-23-hint': 'What is the 23rd word?',
         'validate-words-24-hint': 'What is the 24th word?',
 
-        'export-file-heading': 'Download Login File',
+        'export-file-heading': 'Unlock your Login File',
         'export-file-intro-heading': 'Save your account',
         'export-file-intro-blue-text': 'Your Login File grants access to your account. '
-                                     + 'Only you can access it. Download and save it.',
+                                     + 'Download and save it.',
+        'export-file-intro-browser': 'Your Account is stored in your browser.',
+        'export-file-intro-accident': 'As a part of your browser\'s data it might be deleted by accident.',
+        'export-file-intro-download-file': 'Download a Login File to stay save and to login to other browsers '
+                                         + 'and devices.',
         'export-file-intro-orange-text': 'Never share it. Don\'t Lose it.',
+        'export-file-success-set-password': 'Set password',
+        'export-file-success-save-file': 'Save Login File',
+        'export-file-success-create-backup': 'Create backup',
+        'export-file-success-heading': 'Take 5 minutes for a backup',
+        'export-file-success-words-intro': 'There is no \'forgot password\' option. '
+                                         + 'Write down 24 words to create a secure backup.',
         'export-words-intro-heading': 'There is no password recovery!',
-        'go-to-recovery-words': 'Go to Recovery Words',
+        'go-to-recovery-words': 'Create backup',
         'export-continue-to-login-file': 'Continue to Login File',
 
         'remove-key-heading': 'Don\'t lose access',
@@ -149,12 +160,13 @@ const TRANSLATIONS = {
         'recovery-words-intro-safety': 'Schütze dich vor Wasser und Feuer und benutze eine verschlossene Kiste um '
                                      + 'deine Wiederherstellungswörter zu verwahren.',
         'recovery-words-text': 'Jeder im Besitz dieser Wörter kann auf deinen Account zugreifen. Verwahre sie sicher.',
+        'recovery-words-validate': 'Wörter überprüfen',
 
         'create-heading-choose-identicon': 'Wähle deinen Konto-Avatar',
         'create-heading-create-password': 'Erstelle ein Passwort',
         'create-heading-repeat-password': 'Bestätige dein Passwort',
         'create-heading-validate-backup': 'Überprüfe dein Backup',
-        'create-wallet-desc': 'Das ist dein Account mit deiner ersten Addresse.',
+        'create-wallet-desc': 'Das ist dein neuer Account mit seiner ersten Addresse.',
 
         'import-heading-enter-recovery-words': 'Wiederherstellungswörter eingeben',
         'import-upload-login-file': 'Lade dein Login File hoch',
@@ -231,13 +243,23 @@ const TRANSLATIONS = {
         'validate-words-23-hint': 'Was ist das 23. Wort?',
         'validate-words-24-hint': 'Was ist das 24. Wort?',
 
-        'export-file-heading': 'Login File herunterladen',
+        'export-file-heading': 'Login File entsperren',
         'export-file-intro-heading': 'Sichere deinen Account',
         'export-file-intro-blue-text': 'Dein Login File gewährt Zugang zu deinem Account. '
-                                    + 'Nur du kannst darauf zugreifen. Lade es runter und speichere es.',
+                                     + 'Lade es runter und speichere es.',
+        'export-file-intro-browser': 'Dein Account ist in deinem Browser gespeichert.',
+        'export-file-intro-accident': 'Als Teil deiner Browserdatan könnten sie versehentlich gelöscht werden.',
+        'export-file-intro-download-file': 'Lade zur Sicherheit ein Login File runter und um dich damit in anderen '
+                                         + 'Browsern und Geräten anzumelden.',
         'export-file-intro-orange-text': 'Teile es mit niemandem. Verliere es nicht.',
+        'export-file-success-set-password': 'Passwort gesetzt',
+        'export-file-success-save-file': 'Login File gespeichert',
+        'export-file-success-create-backup': 'Backup erstellt',
+        'export-file-success-heading': 'Nimm dir 5 Minuten Zeit für ein Backup',
+        'export-file-success-words-intro': 'Es gibt keine Möglichkeit der Passwortwiederherstellung. '
+                                         + 'Schreib dir 24 Wörter auf um ein sicheres Backup zu erstellen.',
         'export-words-intro-heading': 'Es gibt keine Passwortwiederherstellung',
-        'go-to-recovery-words': 'Zu den Wiederherstellungswörtern',
+        'go-to-recovery-words': 'Erstelle ein Backup',
         'export-continue-to-login-file': 'Weiter zum Login File',
 
         'remove-key-heading': 'Verliere deinen Zugang nicht',

@@ -76,7 +76,8 @@ export type SimpleRequest = BasicRequest & {
 };
 
 export type ExportRequest = SimpleRequest & {
-    skipFile?: boolean,
+    fileOnly?: boolean,
+    wordsOnly?: boolean,
 };
 
 export type ExportResult = {
@@ -100,10 +101,6 @@ export type SignMessageRequest = SimpleRequest & {
     // The Keyguard validates that the `keyPath` generates this address, before signing the message.
     signer: Uint8Array,
     signerLabel: string,
-};
-
-export type SignMessageResult = SignatureResult & {
-    data: Uint8Array,
 };
 
 // Request unions

@@ -168,12 +168,20 @@ class RequestParser { // eslint-disable-line no-unused-vars
     }
 
     /**
+     * When passed in as a string, the message is parsed as a string and checked for
+     * control characters. When passed in as an Uint8Array, the message is handled as
+     * binary data and only ever displayed as HEX.
+     *
      * @param {any} message
-     * @returns {Uint8Array}
+     * @returns {string | Uint8Array}
      */
     parseMessage(message) {
-        if (typeof message === 'string') message = Utf8Tools.stringToUtf8ByteArray(message);
-        if (!(message instanceof Uint8Array)) {
+        if (typeof message === 'string') {
+            const messageBytes = Utf8Tools.stringToUtf8ByteArray(message);
+            if (!Utf8Tools.isValidUtf8(messageBytes)) {
+                throw new Errors.InvalidRequestError('message cannot include control characters');
+            }
+        } else if (!(message instanceof Uint8Array)) {
             throw new Errors.InvalidRequestError('message must be a string or Uint8Array');
         }
         return message;
@@ -216,5 +224,13 @@ class RequestParser { // eslint-disable-line no-unused-vars
         } catch (error) {
             throw new Errors.InvalidRequestError(error);
         }
+    }
+
+    /**
+     * @param {any} value
+     * @returns {boolean}
+     */
+    parseBoolean(value) {
+        return !!value;
     }
 }

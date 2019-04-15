@@ -67,6 +67,9 @@ class PasswordSetterBox extends Nimiq.Observable {
                     </svg>
                 </a>
             `}
+            <svg height="48" width="54" color="inherit" class="loading-spinner">
+                <use xlink:href="#loading-spinner" />
+            </svg>
         `;
         /* eslint-enable max-len */
 

@@ -2,6 +2,7 @@
 /* global Constants */
 /* global PasswordBox */
 /* global PasswordSetterBox */
+/* global Key */
 /* global KeyStore */
 /* global Errors */
 /* global Utf8Tools */
@@ -56,7 +57,7 @@ class ChangePassword {
 
         this._passwordGetter = new PasswordBox($passwordGetter, {
             buttonI18nTag: 'passwordbox-continue',
-            minLength: this._request.keyInfo.hasPin ? 6 : undefined,
+            minLength: this._request.keyInfo.hasPin ? Key.PIN_LENGTH : undefined,
             hideCancel: true,
             hideInput: !this._request.keyInfo.encrypted,
         });

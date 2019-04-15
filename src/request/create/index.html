@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="icon" href="/favicon.ico">
     <meta http-equiv="Content-Security-Policy"
           content="default-src 'self' 'unsafe-eval';
           img-src http: https: blob: data:;
@@ -23,6 +24,7 @@
     <script defer bundle-common src="../../lib/KeyInfo.js"></script>
     <script defer bundle-common src="../../lib/Errors.js"></script>
     <script defer bundle-common src="../../lib/ErrorConstants.js"></script>
+    <script defer bundle-common src="../../lib/SignMessageConstants.js"></script>
     <script defer bundle-common src="../../lib/CookieJar.js"></script>
     <script defer bundle-common src="../../lib/BrowserDetection.js"></script>
     <script defer bundle-common src="../../lib/AccountStore.js"></script>
@@ -62,6 +64,12 @@
     <link rel="stylesheet" href="./Create.css">
 </head>
 <body class="loading">
+    <!-- Loading spinner SVG -->
+    <svg height="0"><defs><g id="loading-spinner">
+        <path class="big-hex" d="M51.9,21.9L41.3,3.6c-0.8-1.3-2.2-2.1-3.7-2.1H16.4c-1.5,0-2.9,0.8-3.7,2.1L2.1,21.9c-0.8,1.3-0.8,2.9,0,4.2 l10.6,18.3c0.8,1.3,2.2,2.1,3.7,2.1h21.3c1.5,0,2.9-0.8,3.7-2.1l10.6-18.3C52.7,24.8,52.7,23.2,51.9,21.9z" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.4" stroke-dasharray="92.5 60" />
+        <path class="small-hex" d="M51.9,21.9L41.3,3.6c-0.8-1.3-2.2-2.1-3.7-2.1H16.4c-1.5,0-2.9,0.8-3.7,2.1L2.1,21.9c-0.8,1.3-0.8,2.9,0,4.2 l10.6,18.3c0.8,1.3,2.2,2.1,3.7,2.1h21.3c1.5,0,2.9-0.8,3.7-2.1l10.6-18.3C52.7,24.8,52.7,23.2,51.9,21.9z" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-dasharray="47.5 105" />
+    </g></defs></svg>
+
     <div class="header-top">
         <div class="nimiq-app-name">
             <span class="nimiq-logo"></span>
@@ -105,7 +113,7 @@
                     <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-hexagon"/></svg>
                     <div class="identicon"></div>
                 </div>
-                <h2 class="nq-h2 nq-blue" data-i18n="create-wallet-desc">This is your account with your first address in it.</h2>
+                <h2 class="nq-h2 nq-blue" data-i18n="create-wallet-desc">This is your new account with its first address.</h2>
             </div>
 
             <div class="page-footer">
@@ -121,7 +129,9 @@
         <div class="flex-grow"></div>
 
         <div id="loading" class="page">
-            <div class="loading-animation"></div>
+            <svg height="48" width="54" color="inherit" class="loading-spinner">
+                <use xlink:href="#loading-spinner" />
+            </svg>
         </div>
     </div>
 </body>

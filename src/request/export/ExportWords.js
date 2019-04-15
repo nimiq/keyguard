@@ -79,7 +79,7 @@ class ExportWords extends Nimiq.Observable {
         });
         $recoveryWordsSkip.addEventListener('click', event => {
             event.preventDefault();
-            this._resolve({ success: true });
+            this._resolve({ success: false });
         });
         this._wordsPasswordBox.on(PasswordBox.Events.SUBMIT, this._passwordSubmitted.bind(this));
         $recoveryWordsContinue.addEventListener('click', () => {
@@ -87,7 +87,7 @@ class ExportWords extends Nimiq.Observable {
             window.location.hash = ExportWords.Pages.VALIDATE_WORDS;
         });
         this._validateWords.on(ValidateWords.Events.VALIDATED, () => this._resolve({ success: true }));
-        this._validateWords.on(ValidateWords.Events.SKIP, () => this._resolve({ success: true }));
+        this._validateWords.on(ValidateWords.Events.SKIP, () => this._resolve({ success: false }));
     }
 
     run() {
