@@ -63,3 +63,108 @@
 .identicon-selector .generate-more {
     margin-top: 5rem;
 }
+
+.page#choose-identicon {
+    position: relative;
+}
+
+#account-details {
+    position: absolute;
+    overflow: hidden;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    border-radius: 1rem;
+    background-color: rgba(255,255,255, 0.75);
+    z-index: -1;
+    opacity: 0;
+    padding: 4rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: opacity .4s 0s, z-index 0s .4s;
+}
+
+.account-details-open > #account-details {
+    z-index: 3;
+    transition-delay: 0s;
+    opacity: 1;
+}
+
+#details {
+    flex-direction: column;
+    align-items: center;
+}
+
+#effect-container {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: 1rem;
+    flex-grow: 1;
+}
+
+#effect-container > * {
+    transition: filter .4s, opacity .4s;
+    -webkit-filter: blur(0px);
+    -moz-filter: blur(0px);
+    -o-filter: blur(0px);
+    -ms-filter: blur(0px);
+    filter: blur(0px);
+    opacity: 1;
+}
+
+.account-details-open > #effect-container > .page-header,
+.account-details-open > #effect-container > .page-body {
+    -webkit-filter: blur(20px);
+    -moz-filter: blur(20px);
+    -o-filter: blur(20px);
+    -ms-filter: blur(20px);
+    filter: blur(20px);
+    opacity: 0.5;
+}
+
+#account-details #close-details {
+    position: absolute;
+    right: 2rem;
+    top: 2rem;
+    opacity: 0.16;
+    border: 0rem;
+    background: transparent;
+    padding: 0;
+    transition: opacity .3s ease;
+}
+
+#account-details #close-details svg {
+    width: 3rem;
+    height: 3rem;
+}
+
+#account-details #close-details::after {
+    content: '';
+    position: absolute;
+    left: -1.5rem;
+    right: -1.5rem;
+    top: -1.5rem;
+    bottom: -1.5rem;
+    cursor: pointer;
+}
+
+#account-details #close-details:hover,
+#account-details #close-details:focus {
+    opacity: 0.25;
+    outline: none;
+}
+
+#account-details .nq-button {
+    margin: 0 2rem;
+}
+
+#account-details .identicon {
+    margin-top: 8rem;
+}
+
+#account-details .address {
+    margin-top: 8rem;
+}
