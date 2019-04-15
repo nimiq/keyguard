@@ -3,6 +3,7 @@
 /* global QrScanner */
 /* global I18n */
 /* global LoginFile */
+/* global TemplateTags */
 
 class FileImporter extends Nimiq.Observable {
     /**
@@ -40,7 +41,7 @@ class FileImporter extends Nimiq.Observable {
         $el = $el || document.createElement('label');
         $el.classList.add('file-import');
 
-        $el.innerHTML = `
+        $el.innerHTML = TemplateTags.noVars`
             <h3 class="nq-h3 nq-light-blue" data-i18n="file-import-prompt">Drag here or click to upload</h3>
             <span class="error-message"></span>
             <div class="qr-code"></div>

@@ -1,4 +1,5 @@
 /* global Nimiq */
+/* global TemplateTags */
 
 class ProgressIndicator extends Nimiq.Observable { // eslint-disable-line no-unused-vars
     /**
@@ -24,7 +25,7 @@ class ProgressIndicator extends Nimiq.Observable { // eslint-disable-line no-unu
         let html = '';
 
         for (let i = 0; i < numberOfSteps; i++) {
-            html += `<div class="indicator step-${i + 1}"></div>`;
+            html += TemplateTags.hasVars(1)`<div class="indicator step-${i + 1}"></div>`;
         }
 
         $el.innerHTML = html;

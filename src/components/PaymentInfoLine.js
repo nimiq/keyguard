@@ -1,4 +1,5 @@
 /* global Nimiq */
+/* global TemplateTags */
 
 class PaymentInfoLine extends Nimiq.Observable { // eslint-disable-line no-unused-vars
     /**
@@ -22,7 +23,7 @@ class PaymentInfoLine extends Nimiq.Observable { // eslint-disable-line no-unuse
         $el = $el || document.createElement('div');
         $el.classList.add('payment-info-line', 'nq-label');
 
-        $el.innerHTML = `
+        $el.innerHTML = TemplateTags.noVars`
             <div class="description">
                 Payment to
                 <span domain></span>

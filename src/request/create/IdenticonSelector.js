@@ -1,6 +1,7 @@
 /* global Nimiq */
 /* global I18n */
 /* global Identicon */
+/* global TemplateTags */
 
 class IdenticonSelector extends Nimiq.Observable {
     /**
@@ -32,7 +33,7 @@ class IdenticonSelector extends Nimiq.Observable {
         $el = $el || document.createElement('div');
         $el.classList.add('identicon-selector');
 
-        $el.innerHTML = `
+        $el.innerHTML = TemplateTags.noVars`
             <div class="identicons">
                 <div class="loading center">
                     <div class="loading-animation"></div>
