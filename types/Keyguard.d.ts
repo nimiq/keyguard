@@ -61,5 +61,8 @@ type Parsed<T extends KeyguardRequest.Request> =
         'message', { message: Uint8Array | string }> :
     T extends KeyguardRequest.SimpleRequest
         | KeyguardRequest.DeriveAddressRequest
-        | KeyguardRequest.RemoveKeyRequest ? KeyId2KeyInfo<T> : T;
+        | KeyguardRequest.RemoveKeyRequest ? KeyId2KeyInfo<T> :
+    T extends KeyguardRequest.ImportRequest ? Transform<KeyguardRequest.ImportRequest,
+        'isKeyLost', { isKeyLost: boolean }> :
+    T;
 

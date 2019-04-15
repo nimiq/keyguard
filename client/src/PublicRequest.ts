@@ -52,7 +52,7 @@ export type EmptyRequest = null;
 
 export type ImportRequest = BasicRequest & {
     requestedKeyPaths: string[],
-    isKeyLost: boolean,
+    isKeyLost?: boolean,
 };
 
 export type ReleaseKeyRequest = {
