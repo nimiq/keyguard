@@ -14,7 +14,7 @@ let __nimiqLoaded = null;
 // Defaults for development. Build script replaces CONFIG.ALLOWED_ORIGIN and CONFIG.NETWORK.
 const CONFIG = {
     ALLOWED_ORIGIN: '*',
-    NETWORK: 'test',
+    NETWORK: Constants.NETWORK.TEST,
 };
 
 // Register service worker if necessary (and possible).
@@ -39,6 +39,9 @@ async function loadNimiq() {
         await Nimiq.WasmHelper.doImport();
 
         switch (CONFIG.NETWORK) {
+            case Constants.NETWORK.DEV:
+                Nimiq.GenesisConfig.dev();
+                break;
             case Constants.NETWORK.TEST:
                 Nimiq.GenesisConfig.test();
                 break;
