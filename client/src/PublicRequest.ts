@@ -51,8 +51,8 @@ export type DeriveAddressesRequest = {
 export type EmptyRequest = null;
 
 export type ImportRequest = BasicRequest & {
-    defaultKeyPath: string,
     requestedKeyPaths: string[],
+    isKeyLost: boolean,
 };
 
 export type ReleaseKeyRequest = {
