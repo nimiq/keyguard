@@ -11,13 +11,13 @@ class TemplateTags {
             /** @type {TemplateStringsArray} */ strings,
             /** @type {(string | number)[] & { length: T }} */ ...expressions
         ) => {
-            if (strings.length !== variableCount + 1) {
+            if (expressions.length !== variableCount) {
                 throw new Error('Illegal variable use');
             }
 
             let output = strings[0];
             expressions.forEach((expression, index) => {
-                output += expression + strings[index];
+                output += expression + strings[index + 1];
             });
 
             return output;
