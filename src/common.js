@@ -76,8 +76,10 @@ async function runKeyguard(RequestApiClass, options) { // eslint-disable-line no
 
     // Back arrow functionality
     document.body.addEventListener('click', event => {
+        /* To retain the ability to add a custom handler to the back arrow,
+           only capture the event only when in bubbling phase */
         // @ts-ignore (Property 'matches' does not exist on type 'EventTarget'.)
-        if (event.eventPhase === 1 || !event.target || !event.target.matches('a.page-header-back-button')) return;
+        if (event.eventPhase !== 3 || !event.target || !event.target.matches('a.page-header-back-button')) return;
         window.history.back();
     });
 
