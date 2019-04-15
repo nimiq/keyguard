@@ -169,9 +169,7 @@ class PasswordSetterBox extends Nimiq.Observable {
             this._passwordInput.reset();
             this.$el.classList.add('repeat');
             this.fire(PasswordSetterBox.Events.ENTERED);
-            if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
-                this._passwordInput.focus();
-            }
+            this._passwordInput.focus();
             return;
         }
         if (this._password !== this._passwordInput.text) {
