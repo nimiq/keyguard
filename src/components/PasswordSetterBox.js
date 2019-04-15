@@ -1,10 +1,8 @@
-/* global Constants */
 /* global Nimiq */
 /* global I18n */
 /* global PasswordInput */
 /* global AnimationUtils */
 /* global PasswordStrength */
-/* global TopLevelApi */
 /* global TemplateTags */
 
 class PasswordSetterBox extends Nimiq.Observable {

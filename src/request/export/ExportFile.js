@@ -81,7 +81,11 @@ class ExportFile extends Nimiq.Observable {
             this._request.keyInfo.encrypted ? 3 : 4,
             1);
         new ProgressIndicator($unlockFilePage.querySelector('.progress-indicator'), 3, 2);
-        this._progressIndicator = new ProgressIndicator($setPasswordPage.querySelector('.progress-indicator'), 4, 2);
+        this._setPasswordProgressIndicator = new ProgressIndicator(
+            $setPasswordPage.querySelector('.progress-indicator'),
+            4,
+            2,
+        );
         new ProgressIndicator(this.$downloadFilePage.querySelector('.progress-indicator'),
             this._request.keyInfo.encrypted ? 3 : 4,
             this._request.keyInfo.encrypted ? 3 : 4);
@@ -102,7 +106,7 @@ class ExportFile extends Nimiq.Observable {
             } else {
                 this._passwordSetterBox.reset();
                 this._loginFileIcon.unlock();
-                this._progressIndicator.setStep(2);
+                this._setPasswordProgressIndicator.setStep(2);
                 window.location.hash = ExportFile.Pages.LOGIN_FILE_SET_PASSWORD;
                 if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
                     this._passwordSetterBox.focus();
@@ -124,7 +128,7 @@ class ExportFile extends Nimiq.Observable {
             const colorString = LoginFile.CONFIG[color].name;
             colorClass = `nq-${colorString}-bg`;
             this._loginFileIcon.lock(colorClass);
-            this._progressIndicator.setStep(3);
+            this._setPasswordProgressIndicator.setStep(3);
             this.$setPasswordBackButton.addEventListener('click', this.backToEnterPassword.bind(this), { once: true });
         });
 
@@ -143,7 +147,7 @@ class ExportFile extends Nimiq.Observable {
      */
     backToEnterPassword(event) {
         event.stopPropagation();
-        this._progressIndicator.setStep(2);
+        this._setPasswordProgressIndicator.setStep(2);
         this._passwordSetterBox.reset();
         this._loginFileIcon.unlock();
         if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
