@@ -37,7 +37,7 @@
  * ```
  * @abstract
  */
-class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
+class TopLevelApi extends RequestParser {
     constructor() {
         super();
         if (window.self !== window.top) {
@@ -231,6 +231,15 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
      * @param {boolean} showLoading
      */
     static setLoading(showLoading) {
+        // Check if a loading spinner element is available somewhere on the current page
+        const loadingSpinner = document.body.querySelector('.page:target .loading-spinner');
+        if (loadingSpinner) {
+            /** @type {HTMLElement} */
+            (document.getElementById(TopLevelApi.Pages.LOADING)).classList.add('display-none');
+        } else {
+            /** @type {HTMLElement} */
+            (document.getElementById(TopLevelApi.Pages.LOADING)).classList.remove('display-none');
+        }
         document.body.classList.toggle('loading', showLoading);
     }
 
@@ -262,3 +271,7 @@ class TopLevelApi extends RequestParser { // eslint-disable-line no-unused-vars
             || document.body.clientWidth;
     }
 }
+
+TopLevelApi.Pages = {
+    LOADING: 'loading',
+};

@@ -88,7 +88,7 @@ class ImportFile {
         this.$loginFileImage.src = src;
         const version = this._encryptedKey.readUint8();
         // eslint-disable-next-line no-nested-ternary
-        this.passwordBox.setMinLength(this._flags.hasPin ? 6 : version < 3 ? 10 : undefined);
+        this.passwordBox.setMinLength(this._flags.hasPin ? Key.PIN_LENGTH : version < 3 ? 10 : undefined);
         this.passwordBox.reset();
         this.$unlockAccountPage.classList.remove('animate');
 

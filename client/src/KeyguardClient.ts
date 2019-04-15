@@ -193,3 +193,8 @@ export class KeyguardClient {
         throw new Error('Invalid state after RPC request');
     }
 }
+
+import '../../src/lib/SignMessageConstants.js';
+
+// tslint:disable-next-line:variable-name
+export const MSG_PREFIX = window.__messageSigningPrefix.MSG_PREFIX;

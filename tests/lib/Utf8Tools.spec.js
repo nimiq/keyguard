@@ -28,4 +28,33 @@ describe('Utf8Tools', function() {
         expect(isInvalidUtf8_1).toBe(false);
         expect(isInvalidUtf8_2).toBe(false);
     });
+
+    it('can detect valid UTF-8 and decode correctly', function() {
+        const vectors = [
+            {
+                data: new Uint8Array([72, 101, 108, 108, 111, 32, 87, 111, 114, 108, 100, 33]),
+                isValid: true,
+                decoded: 'Hello World!',
+            },
+            {
+                data: new Uint8Array([72, 101, 108, 108, 111, 0, 32, 87, 111, 114, 108, 100, 33]),
+                isValid: false,
+                decoded: '48656c6c6f0020576f726c6421',
+            },
+            {
+                data: new Uint8Array(Nimiq.BufferUtils.fromBase64('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACgAAAAAAAAAAAAAAASoAAAA=')),
+                isValid: false,
+                decoded: '0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a0000000000000000000000012a000000',
+            },
+        ];
+
+        for (const vector of vectors) {
+            expect(Utf8Tools.isValidUtf8(vector.data)).toBe(vector.isValid);
+            if (vector.isValid) {
+                expect(Utf8Tools.utf8ByteArrayToString(vector.data)).toBe(vector.decoded);
+            } else {
+                expect(Nimiq.BufferUtils.toHex(vector.data)).toBe(vector.decoded);
+            }
+        }
+    });
 });

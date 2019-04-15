@@ -58,6 +58,7 @@
     "types/Nimiq.d.ts",
     "types/Keyguard.d.ts",
     "types/ErrorContainer.d.ts",
+    "types/MessagePrefix.d.ts",
     "src/**/*.js",
     "tests/**/*.js"
   ],

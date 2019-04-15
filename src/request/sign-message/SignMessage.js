@@ -1,5 +1,6 @@
 /* global Constants */
 /* global Nimiq */
+/* global Key */
 /* global KeyStore */
 /* global Identicon */
 /* global PasswordBox */
@@ -10,7 +11,7 @@
 
 /**
  * @callback SignMessage.resolve
- * @param {KeyguardRequest.SignMessageResult} result
+ * @param {KeyguardRequest.SignatureResult} result
  */
 
 class SignMessage {
@@ -33,8 +34,8 @@ class SignMessage {
         const $message = ($page.querySelector('#message'));
 
         // Set message
-        if (Utf8Tools.isValidUtf8(request.message)) {
-            $message.value = Utf8Tools.utf8ByteArrayToString(request.message);
+        if (typeof request.message === 'string') {
+            $message.value = request.message;
         } else {
             $message.value = Nimiq.BufferUtils.toHex(request.message);
         }
@@ -50,7 +51,7 @@ class SignMessage {
         this._passwordBox = new PasswordBox($passwordBox, {
             hideInput: !request.keyInfo.encrypted,
             buttonI18nTag: 'passwordbox-sign-msg',
-            minLength: request.keyInfo.hasPin ? 6 : undefined,
+            minLength: request.keyInfo.hasPin ? Key.PIN_LENGTH : undefined,
             hideCancel: true,
         });
 
@@ -101,13 +102,20 @@ class SignMessage {
             return;
         }
 
-        const signingResult = key.signMessage(request.keyPath, request.message);
+        /** @type {Uint8Array} */
+        let messageBytes;
+        if (typeof request.message === 'string') {
+            messageBytes = Utf8Tools.stringToUtf8ByteArray(request.message);
+        } else {
+            messageBytes = request.message;
+        }
 
-        /** @type {KeyguardRequest.SignMessageResult} */
+        const signature = key.signMessage(request.keyPath, messageBytes);
+
+        /** @type {KeyguardRequest.SignatureResult} */
         const result = {
             publicKey: publicKey.serialize(),
-            signature: signingResult.signature.serialize(),
-            data: signingResult.data,
+            signature: signature.serialize(),
         };
         resolve(result);
     }

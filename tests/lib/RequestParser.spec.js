@@ -146,7 +146,8 @@ describe('RequestParser', () => {
         expect(() => requestParser.parseMessage(undefined)).toThrow();
         expect(() => requestParser.parseMessage(5)).toThrow();
         expect(() => requestParser.parseMessage({})).toThrow();
-        expect(requestParser.parseMessage('123456')).toEqual(new Uint8Array([49, 50, 51, 52, 53, 54]));
+        expect(() => requestParser.parseMessage(Utf8Tools.utf8ByteArrayToString(new Uint8Array([72, 101, 108, 108, 111, 0, 32, 87, 111, 114, 108, 100, 33])))).toThrow(); // 'Hello World!' with a zero byte in the middle
+        expect(requestParser.parseMessage('Sign this message!')).toEqual('Sign this message!');
         const message = new Uint8Array([238, 61, 13, 183, 158, 200, 247, 106, 130, 61, 9, 123, 134, 82, 60, 95, 16, 71, 39, 70]);
         expect(requestParser.parseMessage(message)).toEqual(message);
     });

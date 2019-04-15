@@ -22,7 +22,8 @@
   },
   "include": [
     "src/*.ts",
-    "types/ErrorContainer.d.ts"
+    "types/ErrorContainer.d.ts",
+    "types/MessagePrefix.d.ts"
   ],
   "exclude": [
     "node_modules",
