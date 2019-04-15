@@ -67,34 +67,3 @@ body {
 .display-none {
     display: none !important;
 }
-
-/* Text Inputs */
-
-input[type="text"],
-input[type="password"] {
-    border: none;
-    outline: none;
-    background: transparent;
-    color: white;
-    width: 21rem;
-    text-align: center;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 0;
-    font-size: 1.875rem;
-    font-family: inherit;
-    font-style: inherit;
-    font-variant: inherit;
-    padding: 1px;
-}
-
-input[type="text"]::placeholder,
-input[type="password"]::placeholder {
-    color: rgba(255, 255, 255, 0.3);
-    text-align: center;
-    display: block;
-}
-
-input[type="text"]:focus,
-input[type="password"]:focus {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
-}

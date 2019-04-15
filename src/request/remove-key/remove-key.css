@@ -111,7 +111,10 @@
 
 .page#remove-key #remove-key-label-confirm input {
     font-size: 3.6rem;
-    border-bottom: none;
+    border: none;
     margin-bottom: 4rem;
     width: 100%;
+    padding-top: 0;
+    padding-bottom: 0;
+    text-align: center;
 }
