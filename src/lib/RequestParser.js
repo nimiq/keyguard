@@ -225,4 +225,12 @@ class RequestParser { // eslint-disable-line no-unused-vars
             throw new Errors.InvalidRequestError(error);
         }
     }
+
+    /**
+     * @param {any} value
+     * @returns {boolean}
+     */
+    parseBoolean(value) {
+        return !!value;
+    }
 }

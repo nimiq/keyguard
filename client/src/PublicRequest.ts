@@ -76,7 +76,8 @@ export type SimpleRequest = BasicRequest & {
 };
 
 export type ExportRequest = SimpleRequest & {
-    skipFile?: boolean,
+    fileOnly?: boolean,
+    wordsOnly?: boolean,
 };
 
 export type ExportResult = {
