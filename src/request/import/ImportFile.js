@@ -17,7 +17,7 @@
 
 class ImportFile {
     /**
-     * @param {KeyguardRequest.ImportRequest} request
+     * @param {Parsed<KeyguardRequest.ImportRequest>} request
      * @param {ImportFile.resolve} resolve
      * @param {reject} reject
      */
@@ -37,6 +37,11 @@ class ImportFile {
         this.$importFilePage = (document.getElementById(ImportFile.Pages.IMPORT_FILE));
         /** @type {HTMLElement} */
         this.$unlockAccountPage = (document.getElementById(ImportFile.Pages.UNLOCK_ACCOUNT));
+
+        if (request.isKeyLost) {
+            /** @type {HTMLElement} */
+            (this.$importFilePage.querySelector('.login-to-continue')).classList.remove('display-none');
+        }
 
         /** @type {HTMLLabelElement} */
         const $fileImport = (this.$importFilePage.querySelector('.file-import'));

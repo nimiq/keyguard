@@ -6,6 +6,19 @@
     padding-top: 3rem;
 }
 
+.page#import-file .login-to-continue {
+    font-weight: 600;
+    color: var(--nimiq-orange);
+    text-align: center;
+    font-size: 2rem;
+    margin-top: -4.5rem;
+}
+
+.page#import-file .login-to-continue:not(.display-none) + .file-import {
+    margin-top: 2rem;
+    margin-bottom: -2rem;
+}
+
 .page#import-file .page-footer {
     display: flex;
     flex-direction: column;
