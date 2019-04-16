@@ -67,6 +67,7 @@ class Export {
     }
 
     run() {
+        console.log(this._request);
         if (this._request.wordsOnly || this._request.keyInfo.type === Nimiq.Secret.Type.PRIVATE_KEY) {
             this._exportWordsHandler.run();
         } else {

@@ -60,6 +60,8 @@ const TRANSLATIONS = {
         'passwordbox-password-strength-good': 'Ok, that is an average password',
         'passwordbox-password-strength-strong': 'Great, that is a strong password',
         'passwordbox-password-strength-secure': 'Super, that is a secure password',
+        'passwordbox-repeat-password-long': 'No match, please try again',
+        'passwordbox-repeat-password-short': 'Password is too short',
         'passwordbox-password-skip': 'Skip for now',
 
         'identicon-selector-loading': 'Mixing colors',
@@ -209,6 +211,8 @@ const TRANSLATIONS = {
         'passwordbox-password-strength-good': 'Ok, das ist ein gutes Passwort',
         'passwordbox-password-strength-strong': 'Gut, das ist ein starkes Passwort',
         'passwordbox-password-strength-secure': 'Super, das ist ein sicheres Passwort',
+        'passwordbox-repeat-password-long': 'Keine Übereinstimmung, bitte versuche es erneut',
+        'passwordbox-repeat-password-short': 'Das Passwort ist zu kurz',
         'passwordbox-password-skip': 'Erstmal überspringen',
 
         'identicon-selector-loading': 'Mische Farben',

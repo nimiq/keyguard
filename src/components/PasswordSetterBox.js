@@ -54,6 +54,8 @@ class PasswordSetterBox extends Nimiq.Observable {
             <div class="password-strength strength-good   nq-text-s" data-i18n="passwordbox-password-strength-good"  >Ok, that is an average password</div>
             <div class="password-strength strength-strong nq-text-s" data-i18n="passwordbox-password-strength-strong">Great, that is a strong password</div>
             <div class="password-strength strength-secure nq-text-s" data-i18n="passwordbox-password-strength-secure">Super, that is a secure password</div>
+            <div class="repeat-long nq-text-s" data-i18n="passwordbox-repeat-password-long">No match, please try again</div>
+            <div class="repeat-short nq-text-s" data-i18n="passwordbox-repeat-password-short">Password is too short</div>
             <div class="repeat-password nq-text-s" data-i18n="passwordbox-repeat-password">Repeat your password</div>
 
             <div password-input></div>
@@ -116,20 +118,46 @@ class PasswordSetterBox extends Nimiq.Observable {
      * @param {boolean} isValid
      */
     _onInputChangeValidity(isValid) {
-        if (this._password && this._passwordInput.text === this._password) {
-            this._samePasswordTimout = window.setTimeout(
-                () => {
-                    this.fire(PasswordSetterBox.Events.SUBMIT, this._password);
-                    this._passwordInput.reset();
-                },
-                400,
-            );
-            return;
+        if (this._repeatPasswordTimout) {
+            window.clearTimeout(this._repeatPasswordTimout);
+            this._repeatPasswordTimout = null;
         }
-        if (this._samePasswordTimout) {
-            window.clearTimeout(this._samePasswordTimout);
-            this._samePasswordTimout = null;
+
+        if (this._password) {
+            if (this._passwordInput.text === this._password) {
+                this._repeatPasswordTimout = window.setTimeout(
+                    () => {
+                        this.fire(PasswordSetterBox.Events.SUBMIT, this._password);
+                        this._passwordInput.reset();
+                    },
+                    400,
+                );
+                return;
+            }
+            if (this._passwordInput.text.length > 0) {
+                if (this._passwordInput.text.length < this._password.length) {
+                    this._repeatPasswordTimout = window.setTimeout(
+                        async () => {
+                            this.$el.classList.remove('repeat-long');
+                            this.$el.classList.add('repeat-short');
+                            await AnimationUtils.animate('shake', this._passwordInput.$el);
+                        },
+                        400,
+                    );
+                } else {
+                    this._repeatPasswordTimout = window.setTimeout(
+                        () => {
+                            this.$el.classList.remove('repeat-short');
+                            this.$el.classList.add('repeat-long');
+                        },
+                        1200,
+                    );
+                }
+            } else {
+                this.$el.classList.remove('repeat-short', 'repeat-long');
+            }
         }
+
 
         const score = PasswordStrength.strength(this._passwordInput.text);
 
