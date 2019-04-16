@@ -8,6 +8,16 @@ class FlippableHandler {
         if (!FlippableHandler.flippableHandlerInitialised) {
             /** @type {HTMLElement} */
             const $rotationContainer = (document.getElementById('rotation-container'));
+            if (window.location.hash) {
+                const $page = document.querySelector(window.location.hash);
+                if ($page) {
+                    $rotationContainer.classList.add('disable-transition');
+                    window.setTimeout(() => {
+                        $rotationContainer.classList.toggle('flipped', $page.classList.contains(classname));
+                        window.setTimeout(() => $rotationContainer.classList.remove('disable-transition'), 10);
+                    }, 0);
+                }
+            }
             window.addEventListener('hashchange', event => {
                 const newHash = new URL(event.newURL).hash;
                 const oldHash = new URL(event.oldURL).hash;
