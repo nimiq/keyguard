@@ -22,7 +22,7 @@
 
 class ImportWords {
     /**
-     * @param {KeyguardRequest.ImportRequest} request
+     * @param {Parsed<KeyguardRequest.ImportRequest>} request
      * @param {ImportWords.resolve} resolve
      * @param {reject} reject
      */
