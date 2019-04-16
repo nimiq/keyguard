@@ -129,24 +129,20 @@ class ExportFile extends Nimiq.Observable {
             colorClass = `nq-${colorString}-bg`;
             this._loginFileIcon.lock(colorClass);
             this._setPasswordProgressIndicator.setStep(3);
-            this.$setPasswordBackButton.addEventListener('click', this.backToEnterPassword.bind(this), { once: true });
         });
 
         this._passwordSetterBox.on(PasswordSetterBox.Events.SUBMIT, async password => {
             await this._setPassword(password);
         });
+
+        this._passwordSetterBox.on(PasswordSetterBox.Events.RESET, this.backToEnterPassword.bind(this));
     }
 
     run() {
         window.location.hash = ExportFile.Pages.LOGIN_FILE_INTRO;
     }
 
-    /**
-     *
-     * @param {Event} event
-     */
-    backToEnterPassword(event) {
-        event.stopPropagation();
+    backToEnterPassword() {
         this._setPasswordProgressIndicator.setStep(2);
         this._passwordSetterBox.reset();
         this._loginFileIcon.unlock();

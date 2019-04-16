@@ -97,6 +97,7 @@ class ChangePassword {
         this._passwordSetter.on(PasswordSetterBox.Events.ENTERED, this._prepare.bind(this));
         this._passwordSetter.on(PasswordSetterBox.Events.SUBMIT, this._commitChangeAndOfferLoginFile.bind(this));
         this._passwordSetter.on(PasswordSetterBox.Events.SKIP, this._commitChangeAndOfferLoginFile.bind(this));
+        this._passwordSetter.on(PasswordSetterBox.Events.RESET, this.backToEnterPassword.bind(this));
 
         this._downloadLoginFile.on(DownloadLoginFile.Events.DOWNLOADED, () => {
             this._resolve({ success: true });
@@ -108,12 +109,7 @@ class ChangePassword {
         window.location.hash = ChangePassword.Pages.ENTER_PASSWORD;
     }
 
-    /**
-     *
-     * @param {Event} event
-     */
-    backToEnterPassword(event) {
-        event.stopPropagation();
+    backToEnterPassword() {
         this._progressIndicator.setStep(2);
         this._passwordSetter.reset();
         this._loginFileIcon.unlock();
@@ -173,7 +169,6 @@ class ChangePassword {
         }
         this._loginFileIcon.lock(colorClass);
         this._progressIndicator.setStep(3);
-        this.$setPasswordBackButton.addEventListener('click', this.backToEnterPassword.bind(this), { once: true });
     }
 
     /**

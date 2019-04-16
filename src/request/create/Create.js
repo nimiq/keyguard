@@ -90,17 +90,12 @@ class Create {
         this._passwordSetter.on(PasswordSetterBox.Events.ENTERED, () => {
             this.$setPasswordPage.classList.add('repeat-password');
             this.progressIndicator.setStep(3);
-            this.$setPasswordBackButton.addEventListener('click', this.backToEnterPassword.bind(this), { once: true });
         });
+
+        this._passwordSetter.on(PasswordSetterBox.Events.RESET, this.backToEnterPassword.bind(this));
     } // constructor
 
-
-    /**
-     *
-     * @param {Event} event
-     */
-    backToEnterPassword(event) {
-        event.stopPropagation();
+    backToEnterPassword() {
         this.progressIndicator.setStep(2);
         this._passwordSetter.reset();
         if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {

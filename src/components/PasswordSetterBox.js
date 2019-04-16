@@ -36,6 +36,12 @@ class PasswordSetterBox extends Nimiq.Observable {
         }
 
         this._onInputChangeValidity(false);
+
+        window.onpopstate = /** @param {PopStateEvent} ev */ ev => {
+            if (ev.state && !ev.state.repeat) {
+                this.fire(PasswordSetterBox.Events.RESET);
+            }
+        };
     }
 
     /**
@@ -195,6 +201,8 @@ class PasswordSetterBox extends Nimiq.Observable {
             this._passwordInput.reset();
             this.$el.classList.add('repeat');
             this.fire(PasswordSetterBox.Events.ENTERED);
+            window.history.replaceState({ repeat: false }, 'Keyguard');
+            window.history.pushState({ repeat: true }, 'Keyguard');
             this._passwordInput.focus();
             return;
         }
@@ -212,5 +220,6 @@ class PasswordSetterBox extends Nimiq.Observable {
 PasswordSetterBox.Events = {
     SUBMIT: 'passwordbox-submit',
     ENTERED: 'passwordbox-entered',
+    RESET: 'passsordbox-reset',
     SKIP: 'passwordbox-skip',
 };

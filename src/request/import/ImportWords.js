@@ -88,6 +88,8 @@ class ImportWords {
             }
         });
 
+        this._passwordSetter.on(PasswordSetterBox.Events.RESET, this.backToEnterPassword.bind(this));
+
         this._passwordSetter.on(PasswordSetterBox.Events.ENTERED, () => {
             let colorClass = '';
             if (this._secrets.entropy) {
@@ -99,8 +101,8 @@ class ImportWords {
                 colorClass = `nq-${colorString}-bg`;
             }
             this._loginFileIcon.lock(colorClass);
-            this.$setPasswordBackButton.addEventListener('click', this.backToEnterPassword.bind(this), { once: true });
         });
+
         this._passwordSetter.on(PasswordSetterBox.Events.SUBMIT, async password => {
             await this._storeKeys(password);
 
@@ -173,12 +175,7 @@ class ImportWords {
         window.location.hash = ImportWords.Pages.ENTER_WORDS;
     }
 
-    /**
-     *
-     * @param {Event} event
-     */
-    backToEnterPassword(event) {
-        event.stopPropagation();
+    backToEnterPassword() {
         this._passwordSetter.reset();
         this._loginFileIcon.unlock();
         if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
