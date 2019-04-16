@@ -106,9 +106,6 @@ class ChangePassword {
     async run() {
         this._passwordGetter.reset();
         window.location.hash = ChangePassword.Pages.ENTER_PASSWORD;
-        if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
-            this._passwordGetter.focus();
-        }
     }
 
     /**
@@ -152,10 +149,10 @@ class ChangePassword {
         this._key = key;
         this._passwordSetter.reset();
         window.location.hash = ChangePassword.Pages.SET_PASSWORD;
+        TopLevelApi.setLoading(false);
         if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
             this._passwordSetter.focus();
         }
-        TopLevelApi.setLoading(false);
     }
 
 

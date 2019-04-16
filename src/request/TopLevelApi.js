@@ -1,4 +1,5 @@
 /* global BrowserDetection */
+/* global Constants */
 /* global Errors */
 /* global KeyStore */
 /* global CookieJar */
@@ -156,6 +157,14 @@ class TopLevelApi extends RequestParser {
                 handler.run();
 
                 TopLevelApi.setLoading(false);
+
+                if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
+                    const $page = document.querySelector(window.location.hash);
+                    if ($page && $page.querySelector('.password-box')) {
+                        /** @type {HTMLInputElement} */
+                        ($page.querySelector('.password-box .password-input input')).focus();
+                    }
+                }
             } catch (error) {
                 reject(error);
             }
