@@ -20,7 +20,6 @@
 
 .recovery-words .word {
     margin: .5rem;
-    display: flex;
     flex: 1 0 25%;
     position: relative;
     height: 5rem;
@@ -37,15 +36,14 @@
 }
 
 .recovery-words .word .word-number {
-    display: flex;
     flex-grow: 0;
     margin: 0 1rem;
-    color: rgba(255, 255, 255, 0.3);
+    opacity: 0.3;
+    font-weight: 600;
     font-size: 1.75rem;
 }
 
 .recovery-words .word .word-content {
-    display: flex;
     flex-grow: 1;
     font-size: 2rem;
 }

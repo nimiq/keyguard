@@ -38,6 +38,16 @@
     font-size: 1.75rem;
 }
 
+.validate-words button[disabled].green {
+    /* @nimiq/style does not include disabled styles for colored buttons yet */
+    background: var(--nimiq-green-bg) !important;
+}
+
+.validate-words button[disabled].red {
+    /* @nimiq/style does not include disabled styles for colored buttons yet */
+    background: var(--nimiq-red-bg) !important;
+}
+
 .validate-words button.blink-green {
     animation-name: blink-green;
     animation-duration: 400ms;
