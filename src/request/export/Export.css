@@ -54,7 +54,8 @@ ul.nq-list li > .nq-icon {
 
 @media (max-width: 450px) { /* break point used in @nimiq/style/layout.css for .nq-card-body padding */
     .page#recovery-words .recovery-words {
-        margin: -1rem -3rem -3rem;
+        margin-left: -3rem;
+        margin-right: -3rem;
     }
 }
 
