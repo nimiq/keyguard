@@ -12,8 +12,14 @@
     flex-grow: 1;
     height: 0.5rem;
     border-radius: 0.25rem;
-    background: #e5e5e5;
+    background: var(--nimiq-blue);
     margin: 0.5rem;
+    opacity: 0.1;
+}
+
+.nq-blue-bg .progress-indicator .indicator {
+    background: white;
+    opacity: 0.25;
 }
 
 .nq-card-header .progress-indicator + * {
@@ -73,5 +79,6 @@
 .progress-indicator[data-step="9"] .step-8,
 
 .progress-indicator[data-step="9"] .step-9 {
-    background: #24bdb6;
+    background: var(--nimiq-green);
+    opacity: 1;
 }
