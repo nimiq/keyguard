@@ -59,6 +59,7 @@
 .page#remove-key .backup-option img {
     min-width: 8.375rem;
     height: 14.25rem;
+    border-radius: 0.375rem;
 }
 
 .page#remove-key .backup-option .login-file-svg-container svg {

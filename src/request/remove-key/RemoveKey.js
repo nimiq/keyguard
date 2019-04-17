@@ -28,6 +28,8 @@ class RemoveKey {
         const $removeKey = (document.getElementById(RemoveKey.Pages.REMOVE_KEY));
 
         // remove key
+        /** @type {HTMLDivElement} */
+        const $loginFileContainer = ($removeKey.querySelector('.login-file-svg-container'));
         /** @type {HTMLButtonElement} */
         const $goToDownloadFile = ($removeKey.querySelector('#show-download-login-file'));
         /** @type {HTMLButtonElement} */
@@ -40,6 +42,12 @@ class RemoveKey {
         this.$labelInput = ($labelConfirm.querySelector('input'));
         /** @type {HTMLButtonElement} */
         const $finalConfirmButton = ($removeKey.querySelector('#remove-key-final-confirm'));
+
+        const color = IqonHash.getBackgroundColorIndex(
+            request.keyInfo.defaultAddress.toUserFriendlyAddress(),
+        );
+        const colorString = LoginFile.CONFIG[color].name;
+        $loginFileContainer.classList.add(`nq-${colorString}-bg`);
 
         $labelSpan.textContent = this._request.keyLabel;
 
