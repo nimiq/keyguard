@@ -42,12 +42,6 @@ ul.nq-list li > .nq-icon {
     padding-bottom: 0;
 }
 
-.page#recovery-words .nq-text {
-    text-align: center;
-    color: var(--nimiq-orange); /* Can be removed when CSS specificity is fixed in nimiq-styles */
-    margin-bottom: 0;
-}
-
 .page#recovery-words .recovery-words {
     max-height: 100%;
     margin: 0;
@@ -62,12 +56,6 @@ ul.nq-list li > .nq-icon {
     .page#recovery-words .recovery-words {
         margin: -1rem -3rem -3rem;
     }
-}
-
-
-.page#recovery-words-intro p {
-    text-align: center;
-    margin-bottom: 1rem;
 }
 
 .page#recovery-words-intro .nq-card-body {
@@ -102,9 +90,7 @@ ul.nq-list li > .nq-icon {
     padding-bottom: 0;
 }
 
-.page#login-file-intro p {
-    display: flex;
-    align-items: center;
+.page#login-file-intro .page-body .nq-notice.warning {
     text-align: center;
     margin-top: 0;
 }

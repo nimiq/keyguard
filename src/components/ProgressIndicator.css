@@ -16,7 +16,7 @@
     margin: 0.5rem;
 }
 
-.nq-card-header .progress-indicator ~ * {
+.nq-card-header .progress-indicator + * {
     margin-top: 1rem;
 }
 
