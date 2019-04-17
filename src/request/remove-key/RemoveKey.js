@@ -3,6 +3,8 @@
 /* global KeyStore */
 /* global TopLevelApi */
 /* global Constants */
+/* global IqonHash */
+/* global LoginFile */
 
 /**
  * @callback RemoveKey.resolve
