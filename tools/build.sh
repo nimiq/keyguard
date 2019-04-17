@@ -96,7 +96,7 @@ for DIR in src/request/*/ ; do
     replace_icon_sprite_url dist/request/$REQUEST/$JS_BUNDLE
 
     # get all local css files included in request's index.html, which are not in a bundle
-    LIST_CSS="$(grep '<link' $DIR/index.html | grep -v 'bundle-' | grep -v -E 'http://|https://' | cut -d\" -f4)"
+    LIST_CSS="$(grep '<link' $DIR/index.html | grep -v 'favicon' | grep -v 'bundle-' | grep -v -E 'http://|https://' | cut -d\" -f4)"
 
     # concat them
     for url in $LIST_CSS; do
@@ -132,6 +132,10 @@ for DIR in src/request/*/ ; do
             next
         }
         /<link.*https?/ {
+            print
+            next
+        }
+        /<link.*favicon/{
             print
             next
         }
