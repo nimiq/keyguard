@@ -9,7 +9,7 @@
 
 .recovery-words .nq-input.shake ,
 .recovery-words .shake {
-    border-color: var(--nimiq-red-on-dark);
+    border-color: var(--nimiq-red);
 }
 
 .recovery-words .words-container .word-section {
