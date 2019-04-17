@@ -14,7 +14,7 @@ const TRANSLATIONS = {
         'recovery-words-text': 'Anyone with these words can access your account! Keep them save.',
         'recovery-words-validate': 'Validate words',
 
-        'create-heading-choose-identicon': 'Choose an avatar',
+        'create-heading-choose-identicon': 'Choose an Avatar',
         'create-heading-create-password': 'Create a password',
         'create-heading-repeat-password': 'Confirm your password',
         'create-heading-validate-backup': 'Validate your backup',
@@ -62,7 +62,7 @@ const TRANSLATIONS = {
         'passwordbox-password-skip': 'Skip for now',
 
         'identicon-selector-loading': 'Mixing colors',
-        'identicon-selector-generate-new': 'Generate new',
+        'identicon-selector-generate-new': 'New Avatars',
         'identicon-selector-more-addresses': 'More addresses',
 
         'download-loginfile-download': 'Download Login File',
@@ -210,7 +210,7 @@ const TRANSLATIONS = {
         'passwordbox-password-skip': 'Erstmal überspringen',
 
         'identicon-selector-loading': 'Mische Farben',
-        'identicon-selector-generate-new': 'Neu generieren',
+        'identicon-selector-generate-new': 'Neue Avatare',
         'identicon-selector-more-addresses': 'Mehr Adressen',
 
         'download-loginfile-download': 'Login File herunterladen',
