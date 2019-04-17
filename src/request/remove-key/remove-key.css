@@ -48,17 +48,17 @@
 .page#remove-key .backup-option {
     display: flex;
     align-items: center;
-    margin: 4rem 3rem 0;
+    margin: 0 3rem;
 }
 
 .page#remove-key .backup-option + .backup-option {
-    margin-top: 3rem;
+    margin-top: 2.5rem;
 }
 
 .page#remove-key .backup-option .login-file-svg-container,
 .page#remove-key .backup-option img {
     min-width: 8.375rem;
-    height: 14.744rem;
+    height: 14.25rem;
 }
 
 .page#remove-key .backup-option .login-file-svg-container svg {
@@ -70,6 +70,10 @@
     margin-left: 3rem;
 }
 
+.page#remove-key .backup-option .question {
+    line-height: 1.4;
+}
+
 .page#remove-key .page-body {
     display: flex;
     flex-flow: row wrap;
@@ -77,8 +81,8 @@
 }
 
 .page#remove-key .page-footer button {
-    margin-top: 0;
-    width: calc(100% - 7rem);
+    margin: 3.5rem auto 3rem;
+    width: calc(100% - 10rem);
 }
 
 .page#remove-key:not(.show-final-confirm) #remove-key-label-confirm {
@@ -89,8 +93,7 @@
     line-height: 2.625rem;
     font-size: 1.75rem;
     border-radius: 0.5rem;
-    margin: 2rem auto;
-    margin-bottom: 0;
+    margin: 0;
     cursor: text;
     display: flex;
     flex-flow: column;
