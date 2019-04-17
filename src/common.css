@@ -282,3 +282,7 @@ body.loading .page:target .password-box > .loading-spinner {
     display: flex;
     justify-content: start;
 }
+
+.nq-notice {
+    font-size: 2rem;
+}
