@@ -11,4 +11,5 @@ if (window.location.hostname !== 'localhost' && !ipRegEx.test(window.location.ho
 const CONFIG = { // eslint-disable-line no-unused-vars
     ALLOWED_ORIGIN: '*',
     NETWORK: Constants.NETWORK.TEST,
+    ROOT_REDIRECT: 'https://safe.nimiq-testnet.com',
 };

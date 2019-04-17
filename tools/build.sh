@@ -155,6 +155,29 @@ for DIR in src/request/*/ ; do
     replace_icon_sprite_url dist/request/${REQUEST}/index.html
 done
 
+# copy root redirect script
+cp src/redirect.js dist
+
+# replace scripts in redirect page and output result in dist
+    awk '
+        BEGIN {
+            skip_script = 0
+            skip_link = 0
+        }
+        /<script/ {
+            # Replace first script tag
+            if (!skip_script) {
+                skip_script = 1
+                # Preserve whitespace / intendation. Note: 1 is first array index in awk
+                split($0, space, "<")
+                print space[1] "<script defer src=\"/request/'${JS_COMMON_BUNDLE}'\"></script>"
+                print space[1] "<script defer src=\"/redirect.js\"></script>"
+            }
+            next
+        }
+        { print }
+    ' src/index.html > dist/index.html
+
 # prepare bundle lists
 LIST_JS_COMMON=$(echo $LIST_JS_COMMON | tr " " "\n" | sort -ur) # sort common bundle reverse for nicer order
 LIST_JS_TOPLEVEL=$(echo $LIST_JS_TOPLEVEL | tr " " "\n" | sort -u)
