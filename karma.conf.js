@@ -23,9 +23,10 @@ module.exports = function (/** @type {any} */ config) {
             'tests/**/*.spec.js',
         ],
 
-        // avoid calling runKeyguard, only include local config
+        // avoid calling runKeyguard and redirect page, only include local config
         exclude: [
             'src/request/**/index.js',
+            'src/redirect.js',
             'src/config/config.!(local).js',
         ],
 
