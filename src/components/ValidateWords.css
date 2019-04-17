@@ -20,13 +20,16 @@
     display: block;
     font-size: 10rem;
     line-height: 10rem;
-    margin-bottom: 4rem;
+    margin-bottom: 3rem;
     font-weight: normal;
     text-align: center;
+    font-weight: 600;
 }
 
 .validate-words .word-list {
-    text-align: center;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
 .validate-words button {
@@ -38,17 +41,26 @@
     font-size: 1.75rem;
 }
 
+.validate-words button:disabled {
+    opacity: 0.7;
+}
+
 .validate-words button[disabled].green {
     /* @nimiq/style does not include disabled styles for colored buttons yet */
     background: var(--nimiq-green-bg) !important;
+    opacity: 1;
+    cursor: pointer;
 }
 
 .validate-words button[disabled].red {
     /* @nimiq/style does not include disabled styles for colored buttons yet */
     background: var(--nimiq-red-bg) !important;
+    opacity: 1;
+    cursor: pointer;
 }
 
 .validate-words button.blink-green {
+    opacity: 1;
     animation-name: blink-green;
     animation-duration: 400ms;
     animation-iteration-count: 2;
@@ -56,10 +68,6 @@
 
 @keyframes blink-green {
     50% { background: var(--nimiq-green-bg); }
-}
-
-.validate-words button:disabled {
-    opacity: 0.7;
 }
 
 .validate-words .back-to-words-container {
