@@ -63,6 +63,7 @@ Note that it is mostly not necessary to run the build script for development pur
 You can configure the following values by configuration files located in folder `src/config`:
 - ALLOWED_ORIGIN: The origin from which requests are accepted. '*' allows all origins.
 - NETWORK: The network to connect with. Use Constants.NETWORK constants.
+- ROOT_REDIRECT: The page where the user is redirected to when accidentally going to root URL.
 
 The config file used for unbuilt code is `config.local.js`. The build script uses `config.testnet.js` by default. To use a different file (especially useful for deployment), pass its name as an argument to the build script. `yarn build mainnet` uses `config.mainnet.js`.
 
