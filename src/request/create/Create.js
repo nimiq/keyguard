@@ -1,4 +1,3 @@
-/* global Constants */
 /* global IdenticonSelector */
 /* global PasswordSetterBox */
 /* global Key */
@@ -71,9 +70,8 @@ class Create {
                 );
                 this.progressIndicator.setStep(2);
                 this._passwordSetter.reset();
-                if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
-                    this._passwordSetter.focus();
-                }
+
+                TopLevelApi.focusPasswordBox();
             },
         );
 
@@ -98,9 +96,8 @@ class Create {
     backToEnterPassword() {
         this.progressIndicator.setStep(2);
         this._passwordSetter.reset();
-        if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
-            this._passwordSetter.focus();
-        }
+
+        TopLevelApi.focusPasswordBox();
     }
 
     /**

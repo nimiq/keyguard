@@ -1,4 +1,3 @@
-/* global Constants */
 /* global IqonHash */
 /* global Key */
 /* global LoginFileIcon */
@@ -99,18 +98,16 @@ class ExportFile extends Nimiq.Observable {
                 } else {
                     this._passwordBox.reset();
                     window.location.hash = ExportFile.Pages.LOGIN_FILE_UNLOCK;
-                    if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
-                        this._passwordBox.focus();
-                    }
+
+                    TopLevelApi.focusPasswordBox();
                 }
             } else {
                 this._passwordSetterBox.reset();
                 this._loginFileIcon.unlock();
                 this._setPasswordProgressIndicator.setStep(2);
                 window.location.hash = ExportFile.Pages.LOGIN_FILE_SET_PASSWORD;
-                if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
-                    this._passwordSetterBox.focus();
-                }
+
+                TopLevelApi.focusPasswordBox();
             }
         });
 
@@ -146,9 +143,8 @@ class ExportFile extends Nimiq.Observable {
         this._setPasswordProgressIndicator.setStep(2);
         this._passwordSetterBox.reset();
         this._loginFileIcon.unlock();
-        if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
-            this._passwordSetterBox.focus();
-        }
+
+        TopLevelApi.focusPasswordBox();
     }
 
     /**

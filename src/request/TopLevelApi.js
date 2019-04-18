@@ -158,13 +158,7 @@ class TopLevelApi extends RequestParser {
 
                 TopLevelApi.setLoading(false);
 
-                if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
-                    const $page = document.querySelector(window.location.hash);
-                    if ($page && $page.querySelector('.password-box')) {
-                        /** @type {HTMLInputElement} */
-                        ($page.querySelector('.password-box .password-input input')).focus();
-                    }
-                }
+                TopLevelApi.focusPasswordBox();
             } catch (error) {
                 reject(error);
             }
@@ -250,6 +244,16 @@ class TopLevelApi extends RequestParser {
             (document.getElementById(TopLevelApi.Pages.LOADING)).classList.remove('display-none');
         }
         document.body.classList.toggle('loading', showLoading);
+    }
+
+    static focusPasswordBox() {
+        if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
+            const $passwordBoxInput = (document.querySelector('.page:target .password-box input'));
+            if ($passwordBoxInput) {
+                /** @type {HTMLInputElement} */
+                ($passwordBoxInput).focus();
+            }
+        }
     }
 
     /**

@@ -178,9 +178,8 @@ class ImportWords {
     backToEnterPassword() {
         this._passwordSetter.reset();
         this._loginFileIcon.unlock();
-        if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
-            this._passwordSetter.focus();
-        }
+
+        TopLevelApi.focusPasswordBox();
     }
 
     /**
@@ -285,9 +284,8 @@ class ImportWords {
         this._loginFileIcon.setFileUnavailable(!this._fileAvailable);
         this.$setPassword.classList.toggle('login-file-available', this._fileAvailable);
         window.location.hash = ImportWords.Pages.SET_PASSWORD;
-        if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
-            this._passwordSetter.focus();
-        }
+
+        TopLevelApi.focusPasswordBox();
     }
 }
 

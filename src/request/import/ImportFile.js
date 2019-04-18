@@ -95,9 +95,8 @@ class ImportFile {
         // Go to next page
         window.location.hash = ImportFile.Pages.UNLOCK_ACCOUNT;
         setTimeout(() => this.$unlockAccountPage.classList.add('animate'), 0);
-        if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
-            this.passwordBox.focus();
-        }
+
+        TopLevelApi.focusPasswordBox();
     }
 
     /**

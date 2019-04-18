@@ -113,9 +113,8 @@ class ChangePassword {
         this._progressIndicator.setStep(2);
         this._passwordSetter.reset();
         this._loginFileIcon.unlock();
-        if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
-            this._passwordSetter.focus();
-        }
+
+        TopLevelApi.focusPasswordBox();
     }
 
     /**
@@ -146,9 +145,8 @@ class ChangePassword {
         this._passwordSetter.reset();
         window.location.hash = ChangePassword.Pages.SET_PASSWORD;
         TopLevelApi.setLoading(false);
-        if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
-            this._passwordSetter.focus();
-        }
+
+        TopLevelApi.focusPasswordBox();
     }
 
 
