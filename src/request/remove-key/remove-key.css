@@ -128,3 +128,7 @@
     margin-bottom: 4rem;
     width: 100%;
 }
+
+.page#remove-key ~ .page#recovery-words-intro:target ~ .page#login-file-download {
+    display: none;
+}
