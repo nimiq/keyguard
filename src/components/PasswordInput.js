@@ -80,6 +80,7 @@ class PasswordInput extends Nimiq.Observable {
     async onPasswordIncorrect() {
         await AnimationUtils.animate('shake', this.$input);
         this.reset();
+        this.focus();
     }
 
     /** @param {boolean} [becomeVisible] */
