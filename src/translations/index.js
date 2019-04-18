@@ -56,7 +56,7 @@ const TRANSLATIONS = {
         'passwordbox-show-words': 'Show recovery words',
         'passwordbox-sign-msg': 'Sign message',
         'passwordbox-password-strength-short': 'Enter at least 8 characters',
-        'passwordbox-password-strength-weak': 'That password is too weak',
+        'passwordbox-password-strength-weak': 'That is a weak password',
         'passwordbox-password-strength-good': 'Ok, that is an average password',
         'passwordbox-password-strength-strong': 'Great, that is a strong password',
         'passwordbox-password-strength-secure': 'Super, that is a secure password',

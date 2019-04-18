@@ -56,7 +56,7 @@ class PasswordSetterBox extends Nimiq.Observable {
         /* eslint-disable max-len */
         $el.innerHTML = TemplateTags.hasVars(1)`
             <div class="password-strength strength-short  nq-text-s" data-i18n="passwordbox-password-strength-short" >Enter at least 8 characters</div>
-            <div class="password-strength strength-weak   nq-text-s" data-i18n="passwordbox-password-strength-weak"  >That password is too weak</div>
+            <div class="password-strength strength-weak   nq-text-s" data-i18n="passwordbox-password-strength-weak"  >That is a weak password</div>
             <div class="password-strength strength-good   nq-text-s" data-i18n="passwordbox-password-strength-good"  >Ok, that is an average password</div>
             <div class="password-strength strength-strong nq-text-s" data-i18n="passwordbox-password-strength-strong">Great, that is a strong password</div>
             <div class="password-strength strength-secure nq-text-s" data-i18n="passwordbox-password-strength-secure">Super, that is a secure password</div>
@@ -182,9 +182,8 @@ class PasswordSetterBox extends Nimiq.Observable {
         this.$el.classList.toggle('strength-secure', isValid && score >= PasswordStrength.Score.SECURE);
     }
 
-    _isEligiblePassword() {
-        if (this._passwordInput.text.length < PasswordInput.DEFAULT_MIN_LENGTH) return false;
-        return true;
+    _isPasswordEligible() {
+        return this._passwordInput.text.length >= PasswordInput.DEFAULT_MIN_LENGTH;
     }
 
     /**
@@ -192,7 +191,7 @@ class PasswordSetterBox extends Nimiq.Observable {
      */
     async _onSubmit(event) {
         event.preventDefault();
-        if (!this._isEligiblePassword()) {
+        if (!this._isPasswordEligible()) {
             this.onPasswordIneligible();
             return;
         }
