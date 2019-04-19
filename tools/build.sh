@@ -155,8 +155,10 @@ for DIR in src/request/*/ ; do
     replace_icon_sprite_url dist/request/${REQUEST}/index.html
 done
 
-# copy root redirect script
-cp src/redirect.js dist
+# create bundle for redirect page
+cat src/lib/Constants.js >> dist/redirect.js
+cat src/config/config.$BUILD.js >> dist/redirect.js
+cat src/redirect.js >> dist/redirect.js
 
 # replace scripts in redirect page and output result in dist
     awk '
@@ -170,7 +172,6 @@ cp src/redirect.js dist
                 skip_script = 1
                 # Preserve whitespace / intendation. Note: 1 is first array index in awk
                 split($0, space, "<")
-                print space[1] "<script defer src=\"/request/'${JS_COMMON_BUNDLE}'\"></script>"
                 print space[1] "<script defer src=\"/redirect.js\"></script>"
             }
             next
