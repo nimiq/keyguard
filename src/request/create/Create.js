@@ -95,6 +95,7 @@ class Create {
 
     backToEnterPassword() {
         this.progressIndicator.setStep(2);
+        this.$setPasswordPage.classList.remove('repeat-password');
         this._passwordSetter.reset();
 
         TopLevelApi.focusPasswordBox();
