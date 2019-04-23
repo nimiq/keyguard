@@ -178,6 +178,9 @@ cp src/redirect.js dist
         { print }
     ' src/index.html > dist/index.html
 
+# make redirect file available at /request/ too
+cp dist/index.html dist/request
+
 # prepare bundle lists
 LIST_JS_COMMON=$(echo $LIST_JS_COMMON | tr " " "\n" | sort -ur) # sort common bundle reverse for nicer order
 LIST_JS_TOPLEVEL=$(echo $LIST_JS_TOPLEVEL | tr " " "\n" | sort -u)
