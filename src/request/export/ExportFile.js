@@ -208,7 +208,7 @@ class ExportFile extends Nimiq.Observable {
         const passwordBuffer = password ? Utf8Tools.stringToUtf8ByteArray(password) : undefined;
         await KeyStore.instance.put(key, passwordBuffer);
 
-        this.fire(ExportFile.Events.KEY_CHANGED, this._key, password);
+        this.fire(ExportFile.Events.KEY_CHANGED, key, password);
         await this._goToLoginFileDownload(key, password);
 
         TopLevelApi.setLoading(false);
