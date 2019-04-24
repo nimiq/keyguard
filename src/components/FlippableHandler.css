@@ -31,7 +31,7 @@
     overflow: hidden;
 }
 
-#rotation-container > .page.display-flex {
+#rotation-container > .page.display-flex:not(:target) { /* :not(:target) is only required for specificity */
     display: flex;
     z-index: 3;
 }
