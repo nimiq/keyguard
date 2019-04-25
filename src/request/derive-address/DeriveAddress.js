@@ -53,6 +53,12 @@ class DeriveAddress {
         });
         this._identiconSelector = new DerivedIdenticonSelector($identiconSelector);
 
+        if (request.keyInfo.encrypted) {
+            // Unhide back-button
+            /** @type {HTMLElement} */
+            (this.$chooseIdenticonPage.querySelector('.page-header-back-button')).classList.remove('display-none');
+        }
+
         // Wire up logic
 
         this._passwordBox.on(
