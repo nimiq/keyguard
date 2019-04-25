@@ -288,6 +288,7 @@ body.loading .page:target .password-box > .loading-spinner {
 }
 
 .skip {
+    position: relative;
     font-size: 1.625rem;
     line-height: 2;
     color: inherit;
@@ -296,7 +297,7 @@ body.loading .page:target .password-box > .loading-spinner {
     align-items: baseline;
     justify-content: center;
     width: 40%;
-    margin: -3.25rem auto 0;
+    margin: -3.875rem auto 0.625rem;
 }
 
 .skip .nq-icon  {
@@ -318,7 +319,7 @@ body.loading .page:target .password-box > .loading-spinner {
     transform: translate3D(-0.25rem, 0, 0);
 }
 
-:not(.password-box) > .skip,
+:not(.password-box) > :not(.password-box) + .skip,
 .password-box.hide-input + .skip {
     margin-top: 0;
     margin-bottom: 1rem;

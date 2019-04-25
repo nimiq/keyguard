@@ -222,6 +222,10 @@ ul.nq-list li > .nq-icon {
     text-align: center;
 }
 
+.password-box:not(.hide-input).input-eligible + .skip {
+    display: none;
+}
+
 .page-footer {
     padding: 1rem;
 }
