@@ -14,11 +14,11 @@ const TRANSLATIONS = {
         'recovery-words-text': 'Anyone with these words can access your account! Keep them save.',
         'recovery-words-validate': 'Validate words',
 
-        'create-heading-choose-identicon': 'Choose an Avatar',
-        'create-heading-create-password': 'Create a password',
-        'create-heading-repeat-password': 'Confirm your password',
+        'create-heading-choose-identicon': 'Choose Avatar',
+        'create-heading-create-password': 'Create password',
+        'create-heading-repeat-password': 'Confirm password',
         'create-heading-validate-backup': 'Validate your backup',
-        'create-wallet-desc': 'This is your new account with its first address.',
+        'create-wallet-desc': 'This is your Account with your first Address in it.',
 
         'import-heading-enter-recovery-words': 'Enter Recovery Words',
         'import-upload-login-file': 'Upload your Login File',
