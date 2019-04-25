@@ -147,7 +147,6 @@ class PasswordSetterBox extends Nimiq.Observable {
                         async () => {
                             this.$el.classList.remove('repeat-long');
                             this.$el.classList.add('repeat-short');
-                            await AnimationUtils.animate('shake', this._passwordInput.$el);
                         },
                         400,
                     );
