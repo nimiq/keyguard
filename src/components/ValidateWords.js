@@ -55,7 +55,7 @@ class ValidateWords extends Nimiq.Observable {
                 <button class="nq-button light-blue"></button>
             </div>
             <div class="flex-grow"></div>
-            <a class="skip nq-text-s">
+            <a class="skip nq-link">
                 <span data-i18n="passwordbox-password-skip">Skip for now</span>
                 <svg class="nq-icon">
                     <use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-caret-right-small"/>

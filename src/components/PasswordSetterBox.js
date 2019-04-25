@@ -32,7 +32,7 @@ class PasswordSetterBox extends Nimiq.Observable {
 
         if (!options.hideSkip) {
             /** @type {HTMLElement} */
-            (this.$el.querySelector('.password-skip')).addEventListener('click', () => this._onSkip());
+            (this.$el.querySelector('.skip')).addEventListener('click', () => this._onSkip());
         }
 
         this._onInputChangeValidity(false);
@@ -61,7 +61,7 @@ class PasswordSetterBox extends Nimiq.Observable {
             <button class="submit" data-i18n="passwordbox-continue">Continue</button>
 
             ${options.hideSkip ? '' : TemplateTags.noVars`
-                <a tabindex="0" class="password-skip nq-text-s">
+                <a tabindex="0" class="skip nq-link">
                     <span data-i18n="passwordbox-password-skip">Skip for now</span>
                     <svg class="nq-icon">
                         <use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-caret-right-small"/>

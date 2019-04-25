@@ -46,13 +46,13 @@ class ExportWords extends Nimiq.Observable {
 
         // elements
         /** @type {HTMLLinkElement} */
-        const $noRecoverySkip = (this._$noRecoveryPage.querySelector('.skip-words'));
+        const $noRecoverySkip = (this._$noRecoveryPage.querySelector('.skip'));
         /** @type {HTMLFormElement} */
         const $wordsPasswordBox = (this._$noRecoveryPage.querySelector('.password-box'));
         /** @type {HTMLElement} */
         const $recoveryWords = ($recoveryWordsPage.querySelector('.recovery-words'));
         /** @type {HTMLLinkElement} */
-        const $recoveryWordsSkip = ($recoveryWordsPage.querySelector('.skip-words'));
+        const $recoveryWordsSkip = ($recoveryWordsPage.querySelector('.skip'));
         /** @type {HTMLButtonElement} */
         const $recoveryWordsContinue = ($recoveryWordsPage.querySelector('button'));
         /** @type {HTMLElement} */
