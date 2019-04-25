@@ -295,7 +295,8 @@ body.loading .page:target .password-box > .loading-spinner {
     display: flex;
     align-items: baseline;
     justify-content: center;
-    margin-top: -3.25rem;
+    width: 40%;
+    margin: -3.25rem auto 0;
 }
 
 .skip .nq-icon  {
