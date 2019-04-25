@@ -22,7 +22,7 @@
     opacity: 0.25;
 }
 
-.nq-card-header .progress-indicator + * {
+.nq-card-header .progress-indicator ~ *:not(.nq-notice) {
     margin-top: 1rem;
 }
 
