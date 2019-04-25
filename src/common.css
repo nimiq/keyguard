@@ -108,7 +108,7 @@
     align-items: center;
     position: fixed;
     left: 0;
-    top: 11rem; /* approximate header height */
+    top: auto;
     right: 0;
     bottom: 0;
     width: 100vw;
