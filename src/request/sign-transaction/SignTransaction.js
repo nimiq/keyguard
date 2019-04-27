@@ -1,4 +1,3 @@
-/* global Constants */
 /* global Nimiq */
 /* global Key */
 /* global KeyStore */
@@ -166,10 +165,6 @@ class SignTransaction {
     run() {
         // Go to start page
         window.location.hash = SignTransaction.Pages.CONFIRM_TRANSACTION;
-
-        if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
-            this._passwordBox.focus();
-        }
     }
 
     /**

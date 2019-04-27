@@ -1,4 +1,3 @@
-/* global Constants */
 /* global Nimiq */
 /* global Key */
 /* global KeyStore */
@@ -123,9 +122,6 @@ class SignMessage {
     run() {
         // Go to start page
         window.location.hash = SignMessage.Pages.SIGN_MESSAGE;
-        if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
-            this._passwordBox.focus();
-        }
     }
 }
 

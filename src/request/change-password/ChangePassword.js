@@ -47,6 +47,8 @@ class ChangePassword {
         const $passwordSetter = ($setPassword.querySelector('.password-setter-box'));
         /** @type {HTMLDivElement} */
         const $loginFileIcon = ($setPassword.querySelector('.login-file-icon'));
+        /** @type {HTMLLinkElement} */
+        this.$setPasswordBackButton = ($setPassword.querySelector('a.page-header-back-button'));
         /** @type {HTMLAnchorElement} */
         const $downloadLoginFile = ($downloadFile.querySelector('.download-login-file'));
 
@@ -95,7 +97,7 @@ class ChangePassword {
         this._passwordSetter.on(PasswordSetterBox.Events.ENTERED, this._prepare.bind(this));
         this._passwordSetter.on(PasswordSetterBox.Events.SUBMIT, this._commitChangeAndOfferLoginFile.bind(this));
         this._passwordSetter.on(PasswordSetterBox.Events.SKIP, this._commitChangeAndOfferLoginFile.bind(this));
-        this._passwordSetter.on(PasswordSetterBox.Events.NOT_EQUAL, () => this._loginFileIcon.unlock());
+        this._passwordSetter.on(PasswordSetterBox.Events.RESET, this.backToEnterPassword.bind(this));
 
         this._downloadLoginFile.on(DownloadLoginFile.Events.DOWNLOADED, () => {
             this._resolve({ success: true });
@@ -105,9 +107,14 @@ class ChangePassword {
     async run() {
         this._passwordGetter.reset();
         window.location.hash = ChangePassword.Pages.ENTER_PASSWORD;
-        if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
-            this._passwordGetter.focus();
-        }
+    }
+
+    backToEnterPassword() {
+        this._progressIndicator.setStep(2);
+        this._passwordSetter.reset();
+        this._loginFileIcon.unlock();
+
+        TopLevelApi.focusPasswordBox();
     }
 
     /**
@@ -137,10 +144,9 @@ class ChangePassword {
         this._key = key;
         this._passwordSetter.reset();
         window.location.hash = ChangePassword.Pages.SET_PASSWORD;
-        if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
-            this._passwordSetter.focus();
-        }
         TopLevelApi.setLoading(false);
+
+        TopLevelApi.focusPasswordBox();
     }
 
 

@@ -1,4 +1,5 @@
 /* global BrowserDetection */
+/* global Constants */
 /* global Errors */
 /* global KeyStore */
 /* global CookieJar */
@@ -156,6 +157,8 @@ class TopLevelApi extends RequestParser {
                 handler.run();
 
                 TopLevelApi.setLoading(false);
+
+                TopLevelApi.focusPasswordBox();
             } catch (error) {
                 reject(error);
             }
@@ -241,6 +244,16 @@ class TopLevelApi extends RequestParser {
             (document.getElementById(TopLevelApi.Pages.LOADING)).classList.remove('display-none');
         }
         document.body.classList.toggle('loading', showLoading);
+    }
+
+    static focusPasswordBox() {
+        if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
+            const $passwordBoxInput = (document.querySelector('.page:target .password-box input'));
+            if ($passwordBoxInput) {
+                /** @type {HTMLInputElement} */
+                ($passwordBoxInput).focus();
+            }
+        }
     }
 
     /**

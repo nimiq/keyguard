@@ -52,6 +52,8 @@ class ImportWords {
         // Elements
         /** @type {HTMLFormElement} */
         const $recoveryWords = ($words.querySelector('.recovery-words'));
+        /** @type {HTMLLinkElement} */
+        this.$setPasswordBackButton = (this.$setPassword.querySelector('a.page-header-back-button'));
         /** @type {HTMLFormElement} */
         const $passwordSetter = (this.$setPassword.querySelector('.password-setter-box'));
         /** @type {HTMLDivElement} */
@@ -86,6 +88,8 @@ class ImportWords {
             }
         });
 
+        this._passwordSetter.on(PasswordSetterBox.Events.RESET, this.backToEnterPassword.bind(this));
+
         this._passwordSetter.on(PasswordSetterBox.Events.ENTERED, () => {
             let colorClass = '';
             if (this._secrets.entropy) {
@@ -98,6 +102,7 @@ class ImportWords {
             }
             this._loginFileIcon.lock(colorClass);
         });
+
         this._passwordSetter.on(PasswordSetterBox.Events.SUBMIT, async password => {
             await this._storeKeys(password);
 
@@ -123,7 +128,7 @@ class ImportWords {
             });
             window.location.hash = ImportWords.Pages.DOWNLOAD_LOGINFILE;
         });
-        this._passwordSetter.on(PasswordSetterBox.Events.NOT_EQUAL, () => this._loginFileIcon.unlock());
+
         this._passwordSetter.on(PasswordSetterBox.Events.SKIP, async () => {
             await this._storeKeys();
             this._resolve(this._keyResults);
@@ -168,6 +173,13 @@ class ImportWords {
     run() {
         this._recoveryWords.setWords(new Array(24));
         window.location.hash = ImportWords.Pages.ENTER_WORDS;
+    }
+
+    backToEnterPassword() {
+        this._passwordSetter.reset();
+        this._loginFileIcon.unlock();
+
+        TopLevelApi.focusPasswordBox();
     }
 
     /**
@@ -272,9 +284,8 @@ class ImportWords {
         this._loginFileIcon.setFileUnavailable(!this._fileAvailable);
         this.$setPassword.classList.toggle('login-file-available', this._fileAvailable);
         window.location.hash = ImportWords.Pages.SET_PASSWORD;
-        if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
-            this._passwordSetter.focus();
-        }
+
+        TopLevelApi.focusPasswordBox();
     }
 }
 

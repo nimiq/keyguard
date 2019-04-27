@@ -48,6 +48,7 @@ const TRANSLATIONS = {
 
         'passwordbox-enter-password': 'Enter your password',
         'passwordbox-repeat-password': 'Repeat your password',
+        'passwordbox-repeat': 'Repeat password',
         'passwordbox-continue': 'Continue',
         'passwordbox-log-in': 'Unlock',
         'passwordbox-log-out': 'Confirm logout',
@@ -56,10 +57,12 @@ const TRANSLATIONS = {
         'passwordbox-show-words': 'Show recovery words',
         'passwordbox-sign-msg': 'Sign message',
         'passwordbox-password-strength-short': 'Enter at least 8 characters',
-        'passwordbox-password-strength-weak': 'That password is too weak',
+        'passwordbox-password-strength-weak': 'That is a weak password',
         'passwordbox-password-strength-good': 'Ok, that is an average password',
         'passwordbox-password-strength-strong': 'Great, that is a strong password',
         'passwordbox-password-strength-secure': 'Super, that is a secure password',
+        'passwordbox-repeat-password-long': 'No match, please try again',
+        'passwordbox-repeat-password-short': 'Password is too short',
         'passwordbox-password-skip': 'Skip for now',
 
         'identicon-selector-loading': 'Mixing colors',
@@ -197,6 +200,7 @@ const TRANSLATIONS = {
 
         'passwordbox-enter-password': 'Gib dein Passwort ein',
         'passwordbox-repeat-password': 'Wiederhole dein Passwort',
+        'passwordbox-repeat': 'Passwort wiederholen',
         'passwordbox-continue': 'Weiter',
         'passwordbox-log-in': 'Entsperren',
         'passwordbox-log-out': 'Abmeldung bestätigen',
@@ -209,6 +213,8 @@ const TRANSLATIONS = {
         'passwordbox-password-strength-good': 'Ok, das ist ein gutes Passwort',
         'passwordbox-password-strength-strong': 'Gut, das ist ein starkes Passwort',
         'passwordbox-password-strength-secure': 'Super, das ist ein sicheres Passwort',
+        'passwordbox-repeat-password-long': 'Keine Übereinstimmung, bitte versuche es erneut',
+        'passwordbox-repeat-password-short': 'Das Passwort ist zu kurz',
         'passwordbox-password-skip': 'Erstmal überspringen',
 
         'identicon-selector-loading': 'Mische Farben',

@@ -1,4 +1,3 @@
-/* global Constants */
 /* global DerivedIdenticonSelector */
 /* global PasswordBox */
 /* global KeyStore */
@@ -106,9 +105,6 @@ class DeriveAddress {
     async run() {
         if (this._request.keyInfo.encrypted) {
             window.location.hash = DeriveAddress.Pages.UNLOCK;
-            if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
-                this._passwordBox.focus();
-            }
         } else {
             await this._onPasswordEntered();
             window.location.hash = DeriveAddress.Pages.CHOOSE_IDENTICON;
