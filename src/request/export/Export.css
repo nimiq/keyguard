@@ -43,10 +43,10 @@ ul.nq-list li > .nq-icon {
 }
 
 .page#recovery-words .recovery-words {
-    height: 38rem;
+    height: 37rem;
     margin: 0;
     position: relative;
-    margin: -4rem -4rem -5rem;
+    margin: -4rem;
     padding: 4rem 3rem;
     -webkit-mask-image: linear-gradient(0deg , rgba(255,255,255,0), rgba(255,255,255, 1) 4rem, rgba(255,255,255,1) calc(100% - 4rem), rgba(255,255,255,0));
     mask-image: linear-gradient(0deg , rgba(255,255,255,0), rgba(255,255,255, 1) 4rem, rgba(255,255,255,1) calc(100% - 4rem), rgba(255,255,255,0));
