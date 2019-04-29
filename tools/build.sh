@@ -51,6 +51,11 @@ replace_core_lib_url() {
     sed -i -e "s/$OLD_PATH/$NEW_PATH/g" $1
 }
 
+# generate a base64 file integrity hash
+make_file_hash() {
+    echo $(sha256sum "$1" | awk '{print $1}' | xxd -r -p | base64)
+}
+
 # Before writing any files, verify integrity of Nimiq lib
 output "🧐  Validating Nimiq Core files integrity"
 
@@ -95,7 +100,7 @@ CSS_TOPLEVEL_BUNDLE="toplevel.$HASH.css"
 for DIR in src/request/*/ ; do
     REQUEST=$(basename $DIR)
 
-    output "🛠️   Building request $REQUEST"
+    output "🛠️   Building bundle for request $REQUEST"
 
     # create directory for request
     mkdir dist/request/$REQUEST
@@ -121,80 +126,7 @@ for DIR in src/request/*/ ; do
     # collect bundle files
     LIST_JS_COMMON="$LIST_JS_COMMON$(grep '<script' $DIR/index.html | grep 'bundle-common' | cut -d\" -f2) "
     LIST_JS_TOPLEVEL="$LIST_JS_TOPLEVEL$(grep '<script' $DIR/index.html | grep 'bundle-toplevel' | cut -d\" -f2) "
-
-    # replace scripts and links by bundles in built index.html
-    awk '
-        BEGIN {
-            skip_script = 0
-            skip_link = 0
-        }
-        /<script.*web-offline\.js/ {
-            print
-            next
-        }
-        /<script/ {
-            # Replace first script tag with bundles, delete all others
-            if (!skip_script) {
-                skip_script = 1
-                # Preserve whitespace / intendation. Note: 1 is first array index in awk
-                split($0, space, "<")
-                print space[1] "<script defer src=\"/request/'${JS_COMMON_BUNDLE}'\"></script>"
-                if("'$REQUEST'" != "iframe") {
-                    print space[1] "<script defer src=\"/request/'${JS_TOPLEVEL_BUNDLE}'\"></script>"
-                }
-                print space[1] "<script defer src=\"/request/'${REQUEST}'/'${JS_BUNDLE}'\"></script>"
-            }
-            next
-        }
-        /<link.*https?/ {
-            print
-            next
-        }
-        /<link.*favicon/{
-            print
-            next
-        }
-        /<link/ {
-            if (!skip_link) {
-                skip_link = 1
-                split($0, space, "<")
-                print space[1] "<link rel=\"stylesheet\" href=\"/request/'${CSS_TOPLEVEL_BUNDLE}'\">"
-                print space[1] "<link rel=\"stylesheet\" href=\"/request/'${REQUEST}'/'${CSS_BUNDLE}'\">"
-            }
-            next
-        }
-        { print }
-    ' $DIR/index.html > dist/request/${REQUEST}/index.html
-
-    replace_core_lib_url dist/request/${REQUEST}/index.html
-    replace_icon_sprite_url dist/request/${REQUEST}/index.html
 done
-
-# copy root redirect script
-cp src/redirect.js dist
-
-# replace scripts in redirect page and output result in dist
-    awk '
-        BEGIN {
-            skip_script = 0
-            skip_link = 0
-        }
-        /<script/ {
-            # Replace first script tag
-            if (!skip_script) {
-                skip_script = 1
-                # Preserve whitespace / intendation. Note: 1 is first array index in awk
-                split($0, space, "<")
-                print space[1] "<script defer src=\"/request/'${JS_COMMON_BUNDLE}'\"></script>"
-                print space[1] "<script defer src=\"/redirect.js\"></script>"
-            }
-            next
-        }
-        { print }
-    ' src/index.html > dist/index.html
-
-# make redirect file available at /request/ too
-cp dist/index.html dist/request
 
 # prepare bundle lists
 LIST_JS_COMMON=$(echo $LIST_JS_COMMON | tr " " "\n" | sort -ur) # sort common bundle reverse for nicer order
@@ -203,7 +135,7 @@ LIST_JS_TOPLEVEL=$(echo $LIST_JS_TOPLEVEL | tr " " "\n" | sort -u)
 LIST_CSS_TOPLEVEL="../../../node_modules/@nimiq/style/nimiq-style.min.css ../../nimiq-style.css ../../common.css ../../components/PasswordInput.css ../../components/PasswordBox.css"
 
 # generate bundle files
-output "📦  Generating bundle files"
+output "📦  Generating common bundle files"
 # put constants and config first
 cat src/lib/Constants.js >> dist/request/$JS_COMMON_BUNDLE
 cat src/config/config.$BUILD.js >> dist/request/$JS_COMMON_BUNDLE
@@ -223,6 +155,96 @@ replace_icon_sprite_url dist/request/$JS_TOPLEVEL_BUNDLE
 for url in $LIST_CSS_TOPLEVEL; do
     cat src/request/create/$url >> dist/request/$CSS_TOPLEVEL_BUNDLE
 done
+
+# collect script integrity hashes
+JS_COMMON_BUNDLE_HASH=$(make_file_hash dist/request/$JS_COMMON_BUNDLE)
+JS_TOPLEVEL_BUNDLE_HASH=$(make_file_hash dist/request/$JS_TOPLEVEL_BUNDLE)
+CSS_TOPLEVEL_BUNDLE_HASH=$(make_file_hash dist/request/$CSS_TOPLEVEL_BUNDLE)
+
+# process index.html scripts and links for each request
+for DIR in src/request/*/ ; do
+    REQUEST=$(basename $DIR)
+
+    output "🛠️   Building index.html for request $REQUEST"
+
+    JS_BUNDLE_HASH=$(make_file_hash dist/request/$REQUEST/$JS_BUNDLE)
+    if [ "$REQUEST" != "iframe" ]; then
+        CSS_BUNDLE_HASH=$(make_file_hash dist/request/$REQUEST/$CSS_BUNDLE)
+    fi
+
+    # replace scripts and links by bundles in built index.html
+    awk '
+        BEGIN {
+            skip_script = 0
+            skip_link = 0
+        }
+        /<script.*web-offline\.js/ {
+            print
+            next
+        }
+        /<script/ {
+            # Replace first script tag with bundles, delete all others
+            if (!skip_script) {
+                skip_script = 1
+                # Preserve whitespace / intendation. Note: 1 is first array index in awk
+                split($0, space, "<")
+                print space[1] "<script defer src=\"/request/'${JS_COMMON_BUNDLE}'\" integrity=\"sha256-'${JS_COMMON_BUNDLE_HASH}'\"></script>"
+                if("'$REQUEST'" != "iframe") {
+                    print space[1] "<script defer src=\"/request/'${JS_TOPLEVEL_BUNDLE}'\" integrity=\"sha256-'${JS_TOPLEVEL_BUNDLE_HASH}'\"></script>"
+                }
+                print space[1] "<script defer src=\"/request/'${REQUEST}'/'${JS_BUNDLE}'\" integrity=\"sha256-'${JS_BUNDLE_HASH}'\"></script>"
+            }
+            next
+        }
+        /<link.*https?/ {
+            print
+            next
+        }
+        /<link.*favicon/{
+            print
+            next
+        }
+        /<link/ {
+            if (!skip_link) {
+                skip_link = 1
+                split($0, space, "<")
+                print space[1] "<link rel=\"stylesheet\" href=\"/request/'${CSS_TOPLEVEL_BUNDLE}'\" integrity=\"sha256-'${CSS_TOPLEVEL_BUNDLE_HASH}'\">"
+                print space[1] "<link rel=\"stylesheet\" href=\"/request/'${REQUEST}'/'${CSS_BUNDLE}'\" integrity=\"sha256-'${CSS_BUNDLE_HASH}'\">"
+            }
+            next
+        }
+        { print }
+    ' $DIR/index.html > dist/request/${REQUEST}/index.html
+
+    replace_core_lib_url dist/request/${REQUEST}/index.html
+    replace_icon_sprite_url dist/request/${REQUEST}/index.html
+done
+
+# copy root redirect script
+cp src/redirect.js dist
+
+# replace scripts in redirect page and output result in dist
+REDIRECT_HASH=$(make_file_hash dist/redirect.js)
+awk '
+    BEGIN {
+        skip_script = 0
+        skip_link = 0
+    }
+    /<script/ {
+        # Replace first script tag
+        if (!skip_script) {
+            skip_script = 1
+            # Preserve whitespace / intendation. Note: 1 is first array index in awk
+            split($0, space, "<")
+            print space[1] "<script defer src=\"/request/'${JS_COMMON_BUNDLE}'\" integrity=\"sha256-'${JS_COMMON_BUNDLE_HASH}'\"></script>"
+            print space[1] "<script defer src=\"/redirect.js\" integrity=\"sha256-'${REDIRECT_HASH}'\"></script>"
+        }
+        next
+    }
+    { print }
+' src/index.html > dist/index.html
+# make redirect file available at /request/ too
+cp dist/index.html dist/request
 
 # copy assets
 output "🐑  Copying static assets"
