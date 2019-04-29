@@ -89,10 +89,9 @@ JS_TOPLEVEL_BUNDLE="toplevel.$HASH.js"
 CSS_TOPLEVEL_BUNDLE="toplevel.$HASH.css"
 
 # bundle files for each request
+output "🛠️   Building request bundles"
 for DIR in src/request/*/ ; do
     REQUEST=$(basename $DIR)
-
-    output "🛠️   Building bundle for request $REQUEST"
 
     # create directory for request
     mkdir dist/request/$REQUEST
@@ -127,7 +126,7 @@ LIST_JS_TOPLEVEL=$(echo $LIST_JS_TOPLEVEL | tr " " "\n" | sort -u)
 LIST_CSS_TOPLEVEL="../../../node_modules/@nimiq/style/nimiq-style.min.css ../../nimiq-style.css ../../common.css ../../components/PasswordInput.css ../../components/PasswordBox.css"
 
 # generate bundle files
-output "📦  Generating common bundle files"
+output "📦  Generating common bundles"
 # put constants and config first
 cat src/lib/Constants.js >> dist/request/$JS_COMMON_BUNDLE
 cat src/config/config.$BUILD.js >> dist/request/$JS_COMMON_BUNDLE
@@ -157,10 +156,9 @@ CORE_LIB_PATH="/assets/nimiq"
 CORE_LIB_HASH=$(make_file_hash node_modules/@nimiq/core-web/web-offline.js)
 
 # process index.html scripts and links for each request
+output "🛠️   Building request index.html files"
 for DIR in src/request/*/ ; do
     REQUEST=$(basename $DIR)
-
-    output "🛠️   Building index.html for request $REQUEST"
 
     JS_BUNDLE_HASH=$(make_file_hash dist/request/$REQUEST/$JS_BUNDLE)
     if [ "$REQUEST" != "iframe" ]; then
