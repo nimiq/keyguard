@@ -52,7 +52,7 @@
 
 .page-header-back-button {
     width: 3rem;
-    height: 3rem;
+    height: 3.5rem;
     position: absolute;
     left: 4rem;
     cursor: pointer;
@@ -108,7 +108,7 @@
     align-items: center;
     position: fixed;
     left: 0;
-    top: 11rem; /* approximate header height */
+    top: auto;
     right: 0;
     bottom: 0;
     width: 100vw;
@@ -226,6 +226,15 @@ body.loading .page:target .password-box > .loading-spinner {
     z-index: 3;
     margin-top: 8rem;
     margin-bottom: 5rem;
+    background: transparent !important;
+    opacity: 0.5;
+    transition: color .2s ease, opacity .2s ease;
+}
+
+.global-close:hover,
+.global-close:focus {
+    color: var(--nimiq-light-blue);
+    opacity: 1;
 }
 
 .global-close .nq-icon {
@@ -272,4 +281,8 @@ body.loading .page:target .password-box > .loading-spinner {
 #error {
     display: flex;
     justify-content: start;
+}
+
+.nq-notice {
+    font-size: 2rem;
 }

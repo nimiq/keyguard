@@ -42,7 +42,7 @@ class IdenticonSelector extends Nimiq.Observable {
             </div>
             <h2 class="nq-h2 nq-blue">Avatars represent Addresses.</h2>
             <button class="generate-more nq-button-s" data-i18n="identicon-selector-generate-new">
-                Generate new
+                New Avatars
             </button>`;
 
         I18n.translateDom($el);

@@ -50,17 +50,18 @@
 .page#remove-key .backup-option {
     display: flex;
     align-items: center;
-    margin: 4rem 3rem 0;
+    margin: 0 3rem;
 }
 
 .page#remove-key .backup-option + .backup-option {
-    margin-top: 3rem;
+    margin-top: 2.5rem;
 }
 
 .page#remove-key .backup-option .login-file-svg-container,
 .page#remove-key .backup-option img {
     min-width: 8.375rem;
-    height: 14.744rem;
+    height: 14.25rem;
+    border-radius: 0.375rem;
 }
 
 .page#remove-key .backup-option .login-file-svg-container svg {
@@ -72,6 +73,10 @@
     margin-left: 3rem;
 }
 
+.page#remove-key .backup-option .question {
+    line-height: 1.4;
+}
+
 .page#remove-key .page-body {
     display: flex;
     flex-flow: row wrap;
@@ -79,7 +84,7 @@
 }
 
 .page#remove-key .page-footer button {
-    margin-top: 3.5rem;
+    margin: 3.5rem auto 3rem;
     width: calc(100% - 7rem);
 }
 
@@ -88,7 +93,7 @@
     opacity: 1;
     z-index: 1;
     width: calc(100% - 2rem);
-    height: 13.5rem;
+    height: 14.5rem;
     font-style: normal;
     font-weight: 600;
     line-height: 2.625rem;
@@ -124,9 +129,12 @@
 
 .page#remove-key #remove-key-label-confirm input {
     font-size: 3.6rem;
-    border-bottom: none;
-    margin-bottom: 4rem;
+    border: none;
+    margin-top: 2rem;
     width: 100%;
+    padding-top: 0;
+    padding-bottom: 0;
+    text-align: center;
 }
 
 .page#remove-key ~ .page#recovery-words-intro:target ~ .page#login-file-download {

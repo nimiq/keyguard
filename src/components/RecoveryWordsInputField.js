@@ -46,6 +46,7 @@ class RecoveryWordsInputField extends Nimiq.Observable {
         element.classList.add('recovery-words-input-field');
 
         const input = document.createElement('input');
+        input.classList.add('nq-input');
         input.setAttribute('type', 'text');
         input.setAttribute('autocorrect', 'off');
         input.setAttribute('autocapitalize', 'none');
@@ -151,6 +152,14 @@ class RecoveryWordsInputField extends Nimiq.Observable {
      * @param {number} [setFocusToNextInputOffset = 0]
      */
     _checkValidity(setFocusToNextInputOffset = 0) {
+        // Do not block tabbing through empty fields
+        if (!this.dom.input.value) {
+            if (setFocusToNextInputOffset) {
+                this._focusNext(setFocusToNextInputOffset);
+            }
+            return;
+        }
+
         if (Nimiq.MnemonicUtils.DEFAULT_WORDLIST.indexOf(this.value.toLowerCase()) >= 0) {
             this.complete = true;
             this.dom.element.classList.add('complete');

@@ -1,5 +1,4 @@
 /* global Nimiq */
-/* global Constants */
 /* global PasswordBox */
 /* global PasswordSetterBox */
 /* global Key */
@@ -157,10 +156,7 @@ class ChangePassword {
         let colorClass = '';
         if (this.key.secret instanceof Nimiq.Entropy) {
             const color = IqonHash.getBackgroundColorIndex(
-                new Nimiq.Address(
-                    // use color of first address as loginFile color
-                    this.key.deriveAddress(Constants.DEFAULT_DERIVATION_PATH).serialize(),
-                ).toUserFriendlyAddress(),
+                this._request.keyInfo.defaultAddress.toUserFriendlyAddress(),
             );
             const colorString = LoginFile.CONFIG[color].name;
             colorClass = `nq-${colorString}-bg`;
@@ -186,16 +182,10 @@ class ChangePassword {
         }
 
         // Prepare Login File for download
-
-        const firstAddress = new Nimiq.Address(
-            this.key.deriveAddress(Constants.DEFAULT_DERIVATION_PATH).serialize(),
-        );
-
         const encryptedEntropy = await this.key.secret.exportEncrypted(passwordBytes);
-
         this._downloadLoginFile.setEncryptedEntropy(
             /** @type {Nimiq.SerialBuffer} */(encryptedEntropy),
-            firstAddress,
+            this.key.defaultAddress,
         );
 
         window.location.hash = ChangePassword.Pages.DOWNLOAD_FILE;

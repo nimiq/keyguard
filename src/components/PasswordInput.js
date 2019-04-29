@@ -39,7 +39,7 @@ class PasswordInput extends Nimiq.Observable {
         $el.innerHTML = TemplateTags.noVars`
             <div class="input-container">
                 <div class="input-wrapper">
-                    <input class="password" type="password" placeholder="Enter password">
+                    <input class="nq-input password" type="password" placeholder="Enter password">
                 </div>
                 <svg class="nq-icon eye-button">
                     <use class="is-visible" xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-view-off"/>

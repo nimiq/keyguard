@@ -1,3 +1,7 @@
+#app {
+    perspective: 250rem;
+}
+
 #rotation-container {
     position: relative;
     width: 100%;
@@ -18,7 +22,7 @@
 
 #rotation-container > .page.flipped,
 #rotation-container.flipped {
-    transform: rotateY(180deg);
+    transform: rotateY(-180deg);
 }
 
 #rotation-container > .page {
@@ -27,7 +31,7 @@
     overflow: hidden;
 }
 
-#rotation-container > .page.display-flex {
+#rotation-container > .page.display-flex:not(:target) { /* :not(:target) is only required for specificity */
     display: flex;
     z-index: 3;
 }

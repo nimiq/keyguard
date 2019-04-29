@@ -84,16 +84,20 @@
     z-index: 3;
 }
 
-.page#recovery-words p {
+.page#recovery-words .nq-label {
+    font-weight: bold;
     margin-top: 4rem;
     margin-bottom: 0;
-    opacity: 0.5;
     text-align: center;
-    color: white;
 }
 
-.page#recovery-words .nq-red {
+.page#recovery-words .nq-label.nq-red {
     color: var(--nimiq-red);
+}
+
+.page#recovery-words .input-hint {
+    opacity: 0.5;
+    color: white;
 }
 
 .page#recovery-words.invalid-words p:not(.nq-red),

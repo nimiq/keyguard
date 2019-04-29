@@ -7,7 +7,7 @@
     box-sizing: border-box;
 }
 
-.recovery-words input[type="text"].shake ,
+.recovery-words .nq-input.shake ,
 .recovery-words .shake {
     border-color: var(--nimiq-red);
 }
@@ -15,11 +15,11 @@
 .recovery-words .words-container .word-section {
     display: flex;
     flex-wrap: wrap;
+    overflow: hidden; /* prevent scrollbar from showing when input shakes */
 }
 
 .recovery-words .word {
     margin: .5rem;
-    display: flex;
     flex: 1 0 25%;
     position: relative;
     height: 5rem;
@@ -31,35 +31,39 @@
     background-color: rgba(255, 255, 255, 0.1);
 }
 
+.recovery-words .word.complete input {
+    border-color: rgba(255, 255, 255, 0); /* `transparent` would be black in Safari */
+}
+
 .recovery-words .word .word-number {
-    display: flex;
     flex-grow: 0;
     margin: 0 1rem;
-    color: rgba(255, 255, 255, 0.3);
+    opacity: 0.3;
+    font-weight: 600;
     font-size: 1.75rem;
 }
 
 .recovery-words .word .word-content {
-    display: flex;
     flex-grow: 1;
     font-size: 2rem;
 }
 
-.recovery-words input[type="text"] {
+.recovery-words input {
     width: 100%;
-    font-family: inherit;
-    line-height: 2;
-    font-size: 1.875rem;
-    padding: 0;
-    border-radius: .5rem;
-    border: 2px solid rgba(255, 255, 255, 0.2);
+    text-align: center;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
 }
 
-.recovery-words input[type="text"]:focus {
-    border-color: rgba(255, 255, 255, 0.3);
+.recovery-words input::placeholder {
+    font-weight: 600;
 }
 
-.recovery-words input[type="text"]::-webkit-calendar-picker-indicator {
+.recovery-words input:focus::placeholder {
+    color: transparent;
+}
+
+.recovery-words input::-webkit-calendar-picker-indicator {
     display: none;
 }
 

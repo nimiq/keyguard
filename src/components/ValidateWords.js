@@ -166,7 +166,10 @@ class ValidateWords extends Nimiq.Observable {
         wordList.forEach((word, index) => {
             this.$buttons[index].textContent = word;
         });
-        this.$buttons.forEach(button => button.removeAttribute('disabled'));
+        this.$buttons.forEach(button => {
+            button.disabled = false;
+            button.classList.remove('inverse');
+        });
     }
 
     /**
@@ -192,7 +195,10 @@ class ValidateWords extends Nimiq.Observable {
      * @private
      */
     _onButtonPressed($button) {
-        this.$buttons.forEach(button => button.setAttribute('disabled', 'disabled'));
+        this.$buttons.forEach(button => {
+            button.disabled = true;
+            button.classList.add('inverse');
+        });
 
         if ($button.textContent !== this._targetWord) {
             // wrong choice
