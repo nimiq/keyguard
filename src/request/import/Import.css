@@ -78,6 +78,10 @@
     text-align: center;
 }
 
+.page#recovery-words .nq-label.nq-red {
+    color: var(--nimiq-red);
+}
+
 .page#recovery-words .input-hint {
     opacity: 0.5;
     color: white;
