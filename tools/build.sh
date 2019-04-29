@@ -211,6 +211,7 @@ done
 
 # copy assets
 output "🐑  Copying static assets"
+cp -v favicon.ico dist
 cp -rv src/assets/* dist/assets/
 cp -v src/lib/QrScannerWorker.js dist/lib/
 cp -v node_modules/@nimiq/style/nimiq-style.icons.svg dist/assets/
