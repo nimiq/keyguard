@@ -43,14 +43,6 @@ replace_icon_sprite_url() {
     sed -i -e "s/$OLD_PATH/$NEW_PATH/g" $1
 }
 
-# replace core lib URL in file $1
-replace_core_lib_url() {
-    OLD_PATH="..\/..\/..\/node_modules\/@nimiq\/core-web"
-    NEW_PATH="\/assets\/nimiq"
-
-    sed -i -e "s/$OLD_PATH/$NEW_PATH/g" $1
-}
-
 # generate a base64 file integrity hash
 make_file_hash() {
     echo $(sha256sum "$1" | awk '{print $1}' | xxd -r -p | base64)
@@ -161,6 +153,9 @@ JS_COMMON_BUNDLE_HASH=$(make_file_hash dist/request/$JS_COMMON_BUNDLE)
 JS_TOPLEVEL_BUNDLE_HASH=$(make_file_hash dist/request/$JS_TOPLEVEL_BUNDLE)
 CSS_TOPLEVEL_BUNDLE_HASH=$(make_file_hash dist/request/$CSS_TOPLEVEL_BUNDLE)
 
+CORE_LIB_PATH="/assets/nimiq"
+CORE_LIB_HASH=$(make_file_hash node_modules/@nimiq/core-web/web-offline.js)
+
 # process index.html scripts and links for each request
 for DIR in src/request/*/ ; do
     REQUEST=$(basename $DIR)
@@ -179,15 +174,15 @@ for DIR in src/request/*/ ; do
             skip_link = 0
         }
         /<script.*web-offline\.js/ {
-            print
+            split($0, space, "<") # Preserve intendation.
+            print space[1] "<script defer src=\"'${CORE_LIB_PATH}'/web-offline.js\" integrity=\"sha256-'${CORE_LIB_HASH}'\"></script>"
             next
         }
         /<script/ {
             # Replace first script tag with bundles, delete all others
             if (!skip_script) {
                 skip_script = 1
-                # Preserve whitespace / intendation. Note: 1 is first array index in awk
-                split($0, space, "<")
+                split($0, space, "<") # Preserve intendation.
                 print space[1] "<script defer src=\"/request/'${JS_COMMON_BUNDLE}'\" integrity=\"sha256-'${JS_COMMON_BUNDLE_HASH}'\"></script>"
                 if("'$REQUEST'" != "iframe") {
                     print space[1] "<script defer src=\"/request/'${JS_TOPLEVEL_BUNDLE}'\" integrity=\"sha256-'${JS_TOPLEVEL_BUNDLE_HASH}'\"></script>"
@@ -207,7 +202,7 @@ for DIR in src/request/*/ ; do
         /<link/ {
             if (!skip_link) {
                 skip_link = 1
-                split($0, space, "<")
+                split($0, space, "<") # Preserve intendation.
                 print space[1] "<link rel=\"stylesheet\" href=\"/request/'${CSS_TOPLEVEL_BUNDLE}'\" integrity=\"sha256-'${CSS_TOPLEVEL_BUNDLE_HASH}'\">"
                 print space[1] "<link rel=\"stylesheet\" href=\"/request/'${REQUEST}'/'${CSS_BUNDLE}'\" integrity=\"sha256-'${CSS_BUNDLE_HASH}'\">"
             }
@@ -216,7 +211,6 @@ for DIR in src/request/*/ ; do
         { print }
     ' $DIR/index.html > dist/request/${REQUEST}/index.html
 
-    replace_core_lib_url dist/request/${REQUEST}/index.html
     replace_icon_sprite_url dist/request/${REQUEST}/index.html
 done
 
