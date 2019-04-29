@@ -58,6 +58,8 @@
     <link rel="stylesheet" bundle-toplevel href="../../components/PasswordInput.css">
     <link rel="stylesheet" bundle-toplevel href="../../components/PasswordBox.css">
 
+    <link rel="stylesheet" href="../../components/AddressInfo.css">
+    <link rel="stylesheet" href="../../components/AddressInfoDetailed.css">
     <link rel="stylesheet" href="../create/IdenticonSelector.css">
     <link rel="stylesheet" href="./DeriveAddress.css">
 </head>
@@ -99,12 +101,27 @@
         </div>
 
         <div id="choose-identicon" class="page nq-card">
-            <div class="page-header nq-card-header">
-                <h1 data-i18n="derive-address-heading-choose-identicon" class="nq-h1">Choose a new address</h1>
+            <div id="account-details">
+                <button id="close-details">
+                    <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-close"/></svg>
+                </button>
+                <div id="details" class="addressInfo detailed-view">
+                    <div class="identicon"></div>
+                    <div class="address"></div>
+                </div>
+                <button class="nq-button light-blue confirm" data-i18n="derive-address-add-to-account-button">Add to account</button>
             </div>
+            <div id="effect-container">
+                <div class="page-header nq-card-header">
+                    <a tabindex="0" class="page-header-back-button display-none">
+                        <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
+                    </a>
+                    <h1 data-i18n="derive-address-heading-choose-identicon" class="nq-h1">Choose a new address</h1>
+                </div>
 
-            <div class="page-body nq-card-body">
-                <div class="identicon-selector"></div>
+                <div class="page-body nq-card-body">
+                    <div class="identicon-selector"></div>
+                </div>
             </div>
         </div>
 

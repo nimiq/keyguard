@@ -132,6 +132,7 @@ const TRANSLATIONS = {
         'derive-address-heading-password': 'Unlock your account',
         'derive-address-password-text': 'To add a new address, please[br]unlock your account first.',
         'derive-address-heading-choose-identicon': 'Choose a new address',
+        'derive-address-add-to-account-button': 'Add to account',
 
         'change-password-heading': 'Confirm old password',
         'change-password-paragraph': 'Changing the password will create a new Login File that replaces the '
@@ -285,7 +286,7 @@ const TRANSLATIONS = {
         'derive-address-password-text': 'Bitte gib dein Passwort ein um deinem Account eine weitere Adresse '
                                         + 'hinzuzufügen.',
         'derive-address-heading-choose-identicon': 'Wähle deinen Konto-Avatar',
-        'derive-address-text-select-avatar': 'Wähle einen Avatar für deinen neuen Account aus der Auswahl unten.',
+        'derive-address-add-to-account-button': 'Hinzufügen',
 
         'change-password-heading': 'Altes Passwort bestätigen',
         'change-password-paragraph': 'Die Passwortänderung wird ein neues Login File erstellen, welches das bisherige '

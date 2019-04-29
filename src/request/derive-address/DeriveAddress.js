@@ -4,6 +4,7 @@
 /* global Errors */
 /* global Utf8Tools */
 /* global TopLevelApi */
+/* global Identicon */
 
 /**
  * @callback DeriveAddress.resolve
@@ -21,11 +22,26 @@ class DeriveAddress {
         this._resolve = resolve;
         this._reject = reject;
 
+        /** @type {{address: Nimiq.Address, keyPath: string}?} selectedAddress */
+        this._selectedAddress = null;
+
+        /** @type {HTMLDivElement} */
+        this.$chooseIdenticonPage = (document.querySelector('#choose-identicon'));
+
         /** @type {HTMLFormElement} */
         const $passwordBox = (document.querySelector('.password-box'));
 
         /** @type {HTMLDivElement} */
-        const $identiconSelector = (document.querySelector('.identicon-selector'));
+        const $identiconSelector = (this.$chooseIdenticonPage.querySelector('.identicon-selector'));
+
+        /** @type {HTMLDivElement} */
+        this.$identicon = (this.$chooseIdenticonPage.querySelector('.identicon'));
+
+        /** @type {HTMLDivElement} */
+        this.$address = (this.$chooseIdenticonPage.querySelector('.address'));
+
+        /** @type {HTMLButtonElement} */
+        this.$confirmButton = (this.$chooseIdenticonPage.querySelector('.confirm'));
 
         // Create components
 
@@ -35,6 +51,12 @@ class DeriveAddress {
             hideCancel: true,
         });
         this._identiconSelector = new DerivedIdenticonSelector($identiconSelector);
+
+        if (request.keyInfo.encrypted) {
+            // Unhide back-button
+            /** @type {HTMLElement} */
+            (this.$chooseIdenticonPage.querySelector('.page-header-back-button')).classList.remove('display-none');
+        }
 
         // Wire up logic
 
@@ -50,13 +72,8 @@ class DeriveAddress {
             DerivedIdenticonSelector.Events.IDENTICON_SELECTED,
             /** @param {{address: Nimiq.Address, keyPath: string}} selectedAddress */
             selectedAddress => {
-                /** @type {KeyguardRequest.DeriveAddressResult} */
-                const result = {
-                    address: selectedAddress.address.serialize(),
-                    keyPath: selectedAddress.keyPath,
-                };
-
-                this._resolve(result);
+                this._selectedAddress = selectedAddress;
+                this._openDetails(selectedAddress.address.toUserFriendlyAddress());
             },
         );
 
@@ -64,6 +81,22 @@ class DeriveAddress {
             DerivedIdenticonSelector.Events.MASTER_KEY_NOT_SET,
             this._reject.bind(this),
         );
+
+        this.$confirmButton.addEventListener('click', () => {
+            if (!this._selectedAddress) return;
+
+            /** @type {KeyguardRequest.DeriveAddressResult} */
+            const result = {
+                address: this._selectedAddress.address.serialize(),
+                keyPath: this._selectedAddress.keyPath,
+            };
+
+            this._resolve(result);
+        });
+
+        /** @type {HTMLButtonElement} */
+        const $closeDetails = (this.$chooseIdenticonPage.querySelector('#close-details'));
+        $closeDetails.addEventListener('click', this._closeDetails.bind(this));
     } // constructor
 
     /**
@@ -109,6 +142,22 @@ class DeriveAddress {
             await this._onPasswordEntered();
             window.location.hash = DeriveAddress.Pages.CHOOSE_IDENTICON;
         }
+    }
+
+    /**
+     * @param {string} address
+     */
+    _openDetails(address) {
+        // eslint-disable-next-line no-new
+        new Identicon(address, this.$identicon);
+        // last space is necessary for the rendering to work properly with white-space: pre-wrap.
+        this.$address.textContent = `${address} `;
+
+        this.$chooseIdenticonPage.classList.add('account-details-open');
+    }
+
+    _closeDetails() {
+        this.$chooseIdenticonPage.classList.remove('account-details-open');
     }
 }
 
