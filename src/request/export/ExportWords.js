@@ -1,4 +1,3 @@
-/* global Constants */
 /* global FlippableHandler */
 /* global Nimiq */
 /* global RecoveryWords */
@@ -93,9 +92,8 @@ class ExportWords extends Nimiq.Observable {
     run() {
         this._wordsPasswordBox.reset();
         window.location.hash = ExportWords.Pages.RECOVERY_WORDS_INTRO;
-        if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
-            this._wordsPasswordBox.focus();
-        }
+
+        TopLevelApi.focusPasswordBox();
     }
 
     /**

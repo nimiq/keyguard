@@ -96,7 +96,7 @@ for DIR in src/request/*/ ; do
     replace_icon_sprite_url dist/request/$REQUEST/$JS_BUNDLE
 
     # get all local css files included in request's index.html, which are not in a bundle
-    LIST_CSS="$(grep '<link' $DIR/index.html | grep -v 'bundle-' | grep -v -E 'http://|https://' | cut -d\" -f4)"
+    LIST_CSS="$(grep '<link' $DIR/index.html | grep -v 'favicon' | grep -v 'bundle-' | grep -v -E 'http://|https://' | cut -d\" -f4)"
 
     # concat them
     for url in $LIST_CSS; do
@@ -135,6 +135,10 @@ for DIR in src/request/*/ ; do
             print
             next
         }
+        /<link.*favicon/{
+            print
+            next
+        }
         /<link/ {
             if (!skip_link) {
                 skip_link = 1
@@ -150,6 +154,32 @@ for DIR in src/request/*/ ; do
     replace_core_lib_url dist/request/${REQUEST}/index.html
     replace_icon_sprite_url dist/request/${REQUEST}/index.html
 done
+
+# copy root redirect script
+cp src/redirect.js dist
+
+# replace scripts in redirect page and output result in dist
+    awk '
+        BEGIN {
+            skip_script = 0
+            skip_link = 0
+        }
+        /<script/ {
+            # Replace first script tag
+            if (!skip_script) {
+                skip_script = 1
+                # Preserve whitespace / intendation. Note: 1 is first array index in awk
+                split($0, space, "<")
+                print space[1] "<script defer src=\"/request/'${JS_COMMON_BUNDLE}'\"></script>"
+                print space[1] "<script defer src=\"/redirect.js\"></script>"
+            }
+            next
+        }
+        { print }
+    ' src/index.html > dist/index.html
+
+# make redirect file available at /request/ too
+cp dist/index.html dist/request
 
 # prepare bundle lists
 LIST_JS_COMMON=$(echo $LIST_JS_COMMON | tr " " "\n" | sort -ur) # sort common bundle reverse for nicer order
