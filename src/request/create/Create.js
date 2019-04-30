@@ -80,11 +80,6 @@ class Create {
             this.finish(request);
         });
 
-        this._passwordSetter.on(PasswordSetterBox.Events.SKIP, () => {
-            this.progressIndicator.setStep(3);
-            this.finish(request);
-        });
-
         this._passwordSetter.on(PasswordSetterBox.Events.ENTERED, () => {
             this.$setPasswordPage.classList.add('repeat-password');
             this.progressIndicator.setStep(3);

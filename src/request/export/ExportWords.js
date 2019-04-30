@@ -44,14 +44,10 @@ class ExportWords extends Nimiq.Observable {
         const $validateWordsPage = (document.getElementById(ExportWords.Pages.VALIDATE_WORDS));
 
         // elements
-        /** @type {HTMLLinkElement} */
-        const $noRecoverySkip = (this._$noRecoveryPage.querySelector('.skip-words'));
         /** @type {HTMLFormElement} */
         const $wordsPasswordBox = (this._$noRecoveryPage.querySelector('.password-box'));
         /** @type {HTMLElement} */
         const $recoveryWords = ($recoveryWordsPage.querySelector('.recovery-words'));
-        /** @type {HTMLLinkElement} */
-        const $recoveryWordsSkip = ($recoveryWordsPage.querySelector('.skip-words'));
         /** @type {HTMLButtonElement} */
         const $recoveryWordsContinue = ($recoveryWordsPage.querySelector('button'));
         /** @type {HTMLElement} */
@@ -72,21 +68,12 @@ class ExportWords extends Nimiq.Observable {
         /* eslint-enable no-new */
 
         // events
-        $noRecoverySkip.addEventListener('click', event => {
-            event.preventDefault();
-            this._resolve({ success: false });
-        });
-        $recoveryWordsSkip.addEventListener('click', event => {
-            event.preventDefault();
-            this._resolve({ success: false });
-        });
         this._wordsPasswordBox.on(PasswordBox.Events.SUBMIT, this._passwordSubmitted.bind(this));
         $recoveryWordsContinue.addEventListener('click', () => {
             this._validateWords.reset();
             window.location.hash = ExportWords.Pages.VALIDATE_WORDS;
         });
         this._validateWords.on(ValidateWords.Events.VALIDATED, () => this._resolve({ success: true }));
-        this._validateWords.on(ValidateWords.Events.SKIP, () => this._resolve({ success: false }));
     }
 
     run() {

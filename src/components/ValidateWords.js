@@ -27,11 +27,6 @@ class ValidateWords extends Nimiq.Observable {
         this.$el.addEventListener('click', this._onClick.bind(this));
         /** @type {HTMLElement} */
         this.$textHint = (this.$el.querySelector('p'));
-
-        /** @type {HTMLFormElement} */
-        const $skip = (this.$el.querySelector('.skip'));
-
-        $skip.addEventListener('click', () => this.fire(ValidateWords.Events.SKIP));
     }
 
     /**
@@ -54,13 +49,6 @@ class ValidateWords extends Nimiq.Observable {
                 <button class="nq-button light-blue"></button>
                 <button class="nq-button light-blue"></button>
             </div>
-            <div class="flex-grow"></div>
-            <a class="skip nq-text-s">
-                <span data-i18n="passwordbox-password-skip">Skip for now</span>
-                <svg class="nq-icon">
-                    <use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-caret-right-small"/>
-                </svg>
-            </a>
         `;
         /* eslint-enable max-len */
 
@@ -237,7 +225,6 @@ class ValidateWords extends Nimiq.Observable {
 }
 
 ValidateWords.Events = {
-    SKIP: 'validate-words-skip',
     VALIDATED: 'validate-words-validated',
     BACK: 'validate-words-back',
 };

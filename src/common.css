@@ -290,3 +290,40 @@ body.loading .page:target .page-footer > .loading-spinner {
 .nq-notice {
     font-size: 2rem;
 }
+
+.skip {
+    font-size: 1.625rem;
+    line-height: 2;
+    color: inherit;
+    cursor: pointer;
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    margin: -1.25rem auto 0;
+    width:40%;
+    align-self: center;
+}
+
+.skip .nq-icon  {
+    margin-left: 0.5rem;
+    height: 0.875rem;
+    width: 0.875rem;
+    transition: transform .3s ease;
+}
+
+.skip:hover,
+.skip:focus {
+    outline: none;
+    opacity: 0.7;
+    text-decoration: none;
+}
+
+.skip:hover .nq-icon,
+.skip:focus .nq-icon {
+    transform: translate3D(-0.25rem, 0, 0);
+}
+
+.nq-card > .skip {
+    margin-top: -3.25rem;
+    margin-bottom: 1rem;
+}

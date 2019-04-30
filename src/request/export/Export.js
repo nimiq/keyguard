@@ -48,7 +48,7 @@ class Export {
         this._fileSuccessPage = (document.getElementById(Export.Pages.LOGIN_FILE_SUCCESS));
 
         /** @type {HTMLLinkElement} */
-        const skipWordsButton = (this._fileSuccessPage.querySelector('.skip-words'));
+        const skipWordsButton = (this._fileSuccessPage.querySelector('.skip'));
         skipWordsButton.addEventListener('click', e => {
             e.preventDefault();
             this._resolve(this.exported);
