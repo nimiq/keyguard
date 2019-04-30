@@ -222,43 +222,6 @@ ul.nq-list li > .nq-icon {
     text-align: center;
 }
 
-.password-box:not(.hide-input) + .skip-words {
-    position: absolute;
-    width: calc(100% - 2rem);
-    bottom: 2.25rem;
-}
-
-.password-box:not(.hide-input).input-eligible + .skip-words {
-    display: none;
-}
-
 .page-footer {
     padding: 1rem;
-}
-
-.skip-words {
-    cursor: pointer;
-    display: block;
-    text-align: center;
-    font-size: 1.625rem;
-    transition: opacity .3s ease;
-}
-
-.skip .nq-icon,
-.skip-words .nq-icon {
-    margin-left: 0.5rem;
-    height: 0.875rem;
-    width: 0.875rem;
-    transition: transform .3s ease;
-}
-
-.skip-words:hover,
-.skip-words:focus {
-    outline: none;
-    opacity: 0.7;
-}
-
-.skip-words:hover .nq-icon,
-.skip-words:focus .nq-icon {
-    transform: translate3D(-0.25rem, 0, 0);
 }

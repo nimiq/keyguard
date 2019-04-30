@@ -78,15 +78,3 @@
 .validate-words .back-to-words {
     cursor: pointer;
 }
-
-.validate-words .skip-container {
-    margin-top: 4.5rem;
-    text-align: center;
-}
-
-.validate-words .skip {
-    font-size: 1.625rem;
-    color: inherit;
-    cursor: pointer;
-    text-align: center;
-}

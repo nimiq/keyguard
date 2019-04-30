@@ -13,7 +13,6 @@ class PasswordSetterBox extends Nimiq.Observable {
     constructor($el, options = {}) {
         const defaults = {
             bgColor: 'light-blue',
-            hideSkip: false,
         };
 
         super();
@@ -30,10 +29,6 @@ class PasswordSetterBox extends Nimiq.Observable {
 
         this.$el.addEventListener('submit', event => this._onSubmit(event));
 
-        if (!options.hideSkip) {
-            /** @type {HTMLElement} */
-            (this.$el.querySelector('.password-skip')).addEventListener('click', () => this._onSkip());
-        }
 
         this._onInputChangeValidity(false);
 
@@ -55,7 +50,7 @@ class PasswordSetterBox extends Nimiq.Observable {
         $el.classList.add('password-box', 'actionbox', 'setter', `nq-${options.bgColor}-bg`);
 
         /* eslint-disable max-len */
-        $el.innerHTML = TemplateTags.hasVars(1)`
+        $el.innerHTML = TemplateTags.noVars`
             <div class="password-strength strength-short  nq-text-s" data-i18n="passwordbox-password-strength-short" >Enter at least 8 characters</div>
             <div class="password-strength strength-weak   nq-text-s" data-i18n="passwordbox-password-strength-weak"  >That is a weak password</div>
             <div class="password-strength strength-good   nq-text-s" data-i18n="passwordbox-password-strength-good"  >Ok, that is an average password</div>
@@ -69,14 +64,6 @@ class PasswordSetterBox extends Nimiq.Observable {
 
             <button class="submit" data-i18n="passwordbox-repeat">Repeat password</button>
 
-            ${options.hideSkip ? '' : TemplateTags.noVars`
-                <a tabindex="0" class="password-skip nq-text-s">
-                    <span data-i18n="passwordbox-password-skip">Skip for now</span>
-                    <svg class="nq-icon">
-                        <use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-caret-right-small"/>
-                    </svg>
-                </a>
-            `}
             <svg height="48" width="54" color="inherit" class="loading-spinner">
                 <use xlink:href="#loading-spinner" />
             </svg>
@@ -209,16 +196,10 @@ class PasswordSetterBox extends Nimiq.Observable {
             await AnimationUtils.animate('shake', this._passwordInput.$el);
         }
     }
-
-    _onSkip() {
-        this.fire(PasswordSetterBox.Events.SKIP);
-        this.reset();
-    }
 }
 
 PasswordSetterBox.Events = {
     SUBMIT: 'passwordbox-submit',
     ENTERED: 'passwordbox-entered',
     RESET: 'passsordbox-reset',
-    SKIP: 'passwordbox-skip',
 };

@@ -60,6 +60,8 @@ class ImportWords {
         const $loginFileIcon = (this.$setPassword.querySelector('.login-file-icon'));
         /** @type {HTMLAnchorElement} */
         const $downloadLoginFile = ($downloadFile.querySelector('.download-loginfile'));
+        /** @type {HTMLLinkElement} */
+        const $skipDownloadButton = ($downloadFile.querySelector('.skip'));
 
         // Components
         this._recoveryWords = new RecoveryWords($recoveryWords, true);
@@ -128,8 +130,8 @@ class ImportWords {
             window.location.hash = ImportWords.Pages.DOWNLOAD_LOGINFILE;
         });
 
-        this._passwordSetter.on(PasswordSetterBox.Events.SKIP, async () => {
-            await this._storeKeys();
+        $skipDownloadButton.addEventListener('click', e => {
+            e.preventDefault();
             this._resolve(this._keyResults);
         });
 

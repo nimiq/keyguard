@@ -66,11 +66,7 @@ class ExportFile extends Nimiq.Observable {
                 hideCancel: true,
             },
         );
-        this._passwordSetterBox = new PasswordSetterBox(
-            $passwordSetterBox, {
-                hideSkip: true,
-            },
-        );
+        this._passwordSetterBox = new PasswordSetterBox($passwordSetterBox);
         this._loginFileIcon = new LoginFileIcon($loginFileIcon);
         this._downloadLoginFile = new DownloadLoginFile($downloadLoginFile);
         this._downloadLoginFile.createDummyFile(this._request.keyInfo.defaultAddress);
