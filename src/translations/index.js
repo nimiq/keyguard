@@ -119,8 +119,7 @@ const TRANSLATIONS = {
         'export-continue-to-login-file': 'Continue to Login File',
 
         'remove-key-heading': 'Don\'t lose access',
-        'remove-key-intro-text': 'If you log out without saving your account, you will irretrievably '
-                               + 'lose access to it!',
+        'remove-key-intro-text': 'If you log out without saving your Account, you will irreversible lose access to it!',
         'remove-key-login-file-question': 'Is your Login File savely stored and accessible?',
         'remove-key-download-login-file': 'Download Login File',
         'remove-key-recovery-words-question': 'Do you know where your Recovery Words are?',
