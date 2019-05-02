@@ -138,7 +138,7 @@ const TRANSLATIONS = {
                                    + 'current one.',
         'change-password-paragraph-legacy': 'Changing the password only has an effect on this device.',
         'change-password-info-item-1': 'All old Login Files still work with their old passwords.',
-        'change-password-info-item-2': 'If a Login File was compromised: Please create a new account and transfer '
+        'change-password-info-item-2': 'If a Login File was compromised: Please create a new Account and transfer '
                                      + 'all funds.',
         'change-password-download-login-file': 'Download new Login File',
         'change-password-set-password-heading': 'Create a new password',
