@@ -129,10 +129,10 @@ const TRANSLATIONS = {
         'remove-key-enter-label-2': 'to log out.',
         'remove-key-final-confirm': 'Log out',
 
-        'derive-address-heading-password': 'Unlock your account',
-        'derive-address-password-text': 'To add a new address, please[br]unlock your account first.',
-        'derive-address-heading-choose-identicon': 'Choose a new address',
-        'derive-address-add-to-account-button': 'Add to account',
+        'derive-address-heading-password': 'Unlock account',
+        'derive-address-password-text': 'To add a new Address, please[br]unlock your Account first.',
+        'derive-address-heading-choose-identicon': 'Choose a new Avatar',
+        'derive-address-add-to-account-button': 'Add to Account',
 
         'change-password-heading': 'Confirm old password',
         'change-password-paragraph': 'Changing the password will create a new Login File that replaces the '
