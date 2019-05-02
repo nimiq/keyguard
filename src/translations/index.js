@@ -21,10 +21,10 @@ const TRANSLATIONS = {
         'create-wallet-desc': 'This is your Account with your first Address in it.',
 
         'import-heading-enter-recovery-words': 'Enter Recovery Words',
-        'import-upload-login-file': 'Upload your Login File',
+        'import-upload-login-file': 'Upload Login File',
         'import-login-to-continue': 'Please login again to continue.',
         'import-unlock-account': 'Unlock your account',
-        'import-create-account': 'Create new account',
+        'import-create-account': 'Create new Account',
 
         'import-file-button-words': 'Login with Recovery Words',
 
