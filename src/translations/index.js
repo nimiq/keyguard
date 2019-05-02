@@ -8,16 +8,16 @@ const TRANSLATIONS = {
         'recovery-words-title': 'Write these 24 words on a piece of paper.',
         'recovery-words-intro-text': 'The Recovery Words are the ONLY way to restore '
                                    + 'your account in case you lose your Login File or password.',
-        'recovery-words-intro-offline': 'Keep your Words offline, don’t enter them anywhere but in the Nimiq Safe.',
+        'recovery-words-intro-offline': 'Keep your words offline, enter them nowhere but on keyguard.nimiq.com',
         'recovery-words-intro-copy': 'Create a copy and store it in a safe place: family’s house, bank locker etc.',
         'recovery-words-intro-safety': 'Mind water and fire, use a sealed box to keep your Recovery Words safe.',
-        'recovery-words-text': 'Anyone with these words can access your account! Keep them save.',
-        'recovery-words-validate': 'Validate words',
+        'recovery-words-text': 'Anyone with these words can access your Account! Keep them safe.',
+        'recovery-words-validate': 'Confirm backup',
 
         'create-heading-choose-identicon': 'Choose Avatar',
         'create-heading-create-password': 'Create password',
         'create-heading-repeat-password': 'Confirm password',
-        'create-heading-validate-backup': 'Validate your backup',
+        'create-heading-validate-backup': 'Validate backup',
         'create-wallet-desc': 'This is your Account with your first Address in it.',
 
         'import-heading-enter-recovery-words': 'Enter Recovery Words',
