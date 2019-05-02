@@ -34,7 +34,7 @@ const TRANSLATIONS = {
                                        + 'Create a password to secure it.',
         'import-words-hint': 'Press Tab to Jump to the next field',
         'import-words-error': 'This is not a valid account. Typo?',
-        'import-words-download-loginfile': 'Download your Login File',
+        'import-words-download-loginfile': 'Save Login File',
 
         'file-import-prompt': 'Drag here or click to upload',
 
@@ -72,7 +72,7 @@ const TRANSLATIONS = {
 
         'download-loginfile-download': 'Download Login File',
         'download-loginfile-tap-and-hold': 'Tap and hold image to download',
-        'download-loginfile-continue': 'Continue',
+        'download-loginfile-continue': 'Download',
 
         'validate-words-text': 'Please select the correct word from your list of recovery words.',
         'validate-words-1-hint': 'What is the 1st word?',
@@ -100,15 +100,14 @@ const TRANSLATIONS = {
         'validate-words-23-hint': 'What is the 23rd word?',
         'validate-words-24-hint': 'What is the 24th word?',
 
-        'export-file-heading': 'Unlock your Login File',
-        'export-file-intro-heading': 'Save your account',
-        'export-file-intro-blue-text': 'Your Login File grants access to your account. '
+        'export-file-heading': 'Unlock Login File',
+        'export-file-intro-heading': 'Save Account',
+        'export-file-intro-blue-text': 'Your Login File grants access to your Account. '
                                      + 'Download and save it.',
         'export-file-intro-browser': 'Your Account is stored in your browser.',
-        'export-file-intro-accident': 'As a part of your browser\'s data it might be deleted by accident.',
-        'export-file-intro-download-file': 'Download a Login File to stay save and to login to other browsers '
-                                         + 'and devices.',
-        'export-file-intro-orange-text': 'Never share it. Don\'t Lose it.',
+        'export-file-intro-accident': 'It might be deleted automatically or by accident.',
+        'export-file-intro-download-file': 'Download the Login File to save your Account.',
+        'export-file-intro-orange-text': 'Keep it safe and confidential.',
         'export-file-success-set-password': 'Set password',
         'export-file-success-save-file': 'Save Login File',
         'export-file-success-create-backup': 'Create backup',
