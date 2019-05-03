@@ -58,7 +58,7 @@ export class KeyguardClient {
         this._iframeBehavior = new IFrameRequestBehavior();
 
         // If this is a page-reload, allow location.origin as RPC origin
-        const allowedOrigin = new URL(document.referrer).origin === window.location.origin
+        const allowedOrigin = document.referrer && new URL(document.referrer).origin === window.location.origin
             ? window.location.origin
             : RequestBehavior.getAllowedOrigin(this._endpoint);
 
