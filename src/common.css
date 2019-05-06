@@ -133,7 +133,7 @@
 
 .page-footer > .loading-spinner {
     position: absolute;
-    visibility: hidden;
+    display: none;
     color: white;
     left: calc(50% - 3.375rem);
     margin-top: 3rem; /* 2rem button margin + 1 rem to center */
@@ -141,7 +141,7 @@
 
 .password-box .loading-spinner {
     position: absolute;
-    visibility: hidden;
+    display: none;
     left: calc(50% - 3.375rem);
     bottom: calc(50% - 3.125rem);
 }
@@ -159,14 +159,18 @@ body.loading .page-footer > .loading-spinner + button {
     color: white;
 }
 
-body.loading .password-box > * {
+body.loading .password-box > *:not(.loading-spinner) {
     visibility: hidden
 }
 
-body.loading .page:target .page-footer > .loading-spinner,
-body.loading .page:target .password-box.hide-input > button,
-body.loading .page:target .password-box > .loading-spinner {
+body.loading .page:target .password-box.hide-input > button {
     visibility: visible;
+    z-index: 1;
+}
+
+body.loading .page:target .password-box > .loading-spinner,
+body.loading .page:target .page-footer > .loading-spinner {
+    display: flex;
     z-index: 1;
 }
 
