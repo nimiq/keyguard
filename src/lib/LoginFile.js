@@ -247,12 +247,12 @@ LoginFile.CONFIG = [
     { name: 'orange', color: '#FC8702', corner: '#FD6216', opacityLines: 0.15, opacityWallet: 0.35 },
     { name: 'red', color: '#D94432', corner: '#CC3047', opacityLines: 0.15, opacityWallet: 0.3 },
     { name: 'yellow', color: '#E9B213', corner: '#EC991C', opacityLines: 0.2, opacityWallet: 0.4 },
-    { name: 'blue', color: '#1F2348', corner: '#260133', opacityLines: 0.1, opacityWallet: 0.25 },
-    { name: 'light-blue', color: '#0582CA', corner: '#265DD7', opacityLines: 0.1, opacityWallet: 0.3 },
+    { name: 'indigo', color: '#1F2348', corner: '#260133', opacityLines: 0.1, opacityWallet: 0.25 },
+    { name: 'blue', color: '#0582CA', corner: '#265DD7', opacityLines: 0.1, opacityWallet: 0.3 },
     { name: 'purple', color: '#5F4B8B', corner: '#4D4C96', opacityLines: 0.1, opacityWallet: 0.2 },
-    { name: 'green', color: '#21BCA5', corner: '#41A38E', opacityLines: 0.15, opacityWallet: 0.4 },
+    { name: 'teal', color: '#21BCA5', corner: '#41A38E', opacityLines: 0.15, opacityWallet: 0.4 },
     { name: 'pink', color: '#FA7268', corner: '#E0516B', opacityLines: 0.15, opacityWallet: 0.32 },
-    { name: 'light-green', color: '#88B04B', corner: '#70B069', opacityLines: 0.15, opacityWallet: 0.3 },
+    { name: 'green', color: '#88B04B', corner: '#70B069', opacityLines: 0.15, opacityWallet: 0.3 },
     { name: 'brown', color: '#795548', corner: '#724147', opacityLines: 0.1, opacityWallet: 0.2 },
     /* eslint-enable object-curly-newline */
 ];
