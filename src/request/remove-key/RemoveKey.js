@@ -48,8 +48,8 @@ class RemoveKey {
         const color = IqonHash.getBackgroundColorIndex(
             request.keyInfo.defaultAddress.toUserFriendlyAddress(),
         );
-        const colorString = LoginFile.CONFIG[color].name;
-        $loginFileContainer.classList.add(`nq-${colorString}-bg`);
+        const colorClass = LoginFile.CONFIG[color].className;
+        $loginFileContainer.classList.add(colorClass);
 
         $labelSpan.textContent = this._request.keyLabel;
 

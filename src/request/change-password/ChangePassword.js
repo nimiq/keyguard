@@ -158,8 +158,7 @@ class ChangePassword {
             const color = IqonHash.getBackgroundColorIndex(
                 this._request.keyInfo.defaultAddress.toUserFriendlyAddress(),
             );
-            const colorString = LoginFile.CONFIG[color].name;
-            colorClass = `nq-${colorString}-bg`;
+            colorClass = LoginFile.CONFIG[color].className;
         }
         this._loginFileIcon.lock(colorClass);
         this._progressIndicator.setStep(3);
