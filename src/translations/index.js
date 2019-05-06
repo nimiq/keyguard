@@ -48,7 +48,6 @@ const TRANSLATIONS = {
 
         'passwordbox-enter-password': 'Enter your password',
         'passwordbox-repeat-password': 'Repeat your password',
-        'passwordbox-repeat': 'Repeat password',
         'passwordbox-continue': 'Continue',
         'passwordbox-log-in': 'Unlock',
         'passwordbox-confirm': 'Confirm',
@@ -68,7 +67,6 @@ const TRANSLATIONS = {
 
         'identicon-selector-loading': 'Mixing colors',
         'identicon-selector-generate-new': 'New Avatars',
-        'identicon-selector-more-addresses': 'More addresses',
 
         'download-loginfile-download': 'Download Login File',
         'download-loginfile-tap-and-hold': 'Tap and hold image to download',
@@ -200,7 +198,6 @@ const TRANSLATIONS = {
 
         'passwordbox-enter-password': 'Gib dein Passwort ein',
         'passwordbox-repeat-password': 'Wiederhole dein Passwort',
-        'passwordbox-repeat': 'Passwort wiederholen',
         'passwordbox-continue': 'Weiter',
         'passwordbox-log-in': 'Entsperren',
         'passwordbox-confirm': 'Bestätigen',
@@ -220,7 +217,6 @@ const TRANSLATIONS = {
 
         'identicon-selector-loading': 'Mische Farben',
         'identicon-selector-generate-new': 'Neue Avatare',
-        'identicon-selector-more-addresses': 'Mehr Adressen',
 
         'download-loginfile-download': 'Login File herunterladen',
         'download-loginfile-tap-and-hold': 'Zum Herunterladen Bild gedrückt halten',
