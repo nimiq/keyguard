@@ -292,29 +292,30 @@ body.loading .page:target .page-footer > .loading-spinner {
 }
 
 .skip {
-    font-size: 1.625rem;
+    display: block;
+    font-size: 1.75rem;
+    font-weight: 600;
     line-height: 2;
+    text-align: center;
     color: inherit;
     cursor: pointer;
-    display: flex;
-    align-items: baseline;
-    justify-content: center;
     margin: -1.25rem auto 0;
-    width:40%;
-    align-self: center;
+    width: 40%;
+    opacity: 0.7;
+    transition: opacity .3s ease;
 }
 
 .skip .nq-icon  {
-    margin-left: 0.5rem;
-    height: 0.875rem;
-    width: 0.875rem;
+    height: 1.25rem;
+    width: 1.25rem;
     transition: transform .3s ease;
+    vertical-align: middle;
 }
 
 .skip:hover,
 .skip:focus {
     outline: none;
-    opacity: 0.7;
+    opacity: 1;
     text-decoration: none;
 }
 
