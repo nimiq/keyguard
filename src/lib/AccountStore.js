@@ -1,3 +1,8 @@
+/* global Nimiq */
+/* global Key */
+/* global KeyInfo */
+/* global KeyStore */
+
 /**
  * DEPRECATED
  * This class is only used for retrieving keys and accounts from the old KeyStore.
@@ -114,6 +119,44 @@ class AccountStore {
             };
             openCursorRequest.onerror = () => reject(openCursorRequest.error);
         });
+    }
+
+    /**
+     * @param {string} id
+     * @param {Uint8Array} password
+     * @returns {Promise<Key?>}
+     */
+    async get(id, password) {
+        /** @type {KeyRecord?} */
+        const keyRecord = await this._get(id);
+        if (!keyRecord) return null;
+
+        const secret = await Nimiq.Secret.fromEncrypted(new Nimiq.SerialBuffer(keyRecord.secret), password);
+        return new Key(secret, keyRecord.hasPin);
+    }
+
+    /**
+     * @param {string} id
+     * @returns {Promise<KeyInfo?>}
+     */
+    async getInfo(id) {
+        const keyRecord = await this._get(id);
+        if (!keyRecord) return null;
+        return KeyInfo.fromObject(keyRecord, KeyStore.isEncrypted(keyRecord), keyRecord.defaultAddress);
+    }
+
+    /**
+     * @param {string} id
+     * @returns {Promise<KeyRecord?>}
+     * @private
+     */
+    async _get(id) {
+        const db = await this.connect();
+        if (!db) return null;
+        const transaction = db.transaction([AccountStore.ACCOUNT_DATABASE], 'readonly');
+        const request = transaction.objectStore(AccountStore.ACCOUNT_DATABASE).get(id);
+        const accountRecord = await KeyStore._requestToPromise(request, transaction);
+        return KeyStore.accountRecords2KeyRecords([accountRecord])[0];
     }
 
     async close() {

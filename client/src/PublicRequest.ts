@@ -78,6 +78,7 @@ export type SimpleRequest = BasicRequest & {
 export type ExportRequest = SimpleRequest & {
     fileOnly?: boolean,
     wordsOnly?: boolean,
+    useLegacyStore?: boolean,
 };
 
 export type ExportResult = {

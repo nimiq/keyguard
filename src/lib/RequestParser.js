@@ -1,5 +1,6 @@
 /* global Nimiq */
 /* global KeyStore */
+/* global AccountStore */
 /* global Errors */
 /* global Utf8Tools */
 
@@ -78,13 +79,16 @@ class RequestParser { // eslint-disable-line no-unused-vars
 
     /**
      * @param {any} keyId
+     * @param {boolean} [useLegacyStore = false]
      * @returns {Promise<KeyInfo>}
      */
-    async parseKeyId(keyId) {
+    async parseKeyId(keyId, useLegacyStore = false) {
         if (!keyId || typeof keyId !== 'string') {
             throw new Errors.InvalidRequestError('keyId must be a string');
         }
-        const keyInfo = await KeyStore.instance.getInfo(keyId);
+        const keyInfo = useLegacyStore
+            ? await AccountStore.instance.getInfo(keyId)
+            : await KeyStore.instance.getInfo(keyId);
         if (!keyInfo) {
             throw new Errors.KeyNotFoundError();
         }
