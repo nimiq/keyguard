@@ -1,3 +1,4 @@
+/* global AnimationUtils */
 /* global ExportWords */
 /* global ExportFile */
 /* global KeyStore */
@@ -79,14 +80,18 @@ class RemoveKey {
     }
 
     async _finalConfirm() {
-        TopLevelApi.setLoading(true);
-        await KeyStore.instance.remove(this._request.keyInfo.id);
+        if (this.$labelInput.value === this._request.keyLabel) {
+            TopLevelApi.setLoading(true);
+            await KeyStore.instance.remove(this._request.keyInfo.id);
 
-        /** @type {KeyguardRequest.SimpleResult} */
-        const result = {
-            success: true,
-        };
-        this._resolve(result);
+            /** @type {KeyguardRequest.SimpleResult} */
+            const result = {
+                success: true,
+            };
+            this._resolve(result);
+        } else {
+            await AnimationUtils.animate('shake', this.$labelInput);
+        }
     }
 }
 
