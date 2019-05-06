@@ -1,6 +1,7 @@
 /* global ExportWords */
 /* global ExportFile */
 /* global KeyStore */
+/* global Nimiq */
 /* global TopLevelApi */
 /* global Constants */
 /* global IqonHash */
@@ -45,11 +46,16 @@ class RemoveKey {
         /** @type {HTMLButtonElement} */
         const $finalConfirmButton = ($removeKey.querySelector('#remove-key-final-confirm'));
 
-        const color = IqonHash.getBackgroundColorIndex(
-            request.keyInfo.defaultAddress.toUserFriendlyAddress(),
-        );
-        const colorClass = LoginFile.CONFIG[color].className;
-        $loginFileContainer.classList.add(colorClass);
+        if (request.keyInfo.type === Nimiq.Secret.Type.PRIVATE_KEY) {
+            /** @type {HTMLElement} */
+            ($removeKey.querySelector('.backup-option.login-file')).classList.add('display-none');
+        } else {
+            const color = IqonHash.getBackgroundColorIndex(
+                request.keyInfo.defaultAddress.toUserFriendlyAddress(),
+            );
+            const colorClass = LoginFile.CONFIG[color].className;
+            $loginFileContainer.classList.add(colorClass);
+        }
 
         $labelSpan.textContent = this._request.keyLabel;
 
