@@ -97,8 +97,7 @@ class ImportWords {
                 const color = IqonHash.getBackgroundColorIndex(
                     key.defaultAddress.toUserFriendlyAddress(),
                 );
-                const colorString = LoginFile.CONFIG[color].name;
-                colorClass = `nq-${colorString}-bg`;
+                colorClass = LoginFile.CONFIG[color].className;
             }
             this._loginFileIcon.lock(colorClass);
         });

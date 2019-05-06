@@ -122,8 +122,7 @@ class ExportFile extends Nimiq.Observable {
             const color = IqonHash.getBackgroundColorIndex(
                 this._request.keyInfo.defaultAddress.toUserFriendlyAddress(),
             );
-            const colorString = LoginFile.CONFIG[color].name;
-            colorClass = `nq-${colorString}-bg`;
+            colorClass = LoginFile.CONFIG[color].className;
             this._loginFileIcon.lock(colorClass);
             this._setPasswordProgressIndicator.setStep(3);
         });
