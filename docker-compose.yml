@@ -9,4 +9,4 @@ services:
       - ./tools/nginx/certs/localhost.key:/etc/nginx/localhost.key
     ports:
     - "8080:80"
-    - "8443:443" # Docker open external port 443 and redirels
+    - "8443:443"
