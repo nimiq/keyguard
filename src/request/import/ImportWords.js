@@ -273,8 +273,7 @@ class ImportWords {
                 };
                 this._keyResults.push(result);
 
-                const secretString = Nimiq.BufferUtils.toBase64(key.secret.serialize());
-                sessionStorage.setItem(ImportApi.SESSION_STORAGE_KEY_PREFIX + result.keyId, secretString);
+                sessionStorage.setItem(ImportApi.SESSION_STORAGE_KEY_PREFIX + result.keyId, 'Private key');
             } else {
                 TopLevelApi.setLoading(false);
             }
