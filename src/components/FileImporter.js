@@ -4,6 +4,7 @@
 /* global I18n */
 /* global LoginFile */
 /* global TemplateTags */
+/* global KeyStore */
 
 class FileImporter extends Nimiq.Observable {
     /**
@@ -87,6 +88,23 @@ class FileImporter extends Nimiq.Observable {
         if (!decoded) {
             AnimationUtils.animate('shake', this.$el);
             this.$errorMessage.textContent = 'Could not read Login File.';
+            return;
+        }
+
+        // Check that the found QR code encodes a Nimiq secret
+        try {
+            // Make sure it is base64
+            const bytes = Nimiq.BufferUtils.fromBase64(decoded.substr(0, 2) === '#2' ? decoded.substr(2) : decoded);
+
+            // Make sure the data size is correct
+            if (bytes.byteLength !== KeyStore.ENCRYPTED_SECRET_SIZE
+                && bytes.byteLength !== KeyStore.ENCRYPTED_SECRET_SIZE_V2) {
+                throw new Error('Invalid encrypted secret size');
+            }
+        } catch (error) {
+            console.error(error);
+            AnimationUtils.animate('shake', this.$el);
+            this.$errorMessage.textContent = 'Invalid Login File.';
             return;
         }
 
