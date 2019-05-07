@@ -1,0 +1,12 @@
+version: '2'
+services:
+  keyguard:
+    image: nginx
+    volumes:
+      - .:/usr/share/nginx/html
+      - ./tools/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./tools/nginx/certs/localhost.crt:/etc/nginx/localhost.crt
+      - ./tools/nginx/certs/localhost.key:/etc/nginx/localhost.key
+    ports:
+    - "8080:80"
+    - "8443:443" # Docker open external port 443 and redirels

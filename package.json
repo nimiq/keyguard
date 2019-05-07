@@ -15,7 +15,10 @@
     "pr": "yarn typecheck && yarn lint && yarn test && yarn checkdeps && yarn checklangs && yarn build && cd client && yarn lint && yarn build",
     "watch": "tsc-watch --pretty --onSuccess \"yarn lint\"",
     "watchfix": "tsc-watch --pretty --onSuccess \"yarn lintfix\"",
-    "postinstall": "cd client && yarn"
+    "postinstall": "cd client && yarn",
+    "generate-https-certs": "( cd tools && ./generateHttpsCerts.sh )",
+    "start-server": "docker-compose up --remove-orphans --no-deps -d && echo 'You can open your browser now using https: https://127.0.0.1:8443/demo'",
+    "stop-server": "docker-compose down -v --remove-orphans"
   },
   "repository": {
     "type": "git",

@@ -20,6 +20,7 @@ Then you can:
 - run the typechecker with `yarn typecheck`.
 - run the typecheck file watcher with `yarn watch`.
 - run the linter with `yarn lint`.
+- check the demo by running `yarn start-server` and stop server by running `yarn stop-server`. You should generate first the https certificates by running `yarn generate-https-certs`. The certificate generation is needed only once.
 - automatically fix basic things like spacing, commas, indentation and quotes
   with `yarn lintfix`.
 - run `yarn pr` to run all three checks (`typecheck`, `lint`, `test`) as they
