@@ -159,18 +159,21 @@ class RequestParser { // eslint-disable-line no-unused-vars
                 'Contract creation data must be 78 bytes for HTLC and 24, 36, or 44 bytes for vesting contracts',
             );
         }
-
-        return new Nimiq.ExtendedTransaction(
-            sender,
-            senderType,
-            recipient,
-            recipientType,
-            object.value,
-            object.fee,
-            object.validityStartHeight,
-            flags,
-            data,
-        );
+        try {
+            return new Nimiq.ExtendedTransaction(
+                sender,
+                senderType,
+                recipient,
+                recipientType,
+                object.value,
+                object.fee,
+                object.validityStartHeight,
+                flags,
+                data,
+            );
+        } catch (error) {
+            throw new Errors.InvalidRequestError(error);
+        }
     }
 
     /**

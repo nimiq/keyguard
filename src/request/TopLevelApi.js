@@ -141,7 +141,9 @@ class TopLevelApi extends RequestParser {
                 if (event.error) {
                     error = new Errors.UnclassifiedError(event.error);
                 } else {
-                    error = new Errors.UnclassifiedError(`${event.message} at ${event.filename}:${event.lineno}:${event.colno}`);
+                    error = new Errors.UnclassifiedError(
+                        `${event.message} at ${event.filename}:${event.lineno}:${event.colno}`,
+                    );
                 }
                 this.reject(error);
                 return false;
