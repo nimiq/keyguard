@@ -7,6 +7,21 @@ output() {
     echo "$(tput bold) $1$(tput sgr0)"
 }
 
+# Check for a working implementation of sha256sum
+SHA256SUM=""
+which sha256sum > /dev/null && SHA256SUM="sha256sum"
+# For (at least) MacPorts on MacOS, the GNU coreutils have been prefixed with 'g'
+# to be easily seperateable from the BSD ones
+[ -z "${SHA256SUM}" ] && which gsha256sum > /dev/null && SHA256SUM="gsha256sum"
+# Yes, that leaves the possibility that the current version of shasum doesn't
+# support the SHA256 algorithm. But I don't think that's rather common by now...
+[ -z "${SHA256SUM}" ] && which shasum > /dev/null && SHA256SUM="shasum -a 256"
+
+if [ -z "${SHA256SUM}" ]; then
+  output "Please install sha256sum or shasum first."
+  exit 1
+fi
+
 # execute config file given as parameter; default to testnet
 BUILD=testnet
 if [ "$1" != "" ]; then
@@ -47,7 +62,7 @@ hashsums=\
  154b1251428363c8658c99acbf55b31eef177c0d447767a506952924a37494a9  node_modules/@nimiq/core-web/worker-js.js
  5670830478ac20a634b1436cd24cc3ba2eda23e8f8a7a30f54958920046435ce  node_modules/@nimiq/core-web/worker.js"
 
-echo "$hashsums" | sha256sum --check
+echo "$hashsums" | ${SHA256SUM} --check
 
 if [ ! $? -eq 0 ]; then
     output "💥  Nimiq Core file integrity check failed!"
