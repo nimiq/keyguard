@@ -47,7 +47,14 @@ hashsums=\
  154b1251428363c8658c99acbf55b31eef177c0d447767a506952924a37494a9  node_modules/@nimiq/core-web/worker-js.js
  5670830478ac20a634b1436cd24cc3ba2eda23e8f8a7a30f54958920046435ce  node_modules/@nimiq/core-web/worker.js"
 
-echo "$hashsums" | sha256sum --check
+sha256() {
+    if hash sha256sum 2>/dev/null; then
+        sha256sum "$@"
+    else
+        shasum -a 256 "$@"
+    fi
+}
+echo "$hashsums" | sha256 --check
 
 if [ ! $? -eq 0 ]; then
     output "💥  Nimiq Core file integrity check failed!"
