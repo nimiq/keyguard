@@ -96,9 +96,7 @@ class TopLevelApi extends RequestParser {
                     try {
                         /** @type {string[]} */
                         const removeKeyArray = JSON.parse(match[1]);
-                        removeKeyArray.forEach(keyId => {
-                            KeyStore.instance.remove(keyId);
-                        });
+                        await Promise.all(removeKeyArray.map(keyId => KeyStore.instance.remove(keyId)));
                     } catch (e) {
                         this._reject(e);
                     }
