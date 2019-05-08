@@ -52,9 +52,10 @@ export class KeyguardClient {
         returnURL?: string,
         localState?: ObjectType|null,
         preserveRequests?: boolean,
+        handleHistoryBack?: boolean,
     ) {
         this._endpoint = endpoint;
-        this._redirectBehavior = new RedirectRequestBehavior(returnURL, localState);
+        this._redirectBehavior = new RedirectRequestBehavior(returnURL, localState, handleHistoryBack);
         this._iframeBehavior = new IFrameRequestBehavior();
 
         // If this is a page-reload, allow location.origin as RPC origin
