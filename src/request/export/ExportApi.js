@@ -14,8 +14,8 @@ class ExportApi extends TopLevelApi { // eslint-disable-line no-unused-vars
 
         const parsedRequest = {};
         parsedRequest.appName = this.parseAppName(request.appName);
-        parsedRequest.useLegacyStore = this.parseBoolean(request.useLegacyStore);
-        parsedRequest.keyInfo = await this.parseKeyId(request.keyId, parsedRequest.useLegacyStore);
+        parsedRequest.keyInfo = await this.parseKeyId(request.keyId);
+        parsedRequest.useLegacyStore = this.isLegacyKeyId(request.keyId);
         parsedRequest.keyLabel = this.parseLabel(request.keyLabel);
         parsedRequest.fileOnly = this.parseBoolean(request.fileOnly);
         parsedRequest.wordsOnly = this.parseBoolean(request.wordsOnly);

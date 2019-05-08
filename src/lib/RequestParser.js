@@ -79,14 +79,14 @@ class RequestParser { // eslint-disable-line no-unused-vars
 
     /**
      * @param {any} keyId
-     * @param {boolean} [useLegacyStore = false]
      * @returns {Promise<KeyInfo>}
      */
-    async parseKeyId(keyId, useLegacyStore = false) {
+    async parseKeyId(keyId) {
         if (!keyId || typeof keyId !== 'string') {
             throw new Errors.InvalidRequestError('keyId must be a string');
         }
-        const keyInfo = useLegacyStore
+
+        const keyInfo = this.isLegacyKeyId(keyId)
             ? await AccountStore.instance.getInfo(keyId)
             : await KeyStore.instance.getInfo(keyId);
         if (!keyInfo) {
@@ -252,6 +252,14 @@ class RequestParser { // eslint-disable-line no-unused-vars
      */
     parseBoolean(value) {
         return !!value;
+    }
+
+    /**
+     * @param {string} id
+     * @returns {boolean}
+     */
+    isLegacyKeyId(id) {
+        return id.substr(0, 2) === 'NQ' && id.length === 44;
     }
 
     /**
