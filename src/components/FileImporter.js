@@ -94,6 +94,7 @@ class FileImporter extends Nimiq.Observable {
         // Check that the found QR code encodes a Nimiq secret
         try {
             // Make sure it is base64
+            // This throws an atob() exception if decoded is not in base64 format
             const bytes = Nimiq.BufferUtils.fromBase64(decoded.substr(0, 2) === '#2' ? decoded.substr(2) : decoded);
 
             // Make sure the data size is correct
