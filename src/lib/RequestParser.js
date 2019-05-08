@@ -220,8 +220,10 @@ class RequestParser { // eslint-disable-line no-unused-vars
         }
         try {
             const parsedUrl = new URL(url);
-            if (parsedUrl.protocol !== 'https:' && parsedUrl.protocol !== 'http:') {
-                throw new Errors.InvalidRequestError('shopOrigin protocol must be https: or http:');
+            const whitelistedProtocols = ['https:', 'http:', 'chrome-extension:', 'moz-extension:'];
+            if (!whitelistedProtocols.includes(parsedUrl.protocol)) {
+                const errorMessage = `shopOrigin protocol must be one of: ${whitelistedProtocols.join(', ')}`;
+                throw new Errors.InvalidRequestError(errorMessage);
             }
             return parsedUrl.origin;
         } catch (error) {
