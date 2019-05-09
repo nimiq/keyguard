@@ -13,11 +13,4 @@ addons:
   firefox: latest
 
 script:
-  - yarn typecheck
-  - yarn lint
-  - yarn test
-  - yarn checkdeps
-  - yarn checklangs
-  - cd client
-  - yarn lint
-  - yarn build
+  - yarn pr
