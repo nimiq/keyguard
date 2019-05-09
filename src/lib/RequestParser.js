@@ -219,12 +219,7 @@ class RequestParser { // eslint-disable-line no-unused-vars
             throw new Errors.InvalidRequestError('shopOrigin must be of type string');
         }
         try {
-            const parsedUrl = new URL(url);
-            const whitelistedProtocols = ['https:', 'http:', 'chrome-extension:', 'moz-extension:'];
-            if (!whitelistedProtocols.includes(parsedUrl.protocol)) {
-                const errorMessage = `shopOrigin protocol must be one of: ${whitelistedProtocols.join(', ')}`;
-                throw new Errors.InvalidRequestError(errorMessage);
-            }
+            const parsedUrl = this._parseUrl(url, 'shopOrigin');
             return parsedUrl.origin;
         } catch (error) {
             throw new Errors.InvalidRequestError(error);
@@ -241,11 +236,7 @@ class RequestParser { // eslint-disable-line no-unused-vars
             throw new Errors.InvalidRequestError('shopLogoUrl must be of type string');
         }
         try {
-            const parsedUrl = new URL(url);
-            if (parsedUrl.protocol !== 'https:' && parsedUrl.protocol !== 'http:') {
-                throw new Errors.InvalidRequestError('shopLogoUrl protocol must be https: or http:');
-            }
-            return parsedUrl;
+            return this._parseUrl(url, 'shopLogoUrl');
         } catch (error) {
             throw new Errors.InvalidRequestError(error);
         }
@@ -257,5 +248,20 @@ class RequestParser { // eslint-disable-line no-unused-vars
      */
     parseBoolean(value) {
         return !!value;
+    }
+
+    /**
+     * @param {string} url
+     * @param {string} parameterName
+     * @returns {URL}
+     */
+    _parseUrl(url, parameterName) {
+        const parsedUrl = new URL(url);
+        const whitelistedProtocols = ['https:', 'http:', 'chrome-extension:', 'moz-extension:'];
+        if (!whitelistedProtocols.includes(parsedUrl.protocol)) {
+            const protocolString = whitelistedProtocols.join(', ');
+            throw new Errors.InvalidRequestError(`${parameterName} protocol must be one of: ${protocolString}`);
+        }
+        return parsedUrl;
     }
 }
