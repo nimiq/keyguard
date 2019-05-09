@@ -56,8 +56,8 @@ class PasswordSetterBox extends Nimiq.Observable {
 
         /* eslint-disable max-len */
         $el.innerHTML = TemplateTags.hasVars(1)`
-            <div class="password-strength strength-short  nq-text-s" data-i18n="passwordbox-password-strength-short" >Enter min. 8 characters</div>
-            <div class="password-strength strength-weak   nq-text-s" data-i18n="passwordbox-password-strength-weak"  >Sufficient password</div>
+            <div class="password-strength strength-short  nq-text-s" data-i18n="passwordbox-password-strength-short" >Enter 8 characters or more</div>
+            <div class="password-strength strength-weak   nq-text-s" data-i18n="passwordbox-password-strength-weak"  >Weak password</div>
             <div class="password-strength strength-good   nq-text-s" data-i18n="passwordbox-password-strength-good"  >Good password</div>
             <div class="password-strength strength-strong nq-text-s" data-i18n="passwordbox-password-strength-strong">Strong password</div>
             <div class="password-strength strength-secure nq-text-s" data-i18n="passwordbox-password-strength-secure">Secure password</div>
@@ -67,7 +67,7 @@ class PasswordSetterBox extends Nimiq.Observable {
 
             <div password-input></div>
 
-            <button class="submit" data-i18n="passwordbox-confirm">Confirm</button>
+            <button class="submit" data-i18n="passwordbox-repeat">Repeat password</button>
 
             ${options.hideSkip ? '' : TemplateTags.noVars`
                 <a tabindex="0" class="password-skip nq-text-s">
