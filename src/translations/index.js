@@ -22,7 +22,7 @@ const TRANSLATIONS = {
         'import-heading-enter-recovery-words': 'Enter Recovery Words',
         'import-upload-login-file': 'Upload your Login File',
         'import-login-to-continue': 'Please login again to continue.',
-        'import-unlock-account': 'Unlock your account',
+        'import-unlock-account': 'Unlock your Account',
         'import-create-account': 'Create new Account',
 
         'import-file-button-words': 'Login with Recovery Words',
@@ -141,7 +141,7 @@ const TRANSLATIONS = {
         'change-password-download-login-file': 'Download new Login File',
         'change-password-set-password-heading': 'Create a new password',
         'change-password-set-password-text': 'Secure your new Login File.',
-        'change-password-set-password-text-legacy': 'Secure your account.',
+        'change-password-set-password-text-legacy': 'Secure your Account.',
 
         'error-no-referrer-heading': 'That went wrong :(',
         'error-no-referrer-message': 'We could not verify the origin of your request. Please go back and try again.',
