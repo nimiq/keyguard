@@ -159,10 +159,40 @@ describe('RequestParser', () => {
         expect(() => requestParser.parseShopOrigin(5)).toThrow();
         expect(() => requestParser.parseShopOrigin({})).toThrow();
         expect(() => requestParser.parseShopOrigin('isThisAUrl?')).toThrow();
-        let url = 'http://nimiq.com';
-        expect(requestParser.parseShopOrigin(url)).toEqual('http://nimiq.com');
-        url = 'http://nimiq.com/some/path/some/where/index.html?foo=bar';
-        expect(requestParser.parseShopOrigin(url)).toEqual('http://nimiq.com');
+        expect(() => requestParser.parseShopOrigin('file:///home/maxmustermann/file.html')).toThrow();
+
+        const vectors = [
+            ['http://nimiq.com', 'http://nimiq.com'],
+            ['https://nimiq.com/some/path/some/where/index.html?foo=bar', 'https://nimiq.com'],
+            // The following two tests are not possible in headless browsers, as they don't know extension protocols
+            // ['chrome-extension://cjpalhdlnbpafiamejdnhcphjbkeiagm/dashboard.html', 'chrome-extension://cjpalhdlnbpafiamejdnhcphjbkeiagm'],
+            // ['moz-extension://cjpalhdlnbpafiamejdnhcphjbkeiagm/dashboard.html', 'moz-extension://cjpalhdlnbpafiamejdnhcphjbkeiagm'],
+        ]
+        for (const vector of vectors) {
+            expect(requestParser.parseShopOrigin(vector[0])).toEqual(vector[1]);
+        }
+    });
+
+    it('can parse shopLogoUrl', () => {
+        const requestParser = new RequestParser();
+
+        expect(() => requestParser.parseShopLogoUrl(5)).toThrow();
+        expect(() => requestParser.parseShopLogoUrl({})).toThrow();
+        expect(() => requestParser.parseShopLogoUrl('isThisAUrl?')).toThrow();
+        expect(() => requestParser.parseShopLogoUrl('file:///home/maxmustermann/image.jpg')).toThrow();
+
+        expect(requestParser.parseShopLogoUrl(undefined)).toBe(undefined);
+
+        const vectors = [
+            ['http://exampleshop.com/image.png', 'http://exampleshop.com/image.png'],
+            ['https://nimiq.com/some/path/some/where/index.jpg?foo=bar', 'https://nimiq.com/some/path/some/where/index.jpg?foo=bar'],
+            ['chrome-extension://cjpalhdlnbpafiamejdnhcphjbkeiagm/logo.jpg', 'chrome-extension://cjpalhdlnbpafiamejdnhcphjbkeiagm/logo.jpg'],
+            ['moz-extension://cjpalhdlnbpafiamejdnhcphjbkeiagm/logo.jpg', 'moz-extension://cjpalhdlnbpafiamejdnhcphjbkeiagm/logo.jpg'],
+        ]
+        for (const vector of vectors) {
+            const parsedUrl = /** @type {URL} */ (requestParser.parseShopLogoUrl(vector[0]));
+            expect(parsedUrl.href).toEqual(vector[1]);
+        }
     });
 
     // no it('can parse addresses', ...) as it is already tested by core.
