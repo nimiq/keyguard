@@ -85,7 +85,7 @@
         }
 
         keyguard.close();
-        KeyStore.instance.remove(request.keyId);
+        await KeyStore.instance.remove(request.keyId);
     }
 </script>
 

@@ -50,6 +50,8 @@ class ChangePassword {
         this.$setPasswordBackButton = ($setPassword.querySelector('a.page-header-back-button'));
         /** @type {HTMLAnchorElement} */
         const $downloadLoginFile = ($downloadFile.querySelector('.download-login-file'));
+        /** @type {HTMLLinkElement} */
+        const $skipDownloadButton = ($downloadFile.querySelector('.skip'));
 
         // Components
         this._passwordSetter = new PasswordSetterBox($passwordSetter);
@@ -95,10 +97,13 @@ class ChangePassword {
         this._passwordGetter.on(PasswordBox.Events.SUBMIT, this._unlock.bind(this));
         this._passwordSetter.on(PasswordSetterBox.Events.ENTERED, this._prepare.bind(this));
         this._passwordSetter.on(PasswordSetterBox.Events.SUBMIT, this._commitChangeAndOfferLoginFile.bind(this));
-        this._passwordSetter.on(PasswordSetterBox.Events.SKIP, this._commitChangeAndOfferLoginFile.bind(this));
         this._passwordSetter.on(PasswordSetterBox.Events.RESET, this.backToEnterPassword.bind(this));
 
         this._downloadLoginFile.on(DownloadLoginFile.Events.DOWNLOADED, () => {
+            this._resolve({ success: true });
+        });
+        $skipDownloadButton.addEventListener('click', e => {
+            e.preventDefault();
             this._resolve({ success: true });
         });
     }
@@ -158,8 +163,7 @@ class ChangePassword {
             const color = IqonHash.getBackgroundColorIndex(
                 this._request.keyInfo.defaultAddress.toUserFriendlyAddress(),
             );
-            const colorString = LoginFile.CONFIG[color].name;
-            colorClass = `nq-${colorString}-bg`;
+            colorClass = LoginFile.CONFIG[color].className;
         }
         this._loginFileIcon.lock(colorClass);
         this._progressIndicator.setStep(3);
@@ -167,7 +171,7 @@ class ChangePassword {
 
     /**
      * Called after new password was entered second time.
-     * @param {string} [newPassword]
+     * @param {string} newPassword
      */
     async _commitChangeAndOfferLoginFile(newPassword) {
         TopLevelApi.setLoading(true);

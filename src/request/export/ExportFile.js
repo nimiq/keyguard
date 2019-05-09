@@ -66,11 +66,7 @@ class ExportFile extends Nimiq.Observable {
                 hideCancel: true,
             },
         );
-        this._passwordSetterBox = new PasswordSetterBox(
-            $passwordSetterBox, {
-                hideSkip: true,
-            },
-        );
+        this._passwordSetterBox = new PasswordSetterBox($passwordSetterBox);
         this._loginFileIcon = new LoginFileIcon($loginFileIcon);
         this._downloadLoginFile = new DownloadLoginFile($downloadLoginFile);
         this._downloadLoginFile.createDummyFile(this._request.keyInfo.defaultAddress);
@@ -122,8 +118,7 @@ class ExportFile extends Nimiq.Observable {
             const color = IqonHash.getBackgroundColorIndex(
                 this._request.keyInfo.defaultAddress.toUserFriendlyAddress(),
             );
-            const colorString = LoginFile.CONFIG[color].name;
-            colorClass = `nq-${colorString}-bg`;
+            colorClass = LoginFile.CONFIG[color].className;
             this._loginFileIcon.lock(colorClass);
             this._setPasswordProgressIndicator.setStep(3);
         });

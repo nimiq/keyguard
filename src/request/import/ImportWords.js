@@ -60,6 +60,8 @@ class ImportWords {
         const $loginFileIcon = (this.$setPassword.querySelector('.login-file-icon'));
         /** @type {HTMLAnchorElement} */
         const $downloadLoginFile = ($downloadFile.querySelector('.download-loginfile'));
+        /** @type {HTMLLinkElement} */
+        const $skipDownloadButton = ($downloadFile.querySelector('.skip'));
 
         // Components
         this._recoveryWords = new RecoveryWords($recoveryWords, true);
@@ -97,8 +99,7 @@ class ImportWords {
                 const color = IqonHash.getBackgroundColorIndex(
                     key.defaultAddress.toUserFriendlyAddress(),
                 );
-                const colorString = LoginFile.CONFIG[color].name;
-                colorClass = `nq-${colorString}-bg`;
+                colorClass = LoginFile.CONFIG[color].className;
             }
             this._loginFileIcon.lock(colorClass);
         });
@@ -129,8 +130,8 @@ class ImportWords {
             window.location.hash = ImportWords.Pages.DOWNLOAD_LOGINFILE;
         });
 
-        this._passwordSetter.on(PasswordSetterBox.Events.SKIP, async () => {
-            await this._storeKeys();
+        $skipDownloadButton.addEventListener('click', e => {
+            e.preventDefault();
             this._resolve(this._keyResults);
         });
 
@@ -138,6 +139,7 @@ class ImportWords {
         // @ts-ignore (Property 'test' does not exist on type 'Window'.)
         window.test = (n = 0) => {
             const testPasswords = [
+                // 0 - Unknown - both used
                 [
                     'curtain', 'cancel', 'tackle', 'always',
                     'draft', 'fade', 'alarm', 'flip',
@@ -154,6 +156,36 @@ class ImportWords {
                     'security', 'enable', 'uniform', 'elegant',
                     'eager', 'idea', 'pretty', 'way',
                 ],
+                // 2 - unknown with none used
+                [
+                    'circle', 'lottery', 'source', 'drip',
+                    'door', 'cargo', 'wash', 'eyebrow',
+                    'curtain', 'ramp', 'arrange', 'bring',
+                    'cushion', 'pill', 'six', 'pottery',
+                    'attract', 'position', 'coast', 'bubble',
+                    'long', 'ugly', 'chunk', 'know',
+                ],
+                // 3 - unknown with bip39 used
+                // NQ29 34Q8 3GTG EYH2 N7US 2L0B S8YJ SY8E MALS
+                [
+                    'aim', 'puppy', 'hip', 'bracket',
+                    'amazing', 'mango', 'car', 'camera',
+                    'release', 'come', 'dynamic', 'credit',
+                    'roast', 'ride', 'puzzle', 'never',
+                    'grab', 'please', 'bubble', 'oxygen',
+                    'year', 'auction', 'visit', 'suggest',
+                ],
+                // 4 - unknown with legacy used
+                // NQ81 NMYF M6PC TV15 YJKX 7E5D Q1PN T3F3 2622
+                [
+                    'interest', 'doctor', 'smooth', 'air',
+                    'taxi', 'talk', 'soul', 'moment',
+                    'major', 'ecology', 'strike', 'trigger',
+                    'hotel', 'glory', 'crouch', 'nurse',
+                    'resource', 'retire', 'warrior', 'judge',
+                    'trial', 'certain', 'universe', 'approve',
+                ],
+
             ];
             // @ts-ignore (Parameter 'field', 'word', 'index' implicitly have an 'any' type.)
             function putWord(field, word, index) { // eslint-disable-line require-jsdoc-except/require-jsdoc
@@ -241,6 +273,8 @@ class ImportWords {
                     wordsExported: true,
                 };
                 this._keyResults.push(result);
+
+                sessionStorage.setItem(ImportApi.SESSION_STORAGE_KEY_PREFIX + result.keyId, 'Private key');
             } else {
                 TopLevelApi.setLoading(false);
             }

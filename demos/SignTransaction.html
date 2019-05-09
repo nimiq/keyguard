@@ -115,7 +115,7 @@
         }
 
         keyguard.close();
-        KeyStore.instance.remove(txRequest.keyId);
+        await KeyStore.instance.remove(txRequest.keyId);
     }
 </script>
 
