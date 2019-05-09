@@ -45,7 +45,7 @@ replace_icon_sprite_url() {
 
 # generate a base64 file integrity hash
 make_file_hash() {
-    echo $(sha256sum "$1" | awk '{print $1}' | xxd -r -p | base64)
+    echo $(${SHA256SUM} "$1" | awk '{print $1}' | xxd -r -p | base64)
 }
 
 # Before writing any files, verify integrity of Nimiq lib
