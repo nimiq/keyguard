@@ -29,28 +29,36 @@ function findI18nKeysAndStrings(filePath) {
     while ((textMatch = textContentRegEx.exec(contents)) !== null) { // eslint-disable-line no-cond-assign
         const key = textMatch[1];
         const phrase = textMatch[2];
-        dict[key] = phrase;
+        if (!dict[key]) {
+            dict[key] = [];
+        }
+        dict[key].push(phrase);
     }
 
     let placeholderMatch;
     while ((placeholderMatch = placeholderRegEx.exec(contents)) !== null) { // eslint-disable-line no-cond-assign
         const key = placeholderMatch[1];
         const phrase = placeholderMatch[2] || '- not found -';
-        dict[key] = phrase;
+        if (!dict[key]) {
+            dict[key] = [];
+        }
+        dict[key].push(phrase);
     }
 
     let phraseMatch;
     while ((phraseMatch = phraseRegEx.exec(contents)) !== null) { // eslint-disable-line no-cond-assign
         const key = phraseMatch[1];
         const phrase = false;
-        dict[key] = phrase;
+        if (!dict[key]) {
+            dict[key] = [];
+        }
+        dict[key].push(phrase);
     }
-
     return dict;
 }
 
 const REF_DICT = {
-    _language: 'English',
+    _language: ['English'],
 };
 
 localizedFiles.forEach(filePath => {
@@ -82,16 +90,16 @@ Object.keys(DICT).forEach(lang => {
         } else if (lang === 'en') {
             // Strip line breaks and indentation
             const inDict = langDict[key].replace('/\n/g', '').replace(/\s+/g, ' ');
-            const inRef = REF_DICT[key] && REF_DICT[key].replace('/\n/g', '').replace(/\s+/g, ' ');
-
             delete unusedDICT[key];
-
-            if (inRef !== false && inDict !== inRef) {
-                console.error(
-                    '\x1b[33m%s\x1b[0m',
-                    `WARN: Different english for >${key}< in dict vs. DOM:\n\t${inDict}\n\t${inRef}`,
-                );
-            }
+            REF_DICT[key].forEach(ref => {
+                const inRef = ref && ref.replace('/\n/g', '').replace(/\s+/g, ' ');
+                if (inRef !== false && inDict !== inRef) {
+                    console.error(
+                        '\x1b[33m%s\x1b[0m',
+                        `WARN: Different english for >${key}< in dict vs. DOM:\n\t${inDict}\n\t${inRef}`,
+                    );
+                }
+            });
         }
     });
 
