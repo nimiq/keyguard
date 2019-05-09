@@ -20,7 +20,7 @@ class AddressInfo {
     renderTo($el, isDetailedView = false) {
         $el = $el || document.createElement('div');
         $el.textContent = '';
-        $el.classList.add('addressInfo');
+        $el.classList.add('address-info');
         $el.classList.toggle('detailed-view', isDetailedView);
 
         // identicon
@@ -47,8 +47,12 @@ class AddressInfo {
         const $label = document.createElement('div');
         $label.classList.add('label');
         $label.textContent = this._addressInfo.label || (isDetailedView
-            ? 'Unnamed Contact'
+            ? ''
             : this._addressInfo.userFriendlyAddress);
+        if (!this._addressInfo.label && !isDetailedView) {
+            // The userfriendly address is displayed, set to Fira Mono font
+            $label.classList.add('mono');
+        }
         $el.appendChild($label);
 
         if (isDetailedView) {

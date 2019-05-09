@@ -1,24 +1,24 @@
-.addressInfo.detailed-view {
+.address-info.detailed-view {
     cursor: auto;
 }
 
-.addressInfo.detailed-view .identicon {
+.address-info.detailed-view .identicon {
     width: 18rem;
     height: 18rem;
 }
 
-.addressInfo.detailed-view .label {
+.address-info.detailed-view .label {
     font-size: 3rem;
     font-weight: 600;
     line-height: 1;
     margin-top: 3rem;
 }
 
-.addressInfo.detailed-view .account-label {
+.address-info.detailed-view .account-label {
     margin-top: 1.5rem;
 }
 
-.addressInfo.detailed-view .address {
+.address-info.detailed-view .address {
     width: 100%;
     max-width: 27.375rem;
     text-transform: uppercase;
