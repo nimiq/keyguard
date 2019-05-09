@@ -6,6 +6,8 @@
 /* global Utf8Tools */
 /* global TopLevelApi */
 /* global AddressInfo */
+/* global Constants */
+/* global I18n */
 
 /**
  * @callback SignTransaction.resolve
@@ -83,7 +85,7 @@ class SignTransaction {
 
         // Set transaction extra data.
         if ($data && transaction.data.byteLength > 0) {
-            $data.textContent = Utf8Tools.utf8ByteArrayToString(transaction.data);
+            $data.textContent = this._formatData(transaction);
             /** @type {HTMLDivElement} */
             const $dataSection = (this.$el.querySelector('.data-section'));
             $dataSection.classList.remove('display-none');
@@ -186,6 +188,25 @@ class SignTransaction {
         // Add thin spaces (U+202F) every 3 digits. Stop at the decimal separator if there is one.
         const regexp = minDecimals > 0 ? /(\d)(?=(\d{3})+\.)/g : /(\d)(?=(\d{3})+$)/g;
         return result.replace(regexp, '$1\u202F');
+    }
+
+    /**
+     * @param {Nimiq.Transaction} transaction
+     * @returns {string}
+     */
+    _formatData(transaction) {
+        if (Nimiq.BufferUtils.equals(transaction.data, Constants.CASHLINK_FUNDING_DATA)) {
+            return I18n.translatePhrase('funding-cashlink');
+        }
+
+        if (transaction.hasFlag(Nimiq.Transaction.Flag.CONTRACT_CREATION)) {
+            // TODO: Decode contract creation transactions
+            // return ...
+        }
+
+        return Utf8Tools.isValidUtf8(transaction.data)
+            ? Utf8Tools.utf8ByteArrayToString(transaction.data)
+            : Nimiq.BufferUtils.toHex(transaction.data);
     }
 }
 
