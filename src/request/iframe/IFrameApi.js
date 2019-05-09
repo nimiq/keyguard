@@ -47,9 +47,9 @@ class IFrameApi {
     /**
      * @param {RpcState?} state
      * @param {KeyguardRequest.ReleaseKeyRequest} request
-     * @returns {KeyguardRequest.SimpleResult}
+     * @returns {Promise<KeyguardRequest.SimpleResult>}
      */
-    releaseKey(state, request) {
+    async releaseKey(state, request) {
         if (request.shouldBeRemoved && sessionStorage.getItem(IFrameApi.SESSION_STORAGE_KEY_PREFIX + request.keyId)) {
             if (BrowserDetection.isIOS() || BrowserDetection.isSafari()) {
                 const match = document.cookie.match(new RegExp('removeKey=([^;]+)'));
@@ -64,7 +64,7 @@ class IFrameApi {
                 document.cookie = `removeKey=${JSON.stringify(removeKeyArray)};max-age=31536000;`
                                 + 'Secure;SameSite=strict;Path=/';
             } else {
-                KeyStore.instance.remove(request.keyId);
+                await KeyStore.instance.remove(request.keyId);
             }
         }
         sessionStorage.removeItem(IFrameApi.SESSION_STORAGE_KEY_PREFIX + request.keyId);
