@@ -5,6 +5,8 @@ const TRANSLATIONS = {
 
         'back-to': 'Back to',
 
+        'funding-cashlink': 'Funding cashlink',
+
         'recovery-words-title': 'Write these 24 words on a piece of paper.',
         'recovery-words-intro-text': 'The Recovery Words are the ONLY way to restore '
                                    + 'your account in case you lose your Login File or password.',
@@ -154,6 +156,8 @@ const TRANSLATIONS = {
         continue: 'Weiter',
 
         'back-to': 'Zurück zu',
+
+        'funding-cashlink': 'Cashlink erstellen',
 
         'recovery-words-title': 'Schreibe diese 24 Wörter auf ein Papier.',
         'recovery-words-intro-text': 'Die Wiederherstellungswörter sind der EINZIGE Weg Zugriff zu '
