@@ -3,27 +3,37 @@
 *******************/
 
 @keyframes shake {
-    10%, 90% {
-        transform: translate3d(-2px, 0, 0);
-    }
+    from { transform: none; }
+    10%  { transform: translate3d(-0.25rem, 0, 0) rotate(-0.15deg); }
+    20%  { transform: translate3d(0.5rem, 0, 0) rotate(0.15deg); }
+    30%  { transform: translate3d(-0.5rem, 0, 0) rotate(-0.15deg); }
+    40%  { transform: translate3d(0.5rem, 0, 0) rotate(0.15deg); }
+    50%  { transform: translate3d(-0.25rem, 0, 0) rotate(-0.15deg); }
+    to   { transform: none; }
+}
 
-    20%, 80% {
-        transform: translate3d(2px, 0, 0);
-    }
+@keyframes shake-background {
+    from { opacity: 0; }
 
-    30%, 50%, 70% {
-        transform: translate3d(-4px, 0, 0);
-    }
-
-    40%, 60% {
-        transform: translate3d(4px, 0, 0);
-    }
+    30%, 70%  { opacity: 1; }
+    to   { opacity: 0; }
 }
 
 .shake {
-    transform: translate3d(0, 0, 0);
-    animation-name: shake;
-    animation-duration: .4s;
+    animation: shake .4s ease;
+    overflow: hidden;
+}
+
+.shake::before {
+    content: ' ';
+    position: absolute;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: var(--nimiq-red-bg);
+    animation: shake-background .4s ease;
 }
 
 /**************
