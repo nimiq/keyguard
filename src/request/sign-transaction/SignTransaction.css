@@ -1,7 +1,6 @@
 #confirm-transaction {
     position: relative;
     overflow: hidden;
-    flex-grow: 1;
 }
 
 #confirm-transaction.standard .hide-standard,
@@ -9,22 +8,22 @@
     display: none;
 }
 
-#confirm-transaction .nq-card-footer {
-    border: 0;
-    padding: 3rem 4rem;
-    text-align: center;
-}
-
 #confirm-transaction .nq-card-body {
-    padding-top: 2rem;
-    padding-bottom: 0rem;
+    padding-bottom: 2rem;
 }
 
-#confirm-transaction .page-footer {
-    padding: 0.75rem;
-    background: white;
-    border-bottom-left-radius: 1rem;
-    border-bottom-right-radius: 1rem;
+#confirm-transaction .transaction {
+    display: flex;
+    flex-direction: column;
+}
+
+#confirm-transaction .value-fee-data {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-top: 2rem;
+    flex-grow: 1;
 }
 
 #confirm-transaction > #account-details {
@@ -125,45 +124,39 @@
     outline: none;
 }
 
-#confirm-transaction .transaction .accounts {
+#confirm-transaction .accounts {
     flex-direction: row;
     align-items: flex-start;
-    padding-bottom: 4rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid rgba(31, 35, 72, 0.1);
+    flex-shrink: 0;
 }
 
-#confirm-transaction .transaction > .nq-card-body::after {
-    content: '';
-    display: flex;
-    height: 0px;
-    border-top: 1px solid #1F2348;
-    opacity: 0.1;
-}
-
-#confirm-transaction .transaction .addressInfo {
+#confirm-transaction .accounts .address-info {
     width: calc(50% - 1.5rem);
 }
 
-
-#confirm-transaction .transaction .arrow {
+#confirm-transaction .arrow {
     margin-top: 4rem;
     height: 2.25rem;
     width: 3rem;
     color: var(--nimiq-light-blue);
 }
 
-#confirm-transaction .transaction .total #value {
+#confirm-transaction .total #value {
     font-size: 5rem;
 }
 
-#confirm-transaction .transaction .total .nim-symbol {
+#confirm-transaction .total .nim-symbol {
     margin-left: 1rem;
     font-weight: 700;
 }
 
-#confirm-transaction .transaction .fee-section {
+#confirm-transaction .fee-section {
     opacity: 0.5;
+    margin-bottom: 0.25rem;
 }
 
-#confirm-transaction .transaction .data-section {
-    margin: 0.5rem 3rem 0;
+#confirm-transaction .data-section {
+    margin: 1rem 3rem;
 }

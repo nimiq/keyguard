@@ -77,10 +77,7 @@
     </div>
 
     <div id="app">
-        <div class="flex-grow"></div>
-
         <div id="confirm-transaction" class="page nq-card">
-
             <div id="account-details">
                 <button id="close-details">
                     <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-close"/></svg>
@@ -96,16 +93,14 @@
                     <h1 data-i18n="sign-tx-heading-tx" class="nq-h1 hide-checkout">Confirm Transaction</h1>
                 </div>
 
-                <div class="page-body transaction">
-                    <div class="nq-card-body">
-                        <div class="center accounts">
-                            <div class="sender"></div>
-                            <svg class="nq-icon arrow"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-right"/></svg>
-                            <div class="recipient"></div>
-                        </div>
+                <div class="page-body nq-card-body transaction">
+                    <div class="center accounts">
+                        <div class="sender"></div>
+                        <svg class="nq-icon arrow"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-right"/></svg>
+                        <div class="recipient"></div>
                     </div>
 
-                    <div class="nq-card-footer">
+                    <div class="value-fee-data">
                         <div class="total nq-light-blue">
                             <span id="value"></span><span class="nim-symbol"></span>
                         </div>
@@ -121,19 +116,16 @@
                     </div>
                 </div>
 
-                <div class="page-footer">
+                <div class="page-footer nq-card-footer">
                     <form id="password-box"></form>
                 </div>
             </div>
-
         </div>
 
         <button class="global-close nq-button-s display-none">
             <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left-small"/></svg>
             <span id="global-close-text"></span>
         </button>
-
-        <div class="flex-grow"></div>
 
         <!-- Default and loading screen -->
         <div id="loading" class="page">

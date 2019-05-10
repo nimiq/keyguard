@@ -1,4 +1,4 @@
-.addressInfo {
+.address-info {
     display: flex;
     width: 100%;
     flex-direction: column;
@@ -9,21 +9,21 @@
     outline: none;
 }
 
-.addressInfo .identicon {
+.address-info .identicon {
     width: 10rem;
     height: 10rem;
     transition: transform 0.45s ease;
 }
 
-.addressInfo .identicon.clip {
+.address-info .identicon.clip {
     position: relative;
 }
 
-.addressInfo .identicon.clip > img {
+.address-info .identicon.clip > img {
     clip-path: url(#nimiq-rounded-hexagon);
 }
 
-.addressInfo .identicon.clip::after {
+.address-info .identicon.clip::after {
     content: '';
     display: block;
     position: absolute;
@@ -38,21 +38,25 @@
     z-index: 1;
 }
 
-.addressInfo:not(.detailed-view):focus .identicon,
-.addressInfo:not(.detailed-view):hover .identicon {
+.address-info:not(.detailed-view):focus .identicon,
+.address-info:not(.detailed-view):hover .identicon {
     transform: scale(1.1);
 }
 
-.addressInfo:not(.detailed-view) .label {
+.address-info:not(.detailed-view) .label {
     font-size: 2rem;
     margin: 1.25rem 0;
     white-space: nowrap;
     overflow: hidden;
     position: relative;
-    width: 80%;
+    width: 18.5rem; /* 148px, the width the automatic labels are designed for */
 }
 
-.addressInfo:not(.detailed-view) .label::after {
+.address-info .label.mono {
+    font-family: "Fira Mono", "Andale Mono", monospace;
+}
+
+.address-info:not(.detailed-view) .label::after {
     content: '';
     display: inline-block;
     width: 2rem;

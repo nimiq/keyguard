@@ -132,6 +132,7 @@ a#goto-create {
 .page#set-password .page-body {
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     align-items: center;
 }
 
@@ -146,7 +147,7 @@ a#goto-create {
 }
 
 .page#set-password .login-file-icon {
-    margin: auto;
+    margin-bottom: 1.25rem;
 }
 
 .page#set-password .page-footer {
