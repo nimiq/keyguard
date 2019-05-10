@@ -1,5 +1,4 @@
 /* global Nimiq */
-/* global AnimationUtils */
 /* global I18n */
 /* global TemplateTags */
 
@@ -75,12 +74,6 @@ class PasswordInput extends Nimiq.Observable {
     reset() {
         this.$input.value = '';
         this._onInputChanged();
-    }
-
-    async onPasswordIncorrect() {
-        await AnimationUtils.animate('shake', this.$input);
-        this.reset();
-        this.focus();
     }
 
     /** @param {boolean} [becomeVisible] */

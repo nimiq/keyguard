@@ -1,3 +1,4 @@
+/* global AnimationUtils */
 /* global Nimiq */
 /* global I18n */
 /* global PasswordInput */
@@ -126,7 +127,9 @@ class PasswordBox extends Nimiq.Observable {
      * @returns {Promise<void>}
      */
     async onPasswordIncorrect() {
-        return this._passwordInput.onPasswordIncorrect();
+        await AnimationUtils.animate('shake', this.$el);
+        this._passwordInput.reset();
+        this._passwordInput.focus();
     }
 
     /**

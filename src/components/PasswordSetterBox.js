@@ -98,15 +98,14 @@ class PasswordSetterBox extends Nimiq.Observable {
     async reset(isWrongPassword) {
         this._password = '';
 
-        if (isWrongPassword) await this._passwordInput.onPasswordIncorrect();
+        if (isWrongPassword) await AnimationUtils.animate('shake', this.$el);
         else this._passwordInput.reset();
 
         this.$el.classList.remove('repeat');
     }
 
     async onPasswordIneligible() {
-        const $hintTooShort = /** @type {HTMLElement} */ (this.$el.querySelector('.password-strength.strength-short'));
-        await AnimationUtils.animate('shake', $hintTooShort);
+        await AnimationUtils.animate('shake', this.$el);
     }
 
     /**
@@ -132,7 +131,7 @@ class PasswordSetterBox extends Nimiq.Observable {
             if (this._passwordInput.text.length > 0) {
                 if (this._passwordInput.text.length < this._password.length) {
                     this._repeatPasswordTimout = window.setTimeout(
-                        async () => {
+                        () => {
                             this.$el.classList.remove('repeat-long');
                             this.$el.classList.add('repeat-short');
                         },
@@ -140,9 +139,10 @@ class PasswordSetterBox extends Nimiq.Observable {
                     );
                 } else {
                     this._repeatPasswordTimout = window.setTimeout(
-                        () => {
+                        async () => {
                             this.$el.classList.remove('repeat-short');
                             this.$el.classList.add('repeat-long');
+                            await AnimationUtils.animate('shake', this.$el);
                         },
                         1200,
                     );
@@ -194,7 +194,7 @@ class PasswordSetterBox extends Nimiq.Observable {
             return;
         }
         if (this._password !== this._passwordInput.text) {
-            await AnimationUtils.animate('shake', this._passwordInput.$el);
+            await AnimationUtils.animate('shake', this.$el);
         }
     }
 }
