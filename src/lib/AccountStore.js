@@ -156,6 +156,7 @@ class AccountStore {
         const transaction = db.transaction([AccountStore.ACCOUNT_DATABASE], 'readonly');
         const request = transaction.objectStore(AccountStore.ACCOUNT_DATABASE).get(id);
         const accountRecord = await KeyStore._requestToPromise(request, transaction);
+        if (!accountRecord) return null;
         return KeyStore.accountRecords2KeyRecords([accountRecord])[0];
     }
 

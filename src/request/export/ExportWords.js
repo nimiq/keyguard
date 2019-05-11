@@ -102,7 +102,7 @@ class ExportWords extends Nimiq.Observable {
             try {
                 key = this._request.useLegacyStore
                     ? await AccountStore.instance.get(
-                        this._request.keyInfo.id,
+                        this._request.keyInfo.defaultAddress.toUserFriendlyAddress(),
                         /** @type {Uint8Array} */ (passwordBuffer),
                     )
                     : await KeyStore.instance.get(this._request.keyInfo.id, passwordBuffer);
