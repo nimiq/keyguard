@@ -70,7 +70,7 @@ const TRANSLATIONS = {
 
         'download-loginfile-download': 'Download Login File',
         'download-loginfile-tap-and-hold': 'Tap and hold image to download',
-        'download-loginfile-continue': 'Download',
+        'download-loginfile-continue': 'Continue',
 
         'validate-words-text': 'Please select the correct word from your list of recovery words.',
         'validate-words-1-hint': 'What is the 1st word?',
