@@ -57,7 +57,7 @@
     left: 4rem;
     cursor: pointer;
     opacity: 0.4;
-    transition: opacity .3s ease, left .3s ease;
+    transition: opacity .3s cubic-bezier(0.25, 0, 0, 1), transform .3s cubic-bezier(0.25, 0, 0, 1);
 }
 
 .page-header-back-button .nq-icon {
@@ -68,7 +68,7 @@
 .page-header-back-button:hover,
 .page-header-back-button:focus {
     opacity: 1;
-    left: 3.625rem;
+    transform: translate3D(-0.375rem, 0, 0);
     outline: none;
 }
 
@@ -231,8 +231,9 @@ body.loading .page:target .page-footer > .loading-spinner {
     margin-top: 8rem;
     margin-bottom: 5rem;
     background: transparent !important;
-    opacity: 0.5;
-    transition: color .2s ease, opacity .2s ease;
+    opacity: 0.4;
+    font-size: 2rem;
+    transition: color .3s cubic-bezier(0.25, 0, 0, 1), opacity .3s cubic-bezier(0.25, 0, 0, 1);
 }
 
 .global-close:hover,
@@ -243,8 +244,16 @@ body.loading .page:target .page-footer > .loading-spinner {
 
 .global-close .nq-icon {
     vertical-align: top;
+    width: 11px;
+    height: 9px;
     margin-right: 0.25rem;
-    margin-top: 0.125rem;
+    margin-top: 5px;
+    transition: transform .3s cubic-bezier(0.25, 0, 0, 1);
+}
+
+.global-close:hover .nq-icon,
+.global-close:focus .nq-icon {
+    transform: translate3D(-2px, 0, 0);
 }
 
 .actionbox {
@@ -302,13 +311,13 @@ body.loading .page:target .page-footer > .loading-spinner {
     margin: -1.25rem auto 0;
     width: 40%;
     opacity: 0.7;
-    transition: opacity .3s ease;
+    transition: opacity .3s cubic-bezier(0.25, 0, 0, 1);
 }
 
 .skip .nq-icon  {
     height: 1.25rem;
     width: 1.25rem;
-    transition: transform .3s ease;
+    transition: transform .3s cubic-bezier(0.25, 0, 0, 1);
     vertical-align: middle;
 }
 

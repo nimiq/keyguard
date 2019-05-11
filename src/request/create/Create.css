@@ -40,7 +40,7 @@
     height: 6rem;
     position: absolute;
     animation: pop-in-0-to-115 .7s ease;
-    animation-delay: 300ms;
+    animation-delay: 150ms;
     animation-fill-mode: both;
 }
 
