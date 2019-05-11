@@ -94,8 +94,6 @@ class RequestParser { // eslint-disable-line no-unused-vars
             throw new Errors.KeyNotFoundError();
         }
 
-        keyInfo.useLegacyStore = this.isLegacyKeyId(keyId);
-
         return keyInfo;
     }
 

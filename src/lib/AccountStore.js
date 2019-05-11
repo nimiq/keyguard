@@ -142,7 +142,9 @@ class AccountStore {
     async getInfo(id) {
         const keyRecord = await this._get(id);
         if (!keyRecord) return null;
-        return KeyInfo.fromObject(keyRecord, KeyStore.isEncrypted(keyRecord), keyRecord.defaultAddress);
+        const keyInfo = KeyInfo.fromObject(keyRecord, KeyStore.isEncrypted(keyRecord), keyRecord.defaultAddress);
+        keyInfo.useLegacyStore = true;
+        return keyInfo;
     }
 
     /**

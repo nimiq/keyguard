@@ -25,7 +25,7 @@ class KeyInfo {
          * @type {boolean}
          * @private
          */
-        this._useLegacyStore = false;
+        this.useLegacyStore = false;
     }
 
     /**
@@ -63,19 +63,6 @@ class KeyInfo {
     /** @type {Nimiq.Address} */
     get defaultAddress() {
         return this._defaultAddress;
-    }
-
-    /**
-     * @description Used for pre-migration export support
-     * @param {boolean} value
-     */
-    set useLegacyStore(value) {
-        this._useLegacyStore = value;
-    }
-
-    /** @description Used for pre-migration export support */
-    get useLegacyStore() {
-        return this._useLegacyStore;
     }
 
     /**
