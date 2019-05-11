@@ -13,19 +13,17 @@
 /** @type {Promise<void>?} */
 let __nimiqLoaded = null;
 
-if (BrowserDetection.isIOS() || BrowserDetection.isSafari()) {
-    // Register service worker to strip cookie from requests
+if ((BrowserDetection.isIOS() || BrowserDetection.isSafari()) && 'serviceWorker' in navigator) {
+    // Register service worker to strip cookie from requests.
     // This file is always called from a ./request/*/ folder, hence the paths.
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('../../ServiceWorker.js', {
-            scope: '../../',
-        }).then(reg => {
-            console.debug(`Service worker has been registered for scope: ${reg.scope}`);
-        }).catch((error) => {
-            console.error(`Service worker installation failed`);
-            throw error;
-        });
-    }
+    navigator.serviceWorker.register('../../ServiceWorker.js', {
+        scope: '../../',
+    }).then(reg => {
+        console.debug(`Service worker has been registered for scope: ${reg.scope}`);
+    }).catch(error => {
+        console.error('Service worker installation failed');
+        throw error;
+    });
 }
 
 /**
