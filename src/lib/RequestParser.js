@@ -89,9 +89,13 @@ class RequestParser { // eslint-disable-line no-unused-vars
         const keyInfo = this.isLegacyKeyId(keyId)
             ? await AccountStore.instance.getInfo(keyId)
             : await KeyStore.instance.getInfo(keyId);
+
         if (!keyInfo) {
             throw new Errors.KeyNotFoundError();
         }
+
+        keyInfo.useLegacyStore = this.isLegacyKeyId(keyId);
+
         return keyInfo;
     }
 

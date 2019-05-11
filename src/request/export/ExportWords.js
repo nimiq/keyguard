@@ -100,18 +100,7 @@ class ExportWords extends Nimiq.Observable {
             const passwordBuffer = password ? Utf8Tools.stringToUtf8ByteArray(password) : undefined;
 
             try {
-                /**
-                 * Because Typescript does not detect the ExportRequest to be different from
-                 * a SimpleRequest (because both extra properties of the ExportRequest are
-                 * optional), we cannot add a new condition for the ExportRequest to the
-                 * Parsed<> transform in types/Keyguard.d.ts.
-                 *
-                 * Because the keyInfo on the parsed request also does not contain any indication
-                 * whether the key is a legacy account or a regular key, we have otherwise no
-                 * idea which IndexedDB store to use.
-                 */
-                // @ts-ignore (Property 'useLegacyStore' does not exist on type)
-                key = /** @type {boolean} */ (this._request.useLegacyStore)
+                key = this._request.keyInfo.useLegacyStore
                     ? await AccountStore.instance.get(
                         this._request.keyInfo.defaultAddress.toUserFriendlyAddress(),
                         /** @type {Uint8Array} */ (passwordBuffer),
