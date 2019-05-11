@@ -37,10 +37,18 @@ output "🎩  Using config file src/config/config.$BUILD.js"
 
 # replace icon sprite URL in file $1
 replace_icon_sprite_url() {
-    OLD_PATH="..\/..\/..\/node_modules\/@nimiq\/style\/nimiq-style.icons.svg"
+    OLD_PATH="\.\.\/\.\.\/\.\.\/node_modules\/@nimiq\/style\/nimiq-style.icons.svg"
     NEW_PATH="\/assets\/nimiq-style.icons.svg"
 
     sed -i -e "s/$OLD_PATH/$NEW_PATH/g" $1
+}
+
+# replace font url in file $1
+replace_font_url() {
+    OLD_PATH="(\.\.\/)*assets\/fonts"
+    NEW_PATH="\/assets\/fonts"
+
+    sed -i -r -e "s/$OLD_PATH/$NEW_PATH/g" $1
 }
 
 # generate a base64 file integrity hash
@@ -114,6 +122,11 @@ for DIR in src/request/*/ ; do
         cat $DIR/$url >> dist/request/$REQUEST/$CSS_BUNDLE
     done
 
+    # replace font url if css file exists
+    if [ -f dist/request/$REQUEST/$CSS_BUNDLE ]; then
+        replace_font_url dist/request/$REQUEST/$CSS_BUNDLE
+    fi
+
     # collect bundle files
     LIST_JS_COMMON="$LIST_JS_COMMON$(grep '<script' $DIR/index.html | grep 'bundle-common' | cut -d\" -f2) "
     LIST_JS_TOPLEVEL="$LIST_JS_TOPLEVEL$(grep '<script' $DIR/index.html | grep 'bundle-toplevel' | cut -d\" -f2) "
@@ -146,6 +159,8 @@ replace_icon_sprite_url dist/request/$JS_TOPLEVEL_BUNDLE
 for url in $LIST_CSS_TOPLEVEL; do
     cat src/request/create/$url >> dist/request/$CSS_TOPLEVEL_BUNDLE
 done
+
+replace_font_url dist/request/$CSS_TOPLEVEL_BUNDLE
 
 # collect script integrity hashes
 JS_COMMON_BUNDLE_HASH=$(make_file_hash dist/request/$JS_COMMON_BUNDLE)

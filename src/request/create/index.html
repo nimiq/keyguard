@@ -9,8 +9,8 @@
           content="default-src 'self' 'unsafe-eval';
           img-src http: https: blob: data:;
           child-src 'self' blob:;
-          style-src 'self' https://fonts.googleapis.com;
-          font-src https://fonts.gstatic.com;">
+          style-src 'self';
+          font-src 'self';">
     <title>Nimiq Keyguard</title>
 
     <script defer manual src="../../../node_modules/@nimiq/core-web/web-offline.js"></script>
@@ -50,9 +50,6 @@
     <script defer src="Create.js"></script>
     <script defer src="CreateApi.js"></script>
     <script defer src="index.js"></script>
-
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Muli:400,600,700">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono&text=0123456789ABCDEFGHJKLMNPQRSTUVXY">
 
     <link rel="stylesheet" bundle-toplevel href="../../../node_modules/@nimiq/style/nimiq-style.min.css">
     <link rel="stylesheet" bundle-toplevel href="../../nimiq-style.css">
