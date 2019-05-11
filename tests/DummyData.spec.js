@@ -4,6 +4,9 @@
 /* global KeyInfo */
 /* global KeyStore */
 
+// Increase test timeout to reduce Travis failure rate
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 10 * 1000; // 10 seconds
+
 beforeAll(async () => {
     Nimiq._path = `${window.location.origin}/base/node_modules/@nimiq/core-web/`;
     await loadNimiq();
