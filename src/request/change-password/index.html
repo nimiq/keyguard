@@ -83,16 +83,15 @@
             <div class="page-header nq-card-header">
                 <div class="progress-indicator"></div>
                 <h1 data-i18n="change-password-heading" class="nq-h1">Confirm old password</h1>
+                <p data-i18n="change-password-paragraph" class="nq-notice warning">
+                    Changing the password will create a new Login File that replaces the current one.
+                </p>
+                <p data-i18n="change-password-paragraph-legacy" class="nq-notice warning legacy">
+                    Changing the password only has an effect on this device.
+                </p>
             </div>
 
             <div class="page-body nq-card-body">
-                <p data-i18n="change-password-paragraph" class="nq-text nq-orange center warning">
-                    Changing the password will create a new Login File that replaces the current one.
-                </p>
-                <p data-i18n="change-password-paragraph-legacy" class="nq-text nq-orange center warning legacy">
-                    Changing the password only has an effect on this device.
-                </p>
-
                 <div class="row">
                     <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-keys"/></svg>
                     <div data-i18n="change-password-info-item-1">
@@ -120,11 +119,12 @@
                     <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
                 </a>
                 <h1 class="nq-h1" data-i18n="change-password-set-password-heading">Create a new password</h1>
+
+                <p data-i18n="change-password-set-password-text" class="nq-notice info">Secure your new Login File.</p>
+                <p data-i18n="change-password-set-password-text-legacy" class="nq-notice info legacy">Secure your Account.</p>
             </div>
 
             <div class="page-body nq-card-body">
-                <p data-i18n="change-password-set-password-text" class="nq-light-blue nq-text center hint">Secure your new Login File.</p>
-                <p data-i18n="change-password-set-password-text-legacy" class="nq-light-blue nq-text center hint legacy">Secure your Account.</p>
                 <div class="login-file-icon"></div>
             </div>
 
