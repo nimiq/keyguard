@@ -46,7 +46,7 @@ class Identicon { // eslint-disable-line no-unused-vars
     }
 
     _updateIqon() {
-        if (!this._address || !Iqons.hasAssets) {
+        if (!this._address || !Iqons.hasAssets()) {
             this.$imgEl.src = Iqons.placeholderToDataUrl();
         }
 
