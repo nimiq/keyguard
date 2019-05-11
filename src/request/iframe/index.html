@@ -3,6 +3,12 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta http-equiv="Content-Security-Policy"
+              content="default-src 'self' 'unsafe-eval';
+              img-src http: https: blob: data:;
+              child-src 'self' blob:;
+              style-src 'self';
+              font-src 'self';">
 
         <script defer manual src="../../../node_modules/@nimiq/core-web/web-offline.js"></script>
         <script defer manual src="../../lib/Constants.js"></script>
