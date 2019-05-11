@@ -20,6 +20,12 @@ class KeyInfo {
         this._hasPin = hasPin;
         /** @private */
         this._defaultAddress = new Nimiq.Address(defaultAddress);
+        /**
+         * @description Used for distinguishing pre-migration accountInfo from regular keyInfo
+         * @type {boolean}
+         * @private
+         */
+        this.useLegacyStore = false;
     }
 
     /**

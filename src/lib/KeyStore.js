@@ -16,7 +16,6 @@
 class KeyStore {
     /** @type {KeyStore} */
     static get instance() {
-        /** @type {KeyStore} */
         KeyStore._instance = KeyStore._instance || new KeyStore();
         return KeyStore._instance;
     }
@@ -82,7 +81,6 @@ class KeyStore {
      * @returns {Promise<Key?>}
      */
     async get(id, password) {
-        /** @type {KeyRecord?} */
         const keyRecord = await this._get(id);
         if (!keyRecord) {
             return null;
@@ -118,7 +116,6 @@ class KeyStore {
      * @returns {Promise<KeyInfo?>}
      */
     async getInfo(id) {
-        /** @type {KeyRecord?} */
         const keyRecord = await this._get(id);
         return keyRecord
             ? KeyInfo.fromObject(keyRecord, KeyStore.isEncrypted(keyRecord), keyRecord.defaultAddress)
@@ -132,9 +129,9 @@ class KeyStore {
      */
     async _get(id) {
         const db = await this.connect();
-        const transaction = db.transaction([KeyStore.DB_KEY_STORE_NAME]);
+        const transaction = db.transaction([KeyStore.DB_KEY_STORE_NAME], 'readonly');
         const request = transaction.objectStore(KeyStore.DB_KEY_STORE_NAME).get(id);
-        return KeyStore._requestToPromise(request, transaction);
+        return KeyStore.requestToPromise(request, transaction);
     }
 
     /**
@@ -185,7 +182,7 @@ class KeyStore {
         const transaction = db.transaction([KeyStore.DB_KEY_STORE_NAME], 'readwrite');
         const request = transaction.objectStore(KeyStore.DB_KEY_STORE_NAME).put(keyRecord);
 
-        const dbKey = await KeyStore._requestToPromise(request, transaction);
+        const dbKey = await KeyStore.requestToPromise(request, transaction);
 
         /** @type {string} */
         const newId = (dbKey.valueOf());
@@ -201,7 +198,7 @@ class KeyStore {
         const db = await this.connect();
         const transaction = db.transaction([KeyStore.DB_KEY_STORE_NAME], 'readwrite');
         const request = transaction.objectStore(KeyStore.DB_KEY_STORE_NAME).delete(id);
-        return KeyStore._requestToPromise(request, transaction);
+        return KeyStore.requestToPromise(request, transaction);
     }
 
     /**
@@ -237,7 +234,7 @@ class KeyStore {
      */
     async migrateAccountsToKeys() {
         const accounts = await AccountStore.instance.dangerousListPlain();
-        const keysRecords = KeyStore._accountRecords2KeyRecords(accounts);
+        const keysRecords = KeyStore.accountRecords2KeyRecords(accounts);
         await Promise.all(keysRecords.map(keyRecord => this.putPlain(keyRecord)));
 
         await AccountStore.instance.drop();
@@ -255,7 +252,7 @@ class KeyStore {
      * @param {AccountRecord[]} accounts
      * @returns {KeyRecord[]}
      */
-    static _accountRecords2KeyRecords(accounts) {
+    static accountRecords2KeyRecords(accounts) {
         return accounts.map(account => {
             const address = Nimiq.Address.fromUserFriendlyAddress(account.userFriendlyAddress);
             const legacyKeyHash = Key.deriveHash(address.serialize());
@@ -310,9 +307,8 @@ class KeyStore {
      * @param {IDBRequest} request
      * @param {IDBTransaction} transaction
      * @returns {Promise<any>}
-     * @private
      */
-    static async _requestToPromise(request, transaction) {
+    static async requestToPromise(request, transaction) {
         const done = await Promise.all([
             new Promise((resolve, reject) => {
                 request.onsuccess = () => resolve(request.result);
