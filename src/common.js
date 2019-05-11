@@ -3,6 +3,7 @@
 /* global Errors */
 /* global Constants */
 /* global CONFIG */
+/* global BrowserDetection */
 
 /**
  * @callback reject
@@ -12,16 +13,19 @@
 /** @type {Promise<void>?} */
 let __nimiqLoaded = null;
 
-// Register service worker if necessary (and possible).
-// This file is always called from a ./request/*/ folder, hence the paths.
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('../../ServiceWorker.js', {
-        scope: '../../',
-    }).then(reg => {
-        console.debug(`Service worker has been registered for scope: ${reg.scope}`);
-    }).catch(error => {
-        console.error(`Service worker installation failed: ${error}`);
-    });
+if (BrowserDetection.isIOS() || BrowserDetection.isSafari()) {
+    // Register service worker to strip cookie from requests
+    // This file is always called from a ./request/*/ folder, hence the paths.
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('../../ServiceWorker.js', {
+            scope: '../../',
+        }).then(reg => {
+            console.debug(`Service worker has been registered for scope: ${reg.scope}`);
+        }).catch((error) => {
+            console.error(`Service worker installation failed`);
+            throw error;
+        });
+    }
 }
 
 /**
