@@ -122,13 +122,17 @@ const deprecatedAccount2KeyInfoObjects = () => [{
     },
 }];
 
-const deprecatedAccount2KeyInfos = () => [
-    KeyInfo.fromObject(
-        deprecatedAccount2KeyInfoObjects()[0],
-        true,
-        deprecatedAccount2KeyInfoObjects()[0].legacyAccount.address,
-    ),
-];
+const deprecatedAccount2KeyInfos = () => {
+    const keyInfos = [
+        KeyInfo.fromObject(
+            deprecatedAccount2KeyInfoObjects()[0],
+            true,
+            deprecatedAccount2KeyInfoObjects()[0].legacyAccount.address,
+        ),
+    ];
+    keyInfos.forEach(ki => ki.useLegacyStore = true);
+    return keyInfos;
+};
 
 const deprecatedAccount2Keys = () => [
     new Key(secrets[1], false)
