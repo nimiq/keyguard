@@ -131,7 +131,7 @@ class KeyStore {
         const db = await this.connect();
         const transaction = db.transaction([KeyStore.DB_KEY_STORE_NAME], 'readonly');
         const request = transaction.objectStore(KeyStore.DB_KEY_STORE_NAME).get(id);
-        return KeyStore._requestToPromise(request, transaction);
+        return KeyStore.requestToPromise(request, transaction);
     }
 
     /**
@@ -182,7 +182,7 @@ class KeyStore {
         const transaction = db.transaction([KeyStore.DB_KEY_STORE_NAME], 'readwrite');
         const request = transaction.objectStore(KeyStore.DB_KEY_STORE_NAME).put(keyRecord);
 
-        const dbKey = await KeyStore._requestToPromise(request, transaction);
+        const dbKey = await KeyStore.requestToPromise(request, transaction);
 
         /** @type {string} */
         const newId = (dbKey.valueOf());
@@ -198,7 +198,7 @@ class KeyStore {
         const db = await this.connect();
         const transaction = db.transaction([KeyStore.DB_KEY_STORE_NAME], 'readwrite');
         const request = transaction.objectStore(KeyStore.DB_KEY_STORE_NAME).delete(id);
-        return KeyStore._requestToPromise(request, transaction);
+        return KeyStore.requestToPromise(request, transaction);
     }
 
     /**
@@ -307,9 +307,8 @@ class KeyStore {
      * @param {IDBRequest} request
      * @param {IDBTransaction} transaction
      * @returns {Promise<any>}
-     * @private
      */
-    static async _requestToPromise(request, transaction) {
+    static async requestToPromise(request, transaction) {
         const done = await Promise.all([
             new Promise((resolve, reject) => {
                 request.onsuccess = () => resolve(request.result);
