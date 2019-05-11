@@ -47,8 +47,8 @@ class DerivedIdenticonSelector extends Nimiq.Observable {
                     <h2 data-i18n="identicon-selector-loading">Mixing colors</h2>
                 </div>
             </div>
-            <button class="generate-more nq-button-s" data-i18n="identicon-selector-more-addresses">
-                More addresses
+            <button class="generate-more nq-button-s" data-i18n="identicon-selector-generate-new">
+                New Avatars
             </button>`;
 
         I18n.translateDom($el);

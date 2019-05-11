@@ -1,7 +1,6 @@
 const TRANSLATIONS = {
     en: {
         _language: 'English',
-        continue: 'Continue',
 
         'back-to': 'Back to',
 
@@ -9,24 +8,24 @@ const TRANSLATIONS = {
 
         'recovery-words-title': 'Write these 24 words on a piece of paper.',
         'recovery-words-intro-text': 'The Recovery Words are the ONLY way to restore '
-                                   + 'your account in case you lose your Login File or password.',
-        'recovery-words-intro-offline': 'Keep your Words offline, don’t enter them anywhere but in the Nimiq Safe.',
+                                   + 'your Account in case you lose your Login File or password.',
+        'recovery-words-intro-offline': 'Keep your words offline, enter them nowhere but on keyguard.nimiq.com.',
         'recovery-words-intro-copy': 'Create a copy and store it in a safe place: family’s house, bank locker etc.',
         'recovery-words-intro-safety': 'Mind water and fire, use a sealed box to keep your Recovery Words safe.',
-        'recovery-words-text': 'Anyone with these words can access your account! Keep them save.',
-        'recovery-words-validate': 'Validate words',
+        'recovery-words-text': 'Anyone with these words can access your Account! Keep them safe.',
+        'recovery-words-validate': 'Validate backup',
 
         'create-heading-choose-identicon': 'Choose an Avatar',
         'create-heading-create-password': 'Create a password',
         'create-heading-repeat-password': 'Confirm your password',
         'create-heading-validate-backup': 'Validate your backup',
-        'create-wallet-desc': 'This is your new account with its first address.',
+        'create-wallet-desc': 'This is your Account with your first Address.',
 
         'import-heading-enter-recovery-words': 'Enter Recovery Words',
         'import-upload-login-file': 'Upload your Login File',
         'import-login-to-continue': 'Please login again to continue.',
-        'import-unlock-account': 'Unlock your account',
-        'import-create-account': 'Create new account',
+        'import-unlock-account': 'Unlock your Account',
+        'import-create-account': 'Create new Account',
 
         'import-file-button-words': 'Login with Recovery Words',
 
@@ -36,7 +35,7 @@ const TRANSLATIONS = {
                                        + 'Create a password to secure it.',
         'import-words-hint': 'Press Tab to Jump to the next field',
         'import-words-error': 'This is not a valid account. Typo?',
-        'import-words-download-loginfile': 'Download your Login File',
+        'import-words-download-loginfile': 'Save your Login File',
 
         'file-import-prompt': 'Drag here or click to upload',
 
@@ -53,23 +52,23 @@ const TRANSLATIONS = {
         'passwordbox-repeat': 'Repeat password',
         'passwordbox-continue': 'Continue',
         'passwordbox-log-in': 'Unlock',
+        'passwordbox-confirm': 'Confirm',
         'passwordbox-log-out': 'Confirm logout',
         'passwordbox-download': 'Download Login File',
         'passwordbox-confirm-tx': 'Confirm transaction',
         'passwordbox-show-words': 'Show recovery words',
         'passwordbox-sign-msg': 'Sign message',
-        'passwordbox-password-strength-short': 'Enter at least 8 characters',
-        'passwordbox-password-strength-weak': 'That is a weak password',
-        'passwordbox-password-strength-good': 'Ok, that is an average password',
-        'passwordbox-password-strength-strong': 'Great, that is a strong password',
-        'passwordbox-password-strength-secure': 'Super, that is a secure password',
+        'passwordbox-password-strength-short': 'Enter 8 characters or more',
+        'passwordbox-password-strength-weak': 'Weak password',
+        'passwordbox-password-strength-good': 'Good password',
+        'passwordbox-password-strength-strong': 'Strong password',
+        'passwordbox-password-strength-secure': 'Secure password',
         'passwordbox-repeat-password-long': 'No match, please try again',
         'passwordbox-repeat-password-short': 'Password is too short',
         'passwordbox-password-skip': 'Skip for now',
 
         'identicon-selector-loading': 'Mixing colors',
         'identicon-selector-generate-new': 'New Avatars',
-        'identicon-selector-more-addresses': 'More addresses',
 
         'download-loginfile-download': 'Download Login File',
         'download-loginfile-tap-and-hold': 'Tap and hold image to download',
@@ -102,14 +101,13 @@ const TRANSLATIONS = {
         'validate-words-24-hint': 'What is the 24th word?',
 
         'export-file-heading': 'Unlock your Login File',
-        'export-file-intro-heading': 'Save your account',
-        'export-file-intro-blue-text': 'Your Login File grants access to your account. '
+        'export-file-intro-heading': 'Save your Account',
+        'export-file-intro-blue-text': 'Your Login File grants access to your Account. '
                                      + 'Download and save it.',
         'export-file-intro-browser': 'Your Account is stored in your browser.',
-        'export-file-intro-accident': 'As a part of your browser\'s data it might be deleted by accident.',
-        'export-file-intro-download-file': 'Download a Login File to stay save and to login to other browsers '
-                                         + 'and devices.',
-        'export-file-intro-orange-text': 'Never share it. Don\'t Lose it.',
+        'export-file-intro-accident': 'It might be deleted automatically or by accident.',
+        'export-file-intro-download-file': 'Download the Login File to secure access to your Account.',
+        'export-file-intro-orange-text': 'Keep it safe and confidential.',
         'export-file-success-set-password': 'Set password',
         'export-file-success-save-file': 'Save Login File',
         'export-file-success-create-backup': 'Create backup',
@@ -121,8 +119,7 @@ const TRANSLATIONS = {
         'export-continue-to-login-file': 'Continue to Login File',
 
         'remove-key-heading': 'Don\'t lose access',
-        'remove-key-intro-text': 'If you log out without saving your account, you will irretrievably '
-                               + 'lose access to it!',
+        'remove-key-intro-text': 'If you log out without saving your Account, you will irreversibly lose access to it!',
         'remove-key-login-file-question': 'Is your Login File savely stored and accessible?',
         'remove-key-download-login-file': 'Download Login File',
         'remove-key-recovery-words-question': 'Do you know where your Recovery Words are?',
@@ -131,29 +128,28 @@ const TRANSLATIONS = {
         'remove-key-enter-label-2': 'to log out.',
         'remove-key-final-confirm': 'Log out',
 
-        'derive-address-heading-password': 'Unlock your account',
-        'derive-address-password-text': 'To add a new address, please[br]unlock your account first.',
-        'derive-address-heading-choose-identicon': 'Choose a new address',
-        'derive-address-add-to-account-button': 'Add to account',
+        'derive-address-heading-password': 'Unlock your Account',
+        'derive-address-password-text': 'To add a new Address, please[br]unlock your Account first.',
+        'derive-address-heading-choose-identicon': 'Choose a new Avatar',
+        'derive-address-add-to-account-button': 'Add to Account',
 
         'change-password-heading': 'Confirm old password',
         'change-password-paragraph': 'Changing the password will create a new Login File that replaces the '
                                    + 'current one.',
         'change-password-paragraph-legacy': 'Changing the password only has an effect on this device.',
         'change-password-info-item-1': 'All old Login Files still work with their old passwords.',
-        'change-password-info-item-2': 'If a Login File was compromised: Please create a new account and transfer '
+        'change-password-info-item-2': 'If a Login File was compromised: Please create a new Account and transfer '
                                      + 'all funds.',
         'change-password-download-login-file': 'Download new Login File',
         'change-password-set-password-heading': 'Create a new password',
         'change-password-set-password-text': 'Secure your new Login File.',
-        'change-password-set-password-text-legacy': 'Secure your account.',
+        'change-password-set-password-text-legacy': 'Secure your Account.',
 
         'error-no-referrer-heading': 'That went wrong :(',
         'error-no-referrer-message': 'We could not verify the origin of your request. Please go back and try again.',
     },
     de: {
         _language: 'Deutsch',
-        continue: 'Weiter',
 
         'back-to': 'Zurück zu',
 
@@ -208,6 +204,7 @@ const TRANSLATIONS = {
         'passwordbox-repeat': 'Passwort wiederholen',
         'passwordbox-continue': 'Weiter',
         'passwordbox-log-in': 'Entsperren',
+        'passwordbox-confirm': 'Bestätigen',
         'passwordbox-log-out': 'Abmeldung bestätigen',
         'passwordbox-download': 'Login File herunterladen',
         'passwordbox-confirm-tx': 'Überweisung bestätigen',
@@ -224,7 +221,6 @@ const TRANSLATIONS = {
 
         'identicon-selector-loading': 'Mische Farben',
         'identicon-selector-generate-new': 'Neue Avatare',
-        'identicon-selector-more-addresses': 'Mehr Adressen',
 
         'download-loginfile-download': 'Login File herunterladen',
         'download-loginfile-tap-and-hold': 'Zum Herunterladen Bild gedrückt halten',
