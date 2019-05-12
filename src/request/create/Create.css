@@ -25,21 +25,20 @@
 
 .wallet-identifier .identicon {
     width: 7rem;
-    height: 6rem;
+    height: 7rem;
     position: absolute;
-    animation: pop-in-0-to-115 0.4s cubic-bezier(.73,2.08,.48,1);
+    animation: pop-in 0.4s cubic-bezier(.73,2.08,.48,1);
     animation-delay: 300ms;
     animation-fill-mode: both;
 }
 
-@keyframes pop-in-0-to-115 {
+@keyframes pop-in {
     0% { transform: translate(-0.5rem, 2.5rem) scale(0); }
-    100% { transform: translate(0.2rem, 3.5rem) scale(1.15); }
+    100% { transform: translate(0.2rem, 3.5rem) scale(1); }
 }
 
 .wallet-identifier .nq-icon {
-    width: 7rem;
-    height: 6rem;
+    font-size: 7rem;
     position: absolute;
     opacity: 0.08;
 }
