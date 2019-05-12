@@ -2,12 +2,6 @@
     position: relative;
 }
 
-.page#unlock .nq-text {
-    opacity: 1;
-    font-weight: 600;
-    text-align: center;
-}
-
 .page#unlock .lock-container {
     display: flex;
     justify-content: center;
