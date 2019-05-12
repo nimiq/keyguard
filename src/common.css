@@ -144,6 +144,7 @@
     flex-shrink: 0;
     margin-top: 0;
     margin-bottom: 0;
+    box-shadow: none;
 }
 
 .page-header {
@@ -208,6 +209,7 @@
 .page:target {
     display: flex;
     justify-content: center;
+    box-shadow: 0 0.5rem 3.5rem rgba(0,0,0,.111158);
 }
 
 #loading {

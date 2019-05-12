@@ -6,14 +6,13 @@
     position: relative;
     width: 100%;
     max-width: 56.5rem; /* 420px + 2 * 2rem because of .nq-card margin*/
-    height: 76.5rem; /* 564px */
-    padding-top: 3rem;
-    margin-top: -3rem;
-    padding-bottom: 3rem;
-    margin-bottom: -3rem;
+    height: 70.5rem; /* 564px */
     transition: transform 0.6s;
     transform-style: preserve-3d;
     will-change: transform;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 #rotation-container.disable-transition {
@@ -29,6 +28,7 @@
     position: absolute;
     backface-visibility: hidden;
     overflow: hidden;
+    margin: inherit;
 }
 
 #rotation-container > .page.display-flex:not(:target) { /* :not(:target) is only required for specificity */
