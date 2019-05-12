@@ -27,12 +27,12 @@
     width: 7rem;
     height: 7rem;
     position: absolute;
-    animation: pop-in 0.4s cubic-bezier(.73,2.08,.48,1);
+    animation: wallet-identifier-pop-in 0.4s cubic-bezier(.73,2.08,.48,1);
     animation-delay: 300ms;
     animation-fill-mode: both;
 }
 
-@keyframes pop-in {
+@keyframes wallet-identifier-pop-in {
     0% { transform: translate(-0.5rem, 2.5rem) scale(0); }
     100% { transform: translate(0.2rem, 3.5rem) scale(1); }
 }
