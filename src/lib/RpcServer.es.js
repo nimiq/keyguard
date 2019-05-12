@@ -220,21 +220,26 @@ class RpcServer { // eslint-disable-line no-unused-vars
         this._responseHandlers.set(command, fn);
     }
 
+    /**
+     * @returns {boolean} Whether a redirect request was handled
+     */
     init() {
         window.addEventListener('message', this._receiveListener);
-        this._receiveRedirect();
+        return this._receiveRedirect();
     }
 
     close() {
         window.removeEventListener('message', this._receiveListener);
     }
 
+    /**
+     * @returns {boolean} Whether a redirect request was handled
+     */
     _receiveRedirect() {
         // Check for a request in the URL (also removes params)
         const urlRequest = UrlRpcEncoder.receiveRedirectCommand(window.location);
         if (urlRequest) {
-            this._receive(urlRequest);
-            return;
+            return this._receive(urlRequest);
         }
 
         // Check for a stored request referenced by a URL 'id' parameter
@@ -242,14 +247,17 @@ class RpcServer { // eslint-disable-line no-unused-vars
         if (searchParams.has('id')) {
             const storedRequest = window.sessionStorage.getItem(`request-${searchParams.get('id')}`);
             if (storedRequest) {
-                this._receive(JsonUtils.parse(storedRequest), false);
+                return this._receive(JsonUtils.parse(storedRequest), false);
             }
         }
+
+        return false;
     }
 
     /**
      * @param {MessageEvent | RedirectRequest} message
      * @param {boolean} [persistMessage]
+     * @returns {boolean} Whether a redirect request was handled
      */
     _receive(message, persistMessage = true) {
         let _state = null;
@@ -258,9 +266,9 @@ class RpcServer { // eslint-disable-line no-unused-vars
             const state = _state;
 
             // Cannot reply to a message that has no source window or return URL
-            if (!('source' in message) && !('returnURL' in message)) return;
+            if (!('source' in message) && !('returnURL' in message)) return false;
             // Ignore messages without a command
-            if (!('command' in state.data)) return;
+            if (!('command' in state.data)) return false;
             if (this._allowedOrigin !== '*' && message.origin !== this._allowedOrigin) {
                 throw new Error('Unauthorized');
             }
@@ -295,10 +303,12 @@ class RpcServer { // eslint-disable-line no-unused-vars
             } else if (result !== undefined) {
                 RpcServer._ok(state, result);
             }
+            return true;
         } catch (error) {
             if (_state) {
                 RpcServer._error(_state, error);
             }
+            return false;
         }
     }
 }
