@@ -9,13 +9,13 @@ output() {
 
 # Check for a working implementation of sha256sum
 SHA256SUM=""
-which sha256sum > /dev/null && SHA256SUM="sha256sum"
+command -v sha256sum > /dev/null && SHA256SUM="sha256sum"
 # For (at least) MacPorts on MacOS, the GNU coreutils have been prefixed with 'g'
 # to be easily seperateable from the BSD ones
-[ -z "${SHA256SUM}" ] && which gsha256sum > /dev/null && SHA256SUM="gsha256sum"
+[ -z "${SHA256SUM}" ] && command -v gsha256sum > /dev/null && SHA256SUM="gsha256sum"
 # Yes, that leaves the possibility that the current version of shasum doesn't
 # support the SHA256 algorithm. But I don't think that's rather common by now...
-[ -z "${SHA256SUM}" ] && which shasum > /dev/null && SHA256SUM="shasum -a 256"
+[ -z "${SHA256SUM}" ] && command -v shasum > /dev/null && SHA256SUM="shasum -a 256"
 
 if [ -z "${SHA256SUM}" ]; then
   output "Please install sha256sum or shasum first."
