@@ -3,6 +3,10 @@
 # Exit on first error
 set -e
 
+# Use default C locale to ensure consistent sorting despite the locale or the
+# operating system.
+export LC_ALL=C
+
 output() {
     echo "$(tput bold) $1$(tput sgr0)"
 }
