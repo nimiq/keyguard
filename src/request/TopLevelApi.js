@@ -37,6 +37,7 @@
  *  runKeyguard(SignTransactionApi);
  * ```
  * @abstract
+ * @template {KeyguardRequest.RedirectRequest} T 
  */
 class TopLevelApi extends RequestParser {
     constructor() {
@@ -172,10 +173,9 @@ class TopLevelApi extends RequestParser {
 
     /**
      * Overwritten by each request's API class
-     * Note: There is a bug with typescript not parsing 'template {KeyguardRequest.RedirectRequest} T', so we use any.
      *
-     * @param {any} request
-     * @returns {Promise<Parsed<any>>}
+     * @param {unknown} request
+     * @returns {Promise<Parsed<T>>}
      * @abstract
      */
     async parseRequest(request) { // eslint-disable-line no-unused-vars
@@ -190,7 +190,7 @@ class TopLevelApi extends RequestParser {
     /**
      * Can be overwritten by a request's API class to excute code before the handler's run() is called
      * Note: There is a bug with typescript not parsing 'template {KeyguardRequest.RedirectRequest} T', so we use any.
-     * @param {Parsed<any>} parsedRequest
+     * @param {Parsed<T>} parsedRequest
      */
     async onBeforeRun(parsedRequest) { // eslint-disable-line no-unused-vars
         // noop
@@ -199,7 +199,7 @@ class TopLevelApi extends RequestParser {
     /**
      * Called by a page's API class on success
      *
-     * @param {*} result
+     * @param {KeyguardRequest.ResultType<T>} result
      * @returns {Promise<void>}
      */
     async resolve(result) {

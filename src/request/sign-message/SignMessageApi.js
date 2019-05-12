@@ -2,6 +2,7 @@
 /* global SignMessage */
 /* global Errors */
 
+/** @extends TopLevelApi<KeyguardRequest.SignMessageRequest> */
 class SignMessageApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
      * @param {KeyguardRequest.SignMessageRequest} request

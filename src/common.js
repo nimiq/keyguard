@@ -56,6 +56,7 @@ async function loadNimiq() {
 }
 
 /**
+ * @template {KeyguardRequest.RedirectRequest} T 
  * @param {Newable} RequestApiClass - Class object of the API which is to be exposed via RPC
  * @param {object} [options]
  */
@@ -86,7 +87,7 @@ async function runKeyguard(RequestApiClass, options) { // eslint-disable-line no
     });
 
     // Instantiate handler.
-    /** @type {TopLevelApi | IFrameApi} */
+    /** @type {TopLevelApi<T> | IFrameApi} */
     const api = new RequestApiClass();
 
     /** @type {string} */

@@ -2,6 +2,7 @@
 /* global Export */
 /* global Errors */
 
+/** @extends TopLevelApi<KeyguardRequest.ExportRequest> */
 class ExportApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
      * @param {KeyguardRequest.ExportRequest} request
