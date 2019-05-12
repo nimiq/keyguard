@@ -22,6 +22,22 @@ if [ -z "${SHA256SUM}" ]; then
   exit 1
 fi
 
+# Detecting whether we're using GNU or BSD sed. There is a small but significant
+# idiosyncracy regarding the inplace option (-i).
+# Fair warning: Yes, that's quite a hack, but distinguishing GNU and BSD utils
+# isn't that easy.
+if sed --in-place 2>&1 | head -1 | grep -q "illegal"; then
+  # For BSD
+  function inplace_sed() {
+    sed -i "" $@
+  }
+else
+  # For GNU
+  function inplace_sed() {
+    sed -i"" $@
+  }
+fi
+
 # execute config file given as parameter; default to testnet
 BUILD=testnet
 if [ "$1" != "" ]; then
@@ -40,7 +56,7 @@ replace_icon_sprite_url() {
     OLD_PATH="\.\.\/\.\.\/\.\.\/node_modules\/@nimiq\/style\/nimiq-style.icons.svg"
     NEW_PATH="\/assets\/nimiq-style.icons.svg"
 
-    sed -i -e "s/$OLD_PATH/$NEW_PATH/g" $1
+    inplace_sed "s/$OLD_PATH/$NEW_PATH/g" $1
 }
 
 # replace font url in file $1
@@ -48,7 +64,7 @@ replace_font_url() {
     OLD_PATH="(\.\.\/)*assets\/fonts"
     NEW_PATH="\/assets\/fonts"
 
-    sed -i -r -e "s/$OLD_PATH/$NEW_PATH/g" $1
+    inplace_sed -E "s/$OLD_PATH/$NEW_PATH/g" $1
 }
 
 # Replace xxd -r -p with a nice bash function
