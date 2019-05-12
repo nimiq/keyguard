@@ -30,7 +30,9 @@ class FlippableHandler {
                         window.setTimeout(() => $newEl.classList.remove('display-flex'), 600);
                         $oldEl.classList.add('display-flex');
                         window.setTimeout(() => $oldEl.classList.remove('display-flex'), 300);
-                        $rotationContainer.classList.toggle('flipped', $newEl.classList.contains(classname));
+                        window.setTimeout(() => {
+                            $rotationContainer.classList.toggle('flipped', $newEl.classList.contains(classname));
+                        }, 0);
                     }
                 } else if (newHash) {
                     const $newEl = document.querySelector(newHash);
