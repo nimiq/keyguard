@@ -64,6 +64,9 @@ class UrlRpcEncoder {
         }
         args = Array.isArray(args) ? args : [];
 
+        url.hash = '';
+        window.history.replaceState(window.history.state, '', url.href);
+
         return {
             origin: referrer.origin,
             data: {
