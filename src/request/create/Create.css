@@ -17,18 +17,6 @@
     display: none;
 }
 
-.page-footer {
-    padding: 1rem;
-}
-
-.page-header {
-    padding-top: 5.5rem;
-}
-
-.page-header .page-header-back-button {
-    top: 5.5rem;
-}
-
 .wallet-identifier {
     width: 20rem;
     height: 20rem;
@@ -61,13 +49,3 @@
 .wallet-identifier .nq-icon:nth-child(3) { transform: translate( 3rem, 10.75rem); }
 .wallet-identifier .nq-icon:nth-child(4) { transform: translate(-3.5rem, 14.25rem); }
 .wallet-identifier .nq-icon:nth-child(5) { transform: translate(-10rem, 10.75rem); }
-
-@media (max-width: 450px) {
-    .page-header {
-        padding-top: 4.5rem;
-    }
-
-    .page-header .page-header-back-button {
-        top: 4.5rem;
-    }
-}
