@@ -26,29 +26,38 @@ const ResponseStatus = {
 
 class UrlRpcEncoder {
     /**
-     * @param {Location} url
+     * @param {Location} location
      * @returns {RedirectRequest?}
      */
-    static receiveRedirectCommand(url) {
+    static receiveRedirectCommand(location) {
+        const url = new URL(location.href);
+
         // Need referrer for origin check
         if (!document.referrer) return null;
+        const referrer = new URL(document.referrer);
+
         // Parse query
         const params = new URLSearchParams(url.search);
-        const referrer = new URL(document.referrer);
-        // Ignore messages without a command
-        if (!params.has('command')) return null;
+
         // Ignore messages without an ID
         if (!params.has('id')) return null;
+        const fragment = new URLSearchParams(url.hash.substring(1));
+
+        // Ignore messages without a command
+        if (!fragment.has('command')) return null;
+        const command = /** @type {string} */ (fragment.get('command'));
+
         // Ignore messages without a valid return path
-        if (!params.has('returnURL')) return null;
+        if (!fragment.has('returnURL')) return null;
+        const returnURL = /** @type {string} */ (fragment.get('returnURL'));
         // Only allow returning to same origin
-        const returnURL = new URL(/** @type {string} */ (params.get('returnURL')));
-        if (returnURL.origin !== referrer.origin) return null;
+        if (new URL(returnURL).origin !== referrer.origin) return null;
+
         // Parse args
         let args = [];
-        if (params.has('args')) {
+        if (fragment.has('args')) {
             try {
-                args = JsonUtils.parse(/** @type {string} */ (params.get('args')));
+                args = JsonUtils.parse(/** @type {string} */ (fragment.get('args')));
             } catch (e) {
                 // Do nothing
             }
@@ -59,25 +68,30 @@ class UrlRpcEncoder {
             origin: referrer.origin,
             data: {
                 id: parseInt(/** @type {string} */ (params.get('id')), 10),
-                command: /** @type {string} */ (params.get('command')),
+                command,
                 args,
             },
-            returnURL: /** @type {string} */ (params.get('returnURL')),
+            returnURL,
         };
     }
 
     /**
      * @param {RpcState} state
-     * @param {string} status
+     * @param {ResponseStatus} status
      * @param {any} result
      * @returns {string}
      */
     static prepareRedirectReply(state, status, result) {
         const returnUrl = new URL(/** @type {string} */ (state.returnURL));
-        const params = returnUrl.searchParams;
-        params.set('status', status);
-        params.set('result', JsonUtils.stringify(result));
-        params.set('id', state.id.toString());
+
+        const search = returnUrl.searchParams;
+        search.set('id', state.id.toString());
+
+        const fragment = new URLSearchParams(returnUrl.hash.substring(1));
+        fragment.set('status', status);
+        fragment.set('result', JsonUtils.stringify(result));
+
+        returnUrl.hash = fragment.toString();
 
         return returnUrl.href;
     }
@@ -94,7 +108,7 @@ class RpcState {
         return this._origin;
     }
 
-    /** @type {any} */
+    /** @type {{command: string, args: any[], id: number}} */
     get data() {
         return this._data;
     }
@@ -104,7 +118,7 @@ class RpcState {
         return this._returnURL;
     }
 
-    /** @type {Window | MessagePort | ServiceWorker | null} */
+    /** @type {Window | null} */
     get source() {
         return this._source;
     }
@@ -119,7 +133,7 @@ class RpcState {
         this._postMessage = 'source' in message && !('returnURL' in message);
         this._returnURL = 'returnURL' in message ? message.returnURL : null;
         this._data = message.data;
-        this._source = 'source' in message ? message.source : null;
+        this._source = 'source' in message ? /** @type {Window} */ (message.source) : null;
     }
 
     /**
@@ -141,8 +155,7 @@ class RpcState {
             if (this._source) {
                 target = this._source;
             } else {
-                // Else guess
-                target = window.opener || window.parent;
+                target = window.parent;
             }
             target.postMessage({
                 status,
@@ -153,6 +166,22 @@ class RpcState {
             // Send via top-level navigation
             window.location.href = UrlRpcEncoder.prepareRedirectReply(this, status, result);
         }
+    }
+
+    /**
+     * Only return an object when the request is via redirect,
+     * because for iframe requests the request does not need
+     * to be stored.
+     *
+     * @returns {RedirectRequest?}
+     */
+    toRequestObject() {
+        if (!this._returnURL) return null;
+        return {
+            origin: this._origin,
+            data: this._data,
+            returnURL: this._returnURL,
+        };
     }
 }
 
@@ -201,16 +230,28 @@ class RpcServer { // eslint-disable-line no-unused-vars
     }
 
     _receiveRedirect() {
-        const message = UrlRpcEncoder.receiveRedirectCommand(window.location);
-        if (message) {
-            this._receive(message);
+        // Check for a request in the URL (also removes params)
+        const urlRequest = UrlRpcEncoder.receiveRedirectCommand(window.location);
+        if (urlRequest) {
+            this._receive(urlRequest);
+            return;
+        }
+
+        // Check for a stored request referenced by a URL 'id' parameter
+        const searchParams = new URLSearchParams(window.location.search);
+        if (searchParams.has('id')) {
+            const storedRequest = window.sessionStorage.getItem(`request-${searchParams.get('id')}`);
+            if (storedRequest) {
+                this._receive(JsonUtils.parse(storedRequest), false);
+            }
         }
     }
 
     /**
      * @param {MessageEvent | RedirectRequest} message
+     * @param {boolean} [persistMessage]
      */
-    _receive(message) {
+    _receive(message, persistMessage = true) {
         let _state = null;
         try {
             _state = new RpcState(message);
@@ -234,6 +275,11 @@ class RpcServer { // eslint-disable-line no-unused-vars
                 throw new Error(`Too many arguments passed: ${JSON.stringify(message)}`);
             }
             console.debug('RpcServer ACCEPT', state.data);
+
+            if (persistMessage) {
+                sessionStorage.setItem(`request-${state.data.id}`, JsonUtils.stringify(state.toRequestObject()));
+            }
+
             // Call method
             const result = requestedMethod(state, ...args);
             // If a value is returned, we take care of the reply,
