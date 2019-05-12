@@ -2,7 +2,7 @@
 /* global ImportFile */
 /* global Errors */
 
-/** @extends TopLevelApi<KeyguardRequest.ImportRequest> */
+/** @extends {TopLevelApi<KeyguardRequest.ImportRequest>} */
 class ImportApi extends TopLevelApi {
     /**
      * @param {KeyguardRequest.ImportRequest} request

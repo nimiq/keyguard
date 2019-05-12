@@ -2,7 +2,7 @@
 /* global Create */
 /* global Errors */
 
-/** @extends TopLevelApi<KeyguardRequest.CreateRequest> */
+/** @extends {TopLevelApi<KeyguardRequest.CreateRequest>} */
 class CreateApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
      * @param {KeyguardRequest.CreateRequest} request

@@ -2,7 +2,7 @@
 /* global RemoveKey */
 /* global Errors */
 
-/** @extends TopLevelApi<KeyguardRequest.RemoveKeyRequest> */
+/** @extends {TopLevelApi<KeyguardRequest.RemoveKeyRequest>} */
 class RemoveKeyApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
      * @param {KeyguardRequest.RemoveKeyRequest} request

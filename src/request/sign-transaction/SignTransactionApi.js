@@ -3,7 +3,7 @@
 /* global SignTransaction */
 /* global Errors */
 
-/** @extends TopLevelApi<KeyguardRequest.SignTransactionRequest> */
+/** @extends {TopLevelApi<KeyguardRequest.SignTransactionRequest>} */
 class SignTransactionApi extends TopLevelApi {
     /**
      * @param {KeyguardRequest.SignTransactionRequest} request

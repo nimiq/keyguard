@@ -37,7 +37,7 @@
  *  runKeyguard(SignTransactionApi);
  * ```
  * @abstract
- * @template {KeyguardRequest.RedirectRequest} T 
+ * @template {KeyguardRequest.RedirectRequest} T
  */
 class TopLevelApi extends RequestParser {
     constructor() {

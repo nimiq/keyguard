@@ -56,7 +56,7 @@ async function loadNimiq() {
 }
 
 /**
- * @template {KeyguardRequest.RedirectRequest} T 
+ * @template {KeyguardRequest.RedirectRequest} T
  * @param {Newable} RequestApiClass - Class object of the API which is to be exposed via RPC
  * @param {object} [options]
  */
