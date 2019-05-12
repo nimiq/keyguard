@@ -51,9 +51,16 @@ replace_font_url() {
     sed -i -r -e "s/$OLD_PATH/$NEW_PATH/g" $1
 }
 
+# Replace xxd -r -p with a nice bash function
+function hex_to_binary() {
+    for (( i=0; i<${#1}; i+=2 )); do
+        printf "\x${1:$i:2}"
+    done
+}
+
 # generate a base64 file integrity hash
 make_file_hash() {
-    echo $(${SHA256SUM} "$1" | awk '{print $1}' | xxd -r -p | base64)
+    hex_to_binary "$(${SHA256SUM} "$1" | cut -d' ' -f1)" | base64
 }
 
 # Before writing any files, verify integrity of Nimiq lib
