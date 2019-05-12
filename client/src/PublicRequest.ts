@@ -1,4 +1,5 @@
 import * as Nimiq from '@nimiq/core-web';
+import { KeyguardCommand } from './KeyguardCommand';
 
 export type ObjectType = {
     [key: string]: any;
@@ -164,12 +165,21 @@ export type RedirectResult = KeyResult
 
 export type Result = RedirectResult | IFrameResult;
 
+// Derived Result types
+
 export type ResultType<T extends RedirectRequest> =
     T extends Is<T, SignMessageRequest> | Is<T, SignTransactionRequest> ? SignatureResult :
     T extends Is<T, DeriveAddressRequest> ? Is<T, DeriveAddressResult> :
     T extends Is<T, CreateRequest> | Is<T, ImportRequest> ? KeyResult :
     T extends Is<T, ExportRequest> ? ExportResult :
     T extends Is<T, RemoveKeyRequest> | Is<T, SimpleRequest> ? SimpleResult : never;
+
+export type ResultByCommand<T extends KeyguardCommand> =
+    T extends KeyguardCommand.SIGN_MESSAGE | KeyguardCommand.SIGN_TRANSACTION ? SignatureResult :
+    T extends KeyguardCommand.DERIVE_ADDRESS ? DeriveAddressResult :
+    T extends KeyguardCommand.CREATE | KeyguardCommand.IMPORT ? KeyResult :
+    T extends KeyguardCommand.EXPORT ? ExportResult :
+    T extends KeyguardCommand.REMOVE ? SimpleResult : never;
 
 // Error constants
 
