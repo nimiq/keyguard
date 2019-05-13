@@ -46,4 +46,15 @@ describe('AccountStore', () => {
         const db = await AccountStore.instance.connect();
         expect(db).toBeNull();
     });
+
+    it('can get a KeyInfo', async function() {
+        const keyInfo = await AccountStore.instance.getInfo('NQ71 CT4K 7R9R EHSB 7HY9 TSTP XNRQ L2RK 8U4U');
+        expect(keyInfo).toEqual(Dummy.deprecatedAccount2KeyInfos()[0]);
+    });
+
+    it('can get a Key', async function() {
+        const passwordBytes = Nimiq.BufferUtils.fromAscii(Dummy.encryptionPassword);
+        const key = await AccountStore.instance.get('NQ71 CT4K 7R9R EHSB 7HY9 TSTP XNRQ L2RK 8U4U', passwordBytes);
+        expect(key).toEqual(Dummy.deprecatedAccount2Keys()[0]);
+    });
 });

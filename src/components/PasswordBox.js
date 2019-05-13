@@ -58,6 +58,7 @@ class PasswordBox extends Nimiq.Observable {
         /** @type {{[i18nTag: string]: string}} */
         const buttonVersions = {
             'passwordbox-continue': '<button class="submit" data-i18n="passwordbox-continue">Continue</button>',
+            'passwordbox-confirm': '<button class="submit" data-i18n="passwordbox-confirm">Confirm</button>',
             'passwordbox-log-in': '<button class="submit" data-i18n="passwordbox-log-in">Unlock</button>',
             'passwordbox-log-out': '<button class="submit" data-i18n="passwordbox-log-out">Confirm logout</button>',
             'passwordbox-confirm-tx': '<button class="submit" data-i18n="passwordbox-confirm-tx">Confirm transaction</button>',

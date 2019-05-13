@@ -3,6 +3,7 @@
 /* global Errors */
 /* global Constants */
 /* global CONFIG */
+/* global BrowserDetection */
 
 /**
  * @callback reject
@@ -12,13 +13,16 @@
 /** @type {Promise<void>?} */
 let __nimiqLoaded = null;
 
-// Register service worker if necessary (and possible).
-// This file is always called from a ./request/*/ folder, hence the paths.
-if ('serviceWorker' in navigator) {
+if ((BrowserDetection.isIOS() || BrowserDetection.isSafari()) && 'serviceWorker' in navigator) {
+    // Register service worker to strip cookie from requests.
+    // This file is always called from a ./request/*/ folder, hence the paths.
     navigator.serviceWorker.register('../../ServiceWorker.js', {
         scope: '../../',
     }).then(reg => {
         console.debug(`Service worker has been registered for scope: ${reg.scope}`);
+    }).catch(error => {
+        console.error('Service worker installation failed');
+        throw error;
     });
 }
 
@@ -95,5 +99,10 @@ async function runKeyguard(RequestApiClass, options) { // eslint-disable-line no
         window.rpcServer.onRequest(method, api[method].bind(api));
     });
 
-    window.rpcServer.init();
+    const handledRedirectRequest = window.rpcServer.init();
+
+    if (window.top === window && !handledRedirectRequest) {
+        // This is not an iframe and no request was handled
+        TopLevelApi.showNoRequestErrorPage(); // eslint-disable-line no-undef
+    }
 }

@@ -1,5 +1,6 @@
 /* global Nimiq */
 /* global KeyStore */
+/* global AccountStore */
 /* global Errors */
 /* global Utf8Tools */
 
@@ -84,10 +85,15 @@ class RequestParser { // eslint-disable-line no-unused-vars
         if (!keyId || typeof keyId !== 'string') {
             throw new Errors.InvalidRequestError('keyId must be a string');
         }
-        const keyInfo = await KeyStore.instance.getInfo(keyId);
+
+        const keyInfo = this.isLegacyKeyId(keyId)
+            ? await AccountStore.instance.getInfo(keyId)
+            : await KeyStore.instance.getInfo(keyId);
+
         if (!keyInfo) {
             throw new Errors.KeyNotFoundError();
         }
+
         return keyInfo;
     }
 
@@ -248,6 +254,14 @@ class RequestParser { // eslint-disable-line no-unused-vars
      */
     parseBoolean(value) {
         return !!value;
+    }
+
+    /**
+     * @param {string} id
+     * @returns {boolean}
+     */
+    isLegacyKeyId(id) {
+        return id.substr(0, 2) === 'NQ' && id.length === 44;
     }
 
     /**

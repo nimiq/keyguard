@@ -9,8 +9,8 @@
           content="default-src 'self' 'unsafe-eval';
           img-src http: https: blob: data:;
           child-src 'self' blob:;
-          style-src 'self' https://fonts.googleapis.com;
-          font-src https://fonts.gstatic.com;">
+          style-src 'self';
+          font-src 'self';">
     <title>Nimiq Keyguard</title>
 
     <script defer manual src="../../../node_modules/@nimiq/core-web/web-offline.js"></script>
@@ -29,7 +29,7 @@
     <script defer bundle-common src="../../lib/BrowserDetection.js"></script>
     <script defer bundle-common src="../../lib/AccountStore.js"></script>
     <script defer bundle-common src="../../common.js"></script>
-    <script defer bundle-toplevel src="../../components/NoReferrerErrorPage.js"></script>
+    <script defer bundle-toplevel src="../../components/NoRequestErrorPage.js"></script>
     <script defer bundle-toplevel src="../../components/PasswordBox.js"></script>
     <script defer bundle-toplevel src="../../components/PasswordInput.js"></script>
     <script defer bundle-toplevel src="../../lib/AnimationUtils.js"></script>
@@ -51,8 +51,6 @@
     <script defer src="ChangePassword.js"></script>
     <script defer src="ChangePasswordApi.js"></script>
     <script defer src="index.js"></script>
-
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Muli:400,600,700">
 
     <link rel="stylesheet" bundle-toplevel href="../../../node_modules/@nimiq/style/nimiq-style.min.css">
     <link rel="stylesheet" bundle-toplevel href="../../nimiq-style.css">
@@ -85,16 +83,15 @@
             <div class="page-header nq-card-header">
                 <div class="progress-indicator"></div>
                 <h1 data-i18n="change-password-heading" class="nq-h1">Confirm old password</h1>
+                <p data-i18n="change-password-paragraph" class="nq-notice warning">
+                    Changing the password will create a new Login File that replaces the current one.
+                </p>
+                <p data-i18n="change-password-paragraph-legacy" class="nq-notice warning legacy">
+                    Changing the password only has an effect on this device.
+                </p>
             </div>
 
             <div class="page-body nq-card-body">
-                <p data-i18n="change-password-paragraph" class="nq-text nq-orange center warning">
-                    Changing the password will create a new Login File that replaces the current one.
-                </p>
-                <p data-i18n="change-password-paragraph-legacy" class="nq-text nq-orange center warning legacy">
-                    Changing the password only has an effect on this device.
-                </p>
-
                 <div class="row">
                     <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-keys"/></svg>
                     <div data-i18n="change-password-info-item-1">
@@ -104,7 +101,7 @@
                 <div class="row">
                     <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-shredder"/></svg>
                     <div data-i18n="change-password-info-item-2">
-                        If a Login File was compromised: Please create a new account and transfer all funds.
+                        If a Login File was compromised: Please create a new Account and transfer all funds.
                     </div>
                 </div>
             </div>
@@ -122,11 +119,12 @@
                     <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
                 </a>
                 <h1 class="nq-h1" data-i18n="change-password-set-password-heading">Create a new password</h1>
+
+                <p data-i18n="change-password-set-password-text" class="nq-notice info">Secure your new Login File.</p>
+                <p data-i18n="change-password-set-password-text-legacy" class="nq-notice info legacy">Secure your Account.</p>
             </div>
 
             <div class="page-body nq-card-body">
-                <p data-i18n="change-password-set-password-text" class="nq-light-blue nq-text center hint">Secure your new Login File.</p>
-                <p data-i18n="change-password-set-password-text-legacy" class="nq-light-blue nq-text center hint legacy">Secure your account.</p>
                 <div class="login-file-icon"></div>
             </div>
 

@@ -9,8 +9,8 @@
           content="default-src 'self' 'unsafe-eval';
           img-src http: https: blob: data:;
           child-src 'self' blob:;
-          style-src 'self' https://fonts.googleapis.com;
-          font-src https://fonts.gstatic.com;">
+          style-src 'self';
+          font-src 'self';">
     <title>Nimiq Keyguard</title>
 
     <script defer manual src="../../../node_modules/@nimiq/core-web/web-offline.js"></script>
@@ -30,7 +30,7 @@
     <script defer bundle-common src="../../lib/AccountStore.js"></script>
     <script defer bundle-common src="../../common.js"></script>
 
-    <script defer bundle-toplevel src="../../components/NoReferrerErrorPage.js"></script>
+    <script defer bundle-toplevel src="../../components/NoRequestErrorPage.js"></script>
     <script defer bundle-toplevel src="../../components/PasswordBox.js"></script>
     <script defer bundle-toplevel src="../../components/PasswordInput.js"></script>
     <script defer bundle-toplevel src="../../lib/AnimationUtils.js"></script>
@@ -58,9 +58,6 @@
     <script defer src="ImportWords.js"></script>
     <script defer src="ImportApi.js"></script>
     <script defer src="index.js"></script>
-
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Muli:400,600,700">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono&text=0123456789ABCDEFGHJKLMNPQRSTUVXY">
 
     <link rel="stylesheet" bundle-toplevel href="../../../node_modules/@nimiq/style/nimiq-style.min.css">
     <link rel="stylesheet" bundle-toplevel href="../../nimiq-style.css">
@@ -123,7 +120,7 @@
                     <div class="login-file-icon"></div>
                 </div>
 
-                <div class="page-footer">
+                <div class="page-footer nq-card-footer">
                     <form class="password-setter-box"></form>
                 </div>
             </div>
@@ -133,7 +130,7 @@
                     <a tabindex="0" class="page-header-back-button">
                         <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
                     </a>
-                    <h1 class="nq-h1" data-i18n="import-words-download-loginfile">Download your Login File</h1>
+                    <h1 class="nq-h1" data-i18n="import-words-download-loginfile">Save your Login File</h1>
                 </div>
 
                 <div class="page-body nq-card-body">
@@ -158,12 +155,12 @@
                     <label class="file-import"></label>
                 </div>
 
-                <div class="page-footer">
+                <div class="page-footer nq-card-footer">
                     <button data-i18n="import-file-button-words" class="nq-button-s" id="goto-words">
                         Login with Recovery Words
                     </button>
                     <a class="skip nq-link" id="goto-create" href="#">
-                        <span data-i18n="import-create-account">Create new account</span>
+                        <span data-i18n="import-create-account">Create new Account</span>
                         <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-caret-right-small"/></svg>
                     </a>
                 </div>
@@ -174,14 +171,14 @@
                     <a tabindex="0" class="page-header-back-button">
                         <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
                     </a>
-                    <h1 data-i18n="import-unlock-account" class="nq-h1">Unlock your account</h1>
+                    <h1 data-i18n="import-unlock-account" class="nq-h1">Unlock your Account</h1>
                 </div>
 
                 <div class="page-body nq-card-body">
                     <img class="loginfile-image">
                 </div>
 
-                <div class="page-footer">
+                <div class="page-footer nq-card-footer">
                     <svg class="nq-icon lock">
                         <use class="lock-locked" xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-lock-locked"/>
                         <use class="lock-unlocked" xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-lock-unlocked"/>

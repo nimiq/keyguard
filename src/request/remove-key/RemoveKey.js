@@ -49,7 +49,7 @@ class RemoveKey {
 
         if (request.keyInfo.type === Nimiq.Secret.Type.PRIVATE_KEY) {
             /** @type {HTMLElement} */
-            ($removeKey.querySelector('.backup-option.login-file')).classList.add('display-none');
+            ($removeKey.querySelector('.option-login-file')).classList.add('display-none');
         } else {
             const color = IqonHash.getBackgroundColorIndex(
                 request.keyInfo.defaultAddress.toUserFriendlyAddress(),

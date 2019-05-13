@@ -51,11 +51,12 @@ class PasswordSetterBox extends Nimiq.Observable {
 
         /* eslint-disable max-len */
         $el.innerHTML = TemplateTags.noVars`
-            <div class="password-strength strength-short  nq-text-s" data-i18n="passwordbox-password-strength-short" >Enter at least 8 characters</div>
-            <div class="password-strength strength-weak   nq-text-s" data-i18n="passwordbox-password-strength-weak"  >That is a weak password</div>
-            <div class="password-strength strength-good   nq-text-s" data-i18n="passwordbox-password-strength-good"  >Ok, that is an average password</div>
-            <div class="password-strength strength-strong nq-text-s" data-i18n="passwordbox-password-strength-strong">Great, that is a strong password</div>
-            <div class="password-strength strength-secure nq-text-s" data-i18n="passwordbox-password-strength-secure">Super, that is a secure password</div>
+            <div class="password-strength strength-short  nq-text-s" data-i18n="passwordbox-password-strength-short" >Enter 8 characters or more</div>
+            <div class="password-strength strength-weak   nq-text-s" data-i18n="passwordbox-password-strength-weak"  >Weak password</div>
+            <div class="password-strength strength-good   nq-text-s" data-i18n="passwordbox-password-strength-good"  >Good password</div>
+            <div class="password-strength strength-strong nq-text-s" data-i18n="passwordbox-password-strength-strong">Strong password</div>
+            <div class="password-strength strength-secure nq-text-s" data-i18n="passwordbox-password-strength-secure">Secure password</div>
+
             <div class="repeat-long nq-text-s" data-i18n="passwordbox-repeat-password-long">No match, please try again</div>
             <div class="repeat-short nq-text-s" data-i18n="passwordbox-repeat-password-short">Password is too short</div>
             <div class="repeat-password nq-text-s" data-i18n="passwordbox-repeat-password">Repeat your password</div>

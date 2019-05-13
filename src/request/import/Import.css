@@ -23,7 +23,6 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 0.625rem;
 }
 
 .page#unlock-account .page-body {
@@ -148,10 +147,6 @@ a#goto-create {
 
 .page#set-password .login-file-icon {
     margin-bottom: 1.25rem;
-}
-
-.page#set-password .page-footer {
-    padding: 0.625rem;
 }
 
 .page#download-file .page-body {

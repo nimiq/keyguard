@@ -5,6 +5,7 @@
 /* global ProgressIndicator */
 /* global ValidateWords */
 /* global KeyStore */
+/* global AccountStore */
 /* global Errors */
 /* global Utf8Tools */
 /* global TopLevelApi */
@@ -19,7 +20,7 @@ class ExportWords extends Nimiq.Observable {
      * if a complete page is missing it will be created.
      * However these pages wil be the default pages which usually don't match the applications requirements.
      * Refer to the corresponsing _build(Privcy | RecoveryWords | ValidateWords) to see the general Structure.
-     * @param {Parsed<KeyguardRequest.SimpleRequest>} request
+     * @param {Parsed<KeyguardRequest.ExportRequest>} request
      * @param {ExportWords.resolve} resolve
      * @param {reject} reject
      */
@@ -99,7 +100,12 @@ class ExportWords extends Nimiq.Observable {
             const passwordBuffer = password ? Utf8Tools.stringToUtf8ByteArray(password) : undefined;
 
             try {
-                key = await KeyStore.instance.get(this._request.keyInfo.id, passwordBuffer);
+                key = this._request.keyInfo.useLegacyStore
+                    ? await AccountStore.instance.get(
+                        this._request.keyInfo.defaultAddress.toUserFriendlyAddress(),
+                        /** @type {Uint8Array} */ (passwordBuffer),
+                    )
+                    : await KeyStore.instance.get(this._request.keyInfo.id, passwordBuffer);
             } catch (e) {
                 if (e.message === 'Invalid key') {
                     this._wordsPasswordBox.onPasswordIncorrect();

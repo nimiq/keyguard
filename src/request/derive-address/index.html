@@ -9,8 +9,8 @@
           content="default-src 'self' 'unsafe-eval';
           img-src http: https: blob: data:;
           child-src 'self' blob:;
-          style-src 'self' https://fonts.googleapis.com;
-          font-src https://fonts.gstatic.com;">
+          style-src 'self';
+          font-src 'self';">
     <title>Nimiq Keyguard</title>
 
     <script defer manual src="../../../node_modules/@nimiq/core-web/web-offline.js"></script>
@@ -30,7 +30,7 @@
     <script defer bundle-common src="../../lib/AccountStore.js"></script>
     <script defer bundle-common src="../../common.js"></script>
 
-    <script defer bundle-toplevel src="../../components/NoReferrerErrorPage.js"></script>
+    <script defer bundle-toplevel src="../../components/NoRequestErrorPage.js"></script>
     <script defer bundle-toplevel src="../../components/PasswordBox.js"></script>
     <script defer bundle-toplevel src="../../components/PasswordInput.js"></script>
     <script defer bundle-toplevel src="../../lib/AnimationUtils.js"></script>
@@ -48,9 +48,6 @@
     <script defer src="DeriveAddress.js"></script>
     <script defer src="DeriveAddressApi.js"></script>
     <script defer src="index.js"></script>
-
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Muli:400,600,700">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono&text=0123456789ABCDEFGHJKLMNPQRSTUVXY">
 
     <link rel="stylesheet" bundle-toplevel href="../../../node_modules/@nimiq/style/nimiq-style.min.css">
     <link rel="stylesheet" bundle-toplevel href="../../nimiq-style.css">
@@ -79,13 +76,13 @@
     <div id="app">
         <div id="unlock" class="page nq-card">
             <div class="page-header nq-card-header">
-                <h1 data-i18n="derive-address-heading-password" class="nq-h1">Unlock your account</h1>
+                <h1 data-i18n="derive-address-heading-password" class="nq-h1">Unlock your Account</h1>
+                <p class="nq-notice warning" data-i18n="derive-address-password-text">
+                    To add a new Address, please[br]unlock your Account first.
+                </p>
             </div>
 
             <div class="page-body nq-card-body">
-                <p class="nq-text nq-orange" data-i18n="derive-address-password-text">
-                    To add a new address, please[br]unlock your account first.
-                </p>
                 <div class="lock-container">
                     <svg class="nq-icon locked"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-lock-locked"/></svg>
                 </div>
@@ -105,18 +102,18 @@
                 <button id="close-details">
                     <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-close"/></svg>
                 </button>
-                <div id="details" class="addressInfo detailed-view">
+                <div id="details" class="address-info detailed-view">
                     <div class="identicon"></div>
                     <div class="address"></div>
                 </div>
-                <button class="nq-button light-blue confirm" data-i18n="derive-address-add-to-account-button">Add to account</button>
+                <button class="nq-button light-blue confirm" data-i18n="derive-address-add-to-account-button">Add to Account</button>
             </div>
             <div id="effect-container">
                 <div class="page-header nq-card-header">
                     <a tabindex="0" class="page-header-back-button display-none">
                         <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
                     </a>
-                    <h1 data-i18n="derive-address-heading-choose-identicon" class="nq-h1">Choose a new address</h1>
+                    <h1 data-i18n="derive-address-heading-choose-identicon" class="nq-h1">Choose a new Avatar</h1>
                 </div>
 
                 <div class="page-body nq-card-body">

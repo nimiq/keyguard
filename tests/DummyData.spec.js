@@ -4,6 +4,9 @@
 /* global KeyInfo */
 /* global KeyStore */
 
+// Increase test timeout to reduce Travis failure rate
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 10 * 1000; // 10 seconds
+
 beforeAll(async () => {
     Nimiq._path = `${window.location.origin}/base/node_modules/@nimiq/core-web/`;
     await loadNimiq();
@@ -122,6 +125,22 @@ const deprecatedAccount2KeyInfoObjects = () => [{
     },
 }];
 
+const deprecatedAccount2KeyInfos = () => {
+    const keyInfos = [
+        KeyInfo.fromObject(
+            deprecatedAccount2KeyInfoObjects()[0],
+            true,
+            deprecatedAccount2KeyInfoObjects()[0].legacyAccount.address,
+        ),
+    ];
+    keyInfos.forEach(ki => ki.useLegacyStore = true);
+    return keyInfos;
+};
+
+const deprecatedAccount2Keys = () => [
+    new Key(secrets[1], false)
+];
+
 const keyInfoCookieEncoded = '2071U/NKd5KzeimvyflGLYku6JfI9Mms2wGxWoCLmx9+0=,10LsYVUikGJA5z8p37+LqkH3EZ5opDz2zQRT1r8cGJ8dE=';
 
 /** @type {string} */
@@ -224,6 +243,8 @@ const Dummy = {
     encryptionPassword2,
     keyInfoObjects,
     deprecatedAccount2KeyInfoObjects,
+    deprecatedAccount2KeyInfos,
+    deprecatedAccount2Keys,
     DUMMY_ACCOUNT_DATABASE_NAME,
     DUMMY_KEY_DATABASE_NAME,
     deprecatedAccountRecords,

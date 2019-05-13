@@ -17,14 +17,6 @@ ul.nq-list li > .nq-icon {
     top: 0.5rem;
 }
 
-
-.page#recovery-words-intro .page-header .nq-h1,
-.page#recovery-words .page-header .nq-h1 {
-    max-width: 80%;
-    margin-left: auto;
-    margin-right: auto;
-}
-
 .page#validate-words .page-body {
     display: flex;
     flex-direction: column;
@@ -159,27 +151,6 @@ ul.nq-list li > .nq-icon {
     background-color: rgb( 255, 255, 255, .0); /* transparent white */
 }
 
-.page#login-file-success .page-header-back-button {
-    position: absolute;
-    right: 2rem;
-    top: 2rem;
-    left: auto;
-    opacity: 0.16;
-    border: 0rem;
-    background: transparent;
-    padding: 0;
-    transition: opacity .3s ease;
-}
-
-.page#login-file-success .page-header-back-button:hover {
-    opacity: 0.25;
-}
-
-.page#login-file-success .page-header-back-button svg {
-    width: 3rem;
-    height: 3rem;
-}
-
 .page#login-file-success .page-body {
     display: flex;
     flex-direction: column;
@@ -220,8 +191,4 @@ ul.nq-list li > .nq-icon {
 
 .page#login-file-success p {
     text-align: center;
-}
-
-.page-footer {
-    padding: 1rem;
 }
