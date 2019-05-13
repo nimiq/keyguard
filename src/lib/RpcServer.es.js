@@ -38,10 +38,13 @@ class UrlRpcEncoder {
 
         // Parse query
         const params = new URLSearchParams(url.search);
+        const fragment = new URLSearchParams(url.hash.substring(1));
 
         // Ignore messages without an ID
-        if (!params.has('id')) return null;
-        const fragment = new URLSearchParams(url.hash.substring(1));
+        if (!fragment.has('id')) return null;
+        const id = parseInt(/** @type {string} */(fragment.get('id')), 10);
+        fragment.delete('id');
+        params.set(UrlRpcEncoder.URL_SEARCHPARAM_NAME, id.toString());
 
         // Ignore messages without a command
         if (!fragment.has('command')) return null;
@@ -65,12 +68,13 @@ class UrlRpcEncoder {
         args = Array.isArray(args) ? args : [];
 
         url.hash = '';
+        url.search = params.toString();
         window.history.replaceState(window.history.state, '', url.href);
 
         return {
             origin: referrer.origin,
             data: {
-                id: parseInt(/** @type {string} */ (params.get('id')), 10),
+                id,
                 command,
                 args,
             },
@@ -86,11 +90,8 @@ class UrlRpcEncoder {
      */
     static prepareRedirectReply(state, status, result) {
         const returnUrl = new URL(/** @type {string} */ (state.returnURL));
-
-        const search = returnUrl.searchParams;
-        search.set('id', state.id.toString());
-
         const fragment = new URLSearchParams(returnUrl.hash.substring(1));
+        fragment.set('id', state.id.toString());
         fragment.set('status', status);
         fragment.set('result', JsonUtils.stringify(result));
 
@@ -99,6 +100,7 @@ class UrlRpcEncoder {
         return returnUrl.href;
     }
 }
+UrlRpcEncoder.URL_SEARCHPARAM_NAME = 'rpcId';
 
 class RpcState {
     /** @type {number} */
@@ -247,8 +249,10 @@ class RpcServer { // eslint-disable-line no-unused-vars
 
         // Check for a stored request referenced by a URL 'id' parameter
         const searchParams = new URLSearchParams(window.location.search);
-        if (searchParams.has('id')) {
-            const storedRequest = window.sessionStorage.getItem(`request-${searchParams.get('id')}`);
+        if (searchParams.has(UrlRpcEncoder.URL_SEARCHPARAM_NAME)) {
+            const storedRequest = window.sessionStorage.getItem(
+                `request-${searchParams.get(UrlRpcEncoder.URL_SEARCHPARAM_NAME)}`,
+            );
             if (storedRequest) {
                 return this._receive(JsonUtils.parse(storedRequest), false);
             }
