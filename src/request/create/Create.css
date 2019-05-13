@@ -33,23 +33,10 @@
 }
 
 @keyframes wallet-identifier-pop-in {
-	0% {
-        transform: translate(-0.5rem, 2.5rem) scale(0);
-        opacity: 0;
-	}
-
-	30% {
-		transform: translate(0.2rem, 3.5rem) scale(1.2);
-	}
-
-	80% {
-        transform: translate(0.2rem, 3.5rem) scale(1);
-        opacity: 1;
-	}
-
-	100% {
-		transform: translate(0.2rem, 3.5rem) scale(1);
-	}
+    0%   { transform: translate(-0.5rem, 2.5rem) scale(0); opacity: 0; }
+    30%  { transform: translate( 0.2rem, 3.5rem) scale(1.2); }
+    80%  { transform: translate( 0.2rem, 3.5rem) scale(1); opacity: 1; }
+    100% { transform: translate( 0.2rem, 3.5rem) scale(1); }
 }
 
 .wallet-identifier .nq-icon {
