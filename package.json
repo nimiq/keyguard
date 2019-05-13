@@ -33,7 +33,7 @@
   "homepage": "https://github.com/nimiq/keyguard-next#readme",
   "devDependencies": {
     "@nimiq/core-web": "1.4.3",
-    "@nimiq/rpc": "^0.0.11",
+    "@nimiq/rpc": "^0.2.1",
     "@nimiq/style": "^0.6.2",
     "@types/jasmine": "^2.8.8",
     "@types/node": "^10.5.2",

@@ -145,8 +145,8 @@ const TRANSLATIONS = {
         'change-password-set-password-text': 'Secure your new Login File.',
         'change-password-set-password-text-legacy': 'Secure your Account.',
 
-        'error-no-referrer-heading': 'That went wrong :(',
-        'error-no-referrer-message': 'We could not verify the origin of your request. Please go back and try again.',
+        'error-no-request-heading': 'That went wrong :(',
+        'error-no-request-message': 'We could not detect a valid request. Please go back and try again.',
     },
     de: {
         _language: 'Deutsch',
@@ -300,8 +300,8 @@ const TRANSLATIONS = {
         'change-password-set-password-text': 'Sichere dein neues Login File.',
         'change-password-set-password-text-legacy': 'Sichere deinen Account.',
 
-        'error-no-referrer-heading': 'Das ging schief :(',
-        'error-no-referrer-message': 'Wir konnten nicht überprüfen, wo deine Anfrage herkommt. Bitte gehe zurück und '
+        'error-no-request-heading': 'Das ging schief :(',
+        'error-no-request-message': 'Wir konnten keine gültige Anfrage finden. Bitte gehe zurück und '
                                    + 'versuche es nochmal.',
     },
 };

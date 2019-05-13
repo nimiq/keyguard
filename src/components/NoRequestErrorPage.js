@@ -1,9 +1,9 @@
 /* global I18n */
 /* global TemplateTags */
 
-class NoReferrerErrorPage { // eslint-disable-line no-unused-vars
+class NoRequestErrorPage { // eslint-disable-line no-unused-vars
     constructor() {
-        this.$el = NoReferrerErrorPage._createElement();
+        this.$el = NoRequestErrorPage._createElement();
     }
 
     /**
@@ -23,9 +23,9 @@ class NoReferrerErrorPage { // eslint-disable-line no-unused-vars
         $element.id = 'error';
 
         $element.innerHTML = TemplateTags.noVars`
-            <h1 class="nq-h1" data-i18n="error-no-referrer-heading">That went wrong :(</h1>
-            <div data-i18n="error-no-referrer-message">
-                We could not verify the origin of your request. Please go back and try again.
+            <h1 class="nq-h1" data-i18n="error-no-request-heading">That went wrong :(</h1>
+            <div data-i18n="error-no-request-message">
+                We could not detect a valid request. Please go back and try again.
             </div>
         `;
 

@@ -100,5 +100,10 @@ async function runKeyguard(RequestApiClass, options) { // eslint-disable-line no
         window.rpcServer.onRequest(method, api[method].bind(api));
     });
 
-    window.rpcServer.init();
+    const handledRedirectRequest = window.rpcServer.init();
+
+    if (window.top === window && !handledRedirectRequest) {
+        // This is not an iframe and no request was handled
+        TopLevelApi.showNoRequestErrorPage(); // eslint-disable-line no-undef
+    }
 }

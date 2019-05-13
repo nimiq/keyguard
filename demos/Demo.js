@@ -64,3 +64,5 @@ class Demo {
         return (await KeyStore.instance.list()).map(ki => ki.toObject());
     }
 }
+
+Demo.serve();

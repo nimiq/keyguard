@@ -6,7 +6,7 @@
 /* global I18n */
 /* global Nimiq */
 /* global RequestParser */
-/* global NoReferrerErrorPage */
+/* global NoRequestErrorPage */
 
 /**
  * A common parent class for pop-up requests.
@@ -55,16 +55,6 @@ class TopLevelApi extends RequestParser {
 
         I18n.initialize(window.TRANSLATIONS, 'en');
         I18n.translateDom();
-
-        // Show error page if we cannot verify origin of request
-        if (!document.referrer) {
-            const errorPage = new NoReferrerErrorPage();
-            /** @type {HTMLDivElement} */
-            const $target = (document.querySelector('#rotation-container') || document.querySelector('#app'));
-            $target.appendChild(errorPage.getElement());
-            window.location.hash = 'error';
-            TopLevelApi.setLoading(false);
-        }
     }
 
     /**
@@ -115,7 +105,7 @@ class TopLevelApi extends RequestParser {
 
             if (!parsedRequest) { // should already be rejected here with an Errors.InvalidRequestError()
                 // this really should never happen
-                this.reject(new Errors.InvalidRequestError('Request was not successfully parsed'));
+                this.reject(new Errors.InvalidRequestError('Request could not be parsed'));
                 return;
             }
 
@@ -249,6 +239,15 @@ class TopLevelApi extends RequestParser {
             (document.getElementById(TopLevelApi.Pages.LOADING)).classList.remove('display-none');
         }
         document.body.classList.toggle('loading', showLoading);
+    }
+
+    static showNoRequestErrorPage() {
+        const errorPage = new NoRequestErrorPage();
+        /** @type {HTMLDivElement} */
+        const $target = (document.querySelector('#rotation-container') || document.querySelector('#app'));
+        $target.appendChild(errorPage.getElement());
+        window.location.hash = 'error';
+        TopLevelApi.setLoading(false);
     }
 
     static focusPasswordBox() {
