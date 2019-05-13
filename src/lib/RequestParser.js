@@ -217,7 +217,7 @@ class RequestParser { // eslint-disable-line no-unused-vars
     }
 
     /**
-     * @param {any} url
+     * @param {unknown} url
      * @returns {string}
      */
     parseShopOrigin(url) {
@@ -249,7 +249,7 @@ class RequestParser { // eslint-disable-line no-unused-vars
     }
 
     /**
-     * @param {any} value
+     * @param {unknown} value
      * @returns {boolean}
      */
     parseBoolean(value) {

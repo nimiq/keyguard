@@ -43,8 +43,8 @@ type KeyRecord = {
     defaultAddress: Uint8Array
 }
 
-type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
-type Transform<T, K extends keyof T, E> = Omit<T, K> & E
+type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
+type Transform<T, K extends keyof T, E> = Omit<T, K> & E;
 
 type KeyId2KeyInfo<T extends { keyId: string }> = Transform<T, 'keyId', { keyInfo: KeyInfo }>
 type ConstructTransaction<T extends KeyguardRequest.TransactionInfo> = Transform<T,
@@ -52,17 +52,18 @@ type ConstructTransaction<T extends KeyguardRequest.TransactionInfo> = Transform
     'validityStartHeight' | 'data' | 'flags',
     { transaction: Nimiq.ExtendedTransaction }>
 
+type Is<T, B> = KeyguardRequest.Is<T, B>;
+
 type Parsed<T extends KeyguardRequest.Request> =
-    T extends KeyguardRequest.SignTransactionRequest ? ConstructTransaction<Transform<KeyId2KeyInfo<KeyguardRequest.SignTransactionRequest>,
+    T extends Is<T, KeyguardRequest.SignTransactionRequest>  ? ConstructTransaction<Transform<KeyId2KeyInfo<KeyguardRequest.SignTransactionRequest>,
         'shopLogoUrl', { shopLogoUrl?: URL }>>
         & { layout: KeyguardRequest.SignTransactionRequestLayout } :
-    T extends KeyguardRequest.SignMessageRequest ? Transform<Transform<KeyId2KeyInfo<KeyguardRequest.SignMessageRequest>,
-        'signer', { signer: Nimiq.Address }>,
-        'message', { message: Uint8Array | string }> :
-    T extends KeyguardRequest.SimpleRequest
-        | KeyguardRequest.DeriveAddressRequest
-        | KeyguardRequest.RemoveKeyRequest ? KeyId2KeyInfo<T> :
-    T extends KeyguardRequest.ImportRequest ? Transform<KeyguardRequest.ImportRequest,
+    T extends Is<T, KeyguardRequest.SignMessageRequest> ? Transform<KeyId2KeyInfo<KeyguardRequest.SignMessageRequest>,
+        'signer' | 'message', { signer: Nimiq.Address, message: Uint8Array | string }> :
+    T extends Is<T, KeyguardRequest.SimpleRequest>
+        | Is<T, KeyguardRequest.DeriveAddressRequest>
+        | Is<T, KeyguardRequest.RemoveKeyRequest>
+        | Is<T, KeyguardRequest.ExportRequest> ? KeyId2KeyInfo<T> :
+    T extends Is<T, KeyguardRequest.ImportRequest> ? Transform<KeyguardRequest.ImportRequest,
         'isKeyLost', { isKeyLost: boolean }> :
     T;
-

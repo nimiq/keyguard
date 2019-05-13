@@ -2,6 +2,7 @@
 /* global ChangePassword */
 /* global Errors */
 
+/** @extends {TopLevelApi<KeyguardRequest.SimpleRequest>} */
 class ChangePasswordApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
      * @param {KeyguardRequest.SimpleRequest} request

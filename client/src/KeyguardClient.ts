@@ -29,6 +29,7 @@ import {
     RedirectResult,
     ExportRequest,
     ObjectType,
+    ResultByCommand,
 } from './PublicRequest';
 
 import Observable from './Observable';
@@ -74,9 +75,9 @@ export class KeyguardClient {
         return this._redirectClient.init();
     }
 
-    public on(
-        command: KeyguardCommand,
-        resolve: (result: RedirectResult, state?: ObjectType|null) => any,
+    public on<T extends KeyguardCommand>(
+        command: T,
+        resolve: (result: ResultByCommand<T>, state?: ObjectType|null) => any,
         reject: (error: Error, state?: ObjectType|null) => any,
     ) {
         this._observable.on(`${command}-resolve`, resolve);
