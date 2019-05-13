@@ -48,6 +48,18 @@ class Demo {
         await this._addEntryToDatabase(db, AccountStore.ACCOUNT_DATABASE, deprecatedAccountRecord2);
 
         db.close();
+
+        // Set cookie
+        const cookieAccounts = [{
+            address: deprecatedAccountRecord1.userFriendlyAddress,
+            type: deprecatedAccountRecord1.type,
+            label: deprecatedAccountRecord1.label,
+        }, {
+            address: deprecatedAccountRecord2.userFriendlyAddress,
+            type: deprecatedAccountRecord2.type,
+            label: deprecatedAccountRecord2.label,
+        }];
+        CookieJar.writeCookie('accounts', JSON.stringify(cookieAccounts));
     }
 
     static async _addEntryToDatabase(db, objectStoreName, entry) {

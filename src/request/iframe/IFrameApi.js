@@ -61,8 +61,7 @@ class IFrameApi {
                     removeKeyArray = [];
                 }
                 removeKeyArray.push(request.keyId);
-                document.cookie = `removeKey=${JSON.stringify(removeKeyArray)};max-age=31536000;`
-                                + 'Secure;SameSite=strict;Path=/';
+                CookieJar.writeCookie('removeKey', JSON.stringify(removeKeyArray));
             } else {
                 await KeyStore.instance.remove(request.keyId);
             }
@@ -110,7 +109,7 @@ class IFrameApi {
          */
         if (BrowserDetection.isIOS() || BrowserDetection.isSafari()) {
             // Set migrate flag cookie
-            document.cookie = 'migrate=1;max-age=31536000;Secure;SameSite=strict;Path=/';
+            CookieJar.writeCookie('migrate', '1');
             return { success: true };
         }
 

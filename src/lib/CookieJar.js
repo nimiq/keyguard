@@ -5,9 +5,7 @@ class CookieJar { // eslint-disable-line no-unused-vars
      * @param {KeyInfo[]} keys
      */
     static fill(keys) {
-        const maxAge = 60 * 60 * 24 * 365;
-        const encodedKeys = this._encodeCookie(keys);
-        document.cookie = `k=${encodedKeys};max-age=${maxAge.toString()};Secure;SameSite=strict;Path=/`;
+        this.writeCookie('k', this._encodeCookie(keys));
     }
 
     /**
@@ -46,6 +44,23 @@ class CookieJar { // eslint-disable-line no-unused-vars
             );
         }
         return [];
+    }
+
+    /**
+     * @param {string} name
+     * @param {string} value
+     * @param {number} [maxAge]
+     */
+    static writeCookie(name, value, maxAge = 31536000 /* 1 year */) {
+        const secure = window.location.protocol === 'https:' ? 'Secure;' : '';
+        document.cookie = `${name}=${value};max-age=${maxAge.toString()};${secure}SameSite=strict;Path=/`;
+    }
+
+    /**
+     * @param {string} name
+     */
+    static deleteCookie(name) {
+        this.writeCookie(name, '', 0);
     }
 
     /**
