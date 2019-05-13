@@ -20,8 +20,6 @@
 }
 
 .page#import-file .page-footer {
-    display: flex;
-    flex-direction: column;
     align-items: center;
 }
 

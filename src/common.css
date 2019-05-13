@@ -204,6 +204,8 @@
 
 .page-footer {
     font-size: 2rem;
+    display: flex;
+    flex-direction: column;
 }
 
 .page:target {
@@ -410,7 +412,7 @@ body.loading .page:target .page-footer > .loading-spinner {
     color: inherit;
     cursor: pointer;
     margin: -1.25rem auto 0;
-    width: 40%;
+    padding: 0 2rem;
     opacity: 0.7;
     transition: opacity .3s ease;
 }
