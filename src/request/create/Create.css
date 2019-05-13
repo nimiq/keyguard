@@ -39,7 +39,7 @@
     width: 7rem;
     height: 7rem;
     position: absolute;
-    animation: pop-in .7s ease;
+    animation: pop-in-ring .7s ease;
     animation-delay: 150ms;
     animation-fill-mode: both;
 }
@@ -49,14 +49,14 @@
     100% { transform: translate(0.2rem, 3.5rem) scale(1.15); opacity: 1; }
 } */
 
-@keyframes pop-in {
+@keyframes pop-in-ring {
 	0% {
         transform: translate(-0.5rem, 2.5rem) scale(0);
         opacity: 0;
 	}
 
 	30% {
-		transform: translate(0.2rem, 3.5rem) scale(1.35);
+		transform: translate(0.2rem, 3.5rem) scale(1.2);
 	}
 
 	80% {
