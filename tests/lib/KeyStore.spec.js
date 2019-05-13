@@ -157,7 +157,7 @@ describe('KeyStore', () => {
                 accountsCookieDeleted = true;
             }
             expect(migrationCookieDeleted || accountsCookieDeleted).toBe(true);
-            expect(cookie.includes('expires=Thu, 01 Jan 1970 00:00:01 GMT')).toBe(true);
+            expect(cookie.includes('max-age=0')).toBe(true);
         });
 
         await KeyStore.instance.migrateAccountsToKeys();

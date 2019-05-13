@@ -69,7 +69,7 @@ class TopLevelApi extends RequestParser {
          *
          * @deprecated Only for database migration
          */
-        if ((BrowserDetection.isIOS() || BrowserDetection.isSafari())) {
+        if (BrowserDetection.isIOS() || BrowserDetection.isSafari()) {
             if (TopLevelApi._hasMigrateFlag()) {
                 await KeyStore.instance.migrateAccountsToKeys();
             }
@@ -93,7 +93,7 @@ class TopLevelApi extends RequestParser {
                     }
                 }
                 // crumble
-                document.cookie = 'removeKey=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+                CookieJar.deleteCookie('removeKey');
             }
         }
 
