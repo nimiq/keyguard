@@ -71,11 +71,7 @@ class SignTransaction {
         const $data = (this.$el.querySelector('#data'));
 
         // Set value and fee.
-        const total = transaction.value + transaction.fee;
-        const totalNim = Nimiq.Policy.satoshisToCoins(total);
-
-        $value.textContent = this._formatNumber(totalNim);
-
+        $value.textContent = this._formatNumber(Nimiq.Policy.satoshisToCoins(transaction.value));
         if ($fee && transaction.fee > 0) {
             $fee.textContent = this._formatNumber(Nimiq.Policy.satoshisToCoins(transaction.fee));
             /** @type {HTMLDivElement} */

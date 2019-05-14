@@ -41,7 +41,6 @@ const TRANSLATIONS = {
 
         'sign-tx-heading-tx': 'Confirm Transaction',
         'sign-tx-heading-checkout': 'Verify Payment',
-        'sign-tx-includes': 'includes',
         'sign-tx-fee': 'fee',
         'sign-tx-cancel-payment': 'Cancel payment',
 
@@ -193,7 +192,6 @@ const TRANSLATIONS = {
 
         'sign-tx-heading-tx': 'Überweisung bestätigen',
         'sign-tx-heading-checkout': 'Zahlung bestätigen',
-        'sign-tx-includes': 'inklusive',
         'sign-tx-fee': 'Gebühr',
         'sign-tx-cancel-payment': 'Zahlung abbrechen',
 
