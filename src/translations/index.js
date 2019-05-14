@@ -158,7 +158,7 @@ const TRANSLATIONS = {
         'recovery-words-intro-text': 'Die Wiederherstellungswörter sind der EINZIGE Weg Zugriff zu '
                                    + 'deinem Account zu erlangen, falls das Login File verloren geht.',
         'recovery-words-intro-offline': 'Behalte deine Wiederherstellungswörter offline und '
-                                        + 'gib sie nur im Nimiq Safe ein.',
+                                        + 'gib sie nur auf https://keyguard.nimiq.com ein.',
         'recovery-words-intro-copy': 'Erstelle eine Kopie und verwahre sie an einem sicheren Ort: '
                                    + 'Dem Haus deiner Familie, Bankschließfach, etc.',
         'recovery-words-intro-safety': 'Schütze dich vor Wasser und Feuer und benutze eine verschlossene Kiste um '
