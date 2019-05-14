@@ -114,8 +114,10 @@ const TRANSLATIONS = {
         'export-file-success-words-intro': 'There is no \'forgot password\' option. '
                                          + 'Write down 24 words to create a secure backup.',
         'export-words-intro-heading': 'There is no password recovery!',
+        'export-words-unlock-heading': 'Unlock your Account',
         'go-to-recovery-words': 'Create backup',
         'export-continue-to-login-file': 'Continue to Login File',
+        'export-continue-to-recovery-words': 'Continue to Recovery Words',
 
         'remove-key-heading': 'Don\'t lose access',
         'remove-key-intro-text': 'If you log out without saving your Account, you will irreversibly lose access to it!',
@@ -266,8 +268,10 @@ const TRANSLATIONS = {
         'export-file-success-words-intro': 'Es gibt keine Möglichkeit der Passwortwiederherstellung. '
                                          + 'Schreib dir 24 Wörter auf um ein sicheres Backup zu erstellen.',
         'export-words-intro-heading': 'Es gibt keine Passwortwiederherstellung',
+        'export-words-unlock-heading': 'Account entsperren',
         'go-to-recovery-words': 'Erstelle ein Backup',
         'export-continue-to-login-file': 'Weiter zum Login File',
+        'export-continue-to-recovery-words': 'Weiter zu den Wiederherstellungswörter',
 
         'remove-key-heading': 'Verliere deinen Zugang nicht',
         'remove-key-intro-text': 'Falls du dich ausloggst, ohne dein Konto zu sichern, wirst du unwiderruflich'
