@@ -26,6 +26,7 @@
 
 #rotation-container > .page {
     position: absolute;
+    -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
     overflow: hidden;
     margin: inherit;
