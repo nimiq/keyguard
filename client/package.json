@@ -1,6 +1,6 @@
 {
   "name": "@nimiq/keyguard-client",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "description": "Nimiq Keyguard client library",
   "main": "dist/KeyguardClient.common.js",
   "module": "dist/KeyguardClient.es.js",
@@ -26,7 +26,7 @@
   },
   "homepage": "https://github.com/nimiq/keyguard-next/client#readme",
   "dependencies": {
-    "@nimiq/rpc": "^0.2.1",
+    "@nimiq/rpc": "^0.3.0",
     "@nimiq/core-web": "1.4.3"
   },
   "devDependencies": {
