@@ -70,6 +70,11 @@ class ImportFile {
         );
         fileImport.on(FileImporter.Events.IMPORT, this._onFileImported.bind(this));
         this.passwordBox.on(PasswordBox.Events.SUBMIT, this._onPasswordEntered.bind(this));
+
+        if (request.enableBackArrow) {
+            /** @type {HTMLElement} */
+            (this.$importFilePage.querySelector('.page-header-back-button')).classList.remove('display-none');
+        }
     }
 
     run() {

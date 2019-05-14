@@ -17,6 +17,7 @@ class ImportApi extends TopLevelApi {
         parsedRequest.appName = this.parseAppName(request.appName);
         parsedRequest.requestedKeyPaths = this.parsePathsArray(request.requestedKeyPaths, ' requestedKeyPaths');
         parsedRequest.isKeyLost = this.parseBoolean(request.isKeyLost);
+        parsedRequest.enableBackArrow = this.parseBoolean(request.enableBackArrow);
 
         return parsedRequest;
     }

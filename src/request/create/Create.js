@@ -36,9 +36,6 @@ class Create {
         /** @type {HTMLFormElement} */
         this.$walletIdentifier = (document.querySelector('.wallet-identifier'));
 
-        /** @type {HTMLLinkElement} */
-        this.$setPasswordBackButton = (this.$setPasswordPage.querySelector('a.page-header-back-button'));
-
         // Create components
 
         this._identiconSelector = new IdenticonSelector(this.$identiconSelector, request.defaultKeyPath);
@@ -86,6 +83,11 @@ class Create {
         });
 
         this._passwordSetter.on(PasswordSetterBox.Events.RESET, this.backToEnterPassword.bind(this));
+
+        if (request.enableBackArrow) {
+            /** @type {HTMLElement} */
+            (this.$identiconSelector.querySelector('.page-header-back-button')).classList.remove('display-none');
+        }
     } // constructor
 
     backToEnterPassword() {
