@@ -38,15 +38,19 @@ class ExportWords extends Nimiq.Observable {
 
         // pages
         /** @type {HTMLElement} */
-        this._$noRecoveryPage = (document.getElementById(ExportWords.Pages.RECOVERY_WORDS_INTRO));
+        const $noRecoveryPage = (document.getElementById(ExportWords.Pages.RECOVERY_WORDS_INTRO));
+        /** @type {HTMLElement} */
+        this._$recoveryWordsUnlockPage = (document.getElementById(ExportWords.Pages.RECOVERY_WORDS_UNLOCK));
         /** @type {HTMLElement} */
         const $recoveryWordsPage = (document.getElementById(ExportWords.Pages.SHOW_WORDS));
         /** @type {HTMLElement} */
         const $validateWordsPage = (document.getElementById(ExportWords.Pages.VALIDATE_WORDS));
 
         // elements
+        /** @type {HTMLButtonElement} */
+        const $recoveryWordsIntroButton = ($noRecoveryPage.querySelector('.page-footer > button'));
         /** @type {HTMLFormElement} */
-        const $wordsPasswordBox = (this._$noRecoveryPage.querySelector('.password-box'));
+        const $wordsPasswordBox = (this._$recoveryWordsUnlockPage.querySelector('.password-box'));
         /** @type {HTMLElement} */
         const $recoveryWords = ($recoveryWordsPage.querySelector('.recovery-words'));
         /** @type {HTMLButtonElement} */
@@ -63,12 +67,18 @@ class ExportWords extends Nimiq.Observable {
         this._recoveryWords = new RecoveryWords($recoveryWords, false);
         this._validateWords = new ValidateWords($validateWords);
         /* eslint-disable no-new */
-        new ProgressIndicator(this._$noRecoveryPage.querySelector('.progress-indicator'), 3, 1);
-        new ProgressIndicator($recoveryWordsPage.querySelector('.progress-indicator'), 3, 2);
-        new ProgressIndicator($validateWordsPage.querySelector('.progress-indicator'), 3, 3);
+        new ProgressIndicator($noRecoveryPage.querySelector('.progress-indicator'), 4, 1);
+        new ProgressIndicator(this._$recoveryWordsUnlockPage.querySelector('.progress-indicator'), 4, 2);
+        new ProgressIndicator($recoveryWordsPage.querySelector('.progress-indicator'), 4, 3);
+        new ProgressIndicator($validateWordsPage.querySelector('.progress-indicator'), 4, 4);
         /* eslint-enable no-new */
 
         // events
+        $recoveryWordsIntroButton.addEventListener('click', () => {
+            this._wordsPasswordBox.reset();
+            window.location.hash = ExportWords.Pages.RECOVERY_WORDS_UNLOCK;
+            TopLevelApi.focusPasswordBox();
+        });
         this._wordsPasswordBox.on(PasswordBox.Events.SUBMIT, this._passwordSubmitted.bind(this));
         $recoveryWordsContinue.addEventListener('click', () => {
             this._validateWords.reset();
@@ -78,10 +88,7 @@ class ExportWords extends Nimiq.Observable {
     }
 
     run() {
-        this._wordsPasswordBox.reset();
         window.location.hash = ExportWords.Pages.RECOVERY_WORDS_INTRO;
-
-        TopLevelApi.focusPasswordBox();
     }
 
     /**
@@ -160,6 +167,7 @@ class ExportWords extends Nimiq.Observable {
 
 ExportWords.Pages = {
     RECOVERY_WORDS_INTRO: 'recovery-words-intro',
+    RECOVERY_WORDS_UNLOCK: 'recovery-words-unlock',
     SHOW_WORDS: 'recovery-words',
     VALIDATE_WORDS: 'validate-words',
 };
