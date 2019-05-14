@@ -40,7 +40,10 @@ export type SignTransactionRequestLayout = 'standard' | 'checkout' | 'cashlink';
 
 // Specific Requests
 
-export type CreateRequest = BasicRequest & { defaultKeyPath: string };
+export type CreateRequest = BasicRequest & {
+    defaultKeyPath: string,
+    enableBackArrow?: boolean,
+ };
 
 export type DeriveAddressRequest = SimpleRequest & {
     baseKeyPath: string
@@ -57,6 +60,7 @@ export type EmptyRequest = null;
 export type ImportRequest = BasicRequest & {
     requestedKeyPaths: string[],
     isKeyLost?: boolean,
+    enableBackArrow?: boolean,
 };
 
 export type ReleaseKeyRequest = {

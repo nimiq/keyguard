@@ -16,6 +16,7 @@ class CreateApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         const parsedRequest = {};
         parsedRequest.appName = this.parseAppName(request.appName);
         parsedRequest.defaultKeyPath = this.parsePath(request.defaultKeyPath, 'defaultKeyPath');
+        parsedRequest.enableBackArrow = this.parseBoolean(request.enableBackArrow);
 
         return parsedRequest;
     }
