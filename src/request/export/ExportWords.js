@@ -33,30 +33,30 @@ class ExportWords extends Nimiq.Observable {
 
         FlippableHandler.init();
 
-        /** @type {Key | null} */
+        /** @type {Key?} */
         this._key = null;
 
         // pages
         /** @type {HTMLElement} */
-        const $noRecoveryPage = (document.getElementById(ExportWords.Pages.RECOVERY_WORDS_INTRO));
+        this._$noRecoveryPage = (document.getElementById(ExportWords.Pages.RECOVERY_WORDS_INTRO));
         /** @type {HTMLElement} */
         this._$recoveryWordsUnlockPage = (document.getElementById(ExportWords.Pages.RECOVERY_WORDS_UNLOCK));
         /** @type {HTMLElement} */
-        const $recoveryWordsPage = (document.getElementById(ExportWords.Pages.SHOW_WORDS));
+        this._$recoveryWordsPage = (document.getElementById(ExportWords.Pages.SHOW_WORDS));
         /** @type {HTMLElement} */
-        const $validateWordsPage = (document.getElementById(ExportWords.Pages.VALIDATE_WORDS));
+        this._$validateWordsPage = (document.getElementById(ExportWords.Pages.VALIDATE_WORDS));
 
         // elements
         /** @type {HTMLButtonElement} */
-        const $recoveryWordsIntroButton = ($noRecoveryPage.querySelector('.page-footer > button'));
+        const $recoveryWordsIntroButton = (this._$noRecoveryPage.querySelector('.page-footer > button'));
         /** @type {HTMLFormElement} */
         const $wordsPasswordBox = (this._$recoveryWordsUnlockPage.querySelector('.password-box'));
         /** @type {HTMLElement} */
-        const $recoveryWords = ($recoveryWordsPage.querySelector('.recovery-words'));
+        const $recoveryWords = (this._$recoveryWordsPage.querySelector('.recovery-words'));
         /** @type {HTMLButtonElement} */
-        const $recoveryWordsContinue = ($recoveryWordsPage.querySelector('button'));
+        const $recoveryWordsContinue = (this._$recoveryWordsPage.querySelector('button'));
         /** @type {HTMLElement} */
-        const $validateWords = ($validateWordsPage.querySelector('.validate-words'));
+        const $validateWords = (this._$validateWordsPage.querySelector('.validate-words'));
 
         // components
         this._wordsPasswordBox = new PasswordBox($wordsPasswordBox, {
@@ -67,17 +67,21 @@ class ExportWords extends Nimiq.Observable {
         this._recoveryWords = new RecoveryWords($recoveryWords, false);
         this._validateWords = new ValidateWords($validateWords);
         /* eslint-disable no-new */
-        new ProgressIndicator($noRecoveryPage.querySelector('.progress-indicator'), 4, 1);
+        new ProgressIndicator(this._$noRecoveryPage.querySelector('.progress-indicator'), 4, 1);
         new ProgressIndicator(this._$recoveryWordsUnlockPage.querySelector('.progress-indicator'), 4, 2);
-        new ProgressIndicator($recoveryWordsPage.querySelector('.progress-indicator'), 4, 3);
-        new ProgressIndicator($validateWordsPage.querySelector('.progress-indicator'), 4, 4);
+        new ProgressIndicator(this._$recoveryWordsPage.querySelector('.progress-indicator'), 4, 3);
+        new ProgressIndicator(this._$validateWordsPage.querySelector('.progress-indicator'), 4, 4);
         /* eslint-enable no-new */
 
         // events
         $recoveryWordsIntroButton.addEventListener('click', () => {
-            this._wordsPasswordBox.reset();
-            window.location.hash = ExportWords.Pages.RECOVERY_WORDS_UNLOCK;
-            TopLevelApi.focusPasswordBox();
+            if (!this._key) {
+                this._wordsPasswordBox.reset();
+                window.location.hash = ExportWords.Pages.RECOVERY_WORDS_UNLOCK;
+                TopLevelApi.focusPasswordBox();
+            } else {
+                this._goToRecoveryWords(this._key);
+            }
         });
         this._wordsPasswordBox.on(PasswordBox.Events.SUBMIT, this._passwordSubmitted.bind(this));
         $recoveryWordsContinue.addEventListener('click', () => {
@@ -92,44 +96,56 @@ class ExportWords extends Nimiq.Observable {
     }
 
     /**
-     * @param {string} [password]
+     * @param {string} password
      */
     async _passwordSubmitted(password) {
         TopLevelApi.setLoading(true);
 
+        const passwordBuffer = password ? Utf8Tools.stringToUtf8ByteArray(password) : undefined;
         /** @type {Key?} */
         let key = null;
-
-        if (this._key) {
-            key = this._key;
-            password = this._password;
-        } else {
-            const passwordBuffer = password ? Utf8Tools.stringToUtf8ByteArray(password) : undefined;
-
-            try {
-                key = this._request.keyInfo.useLegacyStore
-                    ? await AccountStore.instance.get(
-                        this._request.keyInfo.defaultAddress.toUserFriendlyAddress(),
-                        /** @type {Uint8Array} */ (passwordBuffer),
-                    )
-                    : await KeyStore.instance.get(this._request.keyInfo.id, passwordBuffer);
-            } catch (e) {
-                if (e.message === 'Invalid key') {
-                    this._wordsPasswordBox.onPasswordIncorrect();
-                    TopLevelApi.setLoading(false);
-                    return;
-                }
-                this._reject(new Errors.CoreError(e));
+        try {
+            key = this._request.keyInfo.useLegacyStore
+                ? await AccountStore.instance.get(
+                    this._request.keyInfo.defaultAddress.toUserFriendlyAddress(),
+                    /** @type {Uint8Array} */ (passwordBuffer),
+                )
+                : await KeyStore.instance.get(this._request.keyInfo.id, passwordBuffer);
+        } catch (e) {
+            if (e.message === 'Invalid key') {
+                this._wordsPasswordBox.onPasswordIncorrect();
+                TopLevelApi.setLoading(false);
                 return;
             }
-
-            if (!key) {
-                this._reject(new Errors.KeyNotFoundError());
-                return;
-            }
-            this.fire(ExportWords.Events.KEY_CHANGED, key, password);
-            this.setKey(key, password);
+            this._reject(new Errors.CoreError(e));
+            return;
         }
+
+        if (!key) {
+            this._reject(new Errors.KeyNotFoundError());
+            return;
+        }
+        this.fire(ExportWords.Events.KEY_CHANGED, key, password);
+        this._goToRecoveryWords(key);
+    }
+
+    /**
+     * @param {Key} key
+     * @private
+     */
+    _goToRecoveryWords(key) {
+        let words = [''];
+        if (key.secret instanceof Nimiq.PrivateKey) {
+            words = Nimiq.MnemonicUtils.entropyToLegacyMnemonic(key.secret.serialize());
+        } else if (key.secret instanceof Nimiq.Entropy) {
+            words = Nimiq.MnemonicUtils.entropyToMnemonic(key.secret);
+        } else {
+            this._reject(new Errors.KeyguardError('Unknown secret type'));
+            return;
+        }
+
+        this._recoveryWords.setWords(words);
+        this._validateWords.setWords(words);
 
         window.location.hash = ExportWords.Pages.SHOW_WORDS;
         TopLevelApi.setLoading(false);
@@ -139,29 +155,22 @@ class ExportWords extends Nimiq.Observable {
      * Used to set the key if already decrypted elsewhere. This will disable the password requirement.
      * Set to null to re-enable password requirement.
      * @param {Key?} key
-     * @param {string} [password]
      */
-    setKey(key, password) {
+    setKey(key) {
         this._key = key;
-        let words = [''];
-        if (this._key !== null) {
-            if (this._key.secret instanceof Nimiq.PrivateKey) {
-                words = Nimiq.MnemonicUtils.entropyToLegacyMnemonic(this._key.secret.serialize());
-            } else if (this._key.secret instanceof Nimiq.Entropy) {
-                words = Nimiq.MnemonicUtils.entropyToMnemonic(this._key.secret);
-            } else {
-                this._reject(new Errors.KeyguardError('Unknown secret type'));
-                return;
-            }
-
-            if (password) {
-                this._wordsPasswordBox.hideInput(true);
-                this._password = password;
-            }
+        if (key) {
+            /* eslint-disable no-new */
+            new ProgressIndicator(this._$noRecoveryPage.querySelector('.progress-indicator'), 3, 1);
+            new ProgressIndicator(this._$recoveryWordsPage.querySelector('.progress-indicator'), 3, 2);
+            new ProgressIndicator(this._$validateWordsPage.querySelector('.progress-indicator'), 3, 3);
+            /* eslint-enable no-new */
+        } else {
+            /* eslint-disable no-new */
+            new ProgressIndicator(this._$noRecoveryPage.querySelector('.progress-indicator'), 4, 1);
+            new ProgressIndicator(this._$recoveryWordsPage.querySelector('.progress-indicator'), 4, 3);
+            new ProgressIndicator(this._$validateWordsPage.querySelector('.progress-indicator'), 4, 4);
+            /* eslint-enable no-new */
         }
-
-        this._recoveryWords.setWords(words);
-        this._validateWords.setWords(words);
     }
 }
 
