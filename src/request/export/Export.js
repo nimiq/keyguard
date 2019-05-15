@@ -61,7 +61,7 @@ class Export {
         });
 
         this._exportFileHandler.on(ExportFile.Events.KEY_CHANGED,
-            (key, password) => this._exportWordsHandler.setKey(key, password));
+            key => this._exportWordsHandler.setKey(key));
         this._exportWordsHandler.on(ExportWords.Events.KEY_CHANGED,
             (key, password) => this._exportFileHandler.setKey(key, password));
     }
