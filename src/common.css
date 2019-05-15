@@ -408,10 +408,6 @@ body.loading .page:target .page-footer > .loading-spinner {
     justify-content: start;
 }
 
-.nq-notice {
-    font-size: 2rem;
-}
-
 .skip {
     display: block;
     font-size: 1.75rem;
