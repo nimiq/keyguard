@@ -86,7 +86,7 @@ class Create {
 
         if (request.enableBackArrow) {
             /** @type {HTMLElement} */
-            (this.$identiconSelector.querySelector('.page-header-back-button')).classList.remove('display-none');
+            (document.querySelector('#choose-identicon .page-header-back-button')).classList.remove('display-none');
         }
     } // constructor
 
