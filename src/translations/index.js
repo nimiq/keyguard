@@ -99,7 +99,7 @@ const TRANSLATIONS = {
         'validate-words-23-hint': 'What is the 23rd word?',
         'validate-words-24-hint': 'What is the 24th word?',
 
-        'export-file-heading': 'Unlock your Login File',
+        'export-file-heading': 'Access your Login File',
         'export-file-intro-heading': 'Save your Account',
         'export-file-intro-blue-text': 'Your Login File grants access to your Account. '
                                      + 'Download and save it.',
@@ -114,7 +114,7 @@ const TRANSLATIONS = {
         'export-file-success-words-intro': 'There is no \'forgot password\' option. '
                                          + 'Write down 24 words to create a secure backup.',
         'export-words-intro-heading': 'There is no password recovery!',
-        'export-words-unlock-heading': 'Unlock your Account',
+        'export-words-unlock-heading': 'Unlock your Backup',
         'go-to-recovery-words': 'Create backup',
         'export-continue-to-login-file': 'Continue to Login File',
         'export-continue-to-recovery-words': 'Continue to Recovery Words',
@@ -129,7 +129,7 @@ const TRANSLATIONS = {
         'remove-key-enter-label-2': 'to log out.',
         'remove-key-final-confirm': 'Log out',
 
-        'derive-address-heading-password': 'Unlock your Account',
+        'derive-address-heading-password': 'Unlock new Addresses',
         'derive-address-password-text': 'To add a new Address, please[br]unlock your Account first.',
         'derive-address-heading-choose-identicon': 'Choose a new Avatar',
         'derive-address-add-to-account-button': 'Add to Account',
