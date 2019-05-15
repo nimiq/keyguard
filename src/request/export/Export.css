@@ -83,6 +83,7 @@ ul.nq-list li > .nq-icon {
     flex-direction: column;
     align-items: center;
     padding-bottom: 0;
+    justify-content: space-evenly;
 }
 
 .page#login-file-intro .page-body .nq-notice.warning {
@@ -155,7 +156,7 @@ ul.nq-list li > .nq-icon {
 .page#recovery-words .page-header h1,
 .page#recovery-words .page-footer,
 .page#recovery-words .page-header .progress-indicator,
-.page#recovery-words .page-header .header-back-arrow,
+.page#recovery-words .page-header .page-header-back-button,
 .page#login-file-download .page-header,
 .page#login-file-download button {
     opacity: 0;
@@ -164,7 +165,7 @@ ul.nq-list li > .nq-icon {
 .page#recovery-words:target .page-header h1,
 .page#recovery-words:target .page-footer,
 .page#recovery-words:target .page-header .progress-indicator,
-.page#recovery-words:target .page-header .header-back-arrow,
+.page#recovery-words:target .page-header .page-header-back-button,
 .page#login-file-download:target .page-header,
 .page#login-file-download:target button {
     opacity: 1;
