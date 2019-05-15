@@ -63,14 +63,16 @@ ul.nq-list li > .nq-icon {
     color: var(--nimiq-orange);
 }
 
-.page#login-file-unlock .nq-card-body {
+.page#login-file-unlock .nq-card-body,
+.page#recovery-words-unlock .nq-card-body {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-around;
 }
 
-.page#login-file-unlock .nq-card-body .nq-icon {
+.page#login-file-unlock .nq-card-body .nq-icon,
+.page#recovery-words-unlock .nq-card-body .nq-icon {
     width: 8rem;
     height: auto;
     opacity: 0.3;
@@ -121,7 +123,20 @@ ul.nq-list li > .nq-icon {
     filter: blur(20px);
 }
 
-.page#login-file-download:target img {
+.page#recovery-words .page-header .warning,
+.page#recovery-words .words-container {
+    transition: filter .6s, opacity .6s;
+    opacity: .4;
+    -webkit-filter: blur(10px);
+    -moz-filter: blur(10px);
+    -o-filter: blur(10px);
+    -ms-filter: blur(10px);
+    filter: blur(10px);
+}
+
+.page#login-file-download:target img,
+.page#recovery-words:target .page-header .warning,
+.page#recovery-words:target .words-container  {
     opacity: 1;
     -webkit-filter: blur(0px);
     -moz-filter: blur(0px);
@@ -132,22 +147,33 @@ ul.nq-list li > .nq-icon {
 
 .page#login-file-unlock:target ~ .page#login-file-download,
 .page#login-file-success:target ~ .page#login-file-download,
-.page#recovery-words-intro:target ~ .page#login-file-download {
+.page#recovery-words-intro:target ~ .page#login-file-download,
+.page#recovery-words-unlock:target ~ .page#recovery-words {
     display: flex;
 }
 
+.page#recovery-words .page-header h1,
+.page#recovery-words .page-footer,
+.page#recovery-words .page-header .progress-indicator,
+.page#recovery-words .page-header .header-back-arrow,
 .page#login-file-download .page-header,
 .page#login-file-download button {
     opacity: 0;
 }
 
+.page#recovery-words:target .page-header h1,
+.page#recovery-words:target .page-footer,
+.page#recovery-words:target .page-header .progress-indicator,
+.page#recovery-words:target .page-header .header-back-arrow,
 .page#login-file-download:target .page-header,
 .page#login-file-download:target button {
     opacity: 1;
 }
 
 .page#login-file-unlock,
-.page#login-file-success {
+.page#login-file-success,
+.page#recovery-words-unlock {
+    background-image: none;
     background-color: rgb( 255, 255, 255, .0); /* transparent white */
 }
 
