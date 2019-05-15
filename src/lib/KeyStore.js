@@ -238,7 +238,11 @@ class KeyStore {
         const keysRecords = KeyStore.accountRecords2KeyRecords(accounts);
         await Promise.all(keysRecords.map(keyRecord => this.putPlain(keyRecord)));
 
-        await AccountStore.instance.drop();
+        await new Promise(async resolve => {
+            setTimeout(resolve, 2000); // Wait 2s and then just continue
+            await AccountStore.instance.drop();
+            resolve();
+        });
 
         if (BrowserDetection.isIOS() || BrowserDetection.isSafari()) {
             // Delete migrate cookie
