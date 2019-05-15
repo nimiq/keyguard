@@ -140,7 +140,7 @@ class ExportWords extends Nimiq.Observable {
         } else if (key.secret instanceof Nimiq.Entropy) {
             words = Nimiq.MnemonicUtils.entropyToMnemonic(key.secret);
         } else {
-            this._reject(new Errors.KeyguardError('Unknown secret type'));
+            this._reject(new Errors.KeyguardError('Secret not instance of any known type'));
             return;
         }
 
