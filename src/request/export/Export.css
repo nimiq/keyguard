@@ -4,7 +4,7 @@ ul.nq-list li {
     display: flex;
     position: relative;
     padding-left: 2rem;
-    margin-bottom: 2rem;
+    margin-bottom: 3rem;
     min-height: 5rem;
     align-items: center;
 }
