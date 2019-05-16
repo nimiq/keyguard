@@ -41,12 +41,7 @@ class DerivedIdenticonSelector extends Nimiq.Observable {
         $el.classList.add('identicon-selector');
 
         $el.innerHTML = TemplateTags.noVars`
-            <div class="identicons">
-                <div class="loading center">
-                    <div class="loading-animation"></div>
-                    <h2 data-i18n="identicon-selector-loading">Mixing colors</h2>
-                </div>
-            </div>
+            <div class="identicons"></div>
             <button class="generate-more nq-button-s" data-i18n="identicon-selector-generate-new">
                 New Avatars
             </button>`;
