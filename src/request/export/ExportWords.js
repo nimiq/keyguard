@@ -36,6 +36,8 @@ class ExportWords extends Nimiq.Observable {
         /** @type {Key?} */
         this._key = null;
 
+        this._recoveryWordsScrolledDown = false;
+
         // pages
         /** @type {HTMLElement} */
         this._$noRecoveryPage = (document.getElementById(ExportWords.Pages.RECOVERY_WORDS_INTRO));
@@ -52,9 +54,9 @@ class ExportWords extends Nimiq.Observable {
         /** @type {HTMLFormElement} */
         const $wordsPasswordBox = (this._$recoveryWordsUnlockPage.querySelector('.password-box'));
         /** @type {HTMLElement} */
-        const $recoveryWords = (this._$recoveryWordsPage.querySelector('.recovery-words'));
+        this.$recoveryWords = (this._$recoveryWordsPage.querySelector('.recovery-words'));
         /** @type {HTMLButtonElement} */
-        const $recoveryWordsContinue = (this._$recoveryWordsPage.querySelector('button'));
+        this.$recoveryWordsContinue = (this._$recoveryWordsPage.querySelector('button'));
         /** @type {HTMLElement} */
         const $validateWords = (this._$validateWordsPage.querySelector('.validate-words'));
 
@@ -64,7 +66,7 @@ class ExportWords extends Nimiq.Observable {
             hideInput: !request.keyInfo.encrypted || !!this._key,
             hideCancel: true,
         });
-        this._recoveryWords = new RecoveryWords($recoveryWords, false);
+        this._recoveryWords = new RecoveryWords(this.$recoveryWords, false);
         this._validateWords = new ValidateWords($validateWords);
         /* eslint-disable no-new */
         new ProgressIndicator(this._$noRecoveryPage.querySelector('.progress-indicator'), 4, 1);
@@ -83,11 +85,21 @@ class ExportWords extends Nimiq.Observable {
                 this._goToRecoveryWords(this._key);
             }
         });
+
         this._wordsPasswordBox.on(PasswordBox.Events.SUBMIT, this._passwordSubmitted.bind(this));
-        $recoveryWordsContinue.addEventListener('click', () => {
-            this._validateWords.reset();
-            window.location.hash = ExportWords.Pages.VALIDATE_WORDS;
+
+        this.$recoveryWordsContinue.addEventListener('click', () => {
+            if (this._recoveryWordsScrolledDown) {
+                this._validateWords.reset();
+                window.location.hash = ExportWords.Pages.VALIDATE_WORDS;
+            } else {
+                this.$recoveryWords.scrollTo({
+                    top: this.$recoveryWords.scrollTop + 8, // + 1rem
+                    behavior: 'smooth',
+                });
+            }
         });
+
         this._validateWords.on(ValidateWords.Events.VALIDATED, () => this._resolve({ success: true }));
     }
 
@@ -148,6 +160,20 @@ class ExportWords extends Nimiq.Observable {
         this._validateWords.setWords(words);
 
         window.location.hash = ExportWords.Pages.SHOW_WORDS;
+
+        this.$recoveryWords.onscroll = () => {
+            /*
+             * 16 is half of padding-bottom: 4rem; with font-size: 8px; which is the
+             * case for keyguard on desktop. On mobile it is reduced to font-size: 7px;
+             * of which half would be 14 which is still good enough to not have the user
+             * scroll to the last pixel of the container.
+             */
+            const targetScrollTop = this.$recoveryWords.scrollHeight - this.$recoveryWords.offsetHeight - 16;
+            if (this.$recoveryWords.scrollTop >= targetScrollTop) {
+                this._recoveryWordsScrolledDown = true;
+                this.$recoveryWords.onscroll = null;
+            }
+        };
         TopLevelApi.setLoading(false);
     }
 
