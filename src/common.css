@@ -398,7 +398,7 @@ body.loading .page:target .page-footer > .loading-spinner {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    min-height: calc(100vh - 11.625rem); /* window hight - header height */
+    flex-grow: 1;
     padding: 0 1rem;
     width: 100%;
 }
@@ -455,7 +455,6 @@ body.loading .page:target .page-footer > .loading-spinner {
 
     #app {
         padding: 0;
-        min-height: calc(100vh - 7.625rem);
         justify-content: flex-end;
     }
 
