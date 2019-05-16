@@ -38,7 +38,9 @@ class Export {
         (document.querySelector(`#${ExportFile.Pages.LOGIN_FILE_INTRO} .page-header-back-button`))
             .classList.add('display-none');
 
-        if (this._request.wordsOnly || this._request.keyInfo.type === Nimiq.Secret.Type.PRIVATE_KEY) {
+        if ((this._request.wordsOnly || this._request.keyInfo.type === Nimiq.Secret.Type.PRIVATE_KEY)
+            && !this._request.keyInfo.useLegacyStore
+        ) {
             /** @type {HTMLElement} */
             (document.querySelector(`#${ExportWords.Pages.RECOVERY_WORDS_INTRO} .page-header-back-button`))
                 .classList.add('display-none');
@@ -67,7 +69,6 @@ class Export {
     }
 
     run() {
-        console.log(this._request);
         if (this._request.wordsOnly || this._request.keyInfo.type === Nimiq.Secret.Type.PRIVATE_KEY) {
             this._exportWordsHandler.run();
         } else {
