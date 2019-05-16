@@ -135,6 +135,10 @@ ul.nq-list li > .nq-icon {
     filter: blur(10px);
 }
 
+.page#recovery-words .recovery-words {
+    overflow: hidden;
+}
+
 .page#login-file-download:target img,
 .page#recovery-words:target .page-header .warning,
 .page#recovery-words:target .words-container  {
@@ -144,6 +148,10 @@ ul.nq-list li > .nq-icon {
     -o-filter: blur(0px);
     -ms-filter: blur(0px);
     filter: blur(0px);
+}
+
+.page#recovery-words:target .recovery-words {
+    overflow: hidden scroll;
 }
 
 .page#login-file-unlock:target ~ .page#login-file-download,
