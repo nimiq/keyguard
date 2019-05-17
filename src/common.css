@@ -289,12 +289,12 @@ body.loading .page:target .page-footer > .loading-spinner {
     z-index: 1;
 }
 
-#loading-spinner .big-hex {
+.loading-spinner .big-hex {
     stroke-dashoffset: -40.5;
     animation: loading-big-hex 4s cubic-bezier(0.76, 0.29, 0.29, 0.76) infinite;
 }
 
-#loading-spinner .small-hex {
+.loading-spinner .small-hex {
     stroke-dashoffset: 13;
     animation: loading-small-hex 4s cubic-bezier(0.76, 0.29, 0.29, 0.76) infinite;
 }
