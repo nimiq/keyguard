@@ -239,6 +239,19 @@ ul.nq-list li > .nq-icon {
     position: relative;
 }
 
+.page#login-file-success .page-header-back-button {
+    left: auto;
+    right: 2rem;
+    top: 2rem;
+    opacity: 0.16;
+    transition: opacity .3s ease;
+}
+
+.page#login-file-success .page-header-back-button:hover {
+    transform: none;
+    opacity: 0.25;
+}
+
 .page#login-file-success .bullet-point::before {
     content: '\25cf';
     position: absolute;
