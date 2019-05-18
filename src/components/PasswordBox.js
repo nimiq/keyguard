@@ -5,10 +5,12 @@
 /* global TemplateTags */
 
 class PasswordBox extends Nimiq.Observable {
-    // eslint-disable-next-line valid-jsdoc, max-len
-    /** @param {{bgColor?: string, hideInput?: boolean, buttonI18nTag?: string, minLength?: number, hideCancel?: boolean}} [options]
-     *  @param {?HTMLFormElement} $el
+    /* eslint-disable max-len, valid-jsdoc */
+    /**
+     * @param {?HTMLFormElement} $el
+     * @param {{bgColor?: string, hideInput?: boolean, buttonI18nTag?: string, minLength?: number, hideCancel?: boolean}} [options]
      */
+    /* eslint-enable max-len, valid-jsdoc */
     constructor($el, options = {}) {
         const defaults = {
             bgColor: 'light-blue',

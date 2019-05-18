@@ -6,13 +6,15 @@
 /* global TemplateTags */
 
 class PasswordSetterBox extends Nimiq.Observable {
+    // eslint-disable-next-line valid-jsdoc
     /**
      * @param {?HTMLFormElement} $el
-     * @param {object} [options]
+     * @param {{bgColor?: string, buttonI18nTag?: string}} [options]
      */
     constructor($el, options = {}) {
         const defaults = {
             bgColor: 'light-blue',
+            buttonI18nTag: 'passwordbox-confirm',
         };
 
         super();
@@ -42,15 +44,25 @@ class PasswordSetterBox extends Nimiq.Observable {
 
     /**
      * @param {?HTMLFormElement} [$el]
-     * @param {object} options
+     * @param {{bgColor: string, buttonI18nTag: string}} options
      * @returns {HTMLFormElement}
      */
     static _createElement($el, options) {
         $el = $el || document.createElement('form');
         $el.classList.add('password-box', 'actionbox', 'setter', `nq-${options.bgColor}-bg`);
 
+        // To enable i18n validation with the dynamic nature of the password box's contents,
+        // all possible i18n tags and texts have to be specified here in the below format to
+        // enable the validator to find them with its regular expression.
         /* eslint-disable max-len */
-        $el.innerHTML = TemplateTags.noVars`
+        /** @type {{[i18nTag: string]: string}} */
+        const buttonVersions = {
+            'passwordbox-confirm': '<button class="submit show-in-repeat" data-i18n="passwordbox-confirm">Confirm</button>',
+            'passwordbox-confirm-create': '<button class="submit show-in-repeat" data-i18n="passwordbox-confirm-create">Create Account</button>',
+            'passwordbox-confirm-log-in': '<button class="submit show-in-repeat" data-i18n="passwordbox-confirm-log-in">Log in</button>',
+        };
+
+        $el.innerHTML = TemplateTags.hasVars(1)`
             <div class="password-strength strength-short  nq-text-s" data-i18n="passwordbox-password-strength-short" >Enter 8 characters or more</div>
             <div class="password-strength strength-weak   nq-text-s" data-i18n="passwordbox-password-strength-weak"  >Weak password</div>
             <div class="password-strength strength-good   nq-text-s" data-i18n="passwordbox-password-strength-good"  >Good password</div>
@@ -64,6 +76,7 @@ class PasswordSetterBox extends Nimiq.Observable {
             <div password-input></div>
 
             <button class="submit" data-i18n="passwordbox-repeat">Repeat password</button>
+            ${buttonVersions[options.buttonI18nTag]}
 
             <!-- Loading spinner SVG -->
             <svg height="48" width="54" color="inherit" class="loading-spinner"><g>
@@ -73,8 +86,9 @@ class PasswordSetterBox extends Nimiq.Observable {
         `;
         /* eslint-enable max-len */
 
-        /** @type {HTMLButtonElement} */
-        ($el.querySelector('button.submit')).classList.add('nq-button', 'inverse', options.bgColor);
+        $el.querySelectorAll('button.submit').forEach(
+            $button => $button.classList.add('nq-button', 'inverse', options.bgColor),
+        );
 
         I18n.translateDom($el);
         return $el;
@@ -132,7 +146,6 @@ class PasswordSetterBox extends Nimiq.Observable {
                 this.$el.classList.remove('repeat-short', 'repeat-long');
             }
         }
-
 
         const score = PasswordStrength.strength(this._passwordInput.text);
 

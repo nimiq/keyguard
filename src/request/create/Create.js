@@ -39,7 +39,7 @@ class Create {
         // Create components
 
         this._identiconSelector = new IdenticonSelector(this.$identiconSelector, request.defaultKeyPath);
-        this._passwordSetter = new PasswordSetterBox($setPassword);
+        this._passwordSetter = new PasswordSetterBox($setPassword, { buttonI18nTag: 'passwordbox-confirm-create' });
         // Set up progress indicators
         /* eslint-disable-next-line no-new */
         new ProgressIndicator(document.querySelector(`#${Create.Pages.CHOOSE_IDENTICON} .progress-indicator`), 3, 1);

@@ -65,7 +65,7 @@ class ImportWords {
 
         // Components
         this._recoveryWords = new RecoveryWords($recoveryWords, true);
-        this._passwordSetter = new PasswordSetterBox($passwordSetter);
+        this._passwordSetter = new PasswordSetterBox($passwordSetter, { buttonI18nTag: 'passwordbox-confirm-log-in' });
         this._loginFileIcon = new LoginFileIcon($loginFileIcon);
         const downloadLoginFile = new DownloadLoginFile($downloadLoginFile);
 
