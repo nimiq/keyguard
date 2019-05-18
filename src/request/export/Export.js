@@ -85,7 +85,11 @@ class Export {
         if (this._request.fileOnly) {
             this._resolve(this.exported);
         } else {
+            this._fileSuccessPage.classList.add('display-flex');
+            // eslint-disable-next-line no-unused-expressions
+            this._fileSuccessPage.offsetHeight;
             window.location.hash = Export.Pages.LOGIN_FILE_SUCCESS;
+            window.requestAnimationFrame(() => this._fileSuccessPage.classList.remove('display-flex'));
         }
     }
 

@@ -143,7 +143,7 @@ ul.nq-list li > .nq-icon {
 .page#login-file-download img {
     display: flex;
     transition: filter .6s, opacity .6s;
-    opacity: .3;
+    opacity: .15;
     -webkit-filter: blur(20px);
     -moz-filter: blur(20px);
     -o-filter: blur(20px);
@@ -211,6 +211,15 @@ ul.nq-list li > .nq-icon {
 .page#recovery-words-unlock {
     background-image: none;
     background-color: rgb( 255, 255, 255, .0); /* transparent white */
+}
+
+.page#login-file-success {
+    opacity: 0;
+    transition: opacity .3s .1s ease;
+}
+
+.page#login-file-success:target {
+    opacity: 1;
 }
 
 .page#login-file-success .page-body {
