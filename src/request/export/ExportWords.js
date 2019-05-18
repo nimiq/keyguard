@@ -36,8 +36,6 @@ class ExportWords extends Nimiq.Observable {
         /** @type {Key?} */
         this._key = null;
 
-        this._recoveryWordsScrolledDown = false;
-
         // pages
         /** @type {HTMLElement} */
         this._$noRecoveryPage = (document.getElementById(ExportWords.Pages.RECOVERY_WORDS_INTRO));
@@ -89,15 +87,8 @@ class ExportWords extends Nimiq.Observable {
         this._wordsPasswordBox.on(PasswordBox.Events.SUBMIT, this._passwordSubmitted.bind(this));
 
         this.$recoveryWordsContinue.addEventListener('click', () => {
-            if (this._recoveryWordsScrolledDown) {
-                this._validateWords.reset();
-                window.location.hash = ExportWords.Pages.VALIDATE_WORDS;
-            } else {
-                this.$recoveryWords.scrollTo({
-                    top: this.$recoveryWords.scrollTop + 8, // + 1rem
-                    behavior: 'smooth',
-                });
-            }
+            this._validateWords.reset();
+            window.location.hash = ExportWords.Pages.VALIDATE_WORDS;
         });
 
         this._validateWords.on(ValidateWords.Events.VALIDATED, () => this._resolve({ success: true }));
@@ -170,7 +161,8 @@ class ExportWords extends Nimiq.Observable {
              */
             const targetScrollTop = this.$recoveryWords.scrollHeight - this.$recoveryWords.offsetHeight - 16;
             if (this.$recoveryWords.scrollTop >= targetScrollTop) {
-                this._recoveryWordsScrolledDown = true;
+                /** @type {HTMLElement} */
+                (this._$recoveryWordsPage.querySelector('.page-footer')).classList.add('scrolled-down');
                 this.$recoveryWords.onscroll = null;
             }
         };

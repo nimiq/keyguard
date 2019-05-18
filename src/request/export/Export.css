@@ -51,6 +51,33 @@ ul.nq-list li > .nq-icon {
     }
 }
 
+.page#recovery-words .page-footer p {
+    position: absolute;
+    bottom: 4rem;
+    text-align: center;
+    width: calc(100% - 2rem);
+    opacity: 0.5;
+    color: white;
+    transition: opacity .2s ease, z-index 0s .2s;
+}
+
+.page#recovery-words .page-footer.scrolled-down p {
+    z-index: -1;
+    opacity: 0;
+}
+
+.page#recovery-words .page-footer button {
+    z-index: -1;
+    position: relative;
+    opacity: 0;
+    transition: transform 450ms cubic-bezier(.25,0,0,1), box-shadow 450ms cubic-bezier(.25,0,0,1), opacity .4s ease;
+}
+
+.page#recovery-words .page-footer.scrolled-down button {
+    z-index: 1;
+    opacity: 1;
+}
+
 .page#recovery-words-intro .nq-card-body {
     padding-bottom: 0;
     padding-top: 0;
