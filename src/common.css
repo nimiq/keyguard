@@ -385,12 +385,12 @@ body.loading .page:target .page-footer > .loading-spinner {
     margin-bottom: 2rem;
 }
 
-.actionbox ::selection {
-    background: var(--nimiq-blue); /* WebKit/Blink Browsers */
+.actionbox ::-moz-selection {
+    background: rgba(31, 35, 72, 0.5); /* Gecko Browsers */
 }
 
-.actionbox ::-moz-selection {
-    background: var(--nimiq-blue); /* Gecko Browsers */
+.actionbox ::selection {
+    background: rgba(31, 35, 72, 0.5);
 }
 
 #app {
@@ -406,6 +406,7 @@ body.loading .page:target .page-footer > .loading-spinner {
 #error {
     display: flex;
     justify-content: start;
+    box-shadow: none;
 }
 
 .skip {
