@@ -118,35 +118,14 @@ class PasswordSetterBox extends Nimiq.Observable {
         }
 
         if (this._password) {
-            if (this._passwordInput.text === this._password) {
+            if (this._passwordInput.text.length > 0 && this._passwordInput.text.length < this._password.length) {
                 this._repeatPasswordTimout = window.setTimeout(
                     () => {
-                        this.fire(PasswordSetterBox.Events.SUBMIT, this._password);
-                        this._passwordInput.reset();
+                        this.$el.classList.remove('repeat-long');
+                        this.$el.classList.add('repeat-short');
                     },
                     400,
                 );
-                return;
-            }
-            if (this._passwordInput.text.length > 0) {
-                if (this._passwordInput.text.length < this._password.length) {
-                    this._repeatPasswordTimout = window.setTimeout(
-                        () => {
-                            this.$el.classList.remove('repeat-long');
-                            this.$el.classList.add('repeat-short');
-                        },
-                        400,
-                    );
-                } else {
-                    this._repeatPasswordTimout = window.setTimeout(
-                        async () => {
-                            this.$el.classList.remove('repeat-short');
-                            this.$el.classList.add('repeat-long');
-                            await AnimationUtils.animate('shake', this.$el);
-                        },
-                        1200,
-                    );
-                }
             } else {
                 this.$el.classList.remove('repeat-short', 'repeat-long');
             }
@@ -155,7 +134,10 @@ class PasswordSetterBox extends Nimiq.Observable {
 
         const score = PasswordStrength.strength(this._passwordInput.text);
 
-        this.$el.classList.toggle('input-eligible', isValid && !this._password);
+        this.$el.classList.toggle(
+            'input-eligible',
+            isValid && (!this._password || this._passwordInput.text.length >= this._password.length),
+        );
 
         this.$el.classList.toggle('strength-short', !isValid);
         this.$el.classList.toggle('strength-weak', isValid && score < PasswordStrength.Score.MINIMUM);
@@ -193,7 +175,14 @@ class PasswordSetterBox extends Nimiq.Observable {
             this._passwordInput.focus();
             return;
         }
-        if (this._password !== this._passwordInput.text) {
+        if (this._password === this._passwordInput.text) {
+            this.fire(PasswordSetterBox.Events.SUBMIT, this._password);
+            this._passwordInput.reset();
+            return;
+        }
+        if (this._passwordInput.text.length >= this._password.length) {
+            this.$el.classList.remove('repeat-short');
+            this.$el.classList.add('repeat-long');
             await AnimationUtils.animate('shake', this.$el);
         }
     }
