@@ -147,8 +147,6 @@ export type DerivedAddress = {
     address: Uint8Array,
     keyPath: string,
 };
-
-export type DeriveAddressesResult = Nimiq.SerialBuffer[];
 export type KeyResult = SingleKeyResult[];
 export type ListResult = KeyInfoObject[];
 export type ListLegacyResult = LegacyKeyInfoObject[];
@@ -159,7 +157,7 @@ export type SimpleResult = { success: boolean };
 
 export type IFrameResult = ListResult
     | ListLegacyResult
-    | DeriveAddressesResult
+    | DerivedAddress[]
     | SimpleResult;
 
 export type RedirectResult = KeyResult

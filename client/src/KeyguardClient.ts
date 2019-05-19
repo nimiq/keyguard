@@ -21,13 +21,13 @@ import {
     SignMessageRequest,
     SimpleRequest,
     IFrameRequest,
-    DeriveAddressesResult,
     ListLegacyResult,
     ListResult,
     SimpleResult,
     IFrameResult,
     RedirectResult,
     ExportRequest,
+    DerivedAddress,
     ObjectType,
     ResultByCommand,
 } from './PublicRequest';
@@ -125,8 +125,8 @@ export class KeyguardClient {
         return this._iframeRequest<EmptyRequest, SimpleResult>(KeyguardCommand.HAS_KEYS);
     }
 
-    public async deriveAddresses(keyId: string, paths: string[]): Promise<DeriveAddressesResult> {
-        return this._iframeRequest<DeriveAddressesRequest, DeriveAddressesResult>
+    public async deriveAddresses(keyId: string, paths: string[]): Promise<DerivedAddress[]> {
+        return this._iframeRequest<DeriveAddressesRequest, DerivedAddress[]>
             (KeyguardCommand.DERIVE_ADDRESSES, { keyId, paths });
     }
 
