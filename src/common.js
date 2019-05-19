@@ -16,11 +16,9 @@ let __nimiqLoaded = null;
 if ((BrowserDetection.isIOS() || BrowserDetection.isSafari()) && 'serviceWorker' in navigator) {
     // Register service worker to strip cookie from requests.
     // This file is always called from a ./request/*/ folder, hence the paths.
-    navigator.serviceWorker.register('../../ServiceWorker.js', {
-        scope: '../../',
-    }).then(reg => {
+    navigator.serviceWorker.register('/ServiceWorker.js').then(reg => {
         console.debug(`Service worker has been registered for scope: ${reg.scope}`);
-    }).catch(error => {
+    }, error => {
         console.error('Service worker installation failed');
         throw error;
     });
