@@ -96,32 +96,26 @@
     position: absolute;
     right: 2rem;
     top: 2rem;
-    opacity: 0.16;
     border: 0rem;
-    background: transparent;
     padding: 0;
-    transition: opacity .3s ease;
-}
-
-#confirm-transaction #account-details #close-details svg {
-    width: 3rem;
     height: 3rem;
 }
 
-#confirm-transaction #account-details #close-details::after {
-    content: '';
-    position: absolute;
-    left: -1.5rem;
-    right: -1.5rem;
-    top: -1.5rem;
-    bottom: -1.5rem;
+#confirm-transaction #account-details #close-details {
     cursor: pointer;
 }
 
-#confirm-transaction #account-details #close-details:hover,
-#confirm-transaction #account-details #close-details:focus {
-    opacity: 0.25;
-    outline: none;
+#confirm-transaction #account-details #close-details .nq-icon {
+    height: 3rem;
+    width: 3rem;
+    opacity: .2;
+    transition: opacity .3s cubic-bezier(0.25, 0, 0, 1);
+}
+
+#confirm-transaction #account-details #close-details:hover .nq-icon,
+#confirm-transaction #account-details #close-details:active .nq-icon,
+#confirm-transaction #account-details #close-details:focus .nq-icon {
+    opacity: .4;
 }
 
 #confirm-transaction .accounts {
