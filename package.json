@@ -34,7 +34,7 @@
   "devDependencies": {
     "@nimiq/core-web": "1.4.3",
     "@nimiq/rpc": "^0.3.0",
-    "@nimiq/style": "^0.7.1",
+    "@nimiq/style": "^0.7.2",
     "@types/jasmine": "^2.8.8",
     "@types/node": "^10.5.2",
     "browserify": "^14.5.0",
