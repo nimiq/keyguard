@@ -10,8 +10,9 @@
 .address-info.detailed-view .label {
     font-size: 3rem;
     font-weight: 600;
-    line-height: 1;
+    line-height: 1.3;
     margin-top: 3rem;
+    text-align: center;
 }
 
 .address-info.detailed-view .account-label {
