@@ -32,13 +32,12 @@ class ExportApi extends TopLevelApi { // eslint-disable-line no-unused-vars
 
     /**
      * @param {Export} handler
-     * @returns {Promise<boolean>}
      */
-    async onBeforeCancel(handler) {
-        if (handler.exported.fileExported) {
+    async onGlobalClose(handler) {
+        if (handler && handler.exported.fileExported) {
             this.resolve(handler.exported);
-            return true;
+        } else {
+            super.onGlobalClose(handler);
         }
-        return false;
     }
 }

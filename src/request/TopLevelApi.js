@@ -32,10 +32,9 @@
  *          // The return value is not used.
  *      }
  *
- *      async onBeforeCancel(handler) {
- *          // This optional method receives the instantiated handler and returns if the handling
- *          // of the user's click on the global-cancel button should be halted.
- *          // Returning boolean<true> stops the handling.
+ *      async onGlobalClose(handler) {
+ *          // Handle the user's click on the global-close button.
+ *          // This method receives the instantiated handler.
  *      }
  *  }
  *
@@ -195,15 +194,13 @@ class TopLevelApi extends RequestParser {
     }
 
     /**
-     * Can be overwritten by a request's API class to excute code after the user clicked the global-cancel
-     * button, but before the request is rejected with the CANCELED error.
+     * Can be overwritten by a request's API class to excute custom code when the user clicks
+     * the global-cancel button.
      * The instantiated handler is passed as the only argument.
-     * Returning boolean<true> signals that the cancel action was handled and the request is not rejected.
      * @param {any} handler
-     * @returns {Promise<boolean>}
      */
-    async onBeforeCancel(handler) { // eslint-disable-line no-unused-vars
-        return false;
+    async onGlobalClose(handler) { // eslint-disable-line no-unused-vars
+        this.reject(new Errors.RequestCanceled());
     }
 
     /**
@@ -241,10 +238,7 @@ class TopLevelApi extends RequestParser {
         const $button = ($globalCloseText.parentNode);
         if (!$button.classList.contains('display-none')) return;
         $globalCloseText.textContent = buttonText;
-        $button.addEventListener('click', () => {
-            if (this._handler && this.onBeforeCancel(this._handler)) return;
-            this.reject(new Errors.RequestCanceled());
-        });
+        $button.addEventListener('click', () => this.onGlobalClose(this._handler));
         $button.classList.remove('display-none');
     }
 
