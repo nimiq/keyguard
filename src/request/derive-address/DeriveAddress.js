@@ -69,33 +69,17 @@ class DeriveAddress {
         const masterKey = /** @type {Nimiq.Entropy} */ (key.secret).toExtendedPrivateKey();
         const pathsToDerive = this._request.indicesToDerive.map(index => `${this._request.baseKeyPath}/${index}`);
 
-        const derivedAddresses = this._generateAddresses(masterKey, pathsToDerive);
+        /** @type {KeyguardRequest.DerivedAddress[]} */
+        const derivedAddresses = pathsToDerive.map(path => ({
+            address: masterKey.derivePath(path).toAddress().serialize(),
+            keyPath: path,
+        }));
+
         this._resolve(derivedAddresses);
     }
 
     async run() {
         window.location.hash = DeriveAddress.Pages.UNLOCK;
-    }
-
-    /**
-     * @param {Nimiq.ExtendedPrivateKey} masterKey
-     * @param {string[]} pathsToDerive
-     * @returns {KeyguardRequest.DerivedAddress[]}
-     */
-    _generateAddresses(masterKey, pathsToDerive) {
-        /** @type { KeyguardRequest.DerivedAddress[] } */
-        const derivedAddresses = [];
-
-        for (let i = 0; i < pathsToDerive.length; i++) {
-            const key = masterKey.derivePath(pathsToDerive[i]);
-            const address = key.toAddress();
-            derivedAddresses.push({
-                address: address.serialize(),
-                keyPath: pathsToDerive[i],
-            });
-        }
-
-        return derivedAddresses;
     }
 }
 
