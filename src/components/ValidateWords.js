@@ -183,15 +183,18 @@ class ValidateWords extends Nimiq.Observable {
      * @private
      */
     _onButtonPressed($button) {
+        const correctButtonIndex = this._wordList.indexOf(this._targetWord);
+
         this.$buttons.forEach(button => {
             button.disabled = true;
-            button.classList.add('inverse');
+            if (button !== $button && button !== this.$buttons[correctButtonIndex]) {
+                button.classList.add('inverse');
+            }
         });
 
         if ($button.textContent !== this._targetWord) {
             // wrong choice
             ValidateWords._showAsWrong($button);
-            const correctButtonIndex = this._wordList.indexOf(this._targetWord);
             ValidateWords._showAsCorrect(this.$buttons[correctButtonIndex], false);
             setTimeout(() => this.reset(), 820);
         } else {
