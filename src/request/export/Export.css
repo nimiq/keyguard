@@ -252,13 +252,26 @@ ul.nq-list li > .nq-icon {
     left: auto;
     right: 2rem;
     top: 2rem;
-    opacity: 0.16;
-    transition: opacity .3s ease;
+    height: 3rem;
+    padding: 0;
+    opacity: 1;
 }
 
-.page#login-file-success .page-header-back-button:hover {
+.page#login-file-success .page-header-back-button .nq-icon {
+    opacity: .2;
+    transition: opacity .3s cubic-bezier(0.25, 0, 0, 1);
+}
+
+.page#login-file-success .page-header-back-button:hover,
+.page#login-file-success .page-header-back-button:active,
+.page#login-file-success .page-header-back-button:focus {
     transform: none;
-    opacity: 0.25;
+}
+
+.page#login-file-success .page-header-back-button:hover .nq-icon,
+.page#login-file-success .page-header-back-button:active .nq-icon,
+.page#login-file-success .page-header-back-button:focus .nq-icon {
+    opacity: .4;
 }
 
 .page#login-file-success .bullet-point::before {
