@@ -17,8 +17,11 @@ self.addEventListener('fetch', event => {
     // Respond to all requests with matching host, as those are the ones potentially leaking cookie data to the server.
     // See: https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy#Cross-origin_data_storage_access
     // @ts-ignore Property 'request' does not exist on type 'Event'.ts
-    const requestHost = new URL(event.request.url).host;
-    if (requestHost !== location.host) return;
+    try {
+        const requestHost = new URL(event.request.url).host;
+        if (requestHost !== location.host) return
+        console.debug('KG Intercepting request:', event.request.url);
+    } catch (error) { console.error(error); }
 
     // forward request
     // @ts-ignore Property 'respondWith' does not exist on type 'Event'.ts,
@@ -26,5 +29,5 @@ self.addEventListener('fetch', event => {
     event.respondWith(fetch(event.request, {
         // omit cookie transmission
         credentials: 'omit',
-    }));
+    }).catch(error => console.error(error)));
 });
