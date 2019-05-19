@@ -122,6 +122,10 @@ ul.nq-list li > .nq-icon {
     opacity: 0.3;
 }
 
+.page#login-file-intro .nq-notice.warning {
+    font-size: 2.75rem;
+}
+
 .page#login-file-set-password:not(.repeat-password) .nq-h1.repeat,
 .page#login-file-set-password.repeat-password .nq-h1:not(.repeat) {
     display: none;
