@@ -31,6 +31,12 @@
  *          // global close button text is set and the handler is run.
  *          // The return value is not used.
  *      }
+ *
+ *      async onBeforeCancel(handler) {
+ *          // This optional method receives the instantiated handler and returns if the handling
+ *          // of the user's click on the global-cancel button should be halted.
+ *          // Returning boolean<true> stops the handling.
+ *      }
  *  }
  *
  *  // Finally, start your API:
@@ -52,6 +58,9 @@ class TopLevelApi extends RequestParser {
 
         /** @type {Function} */
         this._reject = () => { throw new Error('Method this._reject not defined'); };
+
+        /** @type {any?} */
+        this._handler = null;
 
         I18n.initialize(window.TRANSLATIONS, 'en');
         I18n.translateDom();
@@ -144,13 +153,13 @@ class TopLevelApi extends RequestParser {
             }
 
             try {
-                const handler = new this.Handler(parsedRequest, this.resolve.bind(this), reject);
+                this._handler = new this.Handler(parsedRequest, this.resolve.bind(this), reject);
 
                 await this.onBeforeRun(parsedRequest);
 
                 this.setGlobalCloseButtonText(`${I18n.translatePhrase('back-to')} ${parsedRequest.appName}`);
 
-                handler.run();
+                this._handler.run();
 
                 TopLevelApi.setLoading(false);
 
@@ -179,11 +188,22 @@ class TopLevelApi extends RequestParser {
 
     /**
      * Can be overwritten by a request's API class to excute code before the handler's run() is called
-     * Note: There is a bug with typescript not parsing 'template {KeyguardRequest.RedirectRequest} T', so we use any.
      * @param {Parsed<T>} parsedRequest
      */
     async onBeforeRun(parsedRequest) { // eslint-disable-line no-unused-vars
         // noop
+    }
+
+    /**
+     * Can be overwritten by a request's API class to excute code after the user clicked the global-cancel
+     * button, but before the request is rejected with the CANCELED error.
+     * The instantiated handler is passed as the only argument.
+     * Returning boolean<true> signals that the cancel action was handled and the request is not rejected.
+     * @param {any} handler
+     * @returns {Promise<boolean>}
+     */
+    async onBeforeCancel(handler) { // eslint-disable-line no-unused-vars
+        return false;
     }
 
     /**
@@ -221,7 +241,10 @@ class TopLevelApi extends RequestParser {
         const $button = ($globalCloseText.parentNode);
         if (!$button.classList.contains('display-none')) return;
         $globalCloseText.textContent = buttonText;
-        $button.addEventListener('click', () => this.reject(new Errors.RequestCanceled()));
+        $button.addEventListener('click', () => {
+            if (this._handler && this.onBeforeCancel(this._handler)) return;
+            this.reject(new Errors.RequestCanceled());
+        });
         $button.classList.remove('display-none');
     }
 
