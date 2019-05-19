@@ -9,7 +9,8 @@ const TRANSLATIONS = {
         'recovery-words-title': 'Write these 24 words on a piece of paper.',
         'recovery-words-intro-text': 'The Recovery Words are the ONLY way to restore '
                                    + 'your Account in case you lose your Login File or password.',
-        'recovery-words-intro-offline': 'Keep your words offline, enter them nowhere but on keyguard.nimiq.com.',
+        'recovery-words-intro-offline': 'Keep your words offline, enter them nowhere but on '
+                                      + '[strong]keyguard[/strong].nimiq.com.',
         'recovery-words-intro-copy': 'Create a copy and store it in a safe place: family’s house, bank locker etc.',
         'recovery-words-intro-safety': 'Mind water and fire, use a sealed box to keep your Recovery Words safe.',
         'recovery-words-text': 'Anyone with these words can access your Account! Keep them safe.',
@@ -161,7 +162,7 @@ const TRANSLATIONS = {
         'recovery-words-intro-text': 'Die Wiederherstellungswörter sind der EINZIGE Weg Zugriff zu '
                                    + 'deinem Account zu erlangen, falls das Login File verloren geht.',
         'recovery-words-intro-offline': 'Behalte deine Wiederherstellungswörter offline und '
-                                        + 'gib sie nur auf https://keyguard.nimiq.com ein.',
+                                      + 'gib sie nur auf [strong]keyguard[/strong].nimiq.com ein.',
         'recovery-words-intro-copy': 'Erstelle eine Kopie und verwahre sie an einem sicheren Ort: '
                                    + 'Dem Haus deiner Familie, Bankschließfach, etc.',
         'recovery-words-intro-safety': 'Schütze dich vor Wasser und Feuer und benutze eine verschlossene Kiste um '
