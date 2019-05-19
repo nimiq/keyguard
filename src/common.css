@@ -211,6 +211,10 @@
     flex-direction: column;
 }
 
+.page-footer .nq-button {
+    margin: 2rem 4.75rem 3rem;
+}
+
 .page:target {
     display: flex;
     justify-content: center;
