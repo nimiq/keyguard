@@ -202,7 +202,8 @@ ul.nq-list li > .nq-icon {
 .page#recovery-words .page-header .progress-indicator,
 .page#recovery-words .page-header .page-header-back-button,
 .page#login-file-download .page-header,
-.page#login-file-download button {
+.page#login-file-download button,
+.page#login-file-download .download-button {
     opacity: 0;
 }
 
@@ -211,7 +212,8 @@ ul.nq-list li > .nq-icon {
 .page#recovery-words:target .page-header .progress-indicator,
 .page#recovery-words:target .page-header .page-header-back-button,
 .page#login-file-download:target .page-header,
-.page#login-file-download:target button {
+.page#login-file-download:target button,
+.page#login-file-download:target .download-button {
     opacity: 1;
 }
 

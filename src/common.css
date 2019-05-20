@@ -424,7 +424,7 @@ body.loading .page:target .page-footer > .loading-spinner {
     text-align: center;
     color: inherit;
     cursor: pointer;
-    margin: -1.25rem auto 0;
+    margin: -2rem auto 0;
     padding: 0 2rem;
     opacity: 0.7;
     transition: opacity .3s cubic-bezier(0.25, 0, 0, 1);
@@ -450,7 +450,7 @@ body.loading .page:target .page-footer > .loading-spinner {
 }
 
 .nq-card > .skip {
-    margin-top: -3.25rem;
+    margin-top: -4rem;
     margin-bottom: 1rem;
 }
 
