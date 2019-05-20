@@ -1,6 +1,7 @@
 .download-loginfile {
     display: flex;
     flex-direction: column;
+    justify-content: flex-end;
     text-decoration: none;
     outline: none;
     flex-grow: 1;
@@ -9,6 +10,10 @@
 .download-loginfile .loginfile {
     height: 40rem;
     margin: auto;
+}
+
+.download-button .loginfile-link {
+    flex-grow: 1;
 }
 
 .download-loginfile .long-touch-indicator {

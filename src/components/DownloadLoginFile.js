@@ -24,6 +24,9 @@ class DownloadLoginFile extends Nimiq.Observable {
         this.$loginfile = (this.$el.querySelector('.loginfile'));
 
         /** @type {HTMLAnchorElement} */
+        this.$loginfileLink = (this.$el.querySelector('.loginfile-link'));
+
+        /** @type {HTMLAnchorElement} */
         this.$downloadButton = (this.$el.querySelector('.download-button'));
 
         /** @type {HTMLButtonElement} */
@@ -52,7 +55,7 @@ class DownloadLoginFile extends Nimiq.Observable {
 
         /* eslint-disable max-len */
         $el.innerHTML = TemplateTags.noVars`
-            <img class="loginfile" src=""></img>
+            <a class="loginfile-link"><img class="loginfile" src=""></img></a>
 
             <svg class="long-touch-indicator" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
                 <defs>
@@ -112,7 +115,7 @@ class DownloadLoginFile extends Nimiq.Observable {
         } else {
             // Setup fallback download
             // Hack to make image downloadable on iOS via long tap.
-            // this.$downloadButton.href = 'javascript:void(0);'; // eslint-disable-line no-script-url
+            this.$loginfileLink.href = 'javascript:void(0);'; // eslint-disable-line no-script-url
             this.$el.classList.add('fallback-download');
         }
     }
