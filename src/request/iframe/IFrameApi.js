@@ -30,7 +30,7 @@ class IFrameApi {
     /**
      * @param {RpcState?} state
      * @param {KeyguardRequest.DeriveAddressesRequest} request
-     * @returns {Promise<Nimiq.SerialBuffer[]>}
+     * @returns {Promise<KeyguardRequest.DerivedAddress[]>}
      */
     async deriveAddresses(state, request) {
         const storedEntropy = sessionStorage.getItem(IFrameApi.SESSION_STORAGE_KEY_PREFIX + request.keyId);
@@ -41,7 +41,10 @@ class IFrameApi {
         const entropy = new Nimiq.Entropy(Nimiq.BufferUtils.fromBase64(storedEntropy));
         const master = entropy.toExtendedPrivateKey();
 
-        return request.paths.map(path => master.derivePath(path).toAddress().serialize());
+        return request.paths.map(path => ({
+            address: master.derivePath(path).toAddress().serialize(),
+            keyPath: path,
+        }));
     }
 
     /**

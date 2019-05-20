@@ -68,7 +68,6 @@ const TRANSLATIONS = {
         'passwordbox-repeat-password-short': 'Password is too short',
         'passwordbox-password-skip': 'Skip for now',
 
-        'identicon-selector-loading': 'Mixing colors',
         'identicon-selector-generate-new': 'New Avatars',
 
         'download-loginfile-download': 'Download Login File',
@@ -134,8 +133,6 @@ const TRANSLATIONS = {
 
         'derive-address-heading-password': 'Unlock new Addresses',
         'derive-address-password-text': 'To add a new Address, please[br]unlock your Account first.',
-        'derive-address-heading-choose-identicon': 'Choose a new Avatar',
-        'derive-address-add-to-account-button': 'Add to Account',
 
         'change-password-heading': 'Confirm old password',
         'change-password-paragraph': 'Changing the password will create a new Login File that replaces the '
@@ -224,7 +221,6 @@ const TRANSLATIONS = {
         'passwordbox-repeat-password-short': 'Das Passwort ist zu kurz',
         'passwordbox-password-skip': 'Erstmal überspringen',
 
-        'identicon-selector-loading': 'Mische Farben',
         'identicon-selector-generate-new': 'Neue Avatare',
 
         'download-loginfile-download': 'Login File herunterladen',
@@ -293,8 +289,6 @@ const TRANSLATIONS = {
         'derive-address-heading-password': 'Entschlüssele deinen Account',
         'derive-address-password-text': 'Bitte gib dein Passwort ein um deinem Account eine weitere Adresse '
                                         + 'hinzuzufügen.',
-        'derive-address-heading-choose-identicon': 'Wähle deinen Konto-Avatar',
-        'derive-address-add-to-account-button': 'Hinzufügen',
 
         'change-password-heading': 'Altes Passwort bestätigen',
         'change-password-paragraph': 'Die Passwortänderung wird ein neues Login File erstellen, welches das bisherige '
