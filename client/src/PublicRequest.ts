@@ -171,7 +171,7 @@ export type Result = RedirectResult | IFrameResult;
 
 export type ResultType<T extends RedirectRequest> =
     T extends Is<T, SignMessageRequest> | Is<T, SignTransactionRequest> ? SignatureResult :
-    T extends Is<T, DeriveAddressRequest> ? Is<T, DerivedAddress[]> :
+    T extends Is<T, DeriveAddressRequest> ? DerivedAddress[] :
     T extends Is<T, CreateRequest> | Is<T, ImportRequest> ? KeyResult :
     T extends Is<T, ExportRequest> ? ExportResult :
     T extends Is<T, RemoveKeyRequest> | Is<T, SimpleRequest> ? SimpleResult : never;
