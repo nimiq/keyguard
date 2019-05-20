@@ -53,7 +53,6 @@ const TRANSLATIONS = {
         'passwordbox-log-in': 'Unlock',
         'passwordbox-confirm': 'Confirm',
         'passwordbox-log-out': 'Confirm logout',
-        'passwordbox-download': 'Download Login File',
         'passwordbox-confirm-tx': 'Confirm transaction',
         'passwordbox-confirm-create': 'Create Account',
         'passwordbox-confirm-log-in': 'Log in',
@@ -119,7 +118,7 @@ const TRANSLATIONS = {
         'export-words-hint': 'Scroll to continue',
         'go-to-recovery-words': 'Create backup',
         'export-continue-to-login-file': 'Continue to Login File',
-        'export-continue-to-recovery-words': 'Continue to Recovery Words',
+        'export-show-recovery-words': 'Show Recovery Words',
 
         'remove-key-heading': 'Don\'t lose access',
         'remove-key-intro-text': 'If you log out without saving your Account, you will irreversibly lose access to it!',
@@ -206,7 +205,6 @@ const TRANSLATIONS = {
         'passwordbox-log-in': 'Entsperren',
         'passwordbox-confirm': 'Bestätigen',
         'passwordbox-log-out': 'Abmeldung bestätigen',
-        'passwordbox-download': 'Login File herunterladen',
         'passwordbox-confirm-tx': 'Überweisung bestätigen',
         'passwordbox-confirm-create': 'Account erstellen',
         'passwordbox-confirm-log-in': 'Account anmelden',
@@ -273,7 +271,7 @@ const TRANSLATIONS = {
         'export-words-hint': 'Runter scrollen zum fortfahren',
         'go-to-recovery-words': 'Erstelle ein Backup',
         'export-continue-to-login-file': 'Weiter zum Login File',
-        'export-continue-to-recovery-words': 'Weiter zu den Wiederherstellungswörter',
+        'export-show-recovery-words': 'Wiederherstellungswörter anzeigen',
 
         'remove-key-heading': 'Verliere deinen Zugang nicht',
         'remove-key-intro-text': 'Falls du dich ausloggst, ohne dein Konto zu sichern, wirst du unwiderruflich'

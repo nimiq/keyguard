@@ -65,7 +65,6 @@ class PasswordBox extends Nimiq.Observable {
             'passwordbox-log-in': '<button class="submit" data-i18n="passwordbox-log-in">Unlock</button>',
             'passwordbox-log-out': '<button class="submit" data-i18n="passwordbox-log-out">Confirm logout</button>',
             'passwordbox-confirm-tx': '<button class="submit" data-i18n="passwordbox-confirm-tx">Confirm transaction</button>',
-            'passwordbox-download': '<button class="submit" data-i18n="passwordbox-download">Download Login File</button>',
             'passwordbox-show-words': '<button class="submit" data-i18n="passwordbox-show-words">Show recovery words</button>',
             'passwordbox-sign-msg': '<button class="submit" data-i18n="passwordbox-sign-msg">Sign message</button>',
         };
