@@ -9,6 +9,7 @@
 /* global Errors */
 /* global Utf8Tools */
 /* global TopLevelApi */
+/* global Key */
 
 /**
  * @callback ExportWords.resolve
@@ -63,6 +64,7 @@ class ExportWords extends Nimiq.Observable {
             buttonI18nTag: 'passwordbox-show-words',
             hideInput: !request.keyInfo.encrypted || !!this._key,
             hideCancel: true,
+            minLength: request.keyInfo.useLegacyStore ? Key.PIN_LENGTH : undefined,
         });
         this._recoveryWords = new RecoveryWords(this.$recoveryWords, false);
         this._validateWords = new ValidateWords($validateWords);
