@@ -163,7 +163,8 @@ ul.nq-list li > .nq-icon {
 }
 
 .page#recovery-words .recovery-words {
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: hidden;
 }
 
 .page#login-file-download:target img,
@@ -178,7 +179,8 @@ ul.nq-list li > .nq-icon {
 }
 
 .page#recovery-words:target .recovery-words {
-    overflow: hidden scroll;
+    overflow-y: scroll;
+    overflow-x: hidden;
 }
 
 .page#login-file-unlock:target ~ .page#login-file-download,
