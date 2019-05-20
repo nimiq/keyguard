@@ -37,9 +37,14 @@
     }
 }
 
-.download-loginfile button {
+.download-loginfile button,
+.download-loginfile .download-button {
     margin-top: 4rem;
     margin-bottom: 0;
+}
+
+.download-loginfile .download-button {
+    line-height: 7.5rem;
 }
 
 .download-loginfile .tap-and-hold,

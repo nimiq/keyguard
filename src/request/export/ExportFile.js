@@ -55,7 +55,7 @@ class ExportFile extends Nimiq.Observable {
         this.$setPasswordBackButton = ($setPasswordPage.querySelector('a.page-header-back-button'));
         /** @type {HTMLFormElement} */
         const $passwordSetterBox = ($setPasswordPage.querySelector('.password-setter-box'));
-        /** @type {HTMLAnchorElement} */
+        /** @type {HTMLDivElement} */
         const $downloadLoginFile = (this.$downloadFilePage.querySelector('.download-loginfile'));
 
         this._passwordBox = new PasswordBox(

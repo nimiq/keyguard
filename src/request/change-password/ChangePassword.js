@@ -48,7 +48,7 @@ class ChangePassword {
         const $loginFileIcon = ($setPassword.querySelector('.login-file-icon'));
         /** @type {HTMLLinkElement} */
         this.$setPasswordBackButton = ($setPassword.querySelector('a.page-header-back-button'));
-        /** @type {HTMLAnchorElement} */
+        /** @type {HTMLDivElement} */
         const $downloadLoginFile = ($downloadFile.querySelector('.download-login-file'));
         /** @type {HTMLLinkElement} */
         const $skipDownloadButton = ($downloadFile.querySelector('.skip'));

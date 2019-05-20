@@ -58,7 +58,7 @@ class ImportWords {
         const $passwordSetter = (this.$setPassword.querySelector('.password-setter-box'));
         /** @type {HTMLDivElement} */
         const $loginFileIcon = (this.$setPassword.querySelector('.login-file-icon'));
-        /** @type {HTMLAnchorElement} */
+        /** @type {HTMLDivElement} */
         const $downloadLoginFile = ($downloadFile.querySelector('.download-loginfile'));
         /** @type {HTMLLinkElement} */
         const $skipDownloadButton = ($downloadFile.querySelector('.skip'));
