@@ -90,6 +90,11 @@ ul.nq-list li > .nq-icon {
     color: var(--nimiq-orange);
 }
 
+.page#recovery-words-intro .nq-button {
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .page#login-file-unlock .nq-card-body,
 .page#recovery-words-unlock .nq-card-body {
     display: flex;
