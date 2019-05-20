@@ -31,6 +31,11 @@
  *          // global close button text is set and the handler is run.
  *          // The return value is not used.
  *      }
+ *
+ *      async onGlobalClose(handler) {
+ *          // Handle the user's click on the global-close button.
+ *          // This method receives the instantiated handler.
+ *      }
  *  }
  *
  *  // Finally, start your API:
@@ -52,6 +57,9 @@ class TopLevelApi extends RequestParser {
 
         /** @type {Function} */
         this._reject = () => { throw new Error('Method this._reject not defined'); };
+
+        /** @type {any?} */
+        this._handler = null;
 
         I18n.initialize(window.TRANSLATIONS, 'en');
         I18n.translateDom();
@@ -144,13 +152,13 @@ class TopLevelApi extends RequestParser {
             }
 
             try {
-                const handler = new this.Handler(parsedRequest, this.resolve.bind(this), reject);
+                this._handler = new this.Handler(parsedRequest, this.resolve.bind(this), reject);
 
                 await this.onBeforeRun(parsedRequest);
 
                 this.setGlobalCloseButtonText(`${I18n.translatePhrase('back-to')} ${parsedRequest.appName}`);
 
-                handler.run();
+                this._handler.run();
 
                 TopLevelApi.setLoading(false);
 
@@ -179,11 +187,20 @@ class TopLevelApi extends RequestParser {
 
     /**
      * Can be overwritten by a request's API class to excute code before the handler's run() is called
-     * Note: There is a bug with typescript not parsing 'template {KeyguardRequest.RedirectRequest} T', so we use any.
      * @param {Parsed<T>} parsedRequest
      */
     async onBeforeRun(parsedRequest) { // eslint-disable-line no-unused-vars
         // noop
+    }
+
+    /**
+     * Can be overwritten by a request's API class to excute custom code when the user clicks
+     * the global-cancel button.
+     * The instantiated handler is passed as the only argument.
+     * @param {any} handler
+     */
+    async onGlobalClose(handler) { // eslint-disable-line no-unused-vars
+        this.reject(new Errors.RequestCanceled());
     }
 
     /**
@@ -221,7 +238,7 @@ class TopLevelApi extends RequestParser {
         const $button = ($globalCloseText.parentNode);
         if (!$button.classList.contains('display-none')) return;
         $globalCloseText.textContent = buttonText;
-        $button.addEventListener('click', () => this.reject(new Errors.RequestCanceled()));
+        $button.addEventListener('click', () => this.onGlobalClose(this._handler));
         $button.classList.remove('display-none');
     }
 
