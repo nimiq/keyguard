@@ -79,9 +79,8 @@
     justify-content: center;
 }
 
-.page#remove-key .page-footer button {
-    margin: 3.5rem auto 3rem;
-    width: calc(100% - 7rem);
+.page#remove-key .page-footer .nq-button {
+    margin-top: 4rem;
 }
 
 .page#remove-key #remove-key-label-confirm {

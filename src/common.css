@@ -100,7 +100,7 @@
 
 .header-top {
     width: 100%;
-    padding: 4rem;
+    padding: 3rem;
 }
 
 .header-top .nimiq-app-name {
@@ -209,6 +209,10 @@
     font-size: 2rem;
     display: flex;
     flex-direction: column;
+}
+
+.page-footer .nq-button {
+    margin: 2rem 4.75rem 3rem;
 }
 
 .page:target {
@@ -420,7 +424,7 @@ body.loading .page:target .page-footer > .loading-spinner {
     text-align: center;
     color: inherit;
     cursor: pointer;
-    margin: -1.25rem auto 0;
+    margin: -2rem auto 0;
     padding: 0 2rem;
     opacity: 0.7;
     transition: opacity .3s cubic-bezier(0.25, 0, 0, 1);
@@ -446,7 +450,7 @@ body.loading .page:target .page-footer > .loading-spinner {
 }
 
 .nq-card > .skip {
-    margin-top: -3.25rem;
+    margin-top: -4rem;
     margin-bottom: 1rem;
 }
 

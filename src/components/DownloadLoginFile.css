@@ -1,6 +1,7 @@
 .download-loginfile {
     display: flex;
     flex-direction: column;
+    justify-content: flex-end;
     text-decoration: none;
     outline: none;
     flex-grow: 1;
@@ -10,6 +11,10 @@
 .download-loginfile .loginfile {
     height: 40rem;
     margin: auto;
+}
+
+.download-button .loginfile-link {
+    flex-grow: 1;
 }
 
 .download-loginfile .long-touch-indicator {
@@ -38,9 +43,14 @@
     }
 }
 
-.download-loginfile button {
+.download-loginfile button,
+.download-loginfile .download-button {
     margin-top: 4rem;
-    margin-bottom: 0;
+    margin-bottom: 1rem;
+}
+
+.download-loginfile .download-button {
+    line-height: 7.5rem;
 }
 
 .download-loginfile .tap-and-hold,

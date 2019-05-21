@@ -8,7 +8,7 @@
 
 class DownloadLoginFile extends Nimiq.Observable {
     /**
-     * @param {HTMLAnchorElement} [$el]
+     * @param {HTMLDivElement} [$el]
      * @param {Uint8Array} [encryptedEntropy]
      * @param {Nimiq.Address} [firstAddress]
      */
@@ -23,6 +23,12 @@ class DownloadLoginFile extends Nimiq.Observable {
         /** @type {HTMLImageElement} */
         this.$loginfile = (this.$el.querySelector('.loginfile'));
 
+        /** @type {HTMLAnchorElement} */
+        this.$loginfileLink = (this.$el.querySelector('.loginfile-link'));
+
+        /** @type {HTMLAnchorElement} */
+        this.$downloadButton = (this.$el.querySelector('.download-button'));
+
         /** @type {HTMLButtonElement} */
         const $continueButton = (this.$el.querySelector('.continue'));
 
@@ -33,23 +39,23 @@ class DownloadLoginFile extends Nimiq.Observable {
         /** @type {SVGElement} */
         this.$longTouchIndicator = (this.$el.querySelector('.long-touch-indicator'));
 
-        this.$el.addEventListener('mousedown', e => this._onMouseDown(e));
-        this.$el.addEventListener('mouseup', e => this._onMouseUp(e));
+        this.$loginfile.addEventListener('mousedown', e => this._onMouseDown(e));
         this.$loginfile.addEventListener('touchstart', () => this._onTouchStart());
+        this.$downloadButton.addEventListener('click', () => this._onDownloadStart());
         $continueButton.addEventListener('click', this._onDownloadEnd.bind(this));
     }
 
     /**
-     * @param {?HTMLAnchorElement} [$el]
-     * @returns {HTMLAnchorElement}
+     * @param {?HTMLDivElement} [$el]
+     * @returns {HTMLDivElement}
      */
     static _createElement($el) {
-        $el = $el || document.createElement('a');
+        $el = $el || document.createElement('div');
         $el.classList.add('download-loginfile');
 
         /* eslint-disable max-len */
         $el.innerHTML = TemplateTags.noVars`
-            <img class="loginfile" src=""></img>
+            <a class="loginfile-link"><img class="loginfile" src=""></img></a>
 
             <svg class="long-touch-indicator" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
                 <defs>
@@ -63,10 +69,10 @@ class DownloadLoginFile extends Nimiq.Observable {
                 </g>
             </svg>
 
-            <button class="nq-button light-blue download-button">
+            <a class="nq-button light-blue download-button">
                 <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-download"/></svg>
                 <span data-i18n="download-loginfile-download">Download Login File</span>
-            </button>
+            </a>
             <span class="nq-label tap-and-hold" data-i18n="download-loginfile-tap-and-hold">Tap and hold image to download</span>
             <button class="nq-button light-blue continue" data-i18n="download-loginfile-continue">Continue</button>
         `;
@@ -104,12 +110,12 @@ class DownloadLoginFile extends Nimiq.Observable {
     _setupDownload(href, filename) {
         if (this._supportsNativeDownload()) {
             // Setup native download
-            this.$el.href = href;
-            this.$el.download = filename;
+            this.$downloadButton.href = href;
+            this.$downloadButton.download = filename;
         } else {
             // Setup fallback download
             // Hack to make image downloadable on iOS via long tap.
-            this.$el.href = 'javascript:void(0);'; // eslint-disable-line no-script-url
+            this.$loginfileLink.href = 'javascript:void(0);'; // eslint-disable-line no-script-url
             this.$el.classList.add('fallback-download');
         }
     }
@@ -120,7 +126,7 @@ class DownloadLoginFile extends Nimiq.Observable {
      * @returns {boolean}
      */
     _supportsNativeDownload() {
-        return typeof this.$el.download !== 'undefined';
+        return typeof this.$downloadButton.download !== 'undefined';
     }
 
     /**
@@ -131,28 +137,11 @@ class DownloadLoginFile extends Nimiq.Observable {
     _onMouseDown(event) {
         /** @type {HTMLElement} */
         const target = (event.target);
-        // A click on the Continue button is already covered by a 'click' handler.
-        if (target.matches('.continue')) return;
+        // Clicks on the continue or download buttons are already covered by a 'click' handler.
+        if (target.matches('.continue') || target.matches('.download-button')) return;
 
         if (event.button === 2) { // secondary button
             this._onDownloadStart(true);
-        }
-    }
-
-    /**
-     * Also gets triggered after touchstart.
-     *
-     * @param {MouseEvent} event
-     */
-    _onMouseUp(event) {
-        /** @type {HTMLElement} */
-        const target = (event.target);
-        // A click on the Continue button is already covered by a 'click' handler.
-        if (target.matches('.continue')) return;
-
-        if (event.button === 0) { // primary button
-            if (!this._supportsNativeDownload()) return;
-            this._onDownloadStart();
         }
     }
 

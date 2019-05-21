@@ -90,6 +90,11 @@ ul.nq-list li > .nq-icon {
     color: var(--nimiq-orange);
 }
 
+.page#recovery-words-intro .nq-button {
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .page#login-file-unlock .nq-card-body,
 .page#recovery-words-unlock .nq-card-body {
     display: flex;
@@ -120,6 +125,10 @@ ul.nq-list li > .nq-icon {
 
 .page#login-file-intro li > .nq-icon {
     opacity: 0.3;
+}
+
+.page#login-file-intro .nq-notice.warning {
+    font-size: 2.75rem;
 }
 
 .page#login-file-set-password:not(.repeat-password) .nq-h1.repeat,
@@ -195,7 +204,8 @@ ul.nq-list li > .nq-icon {
 .page#recovery-words .page-header .progress-indicator,
 .page#recovery-words .page-header .page-header-back-button,
 .page#login-file-download .page-header,
-.page#login-file-download button {
+.page#login-file-download button,
+.page#login-file-download .download-button {
     opacity: 0;
 }
 
@@ -204,7 +214,8 @@ ul.nq-list li > .nq-icon {
 .page#recovery-words:target .page-header .progress-indicator,
 .page#recovery-words:target .page-header .page-header-back-button,
 .page#login-file-download:target .page-header,
-.page#login-file-download:target button {
+.page#login-file-download:target button,
+.page#login-file-download:target .download-button {
     opacity: 1;
 }
 
