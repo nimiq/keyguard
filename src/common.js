@@ -35,7 +35,7 @@ async function loadNimiq() {
     // eslint-disable-next-line no-return-assign
     return __nimiqLoaded || (__nimiqLoaded = new Promise(async resolve => {
         // Load web assembly encryption library into browser (if supported)
-        await Nimiq.WasmHelper.doImport();
+        await Nimiq.WasmHelper.doImport(BrowserDetection.isIOS());
 
         switch (CONFIG.NETWORK) {
             case Constants.NETWORK.DEV:
