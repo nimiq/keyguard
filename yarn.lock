@@ -108,10 +108,9 @@
     lodash "^4.17.5"
     to-fast-properties "^2.0.0"
 
-"@nimiq/core-web@1.4.3":
+"@nimiq/core-web@nimiq/core-js#keyguard-conditional-wasm":
   version "1.4.3"
-  resolved "https://registry.yarnpkg.com/@nimiq/core-web/-/core-web-1.4.3.tgz#190d7390324623672fafbbc93841bcf215d2af01"
-  integrity sha512-47JMAx8bFcr2uev+QgX4saBUvRQo/8akQdpvf0z1F5N3I8FPyIfEWRjPW2Xu28C+MOdIZ/VkHL/YmMiGBBtEMA==
+  resolved "https://codeload.github.com/nimiq/core-js/tar.gz/83dda84f95ff9bfb79a7fbb3cdb0a2724fb03895"
 
 "@nimiq/rpc@^0.3.0":
   version "0.3.0"
