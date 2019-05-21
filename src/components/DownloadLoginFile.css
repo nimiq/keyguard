@@ -4,6 +4,7 @@
     text-decoration: none;
     outline: none;
     flex-grow: 1;
+    text-align: center;
 }
 
 .download-loginfile .loginfile {
