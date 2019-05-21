@@ -84,7 +84,7 @@ class TopLevelApi extends RequestParser {
             /*
              * There is a case using recovery words when the kind of secret, entropy or privateKey is ambiguous.
              * In that scenario both keys will be encrypted and stored.
-             * After returning the AccountsManager will do an activity lookup for addresses to both of these keys.
+             * After returning, the Hub will do an activity lookup for addresses to both of these keys.
              * In case one did not see any activity at all, it will be discarded and removed by this code.
              * The cookie is set in `IFrameAPI.releaseKey()` which requires the session to still be active.
              */
