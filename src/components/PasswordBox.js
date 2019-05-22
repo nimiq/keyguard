@@ -3,6 +3,7 @@
 /* global I18n */
 /* global PasswordInput */
 /* global TemplateTags */
+/* global Key */
 
 class PasswordBox extends Nimiq.Observable {
     // eslint-disable-next-line valid-jsdoc
@@ -39,7 +40,7 @@ class PasswordBox extends Nimiq.Observable {
 
     /**
      * @param {HTMLFormElement} [$el]
-     * @param {{bgColor: string, hideInput: boolean, buttonI18nTag: string}} options
+     * @param {{bgColor: string, hideInput: boolean, buttonI18nTag: string, minLength: number}} options
      * @returns {HTMLFormElement}
      */
     static _createElement($el, options) {
@@ -61,13 +62,19 @@ class PasswordBox extends Nimiq.Observable {
             'passwordbox-show-words': '<button class="submit" data-i18n="passwordbox-show-words">Show recovery words</button>',
             'passwordbox-sign-msg': '<button class="submit" data-i18n="passwordbox-sign-msg">Sign message</button>',
         };
+
+        /** @type {{[i18nTag: string]: string}} */
+        const promptVersions = {
+            'passwordbox-enter-password': '<div class="prompt nq-text-s" data-i18n="passwordbox-enter-password">Enter your password</div>',
+            'passwordbox-enter-pin': '<div class="prompt nq-text-s" data-i18n="passwordbox-enter-pin">Enter your PIN</div>',
+        };
         /* eslint-enable max-len */
 
         if (!buttonVersions[options.buttonI18nTag]) throw new Error('PasswordBox button i18n tag not defined');
 
         /* eslint-disable max-len */
-        $el.innerHTML = TemplateTags.hasVars(1)`
-            <div class="prompt nq-text-s" data-i18n="passwordbox-enter-password">Enter your password</div>
+        $el.innerHTML = TemplateTags.hasVars(2)`
+            ${promptVersions[options.minLength === Key.PIN_LENGTH ? 'passwordbox-enter-pin' : 'passwordbox-enter-password']}
             <div password-input></div>
             ${buttonVersions[options.buttonI18nTag]}
             <!-- Loading spinner SVG -->

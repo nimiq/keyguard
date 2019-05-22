@@ -48,6 +48,7 @@ const TRANSLATIONS = {
         'sign-msg-heading': 'Sign Message',
 
         'passwordbox-enter-password': 'Enter your password',
+        'passwordbox-enter-pin': 'Enter your PIN',
         'passwordbox-repeat-password': 'Repeat your password',
         'passwordbox-repeat': 'Repeat password',
         'passwordbox-continue': 'Continue',
@@ -200,6 +201,7 @@ const TRANSLATIONS = {
         'sign-msg-heading': 'Nachricht signieren',
 
         'passwordbox-enter-password': 'Gib dein Passwort ein',
+        'passwordbox-enter-pin': 'Gib deine PIN ein',
         'passwordbox-repeat-password': 'Wiederhole dein Passwort',
         'passwordbox-repeat': 'Passwort wiederholen',
         'passwordbox-continue': 'Weiter',
