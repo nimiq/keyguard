@@ -5,31 +5,27 @@
 /* global TemplateTags */
 
 class PasswordBox extends Nimiq.Observable {
-    /* eslint-disable max-len, valid-jsdoc */
+    // eslint-disable-next-line valid-jsdoc
     /**
-     * @param {?HTMLFormElement} $el
-     * @param {{bgColor?: string, hideInput?: boolean, buttonI18nTag?: string, minLength?: number, hideCancel?: boolean}} [options]
+     * @param {HTMLFormElement} [$el]
+     * @param {{bgColor?: string, hideInput?: boolean, buttonI18nTag?: string, minLength?: number}} [options]
      */
-    /* eslint-enable max-len, valid-jsdoc */
     constructor($el, options = {}) {
         const defaults = {
             bgColor: 'light-blue',
             hideInput: false,
             buttonI18nTag: 'passwordbox-confirm-tx',
             minLength: PasswordInput.DEFAULT_MIN_LENGTH,
-            hideCancel: false,
         };
 
         super();
 
-        // eslint-disable-next-line max-len
-        /** @type {{bgColor: string, hideInput: boolean, buttonI18nTag: string, minLength: number, hideCancel: boolean}} */
+        /** @type {{bgColor: string, hideInput: boolean, buttonI18nTag: string, minLength: number}} */
         this.options = Object.assign(defaults, options);
 
         this.$el = PasswordBox._createElement($el, this.options);
 
         this.$el.classList.toggle('hide-input', this.options.hideInput);
-        this.$el.classList.toggle('hide-cancel', this.options.hideCancel);
 
         this._passwordInput = new PasswordInput(this.$el.querySelector('[password-input]'));
         this._passwordInput.on(PasswordInput.Events.VALID, isValid => this._onInputChangeValidity(isValid));
@@ -39,13 +35,10 @@ class PasswordBox extends Nimiq.Observable {
         this._isInputValid = false;
 
         this.$el.addEventListener('submit', event => this._onSubmit(event));
-
-        /** @type {HTMLElement} */
-        (this.$el.querySelector('.cancel')).addEventListener('click', () => this._onCancel());
     }
 
     /**
-     * @param {?HTMLFormElement} [$el]
+     * @param {HTMLFormElement} [$el]
      * @param {{bgColor: string, hideInput: boolean, buttonI18nTag: string}} options
      * @returns {HTMLFormElement}
      */
@@ -74,11 +67,6 @@ class PasswordBox extends Nimiq.Observable {
 
         /* eslint-disable max-len */
         $el.innerHTML = TemplateTags.hasVars(1)`
-            <a class="cancel">
-                <svg class="nq-icon">
-                    <use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-close"/>
-                </svg>
-            </a>
             <div class="prompt nq-text-s" data-i18n="passwordbox-enter-password">Enter your password</div>
             <div password-input></div>
             ${buttonVersions[options.buttonI18nTag]}
@@ -157,10 +145,6 @@ class PasswordBox extends Nimiq.Observable {
         this._passwordInput.reset();
     }
 
-    _onCancel() {
-        this.fire(PasswordBox.Events.CANCEL);
-    }
-
     /**
      * @param {boolean} hidden
      */
@@ -175,5 +159,4 @@ class PasswordBox extends Nimiq.Observable {
 
 PasswordBox.Events = {
     SUBMIT: 'passwordbox-submit',
-    CANCEL: 'passwordbox-cancel',
 };

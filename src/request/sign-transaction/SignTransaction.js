@@ -94,7 +94,6 @@ class SignTransaction {
             hideInput: !request.keyInfo.encrypted,
             buttonI18nTag: 'passwordbox-confirm-tx',
             minLength: request.keyInfo.hasPin ? Key.PIN_LENGTH : undefined,
-            hideCancel: true,
         });
 
         this._passwordBox.on(

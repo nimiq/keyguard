@@ -63,7 +63,6 @@ class ExportFile extends Nimiq.Observable {
                 buttonI18nTag: 'passwordbox-log-in',
                 hideInput: !this._request.keyInfo.encrypted,
                 minLength: this._request.keyInfo.hasPin ? Key.PIN_LENGTH : undefined,
-                hideCancel: true,
             },
         );
         this._passwordSetterBox = new PasswordSetterBox($passwordSetterBox);

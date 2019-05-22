@@ -63,10 +63,7 @@ class ImportFile {
         const $passwordBox = (this.$unlockAccountPage.querySelector('.password-box'));
         this.passwordBox = new PasswordBox(
             $passwordBox,
-            {
-                buttonI18nTag: 'passwordbox-log-in',
-                hideCancel: true,
-            },
+            { buttonI18nTag: 'passwordbox-log-in' },
         );
         fileImport.on(FileImporter.Events.IMPORT, this._onFileImported.bind(this));
         this.passwordBox.on(PasswordBox.Events.SUBMIT, this._onPasswordEntered.bind(this));

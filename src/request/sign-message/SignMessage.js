@@ -51,7 +51,6 @@ class SignMessage {
             hideInput: !request.keyInfo.encrypted,
             buttonI18nTag: 'passwordbox-sign-msg',
             minLength: request.keyInfo.hasPin ? Key.PIN_LENGTH : undefined,
-            hideCancel: true,
         });
 
         this._passwordBox.on(
