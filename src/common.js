@@ -3,7 +3,7 @@
 /* global Errors */
 /* global Constants */
 /* global CONFIG */
-/* global BrowserDetection */
+// /* global BrowserDetection */
 
 /**
  * @callback reject
