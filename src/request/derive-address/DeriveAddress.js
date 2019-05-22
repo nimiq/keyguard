@@ -28,7 +28,6 @@ class DeriveAddress {
         this._passwordBox = new PasswordBox($passwordBox, {
             hideInput: !request.keyInfo.encrypted,
             buttonI18nTag: 'passwordbox-continue',
-            hideCancel: true,
         });
 
         // Wire up logic
