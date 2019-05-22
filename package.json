@@ -1,6 +1,6 @@
 {
   "name": "keyguard-next",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Secure storage for Nimiq private keys.",
   "scripts": {
     "build": "tools/build.sh",
