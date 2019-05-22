@@ -52,29 +52,11 @@ class KeyStore {
                 /** @type {IDBDatabase} */
                 const db = request.result;
 
-                if (event.oldVersion < 1) {
-                    // Version 1 is the first version of the database.
-                    db.createObjectStore(KeyStore.DB_KEY_STORE_NAME, { keyPath: 'id' });
-                }
-
-                if (event.oldVersion < 2) {
-                    // Version 2 changes the key id calculation, thus we drop and recreate the whole database.
-                    // (Version 1 was only in use in testnet)
-                    db.deleteObjectStore(KeyStore.DB_KEY_STORE_NAME);
-                    db.createObjectStore(KeyStore.DB_KEY_STORE_NAME, { keyPath: 'id', autoIncrement: true });
-                }
-
-                if (event.oldVersion < 3) {
-                    // Version 3 changes the key id calculation, thus we drop and recreate the whole database.
-                    // (Version 2 was only in use in testnet)
-                    db.deleteObjectStore(KeyStore.DB_KEY_STORE_NAME);
-                    db.createObjectStore(KeyStore.DB_KEY_STORE_NAME, { keyPath: 'id' });
-                }
-
                 if (event.oldVersion < 4) {
-                    // Change to version 4 just to delete former testnet databases, because we do the same in hub.
-                    // (Version 3 was only in use in testnet)
-                    db.deleteObjectStore(KeyStore.DB_KEY_STORE_NAME);
+                    // Setup the database, deleting old testnet versions (prior to 4) if existing.
+                    try {
+                        db.deleteObjectStore(KeyStore.DB_KEY_STORE_NAME);
+                    } catch (e) {} // eslint-disable-line no-empty
                     db.createObjectStore(KeyStore.DB_KEY_STORE_NAME, { keyPath: 'id' });
                 }
             };
