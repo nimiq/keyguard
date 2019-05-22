@@ -70,6 +70,13 @@ class KeyStore {
                     db.deleteObjectStore(KeyStore.DB_KEY_STORE_NAME);
                     db.createObjectStore(KeyStore.DB_KEY_STORE_NAME, { keyPath: 'id' });
                 }
+
+                if (event.oldVersion < 4) {
+                    // Change to version 4 just to delete former testnet databases, because we do the same in hub.
+                    // (Version 3 was only in use in testnet)
+                    db.deleteObjectStore(KeyStore.DB_KEY_STORE_NAME);
+                    db.createObjectStore(KeyStore.DB_KEY_STORE_NAME, { keyPath: 'id' });
+                }
             };
         });
 
@@ -360,7 +367,7 @@ class KeyStore {
 /** @type {KeyStore?} */
 KeyStore._instance = null;
 
-KeyStore.DB_VERSION = 3;
+KeyStore.DB_VERSION = 4;
 KeyStore.DB_NAME = 'nimiq-keyguard';
 KeyStore.DB_KEY_STORE_NAME = 'keys';
 
