@@ -23,7 +23,7 @@ const TRANSLATIONS = {
         'create-wallet-desc': 'This is your Account with your first Address.',
 
         'import-heading-enter-recovery-words': 'Enter Recovery Words',
-        'import-upload-login-file': 'Upload your Login File',
+        'import-import-login-file': 'Import your Login File',
         'import-login-to-continue': 'Please login again to continue.',
         'import-unlock-account': 'Unlock your Account',
         'import-create-account': 'Create new Account',
@@ -38,7 +38,7 @@ const TRANSLATIONS = {
         'import-words-error': 'This is not a valid account. Typo?',
         'import-words-download-loginfile': 'Save your Login File',
 
-        'file-import-prompt': 'Drag here or click to upload',
+        'file-import-prompt': 'Drag here or click to import',
 
         'sign-tx-heading-tx': 'Confirm Transaction',
         'sign-tx-heading-checkout': 'Verify Payment',
@@ -175,7 +175,7 @@ const TRANSLATIONS = {
         'create-wallet-desc': 'Das ist dein neuer Account mit seiner ersten Addresse.',
 
         'import-heading-enter-recovery-words': 'Wiederherstellungswörter eingeben',
-        'import-upload-login-file': 'Lade dein Login File hoch',
+        'import-import-login-file': 'Lade dein Login File hoch',
         'import-login-to-continue': 'Bitte logge dich neu ein um fortzufahren.',
         'import-unlock-account': 'Entsperre deinen Account',
         'import-create-account': 'Erstelle einen neuen Account',

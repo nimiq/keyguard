@@ -43,7 +43,7 @@ class FileImporter extends Nimiq.Observable {
         $el.classList.add('file-import');
 
         $el.innerHTML = TemplateTags.noVars`
-            <h3 class="nq-h3 nq-light-blue" data-i18n="file-import-prompt">Drag here or click to upload</h3>
+            <h3 class="nq-h3 nq-light-blue" data-i18n="file-import-prompt">Drag here or click to import</h3>
             <span class="error-message"></span>
             <svg class="nq-icon qr-code">
                 <use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-qr-code"/>
