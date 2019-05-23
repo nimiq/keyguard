@@ -63,7 +63,7 @@ class ExportWords extends Nimiq.Observable {
         this._wordsPasswordBox = new PasswordBox($wordsPasswordBox, {
             buttonI18nTag: 'passwordbox-show-words',
             hideInput: !request.keyInfo.encrypted || !!this._key,
-            minLength: request.keyInfo.useLegacyStore ? Key.PIN_LENGTH : undefined,
+            minLength: request.keyInfo.hasPin ? Key.PIN_LENGTH : undefined,
         });
         this._recoveryWords = new RecoveryWords(this.$recoveryWords, false);
         this._validateWords = new ValidateWords($validateWords);
