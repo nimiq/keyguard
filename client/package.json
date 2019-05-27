@@ -22,9 +22,9 @@
   "author": "Nimiq",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/nimiq/keyguard-next/issues"
+    "url": "https://github.com/nimiq/keyguard/issues"
   },
-  "homepage": "https://github.com/nimiq/keyguard-next/client#readme",
+  "homepage": "https://github.com/nimiq/keyguard/client#readme",
   "dependencies": {
     "@nimiq/rpc": "^0.3.0",
     "@nimiq/core-web": "1.4.3"

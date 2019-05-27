@@ -8,7 +8,7 @@
  * - Run `yarn build` in the @nimiq/rpc directory
  * - @nimiq/rpc/dist/rpc.es.js is the wanted module file
  * - The following changes where made to this file afterwards:
- *   https://github.com/nimiq/keyguard-next/commits/master/src/lib/RpcServer.es.js
+ *   https://github.com/nimiq/keyguard/commits/master/src/lib/RpcServer.es.js
  */
 
 /**
