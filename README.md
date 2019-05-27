@@ -1,9 +1,9 @@
-# Nimiq Keyguard(-next)
+# Nimiq Keyguard
 
 This README is about setting up your own instances of Nimiq Keyguard.
 
 For information about using the client please refer to
-[the Keyguard Client README](https://github.com/nimiq/keyguard-next/tree/master/client/README.md).
+[the Keyguard Client README](https://github.com/nimiq/keyguard/tree/master/client/README.md).
 
 ## Development
 
