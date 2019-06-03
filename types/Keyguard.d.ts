@@ -43,7 +43,6 @@ type KeyRecord = {
     defaultAddress: Uint8Array
 }
 
-type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 type Transform<T, K extends keyof T, E> = Omit<T, K> & E;
 
 type KeyId2KeyInfo<T extends { keyId: string }> = Transform<T, 'keyId', { keyInfo: KeyInfo }>

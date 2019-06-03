@@ -7,3 +7,4 @@ instrumented/
 deployment-keyguard
 deployment-keyguard-next
 dist
+.ts-out
