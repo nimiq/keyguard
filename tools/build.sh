@@ -63,6 +63,17 @@ replace_icon_sprite_url() {
     inplace_sed "s/$OLD_PATH/$NEW_PATH/g" $1
 }
 
+# add file hash to file name and return new file name
+add_hash_to_file_name() {
+    filename=$(basename $1)
+    dirname=$(dirname $1)
+    hash=$(${SHA256SUM} "$1" | cut -c -8)
+    newname=${filename/HASH/$hash}
+
+    mv $1 $dirname/$newname
+    echo $newname
+}
+
 # replace font url in file $1
 replace_font_url() {
     OLD_PATH="(\.\.\/)*assets\/fonts"
@@ -111,17 +122,13 @@ mkdir -p dist/request
 mkdir -p dist/assets/nimiq
 mkdir -p dist/lib
 
-# current git commit hash to create unique filenames to
-# overwrite browser cache (inspired by Vue's build output)
-HASH=$(git rev-parse --short=8 HEAD)
-
 # bundle names
-JS_BUNDLE="index.$HASH.js"
-CSS_BUNDLE="index.$HASH.css"
+JS_BUNDLE="index.HASH.js"
+CSS_BUNDLE="index.HASH.css"
 
-JS_COMMON_BUNDLE="common.$HASH.js"
-JS_TOPLEVEL_BUNDLE="toplevel.$HASH.js"
-CSS_TOPLEVEL_BUNDLE="toplevel.$HASH.css"
+JS_COMMON_BUNDLE="common.HASH.js"
+JS_TOPLEVEL_BUNDLE="toplevel.HASH.js"
+CSS_TOPLEVEL_BUNDLE="toplevel.HASH.css"
 
 # bundle files for each request
 output "🛠️   Building request bundles"
@@ -194,7 +201,11 @@ JS_COMMON_BUNDLE_HASH=$(make_file_hash dist/request/$JS_COMMON_BUNDLE)
 JS_TOPLEVEL_BUNDLE_HASH=$(make_file_hash dist/request/$JS_TOPLEVEL_BUNDLE)
 CSS_TOPLEVEL_BUNDLE_HASH=$(make_file_hash dist/request/$CSS_TOPLEVEL_BUNDLE)
 
-CORE_LIB_PATH="/assets/nimiq"
+# add file hash to bundle file names and overwrite bundle variables with the new file names
+JS_COMMON_BUNDLE=$(add_hash_to_file_name dist/request/$JS_COMMON_BUNDLE)
+JS_TOPLEVEL_BUNDLE=$(add_hash_to_file_name dist/request/$JS_TOPLEVEL_BUNDLE)
+CSS_TOPLEVEL_BUNDLE=$(add_hash_to_file_name dist/request/$CSS_TOPLEVEL_BUNDLE)
+
 CORE_LIB_HASH=$(make_file_hash node_modules/@nimiq/core-web/web-offline.js)
 
 # process index.html scripts and links for each request
@@ -203,8 +214,11 @@ for DIR in src/request/*/ ; do
     REQUEST=$(basename $DIR)
 
     JS_BUNDLE_HASH=$(make_file_hash dist/request/$REQUEST/$JS_BUNDLE)
+    JS_BUNDLE_NAME=$(add_hash_to_file_name dist/request/$REQUEST/$JS_BUNDLE)
+
     if [ "$REQUEST" != "iframe" ]; then
         CSS_BUNDLE_HASH=$(make_file_hash dist/request/$REQUEST/$CSS_BUNDLE)
+        CSS_BUNDLE_NAME=$(add_hash_to_file_name dist/request/$REQUEST/$CSS_BUNDLE)
     fi
 
     # replace scripts and links by bundles in built index.html
@@ -215,7 +229,7 @@ for DIR in src/request/*/ ; do
         }
         /<script.*web-offline\.js/ {
             split($0, space, "<") # Preserve intendation.
-            print space[1] "<script defer src=\"'${CORE_LIB_PATH}'/web-offline.js\" integrity=\"sha256-'${CORE_LIB_HASH}'\"></script>"
+            print space[1] "<script defer src=\"/assets/nimiq/web-offline.js\" integrity=\"sha256-'${CORE_LIB_HASH}'\"></script>"
             next
         }
         /<script/ {
@@ -227,7 +241,7 @@ for DIR in src/request/*/ ; do
                 if("'$REQUEST'" != "iframe") {
                     print space[1] "<script defer src=\"/request/'${JS_TOPLEVEL_BUNDLE}'\" integrity=\"sha256-'${JS_TOPLEVEL_BUNDLE_HASH}'\"></script>"
                 }
-                print space[1] "<script defer src=\"/request/'${REQUEST}'/'${JS_BUNDLE}'\" integrity=\"sha256-'${JS_BUNDLE_HASH}'\"></script>"
+                print space[1] "<script defer src=\"/request/'${REQUEST}'/'${JS_BUNDLE_NAME}'\" integrity=\"sha256-'${JS_BUNDLE_HASH}'\"></script>"
             }
             next
         }
@@ -244,7 +258,7 @@ for DIR in src/request/*/ ; do
                 skip_link = 1
                 split($0, space, "<") # Preserve intendation.
                 print space[1] "<link rel=\"stylesheet\" href=\"/request/'${CSS_TOPLEVEL_BUNDLE}'\" integrity=\"sha256-'${CSS_TOPLEVEL_BUNDLE_HASH}'\">"
-                print space[1] "<link rel=\"stylesheet\" href=\"/request/'${REQUEST}'/'${CSS_BUNDLE}'\" integrity=\"sha256-'${CSS_BUNDLE_HASH}'\">"
+                print space[1] "<link rel=\"stylesheet\" href=\"/request/'${REQUEST}'/'${CSS_BUNDLE_NAME}'\" integrity=\"sha256-'${CSS_BUNDLE_HASH}'\">"
             }
             next
         }
