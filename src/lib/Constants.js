@@ -1,5 +1,5 @@
 const Constants = { // eslint-disable-line no-unused-vars
-    MIN_WIDTH_FOR_AUTOFOCUS: 600,
+    MIN_WIDTH_FOR_AUTOFOCUS: 600, // px
     NETWORK: {
         DEV: 'dev',
         TEST: 'test',
