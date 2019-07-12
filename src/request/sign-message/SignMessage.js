@@ -35,7 +35,7 @@ class SignMessage {
         /** @type {HTMLInputElement} */
         const $tabSize = ($page.querySelector("#tabselect"));
 
-		// Loads last used size from localStorage.
+        // Loads last used size from localStorage.
         let loadedSize = localStorage.getItem("tab-size");
         if (!loadedSize) loadedSize = "8";
 
@@ -48,13 +48,13 @@ class SignMessage {
             localStorage.setItem("tab-size", $tabSize.value);
         }
 
-
         // Set message
         if (typeof request.message === 'string') {
             $message.value = request.message;
 
             if (!request.message.includes("\t")) {
-                $tabSize.parentElement.style.display = "none";
+                const parent = $tabSize.parentElement;
+                if (parent) parent.style.display = "none";
             }
         } else {
             $message.value = Nimiq.BufferUtils.toHex(request.message);
