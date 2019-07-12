@@ -32,9 +32,27 @@ class SignMessage {
         /** @type {HTMLInputElement} */
         const $message = ($page.querySelector('#message'));
 
+		// Loads last used size from localStorage.
+        let loadedSize = localStorage.getItem("tab-size");
+        if (!loadedSize) loadedSize = "8";
+
+        // Sets #tabselect's value and #message's tabSize style property.
+        $tabSize.value = loadedSize;
+        $message.style.tabSize = $tabSize.value;
+        $tabSize.oninput = (e) => {
+            // When #tabselect's value changes, update the value of #message's tabSize and update localStorage.
+            $message.style.tabSize = $tabSize.value;
+            localStorage.setItem("tab-size", $tabSize.value);
+        }
+
+
         // Set message
         if (typeof request.message === 'string') {
             $message.value = request.message;
+
+            if (!request.message.includes("\t")) {
+                $tabSize.parentElement.style.display = "none";
+            }
         } else {
             $message.value = Nimiq.BufferUtils.toHex(request.message);
         }

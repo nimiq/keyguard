@@ -114,7 +114,24 @@
     outline: none;
     width: 100%;
     padding: 1.5rem;
-    flex-grow: 1;
+    flex-grow: 4;
     resize: none;
     font-family: 'Fira Mono', monospace;
+}
+
+#tabdiv {
+    display: flex;
+    flex-direction: row:
+    flex-grow: 1
+}
+
+#tabtext {
+    margin-left: 1rem;
+    flex-grow: 2;
+}
+
+#tabselect {
+    flex-grow: 1;
+    margin-top: 1rem;
+    margin-bottom : 1rem;
 }
