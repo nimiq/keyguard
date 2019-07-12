@@ -32,6 +32,9 @@ class SignMessage {
         /** @type {HTMLInputElement} */
         const $message = ($page.querySelector('#message'));
 
+        /** @type {HTMLInputElement} */
+        const $tabSize = ($page.querySelector("#tabselect"));
+
 		// Loads last used size from localStorage.
         let loadedSize = localStorage.getItem("tab-size");
         if (!loadedSize) loadedSize = "8";
