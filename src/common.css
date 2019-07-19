@@ -81,10 +81,10 @@
 }
 
 /*
- * Reduced Fira Mono font only including 0123456789ABCDEFGHJKLMNPQRSTUVXY for nimiq addresses.
- * Style copied from https://fonts.googleapis.com/css?family=Fira+Mono&text=0123456789ABCDEFGHJKLMNPQRSTUVXY
+ * Reduced Fira Mono font only including 0123456789ABCDEFGHJKLMNPQRSTUVXY and space for nimiq addresses.
+ * Style copied from https://fonts.googleapis.com/css?family=Fira+Mono&text=0123456789ABCDEFGHJKLMNPQRSTUVXY%20
  * but with urls pointing to packaged files.
- * The files have been copied at version v7 from fonts.gstatic.com. As derivative work of
+ * The files have been copied at version v8 from fonts.gstatic.com. As derivative work of
  * the Fira source files (see https://github.com/googlefonts/Fira and
  * https://github.com/google/fonts/tree/master/ofl/firamono) they are licensed under OFL.
  */
