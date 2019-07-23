@@ -4,9 +4,12 @@
     flex-direction: column;
     align-items: center;
     text-decoration: none;
-    cursor: pointer;
     color: var(--nimiq-dark-blue);
     outline: none;
+}
+
+.address-info:not(.detailed-view):not(.cashlink) {
+    cursor: pointer;
 }
 
 .address-info .identicon {
@@ -34,12 +37,22 @@
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain;
-    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="none" width="146" height="146"><path d="M113.829 16.20974L142.47 65.7903c2.578 4.461 2.578 9.9584 0 14.4194L113.829 129.79c-2.57 4.461-7.335 7.21-12.488 7.21H44.0555c-5.1529 0-9.918-2.749-12.4877-7.21L2.92725 80.2097c-2.56966698-4.461-2.56966698-9.9584 0-14.4194L31.5723 16.20974C34.151 11.74872 38.9116 9 44.06 9h57.281c5.153 0 9.918 2.74872 12.488 7.20974z" clip-rule="evenodd" stroke="%231f2348" stroke-width="2" opacity=".2"/></svg>');
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="none" width="146" height="146"><path d="M113.8 16.2l28.7 49.6c2.5 4.5 2.5 10 0 14.4l-28.7 49.6a14.4 14.4 0 0 1-12.5 7.2H44.1c-5.2 0-10-2.7-12.5-7.2L2.9 80.2C.4 75.7.4 70.2 3 65.8l28.7-49.6C34.2 11.7 38.9 9 44 9h57.2c5.2 0 10 2.7 12.5 7.2z" clip-rule="evenodd" stroke="%231f2348" stroke-width="2" opacity="0.2"/></svg>');
     z-index: 1;
 }
 
-.address-info:not(.detailed-view):focus .identicon,
-.address-info:not(.detailed-view):hover .identicon {
+.address-info.cashlink .identicon {
+    border-radius: 50%;
+    border: .25rem solid rgba(31, 35, 72, .1);
+    padding: .25rem;
+}
+
+.address-info.cashlink .identicon > img {
+    border-radius: 50%;
+}
+
+.address-info:not(.detailed-view):not(.cashlink):focus .identicon,
+.address-info:not(.detailed-view):not(.cashlink):hover .identicon {
     transform: scale(1.1);
 }
 
@@ -54,6 +67,10 @@
 
 .address-info .label.mono {
     font-family: "Fira Mono", "Andale Mono", monospace;
+}
+
+.address-info.cashlink .label {
+    opacity: .5;
 }
 
 .address-info:not(.detailed-view) .label::after {

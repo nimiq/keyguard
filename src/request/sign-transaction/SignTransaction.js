@@ -2,6 +2,7 @@
 /* global Key */
 /* global KeyStore */
 /* global PasswordBox */
+/* global SignTransactionApi */
 /* global Errors */
 /* global Utf8Tools */
 /* global TopLevelApi */
@@ -53,12 +54,13 @@ class SignTransaction {
                 : request.recipientLabel || null,
             imageUrl: request.shopLogoUrl || null,
             accountLabel: null,
-        });
+        }, request.layout === SignTransactionApi.Layouts.CASHLINK);
         this._recipientAddressInfo.renderTo($recipient);
-        $recipient.addEventListener('click', () => {
-            this._openDetails(this._recipientAddressInfo);
-        });
-
+        if (request.layout !== SignTransactionApi.Layouts.CASHLINK) {
+            $recipient.addEventListener('click', () => {
+                this._openDetails(this._recipientAddressInfo);
+            });
+        }
         /** @type {HTMLButtonElement} */
         const $closeDetails = (this.$accountDetails.querySelector('#close-details'));
         $closeDetails.addEventListener('click', this._closeDetails.bind(this));

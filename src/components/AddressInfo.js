@@ -4,11 +4,13 @@
 class AddressInfo {
     /**
      * @param {{ userFriendlyAddress: string, label: string?, imageUrl: URL?, accountLabel: string?}} addressInfo
+     * @param {boolean} [displayAsCashlink = false]
      */
-    constructor(addressInfo) {
+    constructor(addressInfo, displayAsCashlink = false) {
         if (addressInfo.imageUrl && !document.getElementById('nimiq-rounded-hexagon')) {
             document.body.insertAdjacentHTML('beforeend', AddressInfo.HEXAGON_CLIP_PATH);
         }
+        this._displayAsCashlink = displayAsCashlink;
         this._addressInfo = addressInfo;
     }
 
@@ -22,6 +24,7 @@ class AddressInfo {
         $el.textContent = '';
         $el.classList.add('address-info');
         $el.classList.toggle('detailed-view', isDetailedView);
+        $el.classList.toggle('cashlink', this._displayAsCashlink);
 
         // identicon
         const $identicon = document.createElement('div');
@@ -37,6 +40,11 @@ class AddressInfo {
                 // eslint-disable-next-line no-new
                 new Identicon(this._addressInfo.userFriendlyAddress, $identicon);
             });
+        } else if (this._displayAsCashlink) {
+            const $cashlinkIcon = document.createElement('img');
+            $cashlinkIcon.src = '../../assets/cashlink-symbol-64x64.svg';
+            $cashlinkIcon.classList.add('nq-blue-bg');
+            $identicon.appendChild($cashlinkIcon);
         } else {
             // eslint-disable-next-line no-new
             new Identicon(this._addressInfo.userFriendlyAddress, $identicon);
