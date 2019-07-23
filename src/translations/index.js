@@ -42,6 +42,7 @@ const TRANSLATIONS = {
 
         'sign-tx-heading-tx': 'Confirm Transaction',
         'sign-tx-heading-checkout': 'Verify Payment',
+        'sign-tx-heading-cashlink': 'Create a Cashlink',
         'sign-tx-fee': 'fee',
         'sign-tx-cancel-payment': 'Cancel payment',
 
@@ -195,6 +196,7 @@ const TRANSLATIONS = {
 
         'sign-tx-heading-tx': 'Überweisung bestätigen',
         'sign-tx-heading-checkout': 'Zahlung bestätigen',
+        'sign-tx-heading-cashlink': 'Cashlink erzeugen',
         'sign-tx-fee': 'Gebühr',
         'sign-tx-cancel-payment': 'Zahlung abbrechen',
 

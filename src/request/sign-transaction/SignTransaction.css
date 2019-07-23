@@ -4,7 +4,8 @@
 }
 
 #confirm-transaction.standard .hide-standard,
-#confirm-transaction.checkout .hide-checkout {
+#confirm-transaction.checkout .hide-checkout,
+#confirm-transaction.cashlink .hide-cashlink {
     display: none;
 }
 
