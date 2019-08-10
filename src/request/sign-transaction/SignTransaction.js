@@ -94,7 +94,9 @@ class SignTransaction {
         const $passwordBox = (document.querySelector('#password-box'));
         this._passwordBox = new PasswordBox($passwordBox, {
             hideInput: !request.keyInfo.encrypted,
-            buttonI18nTag: 'passwordbox-confirm-tx',
+            buttonI18nTag: request.layout === SignTransactionApi.Layouts.CASHLINK
+                ? 'passwordbox-create-cashlink'
+                : 'passwordbox-confirm-tx',
             minLength: request.keyInfo.hasPin ? Key.PIN_LENGTH : undefined,
         });
 
