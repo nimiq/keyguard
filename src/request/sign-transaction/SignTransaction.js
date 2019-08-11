@@ -81,8 +81,15 @@ class SignTransaction {
             $feeSection.classList.remove('display-none');
         }
 
-        // Set transaction extra data.
-        if ($data && transaction.data.byteLength > 0) {
+        if (request.layout === SignTransactionApi.Layouts.CASHLINK) {
+            if (request.cashlinkMessage) {
+                $data.textContent = request.cashlinkMessage;
+                /** @type {HTMLDivElement} */
+                const $dataSection = (this.$el.querySelector('.data-section'));
+                $dataSection.classList.remove('display-none');
+            }
+        } else if ($data && transaction.data.byteLength > 0) {
+            // Set transaction extra data.
             $data.textContent = this._formatData(transaction);
             /** @type {HTMLDivElement} */
             const $dataSection = (this.$el.querySelector('.data-section'));

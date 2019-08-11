@@ -29,6 +29,9 @@ class SignTransactionApi extends TopLevelApi {
             if (parsedRequest.shopLogoUrl && parsedRequest.shopLogoUrl.origin !== parsedRequest.shopOrigin) {
                 throw new Errors.InvalidRequestError('origin of shopLogoUrl must be same as referrer');
             }
+        } else if (parsedRequest.layout === SignTransactionApi.Layouts.CASHLINK && request.cashlinkMessage) {
+            parsedRequest.cashlinkMessage = /** @type {string} */(this.parseMessage(request.cashlinkMessage));
+            parsedRequest.shopOrigin = undefined;
         } else {
             parsedRequest.shopOrigin = undefined;
         }
