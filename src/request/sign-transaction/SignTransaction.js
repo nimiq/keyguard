@@ -81,13 +81,13 @@ class SignTransaction {
             $feeSection.classList.remove('display-none');
         }
 
-        if (request.layout === SignTransactionApi.Layouts.CASHLINK) {
-            if (request.cashlinkMessage) {
-                $data.textContent = request.cashlinkMessage;
-                /** @type {HTMLDivElement} */
-                const $dataSection = (this.$el.querySelector('.data-section'));
-                $dataSection.classList.remove('display-none');
-            }
+        if (request.layout === SignTransactionApi.Layouts.CASHLINK
+         && Nimiq.BufferUtils.equals(transaction.data, Constants.CASHLINK_FUNDING_DATA)
+         && request.cashlinkMessage) {
+            $data.textContent = request.cashlinkMessage;
+            /** @type {HTMLDivElement} */
+            const $dataSection = (this.$el.querySelector('.data-section'));
+            $dataSection.classList.remove('display-none');
         } else if ($data && transaction.data.byteLength > 0) {
             // Set transaction extra data.
             $data.textContent = this._formatData(transaction);
