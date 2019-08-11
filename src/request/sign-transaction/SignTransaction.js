@@ -81,7 +81,8 @@ class SignTransaction {
             $feeSection.classList.remove('display-none');
         }
 
-        if (request.layout === SignTransactionApi.Layouts.CASHLINK) {
+        if (request.layout === SignTransactionApi.Layouts.CASHLINK
+         && Nimiq.BufferUtils.equals(transaction.data, Constants.CASHLINK_FUNDING_DATA)) {
             if (request.cashlinkMessage) {
                 $data.textContent = request.cashlinkMessage;
                 /** @type {HTMLDivElement} */
