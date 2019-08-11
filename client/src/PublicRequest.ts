@@ -100,6 +100,7 @@ export type SignTransactionRequest = SimpleRequest & TransactionInfo & {
     senderLabel?: string,
     shopOrigin?: string,
     shopLogoUrl?: string,
+    cashlinkMessage?: string,
 };
 
 export type SignMessageRequest = SimpleRequest & {
