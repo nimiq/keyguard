@@ -65,12 +65,12 @@ class AddressInfo {
 
         if (isDetailedView) {
             // accountLabel
-            if (this._addressInfo.accountLabel) {
-                const $accountLabel = document.createElement('div');
-                $accountLabel.classList.add('account-label', 'nq-label');
-                $accountLabel.textContent = this._addressInfo.accountLabel;
-                $el.appendChild($accountLabel);
-            }
+            // if (this._addressInfo.accountLabel) {
+            //     const $accountLabel = document.createElement('div');
+            //     $accountLabel.classList.add('account-label', 'nq-label');
+            //     $accountLabel.textContent = this._addressInfo.accountLabel;
+            //     $el.appendChild($accountLabel);
+            // }
 
             // address
             const $address = document.createElement('div');
