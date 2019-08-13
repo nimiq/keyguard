@@ -100,15 +100,11 @@
     border: 0rem;
     padding: 0;
     height: 3rem;
-}
-
-#confirm-transaction #account-details #close-details {
-    cursor: pointer;
+    font-size: 3rem;
+    background: none !important;
 }
 
 #confirm-transaction #account-details #close-details .nq-icon {
-    height: 3rem;
-    width: 3rem;
     opacity: .2;
     transition: opacity .3s cubic-bezier(0.25, 0, 0, 1);
 }
