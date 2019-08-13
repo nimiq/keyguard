@@ -182,7 +182,7 @@ class SignTransaction {
      * @param {number} [minDecimals]
      * @returns {string}
      */
-    _formatNumber(value, maxDecimals = 5, minDecimals = 2) {
+    _formatNumber(value, maxDecimals = 5, minDecimals = 0) {
         const roundingFactor = 10 ** maxDecimals;
         value = Math.floor(value * roundingFactor) / roundingFactor;
 
