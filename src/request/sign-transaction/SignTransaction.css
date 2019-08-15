@@ -96,9 +96,10 @@
     position: absolute;
     right: 2rem;
     top: 2rem;
-    border: 0rem;
+    border: 0;
     padding: 0;
     height: 3rem;
+    background-color: unset;
 }
 
 #confirm-transaction #account-details #close-details {
@@ -109,7 +110,7 @@
     height: 3rem;
     width: 3rem;
     opacity: .2;
-    transition: opacity .3s cubic-bezier(0.25, 0, 0, 1);
+    transition: opacity .3s var(--nimiq-ease);
 }
 
 #confirm-transaction #account-details #close-details:hover .nq-icon,
