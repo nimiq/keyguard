@@ -151,4 +151,6 @@
 #confirm-transaction .data-section {
     margin: 1rem 3rem;
     text-align: center;
+    max-width: 100%;
+    overflow-wrap: break-word;
 }
