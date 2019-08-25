@@ -1,15 +1,11 @@
 /* global Identicon */
-/* global TemplateTags */
 
-class AddressInfo {
+class AddressInfo { // eslint-disable-line no-unused-vars
     /**
      * @param {{ userFriendlyAddress: string, label: string?, imageUrl: URL?, accountLabel: string?}} addressInfo
      * @param {boolean} [displayAsCashlink = false]
      */
     constructor(addressInfo, displayAsCashlink = false) {
-        if (addressInfo.imageUrl && !document.getElementById('nimiq-rounded-hexagon')) {
-            document.body.insertAdjacentHTML('beforeend', AddressInfo.HEXAGON_CLIP_PATH);
-        }
         this._displayAsCashlink = displayAsCashlink;
         this._addressInfo = addressInfo;
     }
@@ -32,11 +28,9 @@ class AddressInfo {
         if (this._addressInfo.imageUrl) { // URl is given, use image
             const $shopLogo = document.createElement('img');
             $shopLogo.src = this._addressInfo.imageUrl.href;
-            $identicon.classList.add('clip');
             $identicon.appendChild($shopLogo);
             $shopLogo.addEventListener('error', () => {
                 $shopLogo.remove();
-                $identicon.classList.remove('clip');
                 // eslint-disable-next-line no-new
                 new Identicon(this._addressInfo.userFriendlyAddress, $identicon);
             });
@@ -93,15 +87,3 @@ class AddressInfo {
         }
     }
 }
-
-/* eslint-disable max-len */
-AddressInfo.HEXAGON_CLIP_PATH = TemplateTags.noVars`
-    <svg width="0" height="0" viewBox="0 0 146 146">
-        <defs>
-            <clipPath id="nimiq-rounded-hexagon" clipPathUnits="objectBoundingBox">
-                <path d="M.302.055A.106.106 0 0 0 .21.108l-.196.34a.106.106 0 0 0 0 .105l.196.34a.106.106 0 0 0 .092.052h.392c.038 0 .073-.02.092-.053l.196-.34a.106.106 0 0 0 0-.105L.786.107A.106.106 0 0 0 .694.056z">
-                </path>
-            </clipPath>
-        </defs>
-    </svg>`;
-/* eslint-enable max-len */
