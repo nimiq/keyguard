@@ -15,30 +15,8 @@
 .address-info .identicon {
     width: 10rem;
     height: 10rem;
+    border-radius: 1rem;
     transition: transform 0.45s cubic-bezier(0.25, 0, 0, 1);
-}
-
-.address-info .identicon.clip {
-    position: relative;
-}
-
-.address-info .identicon.clip > img {
-    clip-path: url(#nimiq-rounded-hexagon);
-}
-
-.address-info .identicon.clip::after {
-    content: '';
-    display: block;
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: contain;
-    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="none" width="146" height="146"><path d="M113.8 16.2l28.7 49.6c2.5 4.5 2.5 10 0 14.4l-28.7 49.6a14.4 14.4 0 0 1-12.5 7.2H44.1c-5.2 0-10-2.7-12.5-7.2L2.9 80.2C.4 75.7.4 70.2 3 65.8l28.7-49.6C34.2 11.7 38.9 9 44 9h57.2c5.2 0 10 2.7 12.5 7.2z" clip-rule="evenodd" stroke="%231f2348" stroke-width="2" opacity="0.2"/></svg>');
-    z-index: 1;
 }
 
 .address-info.cashlink .identicon {
