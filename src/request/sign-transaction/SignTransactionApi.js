@@ -29,6 +29,22 @@ class SignTransactionApi extends TopLevelApi {
             if (parsedRequest.shopLogoUrl && parsedRequest.shopLogoUrl.origin !== parsedRequest.shopOrigin) {
                 throw new Errors.InvalidRequestError('origin of shopLogoUrl must be same as referrer');
             }
+
+            parsedRequest.fiatAmount = this.parseNonNegativeFiniteNumber(request.fiatAmount);
+            parsedRequest.fiatCurrency = this.parseCurrencyInfo(request.fiatCurrency);
+            if ((parsedRequest.fiatAmount === undefined) !== (parsedRequest.fiatCurrency === undefined)) {
+                throw new Errors.InvalidRequestError('fiatAmount and fiatCurrency must be both defined or undefined.');
+            }
+
+            parsedRequest.time = this.parseNonNegativeFiniteNumber(request.time);
+            parsedRequest.expires = this.parseNonNegativeFiniteNumber(request.expires);
+            if (parsedRequest.expires !== undefined) {
+                if (parsedRequest.time === undefined) {
+                    throw new Errors.InvalidRequestError('If `expires` is defined `time` must be defined too.');
+                } else if (parsedRequest.time >= parsedRequest.expires) {
+                    throw new Errors.InvalidRequestError('`expires` must be greater than `time`');
+                }
+            }
         } else {
             parsedRequest.shopOrigin = undefined;
         }
@@ -39,7 +55,7 @@ class SignTransactionApi extends TopLevelApi {
     /**
      * Checks that the given layout is valid
      * @param {any} layout
-     * @returns {any}
+     * @returns {KeyguardRequest.SignTransactionRequestLayout}
      */
     parseLayout(layout) {
         if (!layout) {
@@ -50,6 +66,42 @@ class SignTransactionApi extends TopLevelApi {
             throw new Errors.InvalidRequestError('Invalid selected layout');
         }
         return layout;
+    }
+
+    /**
+     * Parses that a currency info is valid.
+     * @param {any} currencyInfo
+     * @returns {KeyguardRequest.CurrencyInfo | undefined}
+     */
+    parseCurrencyInfo(currencyInfo) {
+        if (currencyInfo === undefined) {
+            return undefined;
+        }
+
+        // parse currency code
+        if (typeof currencyInfo.code !== 'string'
+            || !/^[a-z]{3}$/i.test(currencyInfo.code)) {
+            throw new Errors.InvalidRequestError(`Invalid currency code ${currencyInfo.code}`);
+        }
+        /** @type {{[key: string]: string | undefined}} */
+        const currencySymbolMap = {
+            EUR: '€',
+            USD: '$',
+            JPY: '¥',
+        };
+        let code = currencyInfo.code.toUpperCase();
+        code = currencySymbolMap[code] || code;
+
+        // parse digits
+        if (typeof currencyInfo.digits !== 'number'
+            || !Number.isInteger(currencyInfo.digits)
+            || currencyInfo.digits < 0
+            || currencyInfo.digits > 4) {
+            throw new Errors.InvalidRequestError(`Invalid currency digits ${currencyInfo.digits}`);
+        }
+        const digits = currencyInfo.digits;
+
+        return { code, digits };
     }
 
     get Handler() {
@@ -66,9 +118,9 @@ class SignTransactionApi extends TopLevelApi {
     }
 }
 
-/** @type {{[layout: string]: string}} */
+/** @enum {KeyguardRequest.SignTransactionRequestLayout} */
 SignTransactionApi.Layouts = {
-    STANDARD: 'standard',
-    CHECKOUT: 'checkout',
-    CASHLINK: 'cashlink',
+    STANDARD: /** @type {'standard'} */ ('standard'),
+    CHECKOUT: /** @type {'checkout'} */ ('checkout'),
+    CASHLINK: /** @type {'cashlink'} */ ('cashlink'),
 };

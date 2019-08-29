@@ -93,13 +93,23 @@ export type ExportResult = {
     wordsExported: boolean,
 };
 
+export type CurrencyInfo = {
+    code: string,
+    digits: number,
+};
+
 export type SignTransactionRequest = SimpleRequest & TransactionInfo & {
     keyPath: string,
     layout?: SignTransactionRequestLayout,
     recipientLabel?: string,
     senderLabel?: string,
+    // TODO these should only get added for 'checkout' layout
     shopOrigin?: string,
     shopLogoUrl?: string,
+    time?: number,
+    expires?: number,
+    fiatCurrency?: CurrencyInfo,
+    fiatAmount?: number,
 };
 
 export type SignMessageRequest = SimpleRequest & {
