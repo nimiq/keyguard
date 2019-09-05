@@ -43,8 +43,10 @@
 
     <script defer src="../../lib/IqonHash.js"></script>
     <script defer src="../../lib/Iqons.js"></script>
+    <script defer src="../../lib/NumberFormatting.js"></script>
     <script defer src="../../components/Identicon.js"></script>
     <script defer src="../../components/AddressInfo.js"></script>
+    <script defer src="../../components/PaymentInfoLine.js"></script>
     <script defer src="SignTransaction.js"></script>
     <script defer src="SignTransactionApi.js"></script>
     <script defer src="index.js"></script>
@@ -57,6 +59,7 @@
 
     <link rel="stylesheet" href="../../components/AddressInfo.css">
     <link rel="stylesheet" href="../../components/AddressInfoDetailed.css">
+    <link rel="stylesheet" href="../../components/PaymentInfoLine.css">
     <link rel="stylesheet" href="SignTransaction.css">
 </head>
 <body class="loading">
@@ -75,6 +78,7 @@
                 <div id="details"></div>
             </div>
             <div id="effect-container">
+                <div class="payment-info-line"></div>
                 <div class="page-header nq-card-header">
                     <a tabindex="0" class="page-header-back-button hide-standard">
                         <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>

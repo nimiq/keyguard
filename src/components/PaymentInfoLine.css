@@ -1,0 +1,122 @@
+.payment-info-line {
+    display: flex;
+    box-sizing: border-box;
+    margin: 1.75rem 2.5rem 1rem 2.375rem;
+    flex-shrink: 0;
+    font-size: 2rem;
+    line-height: 1.375;
+    font-weight: normal;
+}
+
+.payment-info-line .amount {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-bottom: .125rem;
+    white-space: nowrap;
+}
+
+.payment-info-line .nim-amount {
+    font-weight: bold;
+    color: var(--nimiq-light-blue);
+}
+
+.payment-info-line .fiat-amount {
+    margin-top: .25rem;
+    font-size: 1.625rem;
+    font-weight: 600;
+    line-height: 1;
+    opacity: .6;
+}
+
+.payment-info-line .arrow-runway {
+    display: flex;
+    flex-grow: 1;
+    min-width: 3rem;
+    margin: auto;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.payment-info-line .arrow-runway .nq-icon {
+    font-size: 2rem;
+    animation: arrow-shooting 2.7s cubic-bezier(.2,.5,.75,.5) infinite;
+}
+
+@keyframes arrow-shooting {
+    0%   { transform: translate3D(-3.5rem, 0, 0); opacity: 0; }
+    15%  { transform: translate3D(-3.5rem, 0, 0); opacity: 0; }
+    30%  { opacity: .2; }
+    70%  { opacity: .2; }
+    85%  { transform: translate3D(3rem, 0, 0); opacity: 0; }
+    100% { transform: translate3D(3rem, 0, 0); opacity: 0; }
+}
+
+.payment-info-line .recipient {
+    display: flex;
+    align-items: center;
+    color: inherit;
+    text-decoration: none;
+    outline: none;
+    overflow: hidden;
+}
+
+.payment-info-line .recipient:hover,
+.payment-info-line .recipient:focus {
+    text-decoration: none;
+}
+
+.payment-info-line .recipient-info {
+    padding: 0;
+    flex-direction: row;
+}
+
+.payment-info-line .recipient-info .identicon {
+    width: 3.375rem;
+    height: 3.375rem;
+    margin-right: 1rem;
+}
+
+.payment-info-line .recipient-info:hover .identicon {
+    transform: none !important; /* avoid scaling on hover */
+}
+
+.payment-info-line .recipient-info .label {
+    width: auto;
+    margin: 0 0 .25rem 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: fade;
+}
+
+.payment-info-line .recipient-info .label::after {
+    display: none; /* don't apply text fadeout, we're using text ellipsis instead */
+}
+
+.payment-info-line .info-circle-container {
+    position: relative;
+    margin-left: 1rem;
+    opacity: .3;
+    transition: opacity .3s var(--nimiq-ease);
+}
+
+.payment-info-line .recipient:hover .info-circle-container,
+.payment-info-line .recipient:focus .info-circle-container {
+    opacity: 1;
+}
+
+.payment-info-line .info-circle-container .nq-icon {
+    display: block;
+}
+
+.payment-info-line .recipient:focus .info-circle-container::after {
+    content: "";
+    position: absolute;
+    left: -.625rem;
+    top: -.625rem;
+    right: -.625rem;
+    bottom: -.625rem;
+    border: .25rem solid rgba(5, 130, 202, .5); /* Based on Nimiq Light Blue */
+    border-radius: 50%;
+}
+

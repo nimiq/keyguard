@@ -8,6 +8,10 @@
     display: none;
 }
 
+#confirm-transaction .payment-info-line + .nq-card-header {
+    padding-top: 2rem;
+}
+
 #confirm-transaction .nq-card-body {
     padding-bottom: 2rem;
 }
@@ -74,6 +78,7 @@
 }
 
 #confirm-transaction.account-details-open > #effect-container > .page-header,
+#confirm-transaction.account-details-open > #effect-container > .payment-info-line,
 #confirm-transaction.account-details-open > #effect-container > .page-body {
     -webkit-filter: blur(20px);
     -moz-filter: blur(20px);

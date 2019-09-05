@@ -30,8 +30,17 @@
 
 <form class="center">
     <div class="row">
+        <label>Layout</label>
+        <select id="layout">
+            <option>standard</option>
+            <option>checkout</option>
+            <option>cashlink</option>
+        </select>
+    </div>
+
+    <div class="row">
         <label>Transaction fee (luna)</label>
-        <input id="fee" value="0">
+        <input id="fee" value="0" type="number">
     </div>
 
     <div class="row">
@@ -44,6 +53,20 @@
         <input id="password" value="1234567890">
     </div>
 
+    <div class="row checkout-only">
+        <label>Fiat Amount (optional)</label>
+        <input id="fiat-amount" type="number">
+    </div>
+
+    <div class="row checkout-only">
+        <label>Fiat Currency Code (optional)</label>
+        <input id="fiat-currency-code">
+    </div>
+
+    <div class="row checkout-only">
+        <label>Fiat Currency Digits (optional)</label>
+        <input id="fiat-currency-digits" type="number">
+    </div>
 
     <br><button id="redirect" type="button" class="small" disabled>Sign transaction (redirect)</button>
     <br><button id="popup" type="button" class="small">Sign transaction (popup)</button>
@@ -58,6 +81,15 @@
         Nimiq.CryptoWorker.getInstanceAsync();
     })();
 
+    const layoutSelector = document.querySelector('#layout');
+    const checkoutOnlyOptions = document.querySelectorAll('.checkout-only');
+    function updateOptions() {
+        checkoutOnlyOptions.forEach((el) => el.style.display = layoutSelector.value === 'checkout' ? '' : 'none');
+    }
+
+    layoutSelector.addEventListener('change', updateOptions);
+    updateOptions();
+
     // document.querySelector('button#redirect').addEventListener('click', async () => {
     //     signTransactionRedirect(await generateRequest());
     // });
@@ -67,6 +99,7 @@
     });
 
     async function generateRequest() {
+        const layout = document.querySelector('#layout').value;
         const txFee = parseInt(document.querySelector('#fee').value) || 0;
         const txData = document.querySelector('#data').value || '';
         const keyPassword = document.querySelector('#password').value || '';
@@ -78,8 +111,10 @@
         const id = await KeyStore.instance.put(key, password);
 
         const path = "m/0'/0'";
-        return {
+        const request = {
             appName: 'SignTX Demo',
+
+            layout,
 
             keyId: id,
             keyPath: path,
@@ -93,6 +128,23 @@
             data: Nimiq.BufferUtils.fromUtf8(txData),
             validityStartHeight: 0,
         };
+
+        if (layout === 'checkout') {
+            request.shopOrigin = location.origin;
+
+            const fiatAmount = parseFloat(document.querySelector('#fiat-amount').value);
+            if (!Number.isNaN(fiatAmount)) {
+                request.fiatAmount = fiatAmount;
+            }
+
+            const fiatCurrencyCode = document.querySelector('#fiat-currency-code').value;
+            const fiatCurrencyDigits = document.querySelector('#fiat-currency-digits').value;
+            if (fiatCurrencyCode !== '' || fiatCurrencyDigits !== '') {
+                request.fiatCurrency = { code: fiatCurrencyCode, digits: parseFloat(fiatCurrencyDigits) };
+            }
+        }
+
+        return request;
     }
 
     // function signTransactionRedirect(txRequest) {

@@ -13,6 +13,7 @@
     width: 10rem;
     height: 10rem;
     transition: transform 0.45s cubic-bezier(0.25, 0, 0, 1);
+    flex-shrink: 0;
 }
 
 .address-info .identicon.clip {
