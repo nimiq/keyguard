@@ -41,7 +41,7 @@ class PaymentInfoLine { // eslint-disable-line no-unused-vars
         });
         recipientInfo.renderTo(/** @type HTMLElement */ (this.$el.querySelector('.recipient')));
 
-        /** @type HTMLAnchorElement */
+        /** @type HTMLElement */
         const $timer = (this.$el.querySelector('.timer'));
         if (paymentInfo.time !== undefined && paymentInfo.expires !== undefined) {
             new Timer(paymentInfo.time, paymentInfo.expires, $timer); // eslint-disable-line no-new
@@ -70,7 +70,7 @@ class PaymentInfoLine { // eslint-disable-line no-unused-vars
                 </svg>
             </div>
             <div class="recipient"></div>
-            <a class="timer"></a>
+            <div class="timer"></div>
         `;
 
         return $el;

@@ -1,8 +1,8 @@
 .timer {
-    display: block;
     width: 3.25rem;
     position: relative;
     outline: none;
+    cursor: default;
 }
 
 /* for setting height automatically depending on width */

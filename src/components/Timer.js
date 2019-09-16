@@ -9,7 +9,7 @@ class Timer extends Nimiq.Observable {
     /**
      * @param {number} startTime
      * @param {number} endTime
-     * @param {HTMLAnchorElement} [$el]
+     * @param {HTMLElement} [$el]
      */
     constructor(startTime, endTime, $el) {
         super();
@@ -58,22 +58,21 @@ class Timer extends Nimiq.Observable {
         window.setTimeout(() => this.fire(Timer.Events.END, endTime), endTime - Date.now());
         this._rerender();
 
-        this.$el.addEventListener('click', event => event.preventDefault()); // avoid CSP warnings for javascript: href
         this.$el.addEventListener('focus', () => this._showDetails());
         this.$el.addEventListener('mouseenter', () => this._showDetails());
         this.$el.addEventListener('blur', () => this._hideDetails());
-        this.$el.addEventListener('mouseleave', () => this._hideDetails(true));
+        this.$el.addEventListener('mouseleave', () => this._hideDetails());
     }
 
     /**
      * @private
-     * @param {HTMLAnchorElement} [$el]
-     * @returns {HTMLAnchorElement}
+     * @param {HTMLElement} [$el]
+     * @returns {HTMLElement}
      */
     static _createElement($el) {
-        $el = $el || document.createElement('a');
-        $el.href = 'javascript:void(0)'; // eslint-disable-line no-script-url
+        $el = $el || document.createElement('div');
         $el.classList.add('timer');
+        $el.tabIndex = 0; // make it focusable
 
         $el.innerHTML = TemplateTags.noVars`
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26">
@@ -263,12 +262,8 @@ class Timer extends Nimiq.Observable {
         this._rerender();
     }
 
-    /**
-     * @private
-     * @param {boolean} [onlyIfNotFocused=false]
-     */
-    _hideDetails(onlyIfNotFocused = false) {
-        if (onlyIfNotFocused && document.activeElement === this.$el) return;
+    /** @private */
+    _hideDetails() {
         this._detailsShown = false;
         this.$el.classList.remove('details-shown');
         this._radius.tweenTo(8, 300);
