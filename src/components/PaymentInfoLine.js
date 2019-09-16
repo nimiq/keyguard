@@ -1,5 +1,6 @@
 /* global Nimiq */
 /* global AddressInfo */
+/* global Timer */
 /* global TemplateTags */
 /* global NumberFormatting */
 
@@ -39,6 +40,14 @@ class PaymentInfoLine { // eslint-disable-line no-unused-vars
             accountLabel: null,
         });
         recipientInfo.renderTo(/** @type HTMLElement */ (this.$el.querySelector('.recipient')));
+
+        /** @type HTMLAnchorElement */
+        const $timer = (this.$el.querySelector('.timer'));
+        if (paymentInfo.time !== undefined && paymentInfo.expires !== undefined) {
+            new Timer(paymentInfo.time, paymentInfo.expires, $timer); // eslint-disable-line no-new
+        } else {
+            $timer.remove();
+        }
     }
 
     /**
@@ -61,6 +70,7 @@ class PaymentInfoLine { // eslint-disable-line no-unused-vars
                 </svg>
             </div>
             <div class="recipient"></div>
+            <a class="timer"></a>
         `;
 
         return $el;

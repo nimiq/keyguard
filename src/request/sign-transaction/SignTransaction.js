@@ -121,6 +121,10 @@ class SignTransaction {
                 this._onConfirm(request, resolve, reject, password);
             },
         );
+
+        if (request.expires !== undefined) {
+            setTimeout(() => reject(new Errors.RequestExpired()), request.expires - Date.now());
+        }
     }
 
     /**

@@ -80,3 +80,8 @@
 .payment-info-line .recipient .label::after {
     display: none; /* don't apply text fadeout, we're using text ellipsis instead */
 }
+
+.payment-info-line .timer {
+    margin: auto -.5rem auto 1rem;
+    flex-shrink: 0;
+}

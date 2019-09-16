@@ -63,6 +63,18 @@
         <input id="fiat-currency">
     </div>
 
+    <div class="row checkout-only">
+        <label>Request Time (optional)</label>
+        <input id="time" type="number">
+        <button id="set-current-time" type="button">Current time</button>
+    </div>
+
+    <div class="row checkout-only">
+        <label>Expiry Time (optional)</label>
+        <input id="expires" type="number">
+        <button id="set-expiry-time" type="button">2 Minutes</button>
+    </div>
+
     <br><button id="redirect" type="button" class="small" disabled>Sign transaction (redirect)</button>
     <br><button id="popup" type="button" class="small">Sign transaction (popup)</button>
 
@@ -84,6 +96,16 @@
 
     layoutSelector.addEventListener('change', updateOptions);
     updateOptions();
+
+    const timeInput = document.querySelector('#time');
+    document.querySelector('button#set-current-time').addEventListener('click', () => {
+        timeInput.value = Date.now();
+    });
+
+    const expiresInput = document.querySelector('#expires');
+    document.querySelector('button#set-expiry-time').addEventListener('click', () => {
+        expiresInput.value = (parseFloat(timeInput.value) || Date.now()) + 2 * 60 * 1000; // set default of 2 minutes
+    });
 
     // document.querySelector('button#redirect').addEventListener('click', async () => {
     //     signTransactionRedirect(await generateRequest());
@@ -135,6 +157,16 @@
             const fiatCurrency = document.querySelector('#fiat-currency').value;
             if (fiatCurrency !== '') {
                 request.fiatCurrency = fiatCurrency;
+            }
+
+            const time = timeInput.value;
+            if (time !== '') {
+                request.time = parseFloat(time);
+            }
+
+            const expires = expiresInput.value;
+            if (expires !== '') {
+                request.expires = parseFloat(expires);
             }
         }
 

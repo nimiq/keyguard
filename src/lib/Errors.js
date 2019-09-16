@@ -75,6 +75,12 @@ Errors.RequestCanceled = class extends Errors.KeyguardError {
     }
 };
 
+Errors.RequestExpired = class extends Errors.KeyguardError {
+    constructor() {
+        super(ErrorConstants.Messages.EXPIRED);
+    }
+};
+
 Errors.GoToCreate = class extends Errors.KeyguardError {
     constructor() {
         super(ErrorConstants.Messages.GOTO_CREATE);
