@@ -67,14 +67,13 @@ class SignTransaction {
         /** @type {HTMLElement} */
         const $paymentInfoLine = (this.$el.querySelector('.payment-info-line'));
         if (request.layout === SignTransactionApi.Layouts.CHECKOUT) {
-            const paymentInfoLine = new PaymentInfoLine(Object.assign({}, request, {
+            // eslint-disable-next-line no-new
+            new PaymentInfoLine(Object.assign({}, request, {
                 recipient: recipientAddress,
                 label: recipientLabel || recipientAddress,
                 imageUrl: request.shopLogoUrl,
                 lunaAmount: request.transaction.value,
             }), $paymentInfoLine);
-            paymentInfoLine.on(PaymentInfoLine.Events.RECIPIENT_CLICKED,
-                () => this._openDetails(this._recipientAddressInfo));
         } else {
             $paymentInfoLine.remove();
         }

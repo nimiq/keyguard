@@ -53,35 +53,23 @@
 }
 
 .payment-info-line .recipient {
-    display: flex;
-    align-items: center;
-    color: inherit;
-    text-decoration: none;
-    outline: none;
+    flex-direction: row;
+    width: auto;
+    cursor: auto !important;
     overflow: hidden;
 }
 
-.payment-info-line .recipient:hover,
-.payment-info-line .recipient:focus {
-    text-decoration: none;
-}
-
-.payment-info-line .recipient-info {
-    padding: 0;
-    flex-direction: row;
-}
-
-.payment-info-line .recipient-info .identicon {
+.payment-info-line .recipient .identicon {
     width: 3.375rem;
     height: 3.375rem;
     margin-right: 1rem;
 }
 
-.payment-info-line .recipient-info:hover .identicon {
+.payment-info-line .recipient:hover .identicon {
     transform: none !important; /* avoid scaling on hover */
 }
 
-.payment-info-line .recipient-info .label {
+.payment-info-line .recipient .label {
     width: auto;
     margin: 0 0 .25rem 0;
     overflow: hidden;
@@ -89,34 +77,6 @@
     text-overflow: fade;
 }
 
-.payment-info-line .recipient-info .label::after {
+.payment-info-line .recipient .label::after {
     display: none; /* don't apply text fadeout, we're using text ellipsis instead */
 }
-
-.payment-info-line .info-circle-container {
-    position: relative;
-    margin-left: 1rem;
-    opacity: .3;
-    transition: opacity .3s var(--nimiq-ease);
-}
-
-.payment-info-line .recipient:hover .info-circle-container,
-.payment-info-line .recipient:focus .info-circle-container {
-    opacity: 1;
-}
-
-.payment-info-line .info-circle-container .nq-icon {
-    display: block;
-}
-
-.payment-info-line .recipient:focus .info-circle-container::after {
-    content: "";
-    position: absolute;
-    left: -.625rem;
-    top: -.625rem;
-    right: -.625rem;
-    bottom: -.625rem;
-    border: .25rem solid rgba(5, 130, 202, .5); /* Based on Nimiq Light Blue */
-    border-radius: 50%;
-}
-

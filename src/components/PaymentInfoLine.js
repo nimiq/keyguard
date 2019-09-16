@@ -3,7 +3,7 @@
 /* global TemplateTags */
 /* global NumberFormatting */
 
-class PaymentInfoLine extends Nimiq.Observable {
+class PaymentInfoLine { // eslint-disable-line no-unused-vars
     /**
      * @param {object}           paymentInfo
      * @param {string}           paymentInfo.recipient
@@ -17,7 +17,6 @@ class PaymentInfoLine extends Nimiq.Observable {
      * @param {HTMLElement}      [$el]
      */
     constructor(paymentInfo, $el) {
-        super();
         this.$el = PaymentInfoLine._createElement($el);
 
         /** @type HTMLElement */
@@ -39,14 +38,7 @@ class PaymentInfoLine extends Nimiq.Observable {
             imageUrl: paymentInfo.imageUrl || null,
             accountLabel: null,
         });
-        recipientInfo.renderTo(/** @type HTMLElement */ (this.$el.querySelector('.recipient-info')));
-
-        /** @type HTMLElement */
-        const $recipient = (this.$el.querySelector('.recipient'));
-        $recipient.addEventListener('click', event => {
-            event.preventDefault(); // to avoid CSP warnings about the javascript:void(0) href
-            this.fire(PaymentInfoLine.Events.RECIPIENT_CLICKED);
-        });
+        recipientInfo.renderTo(/** @type HTMLElement */ (this.$el.querySelector('.recipient')));
     }
 
     /**
@@ -68,20 +60,9 @@ class PaymentInfoLine extends Nimiq.Observable {
                     <use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-right-small"/>
                 </svg>
             </div>
-            <a href="javascript:void(0)" class="recipient">
-                <div class="recipient-info"></div>
-                <div class="info-circle-container">
-                    <svg class="nq-icon">
-                        <use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-info-circle"/>
-                    </svg>
-                </div>
-            </a>
+            <div class="recipient"></div>
         `;
 
         return $el;
     }
 }
-
-PaymentInfoLine.Events = {
-    RECIPIENT_CLICKED: 'recipient-clicked',
-};
