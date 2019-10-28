@@ -41,9 +41,21 @@ class AddressInfo {
                 new Identicon(this._addressInfo.userFriendlyAddress, $identicon);
             });
         } else if (this._displayAsCashlink) {
-            const $cashlinkIcon = document.createElement('img');
-            $cashlinkIcon.src = '../../assets/cashlink-symbol-64x64.svg';
-            $cashlinkIcon.classList.add('nq-blue-bg');
+            const $cashlinkIcon = document.createElementNS(
+                'http://www.w3.org/2000/svg',
+                'svg',
+            );
+            const cashlinkIconUseTag = document.createElementNS(
+                'http://www.w3.org/2000/svg',
+                'use',
+            );
+            cashlinkIconUseTag.setAttributeNS(
+                'http://www.w3.org/1999/xlink',
+                'xlink:href',
+                '../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-cashlink',
+            );
+            $cashlinkIcon.appendChild(cashlinkIconUseTag);
+            $cashlinkIcon.classList.add('nq-icon', 'nq-blue-bg');
             $identicon.appendChild($cashlinkIcon);
         } else {
             // eslint-disable-next-line no-new
