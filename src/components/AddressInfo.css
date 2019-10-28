@@ -47,7 +47,9 @@
     padding: .25rem;
 }
 
-.address-info.cashlink .identicon > img {
+.address-info.cashlink .identicon > .nq-icon {
+    width: 100%;
+    height: 100%;
     border-radius: 50%;
 }
 
