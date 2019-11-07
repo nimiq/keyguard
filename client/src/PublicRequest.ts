@@ -114,14 +114,15 @@ export type SignMessageRequest = SimpleRequest & {
 
 // Request unions
 
-export type RedirectRequest = CreateRequest
-    | ImportRequest
-    | ExportRequest
-    | SimpleRequest
-    | SignTransactionRequest
-    | SignMessageRequest
+export type RedirectRequest
+    = CreateRequest
     | DeriveAddressRequest
-    | RemoveKeyRequest;
+    | ExportRequest
+    | ImportRequest
+    | RemoveKeyRequest
+    | SignMessageRequest
+    | SignTransactionRequest
+    | SimpleRequest;
 
 export type IFrameRequest = EmptyRequest | DeriveAddressesRequest | ReleaseKeyRequest;
 
@@ -156,14 +157,17 @@ export type SimpleResult = { success: boolean };
 
 // Result unions
 
-export type IFrameResult = ListResult
+export type IFrameResult
+    = DerivedAddress[]
     | ListLegacyResult
-    | DerivedAddress[]
+    | ListResult
     | SimpleResult;
 
-export type RedirectResult = KeyResult
+export type RedirectResult
+    = DerivedAddress[]
+    | ExportResult
+    | KeyResult
     | SignTransactionResult
-    | DerivedAddress[]
     | SimpleResult;
 
 export type Result = RedirectResult | IFrameResult;
