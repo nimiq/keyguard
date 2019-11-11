@@ -1,4 +1,6 @@
 /* global Nimiq */
+/* global I18n */
+/* global Errors */
 /* global TemplateTags */
 /* global Tweenable */
 
@@ -89,7 +91,7 @@ class Timer extends Nimiq.Observable {
                 <text class="countdown" x="50%" y="50%">0</text>
             </svg>
             <div class="tooltip">
-                This offer expires in
+                <span data-i18n="timer-expiry">This offer expires in</span>
                 <span class="tooltip-countdown"></span>.
             </div>
         `;
@@ -125,7 +127,24 @@ class Timer extends Nimiq.Observable {
         if (!includeUnit) {
             return resultTime;
         }
-        return `${resultTime} ${resultUnit}${resultTime !== 1 ? 's' : ''}`;
+
+        resultUnit = `${resultUnit}${resultTime !== 1 ? 's' : ''}`;
+        let translatedUnit;
+        // Specifically listing all possible i18n translations to enable the translationValidator to find and verify
+        // them with its regular expression.
+        switch (resultUnit) {
+            case 'second': translatedUnit = I18n.translatePhrase('timer-second'); break;
+            case 'seconds': translatedUnit = I18n.translatePhrase('timer-seconds'); break;
+            case 'minute': translatedUnit = I18n.translatePhrase('timer-minute'); break;
+            case 'minutes': translatedUnit = I18n.translatePhrase('timer-minutes'); break;
+            case 'hour': translatedUnit = I18n.translatePhrase('timer-hour'); break;
+            case 'hours': translatedUnit = I18n.translatePhrase('timer-hours'); break;
+            case 'day': translatedUnit = I18n.translatePhrase('timer-day'); break;
+            case 'days': translatedUnit = I18n.translatePhrase('timer-days'); break;
+            default: throw new Errors.KeyguardError(`Unexpected: Unknown time unit ${resultUnit}`);
+        }
+
+        return `${resultTime} ${translatedUnit}`;
     }
 
     /**
