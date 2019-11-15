@@ -221,7 +221,15 @@ class ExportFile extends Nimiq.Observable {
                 /** @type {Nimiq.SerialBuffer} */ (encryptedSecret),
                 key.defaultAddress,
             );
-
+            // reset initial state
+            this.$downloadFilePage.classList.remove(DownloadLoginFile.Events.INITIATED);
+            // add Events
+            this._downloadLoginFile.on(DownloadLoginFile.Events.INITIATED, () => {
+                this.$downloadFilePage.classList.add(DownloadLoginFile.Events.INITIATED);
+            });
+            this._downloadLoginFile.on(DownloadLoginFile.Events.RESET, () => {
+                this.$downloadFilePage.classList.remove(DownloadLoginFile.Events.INITIATED);
+            });
             this._downloadLoginFile.on(DownloadLoginFile.Events.DOWNLOADED, () => {
                 this._resolve({ success: true });
             });
