@@ -30,7 +30,7 @@
   },
   "homepage": "https://github.com/nimiq/keyguard#readme",
   "devDependencies": {
-    "@nimiq/core-web": "1.4.3",
+    "@nimiq/core-web": "1.5.3",
     "@nimiq/rpc": "^0.3.0",
     "@nimiq/style": "^0.7.6",
     "@types/jasmine": "^2.8.8",
