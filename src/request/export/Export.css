@@ -164,6 +164,11 @@ ul.nq-list li > .nq-icon {
     filter: blur(20px);
 }
 
+.page#login-file-download.loginfile-download-initiated .page-header .nq-h1:not(.confirm-download),
+.page#login-file-download:not(.loginfile-download-initiated) .page-header .confirm-download {
+    display: none;
+}
+
 .page#recovery-words .page-header .warning,
 .page#recovery-words .words-container {
     transition: filter .6s, opacity .6s;

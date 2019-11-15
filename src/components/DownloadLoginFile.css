@@ -13,6 +13,10 @@
     margin: auto;
 }
 
+.download-loginfile.maybe-downloaded .loginfile {
+    height: 38rem;
+}
+
 .download-button .loginfile-link {
     flex-grow: 1;
 }
@@ -53,16 +57,26 @@
     line-height: 7.5rem;
 }
 
+.download-loginfile .download-button > .nq-icon {
+    margin-right: 1.5rem;
+}
+
 .download-loginfile .tap-and-hold,
 .download-loginfile .continue,
+.download-loginfile .back-to-download,
 .download-loginfile.fallback-download .download-button,
 .download-loginfile.maybe-downloaded .download-button {
     display: none;
 }
 
 .download-loginfile.fallback-download .tap-and-hold,
-.download-loginfile.maybe-downloaded .continue {
+.download-loginfile.maybe-downloaded .continue,
+.download-loginfile.maybe-downloaded .back-to-download {
     display: block;
+}
+
+.download-loginfile.maybe-downloaded .back-to-download {
+    margin: 1rem auto -1rem;
 }
 
 .download-loginfile.maybe-downloaded .tap-and-hold {

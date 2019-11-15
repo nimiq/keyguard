@@ -74,8 +74,10 @@ const TRANSLATIONS = {
         'identicon-selector-generate-new': 'New Avatars',
 
         'download-loginfile-download': 'Download Login File',
+        'download-loginfile-successful': 'Download successful?',
         'download-loginfile-tap-and-hold': 'Tap and hold image to download',
-        'download-loginfile-continue': 'Continue',
+        'download-loginfile-continue': 'Continue when ready',
+        'download-loginfile-download-again': 'Download again',
 
         'validate-words-text': 'Please select the correct word from your list of recovery words.',
         'validate-words-1-hint': 'What is the 1st word?',
@@ -229,8 +231,10 @@ const TRANSLATIONS = {
         'identicon-selector-generate-new': 'Neue Avatare',
 
         'download-loginfile-download': 'Login File herunterladen',
+        'download-loginfile-successful': 'Download erfolgreich?',
         'download-loginfile-tap-and-hold': 'Zum Herunterladen Bild gedrückt halten',
         'download-loginfile-continue': 'Weiter',
+        'download-loginfile-download-again': 'Erneut herunterladen',
 
         'validate-words-text': 'Bitte wähle das richtige Wort aus deiner Liste von Wiederherstellungswörtern aus.',
         'validate-words-1-hint': 'Was ist das 1. Wort?',
