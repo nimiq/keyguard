@@ -214,7 +214,9 @@ ul.nq-list li > .nq-icon {
 .page#recovery-words .page-header .page-header-back-button,
 .page#login-file-download .page-header,
 .page#login-file-download button,
-.page#login-file-download .download-button {
+.page#login-file-download .download-button,
+.page#login-file-download .continue,
+.page#login-file-download .back-to-download {
     opacity: 0;
 }
 

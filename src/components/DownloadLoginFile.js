@@ -46,10 +46,16 @@ class DownloadLoginFile extends Nimiq.Observable {
         this.$loginfile.addEventListener('mousedown', e => this._onMouseDown(e));
         this.$loginfile.addEventListener('touchstart', () => this._onTouchStart());
         this.$downloadButton.addEventListener('click', () => this._onDownloadStart());
-        $continueButton.addEventListener('click', this._onDownloadEnd.bind(this));
+        $continueButton.addEventListener('click', () => {
+            this._onDownloadEnd();
+            // Remove previously added classes after a short delay to restore the initial state.
+            window.setTimeout(() => {
+                this.$el.classList.remove('maybe-downloaded');
+                this.fire(DownloadLoginFile.Events.RESET);
+            }, 300);
+        });
         $backToDownloadButton.addEventListener('click', () => {
-            this.$el.classList.remove('maybe-downloaded');
-            this.fire(DownloadLoginFile.Events.RESET);
+            this.$downloadButton.click();
         });
     }
 
@@ -101,6 +107,7 @@ class DownloadLoginFile extends Nimiq.Observable {
         }
         // Remove previously added classes to restore the initial state.
         this.$el.classList.remove('maybe-downloaded');
+        this.fire(DownloadLoginFile.Events.RESET);
 
         const color = IqonHash.getBackgroundColorIndex(firstAddress.toUserFriendlyAddress());
         this.file = new LoginFile(Nimiq.BufferUtils.toBase64(encryptedEntropy), color);
@@ -178,7 +185,7 @@ class DownloadLoginFile extends Nimiq.Observable {
             // If window gets blurred, show 'Continue' button in interface and do not automatically
             // consider the download successful.
             // As mobile Safari on iOS 13.x+ does support the download attribute, it no longer uses the long tap
-            // fallback. However, if the page changes its hash in the background while the promt asking to download
+            // fallback. However, if the page changes its hash in the background while the prompt asking to download
             // the file was not confirmed yet, the download will simply do nothing. To prevent that behaviour the
             // hash change is delayed by the .maybe-downloaded confirmation mechanism.
             if (!document.hasFocus()
