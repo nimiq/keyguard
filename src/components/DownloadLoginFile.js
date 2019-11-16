@@ -49,14 +49,9 @@ class DownloadLoginFile extends Nimiq.Observable {
         $continueButton.addEventListener('click', () => {
             this._onDownloadEnd();
             // Remove previously added classes after a short delay to restore the initial state.
-            window.setTimeout(() => {
-                this.$el.classList.remove('maybe-downloaded');
-                this.fire(DownloadLoginFile.Events.RESET);
-            }, 300);
+            window.setTimeout(this._reset.bind(this), 300);
         });
-        $backToDownloadButton.addEventListener('click', () => {
-            this.$downloadButton.click();
-        });
+        $backToDownloadButton.addEventListener('click', () => this.$downloadButton.click());
     }
 
     /**
@@ -106,8 +101,7 @@ class DownloadLoginFile extends Nimiq.Observable {
             throw new Errors.KeyguardError('Can only export encrypted Entropies');
         }
         // Remove previously added classes to restore the initial state.
-        this.$el.classList.remove('maybe-downloaded');
-        this.fire(DownloadLoginFile.Events.RESET);
+        this._reset();
 
         const color = IqonHash.getBackgroundColorIndex(firstAddress.toUserFriendlyAddress());
         this.file = new LoginFile(Nimiq.BufferUtils.toBase64(encryptedEntropy), color);
@@ -189,9 +183,7 @@ class DownloadLoginFile extends Nimiq.Observable {
             // the file was not confirmed yet, the download will simply do nothing. To prevent that behaviour the
             // hash change is delayed by the .maybe-downloaded confirmation mechanism.
             if (!document.hasFocus()
-                || (BrowserDetection.isIOS()
-                    && BrowserDetection.isSafari()
-                    && BrowserDetection.iOSVersion()[0] > 12)) {
+                || (BrowserDetection.isIOS() && BrowserDetection.iOSVersion()[0] > 12)) {
                 this.$el.classList.add('maybe-downloaded');
                 this.fire(DownloadLoginFile.Events.INITIATED);
                 return;
@@ -239,6 +231,11 @@ class DownloadLoginFile extends Nimiq.Observable {
             this.$longTouchIndicator.style.display = 'none';
             this.$longTouchIndicator.classList.remove('animate');
         }
+    }
+
+    _reset() {
+        this.$el.classList.remove('maybe-downloaded');
+        this.fire(DownloadLoginFile.Events.RESET);
     }
 
     get file() {
