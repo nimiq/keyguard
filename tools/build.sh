@@ -99,11 +99,11 @@ output "🧐  Validating Nimiq Core files integrity"
 
 # For Nimiq Core v1.4.3
 hashsums=\
-"131abbc8c240d8c887bb48370f0c8d902d2a8f3a40ffb2aa629b98add599c9b6  node_modules/@nimiq/core-web/web-offline.js
+"2fc34cc4e1a42164417a1d8b108148e2c52ad26fa6e6c22e056659cad28d4810  node_modules/@nimiq/core-web/web-offline.js
  a658ca600c43789c8daff47578ea5758e7a1a2a5fee1b249e7bb5ce691d126cd  node_modules/@nimiq/core-web/worker-wasm.wasm
  d61df01adc927cb2832314ef5634b9ea97092acacb09beb7628b1a98a0962c70  node_modules/@nimiq/core-web/worker-wasm.js
  154b1251428363c8658c99acbf55b31eef177c0d447767a506952924a37494a9  node_modules/@nimiq/core-web/worker-js.js
- 5670830478ac20a634b1436cd24cc3ba2eda23e8f8a7a30f54958920046435ce  node_modules/@nimiq/core-web/worker.js"
+ 2123d109821661e758f091676670f29d905c7e24a177757288aaefcf59fefdda  node_modules/@nimiq/core-web/worker.js"
 
 echo "$hashsums" | ${SHA256SUM} --check
 
