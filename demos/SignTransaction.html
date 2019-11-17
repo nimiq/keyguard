@@ -60,12 +60,7 @@
 
     <div class="row checkout-only">
         <label>Fiat Currency Code (optional)</label>
-        <input id="fiat-currency-code">
-    </div>
-
-    <div class="row checkout-only">
-        <label>Fiat Currency Digits (optional)</label>
-        <input id="fiat-currency-digits" type="number">
+        <input id="fiat-currency">
     </div>
 
     <br><button id="redirect" type="button" class="small" disabled>Sign transaction (redirect)</button>
@@ -137,10 +132,9 @@
                 request.fiatAmount = fiatAmount;
             }
 
-            const fiatCurrencyCode = document.querySelector('#fiat-currency-code').value;
-            const fiatCurrencyDigits = document.querySelector('#fiat-currency-digits').value;
-            if (fiatCurrencyCode !== '' || fiatCurrencyDigits !== '') {
-                request.fiatCurrency = { code: fiatCurrencyCode, digits: parseFloat(fiatCurrencyDigits) };
+            const fiatCurrency = document.querySelector('#fiat-currency').value;
+            if (fiatCurrency !== '') {
+                request.fiatCurrency = fiatCurrency;
             }
         }
 

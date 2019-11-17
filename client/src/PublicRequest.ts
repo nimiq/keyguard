@@ -93,11 +93,6 @@ export type ExportResult = {
     wordsExported: boolean,
 };
 
-export type CurrencyInfo = {
-    code: string,
-    digits: number,
-};
-
 export type SignTransactionRequest = SimpleRequest & TransactionInfo & {
     keyPath: string,
     layout?: SignTransactionRequestLayout,
@@ -108,7 +103,7 @@ export type SignTransactionRequest = SimpleRequest & TransactionInfo & {
     shopLogoUrl?: string,
     time?: number,
     expires?: number,
-    fiatCurrency?: CurrencyInfo,
+    fiatCurrency?: string,
     fiatAmount?: number,
 };
 

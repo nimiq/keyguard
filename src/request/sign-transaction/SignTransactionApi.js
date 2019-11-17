@@ -31,7 +31,7 @@ class SignTransactionApi extends TopLevelApi {
             }
 
             parsedRequest.fiatAmount = this.parseNonNegativeFiniteNumber(request.fiatAmount);
-            parsedRequest.fiatCurrency = this.parseCurrencyInfo(request.fiatCurrency);
+            parsedRequest.fiatCurrency = this.parseFiatCurrency(request.fiatCurrency);
             if ((parsedRequest.fiatAmount === undefined) !== (parsedRequest.fiatCurrency === undefined)) {
                 throw new Errors.InvalidRequestError('fiatAmount and fiatCurrency must be both defined or undefined.');
             }
@@ -70,38 +70,20 @@ class SignTransactionApi extends TopLevelApi {
 
     /**
      * Parses that a currency info is valid.
-     * @param {any} currencyInfo
-     * @returns {KeyguardRequest.CurrencyInfo | undefined}
+     * @param {any} fiatCurrency
+     * @returns {string | undefined}
      */
-    parseCurrencyInfo(currencyInfo) {
-        if (currencyInfo === undefined) {
+    parseFiatCurrency(fiatCurrency) {
+        if (fiatCurrency === undefined) {
             return undefined;
         }
 
         // parse currency code
-        if (typeof currencyInfo.code !== 'string'
-            || !/^[a-z]{3}$/i.test(currencyInfo.code)) {
-            throw new Errors.InvalidRequestError(`Invalid currency code ${currencyInfo.code}`);
+        if (typeof fiatCurrency !== 'string'
+            || !/^[a-z]{3}$/i.test(fiatCurrency)) {
+            throw new Errors.InvalidRequestError(`Invalid currency code ${fiatCurrency}`);
         }
-        /** @type {{[key: string]: string | undefined}} */
-        const currencySymbolMap = {
-            EUR: '€',
-            USD: '$',
-            JPY: '¥',
-        };
-        let code = currencyInfo.code.toUpperCase();
-        code = currencySymbolMap[code] || code;
-
-        // parse digits
-        if (typeof currencyInfo.digits !== 'number'
-            || !Number.isInteger(currencyInfo.digits)
-            || currencyInfo.digits < 0
-            || currencyInfo.digits > 4) {
-            throw new Errors.InvalidRequestError(`Invalid currency digits ${currencyInfo.digits}`);
-        }
-        const digits = currencyInfo.digits;
-
-        return { code, digits };
+        return fiatCurrency.toUpperCase();
     }
 
     get Handler() {

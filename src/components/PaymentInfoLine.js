@@ -5,16 +5,16 @@
 
 class PaymentInfoLine extends Nimiq.Observable {
     /**
-     * @param {object}                                 paymentInfo
-     * @param {string}                                 paymentInfo.recipient
-     * @param {string|undefined}                       [paymentInfo.label]
-     * @param {URL|undefined}                          [paymentInfo.imageUrl]
-     * @param {number}                                 paymentInfo.lunaAmount
-     * @param {number|undefined}                       [paymentInfo.fiatAmount]
-     * @param {KeyguardRequest.CurrencyInfo|undefined} [paymentInfo.fiatCurrency]
-     * @param {number|undefined}                       [paymentInfo.time]
-     * @param {number|undefined}                       [paymentInfo.expires]
-     * @param {HTMLElement}                            [$el]
+     * @param {object}           paymentInfo
+     * @param {string}           paymentInfo.recipient
+     * @param {string|undefined} [paymentInfo.label]
+     * @param {URL|undefined}    [paymentInfo.imageUrl]
+     * @param {number}           paymentInfo.lunaAmount
+     * @param {number|undefined} [paymentInfo.fiatAmount]
+     * @param {string|undefined} [paymentInfo.fiatCurrency]
+     * @param {number|undefined} [paymentInfo.time]
+     * @param {number|undefined} [paymentInfo.expires]
+     * @param {HTMLElement}      [$el]
      */
     constructor(paymentInfo, $el) {
         super();
@@ -28,8 +28,7 @@ class PaymentInfoLine extends Nimiq.Observable {
         /** @type HTMLElement */
         const $fiatAmount = (this.$el.querySelector('.fiat-amount'));
         if (paymentInfo.fiatAmount !== undefined && paymentInfo.fiatCurrency !== undefined) {
-            const fiatAmount = NumberFormatting.formatNumber(paymentInfo.fiatAmount, paymentInfo.fiatCurrency.digits);
-            $fiatAmount.textContent = `${fiatAmount} ${paymentInfo.fiatCurrency.code}`;
+            $fiatAmount.textContent = NumberFormatting.formatCurrency(paymentInfo.fiatAmount, paymentInfo.fiatCurrency);
         } else {
             $fiatAmount.remove();
         }
