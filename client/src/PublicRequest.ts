@@ -93,19 +93,24 @@ export type ExportResult = {
     wordsExported: boolean,
 };
 
-export type SignTransactionRequest = SimpleRequest & TransactionInfo & {
+export type SignTransactionRequestSimple = SimpleRequest & TransactionInfo & {
+    layout?: Exclude<SignTransactionRequestLayout, 'checkout'>,
     keyPath: string,
-    layout?: SignTransactionRequestLayout,
     recipientLabel?: string,
     senderLabel?: string,
-    // TODO these should only get added for 'checkout' layout
-    shopOrigin?: string,
+};
+
+export type SignTransactionRequestCheckout = Omit<SignTransactionRequestSimple, 'layout'> & {
+    layout: 'checkout'
+    shopOrigin: string,
     shopLogoUrl?: string,
     time?: number,
     expires?: number,
     fiatCurrency?: string,
     fiatAmount?: number,
 };
+
+export type SignTransactionRequest = SignTransactionRequestSimple | SignTransactionRequestCheckout;
 
 export type SignMessageRequest = SimpleRequest & {
     keyPath: string,
@@ -175,18 +180,21 @@ export type Result = RedirectResult | IFrameResult;
 // Derived Result types
 
 export type ResultType<T extends RedirectRequest> =
-    T extends Is<T, SignMessageRequest> | Is<T, SignTransactionRequest> ? SignatureResult :
+    T extends Is<T, SignMessageRequest> | Is<T, SignTransactionRequestCheckout> | Is<T, SignTransactionRequestSimple>
+        ? SignatureResult :
     T extends Is<T, DeriveAddressRequest> ? DerivedAddress[] :
     T extends Is<T, CreateRequest> | Is<T, ImportRequest> ? KeyResult :
     T extends Is<T, ExportRequest> ? ExportResult :
-    T extends Is<T, RemoveKeyRequest> | Is<T, SimpleRequest> ? SimpleResult : never;
+    T extends Is<T, RemoveKeyRequest> | Is<T, SimpleRequest> ? SimpleResult :
+    never;
 
 export type ResultByCommand<T extends KeyguardCommand> =
     T extends KeyguardCommand.SIGN_MESSAGE | KeyguardCommand.SIGN_TRANSACTION ? SignatureResult :
     T extends KeyguardCommand.DERIVE_ADDRESS ? DerivedAddress[] :
     T extends KeyguardCommand.CREATE | KeyguardCommand.IMPORT ? KeyResult :
     T extends KeyguardCommand.EXPORT ? ExportResult :
-    T extends KeyguardCommand.REMOVE ? SimpleResult : never;
+    T extends KeyguardCommand.REMOVE ? SimpleResult :
+    never;
 
 // Error constants
 

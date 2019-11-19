@@ -50,13 +50,15 @@ class SignTransaction {
         /** @type {HTMLLinkElement} */
         const $recipient = (this.$el.querySelector('.accounts .recipient'));
         const recipientAddress = transaction.recipient.toUserFriendlyAddress();
-        const recipientLabel = request.shopOrigin
+        const recipientLabel = 'shopOrigin' in request && !!request.shopOrigin
             ? request.shopOrigin.split('://')[1]
             : request.recipientLabel || null;
         this._recipientAddressInfo = new AddressInfo({
             userFriendlyAddress: recipientAddress,
             label: recipientLabel,
-            imageUrl: request.shopLogoUrl || null,
+            imageUrl: 'shopLogoUrl' in request && !!request.shopLogoUrl
+                ? request.shopLogoUrl
+                : null,
             accountLabel: null,
         });
         this._recipientAddressInfo.renderTo($recipient);
@@ -122,7 +124,7 @@ class SignTransaction {
             },
         );
 
-        if (request.expires !== undefined) {
+        if ('expires' in request && request.expires !== undefined) {
             setTimeout(() => reject(new Errors.RequestExpired()), request.expires - Date.now());
         }
     }

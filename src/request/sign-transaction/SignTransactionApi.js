@@ -14,6 +14,7 @@ class SignTransactionApi extends TopLevelApi {
             throw new Errors.InvalidRequestError('request is required');
         }
 
+        /** @type {Parsed<KeyguardRequest.SignTransactionRequest>} */
         const parsedRequest = {};
         parsedRequest.appName = this.parseAppName(request.appName);
         parsedRequest.keyInfo = await this.parseKeyId(request.keyId);
@@ -23,7 +24,8 @@ class SignTransactionApi extends TopLevelApi {
         parsedRequest.recipientLabel = this.parseLabel(request.recipientLabel);
         parsedRequest.transaction = this.parseTransaction(request);
         parsedRequest.layout = this.parseLayout(request.layout);
-        if (parsedRequest.layout === SignTransactionApi.Layouts.CHECKOUT) {
+        if (parsedRequest.layout === SignTransactionApi.Layouts.CHECKOUT
+            && request.layout === SignTransactionApi.Layouts.CHECKOUT) {
             parsedRequest.shopOrigin = this.parseShopOrigin(request.shopOrigin);
             parsedRequest.shopLogoUrl = this.parseShopLogoUrl(request.shopLogoUrl);
             if (parsedRequest.shopLogoUrl && parsedRequest.shopLogoUrl.origin !== parsedRequest.shopOrigin) {
@@ -45,8 +47,6 @@ class SignTransactionApi extends TopLevelApi {
                     throw new Errors.InvalidRequestError('`expires` must be greater than `time`');
                 }
             }
-        } else {
-            parsedRequest.shopOrigin = undefined;
         }
 
         return parsedRequest;
@@ -100,7 +100,10 @@ class SignTransactionApi extends TopLevelApi {
     }
 }
 
-/** @enum {KeyguardRequest.SignTransactionRequestLayout} */
+/**
+ * @enum {KeyguardRequest.SignTransactionRequestLayout}
+ * @readonly
+ */
 SignTransactionApi.Layouts = {
     STANDARD: /** @type {'standard'} */ ('standard'),
     CHECKOUT: /** @type {'checkout'} */ ('checkout'),
