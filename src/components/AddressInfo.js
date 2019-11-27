@@ -1,3 +1,4 @@
+/* global Copyable */
 /* global Identicon */
 
 class AddressInfo { // eslint-disable-line no-unused-vars
@@ -83,7 +84,8 @@ class AddressInfo { // eslint-disable-line no-unused-vars
             $address.classList.add('address');
             // last space is necessary for the rendering to work properly with white-space: pre-wrap.
             $address.textContent = `${this._addressInfo.userFriendlyAddress} `;
-            $el.appendChild($address);
+            const copyableAddress = new Copyable(this._addressInfo.userFriendlyAddress, $address);
+            $el.appendChild(copyableAddress.getElement());
         }
     }
 }
