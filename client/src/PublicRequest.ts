@@ -93,16 +93,18 @@ export type ExportResult = {
     wordsExported: boolean,
 };
 
-export type SignTransactionRequestSimple = SimpleRequest & TransactionInfo & {
-    layout?: Exclude<SignTransactionRequestLayout, 'checkout'>,
+type SignTransactionRequestCommon = SimpleRequest & TransactionInfo & {
     keyPath: string,
-    recipientLabel?: string,
     senderLabel?: string,
-    cashlinkMessage?: string,
 };
 
-export type SignTransactionRequestCheckout = Omit<SignTransactionRequestSimple, 'layout'> & {
-    layout: 'checkout'
+export type SignTransactionRequestStandard = SignTransactionRequestCommon & {
+    layout?: 'standard',
+    recipientLabel?: string,
+};
+
+export type SignTransactionRequestCheckout = SignTransactionRequestCommon & {
+    layout: 'checkout',
     shopOrigin: string,
     shopLogoUrl?: string,
     time?: number,
@@ -111,7 +113,15 @@ export type SignTransactionRequestCheckout = Omit<SignTransactionRequestSimple, 
     fiatAmount?: number,
 };
 
-export type SignTransactionRequest = SignTransactionRequestSimple | SignTransactionRequestCheckout;
+export type SignTransactionRequestCashlink = SignTransactionRequestCommon & {
+    layout: 'cashlink',
+    cashlinkMessage?: string,
+};
+
+export type SignTransactionRequest
+    = SignTransactionRequestStandard
+    | SignTransactionRequestCheckout
+    | SignTransactionRequestCashlink;
 
 export type SignMessageRequest = SimpleRequest & {
     keyPath: string,
@@ -185,7 +195,10 @@ export type Result = RedirectResult | IFrameResult;
 // Derived Result types
 
 export type ResultType<T extends RedirectRequest> =
-    T extends Is<T, SignMessageRequest> | Is<T, SignTransactionRequestCheckout> | Is<T, SignTransactionRequestSimple>
+    T extends Is<T, SignMessageRequest>
+        | Is<T, SignTransactionRequestStandard>
+        | Is<T, SignTransactionRequestCheckout>
+        | Is<T, SignTransactionRequestCashlink>
         ? SignatureResult :
     T extends Is<T, DeriveAddressRequest> ? DerivedAddress[] :
     T extends Is<T, CreateRequest> | Is<T, ImportRequest> ? KeyResult :

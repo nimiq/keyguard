@@ -51,9 +51,13 @@ class SignTransaction {
         /** @type {HTMLLinkElement} */
         const $recipient = (this.$el.querySelector('.accounts .recipient'));
         const recipientAddress = transaction.recipient.toUserFriendlyAddress();
+        /* eslint-disable no-nested-ternary */
         const recipientLabel = 'shopOrigin' in request && !!request.shopOrigin
             ? request.shopOrigin.split('://')[1]
-            : request.recipientLabel || null;
+            : 'recipientLabel' in request && !!request.recipientLabel
+                ? request.recipientLabel
+                : null;
+        /* eslint-enable no-nested-ternary */
         const recipientImage = 'shopLogoUrl' in request && !!request.shopLogoUrl
             ? request.shopLogoUrl
             : null;
