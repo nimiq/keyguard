@@ -53,12 +53,13 @@ class SignTransaction {
         const recipientLabel = 'shopOrigin' in request && !!request.shopOrigin
             ? request.shopOrigin.split('://')[1]
             : request.recipientLabel || null;
+        const recipientImage = 'shopLogoUrl' in request && !!request.shopLogoUrl
+            ? request.shopLogoUrl
+            : null;
         this._recipientAddressInfo = new AddressInfo({
             userFriendlyAddress: recipientAddress,
             label: recipientLabel,
-            imageUrl: 'shopLogoUrl' in request && !!request.shopLogoUrl
-                ? request.shopLogoUrl
-                : null,
+            imageUrl: recipientImage,
             accountLabel: null,
         });
         this._recipientAddressInfo.renderTo($recipient);
@@ -124,7 +125,7 @@ class SignTransaction {
             },
         );
 
-        if ('expires' in request && request.expires !== undefined) {
+        if ('expires' in request && request.expires) {
             setTimeout(() => reject(new Errors.RequestExpired()), request.expires - Date.now());
         }
     }

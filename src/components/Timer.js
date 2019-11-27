@@ -4,8 +4,13 @@
 /* global TemplateTags */
 /* global Tweenable */
 
-// eslint-disable-next-line max-len
-/** @typedef {{length: number, lengthWithLineCaps: number, gap: number, offset: number, strokeWidth: number}} CircleInfo */
+/** @typedef {{
+ *      length: number,
+ *      lengthWithLineCaps: number,
+ *      gap: number,
+ *      offset: number,
+ *      strokeWidth: number
+ *  }} CircleInfo */
 
 class Timer extends Nimiq.Observable {
     /**
@@ -46,7 +51,7 @@ class Timer extends Nimiq.Observable {
         // animate via JS.
         /** @private
          *  @type {Tweenable} */
-        this._radius = new Tweenable(8);
+        this._radius = new Tweenable(Timer.RADIUS);
         /** @private
          *  @type {number} */
         this._fullCircleLength = 2 * Math.PI * this._radius.currentValue;
@@ -97,54 +102,6 @@ class Timer extends Nimiq.Observable {
         `;
 
         return $el;
-    }
-
-    /**
-     * @private
-     * @param {number} millis
-     * @param {boolean} [includeUnit=true]
-     * @returns {string|number}
-     */
-    static _toSimplifiedTime(millis, includeUnit = true) {
-        // find appropriate unit, starting with second
-        let resultTime = millis / 1000;
-        let resultUnit = 'second';
-        const timeSteps = [
-            { unit: 'minute', factor: 60 },
-            { unit: 'hour', factor: 60 },
-            { unit: 'day', factor: 24 },
-        ];
-        for (const { unit, factor } of timeSteps) { // eslint-disable-line no-restricted-syntax
-            if (resultTime / factor < 1) {
-                break;
-            } else {
-                resultTime /= factor;
-                resultUnit = unit;
-            }
-        }
-
-        resultTime = Math.round(resultTime);
-        if (!includeUnit) {
-            return resultTime;
-        }
-
-        resultUnit = `${resultUnit}${resultTime !== 1 ? 's' : ''}`;
-        let translatedUnit;
-        // Specifically listing all possible i18n translations to enable the translationValidator to find and verify
-        // them with its regular expression.
-        switch (resultUnit) {
-            case 'second': translatedUnit = I18n.translatePhrase('timer-second'); break;
-            case 'seconds': translatedUnit = I18n.translatePhrase('timer-seconds'); break;
-            case 'minute': translatedUnit = I18n.translatePhrase('timer-minute'); break;
-            case 'minutes': translatedUnit = I18n.translatePhrase('timer-minutes'); break;
-            case 'hour': translatedUnit = I18n.translatePhrase('timer-hour'); break;
-            case 'hours': translatedUnit = I18n.translatePhrase('timer-hours'); break;
-            case 'day': translatedUnit = I18n.translatePhrase('timer-day'); break;
-            case 'days': translatedUnit = I18n.translatePhrase('timer-days'); break;
-            default: throw new Errors.KeyguardError(`Unexpected: Unknown time unit ${resultUnit}`);
-        }
-
-        return `${resultTime} ${translatedUnit}`;
     }
 
     /**
@@ -260,10 +217,8 @@ class Timer extends Nimiq.Observable {
 
                 this.$el.classList.toggle('little-time-left', this._progress >= 0.75);
                 if (this._detailsShown) {
-                    this.$countdown.textContent = Timer._toSimplifiedTime(this._timeLeft, false).toString();
-                    this.$tooltipCountdown.textContent = /** @type string */ (
-                        Timer._toSimplifiedTime(this._timeLeft, true)
-                    );
+                    this.$countdown.textContent = this._toSimplifiedTime(false);
+                    this.$tooltipCountdown.textContent = this._toSimplifiedTime(true);
                 }
             }
 
@@ -277,7 +232,7 @@ class Timer extends Nimiq.Observable {
     _showDetails() {
         this._detailsShown = true;
         this.$el.classList.add('details-shown');
-        this._radius.tweenTo(12, 300);
+        this._radius.tweenTo(Timer.EXPANDED_RADIUS, 300);
         this._rerender();
     }
 
@@ -285,13 +240,63 @@ class Timer extends Nimiq.Observable {
     _hideDetails() {
         this._detailsShown = false;
         this.$el.classList.remove('details-shown');
-        this._radius.tweenTo(8, 300);
+        this._radius.tweenTo(Timer.RADIUS, 300);
         this._rerender();
+    }
+
+    /**
+     * @private
+     * @param {boolean} [includeUnit=true]
+     * @returns {string}
+     */
+    _toSimplifiedTime(includeUnit = true) {
+        // find appropriate unit, starting with second
+        let resultTime = this._timeLeft / 1000;
+        let resultUnit = 'second';
+        const timeSteps = [
+            { unit: 'minute', factor: 60 },
+            { unit: 'hour', factor: 60 },
+            { unit: 'day', factor: 24 },
+        ];
+        for (const { unit, factor } of timeSteps) { // eslint-disable-line no-restricted-syntax
+            if (resultTime / factor < 1) {
+                break;
+            } else {
+                resultTime /= factor;
+                resultUnit = unit;
+            }
+        }
+
+        resultTime = Math.round(resultTime);
+        if (!includeUnit) {
+            return resultTime.toString();
+        }
+
+        resultUnit = `${resultUnit}${resultTime !== 1 ? 's' : ''}`;
+        let translatedUnit;
+        // Specifically listing all possible i18n translations to enable the translationValidator to find and verify
+        // them with its regular expression.
+        switch (resultUnit) {
+            case 'second': translatedUnit = I18n.translatePhrase('timer-second'); break;
+            case 'seconds': translatedUnit = I18n.translatePhrase('timer-seconds'); break;
+            case 'minute': translatedUnit = I18n.translatePhrase('timer-minute'); break;
+            case 'minutes': translatedUnit = I18n.translatePhrase('timer-minutes'); break;
+            case 'hour': translatedUnit = I18n.translatePhrase('timer-hour'); break;
+            case 'hours': translatedUnit = I18n.translatePhrase('timer-hours'); break;
+            case 'day': translatedUnit = I18n.translatePhrase('timer-day'); break;
+            case 'days': translatedUnit = I18n.translatePhrase('timer-days'); break;
+            default: throw new Errors.KeyguardError(`Unexpected: Unknown time unit ${resultUnit}`);
+        }
+
+        return `${resultTime} ${translatedUnit}`;
     }
 }
 
 Timer.Events = {
     END: 'end',
 };
+// These values are the same as in the svg.
 Timer.STROKE_WIDTH = 2;
 Timer.VIEWBOX_SIZE = 26;
+Timer.RADIUS = 8;
+Timer.EXPANDED_RADIUS = 12;

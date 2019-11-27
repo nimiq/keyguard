@@ -29,7 +29,7 @@ class SignTransactionApi extends TopLevelApi {
             parsedRequest.shopOrigin = this.parseShopOrigin(request.shopOrigin);
             parsedRequest.shopLogoUrl = this.parseShopLogoUrl(request.shopLogoUrl);
             if (parsedRequest.shopLogoUrl && parsedRequest.shopLogoUrl.origin !== parsedRequest.shopOrigin) {
-                throw new Errors.InvalidRequestError('origin of shopLogoUrl must be same as referrer');
+                throw new Errors.InvalidRequestError('origin of shopLogoUrl must be same as shopOrigin');
             }
 
             parsedRequest.fiatAmount = this.parseNonNegativeFiniteNumber(request.fiatAmount);
@@ -42,7 +42,7 @@ class SignTransactionApi extends TopLevelApi {
             parsedRequest.expires = this.parseNonNegativeFiniteNumber(request.expires);
             if (parsedRequest.expires !== undefined) {
                 if (parsedRequest.time === undefined) {
-                    throw new Errors.InvalidRequestError('If `expires` is defined `time` must be defined too.');
+                    throw new Errors.InvalidRequestError('If `expires` is given, `time` must be given too.');
                 } else if (parsedRequest.time >= parsedRequest.expires) {
                     throw new Errors.InvalidRequestError('`expires` must be greater than `time`');
                 }

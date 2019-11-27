@@ -4,18 +4,21 @@
 /* global TemplateTags */
 /* global NumberFormatting */
 
+/** @typedef {{
+ *      recipient: string,
+ *      label?: string,
+ *      imageUrl?: URL,
+ *      lunaAmount: number,
+ *      fiatAmount?: number,
+ *      fiatCurrency?: string,
+ *      time?: number,
+ *      expires?: number
+ *  }} PaymentInfo */
+
 class PaymentInfoLine { // eslint-disable-line no-unused-vars
     /**
-     * @param {object}           paymentInfo
-     * @param {string}           paymentInfo.recipient
-     * @param {string|undefined} [paymentInfo.label]
-     * @param {URL|undefined}    [paymentInfo.imageUrl]
-     * @param {number}           paymentInfo.lunaAmount
-     * @param {number|undefined} [paymentInfo.fiatAmount]
-     * @param {string|undefined} [paymentInfo.fiatCurrency]
-     * @param {number|undefined} [paymentInfo.time]
-     * @param {number|undefined} [paymentInfo.expires]
-     * @param {HTMLElement}      [$el]
+     * @param {PaymentInfo} paymentInfo
+     * @param {HTMLElement} [$el]
      */
     constructor(paymentInfo, $el) {
         this.$el = PaymentInfoLine._createElement($el);
@@ -27,7 +30,7 @@ class PaymentInfoLine { // eslint-disable-line no-unused-vars
 
         /** @type HTMLElement */
         const $fiatAmount = (this.$el.querySelector('.fiat-amount'));
-        if (paymentInfo.fiatAmount !== undefined && paymentInfo.fiatCurrency !== undefined) {
+        if (paymentInfo.fiatAmount && paymentInfo.fiatCurrency) {
             $fiatAmount.textContent = NumberFormatting.formatCurrency(paymentInfo.fiatAmount, paymentInfo.fiatCurrency);
         } else {
             $fiatAmount.remove();
@@ -43,7 +46,7 @@ class PaymentInfoLine { // eslint-disable-line no-unused-vars
 
         /** @type HTMLElement */
         const $timer = (this.$el.querySelector('.timer'));
-        if (paymentInfo.time !== undefined && paymentInfo.expires !== undefined) {
+        if (paymentInfo.time && paymentInfo.expires) {
             new Timer(paymentInfo.time, paymentInfo.expires, $timer); // eslint-disable-line no-new
         } else {
             $timer.remove();

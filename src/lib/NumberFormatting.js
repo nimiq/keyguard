@@ -5,7 +5,7 @@ class NumberFormatting { // eslint-disable-line no-unused-vars
      * @param {number} [minDecimals]
      * @returns {string}
      */
-    static formatNumber(value, maxDecimals = 5, minDecimals = Math.min(0, maxDecimals)) {
+    static formatNumber(value, maxDecimals = 5, minDecimals = 0) {
         const roundingFactor = 10 ** maxDecimals;
         value = Math.round(value * roundingFactor) / roundingFactor;
 
@@ -38,8 +38,9 @@ class NumberFormatting { // eslint-disable-line no-unused-vars
         if (!integerMatch) return formatted; // should never happen
         const integerPart = integerMatch[0];
         return formatted
-            .replace(/(\d)\D(\d)/, '$1.$2') // enforce a dot as decimal separator for
-            // consistency. Using capturing groups instead of lookahead/lookbehind to avoid browser support limitations.
+            // Enforce a dot as decimal separator for consistency. Using capturing groups instead of
+            // lookahead/lookbehind to avoid browser support limitations.
+            .replace(/(\d)\D(\d)/, '$1.$2')
             .replace(integerPart, NumberFormatting.formatNumber(parseInt(integerPart, 10)));
     }
 }
