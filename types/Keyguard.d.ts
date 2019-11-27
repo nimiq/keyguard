@@ -54,15 +54,17 @@ type ConstructTransaction<T extends KeyguardRequest.TransactionInfo> = Transform
 type Is<T, B> = KeyguardRequest.Is<T, B>;
 
 type Parsed<T extends KeyguardRequest.Request> =
+    T extends Is<T, KeyguardRequest.SignTransactionRequestStandard> ?
+        ConstructTransaction<KeyId2KeyInfo<KeyguardRequest.SignTransactionRequestStandard>>
+        & { layout: KeyguardRequest.SignTransactionRequestLayout } :
     T extends Is<T, KeyguardRequest.SignTransactionRequestCheckout> ?
         Transform<
             ConstructTransaction<KeyId2KeyInfo<KeyguardRequest.SignTransactionRequestCheckout>>,
             'shopLogoUrl',
             { shopLogoUrl?: URL }
         > :
-    T extends Is<T, KeyguardRequest.SignTransactionRequestSimple> ?
-        ConstructTransaction<KeyId2KeyInfo<KeyguardRequest.SignTransactionRequestSimple>>
-        & { layout: KeyguardRequest.SignTransactionRequestLayout } :
+    T extends Is<T, KeyguardRequest.SignTransactionRequestCashlink> ?
+        ConstructTransaction<KeyId2KeyInfo<KeyguardRequest.SignTransactionRequestCashlink>> :
     T extends Is<T, KeyguardRequest.SignMessageRequest> ?
         Transform<
             KeyId2KeyInfo<KeyguardRequest.SignMessageRequest>,

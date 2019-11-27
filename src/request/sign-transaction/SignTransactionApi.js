@@ -21,11 +21,13 @@ class SignTransactionApi extends TopLevelApi {
         parsedRequest.keyLabel = this.parseLabel(request.keyLabel);
         parsedRequest.keyPath = this.parsePath(request.keyPath, 'keyPath');
         parsedRequest.senderLabel = this.parseLabel(request.senderLabel);
-        parsedRequest.recipientLabel = this.parseLabel(request.recipientLabel);
         parsedRequest.transaction = this.parseTransaction(request);
         parsedRequest.layout = this.parseLayout(request.layout);
-        if (parsedRequest.layout === SignTransactionApi.Layouts.CHECKOUT
-            && request.layout === SignTransactionApi.Layouts.CHECKOUT) {
+        if ((!request.layout || request.layout === SignTransactionApi.Layouts.STANDARD)
+            && parsedRequest.layout === SignTransactionApi.Layouts.STANDARD) {
+            parsedRequest.recipientLabel = this.parseLabel(request.recipientLabel);
+        } else if (request.layout === SignTransactionApi.Layouts.CHECKOUT
+            && parsedRequest.layout === SignTransactionApi.Layouts.CHECKOUT) {
             parsedRequest.shopOrigin = this.parseShopOrigin(request.shopOrigin);
             parsedRequest.shopLogoUrl = this.parseShopLogoUrl(request.shopLogoUrl);
             if (parsedRequest.shopLogoUrl && parsedRequest.shopLogoUrl.origin !== parsedRequest.shopOrigin) {
@@ -47,7 +49,9 @@ class SignTransactionApi extends TopLevelApi {
                     throw new Errors.InvalidRequestError('`expires` must be greater than `time`');
                 }
             }
-        } else if (parsedRequest.layout === SignTransactionApi.Layouts.CASHLINK && request.cashlinkMessage) {
+        } else if (request.layout === SignTransactionApi.Layouts.CASHLINK
+            && parsedRequest.layout === SignTransactionApi.Layouts.CASHLINK
+            && request.cashlinkMessage) {
             parsedRequest.cashlinkMessage = /** @type {string} */(this.parseMessage(request.cashlinkMessage));
         }
 
