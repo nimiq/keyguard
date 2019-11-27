@@ -9,6 +9,10 @@
     display: none;
 }
 
+#confirm-transaction .payment-info-line + .nq-card-header {
+    padding-top: 2rem;
+}
+
 #confirm-transaction .nq-card-body {
     padding-bottom: 2rem;
 }
@@ -66,15 +70,11 @@
 
 #confirm-transaction > #effect-container > * {
     transition: filter .4s, opacity .4s;
-    -webkit-filter: blur(0px);
-    -moz-filter: blur(0px);
-    -o-filter: blur(0px);
-    -ms-filter: blur(0px);
-    filter: blur(0px);
     opacity: 1;
 }
 
 #confirm-transaction.account-details-open > #effect-container > .page-header,
+#confirm-transaction.account-details-open > #effect-container > .payment-info-line,
 #confirm-transaction.account-details-open > #effect-container > .page-body {
     -webkit-filter: blur(20px);
     -moz-filter: blur(20px);

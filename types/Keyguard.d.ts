@@ -54,15 +54,29 @@ type ConstructTransaction<T extends KeyguardRequest.TransactionInfo> = Transform
 type Is<T, B> = KeyguardRequest.Is<T, B>;
 
 type Parsed<T extends KeyguardRequest.Request> =
-    T extends Is<T, KeyguardRequest.SignTransactionRequest>  ? ConstructTransaction<Transform<KeyId2KeyInfo<KeyguardRequest.SignTransactionRequest>,
-        'shopLogoUrl', { shopLogoUrl?: URL }>>
+    T extends Is<T, KeyguardRequest.SignTransactionRequestCheckout> ?
+        Transform<
+            ConstructTransaction<KeyId2KeyInfo<KeyguardRequest.SignTransactionRequestCheckout>>,
+            'shopLogoUrl',
+            { shopLogoUrl?: URL }
+        > :
+    T extends Is<T, KeyguardRequest.SignTransactionRequestSimple> ?
+        ConstructTransaction<KeyId2KeyInfo<KeyguardRequest.SignTransactionRequestSimple>>
         & { layout: KeyguardRequest.SignTransactionRequestLayout } :
-    T extends Is<T, KeyguardRequest.SignMessageRequest> ? Transform<KeyId2KeyInfo<KeyguardRequest.SignMessageRequest>,
-        'signer' | 'message', { signer: Nimiq.Address, message: Uint8Array | string }> :
+    T extends Is<T, KeyguardRequest.SignMessageRequest> ?
+        Transform<
+            KeyId2KeyInfo<KeyguardRequest.SignMessageRequest>,
+            'signer' | 'message',
+            { signer: Nimiq.Address, message: Uint8Array | string }
+        > :
     T extends Is<T, KeyguardRequest.SimpleRequest>
         | Is<T, KeyguardRequest.DeriveAddressRequest>
         | Is<T, KeyguardRequest.RemoveKeyRequest>
         | Is<T, KeyguardRequest.ExportRequest> ? KeyId2KeyInfo<T> :
-    T extends Is<T, KeyguardRequest.ImportRequest> ? Transform<KeyguardRequest.ImportRequest,
-        'isKeyLost', { isKeyLost: boolean }> :
+    T extends Is<T, KeyguardRequest.ImportRequest> ?
+        Transform<
+            KeyguardRequest.ImportRequest,
+            'isKeyLost',
+            { isKeyLost: boolean }
+        > :
     T;

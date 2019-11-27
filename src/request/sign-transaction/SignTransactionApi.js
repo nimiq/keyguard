@@ -14,6 +14,7 @@ class SignTransactionApi extends TopLevelApi {
             throw new Errors.InvalidRequestError('request is required');
         }
 
+        /** @type {Parsed<KeyguardRequest.SignTransactionRequest>} */
         const parsedRequest = {};
         parsedRequest.appName = this.parseAppName(request.appName);
         parsedRequest.keyInfo = await this.parseKeyId(request.keyId);
@@ -23,17 +24,31 @@ class SignTransactionApi extends TopLevelApi {
         parsedRequest.recipientLabel = this.parseLabel(request.recipientLabel);
         parsedRequest.transaction = this.parseTransaction(request);
         parsedRequest.layout = this.parseLayout(request.layout);
-        if (parsedRequest.layout === SignTransactionApi.Layouts.CHECKOUT) {
+        if (parsedRequest.layout === SignTransactionApi.Layouts.CHECKOUT
+            && request.layout === SignTransactionApi.Layouts.CHECKOUT) {
             parsedRequest.shopOrigin = this.parseShopOrigin(request.shopOrigin);
             parsedRequest.shopLogoUrl = this.parseShopLogoUrl(request.shopLogoUrl);
             if (parsedRequest.shopLogoUrl && parsedRequest.shopLogoUrl.origin !== parsedRequest.shopOrigin) {
-                throw new Errors.InvalidRequestError('origin of shopLogoUrl must be same as referrer');
+                throw new Errors.InvalidRequestError('origin of shopLogoUrl must be same as shopOrigin');
+            }
+
+            parsedRequest.fiatAmount = this.parseNonNegativeFiniteNumber(request.fiatAmount);
+            parsedRequest.fiatCurrency = this.parseFiatCurrency(request.fiatCurrency);
+            if ((parsedRequest.fiatAmount === undefined) !== (parsedRequest.fiatCurrency === undefined)) {
+                throw new Errors.InvalidRequestError('fiatAmount and fiatCurrency must be both defined or undefined.');
+            }
+
+            parsedRequest.time = this.parseNonNegativeFiniteNumber(request.time);
+            parsedRequest.expires = this.parseNonNegativeFiniteNumber(request.expires);
+            if (parsedRequest.expires !== undefined) {
+                if (parsedRequest.time === undefined) {
+                    throw new Errors.InvalidRequestError('If `expires` is given, `time` must be given too.');
+                } else if (parsedRequest.time >= parsedRequest.expires) {
+                    throw new Errors.InvalidRequestError('`expires` must be greater than `time`');
+                }
             }
         } else if (parsedRequest.layout === SignTransactionApi.Layouts.CASHLINK && request.cashlinkMessage) {
             parsedRequest.cashlinkMessage = /** @type {string} */(this.parseMessage(request.cashlinkMessage));
-            parsedRequest.shopOrigin = undefined;
-        } else {
-            parsedRequest.shopOrigin = undefined;
         }
 
         return parsedRequest;
@@ -42,7 +57,7 @@ class SignTransactionApi extends TopLevelApi {
     /**
      * Checks that the given layout is valid
      * @param {any} layout
-     * @returns {any}
+     * @returns {KeyguardRequest.SignTransactionRequestLayout}
      */
     parseLayout(layout) {
         if (!layout) {
@@ -53,6 +68,24 @@ class SignTransactionApi extends TopLevelApi {
             throw new Errors.InvalidRequestError('Invalid selected layout');
         }
         return layout;
+    }
+
+    /**
+     * Parses that a currency info is valid.
+     * @param {any} fiatCurrency
+     * @returns {string | undefined}
+     */
+    parseFiatCurrency(fiatCurrency) {
+        if (fiatCurrency === undefined) {
+            return undefined;
+        }
+
+        // parse currency code
+        if (typeof fiatCurrency !== 'string'
+            || !/^[a-z]{3}$/i.test(fiatCurrency)) {
+            throw new Errors.InvalidRequestError(`Invalid currency code ${fiatCurrency}`);
+        }
+        return fiatCurrency.toUpperCase();
     }
 
     get Handler() {
@@ -69,9 +102,12 @@ class SignTransactionApi extends TopLevelApi {
     }
 }
 
-/** @type {{[layout: string]: string}} */
+/**
+ * @enum {KeyguardRequest.SignTransactionRequestLayout}
+ * @readonly
+ */
 SignTransactionApi.Layouts = {
-    STANDARD: 'standard',
-    CHECKOUT: 'checkout',
-    CASHLINK: 'cashlink',
+    STANDARD: /** @type {'standard'} */ ('standard'),
+    CHECKOUT: /** @type {'checkout'} */ ('checkout'),
+    CASHLINK: /** @type {'cashlink'} */ ('cashlink'),
 };

@@ -71,6 +71,16 @@ const TRANSLATIONS = {
         'passwordbox-repeat-password-short': 'Password is too short',
         'passwordbox-password-skip': 'Skip for now',
 
+        'timer-expiry': 'This offer expires in',
+        'timer-second': 'second',
+        'timer-seconds': 'seconds',
+        'timer-minute': 'minute',
+        'timer-minutes': 'minutes',
+        'timer-hour': 'hour',
+        'timer-hours': 'hours',
+        'timer-day': 'day',
+        'timer-days': 'days',
+
         'identicon-selector-generate-new': 'New Avatars',
 
         'download-loginfile-download': 'Download Login File',
@@ -227,6 +237,16 @@ const TRANSLATIONS = {
         'passwordbox-repeat-password-long': 'Keine Übereinstimmung, bitte versuche es erneut',
         'passwordbox-repeat-password-short': 'Das Passwort ist zu kurz',
         'passwordbox-password-skip': 'Erstmal überspringen',
+
+        'timer-expiry': 'Angebot endet in',
+        'timer-second': 'Sekunde',
+        'timer-seconds': 'Sekunden',
+        'timer-minute': 'Minute',
+        'timer-minutes': 'Minuten',
+        'timer-hour': 'Stunde',
+        'timer-hours': 'Stunden',
+        'timer-day': 'Tag',
+        'timer-days': 'Tagen',
 
         'identicon-selector-generate-new': 'Neue Avatare',
 

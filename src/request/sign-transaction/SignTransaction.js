@@ -1,13 +1,16 @@
 /* global Nimiq */
 /* global Key */
 /* global KeyStore */
+/* global SignTransactionApi */
 /* global PasswordBox */
 /* global SignTransactionApi */
 /* global Errors */
 /* global Utf8Tools */
 /* global TopLevelApi */
 /* global AddressInfo */
+/* global PaymentInfoLine */
 /* global Constants */
+/* global NumberFormatting */
 /* global I18n */
 
 /**
@@ -47,12 +50,17 @@ class SignTransaction {
 
         /** @type {HTMLLinkElement} */
         const $recipient = (this.$el.querySelector('.accounts .recipient'));
+        const recipientAddress = transaction.recipient.toUserFriendlyAddress();
+        const recipientLabel = 'shopOrigin' in request && !!request.shopOrigin
+            ? request.shopOrigin.split('://')[1]
+            : request.recipientLabel || null;
+        const recipientImage = 'shopLogoUrl' in request && !!request.shopLogoUrl
+            ? request.shopLogoUrl
+            : null;
         this._recipientAddressInfo = new AddressInfo({
-            userFriendlyAddress: transaction.recipient.toUserFriendlyAddress(),
-            label: request.shopOrigin
-                ? request.shopOrigin.split('://')[1]
-                : request.recipientLabel || null,
-            imageUrl: request.shopLogoUrl || null,
+            userFriendlyAddress: recipientAddress,
+            label: recipientLabel,
+            imageUrl: recipientImage,
             accountLabel: null,
         }, request.layout === SignTransactionApi.Layouts.CASHLINK);
         this._recipientAddressInfo.renderTo($recipient);
@@ -61,6 +69,21 @@ class SignTransaction {
                 this._openDetails(this._recipientAddressInfo);
             });
         }
+
+        /** @type {HTMLElement} */
+        const $paymentInfoLine = (this.$el.querySelector('.payment-info-line'));
+        if (request.layout === SignTransactionApi.Layouts.CHECKOUT) {
+            // eslint-disable-next-line no-new
+            new PaymentInfoLine(Object.assign({}, request, {
+                recipient: recipientAddress,
+                label: recipientLabel || recipientAddress,
+                imageUrl: request.shopLogoUrl,
+                lunaAmount: request.transaction.value,
+            }), $paymentInfoLine);
+        } else {
+            $paymentInfoLine.remove();
+        }
+
         /** @type {HTMLButtonElement} */
         const $closeDetails = (this.$accountDetails.querySelector('#close-details'));
         $closeDetails.addEventListener('click', this._closeDetails.bind(this));
@@ -73,9 +96,9 @@ class SignTransaction {
         const $data = (this.$el.querySelector('#data'));
 
         // Set value and fee.
-        $value.textContent = this._formatNumber(Nimiq.Policy.satoshisToCoins(transaction.value));
+        $value.textContent = NumberFormatting.formatNumber(Nimiq.Policy.satoshisToCoins(transaction.value));
         if ($fee && transaction.fee > 0) {
-            $fee.textContent = this._formatNumber(Nimiq.Policy.satoshisToCoins(transaction.fee));
+            $fee.textContent = NumberFormatting.formatNumber(Nimiq.Policy.satoshisToCoins(transaction.fee));
             /** @type {HTMLDivElement} */
             const $feeSection = (this.$el.querySelector('.fee-section'));
             $feeSection.classList.remove('display-none');
@@ -114,6 +137,10 @@ class SignTransaction {
                 this._onConfirm(request, resolve, reject, password);
             },
         );
+
+        if ('expires' in request && request.expires) {
+            setTimeout(() => reject(new Errors.RequestExpired()), request.expires - Date.now());
+        }
     }
 
     /**
@@ -174,27 +201,6 @@ class SignTransaction {
     run() {
         // Go to start page
         window.location.hash = SignTransaction.Pages.CONFIRM_TRANSACTION;
-    }
-
-    /**
-     * @param {number} value
-     * @param {number} [maxDecimals]
-     * @param {number} [minDecimals]
-     * @returns {string}
-     */
-    _formatNumber(value, maxDecimals = 5, minDecimals = 0) {
-        const roundingFactor = 10 ** maxDecimals;
-        value = Math.floor(value * roundingFactor) / roundingFactor;
-
-        const result = parseFloat(value.toFixed(minDecimals)) === value
-            ? value.toFixed(minDecimals)
-            : value.toString();
-
-        if (Math.abs(value) < 10000) return result;
-
-        // Add thin spaces (U+202F) every 3 digits. Stop at the decimal separator if there is one.
-        const regexp = minDecimals > 0 ? /(\d)(?=(\d{3})+\.)/g : /(\d)(?=(\d{3})+$)/g;
-        return result.replace(regexp, '$1\u202F');
     }
 
     /**

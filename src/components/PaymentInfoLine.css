@@ -1,0 +1,87 @@
+.payment-info-line {
+    display: flex;
+    box-sizing: border-box;
+    margin: 1.75rem 2.5rem 1rem 2.375rem;
+    flex-shrink: 0;
+    font-size: 2rem;
+    line-height: 1.375;
+    font-weight: normal;
+}
+
+.payment-info-line .amount {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-bottom: .125rem;
+    white-space: nowrap;
+}
+
+.payment-info-line .nim-amount {
+    font-weight: bold;
+    color: var(--nimiq-light-blue);
+}
+
+.payment-info-line .fiat-amount {
+    margin-top: .25rem;
+    font-size: 1.625rem;
+    font-weight: 600;
+    line-height: 1;
+    opacity: .6;
+}
+
+.payment-info-line .arrow-runway {
+    display: flex;
+    flex-grow: 1;
+    min-width: 3rem;
+    margin: auto;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.payment-info-line .arrow-runway .nq-icon {
+    font-size: 2rem;
+    animation: arrow-shooting 2.7s cubic-bezier(.2,.5,.75,.5) infinite;
+}
+
+@keyframes arrow-shooting {
+    0%   { transform: translate3D(-3.5rem, 0, 0); opacity: 0; }
+    15%  { transform: translate3D(-3.5rem, 0, 0); opacity: 0; }
+    30%  { opacity: .2; }
+    70%  { opacity: .2; }
+    85%  { transform: translate3D(3rem, 0, 0); opacity: 0; }
+    100% { transform: translate3D(3rem, 0, 0); opacity: 0; }
+}
+
+.payment-info-line .recipient {
+    flex-direction: row;
+    width: auto;
+    cursor: auto !important;
+    overflow: hidden;
+}
+
+.payment-info-line .recipient .identicon {
+    width: 3.375rem;
+    height: 3.375rem;
+    margin-right: 1rem;
+}
+
+.payment-info-line .recipient:hover .identicon {
+    transform: none !important; /* avoid scaling on hover */
+}
+
+.payment-info-line .recipient .label {
+    width: auto;
+    margin: 0 0 .25rem 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: fade;
+}
+
+.payment-info-line .recipient .label::after {
+    display: none; /* don't apply text fadeout, we're using text ellipsis instead */
+}
+
+.payment-info-line .timer {
+    margin: auto -.5rem auto 1rem;
+    flex-shrink: 0;
+}

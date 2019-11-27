@@ -17,6 +17,7 @@
     height: 10rem;
     border-radius: 1rem;
     transition: transform 0.45s var(--nimiq-ease);
+    flex-shrink: 0;
 }
 
 .address-info.cashlink .identicon {

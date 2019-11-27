@@ -15,6 +15,8 @@ const ErrorConstants = {
         GOTO_CREATE: 'GOTO_CREATE',
         // used to signal a user initiated cancelation of the request
         CANCELED: 'CANCELED',
+        // used to signal that the request expired
+        EXPIRED: 'EXPIRED',
         // used to signal that a given keyId no longer exist in KG, to be treated by caller.
         KEY_NOT_FOUND: 'keyId not found',
         // network name does not exist
