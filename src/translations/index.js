@@ -48,6 +48,8 @@ const TRANSLATIONS = {
 
         'sign-msg-heading': 'Sign Message',
 
+        'address-info-new-cashlink': 'New Cashlink',
+
         'passwordbox-enter-password': 'Enter your password',
         'passwordbox-enter-pin': 'Enter your PIN',
         'passwordbox-repeat-password': 'Repeat your password',
@@ -214,6 +216,8 @@ const TRANSLATIONS = {
         'sign-tx-cancel-payment': 'Zahlung abbrechen',
 
         'sign-msg-heading': 'Nachricht signieren',
+
+        'address-info-new-cashlink': 'Neuer Cashlink',
 
         'passwordbox-enter-password': 'Gib dein Passwort ein',
         'passwordbox-enter-pin': 'Gib deine PIN ein',

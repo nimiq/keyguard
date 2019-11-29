@@ -1,3 +1,4 @@
+/* global I18n */
 /* global Copyable */
 /* global Identicon */
 
@@ -61,14 +62,20 @@ class AddressInfo { // eslint-disable-line no-unused-vars
         // label
         const $label = document.createElement('div');
         $label.classList.add('label');
-        $label.textContent = this._addressInfo.label || (isDetailedView
-            ? ''
-            : this._addressInfo.userFriendlyAddress);
-        if (!this._addressInfo.label && !isDetailedView) {
-            // The userfriendly address is displayed, set to Fira Mono font
-            $label.classList.add('mono');
+        if (this._displayAsCashlink) {
+            // Apply the translation via translatePhrase such that the translationValidator finds it and additionally
+            // apply the data-i18n attribute such that the translation can be updated on language switch.
+            $label.textContent = I18n.translatePhrase('address-info-new-cashlink');
+            $label.dataset.i18n = 'address-info-new-cashlink';
+        } else if (this._addressInfo.label) {
+            $label.textContent = this._addressInfo.label;
+        } else if (!isDetailedView) {
+            $label.textContent = this._addressInfo.userFriendlyAddress;
+            $label.classList.add('mono'); // Fira Mono font for address display
         }
-        $el.appendChild($label);
+        if ($label.textContent) {
+            $el.appendChild($label);
+        }
 
         if (isDetailedView) {
             // accountLabel
