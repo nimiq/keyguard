@@ -5,11 +5,21 @@
 /* global TemplateTags */
 /* global Key */
 
+/**
+ *  @typedef {{
+ *      bgColor: string,
+ *      hideInput: boolean,
+ *      buttonI18nTag: string,
+ *      minLength: number,
+ *      showResetPassword: boolean,
+ *  }} PasswordBoxOptions
+ */
+
 class PasswordBox extends Nimiq.Observable {
     // eslint-disable-next-line valid-jsdoc
     /**
      * @param {HTMLFormElement} [$el]
-     * @param {{bgColor?: string, hideInput?: boolean, buttonI18nTag?: string, minLength?: number}} [options]
+     * @param {Partial<PasswordBoxOptions>} [options]
      */
     constructor($el, options = {}) {
         const defaults = {
@@ -17,11 +27,12 @@ class PasswordBox extends Nimiq.Observable {
             hideInput: false,
             buttonI18nTag: 'passwordbox-confirm-tx',
             minLength: PasswordInput.DEFAULT_MIN_LENGTH,
+            showResetPassword: false,
         };
 
         super();
 
-        /** @type {{bgColor: string, hideInput: boolean, buttonI18nTag: string, minLength: number}} */
+        /** @type {PasswordBoxOptions} */
         this.options = Object.assign(defaults, options);
 
         this.$el = PasswordBox._createElement($el, this.options);
@@ -36,11 +47,19 @@ class PasswordBox extends Nimiq.Observable {
         this._isInputValid = false;
 
         this.$el.addEventListener('submit', event => this._onSubmit(event));
+
+        if (options.showResetPassword) {
+            /** @type {HTMLAnchorElement} */
+            (this.$el.querySelector('.skip')).addEventListener('click', /** @param {Event} event */ event => {
+                event.preventDefault();
+                this.fire(PasswordBox.Events.RESET_PASSWORD);
+            });
+        }
     }
 
     /**
      * @param {HTMLFormElement} [$el]
-     * @param {{bgColor: string, hideInput: boolean, buttonI18nTag: string, minLength: number}} options
+     * @param {PasswordBoxOptions} options
      * @returns {HTMLFormElement}
      */
     static _createElement($el, options) {
@@ -64,6 +83,16 @@ class PasswordBox extends Nimiq.Observable {
             'passwordbox-sign-msg': '<button class="submit" data-i18n="passwordbox-sign-msg">Sign message</button>',
         };
 
+        const resetPasswordHtml = options.showResetPassword
+            ? TemplateTags.noVars`
+                <a href="#" class="skip nq-link">
+                    <span data-i18n="passwordbox-reset-password">Reset with Recovery Words</span>
+                    <svg class="nq-icon">
+                        <use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-caret-right-small"/>
+                    </svg>
+                <a>`
+            : '';
+
         /** @type {{[i18nTag: string]: string}} */
         const promptVersions = {
             'passwordbox-enter-password': '<div class="prompt nq-text-s" data-i18n="passwordbox-enter-password">Enter your password</div>',
@@ -74,7 +103,7 @@ class PasswordBox extends Nimiq.Observable {
         if (!buttonVersions[options.buttonI18nTag]) throw new Error('PasswordBox button i18n tag not defined');
 
         /* eslint-disable max-len */
-        $el.innerHTML = TemplateTags.hasVars(2)`
+        $el.innerHTML = TemplateTags.hasVars(3)`
             ${promptVersions[options.minLength === Key.PIN_LENGTH ? 'passwordbox-enter-pin' : 'passwordbox-enter-password']}
             <div password-input></div>
             ${buttonVersions[options.buttonI18nTag]}
@@ -83,6 +112,7 @@ class PasswordBox extends Nimiq.Observable {
                 <path class="big-hex" d="M51.9,21.9L41.3,3.6c-0.8-1.3-2.2-2.1-3.7-2.1H16.4c-1.5,0-2.9,0.8-3.7,2.1L2.1,21.9c-0.8,1.3-0.8,2.9,0,4.2 l10.6,18.3c0.8,1.3,2.2,2.1,3.7,2.1h21.3c1.5,0,2.9-0.8,3.7-2.1l10.6-18.3C52.7,24.8,52.7,23.2,51.9,21.9z" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.4" stroke-dasharray="92.5 60"/>
                 <path class="small-hex" d="M51.9,21.9L41.3,3.6c-0.8-1.3-2.2-2.1-3.7-2.1H16.4c-1.5,0-2.9,0.8-3.7,2.1L2.1,21.9c-0.8,1.3-0.8,2.9,0,4.2 l10.6,18.3c0.8,1.3,2.2,2.1,3.7,2.1h21.3c1.5,0,2.9-0.8,3.7-2.1l10.6-18.3C52.7,24.8,52.7,23.2,51.9,21.9z" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-dasharray="47.5 105"/>
             </g></svg>
+            ${resetPasswordHtml}
         `;
         /* eslint-enable max-len */
 
@@ -167,4 +197,5 @@ class PasswordBox extends Nimiq.Observable {
 
 PasswordBox.Events = {
     SUBMIT: 'passwordbox-submit',
+    RESET_PASSWORD: 'passwordbox-reset-password',
 };

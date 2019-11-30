@@ -181,6 +181,7 @@ class ImportFile {
             /** @type {HTMLElement} */
             (this.$unlockAccountPage.querySelector('.lock')).classList.add('unlocked');
 
+            // TODO expectedKeyId check if it gets used in the future.
             const key = new Key(secret, this._flags.hasPin);
             await KeyStore.instance.put(key, encryptionKey);
             return key;

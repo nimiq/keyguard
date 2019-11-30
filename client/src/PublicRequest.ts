@@ -61,6 +61,8 @@ export type ImportRequest = BasicRequest & {
     requestedKeyPaths: string[],
     isKeyLost?: boolean,
     enableBackArrow?: boolean,
+    wordsOnly?: boolean,
+    expectedKeyId?: string,
 };
 
 export type ReleaseKeyRequest = {
@@ -230,6 +232,8 @@ export type KeyguardError = {
     Messages: {
         // specifically used to trigger a redirect to create after returning to caller
         GOTO_CREATE: 'GOTO_CREATE',
+        // Specifically used to trigger a redirect to a special import after returning to caller
+        GOTO_RESET_PASSWORD: 'GOTO_RESET_PASSWORD',
         // used to signal a user initiated cancelation of the request
         CANCELED: 'CANCELED',
         // used to signal that the request expired

@@ -43,7 +43,7 @@ class ImportWords {
 
         // Pages
         /** @type {HTMLFormElement} */
-        const $words = (document.getElementById(ImportWords.Pages.ENTER_WORDS));
+        this.$words = (document.getElementById(ImportWords.Pages.ENTER_WORDS));
         /** @type {HTMLFormElement} */
         this.$setPassword = (document.getElementById(ImportWords.Pages.SET_PASSWORD));
         /** @type {HTMLFormElement} */
@@ -51,7 +51,7 @@ class ImportWords {
 
         // Elements
         /** @type {HTMLFormElement} */
-        const $recoveryWords = ($words.querySelector('.recovery-words'));
+        const $recoveryWords = (this.$words.querySelector('.recovery-words'));
         /** @type {HTMLLinkElement} */
         this.$setPasswordBackButton = (this.$setPassword.querySelector('a.page-header-back-button'));
         /** @type {HTMLFormElement} */
@@ -79,11 +79,12 @@ class ImportWords {
             this._secrets = { entropy: null, privateKey: null };
             this._keyResults = [];
         });
-        this._recoveryWords.on(RecoveryWords.Events.INVALID, () => $words.classList.add('invalid-words'));
-        $words.querySelectorAll('input').forEach(
-            el => el.addEventListener('focus', () => $words.classList.remove('invalid-words')),
+        this._recoveryWords.on(RecoveryWords.Events.INVALID, () => this.$words.classList.add('invalid-words'));
+        this.$words.querySelectorAll('input').forEach(
+            el => el.addEventListener('focus',
+                () => this.$words.classList.remove('invalid-words', 'wrong-seed-phrase')),
         );
-        $words.addEventListener('submit', event => {
+        this.$words.addEventListener('submit', event => {
             event.preventDefault();
             if (this._recoveryWords.mnemonic) {
                 this._onRecoveryWordsComplete(this._recoveryWords.mnemonic, this._recoveryWords.mnemonicType);
@@ -130,10 +131,14 @@ class ImportWords {
             window.location.hash = ImportWords.Pages.DOWNLOAD_LOGINFILE;
         });
 
-        $skipDownloadButton.addEventListener('click', e => {
-            e.preventDefault();
-            this._resolve(this._keyResults);
-        });
+        if (this._request.wordsOnly && this._request.expectedKeyId) {
+            $skipDownloadButton.remove();
+        } else {
+            $skipDownloadButton.addEventListener('click', e => {
+                e.preventDefault();
+                this._resolve(this._keyResults);
+            });
+        }
     }
 
     run() {
@@ -244,6 +249,17 @@ class ImportWords {
         if (!this._secrets.entropy && !this._secrets.privateKey) {
             // no mnemonicType was matched.
             this._reject(new Errors.KeyguardError('Invalid mnemonic type'));
+            return;
+        }
+        if (this._request.expectedKeyId
+            && (!this._secrets.entropy
+                || this._request.expectedKeyId.id !== (new Key(this._secrets.entropy)).id)
+            && (!this._secrets.privateKey
+                || this._request.expectedKeyId.id !== (new Key(this._secrets.privateKey)).id)) {
+            this.$words.classList.add('wrong-seed-phrase');
+            this._recoveryWords.wrongSeedPhrase();
+            this._secrets = { entropy: null, privateKey: null };
+            this._fileAvailable = undefined;
             return;
         }
 

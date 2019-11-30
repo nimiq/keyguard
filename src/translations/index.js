@@ -32,10 +32,11 @@ const TRANSLATIONS = {
 
         'import-words-file-available': 'Using the Recovery Words creates a new Login File. '
                                      + 'Create a password to secure it.',
-        'import-words-file-unavailable': 'Using the Recovery Words creates a new account. '
+        'import-words-file-unavailable': 'Using the Recovery Words creates a new Account. '
                                        + 'Create a password to secure it.',
         'import-words-hint': 'Press Tab to Jump to the next field',
-        'import-words-error': 'This is not a valid account. Typo?',
+        'import-words-error': 'This is not a valid Account. Typo?',
+        'import-words-wrong-seed-phrase': 'These Recovery Words belong to a different Account',
         'import-words-download-loginfile': 'Save your Login File',
 
         'file-import-prompt': 'Drag here or click to import',
@@ -72,6 +73,7 @@ const TRANSLATIONS = {
         'passwordbox-repeat-password-long': 'No match, please try again',
         'passwordbox-repeat-password-short': 'Password is too short',
         'passwordbox-password-skip': 'Skip for now',
+        'passwordbox-reset-password': 'Reset with Recovery Words',
 
         'timer-expiry': 'This offer expires in',
         'timer-second': 'second',
@@ -205,6 +207,7 @@ const TRANSLATIONS = {
                                        + 'Setze ein Passwort um ihn zu schützen.',
         'import-words-hint': 'Mit Tab kannst du zum nächsten Feld springen',
         'import-words-error': 'Das ist kein gültiger Account. Schreibfehler?',
+        'import-words-wrong-seed-phrase': 'Diese Wiederherstellungswörter gehören zu einem anderen Account',
         'import-words-download-loginfile': 'Lade dein Login File herunter',
 
         'file-import-prompt': 'Ziehe dein Login File auf dieses Feld',
@@ -241,6 +244,7 @@ const TRANSLATIONS = {
         'passwordbox-repeat-password-long': 'Keine Übereinstimmung, bitte versuche es erneut',
         'passwordbox-repeat-password-short': 'Das Passwort ist zu kurz',
         'passwordbox-password-skip': 'Erstmal überspringen',
+        'passwordbox-reset-password': 'Mit Wiederherstellungswörtern zurücksetzen',
 
         'timer-expiry': 'Angebot endet in',
         'timer-second': 'Sekunde',
