@@ -78,7 +78,13 @@ type Parsed<T extends KeyguardRequest.Request> =
     T extends Is<T, KeyguardRequest.ImportRequest> ?
         Transform<
             KeyguardRequest.ImportRequest,
+            'isKeyLost' | 'wordsOnly',
+            { isKeyLost: boolean, wordsOnly: boolean }
+        > :
+    T extends Is<T, KeyguardRequest.ResetPasswordRequest> ?
+        Transform<
+            KeyguardRequest.ResetPasswordRequest,
             'isKeyLost' | 'expectedKeyId' | 'wordsOnly',
-            { isKeyLost: boolean, expectedKeyId?: KeyInfo, wordsOnly: boolean }
+            { isKeyLost: boolean, expectedKeyId: string, wordsOnly: boolean }
         > :
     T;

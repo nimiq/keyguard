@@ -17,6 +17,7 @@ import {
     RedirectRequest,
     RemoveKeyRequest,
     ReleaseKeyRequest,
+    ResetPasswordRequest,
     SignTransactionRequest,
     SignMessageRequest,
     SimpleRequest,
@@ -93,6 +94,10 @@ export class KeyguardClient {
 
     public import(request: ImportRequest) {
         this._redirectRequest<ImportRequest>(KeyguardCommand.IMPORT, request);
+    }
+
+    public resetPassword(request: ResetPasswordRequest) {
+        this._redirectRequest<ResetPasswordRequest>(KeyguardCommand.IMPORT, request);
     }
 
     public export(request: ExportRequest) {

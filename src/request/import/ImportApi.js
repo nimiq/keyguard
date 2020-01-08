@@ -6,8 +6,8 @@
 /** @extends {TopLevelApi<KeyguardRequest.ImportRequest>} */
 class ImportApi extends TopLevelApi {
     /**
-     * @param {KeyguardRequest.ImportRequest} request
-     * @returns {Promise<Parsed<KeyguardRequest.ImportRequest>>}
+     * @param {KeyguardRequest.ImportRequest | KeyguardRequest.ResetPasswordRequest} request
+     * @returns {Promise<Parsed<KeyguardRequest.ImportRequest | KeyguardRequest.ResetPasswordRequest>>}
      */
     async parseRequest(request) {
         if (!request) {
@@ -20,7 +20,9 @@ class ImportApi extends TopLevelApi {
         parsedRequest.isKeyLost = this.parseBoolean(request.isKeyLost);
         parsedRequest.enableBackArrow = this.parseBoolean(request.enableBackArrow);
         parsedRequest.wordsOnly = this.parseBoolean(request.wordsOnly);
-        parsedRequest.expectedKeyId = request.expectedKeyId ? await this.parseKeyId(request.expectedKeyId) : undefined;
+        if ('expectedKeyId' in request) {
+            parsedRequest.expectedKeyId = (await this.parseKeyId(request.expectedKeyId)).id;
+        }
 
         this._handler = parsedRequest.wordsOnly ? ImportWords : ImportFile;
 

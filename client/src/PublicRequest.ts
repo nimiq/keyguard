@@ -62,7 +62,10 @@ export type ImportRequest = BasicRequest & {
     isKeyLost?: boolean,
     enableBackArrow?: boolean,
     wordsOnly?: boolean,
-    expectedKeyId?: string,
+};
+
+export type ResetPasswordRequest = ImportRequest & {
+    expectedKeyId: string,
 };
 
 export type ReleaseKeyRequest = {
@@ -203,7 +206,7 @@ export type ResultType<T extends RedirectRequest> =
         | Is<T, SignTransactionRequestCashlink>
         ? SignatureResult :
     T extends Is<T, DeriveAddressRequest> ? DerivedAddress[] :
-    T extends Is<T, CreateRequest> | Is<T, ImportRequest> ? KeyResult :
+    T extends Is<T, CreateRequest> | Is<T, ImportRequest> | Is<T, ResetPasswordRequest> ? KeyResult :
     T extends Is<T, ExportRequest> ? ExportResult :
     T extends Is<T, RemoveKeyRequest> | Is<T, SimpleRequest> ? SimpleResult :
     never;

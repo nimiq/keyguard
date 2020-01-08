@@ -22,7 +22,7 @@
 
 class ImportWords {
     /**
-     * @param {Parsed<KeyguardRequest.ImportRequest>} request
+     * @param {Parsed<KeyguardRequest.ImportRequest | KeyguardRequest.ResetPasswordRequest>} request
      * @param {ImportWords.resolve} resolve
      * @param {reject} reject
      */
@@ -131,7 +131,7 @@ class ImportWords {
             window.location.hash = ImportWords.Pages.DOWNLOAD_LOGINFILE;
         });
 
-        if (this._request.wordsOnly && this._request.expectedKeyId) {
+        if (this._request.wordsOnly && 'expectedKeyId' in this._request) {
             $skipDownloadButton.remove();
         } else {
             $skipDownloadButton.addEventListener('click', e => {
@@ -251,11 +251,11 @@ class ImportWords {
             this._reject(new Errors.KeyguardError('Invalid mnemonic type'));
             return;
         }
-        if (this._request.expectedKeyId
+        if ('expectedKeyId' in this._request
             && (!this._secrets.entropy
-                || this._request.expectedKeyId.id !== (new Key(this._secrets.entropy)).id)
+                || this._request.expectedKeyId !== (new Key(this._secrets.entropy)).id)
             && (!this._secrets.privateKey
-                || this._request.expectedKeyId.id !== (new Key(this._secrets.privateKey)).id)) {
+                || this._request.expectedKeyId !== (new Key(this._secrets.privateKey)).id)) {
             this.$words.classList.add('wrong-seed-phrase');
             this._recoveryWords.wrongSeedPhrase();
             this._secrets = { entropy: null, privateKey: null };
