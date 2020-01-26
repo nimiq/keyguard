@@ -43,6 +43,7 @@
 
     <script defer src="../../lib/IqonHash.js"></script>
     <script defer src="../../lib/Iqons.js"></script>
+    <script defer src="../../components/TabWidthSelector.js"></script>
     <script defer src="../../components/Identicon.js"></script>
     <script defer src="SignMessageApi.js"></script>
     <script defer src="SignMessage.js"></script>
@@ -51,6 +52,7 @@
     <link rel="stylesheet" bundle-toplevel href="../../../node_modules/@nimiq/style/nimiq-style.min.css">
     <link rel="stylesheet" bundle-toplevel href="../../nimiq-style.css">
     <link rel="stylesheet" bundle-toplevel href="../../common.css">
+    <link rel="stylesheet" bundle-toplevel href="../../components/TabWidthSelector.css">
     <link rel="stylesheet" bundle-toplevel href="../../components/PasswordInput.css">
     <link rel="stylesheet" bundle-toplevel href="../../components/PasswordBox.css">
 
@@ -71,6 +73,9 @@
 
             <div class="page-body nq-card-body">
                 <textarea id="message" readonly="readonly"></textarea>
+                <div class="tab-width">
+                    <div id="tab-width-selector"></div>
+                </div>
 
                 <div class="account">
                     <div class="identicon" id="signer-identicon"></div>

@@ -118,3 +118,22 @@
     resize: none;
     font-family: 'Fira Mono', monospace;
 }
+
+.tab-width {
+    text-align: right;
+    padding: 0.5rem;
+    background-color: rgba(31, 35, 72, .05); /* Based on Nimiq Blue */
+    border: solid 1px rgba(31, 35, 72, .1); /* Based on Nimiq Blue */
+    border-top: none;
+    border-bottom-left-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+}
+
+.page#sign-message:not(.show-tab-width-selector) .tab-width {
+    display: none;
+}
+
+.page#sign-message.show-tab-width-selector #message {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}

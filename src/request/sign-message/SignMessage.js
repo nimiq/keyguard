@@ -1,6 +1,7 @@
 /* global Nimiq */
 /* global Key */
 /* global KeyStore */
+/* global TabWidthSelector */
 /* global Identicon */
 /* global PasswordBox */
 /* global Utf8Tools */
@@ -35,6 +36,25 @@ class SignMessage {
         // Set message
         if (typeof request.message === 'string') {
             $message.value = request.message;
+
+            // Look for tabs
+            if (request.message.includes('\t')) {
+                // Init tab width selector
+
+                /** @type {HTMLDivElement} */
+                const $tabWidthSelector = ($page.querySelector('#tab-width-selector'));
+                const tws = new TabWidthSelector($tabWidthSelector);
+
+                // @ts-ignore Property 'tabSize' does not exist on type 'CSSStyleDeclaration'
+                $message.style.tabSize = tws.width;
+
+                tws.on(TabWidthSelector.Events.INPUT, width => {
+                    // @ts-ignore Property 'tabSize' does not exist on type 'CSSStyleDeclaration'
+                    $message.style.tabSize = width;
+                });
+
+                $page.classList.add('show-tab-width-selector');
+            }
         } else {
             $message.value = Nimiq.BufferUtils.toHex(request.message);
         }
