@@ -1,6 +1,7 @@
 /* global Nimiq */
 /* global Key */
 /* global KeyStore */
+/* global TabWidthSelector */
 /* global Identicon */
 /* global PasswordBox */
 /* global Utf8Tools */
@@ -32,29 +33,27 @@ class SignMessage {
         /** @type {HTMLInputElement} */
         const $message = ($page.querySelector('#message'));
 
-        /** @type {HTMLInputElement} */
-        const $tabSize = ($page.querySelector("#tabselect"));
-
-        // Loads last used size from localStorage.
-        let loadedSize = localStorage.getItem("tab-size");
-        if (!loadedSize) loadedSize = "8";
-
-        // Sets #tabselect's value and #message's tabSize style property.
-        $tabSize.value = loadedSize;
-        $message.style.tabSize = $tabSize.value;
-        $tabSize.oninput = (e) => {
-            // When #tabselect's value changes, update the value of #message's tabSize and update localStorage.
-            $message.style.tabSize = $tabSize.value;
-            localStorage.setItem("tab-size", $tabSize.value);
-        }
-
         // Set message
         if (typeof request.message === 'string') {
             $message.value = request.message;
 
-            if (!request.message.includes("\t")) {
-                const parent = $tabSize.parentElement;
-                if (parent) parent.style.display = "none";
+            // Look for tabs
+            if (request.message.includes('\t')) {
+                // Init tab width selector
+
+                /** @type {HTMLDivElement} */
+                const $tabWidthSelector = ($page.querySelector('#tabwidthselector'));
+                const tws = new TabWidthSelector($tabWidthSelector);
+
+                // @ts-ignore Property 'tabSize' does not exist on type 'CSSStyleDeclaration'
+                $message.style.tabSize = tws.width;
+
+                tws.on(TabWidthSelector.Events.INPUT, width => {
+                    // @ts-ignore Property 'tabSize' does not exist on type 'CSSStyleDeclaration'
+                    $message.style.tabSize = width;
+                });
+
+                $page.classList.add('show-tab-width-selector');
             }
         } else {
             $message.value = Nimiq.BufferUtils.toHex(request.message);

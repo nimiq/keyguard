@@ -48,6 +48,8 @@ const TRANSLATIONS = {
 
         'sign-msg-heading': 'Sign Message',
 
+        'tabwidthselector-label': 'Tab Width',
+
         'address-info-new-cashlink': 'New Cashlink',
 
         'passwordbox-enter-password': 'Enter your password',
@@ -216,6 +218,8 @@ const TRANSLATIONS = {
         'sign-tx-cancel-payment': 'Zahlung abbrechen',
 
         'sign-msg-heading': 'Nachricht signieren',
+
+        'tabwidthselector-label': 'Tab-Breite',
 
         'address-info-new-cashlink': 'Neuer Cashlink',
 
