@@ -36,7 +36,7 @@ class TabWidthSelector extends Nimiq.Observable {
 
         /* eslint-disable max-len */
         $el.innerHTML = TemplateTags.noVars`
-            <span data-i18n="tabwidthselector-label">Tab Width</span>
+            <span data-i18n="tab-width-selector-label">Tab Width</span>
             <button class="nq-button-s" data-width="2">2</button>
             <button class="nq-button-s" data-width="4">4</button>
             <button class="nq-button-s" data-width="8">8</button>

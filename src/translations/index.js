@@ -48,7 +48,7 @@ const TRANSLATIONS = {
 
         'sign-msg-heading': 'Sign Message',
 
-        'tabwidthselector-label': 'Tab Width',
+        'tab-width-selector-label': 'Tab Width',
 
         'address-info-new-cashlink': 'New Cashlink',
 
@@ -219,7 +219,7 @@ const TRANSLATIONS = {
 
         'sign-msg-heading': 'Nachricht signieren',
 
-        'tabwidthselector-label': 'Tab-Breite',
+        'tab-width-selector-label': 'Tab-Breite',
 
         'address-info-new-cashlink': 'Neuer Cashlink',
 

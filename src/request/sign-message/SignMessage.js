@@ -42,7 +42,7 @@ class SignMessage {
                 // Init tab width selector
 
                 /** @type {HTMLDivElement} */
-                const $tabWidthSelector = ($page.querySelector('#tabwidthselector'));
+                const $tabWidthSelector = ($page.querySelector('#tab-width-selector'));
                 const tws = new TabWidthSelector($tabWidthSelector);
 
                 // @ts-ignore Property 'tabSize' does not exist on type 'CSSStyleDeclaration'
