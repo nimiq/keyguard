@@ -96,16 +96,16 @@ export class KeyguardClient {
         this._redirectRequest<ImportRequest>(KeyguardCommand.IMPORT, request);
     }
 
-    public resetPassword(request: ResetPasswordRequest) {
-        this._redirectRequest<ResetPasswordRequest>(KeyguardCommand.IMPORT, request);
-    }
-
     public export(request: ExportRequest) {
         this._redirectRequest<ExportRequest>(KeyguardCommand.EXPORT, request);
     }
 
     public changePassword(request: SimpleRequest) {
         this._redirectRequest<SimpleRequest>(KeyguardCommand.CHANGE_PASSWORD, request);
+    }
+
+    public resetPassword(request: ResetPasswordRequest) {
+        this._redirectRequest<ResetPasswordRequest>(KeyguardCommand.IMPORT, request);
     }
 
     public signTransaction(request: SignTransactionRequest) {
