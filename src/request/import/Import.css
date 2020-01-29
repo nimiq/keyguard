@@ -97,8 +97,16 @@
     color: white;
 }
 
-.page#recovery-words.invalid-words p:not(.nq-red),
-.page#recovery-words:not(.invalid-words) p.nq-red {
+.page#recovery-words .wrong-seed-phrase {
+    line-height: 1.3;
+    margin-top: 2rem;
+    margin-bottom: -1.125rem;
+}
+
+.page#recovery-words.invalid-words p:not(.invalid),
+.page#recovery-words:not(.invalid-words) p.invalid,
+.page#recovery-words.wrong-seed-phrase p:not(.wrong-seed-phrase),
+.page#recovery-words:not(.wrong-seed-phrase) p.wrong-seed-phrase {
     display: none;
 }
 

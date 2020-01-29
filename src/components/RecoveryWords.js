@@ -101,6 +101,15 @@ class RecoveryWords extends Nimiq.Observable {
         return this.$el;
     }
 
+    wrongSeedPhrase() {
+        this._animateError();
+        window.setTimeout(() => {
+            for (let i = 0; i < 24; i++) {
+                this.$fields[i].value = '';
+            }
+        }, 500);
+    }
+
     _onFieldComplete() {
         this._checkPhraseComplete();
     }

@@ -62,6 +62,7 @@ class ChangePassword {
             buttonI18nTag: 'passwordbox-confirm',
             minLength: this._request.keyInfo.hasPin ? Key.PIN_LENGTH : undefined,
             hideInput: !this._request.keyInfo.encrypted,
+            showResetPassword: true,
         });
 
         // Adapt to type of secret
@@ -94,6 +95,7 @@ class ChangePassword {
         // Events
 
         this._passwordGetter.on(PasswordBox.Events.SUBMIT, this._unlock.bind(this));
+        this._passwordGetter.on(PasswordBox.Events.RESET_PASSWORD, () => this._reject(new Errors.GoToResetPassword()));
         this._passwordSetter.on(PasswordSetterBox.Events.ENTERED, this._prepare.bind(this));
         this._passwordSetter.on(PasswordSetterBox.Events.SUBMIT, this._commitChangeAndOfferLoginFile.bind(this));
         this._passwordSetter.on(PasswordSetterBox.Events.RESET, this.backToEnterPassword.bind(this));
@@ -198,7 +200,6 @@ class ChangePassword {
     /**
      * @returns {Key}
      */
-
     get key() {
         if (!this._key) {
             throw new Error('This should never happen.');

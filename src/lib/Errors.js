@@ -81,6 +81,12 @@ Errors.RequestExpired = class extends Errors.KeyguardError {
     }
 };
 
+Errors.GoToResetPassword = class extends Errors.KeyguardError {
+    constructor() {
+        super(ErrorConstants.Messages.GOTO_RESET_PASSWORD);
+    }
+};
+
 Errors.GoToCreate = class extends Errors.KeyguardError {
     constructor() {
         super(ErrorConstants.Messages.GOTO_CREATE);

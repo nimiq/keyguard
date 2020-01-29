@@ -61,6 +61,11 @@ export type ImportRequest = BasicRequest & {
     requestedKeyPaths: string[],
     isKeyLost?: boolean,
     enableBackArrow?: boolean,
+    wordsOnly?: boolean,
+};
+
+export type ResetPasswordRequest = ImportRequest & {
+    expectedKeyId: string,
 };
 
 export type ReleaseKeyRequest = {
@@ -201,7 +206,7 @@ export type ResultType<T extends RedirectRequest> =
         | Is<T, SignTransactionRequestCashlink>
         ? SignatureResult :
     T extends Is<T, DeriveAddressRequest> ? DerivedAddress[] :
-    T extends Is<T, CreateRequest> | Is<T, ImportRequest> ? KeyResult :
+    T extends Is<T, CreateRequest> | Is<T, ImportRequest> | Is<T, ResetPasswordRequest> ? KeyResult :
     T extends Is<T, ExportRequest> ? ExportResult :
     T extends Is<T, RemoveKeyRequest> | Is<T, SimpleRequest> ? SimpleResult :
     never;
@@ -230,6 +235,8 @@ export type KeyguardError = {
     Messages: {
         // specifically used to trigger a redirect to create after returning to caller
         GOTO_CREATE: 'GOTO_CREATE',
+        // Specifically used to trigger a redirect to a special import after returning to caller
+        GOTO_RESET_PASSWORD: 'GOTO_RESET_PASSWORD',
         // used to signal a user initiated cancelation of the request
         CANCELED: 'CANCELED',
         // used to signal that the request expired
