@@ -178,7 +178,10 @@ class ImportWords {
                     keyId: await KeyStore.instance.put(key, encryptionKey || undefined),
                     keyType: Nimiq.Secret.Type.ENTROPY,
                     addresses,
-                    fileExported: false,
+
+                    // Backup warnings should not be shown for imported accounts, only for newly created accounts.
+                    // Therefore we set both flags to true.
+                    fileExported: true,
                     wordsExported: true,
                 };
                 this._keyResults.push(result);
@@ -208,7 +211,7 @@ class ImportWords {
                         keyPath: Constants.LEGACY_DERIVATION_PATH,
                         address: key.deriveAddress(Constants.LEGACY_DERIVATION_PATH).serialize(),
                     }],
-                    fileExported: false,
+                    fileExported: false, // Legacy accounts do not get a LoginFile
                     wordsExported: true,
                 };
                 this._keyResults.push(result);
