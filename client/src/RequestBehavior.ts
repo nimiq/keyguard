@@ -74,8 +74,14 @@ export class IFrameRequestBehavior extends RequestBehavior {
     }
 
     public async request(endpoint: string, command: KeyguardCommand, args: any[]): Promise<any> {
-        if (this._iframe && this._iframe.src !== `${endpoint}${IFrameRequestBehavior.IFRAME_PATH_SUFFIX}`) {
-            throw new Error('Keyguard iframe is already opened with another endpoint');
+        if (this._iframe
+            && this._iframe.src
+            && this._iframe.src !== `${endpoint}${IFrameRequestBehavior.IFRAME_PATH_SUFFIX}`
+        ) {
+            const openedSrc = this._iframe.src;
+            const expectedSrc = `${endpoint}${IFrameRequestBehavior.IFRAME_PATH_SUFFIX}`;
+            throw new Error('Keyguard iframe is already opened with another endpoint' +
+                `(opened: ${openedSrc}, expected: ${expectedSrc}`);
         }
 
         const origin = RequestBehavior.getAllowedOrigin(endpoint);
