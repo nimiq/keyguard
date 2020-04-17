@@ -156,8 +156,11 @@ class ImportFile {
             keyId: key.id,
             keyType: key.type,
             addresses,
+
+            // Backup warnings should not be shown for imported accounts, only for newly created accounts.
+            // Therefore we set both flags to true.
             fileExported: true,
-            wordsExported: false,
+            wordsExported: true,
         }];
 
         this._resolve(result);
