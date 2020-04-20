@@ -23,62 +23,31 @@
     stroke-linecap: round;
 }
 
-.timer circle {
-    stroke: var(--nimiq-blue);
-}
-
 .timer .filler-circle {
+    stroke: var(--nimiq-blue);
     opacity: .2;
 }
 
 .timer .time-circle {
-    opacity: .3;
-    transition: stroke .3s var(--nimiq-ease), opacity .3s var(--nimiq-ease);
-}
-
-.timer.details-shown .time-circle {
     stroke: var(--nimiq-light-blue);
-    opacity: 1;
+    transition: stroke .3s var(--nimiq-ease);
 }
 
 .timer.little-time-left .time-circle {
     stroke: var(--nimiq-orange);
-    opacity: 1;
-}
-
-.timer .info-exclamation-icon {
-    fill: var(--nimiq-blue);
-    opacity: .4;
-    transform-origin: center;
-    transition: fill .3s var(--nimiq-ease), opacity .3s var(--nimiq-ease), transform .3s var(--nimiq-ease);
-}
-
-.timer.little-time-left .info-exclamation-icon {
-    fill: var(--nimiq-orange);
-    opacity: 1;
-    transform: rotate(180deg); /* turn info icon into an exclamation mark */
-}
-
-.timer.details-shown .info-exclamation-icon {
-    opacity: 0;
 }
 
 .timer .countdown {
-    opacity: 0;
     font-size: 12px; /* relative to svg viewBox */
     font-weight: bold;
     text-anchor: middle;
     dominant-baseline: central;
     fill: var(--nimiq-light-blue);
-    transition: fill .3s var(--nimiq-ease), opacity .3s var(--nimiq-ease);
+    transition: fill .3s var(--nimiq-ease);
 }
 
 .timer.little-time-left .countdown {
     fill: var(--nimiq-orange);
-}
-
-.timer.details-shown .countdown {
-    opacity: 1;
 }
 
 .timer .tooltip {
@@ -96,10 +65,10 @@
     z-index: 1;
     pointer-events: none;
     background-image: url('data:image/svg+xml,<svg viewBox="0 0 136 63.9" xmlns="http://www.w3.org/2000/svg"><path d="M136 59.9a4 4 0 0 1-4 4H4a4 4 0 0 1-4-4v-47a4 4 0 0 1 4-4h99a4 4 0 0 0 3.2-1.7l4.6-6.6c.6-.8 1.8-.8 2.4 0l4.6 6.6a4 4 0 0 0 3.3 1.7H132a4 4 0 0 1 4 4z" fill="url(%23a)"/><defs><radialGradient id="a" cx="0" cy="0" r="1" gradientTransform="matrix(-190 0 0 -64.999 136 70.9)" gradientUnits="userSpaceOnUse"><stop stop-color="%23260133" offset="0"/><stop stop-color="%231F2348" offset="1"/></radialGradient></defs></svg>');
-    transition: opacity .3s var(--nimiq-ease), transform .3s var(--nimiq-ease);
+    transition: opacity .3s var(--nimiq-ease);
 }
 
-.timer.details-shown .tooltip {
+.timer:hover .tooltip,
+.timer:focus .tooltip {
     opacity: 1;
-    transform: translateY(.5rem);
 }
