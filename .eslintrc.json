@@ -17,6 +17,7 @@
     "prefer-destructuring": ["off"],
     "no-console": ["off"],
     "no-warning-comments": ["warn"],
+    "no-restricted-syntax": ["error", "ForInStatement", "LabeledStatement", "WithStatement"],
     "require-jsdoc-except/require-jsdoc": ["error", {
       "require": {
         "FunctionDeclaration": true,

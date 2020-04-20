@@ -21,6 +21,11 @@ const keys = [
     Uint8Array.from([ 0x68, 0x2d, 0xf0, 0x35, 0xc3, 0x0e, 0x8c, 0x55, 0xbd, 0xa4, 0xab, 0x51, 0x72, 0x13, 0x79, 0x2c, 0x2a, 0xf4, 0xb4, 0xe9, 0xc2, 0x3a, 0xc2, 0xcf, 0x11, 0xbd, 0x28, 0xb2, 0x37, 0xa6, 0x54, 0x4e ]),
 ];
 
+const mnemonics = [
+    'exotic discover sport hamster index puppy trip blood illness gadget mass hour tray catch color genre draft merit strong aim yellow system plug year',
+    'habit hurdle aspect maid trip client walk nice fabric mountain tattoo flame quantum foil poem elder security joy hungry fabric casino spring eye scene',
+];
+
 const secrets = [
     new Nimiq.Entropy(keys[0]),
     new Nimiq.PrivateKey(keys[1]),
