@@ -19,6 +19,7 @@ module.exports = function (/** @type {any} */ config) {
             {'pattern': 'node_modules/@nimiq/core-web/worker-wasm.js', included: false},
             {'pattern': 'node_modules/@nimiq/core-web/worker.js', included: false},
             'src/lib/*.js', // Force load of lib files before components and common.js
+            'src/lib/bitcoin/*.js',
             'src/**/*js',
             'tests/**/*.spec.js',
         ],

@@ -1,77 +1,39 @@
 /* global Nimiq */
-/* global Key */
-/* global BitcoinConstants */
 /* global BitcoinJS */
+/* global BitcoinConstants */
+/* global BitcoinUtils */
 /* global NodeBuffer */
+/* global CONFIG */
 
 class BitcoinKey {
-    /**
-     * @param {string[]} paths
-     * @returns {{prefix: string, suffixes: string[]}}
-     */
-    static pathsToPrefixAndSuffixes(paths) {
-        const sorted = paths.concat().sort();
-        const first = sorted[0];
-        const last = sorted[sorted.length - 1];
-
-        let i = 0;
-        while (i < first.length && first.charAt(i) === last.charAt(i)) {
-            i += 1;
-        }
-        let prefix = first.substring(0, i);
-
-        // Make sure prefix ends on a slash so we don't derive a partial step
-        while (prefix.charAt(prefix.length - 1) !== '/') {
-            prefix = prefix.substring(0, prefix.length - 1);
-        }
-
-        const suffixes = prefix ? paths.map(path => path.replace(prefix, '')) : paths;
-
-        // Remove trailing slash from prefix before returning
-        prefix = prefix.substring(0, prefix.length - 1);
-
-        return {
-            prefix,
-            suffixes,
-        };
-    }
-
     /**
      * @param {Key} key
      */
     constructor(key) {
-        if (!(key.secret instanceof Nimiq.Entropy)) {
+        if (key.type !== Nimiq.Secret.Type.ENTROPY) {
             throw new Error('Key must be of type Nimiq.Entropy');
         }
-        this._secret = key.secret;
-        this._hasPin = key.hasPin;
-        this._id = key.id;
-    }
-
-    /**
-     * @returns {Key}
-     */
-    toKey() {
-        return new Key(this._secret, this._hasPin);
+        this._key = key;
     }
 
     /**
      * @param {string} path
-     * @param {string} bip
      * @returns {string}
      */
-    deriveAddress(path, bip) {
-        const keyPair = this._deriveNode(path);
+    deriveAddress(path) {
+        const keyPair = this._deriveKeyPair(path);
+
+        const bip = BitcoinUtils.parseBipFromDerivationPath(path);
 
         /** @type {BitcoinJS.Payment} */
         let payment;
 
         switch (bip) {
             case BitcoinConstants.BIP.BIP49:
-                payment = this._nestedSegwitPayment(keyPair);
+                payment = BitcoinUtils.keyPairToNestedSegwit(keyPair);
                 break;
             case BitcoinConstants.BIP.BIP84:
-                payment = this._nativeSegwitPayment(keyPair);
+                payment = BitcoinUtils.keyPairToNativeSegwit(keyPair);
                 break;
             default:
                 throw new Error(`Invalid bip: ${bip}`);
@@ -85,31 +47,19 @@ class BitcoinKey {
     }
 
     /**
-     * @param {BitcoinJS.BIP32Interface} keyPair
-     * @returns {BitcoinJS.Payment}
+     * @param {string} path
+     * @returns {string}
      */
-    _nestedSegwitPayment(keyPair) {
-        const network = BitcoinJS.networks.testnet; // FIXME: Make dynamic
-
-        return BitcoinJS.payments.p2sh({
-            redeem: BitcoinJS.payments.p2wpkh({
-                pubkey: keyPair.publicKey,
-                network,
-            }),
-        });
-    }
-
-    /**
-     * @param {BitcoinJS.BIP32Interface} keyPair
-     * @returns {BitcoinJS.Payment}
-     */
-    _nativeSegwitPayment(keyPair) {
-        const network = BitcoinJS.networks.testnet; // FIXME: Make dynamic
-
-        return BitcoinJS.payments.p2wpkh({
-            pubkey: keyPair.publicKey,
-            network,
-        });
+    deriveExtendedPublicKey(path) {
+        const bip = BitcoinUtils.parseBipFromDerivationPath(path);
+        /** @type {BitcoinJS.Network} */
+        const network = {
+            ...BitcoinUtils.Network,
+            bip32: BitcoinConstants.EXTENDED_KEY_PREFIXES[bip][CONFIG.BTC_NETWORK],
+        };
+        const keyPair = this._deriveKeyPair(path, network);
+        const publicKey = keyPair.neutered();
+        return publicKey.toBase58();
     }
 
     /**
@@ -119,8 +69,8 @@ class BitcoinKey {
      */
     sign(paths, psbt) {
         // Find common path prefix
-        const { prefix, suffixes } = BitcoinKey.pathsToPrefixAndSuffixes(paths);
-        const base = this._deriveNode(prefix);
+        const { prefix, suffixes } = BitcoinUtils.pathsToPrefixAndSuffixes(paths);
+        const base = this._deriveKeyPair(prefix);
         for (const suffix of suffixes) {
             const keyPair = base.derivePath(suffix);
             psbt.signAllInputs(keyPair);
@@ -139,44 +89,52 @@ class BitcoinKey {
 
     /**
      * @param {string} path
+     * @param {BitcoinJS.Network} [network]
      * @returns {BitcoinJS.BIP32Interface}
      * @private
      */
-    _deriveNode(path) {
-        const mnemonic = Nimiq.MnemonicUtils.entropyToMnemonic(this._secret);
+    _deriveKeyPair(path, network = BitcoinUtils.Network) {
+        const mnemonic = Nimiq.MnemonicUtils.entropyToMnemonic(this.secret);
         const seed = Nimiq.MnemonicUtils.mnemonicToSeed(mnemonic);
 
         // @ts-ignore Argument of type 'import("...").Buffer' is not assignable to parameter of type 'Buffer'.
-        const master = BitcoinJS.bip32.fromSeed(NodeBuffer.Buffer.from(seed), BitcoinJS.networks.testnet);
+        const master = BitcoinJS.bip32.fromSeed(NodeBuffer.Buffer.from(seed), network);
         return master.derivePath(path);
+    }
+
+    /**
+     * @returns {Key}
+     */
+    key() {
+        return this._key;
     }
 
     /**
      * @type {string}
      */
     get id() {
-        return this._id;
+        return this._key.id;
     }
 
     /**
      * @type {Nimiq.Entropy}
      */
     get secret() {
-        return this._secret;
+        return /** @type {Nimiq.Entropy} */ (this._key.secret);
     }
 
     /**
      * @type {Nimiq.Secret.Type}
      */
     get type() {
-        return this._secret.type;
+        return this._key.secret.type;
     }
 
     /**
      * @type {boolean}
      */
     get hasPin() {
-        return this._hasPin;
+        return this._key.hasPin;
     }
 
     set hasPin(hasPin) {
