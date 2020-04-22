@@ -21,6 +21,9 @@ class SignBtcTransactionApi extends TopLevelApi {
         const parsedRequest = {};
         parsedRequest.appName = this.parseAppName(request.appName);
         parsedRequest.keyInfo = await this.parseKeyId(request.keyId);
+        if (parsedRequest.keyInfo.type !== Nimiq.Secret.Type.ENTROPY) {
+            throw new Errors.InvalidRequestError('Bitcoin is only supported with modern accounts.');
+        }
         parsedRequest.keyLabel = this.parseLabel(request.keyLabel);
         parsedRequest.senderLabel = this.parseLabel(request.senderLabel);
         parsedRequest.inputs = this.parseInputs(request.inputs);
