@@ -121,12 +121,48 @@ class SignBtcTransactionApi extends TopLevelApi {
                         /** @type {number} */
                         (this.parseNonNegativeFiniteNumber(input.value, false, `input[${index}].value`)),
                 },
-                keyPath: this.parsePath(input.keyPath, `input[${index}].keypath`),
+                keyPath: this.parseBitcoinPath(input.keyPath, `input[${index}].keypath`),
                 // Address added only for display
                 // @ts-ignore Argument of type 'Uint8Array' is not assignable to parameter of type 'Buffer'.
                 address: BitcoinJS.address.fromOutputScript(script, BitcoinUtils.Network),
             };
         });
+    }
+
+    /**
+     * @param {any} path
+     * @param {string} name - name of the property, used in error case only
+     * @returns {string}
+     */
+    parseBitcoinPath(path, name) {
+        if (!path || typeof path !== 'string') {
+            throw new Errors.InvalidRequestError(`${name} must be a string`);
+        }
+        if (!this.isValidBitcoinPath(path)) {
+            throw new Errors.InvalidRequestError(`${name}: Invalid path`);
+        }
+        try {
+            BitcoinUtils.parseBipFromDerivationPath(path);
+        } catch (error) {
+            throw new Errors.InvalidRequestError(`${name}: Invalid BIP, only BIP49 and BIP84 are supported`);
+        }
+        return path;
+    }
+
+    /**
+     * @param {string} path
+     * @returns {boolean}
+     */
+    isValidBitcoinPath(path) {
+        if (path.match(/^m(\/[0-9]+'?)*$/) === null) return false;
+
+        // Overflow check.
+        const segments = path.split('/');
+        for (let i = 1; i < segments.length; i++) {
+            if (!Nimiq.NumberUtils.isUint32(parseInt(segments[i], 10))) return false;
+        }
+
+        return true;
     }
 
     /**
