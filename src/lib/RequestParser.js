@@ -18,7 +18,7 @@ class RequestParser { // eslint-disable-line no-unused-vars
 
     /**
      * @param {any} path
-     * @param {string} name -  name of the property, used in error case only
+     * @param {string} name - name of the property, used in error case only
      * @returns {string}
      */
     parsePath(path, name) {
