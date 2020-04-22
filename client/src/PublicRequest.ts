@@ -22,6 +22,7 @@ export type SingleKeyResult = {
     }>;
     fileExported: boolean;
     wordsExported: boolean;
+    bitcoinXPub?: string;
 };
 
 export type TransactionInfo = {
@@ -62,6 +63,7 @@ export type ImportRequest = BasicRequest & {
     isKeyLost?: boolean,
     enableBackArrow?: boolean,
     wordsOnly?: boolean,
+    bitcoinXPubPath: string,
 };
 
 export type ResetPasswordRequest = ImportRequest & {

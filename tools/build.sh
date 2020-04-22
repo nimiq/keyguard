@@ -132,6 +132,7 @@ CSS_BUNDLE="index.HASH.css"
 
 JS_COMMON_BUNDLE="common.HASH.js"
 JS_TOPLEVEL_BUNDLE="toplevel.HASH.js"
+JS_BITCOIN_BUNDLE="bitcoin.HASH.js"
 CSS_TOPLEVEL_BUNDLE="toplevel.HASH.css"
 
 # bundle files for each request
@@ -168,11 +169,13 @@ for DIR in src/request/*/ ; do
     # collect bundle files
     LIST_JS_COMMON="$LIST_JS_COMMON$(grep '<script' $DIR/index.html | grep 'bundle-common' | cut -d\" -f2) "
     LIST_JS_TOPLEVEL="$LIST_JS_TOPLEVEL$(grep '<script' $DIR/index.html | grep 'bundle-toplevel' | cut -d\" -f2) "
+    LIST_JS_BITCOIN="$LIST_JS_BITCOIN$(grep '<script' $DIR/index.html | grep 'bundle-bitcoin' | cut -d\" -f2) "
 done
 
 # prepare bundle lists
 LIST_JS_COMMON=$(echo $LIST_JS_COMMON | tr " " "\n" | sort -ur) # sort common bundle reverse for nicer order
 LIST_JS_TOPLEVEL=$(echo $LIST_JS_TOPLEVEL | tr " " "\n" | sort -u)
+LIST_JS_BITCOIN=$(echo $LIST_JS_BITCOIN | tr " " "\n" | sort -u)
 # for CSS the order is very important, so sorting is not possible, thus we have to put the list here manually
 LIST_CSS_TOPLEVEL="../../../node_modules/@nimiq/style/nimiq-style.min.css ../../nimiq-style.css ../../common.css ../../components/PasswordInput.css ../../components/PasswordBox.css"
 
@@ -194,6 +197,10 @@ done
 
 replace_icon_sprite_url dist/request/$JS_TOPLEVEL_BUNDLE
 
+for url in $LIST_JS_BITCOIN; do
+    cat src/request/create/$url >> dist/request/$JS_BITCOIN_BUNDLE
+done
+
 for url in $LIST_CSS_TOPLEVEL; do
     cat src/request/create/$url >> dist/request/$CSS_TOPLEVEL_BUNDLE
 done
@@ -203,11 +210,13 @@ replace_font_url dist/request/$CSS_TOPLEVEL_BUNDLE
 # collect script integrity hashes
 JS_COMMON_BUNDLE_HASH=$(make_file_hash dist/request/$JS_COMMON_BUNDLE)
 JS_TOPLEVEL_BUNDLE_HASH=$(make_file_hash dist/request/$JS_TOPLEVEL_BUNDLE)
+JS_BITCOIN_BUNDLE_HASH=$(make_file_hash dist/request/$JS_BITCOIN_BUNDLE)
 CSS_TOPLEVEL_BUNDLE_HASH=$(make_file_hash dist/request/$CSS_TOPLEVEL_BUNDLE)
 
 # add file hash to bundle file names and overwrite bundle variables with the new file names
 JS_COMMON_BUNDLE=$(add_hash_to_file_name dist/request/$JS_COMMON_BUNDLE)
 JS_TOPLEVEL_BUNDLE=$(add_hash_to_file_name dist/request/$JS_TOPLEVEL_BUNDLE)
+JS_BITCOIN_BUNDLE=$(add_hash_to_file_name dist/request/$JS_BITCOIN_BUNDLE)
 CSS_TOPLEVEL_BUNDLE=$(add_hash_to_file_name dist/request/$CSS_TOPLEVEL_BUNDLE)
 
 CORE_LIB_HASH=$(make_file_hash node_modules/@nimiq/core-web/web-offline.js)
@@ -244,6 +253,9 @@ for DIR in src/request/*/ ; do
                 print space[1] "<script defer src=\"/request/'${JS_COMMON_BUNDLE}'\" integrity=\"sha256-'${JS_COMMON_BUNDLE_HASH}'\"></script>"
                 if("'$REQUEST'" != "iframe") {
                     print space[1] "<script defer src=\"/request/'${JS_TOPLEVEL_BUNDLE}'\" integrity=\"sha256-'${JS_TOPLEVEL_BUNDLE_HASH}'\"></script>"
+                }
+                if("'$REQUEST'" == "import" || "'$REQUEST'" == "sign-btc-transaction") {
+                    print space[1] "<script defer src=\"/request/'${JS_BITCOIN_BUNDLE}'\" integrity=\"sha256-'${JS_BITCOIN_BUNDLE_HASH}'\"></script>"
                 }
                 print space[1] "<script defer src=\"/request/'${REQUEST}'/'${JS_BUNDLE_NAME}'\" integrity=\"sha256-'${JS_BUNDLE_HASH}'\"></script>"
             }
