@@ -31,6 +31,7 @@ import {
     DerivedAddress,
     ObjectType,
     ResultByCommand,
+    SignBtcTransactionRequest,
 } from './PublicRequest';
 
 import Observable from './Observable';
@@ -118,6 +119,10 @@ export class KeyguardClient {
 
     public signMessage(request: SignMessageRequest) {
         this._redirectRequest<SignMessageRequest>(KeyguardCommand.SIGN_MESSAGE, request);
+    }
+
+    public signBtcTransaction(request: SignBtcTransactionRequest) {
+        this._redirectRequest<SignBtcTransactionRequest>(KeyguardCommand.SIGN_BTC_TRANSACTION, request);
     }
 
     /* IFRAME REQUESTS */
