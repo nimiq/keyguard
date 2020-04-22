@@ -3,6 +3,7 @@
 /* global TopLevelApi */
 /* global SignBtcTransaction */
 /* global Errors */
+/* global NodeBuffer */
 /* global BitcoinJS */
 /* global BitcoinUtils */
 
@@ -112,7 +113,7 @@ class SignBtcTransactionApi extends TopLevelApi {
 
         // Construct inputs
         return inputs.map((input, index) => {
-            const script = new Uint8Array(Nimiq.BufferUtils.fromAny(input.outputScript));
+            const script = NodeBuffer.Buffer.from(Nimiq.BufferUtils.fromAny(input.outputScript));
             return {
                 hash: Nimiq.BufferUtils.toHex(Nimiq.BufferUtils.fromAny(input.txHash)),
                 index:
