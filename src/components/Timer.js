@@ -115,10 +115,34 @@ class Timer extends Nimiq.Observable {
         const circleLengthPixels = Timer.FULL_CIRCLE_LENGTH * scaleFactor;
         const steps = circleLengthPixels * 3; // update every .33 pixel change for smooth transitions
         const minInterval = 1000 / 60; // up to 60 fps
-        const maxInterval = this._timeLeft < 60000
-            ? 500 // when counting down seconds update more regularly
-            : Number.POSITIVE_INFINITY;
-        return Math.max(minInterval, Math.min(maxInterval, this._totalTime / steps));
+        // Constrain interval such that we don't skip time steps in the countdown for the respective time unit.
+        const timeLeft = this._timeLeft;
+        const totalTime = this._totalTime;
+        const updatesPerTimeStep = 2; // multiple times per time step to avoid skipping a step by a delayed interval
+        let timeStep = 1000; // starting with seconds
+        let maxInterval = timeStep / updatesPerTimeStep;
+        for (const { factor } of Timer.TIME_STEPS) { // eslint-disable-line no-restricted-syntax
+            const nextTimeStep = timeStep * factor;
+            const nextMaxInterval = nextTimeStep / updatesPerTimeStep;
+            const nextInterval = Math.min(nextMaxInterval, Math.max(minInterval, totalTime / steps));
+            if ((timeLeft - nextInterval) / nextTimeStep < 1) {
+                // If the time left after nextInterval can't be expressed in nextTimeStep as a value >=1, stop. We check
+                // for the time after the next interval to avoid jumping for example from 70s (displayed as 1 minute)
+                // directly to 50s if the interval is 20s. Note that the behavior here resembles the one in
+                // _toSimplifiedTime.
+                if (timeLeft / nextTimeStep > 1) {
+                    // If the value before the interval is still >1 in the next time unit still allow a larger jump than
+                    // at the smaller time unit but set the maxInterval such that we jump no further than where the
+                    // switch to the smaller unit happens, for example jump from 70s to 60s if the interval is 20s.
+                    maxInterval = timeLeft - nextTimeStep;
+                }
+                break;
+            }
+            timeStep = nextTimeStep;
+            maxInterval = nextMaxInterval;
+        }
+
+        return Math.min(maxInterval, Math.max(minInterval, this._totalTime / steps));
     }
 
     /**
@@ -200,21 +224,13 @@ class Timer extends Nimiq.Observable {
         // find appropriate unit, starting with second
         let resultTime = this._timeLeft / 1000;
         let resultUnit = 'second';
-        const timeSteps = [
-            { unit: 'minute', factor: 60 },
-            { unit: 'hour', factor: 60 },
-            { unit: 'day', factor: 24 },
-        ];
-        for (const { unit, factor } of timeSteps) { // eslint-disable-line no-restricted-syntax
-            if (resultTime / factor < 1) {
-                break;
-            } else {
-                resultTime /= factor;
-                resultUnit = unit;
-            }
+        for (const { unit, factor } of Timer.TIME_STEPS) { // eslint-disable-line no-restricted-syntax
+            if (resultTime / factor < 1) break;
+            resultTime /= factor;
+            resultUnit = unit;
         }
 
-        resultTime = Math.round(resultTime);
+        resultTime = Math.floor(resultTime);
         if (!includeUnit) {
             return resultTime.toString();
         }
@@ -242,6 +258,11 @@ class Timer extends Nimiq.Observable {
 Timer.Events = {
     END: 'end',
 };
+Timer.TIME_STEPS = [
+    { unit: 'minute', factor: 60 },
+    { unit: 'hour', factor: 60 },
+    { unit: 'day', factor: 24 },
+];
 // These values are the same as in the svg.
 Timer.STROKE_WIDTH = 2;
 Timer.VIEWBOX_SIZE = 26;
