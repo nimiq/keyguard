@@ -40,16 +40,18 @@ class Timer extends Nimiq.Observable {
         /** @private
          *  @type {number} */
         this._endTime = endTime;
-
         /** @private
          *  @type {number} */
-        this._lastUpdateTime = 0;
-        /** @private
-         *  @type {number | null} */
-        this._requestAnimationFrameId = null;
+        this._size = Timer.VIEWBOX_SIZE;
 
         window.setTimeout(() => this.fire(Timer.Events.END, endTime), endTime - Date.now());
-        this._rerender();
+        // eslint-disable-next-line no-return-assign
+        window.addEventListener('resize', () => this._size = this.$el.offsetWidth);
+
+        requestAnimationFrame(() => {
+            this._size = this.$el.offsetWidth;
+            this._rerender();
+        });
     }
 
     /**
@@ -109,8 +111,7 @@ class Timer extends Nimiq.Observable {
      * @returns {number}
      */
     get _updateInterval() {
-        const timerSize = this.$el.offsetWidth || Timer.VIEWBOX_SIZE;
-        const scaleFactor = timerSize / Timer.VIEWBOX_SIZE;
+        const scaleFactor = this._size / Timer.VIEWBOX_SIZE;
         const circleLengthPixels = Timer.FULL_CIRCLE_LENGTH * scaleFactor;
         const steps = circleLengthPixels * 3; // update every .33 pixel change for smooth transitions
         const minInterval = 1000 / 60; // up to 60 fps
@@ -172,31 +173,22 @@ class Timer extends Nimiq.Observable {
 
     /** @private */
     _rerender() {
-        if (this._requestAnimationFrameId !== null) return;
-        this._requestAnimationFrameId = requestAnimationFrame(() => {
-            // update if necessary
-            if (Date.now() - this._lastUpdateTime >= this._updateInterval) {
-                this._lastUpdateTime = Date.now();
+        const timeCircleInfo = this._calculateTimeCircleInfo();
+        this.$timeCircle.style.strokeDasharray = `${timeCircleInfo.length} ${timeCircleInfo.gap}`;
+        this.$timeCircle.style.strokeDashoffset = timeCircleInfo.offset.toString();
 
-                const timeCircleInfo = this._calculateTimeCircleInfo();
-                this.$timeCircle.style.strokeDasharray = `${timeCircleInfo.length} ${timeCircleInfo.gap}`;
-                this.$timeCircle.style.strokeDashoffset = timeCircleInfo.offset.toString();
+        const fillerCircleInfo = this._calculateFillerCircleInfo(timeCircleInfo);
+        this.$fillerCircle.style.strokeDasharray = `${fillerCircleInfo.length} ${fillerCircleInfo.gap}`;
+        this.$fillerCircle.style.strokeDashoffset = fillerCircleInfo.offset.toString();
+        this.$fillerCircle.style.strokeWidth = fillerCircleInfo.strokeWidth.toString();
 
-                const fillerCircleInfo = this._calculateFillerCircleInfo(timeCircleInfo);
-                this.$fillerCircle.style.strokeDasharray = `${fillerCircleInfo.length} ${fillerCircleInfo.gap}`;
-                this.$fillerCircle.style.strokeDashoffset = fillerCircleInfo.offset.toString();
-                this.$fillerCircle.style.strokeWidth = fillerCircleInfo.strokeWidth.toString();
+        this.$el.classList.toggle('little-time-left', this._progress >= 0.75);
 
-                this.$el.classList.toggle('little-time-left', this._progress >= 0.75);
+        this.$countdown.textContent = this._toSimplifiedTime(false);
+        this.$tooltipCountdown.textContent = this._toSimplifiedTime(true);
 
-                this.$countdown.textContent = this._toSimplifiedTime(false);
-                this.$tooltipCountdown.textContent = this._toSimplifiedTime(true);
-            }
-
-            this._requestAnimationFrameId = null;
-            if (this._timeLeft === 0) return;
-            this._rerender();
-        });
+        if (this._timeLeft === 0) return;
+        setTimeout(() => this._rerender(), this._updateInterval);
     }
 
     /**
