@@ -64,6 +64,11 @@
     </div>
 
     <div class="row checkout-only">
+        <label>Vendor Markup (optional)</label>
+        <input id="vendor-markup" type="number">
+    </div>
+
+    <div class="row checkout-only">
         <label>Request Time (optional)</label>
         <input id="time" type="number">
         <button id="set-current-time" type="button">Current time</button>
@@ -157,6 +162,11 @@
             const fiatCurrency = document.querySelector('#fiat-currency').value;
             if (fiatCurrency !== '') {
                 request.fiatCurrency = fiatCurrency;
+            }
+
+            const vendorMarkup = parseFloat(document.querySelector('#vendor-markup').value);
+            if (!Number.isNaN(vendorMarkup)) {
+                request.vendorMarkup = vendorMarkup;
             }
 
             const time = timeInput.value;
