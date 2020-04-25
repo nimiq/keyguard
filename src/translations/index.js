@@ -77,6 +77,14 @@ const TRANSLATIONS = {
         'passwordbox-password-skip': 'Skip for now',
         'passwordbox-reset-password': 'Reset with Recovery Words',
 
+        'payment-info-line-order-amount': 'Order amount',
+        'payment-info-line-vendor-markup': 'Vendor crypto markup',
+        'payment-info-line-vendor-discount': 'Vendor crypto discount',
+        'payment-info-line-effective-rate': 'Effective rate',
+        'payment-info-line-free-service': 'Nimiq provides this service free of charge.',
+        'payment-info-line-total': 'Total',
+        'payment-info-line-network-fee': 'network fee',
+
         'timer-expiry': 'This offer expires in',
         'timer-second': 'second',
         'timer-seconds': 'seconds',
@@ -249,6 +257,14 @@ const TRANSLATIONS = {
         'passwordbox-repeat-password-short': 'Das Passwort ist zu kurz',
         'passwordbox-password-skip': 'Erstmal überspringen',
         'passwordbox-reset-password': 'Mit Wiederherstellungswörtern zurücksetzen',
+
+        'payment-info-line-order-amount': 'Kaufbetrag',
+        'payment-info-line-vendor-markup': 'Verkäufer Krypto-Aufschlag',
+        'payment-info-line-vendor-discount': 'Verkäufer Krypto-Rabatt',
+        'payment-info-line-effective-rate': 'Effektiver Wechselkurs',
+        'payment-info-line-free-service': 'Nimiq bietet diesen Service kostenfrei an.',
+        'payment-info-line-total': 'Gesamt',
+        'payment-info-line-network-fee': 'Netzwerkgebühr',
 
         'timer-expiry': 'Angebot endet in',
         'timer-second': 'Sekunde',

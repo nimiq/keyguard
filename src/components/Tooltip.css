@@ -2,6 +2,7 @@
 
 .tooltip {
     position: relative;
+    outline: none;
 }
 
 .tooltip::after {

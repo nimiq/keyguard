@@ -83,6 +83,7 @@ class SignTransaction {
                 label: recipientLabel || recipientAddress,
                 imageUrl: request.shopLogoUrl,
                 lunaAmount: request.transaction.value,
+                networkFee: request.transaction.fee,
             }), $paymentInfoLine);
         } else {
             $paymentInfoLine.remove();
