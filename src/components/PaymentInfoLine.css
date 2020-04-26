@@ -43,7 +43,7 @@
     color: var(--nimiq-orange);
 }
 
-.payment-info-line .price-tooltip .fiat-amount {
+.payment-info-line .price-tooltip > .fiat-amount {
     font-size: 1.625rem;
     font-weight: 600;
     line-height: 1;

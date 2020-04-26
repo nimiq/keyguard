@@ -86,57 +86,31 @@ class PaymentInfoLine { // eslint-disable-line no-unused-vars
         const { fiatAmount, fiatCurrency, vendorMarkup, lunaAmount, networkFee } = this.paymentInfo;
         if (!fiatAmount || !fiatCurrency) return;
 
-        const formattedFiatAmount = NumberFormatting.formatCurrency(fiatAmount, fiatCurrency);
-
-        let vendorMarkupInfo = '';
-        if (vendorMarkup !== undefined) {
-            // Specifically listing all possible i18n translations to enable the translationValidator to find and verify
-            // them with its regular expression.
-            const vendorMarkupLabel = vendorMarkup >= 0
-                ? '<label data-i18n="payment-info-line-vendor-markup">Vendor crypto markup</label>'
-                : '<label data-i18n="payment-info-line-vendor-discount">Vendor crypto discount</label>';
-            // Convert to percent and round to two decimals. Always ceil to avoid displaying a lower fee than charged or
-            // larger discount than applied. Subtract small epsilon to avoid that numbers get rounded up as a result of
-            // floating point imprecision after multiplication. Otherwise formatting for example .07 results in 7.01%.
-            const vendorMarkupPercent = Math.ceil(vendorMarkup * 100 * 100 - 1e-10) / 100;
-            const vendorMarkupValue = `<div>${vendorMarkup >= 0 ? '+' : ''}${vendorMarkupPercent}%</div>`;
-            vendorMarkupInfo = vendorMarkupLabel + vendorMarkupValue;
-        }
-
-        // Fiat/crypto rate. Higher fiat/crypto rate means user is paying less crypto for the requested fiat amount
-        // and is therefore better for the user. Note: precision loss should be acceptable here.
-        const effectiveRate = fiatAmount / Nimiq.Policy.lunasToCoins(lunaAmount);
-        const formattedEffectiveRate = `${NumberFormatting.formatCurrency(effectiveRate, fiatCurrency, 0.0001)} / NIM`;
-
-        const formattedTotal = `${NumberFormatting.formatNumber(Nimiq.Policy.lunasToCoins(lunaAmount))} NIM`;
-
-        let networkFeeInfo = '';
-        // Note that in the Keyguard the fee is never undefined.
-        if (networkFee !== 0) {
-            networkFeeInfo = TemplateTags.hasVars(1)`<div class="network-fee-info info">
-                + ${NumberFormatting.formatNumber(Nimiq.Policy.lunasToCoins(networkFee))} NIM
-                <span data-i18n="payment-info-line-network-fee">network fee</span>
-            </div>`;
-        }
-
         const $tooltip = document.createElement('div');
         $tooltip.classList.add('price-tooltip', 'tooltip');
         $tooltip.tabIndex = 0; // make the tooltip focusable
 
-        $tooltip.innerHTML = TemplateTags.hasVars(6)`
+        /* eslint-disable indent */
+        $tooltip.innerHTML = TemplateTags.hasVars(1)`
             <svg class="warning-triangle nq-icon">
                 <use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-alert-triangle"/>
             </svg>
-            <span class="fiat-amount">${formattedFiatAmount}</span>
+            <span class="fiat-amount"></span>
             <div class="tooltip-box">
                 <div class="price-breakdown">
                     <label data-i18n="payment-info-line-order-amount">Order amount</label>
-                    <div>${formattedFiatAmount}</div>
-                    ${vendorMarkupInfo}
+                    <div class="fiat-amount"></div>
+                    <template class="vendor-markup-template">
+                        ${!vendorMarkup || vendorMarkup >= 0
+                            ? '<label data-i18n="payment-info-line-vendor-markup">Vendor crypto markup</label>'
+                            : '<label data-i18n="payment-info-line-vendor-discount">Vendor crypto discount</label>'
+                        }
+                        <div class="vendor-markup"></div>
+                    </template>
                     <label class="highlight-on-bad-rate" data-i18n="payment-info-line-effective-rate">
                         Effective rate
                     </label>
-                    <div class="highlight-on-bad-rate">${formattedEffectiveRate}</div>
+                    <div class="effective-rate highlight-on-bad-rate"></div>
                 </div>
                 <div class="rate-info info highlight-on-bad-rate"></div>
                 <div class="free-service-info info" data-i18n="payment-info-line-free-service">
@@ -145,11 +119,57 @@ class PaymentInfoLine { // eslint-disable-line no-unused-vars
                 <hr>
                 <div class="price-breakdown">
                     <label data-i18n="payment-info-line-total">Total</label>
-                    <div class="total">${formattedTotal}</div>
+                    <div class="total"></div>
                 </div>
-                ${networkFeeInfo}
+                <div class="network-fee-info info">
+                    + <span class="network-fee"></span>
+                    <span data-i18n="payment-info-line-network-fee">network fee</span>
+                </div>
             </div>
         `;
+        /* eslint-enable indent */
+
+        const formattedFiatAmount = NumberFormatting.formatCurrency(fiatAmount, fiatCurrency);
+        $tooltip.querySelectorAll('.fiat-amount').forEach($fiatAmount => {
+            $fiatAmount.textContent = formattedFiatAmount;
+        });
+
+        /** @type {HTMLTemplateElement} */
+        const $vendorMarkupTemplate = ($tooltip.querySelector('.vendor-markup-template'));
+        if (vendorMarkup !== undefined) {
+            // Convert to percent and round to two decimals. Always ceil to avoid displaying a lower fee than charged or
+            // larger discount than applied. Subtract small epsilon to avoid that numbers get rounded up as a result of
+            // floating point imprecision after multiplication. Otherwise formatting for example .07 results in 7.01%.
+            const vendorMarkupPercent = Math.ceil(vendorMarkup * 100 * 100 - 1e-10) / 100;
+            $vendorMarkupTemplate.replaceWith($vendorMarkupTemplate.content);
+            /** @type {HTMLElement} */
+            const $vendorMarkup = ($tooltip.querySelector('.vendor-markup'));
+            $vendorMarkup.textContent = `${vendorMarkup >= 0 ? '+' : ''}${vendorMarkupPercent}%`;
+        } else {
+            $vendorMarkupTemplate.remove();
+        }
+
+        /** @type {HTMLElement} */
+        const $effectiveRate = ($tooltip.querySelector('.effective-rate'));
+        // Fiat/crypto rate. Higher fiat/crypto rate means user is paying less crypto for the requested fiat amount
+        // and is therefore better for the user. Note: precision loss should be acceptable here.
+        const effectiveRate = fiatAmount / Nimiq.Policy.lunasToCoins(lunaAmount);
+        $effectiveRate.textContent = `${NumberFormatting.formatCurrency(effectiveRate, fiatCurrency, 0.0001)} / NIM`;
+
+        /** @type {HTMLElement} */
+        const $total = ($tooltip.querySelector('.total'));
+        $total.textContent = `${NumberFormatting.formatNumber(Nimiq.Policy.lunasToCoins(lunaAmount))} NIM`;
+
+        // Note that in the Keyguard the fee is never undefined.
+        if (networkFee !== 0) {
+            /** @type {HTMLElement} */
+            const $networkFee = ($tooltip.querySelector('.network-fee'));
+            $networkFee.textContent = `${NumberFormatting.formatNumber(Nimiq.Policy.lunasToCoins(networkFee))} NIM`;
+        } else {
+            /** @type {HTMLElement} */
+            const $networkFeeInfo = ($tooltip.querySelector('.network-fee-info'));
+            $networkFeeInfo.remove();
+        }
 
         /** @type {HTMLElement} */
         const $rateInfo = ($tooltip.querySelector('.rate-info'));
