@@ -13,18 +13,34 @@
     flex-direction: column;
     justify-content: center;
     margin-bottom: .125rem;
-    white-space: nowrap;
     cursor: default;
 }
 
 .payment-info-line .nim-amount {
     font-weight: bold;
     color: var(--nimiq-light-blue);
+    white-space: nowrap;
 }
 
 .payment-info-line .price-tooltip {
     margin-top: -.25rem;
     align-self: flex-start;
+}
+
+.payment-info-line .price-tooltip .warning-triangle {
+    font-size: 1.625rem;
+    color: var(--nimiq-orange);
+    vertical-align: -.125rem;
+    display: none;
+}
+
+.payment-info-line .price-tooltip.bad-rate .warning-triangle {
+    display: inline;
+}
+
+.payment-info-line .price-tooltip.bad-rate .highlight-on-bad-rate {
+    opacity: 1;
+    color: var(--nimiq-orange);
 }
 
 .payment-info-line .price-tooltip .fiat-amount {
@@ -66,6 +82,11 @@
 .payment-info-line .price-tooltip .info {
     font-size: 1.625rem;
     opacity: .5;
+}
+
+.payment-info-line .price-tooltip .rate-info {
+    display: none;
+    margin-top: .5rem;
 }
 
 .payment-info-line .price-tooltip .free-service-info {

@@ -1,8 +1,10 @@
 /* global Nimiq */
-/* global AddressInfo */
-/* global Timer */
+/* global I18n */
 /* global TemplateTags */
 /* global NumberFormatting */
+/* global FiatApi */
+/* global AddressInfo */
+/* global Timer */
 
 /** @typedef {{
  *      recipient: string,
@@ -23,14 +25,15 @@ class PaymentInfoLine { // eslint-disable-line no-unused-vars
      * @param {HTMLElement} [$el]
      */
     constructor(paymentInfo, $el) {
+        this.paymentInfo = paymentInfo;
         this.$el = PaymentInfoLine._createElement($el);
 
         /** @type HTMLElement */
         const $nimAmount = (this.$el.querySelector('.nim-amount'));
-        const nimAmount = NumberFormatting.formatNumber(Nimiq.Policy.lunasToCoins(paymentInfo.lunaAmount));
+        const nimAmount = NumberFormatting.formatNumber(Nimiq.Policy.lunasToCoins(paymentInfo.lunaAmount), 4);
         $nimAmount.textContent = `${nimAmount} NIM`;
 
-        this._createPriceTooltip(paymentInfo, /** @type HTMLElement */ (this.$el.querySelector('.amounts')));
+        this._createPriceTooltip(/** @type {HTMLElement} */ (this.$el.querySelector('.amounts')));
 
         const recipientInfo = new AddressInfo({
             userFriendlyAddress: paymentInfo.recipient,
@@ -76,43 +79,42 @@ class PaymentInfoLine { // eslint-disable-line no-unused-vars
 
     /**
      * @private
-     * @param {PaymentInfo} paymentInfo
      * @param {HTMLElement} $container
      */
-    _createPriceTooltip(paymentInfo, $container) {
-        if (!paymentInfo.fiatAmount || !paymentInfo.fiatCurrency) return;
+    _createPriceTooltip($container) {
+        // eslint-disable-next-line object-curly-newline
+        const { fiatAmount, fiatCurrency, vendorMarkup, lunaAmount, networkFee } = this.paymentInfo;
+        if (!fiatAmount || !fiatCurrency) return;
 
-        const formattedFiatAmount = NumberFormatting.formatCurrency(paymentInfo.fiatAmount, paymentInfo.fiatCurrency);
+        const formattedFiatAmount = NumberFormatting.formatCurrency(fiatAmount, fiatCurrency);
 
         let vendorMarkupInfo = '';
-        if (paymentInfo.vendorMarkup !== undefined) {
+        if (vendorMarkup !== undefined) {
             // Specifically listing all possible i18n translations to enable the translationValidator to find and verify
             // them with its regular expression.
-            const vendorMarkupLabel = paymentInfo.vendorMarkup >= 0
+            const vendorMarkupLabel = vendorMarkup >= 0
                 ? '<label data-i18n="payment-info-line-vendor-markup">Vendor crypto markup</label>'
                 : '<label data-i18n="payment-info-line-vendor-discount">Vendor crypto discount</label>';
             // Convert to percent and round to two decimals. Always ceil to avoid displaying a lower fee than charged or
             // larger discount than applied. Subtract small epsilon to avoid that numbers get rounded up as a result of
             // floating point imprecision after multiplication. Otherwise formatting for example .07 results in 7.01%.
-            const vendorMarkupPercent = Math.ceil(paymentInfo.vendorMarkup * 100 * 100 - 1e-10) / 100;
-            const vendorMarkupValue = `<div>${paymentInfo.vendorMarkup >= 0 ? '+' : ''}${vendorMarkupPercent}%</div>`;
+            const vendorMarkupPercent = Math.ceil(vendorMarkup * 100 * 100 - 1e-10) / 100;
+            const vendorMarkupValue = `<div>${vendorMarkup >= 0 ? '+' : ''}${vendorMarkupPercent}%</div>`;
             vendorMarkupInfo = vendorMarkupLabel + vendorMarkupValue;
         }
 
         // Fiat/crypto rate. Higher fiat/crypto rate means user is paying less crypto for the requested fiat amount
         // and is therefore better for the user. Note: precision loss should be acceptable here.
-        const effectiveRate = paymentInfo.fiatAmount / Nimiq.Policy.lunasToCoins(paymentInfo.lunaAmount);
-        const formattedEffectiveRate = `
-            ${NumberFormatting.formatCurrency(effectiveRate, paymentInfo.fiatCurrency, 0.0001)} / NIM`;
+        const effectiveRate = fiatAmount / Nimiq.Policy.lunasToCoins(lunaAmount);
+        const formattedEffectiveRate = `${NumberFormatting.formatCurrency(effectiveRate, fiatCurrency, 0.0001)} / NIM`;
 
-        const formattedTotal = `
-            ${NumberFormatting.formatNumber(Nimiq.Policy.lunasToCoins(paymentInfo.lunaAmount))} NIM`;
+        const formattedTotal = `${NumberFormatting.formatNumber(Nimiq.Policy.lunasToCoins(lunaAmount))} NIM`;
 
         let networkFeeInfo = '';
         // Note that in the Keyguard the fee is never undefined.
-        if (paymentInfo.networkFee !== 0) {
+        if (networkFee !== 0) {
             networkFeeInfo = TemplateTags.hasVars(1)`<div class="network-fee-info info">
-                + ${NumberFormatting.formatNumber(Nimiq.Policy.lunasToCoins(paymentInfo.networkFee))} NIM
+                + ${NumberFormatting.formatNumber(Nimiq.Policy.lunasToCoins(networkFee))} NIM
                 <span data-i18n="payment-info-line-network-fee">network fee</span>
             </div>`;
         }
@@ -122,17 +124,21 @@ class PaymentInfoLine { // eslint-disable-line no-unused-vars
         $tooltip.tabIndex = 0; // make the tooltip focusable
 
         $tooltip.innerHTML = TemplateTags.hasVars(6)`
+            <svg class="warning-triangle nq-icon">
+                <use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-alert-triangle"/>
+            </svg>
             <span class="fiat-amount">${formattedFiatAmount}</span>
             <div class="tooltip-box">
                 <div class="price-breakdown">
                     <label data-i18n="payment-info-line-order-amount">Order amount</label>
                     <div>${formattedFiatAmount}</div>
                     ${vendorMarkupInfo}
-                    <label data-i18n="payment-info-line-effective-rate">
+                    <label class="highlight-on-bad-rate" data-i18n="payment-info-line-effective-rate">
                         Effective rate
                     </label>
-                    <div>${formattedEffectiveRate}</div>
+                    <div class="highlight-on-bad-rate">${formattedEffectiveRate}</div>
                 </div>
+                <div class="rate-info info highlight-on-bad-rate"></div>
                 <div class="free-service-info info" data-i18n="payment-info-line-free-service">
                     Nimiq provides this service free of charge.
                 </div>
@@ -145,6 +151,75 @@ class PaymentInfoLine { // eslint-disable-line no-unused-vars
             </div>
         `;
 
+        /** @type {HTMLElement} */
+        const $rateInfo = ($tooltip.querySelector('.rate-info'));
+        const updateRateComparison = this._updateRateComparison.bind(this, effectiveRate, $tooltip, $rateInfo);
+        updateRateComparison();
+        window.setInterval(updateRateComparison, PaymentInfoLine.REFERENCE_RATE_UPDATE_INTERVAL);
+        I18n.observer.on(I18n.Events.LANGUAGE_CHANGED, updateRateComparison);
+
         $container.appendChild($tooltip);
     }
+
+    /**
+     * @private
+     * @param {number} effectiveRate
+     * @param {HTMLElement} $tooltip
+     * @param {HTMLElement} $rateInfo
+     */
+    async _updateRateComparison(effectiveRate, $tooltip, $rateInfo) {
+        if (!this.paymentInfo.fiatCurrency) return;
+        /** @type {FiatApi.SupportedFiatCurrency} */
+        const fiatCurrency = (this.paymentInfo.fiatCurrency.toLowerCase());
+        if (!Object.values(FiatApi.SupportedFiatCurrency).includes(fiatCurrency)) return;
+
+        let referenceRate;
+        try {
+            /* eslint-disable object-curly-spacing */
+            const {nim: currencyRecord} = await FiatApi.getExchangeRates(['nim'], [fiatCurrency]);
+            if (!currencyRecord) return;
+            ({[fiatCurrency]: referenceRate} = currencyRecord);
+            /* eslint-enable object-curly-spacing */
+            if (typeof referenceRate !== 'number') return;
+        } catch (e) {
+            return;
+        }
+
+        // Compare rates. Convert them from fiat/crypto to crypto/fiat as the user will be paying crypto in the end
+        // and the flipped rates can therefore be compared more intuitively. Negative rate deviation is better for
+        // the user.
+        const flippedEffectiveRate = 1 / effectiveRate;
+        const flippedReferenceRate = 1 / referenceRate;
+        const rateDeviation = (flippedEffectiveRate - flippedReferenceRate) / flippedReferenceRate;
+
+        const isBadRate = rateDeviation >= PaymentInfoLine.RATE_DEVIATION_THRESHOLD
+            || (!!this.paymentInfo.vendorMarkup
+                && this.paymentInfo.vendorMarkup < 0 // verify promised discount
+                && rateDeviation >= this.paymentInfo.vendorMarkup + PaymentInfoLine.RATE_DEVIATION_THRESHOLD
+            );
+        $tooltip.classList.toggle('bad-rate', isBadRate);
+
+        if (isBadRate || Math.abs(rateDeviation) >= PaymentInfoLine.RATE_DEVIATION_THRESHOLD) {
+            let rateInfo;
+            if (rateDeviation < 0 && isBadRate) {
+                // False discount
+                rateInfo = I18n.translatePhrase('payment-info-line-actual-discount');
+            } else if (rateDeviation >= 0) {
+                rateInfo = I18n.translatePhrase('payment-info-line-paying-more');
+            } else {
+                rateInfo = I18n.translatePhrase('payment-info-line-paying-less');
+            }
+
+            // Converted to absolute percent, rounded to one decimal
+            const formattedRateDeviation = `${Math.round(Math.abs(rateDeviation) * 100 * 10) / 10}%`;
+            $rateInfo.textContent = rateInfo.replace('%RATE_DEVIATION%', formattedRateDeviation);
+
+            $rateInfo.style.display = 'block';
+        } else {
+            $rateInfo.style.display = 'none';
+        }
+    }
 }
+
+PaymentInfoLine.RATE_DEVIATION_THRESHOLD = 0.1;
+PaymentInfoLine.REFERENCE_RATE_UPDATE_INTERVAL = 30000;
