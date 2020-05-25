@@ -131,3 +131,39 @@ page:
     const languagePicker = new LanguagePicker();
     document.body.appendChild(languagePicker.getElement());
 ```
+
+### Contribute to translations
+
+First of all, a big thank you to all translators!
+
+The Nimiq Keyguard is fully internationalized and ready for the community to add translations in different languages.
+
+To help translate the Keyguard, the procedure is as follows:
+- Clone this repository.
+
+- The translations are located in the `src/translations` folder. A translation file for a language is named as the language's two letter [ISO 639-1 code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) plus file extension `.json`. For example, for French with two letter code `fr` the translations are located at `src/translations/fr.json`. If that file doesn't exist yet, i.e. you're starting a new translation, please duplicate `en.json` as starting point and rename it accordingly.
+
+- The translations files are in a key-value json format.
+  For Example:
+  ```json
+  "my-translation": "Content in English",
+  "timer-expiry": "This offer expires in",
+  ```
+  Where the key is the unique identifier of the string to translate. You can find the source string to translate in the `en.json` file.
+  Please only edit the translations, not the source strings nor the keys.
+
+- Once the file has been fully translated or you are done updating an existing language file, you can open a pull
+  request here in github.
+
+- The pull request will then be reviewed and, if all goes well, merged into the master branch and published asap.
+
+#### Additional information
+
+- Words between square brackets are html tags which must not be translated nor edited. They will be replaced by a html tag during app runtime. For example:
+  ```json
+  "recovery-words-intro-offline": "Keep your words offline, enter them nowhere but on [strong]keyguard[/strong].nimiq.com."
+  ```
+
+- If you're a transifex collaborator, and need some information about how to get started, here are two links for you:
+  - How to get started as a translator: https://docs.transifex.com/getting-started-1/translators
+  - How translate using the web editor: https://docs.transifex.com/translation/translating-with-the-web-editor
