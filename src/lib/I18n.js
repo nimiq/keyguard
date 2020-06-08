@@ -19,7 +19,6 @@ class I18n { // eslint-disable-line no-unused-vars
         /** @type {string} */
         this._fallbackLanguage = fallbackLanguage;
 
-        // Re-enable next line (and remove line after) to enable internationalisation support
         this.language = this.detectLanguage();
 
         window.addEventListener('focus', this._onTabFocus.bind(this));
@@ -31,9 +30,8 @@ class I18n { // eslint-disable-line no-unused-vars
     static detectLanguage() {
         const cookieMatch = document.cookie.match(new RegExp('(^| )lang=([^;]+)'));
         const cookieLang = cookieMatch && decodeURIComponent(cookieMatch[2]);
-        const browserLang = navigator.language.split('-')[0];
 
-        return cookieLang || browserLang;
+        return cookieLang || navigator.language.split('-')[0];
     }
 
     /**
