@@ -77,6 +77,20 @@ const TRANSLATIONS = {
         'passwordbox-password-skip': 'Skip for now',
         'passwordbox-reset-password': 'Reset with Recovery Words',
 
+        'payment-info-line-order-amount': 'Order amount',
+        'payment-info-line-vendor-markup': 'Vendor crypto markup',
+        'payment-info-line-vendor-discount': 'Vendor crypto discount',
+        'payment-info-line-effective-rate': 'Effective rate',
+        'payment-info-line-free-service': 'Nimiq provides this service free of charge.',
+        'payment-info-line-total': 'Total',
+        'payment-info-line-network-fee': 'network fee',
+        'payment-info-line-paying-more': 'You are paying approx. %RATE_DEVIATION% more than at the current market rate '
+                                       + '(coingecko.com).',
+        'payment-info-line-paying-less': 'You are paying approx. %RATE_DEVIATION% less than at the current market rate '
+                                       + '(coingecko.com).',
+        'payment-info-line-actual-discount': 'Your actual discount is approx. %RATE_DEVIATION% compared to the current '
+                                           + 'market rate (coingecko.com).',
+
         'timer-expiry': 'This offer expires in',
         'timer-second': 'second',
         'timer-seconds': 'seconds',
@@ -250,6 +264,20 @@ const TRANSLATIONS = {
         'passwordbox-password-skip': 'Erstmal überspringen',
         'passwordbox-reset-password': 'Mit Wiederherstellungswörtern zurücksetzen',
 
+        'payment-info-line-order-amount': 'Kaufbetrag',
+        'payment-info-line-vendor-markup': 'Verkäufer Krypto-Aufschlag',
+        'payment-info-line-vendor-discount': 'Verkäufer Krypto-Rabatt',
+        'payment-info-line-effective-rate': 'Effektiver Wechselkurs',
+        'payment-info-line-free-service': 'Nimiq bietet diesen Service kostenfrei an.',
+        'payment-info-line-total': 'Gesamt',
+        'payment-info-line-network-fee': 'Netzwerkgebühr',
+        'payment-info-line-paying-more': 'Du zahlst etwa %RATE_DEVIATION% mehr als zum aktuellen '
+                                       + 'Wechselkurs (coingecko.com).',
+        'payment-info-line-paying-less': 'Du zahlst etwa %RATE_DEVIATION% weniger als zum aktuellen '
+                                       + 'Wechselkurs (coingecko.com).',
+        'payment-info-line-actual-discount': 'Dein tatsächlicher Rabatt beträgt etwa %RATE_DEVIATION% zum aktuellen '
+                                           + 'Wechselkurs (coingecko.com).',
+
         'timer-expiry': 'Angebot endet in',
         'timer-second': 'Sekunde',
         'timer-seconds': 'Sekunden',
@@ -345,7 +373,7 @@ const TRANSLATIONS = {
 
         'error-no-request-heading': 'Das ging schief :(',
         'error-no-request-message': 'Wir konnten keine gültige Anfrage finden. Bitte gehe zurück und '
-                                   + 'versuche es nochmal.',
+                                  + 'versuche es nochmal.',
     },
 };
 

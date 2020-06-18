@@ -116,6 +116,7 @@ export type SignTransactionRequestCheckout = SignTransactionRequestCommon & {
     expires?: number,
     fiatCurrency?: string,
     fiatAmount?: number,
+    vendorMarkup?: number,
 };
 
 export type SignTransactionRequestCashlink = SignTransactionRequestCommon & {

@@ -39,6 +39,11 @@
     </div>
 
     <div class="row">
+        <label>Transaction amount (luna)</label>
+        <input id="amount" value="200000000" type="number">
+    </div>
+
+    <div class="row">
         <label>Transaction fee (luna)</label>
         <input id="fee" value="0" type="number">
     </div>
@@ -61,6 +66,11 @@
     <div class="row checkout-only">
         <label>Fiat Currency Code (optional)</label>
         <input id="fiat-currency">
+    </div>
+
+    <div class="row checkout-only">
+        <label>Vendor Markup (optional)</label>
+        <input id="vendor-markup" type="number">
     </div>
 
     <div class="row checkout-only">
@@ -117,6 +127,7 @@
 
     async function generateRequest() {
         const layout = document.querySelector('#layout').value;
+        const txAmount = parseInt(document.querySelector('#amount').value) || 0;
         const txFee = parseInt(document.querySelector('#fee').value) || 0;
         const txData = document.querySelector('#data').value || '';
         const keyPassword = document.querySelector('#password').value || '';
@@ -140,7 +151,7 @@
             senderLabel: 'Spending Account',
             recipient: Nimiq.Address.fromUserFriendlyAddress('NQ82 HP54 C9D4 2FAG 69QD 6Q71 LURR 5187 0V3X').serialize(),
             recipientLabel: 'Best Friend',
-            value: 123400000,
+            value: txAmount,
             fee: txFee,
             data: Nimiq.BufferUtils.fromUtf8(txData),
             validityStartHeight: 0,
@@ -157,6 +168,11 @@
             const fiatCurrency = document.querySelector('#fiat-currency').value;
             if (fiatCurrency !== '') {
                 request.fiatCurrency = fiatCurrency;
+            }
+
+            const vendorMarkup = parseFloat(document.querySelector('#vendor-markup').value);
+            if (!Number.isNaN(vendorMarkup)) {
+                request.vendorMarkup = vendorMarkup;
             }
 
             const time = timeInput.value;

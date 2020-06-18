@@ -61,7 +61,7 @@ class Timer extends Nimiq.Observable {
      */
     static _createElement($el) {
         $el = $el || document.createElement('div');
-        $el.classList.add('timer');
+        $el.classList.add('timer', 'tooltip');
         $el.tabIndex = 0; // make it focusable
 
         $el.innerHTML = TemplateTags.noVars`
@@ -73,7 +73,7 @@ class Timer extends Nimiq.Observable {
 
                 <text class="countdown" x="50%" y="50%">0</text>
             </svg>
-            <div class="tooltip">
+            <div class="tooltip-box">
                 <span data-i18n="timer-expiry">This offer expires in</span>
                 <span class="tooltip-countdown"></span>.
             </div>

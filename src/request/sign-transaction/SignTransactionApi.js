@@ -40,6 +40,8 @@ class SignTransactionApi extends TopLevelApi {
                 throw new Errors.InvalidRequestError('fiatAmount and fiatCurrency must be both defined or undefined.');
             }
 
+            parsedRequest.vendorMarkup = this.parseVendorMarkup(request.vendorMarkup);
+
             parsedRequest.time = this.parseNonNegativeFiniteNumber(request.time);
             parsedRequest.expires = this.parseNonNegativeFiniteNumber(request.expires);
             if (parsedRequest.expires !== undefined) {
@@ -60,7 +62,7 @@ class SignTransactionApi extends TopLevelApi {
 
     /**
      * Checks that the given layout is valid
-     * @param {any} layout
+     * @param {unknown} layout
      * @returns {KeyguardRequest.SignTransactionRequestLayout}
      */
     parseLayout(layout) {
@@ -71,12 +73,12 @@ class SignTransactionApi extends TopLevelApi {
         if (Object.values(SignTransactionApi.Layouts).indexOf(layout) === -1) {
             throw new Errors.InvalidRequestError('Invalid selected layout');
         }
-        return layout;
+        return /** @type KeyguardRequest.SignTransactionRequestLayout */ (layout);
     }
 
     /**
      * Parses that a currency info is valid.
-     * @param {any} fiatCurrency
+     * @param {unknown} fiatCurrency
      * @returns {string | undefined}
      */
     parseFiatCurrency(fiatCurrency) {
@@ -90,6 +92,21 @@ class SignTransactionApi extends TopLevelApi {
             throw new Errors.InvalidRequestError(`Invalid currency code ${fiatCurrency}`);
         }
         return fiatCurrency.toUpperCase();
+    }
+
+    /**
+     * Parses that a value is a valid vendor markup.
+     * @param {unknown} value
+     * @returns {number | undefined}
+     */
+    parseVendorMarkup(value) {
+        if (value === undefined) {
+            return undefined;
+        }
+        if (typeof value !== 'number' || value <= -1 || !Number.isFinite(value)) {
+            throw new Errors.InvalidRequestError('Vendor markup must be a finite number > -1.');
+        }
+        return value;
     }
 
     get Handler() {
