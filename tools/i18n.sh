@@ -1,6 +1,13 @@
 #!/bin/bash
 # This script is used to generate the src/translations/index.js file containing all translations
 
+# Exit on first error
+set -e
+
+# Use default C locale to ensure consistent sorting despite the locale or the
+# operating system.
+export LC_ALL=C
+
 FILES=$(ls -1 src/translations/*.json)
 OUTPUT_FILE=src/translations/index.js
 

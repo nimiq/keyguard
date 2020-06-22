@@ -8,4 +8,4 @@ deployment-keyguard
 deployment-keyguard-next
 dist
 .ts-out
-/src/translations/index.js
+src/translations/index.js

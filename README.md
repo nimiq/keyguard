@@ -29,7 +29,8 @@ For local testing of the Keyguard you can setup a local server, for example usin
 [`python -m http.server 8000`](https://docs.python.org/3/library/http.server.html#http-server-cli).
 Note that it is mostly not necessary to run the build script for development purposes, as the code in `src` is fully
 functional and you can use it as an endpoint. Only (re)generating the translation dictionary needs to be triggered
-manually via `yarn prebuild`. For convenient testing of the Keyguard there are demos provided under `/demos`.
+manually via `yarn i18n:build-dictionary`. For convenient testing of the Keyguard there are demos provided under
+`/demos`.
 
 ## Coding Style
 

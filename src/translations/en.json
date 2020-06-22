@@ -1,7 +1,7 @@
 {
     "_language": "English",
 
-    "language-changed": "The display language changed but some translations can't be updated. Do you want to reload the page to update thoses?",
+    "language-changed": "The display language changed. Do you want to reload the page to update all translations? Otherwise, some translations might not be updated automatically.",
 
     "back-to": "Back to",
 
