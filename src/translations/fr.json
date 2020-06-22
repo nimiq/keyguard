@@ -45,6 +45,7 @@
     "sign-tx-cancel-payment": "Annuler le paiement",
 
     "sign-msg-heading": "Signer le Message",
+    "sign-msg-signer": "Signataire",
 
     "tab-width-selector-label": "Largeur de Tabulation",
 
@@ -84,6 +85,7 @@
     "timer-day": "jour",
     "timer-days": "jours",
 
+    "identicon-selector-avatars-hint": "Les avatars représentent les adresses.",
     "identicon-selector-generate-new": "Nouveaux Avatars",
 
     "download-loginfile-download": "Télécharger Fichier de Connexion",

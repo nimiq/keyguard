@@ -1,5 +1,5 @@
 {
-    "_language": "英文",
+    "_language": "中文",
 
     "language-changed": "显示语言已更改。您要重新加载页面以更新所有翻译吗？否则，某些翻译可能不会自动更新。",
 
@@ -45,6 +45,7 @@
     "sign-tx-cancel-payment": "取消付款",
 
     "sign-msg-heading": "签署信息",
+    "sign-msg-signer": "签署者",
 
     "tab-width-selector-label": "标签宽度",
 
@@ -84,6 +85,7 @@
     "timer-day": "天",
     "timer-days": "天",
 
+    "identicon-selector-avatars-hint": "头像代表地址。",
     "identicon-selector-generate-new": "新的头像",
 
     "download-loginfile-download": "下载登录文件",

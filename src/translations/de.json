@@ -8,7 +8,7 @@
     "funding-cashlink": "Cashlink erstellen",
 
     "recovery-words-title": "Schreibe diese 24 Wörter auf ein Papier.",
-    "recovery-words-intro-text": "Die Wiederherstellungswörter sind der EINZIGE Weg Zugriff zu stellungswörter offline und gib sie nur auf [strong]keyguard[/strong].nimiq.com ein.",
+    "recovery-words-intro-text": "Die Wiederherstellungswörter sind der EINZIGE Weg Zugriff zu deinem Account zu erhalten, wenn du dein Login File oder Passwort verlierst.",
     "recovery-words-intro-offline": "Bewahre deine Wörter offline auf und gib sie auf keiner anderen Seite als [strong]keyguard[/strong].nimiq.com ein.",
     "recovery-words-intro-copy": "Erstelle eine Kopie und verwahre sie an einem sicheren Ort: Dem Haus deiner Familie, Bankschließfach, etc.",
     "recovery-words-intro-safety": "Schütze dich vor Wasser und Feuer und benutze eine verschlossene Kiste um deine Wiederherstellungswörter zu verwahren.",
@@ -45,6 +45,7 @@
     "sign-tx-cancel-payment": "Zahlung abbrechen",
 
     "sign-msg-heading": "Nachricht signieren",
+    "sign-msg-signer": "Unterzeichner",
 
     "tab-width-selector-label": "Tab-Breite",
 
@@ -84,6 +85,7 @@
     "timer-day": "Tag",
     "timer-days": "Tagen",
 
+    "identicon-selector-avatars-hint": "Avatare repräsentieren Adressen.",
     "identicon-selector-generate-new": "Neue Avatare",
 
     "download-loginfile-download": "Login File herunterladen",
@@ -148,7 +150,7 @@
     "remove-key-final-confirm": "Ausloggen",
 
     "derive-address-heading-password": "Entschlüssele deinen Account",
-    "derive-address-password-text": "Bitte gib dein Passwort ein um deinem Account eine weitere Adresse hinzuzufügen.",
+    "derive-address-password-text": "Bitte gib dein Passwort ein um deinem[br]Account eine weitere Adresse hinzuzufügen.",
 
     "change-password-heading": "Altes Passwort bestätigen",
     "change-password-paragraph": "Die Passwortänderung wird ein neues Login File erstellen, welches das bisherige ersetzt.",
