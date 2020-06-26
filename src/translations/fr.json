@@ -75,6 +75,17 @@
     "passwordbox-password-skip": "Ignorer pour l'instant",
     "passwordbox-reset-password": "Réinitialiser avec les mots de récupération",
 
+    "payment-info-line-order-amount": "Montant de la commande",
+    "payment-info-line-vendor-markup": "Vendor crypto markup",
+    "payment-info-line-vendor-discount": "Vendor crypto discount",
+    "payment-info-line-effective-rate": "Taux effectif",
+    "payment-info-line-free-service": "Nimiq fournit ce service gratuitement.",
+    "payment-info-line-total": "Total",
+    "payment-info-line-network-fee": "frais du réseau",
+    "payment-info-line-paying-more": "Vous payez env. %RATE_DEVIATION% de plus que le taux actuel du marché (coingecko.com).",
+    "payment-info-line-paying-less": "Vous payez env. %RATE_DEVIATION% de moins que le taux actuel du marché (coingecko.com).",
+    "payment-info-line-actual-discount": "Votre remise réelle est d'env. %RATE_DEVIATION% par rapport au taux actuel du marché (coingecko.com).",
+
     "timer-expiry": "Cette offre expire dans",
     "timer-second": "seconde",
     "timer-seconds": "secondes",
@@ -85,7 +96,7 @@
     "timer-day": "jour",
     "timer-days": "jours",
 
-    "identicon-selector-avatars-hint": "Les avatars représentent les adresses.",
+    "identicon-selector-avatars-hint": "Les avatars représentes les adresses.",
     "identicon-selector-generate-new": "Nouveaux Avatars",
 
     "download-loginfile-download": "Télécharger Fichier de Connexion",

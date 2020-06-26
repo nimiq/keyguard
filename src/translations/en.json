@@ -75,6 +75,17 @@
     "passwordbox-password-skip": "Skip for now",
     "passwordbox-reset-password": "Reset with Recovery Words",
 
+    "payment-info-line-order-amount": "Order amount",
+    "payment-info-line-vendor-markup": "Vendor crypto markup",
+    "payment-info-line-vendor-discount": "Vendor crypto discount",
+    "payment-info-line-effective-rate": "Effective rate",
+    "payment-info-line-free-service": "Nimiq provides this service free of charge.",
+    "payment-info-line-total": "Total",
+    "payment-info-line-network-fee": "network fee",
+    "payment-info-line-paying-more": "You are paying approx. %RATE_DEVIATION% more than at the current market rate (coingecko.com).",
+    "payment-info-line-paying-less": "You are paying approx. %RATE_DEVIATION% less than at the current market rate (coingecko.com).",
+    "payment-info-line-actual-discount": "Your actual discount is approx. %RATE_DEVIATION% compared to the current market rate (coingecko.com).",
+
     "timer-expiry": "This offer expires in",
     "timer-second": "second",
     "timer-seconds": "seconds",
