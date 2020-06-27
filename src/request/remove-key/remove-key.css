@@ -93,7 +93,7 @@
     font-weight: 600;
     line-height: 2.625rem;
     font-size: 1.75rem;
-    border-radius: 0.5rem;
+    border-radius: 0.625rem;
     cursor: text;
     display: flex;
     flex-flow: column;
@@ -124,12 +124,13 @@
 
 .page#remove-key #remove-key-label-confirm input {
     font-size: 3.6rem;
-    border: none;
+    box-shadow: none;
     margin-top: 2rem;
     width: 100%;
     padding-top: 0;
     padding-bottom: 0;
     text-align: center;
+    color: var(--nimiq-white);
 }
 
 .page#remove-key ~ .page#recovery-words-intro:target ~ .page#login-file-download {

@@ -378,7 +378,7 @@ body.loading .page:target .page-footer > .loading-spinner {
 .actionbox {
     width: 100%;
     padding: 1.25rem;
-    border-radius: 0.5rem;
+    border-radius: 0.625rem;
     text-align: center;
 }
 
