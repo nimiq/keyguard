@@ -42,8 +42,12 @@ else
   }
 fi
 
-# execute config file given as parameter; default to testnet
-BUILD=testnet
+# execute config file given as parameter
+if [ -z "$1" ]; then
+    echo "ERROR: Please specify which network to build for by appending 'testnet' or 'mainnet' to the build command."
+    exit 1
+fi
+
 if [ "$1" != "" ]; then
     BUILD="$1"
 fi
