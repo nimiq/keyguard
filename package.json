@@ -3,17 +3,21 @@
   "version": "1.0.0",
   "description": "Secure storage for Nimiq private keys.",
   "scripts": {
-    "build": "tools/build.sh",
+    "build": "yarn i18n:build-dictionary && tools/build.sh",
     "test": "karma start",
     "typecheck": "tsc",
-    "lint": "eslint src tools && if ( grep fit tests/lib/* ); then exit 1; else exit 0; fi",
+    "lint": "yarn i18n:build-dictionary && eslint src tools && if ( grep fit tests/lib/* ); then exit 1; else exit 0; fi",
     "lintfix": "eslint --fix src tools",
     "checkdeps": "node tools/dependencyValidator.js",
-    "checklangs": "node tools/translationValidator.js",
+    "checklangs": "yarn i18n:build-dictionary && node tools/translationValidator.js",
     "pr": "yarn typecheck && yarn lint && yarn test && yarn checkdeps && yarn checklangs && yarn build testnet && cd client && yarn lint && yarn build",
     "watch": "tsc-watch --pretty --onSuccess \"yarn lint\"",
     "watchfix": "tsc-watch --pretty --onSuccess \"yarn lintfix\"",
-    "postinstall": "cd client && yarn"
+    "postinstall": "cd client && yarn",
+    "i18n:build-dictionary": "tools/i18n.sh",
+    "i18n:pull": "tx pull --all --parallel --no-interactive --force",
+    "i18n:push": "tx push --source",
+    "i18n:sync": "yarn i18n:push && yarn i18n:pull"
   },
   "repository": {
     "type": "git",

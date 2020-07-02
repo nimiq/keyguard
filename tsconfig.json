@@ -69,6 +69,7 @@
     "demos",
     "instrumented",
     "coverage",
-    "src/lib/QrScannerWorker.js"
+    "src/lib/QrScannerWorker.js",
+    "src/translations/index.js"
   ]
 }

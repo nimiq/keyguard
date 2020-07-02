@@ -19,9 +19,38 @@ class I18n { // eslint-disable-line no-unused-vars
         /** @type {string} */
         this._fallbackLanguage = fallbackLanguage;
 
-        // Re-enable next line (and remove line after) to enable internationalisation support
-        // this.language = navigator.language;
-        this.language = 'en';
+        this.language = this.detectLanguage();
+
+        window.addEventListener('focus', this._onTabFocus.bind(this));
+    }
+
+    /**
+     * @returns {string} The detected language set in the 'lang' cookie. Fallback to the browser language.
+     */
+    static detectLanguage() {
+        const cookieMatch = document.cookie.match(new RegExp('(^| )lang=([^;]+)'));
+        const cookieLang = cookieMatch && decodeURIComponent(cookieMatch[2]);
+
+        // TODO 'en' fallback just set temporarily, until language switching is enabled in wallet
+        const lang = cookieLang || 'en'; // || navigator.language.split('-')[0];
+        return I18n.getClosestSupportedLanguage(lang);
+    }
+
+    /**
+     * This method is executed on tab focus to check if the selected language got changed in another tab
+     * by the user and, if so, ask him if he wants to reload the page to update translations
+     */
+    static _onTabFocus() {
+        const lang = this.detectLanguage();
+        if (lang !== this.language && Object.keys(window.TRANSLATIONS).includes(lang)) {
+            this.language = lang;
+            const question = this.translatePhrase('language-changed');
+
+            // eslint-disable-next-line no-alert
+            if (window.confirm(question)) {
+                document.location.reload();
+            }
+        }
     }
 
     /**
