@@ -64,39 +64,27 @@ export class RedirectRequestBehavior extends RequestBehavior {
 export class IFrameRequestBehavior extends RequestBehavior {
     private static IFRAME_PATH_SUFFIX = '/request/iframe/';
 
-    private _iframe: HTMLIFrameElement | null;
-    private _client: PostMessageRpcClient | null;
+    private _iframeEndpoint: string | null = null;
+    private _iframePromise: Promise<HTMLIFrameElement> | null = null;
+    private _clientPromise: Promise<PostMessageRpcClient> | null = null;
 
     constructor() {
         super(BehaviorType.IFRAME);
-        this._iframe = null;
-        this._client = null;
     }
 
     public async request(endpoint: string, command: KeyguardCommand, args: any[]): Promise<any> {
-        if (this._iframe && this._iframe.src !== `${endpoint}${IFrameRequestBehavior.IFRAME_PATH_SUFFIX}`) {
-            throw new Error('Keyguard iframe is already opened with another endpoint');
-        }
-
-        const origin = RequestBehavior.getAllowedOrigin(endpoint);
-
-        if (!this._iframe) {
-            this._iframe = await this.createIFrame(endpoint);
-        }
-        if (!this._iframe.contentWindow) {
-            throw new Error(`IFrame contentWindow is ${typeof this._iframe.contentWindow}`);
-        }
-
-        if (!this._client) {
-            this._client = new PostMessageRpcClient(this._iframe.contentWindow, origin);
-            await this._client.init();
-        }
-
-        return await this._client.call(command, ...args);
+        const client = await this._getClient(endpoint);
+        return client.call(command, ...args);
     }
 
     public async createIFrame(endpoint: string): Promise<HTMLIFrameElement> {
-        return new Promise((resolve, reject) => {
+        if (this._iframeEndpoint && this._iframeEndpoint !== endpoint) {
+            throw new Error('Keyguard iframe is already opened with another endpoint' +
+                `(opened: ${this._iframeEndpoint}, expected: ${endpoint})`);
+        }
+        this._iframeEndpoint = endpoint;
+
+        this._iframePromise = this._iframePromise || new Promise((resolve, reject) => {
             const $iframe = document.createElement('iframe');
             $iframe.name = 'NimiqKeyguardIFrame';
             $iframe.style.display = 'none';
@@ -104,6 +92,25 @@ export class IFrameRequestBehavior extends RequestBehavior {
             $iframe.src = `${endpoint}${IFrameRequestBehavior.IFRAME_PATH_SUFFIX}`;
             $iframe.onload = () => resolve($iframe);
             $iframe.onerror = reject;
-        }) as Promise<HTMLIFrameElement>;
+        });
+
+        return this._iframePromise;
+    }
+
+    private _getClient(endpoint: string): Promise<PostMessageRpcClient> {
+        this._clientPromise = this._clientPromise || new Promise(async (resolve) => {
+            const iframe = await this.createIFrame(endpoint);
+            if (!iframe.contentWindow) {
+                throw new Error(`IFrame contentWindow is ${typeof iframe.contentWindow}`);
+            }
+
+            const origin = RequestBehavior.getAllowedOrigin(endpoint);
+            const client = new PostMessageRpcClient(iframe.contentWindow, origin);
+            await client.init();
+
+            resolve(client);
+        });
+
+        return this._clientPromise;
     }
 }
