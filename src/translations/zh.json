@@ -75,6 +75,17 @@
     "passwordbox-password-skip": "现在跳过",
     "passwordbox-reset-password": "使用恢复字重置",
 
+    "payment-info-line-order-amount": "订单数量",
+    "payment-info-line-vendor-markup": "供应商加密货币加价",
+    "payment-info-line-vendor-discount": "供应商加密货币折扣",
+    "payment-info-line-effective-rate": "有效汇率",
+    "payment-info-line-free-service": "Nimiq免费提供这项服务。",
+    "payment-info-line-total": "总额",
+    "payment-info-line-network-fee": "网络费",
+    "payment-info-line-paying-more": "您需要比当前市场汇率(coingecko.com)多支付大约%RATE_DEVIATION%。",
+    "payment-info-line-paying-less": "您需要比当前市场汇率(coingecko.com)少支付大约%RATE_DEVIATION%。",
+    "payment-info-line-actual-discount": "与当前市场汇率(coingecko.com)相比，您的实际折扣约为%RATE_DEVIATION%。",
+
     "timer-expiry": "此报价在以下时间到期",
     "timer-second": "秒",
     "timer-seconds": "秒",

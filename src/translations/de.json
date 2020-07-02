@@ -75,6 +75,17 @@
     "passwordbox-password-skip": "Erstmal überspringen",
     "passwordbox-reset-password": "Mit Wiederherstellungswörtern zurücksetzen",
 
+    "payment-info-line-order-amount": "Kaufbetrag",
+    "payment-info-line-vendor-markup": "Verkäufer Krypto-Aufschlag",
+    "payment-info-line-vendor-discount": "Verkäufer Krypto-Rabatt",
+    "payment-info-line-effective-rate": "Effektiver Wechselkurs",
+    "payment-info-line-free-service": "Nimiq bietet diesen Service kostenfrei an.",
+    "payment-info-line-total": "Gesamt",
+    "payment-info-line-network-fee": "Netzwerkgebühr",
+    "payment-info-line-paying-more": "Du zahlst etwa %RATE_DEVIATION% mehr als zum aktuellen Wechselkurs (coingecko.com).",
+    "payment-info-line-paying-less": "Du zahlst etwa %RATE_DEVIATION% weniger als zum aktuellen Wechselkurs (coingecko.com).",
+    "payment-info-line-actual-discount": "Dein tatsächlicher Rabatt beträgt etwa %RATE_DEVIATION% zum aktuellen Wechselkurs (coingecko.com).",
+
     "timer-expiry": "Angebot endet in",
     "timer-second": "Sekunde",
     "timer-seconds": "Sekunden",

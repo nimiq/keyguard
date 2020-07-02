@@ -76,8 +76,8 @@
     "passwordbox-reset-password": "Réinitialiser avec les mots de récupération",
 
     "payment-info-line-order-amount": "Montant de la commande",
-    "payment-info-line-vendor-markup": "Vendor crypto markup",
-    "payment-info-line-vendor-discount": "Vendor crypto discount",
+    "payment-info-line-vendor-markup": "Crypto-premium",
+    "payment-info-line-vendor-discount": "Crypto-remise",
     "payment-info-line-effective-rate": "Taux effectif",
     "payment-info-line-free-service": "Nimiq fournit ce service gratuitement.",
     "payment-info-line-total": "Total",
