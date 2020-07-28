@@ -78,7 +78,7 @@ class SignBtcTransactionApi extends TopLevelApi {
         if (Object.values(SignBtcTransactionApi.Layouts).indexOf(layout) === -1) {
             throw new Errors.InvalidRequestError('Invalid selected layout');
         }
-        return /** @type KeyguardRequest.SignTransactionRequestLayout */ (layout);
+        return /** @type KeyguardRequest.SignBtcTransactionRequestLayout */ (layout);
     }
 
     /**
@@ -100,7 +100,7 @@ class SignBtcTransactionApi extends TopLevelApi {
     }
 
     /**
-     * @param {any} inputs
+     * @param {unknown} inputs
      * @returns {ParsedBitcoinTransactionInput[]}
      */
     parseInputs(inputs) {
@@ -134,7 +134,7 @@ class SignBtcTransactionApi extends TopLevelApi {
     }
 
     /**
-     * @param {any} path
+     * @param {unknown} path
      * @param {string} name - name of the property, used in error case only
      * @returns {string}
      */
@@ -170,7 +170,7 @@ class SignBtcTransactionApi extends TopLevelApi {
     }
 
     /**
-     * @param {any} output
+     * @param {unknown} output
      * @param {boolean} allowUndefined
      * @param {string} parameterName
      * @returns {KeyguardRequest.BitcoinTransactionOutput | undefined}
@@ -180,16 +180,27 @@ class SignBtcTransactionApi extends TopLevelApi {
             return undefined;
         }
 
+        if (!output || typeof output !== 'object') {
+            throw new Error(`${parameterName} is not a valid output`);
+        }
+
         return {
-            address: this.parseBitcoinAddress(output.address, `${parameterName}.address`),
+            address: this.parseBitcoinAddress(
+                /** @type {{address: unknown}} */ (output).address,
+                `${parameterName}.address`,
+            ),
             value:
                 /** @type {number} */
-                (this.parseNonNegativeFiniteNumber(output.value, false, `${parameterName}.value`)),
+                (this.parseNonNegativeFiniteNumber(
+                    /** @type {{value: unknown}} */ (output).value,
+                    false,
+                    `${parameterName}.value`,
+                )),
         };
     }
 
     /**
-     * @param {any} address
+     * @param {unknown} address
      * @param {string} parameterName
      * @returns {string}
      */
@@ -197,7 +208,7 @@ class SignBtcTransactionApi extends TopLevelApi {
         if (!BitcoinUtils.validateAddress(address)) {
             throw new Errors.InvalidRequestError(`${parameterName} is not a valid Bitcoin address`);
         }
-        return address;
+        return /** @type {string} */ (address);
     }
 
     /**

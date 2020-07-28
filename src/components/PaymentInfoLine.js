@@ -78,7 +78,7 @@ class PaymentInfoLine { // eslint-disable-line no-unused-vars
     }
 
     /**
-     * @private
+     * @protected
      * @param {HTMLElement} $container
      */
     _createPriceTooltip($container) {
@@ -182,7 +182,7 @@ class PaymentInfoLine { // eslint-disable-line no-unused-vars
     }
 
     /**
-     * @private
+     * @protected
      * @param {number} effectiveRate
      * @param {HTMLElement} $tooltip
      * @param {HTMLElement} $rateInfo

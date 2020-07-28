@@ -168,6 +168,7 @@ export type SignBtcTransactionRequestCheckout = SignBtcTransactionRequestCommon 
     expires?: number,
     fiatCurrency?: string,
     fiatAmount?: number,
+    vendorMarkup?: number,
 };
 
 export type SignBtcTransactionRequest

@@ -1,3 +1,4 @@
+/* global Nimiq */
 /* global Key */
 /* global KeyStore */
 /* global SignBtcTransactionApi */
@@ -88,7 +89,7 @@ class SignBtcTransaction {
                 label: recipientLabel || recipientAddress,
                 imageUrl: request.shopLogoUrl,
                 satoshiAmount: recipientOutput.value,
-                networkFee: request.transaction.fee,
+                networkFee: fee,
             }), $paymentInfoLine);
         } else {
             $paymentInfoLine.remove();
