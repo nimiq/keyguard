@@ -1,3 +1,4 @@
+/* global I18n */
 /* global QrEncoder */
 /* global LoginFileConfig */
 
@@ -32,7 +33,8 @@ class LoginFile {
     }
 
     filename() {
-        return `Nimiq-Login-File-${this._config.name}-Account.png`;
+        const filename = I18n.translatePhrase('login-file-filename');
+        return filename.replace('{color}', this._config.name);
     }
 
     async toDataUrl() {
