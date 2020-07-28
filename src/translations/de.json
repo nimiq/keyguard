@@ -174,5 +174,7 @@
     "change-password-set-password-text-legacy": "Sichere deinen Account.",
 
     "error-no-request-heading": "Das ging schief :(",
-    "error-no-request-message": "Wir konnten keine gültige Anfrage finden. Bitte gehe zurück und versuche es nochmal."
+    "error-no-request-message": "Wir konnten keine gültige Anfrage finden. Bitte gehe zurück und versuche es nochmal.",
+
+    "bitcoin-recipient-unlabelled": "Unlabelled"
 }

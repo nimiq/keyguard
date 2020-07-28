@@ -51,6 +51,7 @@
     <script defer src="../../lib/ClipboardUtils.js"></script>
     <script defer src="../../lib/IqonHash.js"></script>
     <script defer src="../../lib/Iqons.js"></script>
+    <script defer src="../../lib/LoginFileConfig.js"></script>
     <script defer src="../../lib/NumberFormatting.js"></script>
     <script defer src="../../lib/FiatApi.js"></script>
     <script defer src="../../components/Copyable.js"></script>
@@ -86,46 +87,37 @@
 
     <div id="app">
         <div id="confirm-transaction" class="page nq-card">
-            <div id="account-details">
-                <button id="close-details" class="nq-button-s">
-                    <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-close"/></svg>
-                </button>
-                <div id="details"></div>
+            <div class="payment-info-line"></div>
+            <div class="page-header nq-card-header">
+                <a tabindex="0" class="page-header-back-button hide-standard">
+                    <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
+                </a>
+                <h1 data-i18n="sign-tx-heading-checkout" class="nq-h1 hide-standard hide-cashlink">Verify Payment</h1>
+                <h1 data-i18n="sign-tx-heading-tx" class="nq-h1 hide-checkout hide-cashlink">Confirm Transaction</h1>
             </div>
-            <div id="effect-container">
-                <div class="payment-info-line"></div>
-                <div class="page-header nq-card-header">
-                    <a tabindex="0" class="page-header-back-button hide-standard">
-                        <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
-                    </a>
-                    <h1 data-i18n="sign-tx-heading-checkout" class="nq-h1 hide-standard hide-cashlink">Verify Payment</h1>
-                    <h1 data-i18n="sign-tx-heading-tx" class="nq-h1 hide-checkout hide-cashlink">Confirm Transaction</h1>
-                    <h1 data-i18n="sign-tx-heading-cashlink" class="nq-h1 hide-checkout hide-standard ">Create a Cashlink</h1>
+
+            <div class="page-body nq-card-body transaction">
+                <div class="recipient">
+                    <div class="label-line">
+                        <div id="avatar"></div>
+                        <div id="label"></div>
+                    </div>
+                    <span id="address"></span>
                 </div>
 
-                <div class="page-body nq-card-body transaction">
-                    <div class="center accounts">
-                        <div class="sender"></div>
-                        <svg class="nq-icon arrow"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-right"/></svg>
-                        <div class="recipient"></div>
+                <div class="value-fee">
+                    <div class="total nq-light-blue">
+                        <span id="value"></span><span class="btc-symbol"></span>
                     </div>
 
-                    <div class="value-fee-data">
-                        <div class="total nq-light-blue">
-                            <span id="value"></span><span class="btc-symbol"></span>
-                        </div>
-
-                        <div class="fee-section nq-text-s display-none">
-                            + <span id="fee"></span> <span class="btc-symbol"></span> <span data-i18n="sign-tx-fee">fee</span>
-                        </div>
-
-                        <div class="data-section display-none nq-text nq-blue" id="data"></div>
+                    <div class="fee-section nq-text-s display-none">
+                        + <span id="fee"></span> <span class="btc-symbol"></span> <span data-i18n="sign-tx-fee">fee</span>
                     </div>
                 </div>
+            </div>
 
-                <div class="page-footer nq-card-footer">
-                    <form id="password-box"></form>
-                </div>
+            <div class="page-footer nq-card-footer">
+                <form id="password-box"></form>
             </div>
         </div>
 

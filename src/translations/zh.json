@@ -174,5 +174,7 @@
     "change-password-set-password-text-legacy": "确保您的账户安全",
 
     "error-no-request-heading": "出错了 :(",
-    "error-no-request-message": "我们无法检测到有效的请求，请返回并再次尝试"
+    "error-no-request-message": "我们无法检测到有效的请求，请返回并再次尝试",
+
+    "bitcoin-recipient-unlabelled": "Unlabelled"
 }

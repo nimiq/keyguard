@@ -174,5 +174,7 @@
     "change-password-set-password-text-legacy": "Sécurisez votre Compte.",
 
     "error-no-request-heading": "Cela a mal tourné :(",
-    "error-no-request-message": "Nous n'avons pas pu détecter une requête valide. Veuillez revenir en arrière et réessayer."
+    "error-no-request-message": "Nous n'avons pas pu détecter une requête valide. Veuillez revenir en arrière et réessayer.",
+
+    "bitcoin-recipient-unlabelled": "Unlabelled"
 }

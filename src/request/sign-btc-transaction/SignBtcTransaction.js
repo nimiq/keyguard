@@ -7,13 +7,15 @@
 /* global Errors */
 /* global Utf8Tools */
 /* global TopLevelApi */
-/* global AddressInfo */
 /* global PaymentInfoLineBitcoin */
 /* global NumberFormatting */
 /* global BitcoinJS */
 /* global BitcoinConstants */
 /* global BitcoinUtils */
 /* global BitcoinKey */
+/* global IqonHash */
+/* global LoginFileConfig */
+/* global I18n */
 
 /**
  * @callback SignBtcTransaction.resolve
@@ -32,32 +34,20 @@ class SignBtcTransaction {
         this.$el = (document.getElementById(SignBtcTransaction.Pages.CONFIRM_TRANSACTION));
         this.$el.classList.add(request.layout);
 
-        const inputs = request.inputs;
         const recipientOutput = request.recipientOutput;
         const changeOutput = request.changeOutput;
 
-        const fee = inputs.reduce((sum, input) => sum + input.witnessUtxo.value, 0)
+        const fee = request.inputs.reduce((sum, input) => sum + input.witnessUtxo.value, 0)
             - recipientOutput.value
             - (changeOutput ? changeOutput.value : 0);
 
-        /** @type {HTMLElement} */
-        this.$accountDetails = (this.$el.querySelector('#account-details'));
-
         /** @type {HTMLLinkElement} */
-        const $sender = (this.$el.querySelector('.accounts .sender'));
-        this._senderAddressInfo = new AddressInfo({
-            userFriendlyAddress: inputs[0].address, // TODO: Show all input addresses?
-            label: request.senderLabel || null,
-            imageUrl: null,
-            accountLabel: request.keyLabel || null,
-        });
-        this._senderAddressInfo.renderTo($sender);
-        $sender.addEventListener('click', () => {
-            this._openDetails(this._senderAddressInfo);
-        });
-
+        const $recipientAvatar = (this.$el.querySelector('#avatar'));
         /** @type {HTMLLinkElement} */
-        const $recipient = (this.$el.querySelector('.accounts .recipient'));
+        const $recipientLabel = (this.$el.querySelector('#label'));
+        /** @type {HTMLLinkElement} */
+        const $recipientAddress = (this.$el.querySelector('#address'));
+
         const recipientAddress = recipientOutput.address;
         /* eslint-disable no-nested-ternary */
         const recipientLabel = 'shopOrigin' in request && !!request.shopOrigin
@@ -69,16 +59,24 @@ class SignBtcTransaction {
         const recipientImage = 'shopLogoUrl' in request && !!request.shopLogoUrl
             ? request.shopLogoUrl
             : null;
-        this._recipientAddressInfo = new AddressInfo({
-            userFriendlyAddress: recipientAddress, // TODO: Show change address, too?
-            label: recipientLabel,
-            imageUrl: recipientImage,
-            accountLabel: null,
-        });
-        this._recipientAddressInfo.renderTo($recipient);
-        $recipient.addEventListener('click', () => {
-            this._openDetails(this._recipientAddressInfo);
-        });
+
+        if (recipientLabel) {
+            if (recipientImage) {
+                const img = new Image();
+                img.src = recipientImage.href;
+                $recipientAvatar.appendChild(img);
+            } else {
+                $recipientAvatar.textContent = recipientLabel.substring(0, 1);
+                const color = IqonHash.getBackgroundColorIndex(recipientLabel);
+                $recipientAvatar.classList.add(LoginFileConfig[color].className, 'initial');
+            }
+        } else {
+            $recipientAvatar.classList.add('unlabelled');
+            $recipientLabel.classList.add('unlabelled');
+        }
+        $recipientLabel.textContent = recipientLabel || I18n.translatePhrase('bitcoin-recipient-unlabelled');
+
+        $recipientAddress.textContent = recipientAddress;
 
         /** @type {HTMLElement} */
         const $paymentInfoLine = (this.$el.querySelector('.payment-info-line'));
@@ -94,10 +92,6 @@ class SignBtcTransaction {
         } else {
             $paymentInfoLine.remove();
         }
-
-        /** @type {HTMLButtonElement} */
-        const $closeDetails = (this.$accountDetails.querySelector('#close-details'));
-        $closeDetails.addEventListener('click', this._closeDetails.bind(this));
 
         /** @type {HTMLDivElement} */
         const $value = (this.$el.querySelector('#value'));
@@ -132,21 +126,6 @@ class SignBtcTransaction {
         if ('expires' in request && request.expires) {
             setTimeout(() => reject(new Errors.RequestExpired()), request.expires - Date.now());
         }
-    }
-
-    /**
-     * @param {AddressInfo} which
-     */
-    _openDetails(which) {
-        which.renderTo(
-            /** @type {HTMLElement} */(this.$accountDetails.querySelector('#details')),
-            true,
-        );
-        this.$el.classList.add('account-details-open');
-    }
-
-    _closeDetails() {
-        this.$el.classList.remove('account-details-open');
     }
 
     /**
@@ -226,6 +205,8 @@ class SignBtcTransaction {
             // Sign
             const paths = request.inputs.map(input => input.keyPath);
             btcKey.sign(paths, psbt);
+
+            // Verify that all inputs are signed
             if (!psbt.validateSignaturesOfAllInputs()) {
                 throw new Error('Invalid or missing signature(s).');
             }

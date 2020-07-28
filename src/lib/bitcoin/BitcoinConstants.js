@@ -8,7 +8,7 @@ const BitcoinConstants = { // eslint-disable-line no-unused-vars
         BIP49: /** @type {'BIP49'} */ ('BIP49'), // Nested SegWit
         BIP84: /** @type {'BIP84'} */ ('BIP84'), // Native SegWit
     },
-    ACCOUNT_DERIVATION_PATH: {
+    ACCOUNT_DERIVATION_PATH: { // Used in tests
         BIP49: {
             MAIN: 'm/49\'/0\'/0\'',
             TEST: 'm/49\'/1\'/0\'',

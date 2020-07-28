@@ -174,5 +174,7 @@
     "change-password-set-password-text-legacy": "Secure your Account.",
 
     "error-no-request-heading": "That went wrong :(",
-    "error-no-request-message": "We could not detect a valid request. Please go back and try again."
+    "error-no-request-message": "We could not detect a valid request. Please go back and try again.",
+
+    "bitcoin-recipient-unlabelled": "Unlabelled"
 }
