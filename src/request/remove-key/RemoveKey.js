@@ -6,7 +6,7 @@
 /* global TopLevelApi */
 /* global Constants */
 /* global IqonHash */
-/* global LoginFile */
+/* global LoginFileConfig */
 
 /**
  * @callback RemoveKey.resolve
@@ -54,7 +54,7 @@ class RemoveKey {
             const color = IqonHash.getBackgroundColorIndex(
                 request.keyInfo.defaultAddress.toUserFriendlyAddress(),
             );
-            const colorClass = LoginFile.CONFIG[color].className;
+            const colorClass = LoginFileConfig[color].className;
             $loginFileContainer.classList.add(colorClass);
         }
 

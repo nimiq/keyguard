@@ -6,7 +6,7 @@
 /* global IqonHash */
 /* global Key */
 /* global KeyStore */
-/* global LoginFile */
+/* global LoginFileConfig */
 /* global LoginFileIcon */
 /* global Nimiq */
 /* global PasswordInput */
@@ -100,7 +100,7 @@ class ImportWords {
                 const color = IqonHash.getBackgroundColorIndex(
                     key.defaultAddress.toUserFriendlyAddress(),
                 );
-                colorClass = LoginFile.CONFIG[color].className;
+                colorClass = LoginFileConfig[color].className;
             }
             this._loginFileIcon.lock(colorClass);
         });

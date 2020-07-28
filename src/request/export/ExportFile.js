@@ -1,7 +1,7 @@
 /* global IqonHash */
 /* global Key */
 /* global LoginFileIcon */
-/* global LoginFile */
+/* global LoginFileConfig */
 /* global Nimiq */
 /* global PasswordBox */
 /* global PasswordSetterBox */
@@ -117,7 +117,7 @@ class ExportFile extends Nimiq.Observable {
             const color = IqonHash.getBackgroundColorIndex(
                 this._request.keyInfo.defaultAddress.toUserFriendlyAddress(),
             );
-            colorClass = LoginFile.CONFIG[color].className;
+            colorClass = LoginFileConfig[color].className;
             this._loginFileIcon.lock(colorClass);
             this._setPasswordProgressIndicator.setStep(3);
         });
