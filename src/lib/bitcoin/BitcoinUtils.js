@@ -78,4 +78,40 @@ class BitcoinUtils { // eslint-disable-line no-unused-vars
         if (path.startsWith('m/84\'/')) return BitcoinConstants.BIP.BIP84;
         throw new Error(`Could not parse BIP from derivation path: ${path}`);
     }
+
+    /**
+     * @param {any} address
+     * @returns {boolean}
+     */
+    static validateAddress(address) {
+        try {
+            const parsedAddress = BitcoinJS.address.fromBase58Check(address);
+            return BitcoinConstants.BIP49_ADDRESS_VERSIONS[CONFIG.BTC_NETWORK].includes(parsedAddress.version);
+        } catch (error) {
+            // Ignore, try Bech32 format below
+        }
+
+        try {
+            const parsedAddress = BitcoinJS.address.fromBech32(address);
+            return BitcoinConstants.BIP84_ADDRESS_PREFIX[CONFIG.BTC_NETWORK] === parsedAddress.prefix;
+        } catch (error) {
+            return false;
+        }
+    }
+
+    /**
+     * @param {number} coins Bitcoin count in decimal
+     * @returns {number} Number of Satoshis
+     */
+    static coinsToSatoshis(coins) {
+        return Math.round(coins * BitcoinConstants.SATOSHIS_PER_COIN);
+    }
+
+    /**
+     * @param {number} satoshis Number of Satoshis.
+     * @returns {number} Bitcoin count in decimal.
+     */
+    static satoshisToCoins(satoshis) {
+        return satoshis / BitcoinConstants.SATOSHIS_PER_COIN;
+    }
 }

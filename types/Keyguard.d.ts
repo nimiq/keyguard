@@ -43,6 +43,18 @@ type KeyRecord = {
     defaultAddress: Uint8Array
 }
 
+type ParsedBitcoinTransactionInput = {
+    hash: string,
+    index: number,
+    witnessUtxo: {
+        script: Uint8Array,
+        value: number,
+    },
+    redeemScript?: Uint8Array,
+    keyPath: string,
+    address: string,
+};
+
 type Transform<T, K extends keyof T, E> = Omit<T, K> & E;
 
 type KeyId2KeyInfo<T extends { keyId: string }> = Transform<T, 'keyId', { keyInfo: KeyInfo }>
@@ -86,5 +98,17 @@ type Parsed<T extends KeyguardRequest.Request> =
             KeyguardRequest.ResetPasswordRequest,
             'isKeyLost' | 'expectedKeyId' | 'wordsOnly',
             { isKeyLost: boolean, expectedKeyId: string, wordsOnly: boolean }
+        > :
+    T extends Is<T, KeyguardRequest.SignBtcTransactionRequestStandard> ?
+        Transform<
+            KeyId2KeyInfo<KeyguardRequest.SignBtcTransactionRequestStandard>,
+            'inputs', { inputs: ParsedBitcoinTransactionInput[] }
+        > & { layout: KeyguardRequest.SignBtcTransactionRequestLayout } :
+    T extends Is<T, KeyguardRequest.SignBtcTransactionRequestCheckout> ?
+        Transform<
+            Transform<
+                KeyId2KeyInfo<KeyguardRequest.SignBtcTransactionRequestCheckout>,
+                'inputs', { inputs: ParsedBitcoinTransactionInput[] }
+            >, 'shopLogoUrl', { shopLogoUrl?: URL }
         > :
     T;

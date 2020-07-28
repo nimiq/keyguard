@@ -260,14 +260,15 @@ class RequestParser { // eslint-disable-line no-unused-vars
      * Checks that a given value is a non-negative finite number.
      * @param {any} value
      * @param {boolean} [allowUndefined=true]
+     * @param {string} [parameterName='Value']
      * @returns {number | undefined}
      */
-    parseNonNegativeFiniteNumber(value, allowUndefined = true) {
+    parseNonNegativeFiniteNumber(value, allowUndefined = true, parameterName = 'Value') {
         if (value === undefined && allowUndefined) {
             return undefined;
         }
         if (typeof value !== 'number' || value < 0 || !Number.isFinite(value)) {
-            throw new Errors.InvalidRequestError('Value must be a non-negative finite number.');
+            throw new Errors.InvalidRequestError(`${parameterName} must be a non-negative finite number.`);
         }
         return value;
     }

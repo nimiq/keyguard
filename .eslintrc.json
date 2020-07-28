@@ -18,6 +18,7 @@
     "no-console": ["off"],
     "no-warning-comments": ["warn"],
     "no-restricted-syntax": ["error", "ForInStatement", "LabeledStatement", "WithStatement"],
+    "no-continue": ["off"],
     "require-jsdoc-except/require-jsdoc": ["error", {
       "require": {
         "FunctionDeclaration": true,

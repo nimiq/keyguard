@@ -1,4 +1,3 @@
-/* global Nimiq */
 /* global Key */
 /* global KeyStore */
 /* global SignBtcTransactionApi */
@@ -8,19 +7,21 @@
 /* global Utf8Tools */
 /* global TopLevelApi */
 /* global AddressInfo */
-/* global PaymentInfoLine */
-/* global Constants */
+/* global PaymentInfoLineBitcoin */
 /* global NumberFormatting */
-/* global I18n */
+/* global BitcoinJS */
+/* global BitcoinConstants */
+/* global BitcoinUtils */
+/* global BitcoinKey */
 
 /**
  * @callback SignBtcTransaction.resolve
- * @param {KeyguardRequest.SignTransactionResult} result
+ * @param {KeyguardRequest.SignedBitcoinTransaction} result
  */
 
 class SignBtcTransaction {
     /**
-     * @param {Parsed<KeyguardRequest.SignTransactionRequest>} request
+     * @param {Parsed<KeyguardRequest.SignBtcTransactionRequest>} request
      * @param {SignBtcTransaction.resolve} resolve
      * @param {reject} reject
      */
@@ -30,7 +31,13 @@ class SignBtcTransaction {
         this.$el = (document.getElementById(SignBtcTransaction.Pages.CONFIRM_TRANSACTION));
         this.$el.classList.add(request.layout);
 
-        const transaction = request.transaction;
+        const inputs = request.inputs;
+        const recipientOutput = request.recipientOutput;
+        const changeOutput = request.changeOutput;
+
+        const fee = inputs.reduce((sum, input) => sum + input.witnessUtxo.value, 0)
+            - recipientOutput.value
+            - (changeOutput ? changeOutput.value : 0);
 
         /** @type {HTMLElement} */
         this.$accountDetails = (this.$el.querySelector('#account-details'));
@@ -38,7 +45,7 @@ class SignBtcTransaction {
         /** @type {HTMLLinkElement} */
         const $sender = (this.$el.querySelector('.accounts .sender'));
         this._senderAddressInfo = new AddressInfo({
-            userFriendlyAddress: transaction.sender.toUserFriendlyAddress(),
+            userFriendlyAddress: inputs[0].address, // TODO: Show all input addresses?
             label: request.senderLabel || null,
             imageUrl: null,
             accountLabel: request.keyLabel || null,
@@ -50,7 +57,7 @@ class SignBtcTransaction {
 
         /** @type {HTMLLinkElement} */
         const $recipient = (this.$el.querySelector('.accounts .recipient'));
-        const recipientAddress = transaction.recipient.toUserFriendlyAddress();
+        const recipientAddress = recipientOutput.address;
         /* eslint-disable no-nested-ternary */
         const recipientLabel = 'shopOrigin' in request && !!request.shopOrigin
             ? request.shopOrigin.split('://')[1]
@@ -62,27 +69,25 @@ class SignBtcTransaction {
             ? request.shopLogoUrl
             : null;
         this._recipientAddressInfo = new AddressInfo({
-            userFriendlyAddress: recipientAddress,
+            userFriendlyAddress: recipientAddress, // TODO: Show change address, too?
             label: recipientLabel,
             imageUrl: recipientImage,
             accountLabel: null,
-        }, request.layout === SignBtcTransactionApi.Layouts.CASHLINK);
+        });
         this._recipientAddressInfo.renderTo($recipient);
-        if (request.layout !== SignBtcTransactionApi.Layouts.CASHLINK) {
-            $recipient.addEventListener('click', () => {
-                this._openDetails(this._recipientAddressInfo);
-            });
-        }
+        $recipient.addEventListener('click', () => {
+            this._openDetails(this._recipientAddressInfo);
+        });
 
         /** @type {HTMLElement} */
         const $paymentInfoLine = (this.$el.querySelector('.payment-info-line'));
         if (request.layout === SignBtcTransactionApi.Layouts.CHECKOUT) {
             // eslint-disable-next-line no-new
-            new PaymentInfoLine(Object.assign({}, request, {
+            new PaymentInfoLineBitcoin(Object.assign({}, request, {
                 recipient: recipientAddress,
                 label: recipientLabel || recipientAddress,
                 imageUrl: request.shopLogoUrl,
-                lunaAmount: request.transaction.value,
+                satoshiAmount: recipientOutput.value,
                 networkFee: request.transaction.fee,
             }), $paymentInfoLine);
         } else {
@@ -97,32 +102,14 @@ class SignBtcTransaction {
         const $value = (this.$el.querySelector('#value'));
         /** @type {HTMLDivElement} */
         const $fee = (this.$el.querySelector('#fee'));
-        /** @type {HTMLDivElement} */
-        const $data = (this.$el.querySelector('#data'));
 
         // Set value and fee.
-        $value.textContent = NumberFormatting.formatNumber(Nimiq.Policy.satoshisToCoins(transaction.value));
-        if ($fee && transaction.fee > 0) {
-            $fee.textContent = NumberFormatting.formatNumber(Nimiq.Policy.satoshisToCoins(transaction.fee));
+        $value.textContent = NumberFormatting.formatNumber(BitcoinUtils.satoshisToCoins(recipientOutput.value), 8);
+        if ($fee && fee > 0) {
+            $fee.textContent = NumberFormatting.formatNumber(BitcoinUtils.satoshisToCoins(fee), 8);
             /** @type {HTMLDivElement} */
             const $feeSection = (this.$el.querySelector('.fee-section'));
             $feeSection.classList.remove('display-none');
-        }
-
-        if (request.layout === SignBtcTransactionApi.Layouts.CASHLINK
-         && Nimiq.BufferUtils.equals(transaction.data, Constants.CASHLINK_FUNDING_DATA)) {
-            if (request.cashlinkMessage) {
-                $data.textContent = request.cashlinkMessage;
-                /** @type {HTMLDivElement} */
-                const $dataSection = (this.$el.querySelector('.data-section'));
-                $dataSection.classList.remove('display-none');
-            }
-        } else if ($data && transaction.data.byteLength > 0) {
-            // Set transaction extra data.
-            $data.textContent = this._formatData(transaction);
-            /** @type {HTMLDivElement} */
-            const $dataSection = (this.$el.querySelector('.data-section'));
-            $dataSection.classList.remove('display-none');
         }
 
         // Set up password box.
@@ -130,9 +117,7 @@ class SignBtcTransaction {
         const $passwordBox = (document.querySelector('#password-box'));
         this._passwordBox = new PasswordBox($passwordBox, {
             hideInput: !request.keyInfo.encrypted,
-            buttonI18nTag: request.layout === SignBtcTransactionApi.Layouts.CASHLINK
-                ? 'passwordbox-create-cashlink'
-                : 'passwordbox-confirm-tx',
+            buttonI18nTag: 'passwordbox-confirm-tx',
             minLength: request.keyInfo.hasPin ? Key.PIN_LENGTH : undefined,
         });
 
@@ -164,7 +149,7 @@ class SignBtcTransaction {
     }
 
     /**
-     * @param {Parsed<KeyguardRequest.SignTransactionRequest>} request
+     * @param {Parsed<KeyguardRequest.SignBtcTransactionRequest>} request
      * @param {SignBtcTransaction.resolve} resolve
      * @param {reject} reject
      * @param {string} [password]
@@ -192,39 +177,76 @@ class SignBtcTransaction {
             return;
         }
 
-        const publicKey = key.derivePublicKey(request.keyPath);
-        const signature = key.sign(request.keyPath, request.transaction.serializeContent());
+        const btcKey = new BitcoinKey(key);
 
-        /** @type {KeyguardRequest.SignTransactionResult} */
-        const result = {
-            publicKey: publicKey.serialize(),
-            signature: signature.serialize(),
-        };
-        resolve(result);
+        // For BIP49 (nested SegWit) inputs, a redeemScript needs to be added to inputs
+        for (const input of request.inputs) {
+            if (BitcoinUtils.parseBipFromDerivationPath(input.keyPath) !== BitcoinConstants.BIP.BIP49) continue;
+
+            // Add redeemScripts for BIP49 inputs
+            const keyPair = btcKey.deriveKeyPair(input.keyPath);
+            const output = BitcoinUtils.keyPairToNativeSegwit(keyPair).output;
+            if (!output) {
+                TopLevelApi.setLoading(false);
+                alert('UNEXPECTED: Failed to get native SegWit output for redeemScript');
+                return;
+            }
+            input.redeemScript = output;
+        }
+
+        // Sort inputs by tx hash ASC, then index ASC
+        request.inputs.sort((a, b) => {
+            if (a.hash !== b.hash) return a.hash < b.hash ? -1 : 1;
+            return a.index - b.index;
+        });
+
+        // Construct outputs
+        const outputs = [request.recipientOutput];
+        if (request.changeOutput) {
+            outputs.push(request.changeOutput);
+        }
+
+        // Sort outputs by value ASC, then address ASC
+        outputs.sort((a, b) => (a.value - b.value) || (a.address < b.address ? -1 : 1));
+
+        try {
+            // Construct transaction
+            const psbt = new BitcoinJS.Psbt({ network: BitcoinUtils.Network });
+
+            // Add inputs
+            // @ts-ignore Argument of type 'Uint8Array' is not assignable to parameter of type 'Buffer'.
+            psbt.addInputs(request.inputs);
+            // Add outputs
+            psbt.addOutputs(outputs);
+
+            // Sign
+            const paths = request.inputs.map(input => input.keyPath);
+            btcKey.sign(paths, psbt);
+            if (!psbt.validateSignaturesOfAllInputs()) {
+                throw new Error('Invalid or missing signature(s).');
+            }
+
+            // Finalize
+            psbt.finalizeAllInputs();
+
+            // Extract tx
+            const tx = psbt.extractTransaction();
+
+            /** @type {KeyguardRequest.SignedBitcoinTransaction} */
+            const result = {
+                raw: tx.toHex(),
+            };
+            resolve(result);
+        } catch (error) {
+            TopLevelApi.setLoading(false);
+            alert(`ERROR: ${error.message}`);
+            // return;
+        }
     }
 
     run() {
         // Go to start page
         window.location.hash = SignBtcTransaction.Pages.CONFIRM_TRANSACTION;
-    }
-
-    /**
-     * @param {Nimiq.Transaction} transaction
-     * @returns {string}
-     */
-    _formatData(transaction) {
-        if (Nimiq.BufferUtils.equals(transaction.data, Constants.CASHLINK_FUNDING_DATA)) {
-            return I18n.translatePhrase('funding-cashlink');
-        }
-
-        if (transaction.hasFlag(Nimiq.Transaction.Flag.CONTRACT_CREATION)) {
-            // TODO: Decode contract creation transactions
-            // return ...
-        }
-
-        return Utf8Tools.isValidUtf8(transaction.data)
-            ? Utf8Tools.utf8ByteArrayToString(transaction.data)
-            : Nimiq.BufferUtils.toHex(transaction.data);
     }
 }
 

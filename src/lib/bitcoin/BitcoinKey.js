@@ -21,7 +21,7 @@ class BitcoinKey {
      * @returns {string}
      */
     deriveAddress(path) {
-        const keyPair = this._deriveKeyPair(path);
+        const keyPair = this.deriveKeyPair(path);
 
         const bip = BitcoinUtils.parseBipFromDerivationPath(path);
 
@@ -57,7 +57,7 @@ class BitcoinKey {
             ...BitcoinUtils.Network,
             bip32: BitcoinConstants.EXTENDED_KEY_PREFIXES[bip][CONFIG.BTC_NETWORK],
         };
-        const keyPair = this._deriveKeyPair(path, network);
+        const keyPair = this.deriveKeyPair(path, network);
         const publicKey = keyPair.neutered();
         return publicKey.toBase58();
     }
@@ -68,9 +68,12 @@ class BitcoinKey {
      * @returns {BitcoinJS.Psbt}
      */
     sign(paths, psbt) {
+        // Dedupe paths
+        paths = [...new Set(paths)];
+
         // Find common path prefix
         const { prefix, suffixes } = BitcoinUtils.pathsToPrefixAndSuffixes(paths);
-        const base = this._deriveKeyPair(prefix);
+        const base = this.deriveKeyPair(prefix);
         for (const suffix of suffixes) {
             const keyPair = base.derivePath(suffix);
             psbt.signAllInputs(keyPair);
@@ -91,9 +94,8 @@ class BitcoinKey {
      * @param {string} path
      * @param {BitcoinJS.Network} [network]
      * @returns {BitcoinJS.BIP32Interface}
-     * @private
      */
-    _deriveKeyPair(path, network = BitcoinUtils.Network) {
+    deriveKeyPair(path, network = BitcoinUtils.Network) {
         const mnemonic = Nimiq.MnemonicUtils.entropyToMnemonic(this.secret);
         const seed = Nimiq.MnemonicUtils.mnemonicToSeed(mnemonic);
 

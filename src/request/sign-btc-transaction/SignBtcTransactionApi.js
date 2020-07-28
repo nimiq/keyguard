@@ -1,27 +1,32 @@
+/* global Nimiq */
 /* global I18n */
 /* global TopLevelApi */
 /* global SignBtcTransaction */
 /* global Errors */
+/* global BitcoinJS */
+/* global BitcoinUtils */
 
-/** @extends {TopLevelApi<KeyguardRequest.SignTransactionRequest>} */
+/** @extends {TopLevelApi<KeyguardRequest.SignBtcTransactionRequest>} */
 class SignBtcTransactionApi extends TopLevelApi {
     /**
-     * @param {KeyguardRequest.SignTransactionRequest} request
-     * @returns {Promise<Parsed<KeyguardRequest.SignTransactionRequest>>}
+     * @param {KeyguardRequest.SignBtcTransactionRequest} request
+     * @returns {Promise<Parsed<KeyguardRequest.SignBtcTransactionRequest>>}
      */
     async parseRequest(request) {
         if (!request) {
             throw new Errors.InvalidRequestError('request is required');
         }
 
-        /** @type {Parsed<KeyguardRequest.SignTransactionRequest>} */
+        /** @type {Parsed<KeyguardRequest.SignBtcTransactionRequest>} */
         const parsedRequest = {};
         parsedRequest.appName = this.parseAppName(request.appName);
         parsedRequest.keyInfo = await this.parseKeyId(request.keyId);
         parsedRequest.keyLabel = this.parseLabel(request.keyLabel);
-        parsedRequest.keyPath = this.parsePath(request.keyPath, 'keyPath');
         parsedRequest.senderLabel = this.parseLabel(request.senderLabel);
-        parsedRequest.transaction = this.parseTransaction(request);
+        parsedRequest.inputs = this.parseInputs(request.inputs);
+        parsedRequest.recipientOutput = /** @type {KeyguardRequest.BitcoinTransactionOutput} */ (
+            this.parseOutput(request.recipientOutput, false, 'recipientOutput'));
+        parsedRequest.changeOutput = this.parseOutput(request.changeOutput, true, 'changeOutput');
         parsedRequest.layout = this.parseLayout(request.layout);
         if ((!request.layout || request.layout === SignBtcTransactionApi.Layouts.STANDARD)
             && parsedRequest.layout === SignBtcTransactionApi.Layouts.STANDARD) {
@@ -51,10 +56,6 @@ class SignBtcTransactionApi extends TopLevelApi {
                     throw new Errors.InvalidRequestError('`expires` must be greater than `time`');
                 }
             }
-        } else if (request.layout === SignBtcTransactionApi.Layouts.CASHLINK
-            && parsedRequest.layout === SignBtcTransactionApi.Layouts.CASHLINK
-            && request.cashlinkMessage) {
-            parsedRequest.cashlinkMessage = /** @type {string} */(this.parseMessage(request.cashlinkMessage));
         }
 
         return parsedRequest;
@@ -63,7 +64,7 @@ class SignBtcTransactionApi extends TopLevelApi {
     /**
      * Checks that the given layout is valid
      * @param {unknown} layout
-     * @returns {KeyguardRequest.SignTransactionRequestLayout}
+     * @returns {KeyguardRequest.SignBtcTransactionRequestLayout}
      */
     parseLayout(layout) {
         if (!layout) {
@@ -95,6 +96,71 @@ class SignBtcTransactionApi extends TopLevelApi {
     }
 
     /**
+     * @param {any} inputs
+     * @returns {ParsedBitcoinTransactionInput[]}
+     */
+    parseInputs(inputs) {
+        if (!inputs || !Array.isArray(inputs)) {
+            throw new Errors.InvalidRequestError('inputs must be an array');
+        }
+        if (inputs.length === 0) {
+            throw new Errors.InvalidRequestError('inputs must not be empty');
+        }
+
+        // Construct inputs
+        return inputs.map((input, index) => {
+            const script = new Uint8Array(Nimiq.BufferUtils.fromAny(input.outputScript));
+            return {
+                hash: Nimiq.BufferUtils.toHex(Nimiq.BufferUtils.fromAny(input.txHash)),
+                index:
+                    /** @type {number} */
+                    (this.parseNonNegativeFiniteNumber(input.outputIndex, false, `input[${index}].outputIndex`)),
+                witnessUtxo: {
+                    script,
+                    value:
+                        /** @type {number} */
+                        (this.parseNonNegativeFiniteNumber(input.value, false, `input[${index}].value`)),
+                },
+                keyPath: this.parsePath(input.keyPath, `input[${index}].keypath`),
+                // Address added only for display
+                // @ts-ignore Argument of type 'Uint8Array' is not assignable to parameter of type 'Buffer'.
+                address: BitcoinJS.address.fromOutputScript(script, BitcoinUtils.Network),
+            };
+        });
+    }
+
+    /**
+     * @param {any} output
+     * @param {boolean} allowUndefined
+     * @param {string} parameterName
+     * @returns {KeyguardRequest.BitcoinTransactionOutput | undefined}
+     */
+    parseOutput(output, allowUndefined, parameterName) {
+        if (output === undefined && allowUndefined) {
+            return undefined;
+        }
+
+        return {
+            address: this.parseBitcoinAddress(output.address, `${parameterName}.address`),
+            value:
+                /** @type {number} */
+                (this.parseNonNegativeFiniteNumber(output.value, false, `${parameterName}.value`)),
+        };
+    }
+
+    /**
+     * @param {any} address
+     * @param {string} parameterName
+     * @returns {string}
+     */
+    parseBitcoinAddress(address, parameterName) {
+        if (!BitcoinUtils.validateAddress(address)) {
+            throw new Errors.InvalidRequestError(`${parameterName} is not a valid Bitcoin address`);
+        }
+        return address;
+    }
+
+    /**
      * Parses that a value is a valid vendor markup.
      * @param {unknown} value
      * @returns {number | undefined}
@@ -114,7 +180,7 @@ class SignBtcTransactionApi extends TopLevelApi {
     }
 
     /**
-     * @param {Parsed<KeyguardRequest.SignTransactionRequest>} parsedRequest
+     * @param {Parsed<KeyguardRequest.SignBtcTransactionRequest>} parsedRequest
      */
     async onBeforeRun(parsedRequest) {
         if (parsedRequest.layout === SignBtcTransactionApi.Layouts.CHECKOUT) {
@@ -124,11 +190,10 @@ class SignBtcTransactionApi extends TopLevelApi {
 }
 
 /**
- * @enum {KeyguardRequest.SignTransactionRequestLayout}
+ * @enum {KeyguardRequest.SignBtcTransactionRequestLayout}
  * @readonly
  */
 SignBtcTransactionApi.Layouts = {
     STANDARD: /** @type {'standard'} */ ('standard'),
     CHECKOUT: /** @type {'checkout'} */ ('checkout'),
-    CASHLINK: /** @type {'cashlink'} */ ('cashlink'),
 };

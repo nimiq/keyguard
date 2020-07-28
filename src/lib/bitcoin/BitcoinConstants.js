@@ -1,4 +1,5 @@
 const BitcoinConstants = { // eslint-disable-line no-unused-vars
+    SATOSHIS_PER_COIN: 1e8,
     NETWORK: {
         MAIN: /** @type {'MAIN'} */ ('MAIN'),
         TEST: /** @type {'TEST'} */ ('TEST'),
@@ -39,5 +40,15 @@ const BitcoinConstants = { // eslint-disable-line no-unused-vars
                 private: 0x045f18bc, // vprv
             },
         },
+    },
+    BIP49_ADDRESS_VERSIONS: {
+        // See https://en.bitcoin.it/wiki/List_of_address_prefixes
+        MAIN: [0, 5],
+        TEST: [111, 196],
+    },
+    BIP84_ADDRESS_PREFIX: {
+        // See https://en.bitcoin.it/wiki/List_of_address_prefixes
+        MAIN: 'bc',
+        TEST: 'tb',
     },
 };

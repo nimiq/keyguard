@@ -37,7 +37,27 @@ export type TransactionInfo = {
     flags?: number,
 };
 
+export type BitcoinTransactionInput = {
+    keyPath: string,
+    txHash: string,
+    outputIndex: number,
+    outputScript: string,
+    value: number,
+};
+
+export type BitcoinTransactionOutput = {
+    address: string,
+    value: number,
+};
+
+export type BitcoinTransactionInfo = {
+    inputs: BitcoinTransactionInput[],
+    recipientOutput: BitcoinTransactionOutput,
+    changeOutput?: BitcoinTransactionOutput,
+};
+
 export type SignTransactionRequestLayout = 'standard' | 'checkout' | 'cashlink';
+export type SignBtcTransactionRequestLayout = 'standard' | 'checkout';
 
 // Specific Requests
 
@@ -131,6 +151,29 @@ export type SignTransactionRequest
     | SignTransactionRequestCheckout
     | SignTransactionRequestCashlink;
 
+type SignBtcTransactionRequestCommon = SimpleRequest & BitcoinTransactionInfo & {
+    senderLabel?: string,
+};
+
+export type SignBtcTransactionRequestStandard = SignBtcTransactionRequestCommon & {
+    layout?: 'standard',
+    recipientLabel?: string,
+};
+
+export type SignBtcTransactionRequestCheckout = SignBtcTransactionRequestCommon & {
+    layout: 'checkout',
+    shopOrigin: string,
+    shopLogoUrl?: string,
+    time?: number,
+    expires?: number,
+    fiatCurrency?: string,
+    fiatAmount?: number,
+};
+
+export type SignBtcTransactionRequest
+    = SignBtcTransactionRequestStandard
+    | SignBtcTransactionRequestCheckout;
+
 export type SignMessageRequest = SimpleRequest & {
     keyPath: string,
     message: Uint8Array | string,
@@ -182,6 +225,7 @@ export type ListResult = KeyInfoObject[];
 export type ListLegacyResult = LegacyKeyInfoObject[];
 export type SignTransactionResult = SignatureResult;
 export type SimpleResult = { success: boolean };
+export type SignedBitcoinTransaction = { raw: string };
 
 // Result unions
 
@@ -196,6 +240,7 @@ export type RedirectResult
     | ExportResult
     | KeyResult
     | SignTransactionResult
+    | SignedBitcoinTransaction
     | SimpleResult;
 
 export type Result = RedirectResult | IFrameResult;
@@ -203,15 +248,12 @@ export type Result = RedirectResult | IFrameResult;
 // Derived Result types
 
 export type ResultType<T extends RedirectRequest> =
-    T extends Is<T, SignMessageRequest>
-        | Is<T, SignTransactionRequestStandard>
-        | Is<T, SignTransactionRequestCheckout>
-        | Is<T, SignTransactionRequestCashlink>
-        ? SignatureResult :
+    T extends Is<T, SignMessageRequest> | Is<T, SignTransactionRequest> ? SignatureResult :
     T extends Is<T, DeriveAddressRequest> ? DerivedAddress[] :
     T extends Is<T, CreateRequest> | Is<T, ImportRequest> | Is<T, ResetPasswordRequest> ? KeyResult :
     T extends Is<T, ExportRequest> ? ExportResult :
     T extends Is<T, RemoveKeyRequest> | Is<T, SimpleRequest> ? SimpleResult :
+    T extends Is<T, SignBtcTransactionRequest> ? SignedBitcoinTransaction :
     never;
 
 export type ResultByCommand<T extends KeyguardCommand> =
@@ -220,6 +262,7 @@ export type ResultByCommand<T extends KeyguardCommand> =
     T extends KeyguardCommand.CREATE | KeyguardCommand.IMPORT ? KeyResult :
     T extends KeyguardCommand.EXPORT ? ExportResult :
     T extends KeyguardCommand.REMOVE ? SimpleResult :
+    T extends KeyguardCommand.SIGN_BTC_TRANSACTION ? SignedBitcoinTransaction :
     never;
 
 // Error constants
