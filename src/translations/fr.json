@@ -174,5 +174,18 @@
     "change-password-set-password-text-legacy": "Sécurisez votre Compte.",
 
     "error-no-request-heading": "Cela a mal tourné :(",
-    "error-no-request-message": "Nous n'avons pas pu détecter une requête valide. Veuillez revenir en arrière et réessayer."
+    "error-no-request-message": "Nous n'avons pas pu détecter une requête valide. Veuillez revenir en arrière et réessayer.",
+
+    "login-file-color-orange": "Orange",
+    "login-file-color-red": "Rouge",
+    "login-file-color-yellow": "Jaune",
+    "login-file-color-indigo": "Indigo",
+    "login-file-color-blue": "Bleu",
+    "login-file-color-purple": "Violet",
+    "login-file-color-teal": "Sarcelle",
+    "login-file-color-pink": "Rose",
+    "login-file-color-green": "Vert",
+    "login-file-color-brown": "Marron",
+
+    "login-file-filename": "Fichier-de-Connexion-Nimiq-Compte-{color}.png"
 }

@@ -174,5 +174,18 @@
     "change-password-set-password-text-legacy": "Sichere deinen Account.",
 
     "error-no-request-heading": "Das ging schief :(",
-    "error-no-request-message": "Wir konnten keine gültige Anfrage finden. Bitte gehe zurück und versuche es nochmal."
+    "error-no-request-message": "Wir konnten keine gültige Anfrage finden. Bitte gehe zurück und versuche es nochmal.",
+
+    "login-file-color-orange": "Orange",
+    "login-file-color-red": "Red",
+    "login-file-color-yellow": "Yellow",
+    "login-file-color-indigo": "Indigo",
+    "login-file-color-blue": "Blue",
+    "login-file-color-purple": "Purple",
+    "login-file-color-teal": "Teal",
+    "login-file-color-pink": "Pink",
+    "login-file-color-green": "Green",
+    "login-file-color-brown": "Brown",
+
+    "login-file-filename": "Nimiq-Login-File-{color}-Account.png"
 }
