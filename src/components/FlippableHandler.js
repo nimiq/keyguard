@@ -48,12 +48,10 @@ class FlippableHandler {
                             window.setTimeout(() => $rotationContainer.classList.remove('disable-transition'), 10);
                         }, 0);
                     } else {
+                        $rotationContainer.classList.add('disable-transition');
+                        FlippableHandler._updateContainerHeight($newEl || undefined);
                         window.setTimeout(() => {
-                            $rotationContainer.classList.add('disable-transition');
-                            FlippableHandler._updateContainerHeight($newEl || undefined);
-                            window.setTimeout(() => {
-                                $rotationContainer.classList.remove('disable-transition');
-                            }, 0);
+                            $rotationContainer.classList.remove('disable-transition');
                         }, 0);
                     }
                 }
@@ -65,7 +63,7 @@ class FlippableHandler {
     /**
      * Update the height of the #rotation-container element to match its content.
      * The default behavior is to look for every visible `.page` element,
-     * and, if there is multiple, take the height of the higher.
+     * and, if there are multiple, take the height of the higher.
      * @param {Element} [$enforcedElement] - Enforce which element the function is taking the height from.
      *  Must be a child of `#rotation-container`
      */
@@ -78,7 +76,7 @@ class FlippableHandler {
             /** @type {Array<HTMLElement>} */
             const $pages = Array.from($rotationContainer.querySelectorAll('.page'));
             if ($pages && $pages.length > 0) {
-                const heights = $pages.map($el => ($el.offsetParent ? $el.clientHeight : 0));
+                const heights = $pages.map($el => $el.clientHeight);
                 const visiblePageHeight = Math.max(...heights);
                 $rotationContainer.style.height = visiblePageHeight > 0 ? `${visiblePageHeight}px` : '';
             }
