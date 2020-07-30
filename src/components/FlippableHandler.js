@@ -78,13 +78,9 @@ class FlippableHandler {
             /** @type {Array<HTMLElement>} */
             const $pages = Array.from($rotationContainer.querySelectorAll('.page'));
             if ($pages && $pages.length > 0) {
-                const $visiblePageHeight = $pages.reduce(
-                    (acc, $el) => ($el.offsetParent && $el.clientHeight > acc ? $el.clientHeight : acc),
-                    0,
-                );
-                if ($visiblePageHeight > 0) {
-                    $rotationContainer.style.height = `${$visiblePageHeight}px`;
-                }
+                const heights = $pages.map($el => ($el.offsetParent ? $el.clientHeight : 0));
+                const visiblePageHeight = Math.max(...heights);
+                $rotationContainer.style.height = visiblePageHeight > 0 ? `${visiblePageHeight}px` : '';
             }
         }
     }
