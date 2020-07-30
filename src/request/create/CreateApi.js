@@ -17,6 +17,7 @@ class CreateApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         parsedRequest.appName = this.parseAppName(request.appName);
         parsedRequest.defaultKeyPath = this.parsePath(request.defaultKeyPath, 'defaultKeyPath');
         parsedRequest.enableBackArrow = this.parseBoolean(request.enableBackArrow);
+        parsedRequest.bitcoinXPubPath = this.parsePath(request.bitcoinXPubPath, 'bitcoinXPubPath');
 
         return parsedRequest;
     }

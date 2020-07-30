@@ -64,6 +64,7 @@ export type SignBtcTransactionRequestLayout = 'standard' | 'checkout';
 export type CreateRequest = BasicRequest & {
     defaultKeyPath: string,
     enableBackArrow?: boolean,
+    bitcoinXPubPath: string,
  };
 
 export type DeriveAddressRequest = SimpleRequest & {
