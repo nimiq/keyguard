@@ -48,6 +48,7 @@ export type BitcoinTransactionInput = {
 export type BitcoinTransactionOutput = {
     address: string,
     value: number,
+    label?: string,
 };
 
 export type BitcoinTransactionChangeOutput = {
@@ -158,16 +159,11 @@ export type SignTransactionRequest
     | SignTransactionRequestCheckout
     | SignTransactionRequestCashlink;
 
-type SignBtcTransactionRequestCommon = SimpleRequest & BitcoinTransactionInfo & {
-    senderLabel?: string,
-};
-
-export type SignBtcTransactionRequestStandard = SignBtcTransactionRequestCommon & {
+export type SignBtcTransactionRequestStandard = SimpleRequest & BitcoinTransactionInfo & {
     layout?: 'standard',
-    recipientLabel?: string,
 };
 
-export type SignBtcTransactionRequestCheckout = SignBtcTransactionRequestCommon & {
+export type SignBtcTransactionRequestCheckout = SimpleRequest & BitcoinTransactionInfo & {
     layout: 'checkout',
     shopOrigin: string,
     shopLogoUrl?: string,
@@ -233,7 +229,10 @@ export type ListResult = KeyInfoObject[];
 export type ListLegacyResult = LegacyKeyInfoObject[];
 export type SignTransactionResult = SignatureResult;
 export type SimpleResult = { success: boolean };
-export type SignedBitcoinTransaction = { raw: string };
+export type SignedBitcoinTransaction = {
+    transactionHash: string,
+    raw: string,
+};
 
 // Result unions
 

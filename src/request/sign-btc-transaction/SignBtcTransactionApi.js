@@ -26,16 +26,12 @@ class SignBtcTransactionApi extends TopLevelApi {
             throw new Errors.InvalidRequestError('Bitcoin is only supported with modern accounts.');
         }
         parsedRequest.keyLabel = this.parseLabel(request.keyLabel);
-        parsedRequest.senderLabel = this.parseLabel(request.senderLabel);
         parsedRequest.inputs = this.parseInputs(request.inputs);
         parsedRequest.recipientOutput = /** @type {KeyguardRequest.BitcoinTransactionOutput} */ (
             this.parseOutput(request.recipientOutput, false, 'recipientOutput'));
         parsedRequest.changeOutput = this.parseChangeOutput(request.changeOutput, true, 'changeOutput');
         parsedRequest.layout = this.parseLayout(request.layout);
-        if ((!request.layout || request.layout === SignBtcTransactionApi.Layouts.STANDARD)
-            && parsedRequest.layout === SignBtcTransactionApi.Layouts.STANDARD) {
-            parsedRequest.recipientLabel = this.parseLabel(request.recipientLabel);
-        } else if (request.layout === SignBtcTransactionApi.Layouts.CHECKOUT
+        if (request.layout === SignBtcTransactionApi.Layouts.CHECKOUT
             && parsedRequest.layout === SignBtcTransactionApi.Layouts.CHECKOUT) {
             parsedRequest.shopOrigin = this.parseShopOrigin(request.shopOrigin);
             parsedRequest.shopLogoUrl = this.parseShopLogoUrl(request.shopLogoUrl);
@@ -189,13 +185,12 @@ class SignBtcTransactionApi extends TopLevelApi {
                 /** @type {{address: unknown}} */ (output).address,
                 `${parameterName}.address`,
             ),
-            value:
-                /** @type {number} */
-                (this.parseNonNegativeFiniteNumber(
-                    /** @type {{value: unknown}} */ (output).value,
-                    false,
-                    `${parameterName}.value`,
-                )),
+            label: this.parseLabel(/** @type {{label: unknown}} */ (output).label),
+            value: /** @type {number} */ (this.parseNonNegativeFiniteNumber(
+                /** @type {{value: unknown}} */ (output).value,
+                false,
+                `${parameterName}.value`,
+            )),
         };
     }
 

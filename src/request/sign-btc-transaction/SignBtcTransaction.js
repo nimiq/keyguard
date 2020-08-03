@@ -52,9 +52,7 @@ class SignBtcTransaction {
         /* eslint-disable no-nested-ternary */
         const recipientLabel = 'shopOrigin' in request && !!request.shopOrigin
             ? request.shopOrigin.split('://')[1]
-            : 'recipientLabel' in request && !!request.recipientLabel
-                ? request.recipientLabel
-                : null;
+            : request.recipientOutput.label || null;
         /* eslint-enable no-nested-ternary */
         const recipientImage = 'shopLogoUrl' in request && !!request.shopLogoUrl
             ? request.shopLogoUrl
@@ -247,6 +245,7 @@ class SignBtcTransaction {
 
             /** @type {KeyguardRequest.SignedBitcoinTransaction} */
             const result = {
+                transactionHash: tx.getId(),
                 raw: tx.toHex(),
             };
             resolve(result);
