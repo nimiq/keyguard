@@ -39,7 +39,7 @@ export type TransactionInfo = {
 
 export type BitcoinTransactionInput = {
     keyPath: string,
-    txHash: string,
+    transactionHash: string,
     outputIndex: number,
     outputScript: string,
     value: number,
@@ -50,10 +50,16 @@ export type BitcoinTransactionOutput = {
     value: number,
 };
 
+export type BitcoinTransactionChangeOutput = {
+    keyPath: string, // We require a key path for the change output to make sure that this output goes to the same key.
+    address?: string, // An address can still be passed in and will be checked against the derived address.
+    value: number,
+};
+
 export type BitcoinTransactionInfo = {
     inputs: BitcoinTransactionInput[],
     recipientOutput: BitcoinTransactionOutput,
-    changeOutput?: BitcoinTransactionOutput,
+    changeOutput?: BitcoinTransactionChangeOutput,
 };
 
 export type SignTransactionRequestLayout = 'standard' | 'checkout' | 'cashlink';

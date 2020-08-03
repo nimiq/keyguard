@@ -30,7 +30,7 @@ class SignBtcTransactionApi extends TopLevelApi {
         parsedRequest.inputs = this.parseInputs(request.inputs);
         parsedRequest.recipientOutput = /** @type {KeyguardRequest.BitcoinTransactionOutput} */ (
             this.parseOutput(request.recipientOutput, false, 'recipientOutput'));
-        parsedRequest.changeOutput = this.parseOutput(request.changeOutput, true, 'changeOutput');
+        parsedRequest.changeOutput = this.parseChangeOutput(request.changeOutput, true, 'changeOutput');
         parsedRequest.layout = this.parseLayout(request.layout);
         if ((!request.layout || request.layout === SignBtcTransactionApi.Layouts.STANDARD)
             && parsedRequest.layout === SignBtcTransactionApi.Layouts.STANDARD) {
@@ -189,6 +189,41 @@ class SignBtcTransactionApi extends TopLevelApi {
                 /** @type {{address: unknown}} */ (output).address,
                 `${parameterName}.address`,
             ),
+            value:
+                /** @type {number} */
+                (this.parseNonNegativeFiniteNumber(
+                    /** @type {{value: unknown}} */ (output).value,
+                    false,
+                    `${parameterName}.value`,
+                )),
+        };
+    }
+
+    /**
+     * @param {unknown} output
+     * @param {boolean} allowUndefined
+     * @param {string} parameterName
+     * @returns {KeyguardRequest.BitcoinTransactionChangeOutput | undefined}
+     */
+    parseChangeOutput(output, allowUndefined, parameterName) {
+        if (output === undefined && allowUndefined) {
+            return undefined;
+        }
+
+        if (!output || typeof output !== 'object') {
+            throw new Error(`${parameterName} is not a valid output`);
+        }
+
+        return {
+            keyPath: this.parseBitcoinPath(
+                /** @type {{keyPath: unknown}} */ (output).keyPath, `${parameterName}.keyPath`,
+            ),
+            address: /** @type {{address: unknown}} */ (output).address !== undefined
+                ? this.parseBitcoinAddress(
+                    /** @type {{address: unknown}} */ (output).address,
+                    `${parameterName}.address`,
+                )
+                : undefined,
             value:
                 /** @type {number} */
                 (this.parseNonNegativeFiniteNumber(

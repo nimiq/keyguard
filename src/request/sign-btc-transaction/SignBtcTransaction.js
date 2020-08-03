@@ -185,8 +185,36 @@ class SignBtcTransaction {
 
         // Construct outputs
         const outputs = [request.recipientOutput];
+
+        // Validate and add change output
         if (request.changeOutput) {
-            outputs.push(request.changeOutput);
+            // Derive address
+            const keyPair = btcKey.deriveKeyPair(request.changeOutput.keyPath);
+            /** @type {string | undefined} */
+            let address;
+            switch (BitcoinUtils.parseBipFromDerivationPath(request.changeOutput.keyPath)) {
+                case BitcoinConstants.BIP.BIP49: address = BitcoinUtils.keyPairToNestedSegwit(keyPair).address; break;
+                case BitcoinConstants.BIP.BIP84: address = BitcoinUtils.keyPairToNativeSegwit(keyPair).address; break;
+                default: throw new Errors.KeyguardError('UNEXPECTED: change output key path was not a supported BIP');
+            }
+
+            if (!address) {
+                throw new Errors.InvalidRequestError('Could not derive address for change output');
+            }
+
+            if (request.changeOutput.address && request.changeOutput.address !== address) {
+                throw new Errors.InvalidRequestError(
+                    'Given address is different from derived address for change output',
+                );
+            }
+
+            /** @type {KeyguardRequest.BitcoinTransactionOutput} */
+            const output = {
+                address,
+                value: request.changeOutput.value,
+            };
+
+            outputs.push(output);
         }
 
         // Sort outputs by value ASC, then address ASC
