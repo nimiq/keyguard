@@ -111,7 +111,7 @@ class SignBtcTransactionApi extends TopLevelApi {
         return inputs.map((input, index) => {
             const script = NodeBuffer.Buffer.from(Nimiq.BufferUtils.fromAny(input.outputScript));
             return {
-                hash: Nimiq.BufferUtils.toHex(Nimiq.BufferUtils.fromAny(input.txHash)),
+                hash: Nimiq.BufferUtils.toHex(Nimiq.BufferUtils.fromAny(input.transactionHash)),
                 index:
                     /** @type {number} */
                     (this.parseNonNegativeFiniteNumber(input.outputIndex, false, `input[${index}].outputIndex`)),
