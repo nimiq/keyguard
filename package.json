@@ -5,6 +5,7 @@
   "scripts": {
     "build": "yarn i18n:build-dictionary && tools/build.sh",
     "test": "karma start",
+    "serve": "yarn i18n:build-dictionary && serve -p 8000",
     "typecheck": "tsc",
     "lint": "yarn i18n:build-dictionary && eslint src tools && if ( grep fit tests/lib/* ); then exit 1; else exit 0; fi",
     "lintfix": "eslint --fix src tools",
@@ -50,6 +51,7 @@
     "karma-firefox-launcher": "^1.1.0",
     "karma-istanbuljs-reporter": "^0.2.0",
     "karma-jasmine": "^1.1.2",
+    "serve": "^11.3.2",
     "tsc-watch": "^1.0.22",
     "typescript": "^3.5.0"
   }
