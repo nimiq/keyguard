@@ -160,6 +160,7 @@
     opacity: 0.4;
     transition: opacity .3s var(--nimiq-ease), transform .3s var(--nimiq-ease);
     color: inherit;
+    background: transparent !important;
 }
 
 .page-header-back-button .nq-icon {

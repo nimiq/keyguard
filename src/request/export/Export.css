@@ -82,6 +82,10 @@ ul.nq-list li > .nq-icon {
     opacity: 1;
 }
 
+.page#recovery-words-intro .warning {
+    margin-top: 1.5rem;
+}
+
 .page#recovery-words-intro .nq-card-body {
     padding-bottom: 0;
     padding-top: 0;
@@ -92,6 +96,11 @@ ul.nq-list li > .nq-icon {
 
 .page#recovery-words-intro li > .nq-icon {
     color: var(--nimiq-orange);
+}
+
+.page#recovery-words-intro .nq-card-footer {
+    padding-left: 4rem;
+    padding-right: 4rem;
 }
 
 .page#recovery-words-intro .nq-button {
@@ -122,9 +131,18 @@ ul.nq-list li > .nq-icon {
     justify-content: space-evenly;
 }
 
+.page#login-file-intro .nq-card-body > * {
+    margin-bottom: auto;
+}
+
 .page#login-file-intro .page-body .nq-notice.warning {
     text-align: center;
     margin-top: 0;
+    white-space: pre-line;
+}
+
+.page#login-file-intro li:last-child {
+    margin-bottom: 1rem;
 }
 
 .page#login-file-intro li > .nq-icon {
@@ -204,8 +222,10 @@ ul.nq-list li > .nq-icon {
 .page#login-file-unlock:target ~ .page#login-file-download,
 .page#login-file-success:target ~ .page#login-file-download,
 .page#recovery-words-intro:target ~ .page#login-file-download,
+.page#recovery-words-intro:target ~ .page#login-file-success,
 .page#recovery-words-unlock:target ~ .page#recovery-words {
-    display: flex;
+    display: flex; /* display previous page as blurred background or backside during flip */
+    max-height: 70.5rem; /* avoid that page overflows the foreground page */
 }
 
 .page#recovery-words .page-header h1,
@@ -223,10 +243,17 @@ ul.nq-list li > .nq-icon {
 .page#recovery-words:target .page-header h1,
 .page#recovery-words:target .page-footer,
 .page#recovery-words:target .page-header .progress-indicator,
-.page#recovery-words:target .page-header .page-header-back-button,
 .page#login-file-download:target .page-header,
 .page#login-file-download:target button,
 .page#login-file-download:target .download-button {
+    opacity: 1;
+}
+
+.page#recovery-words:target .page-header .page-header-back-button {
+    opacity: .4;
+}
+.page#recovery-words:target .page-header .page-header-back-button:hover,
+.page#recovery-words:target .page-header .page-header-back-button:focus {
     opacity: 1;
 }
 
@@ -234,7 +261,7 @@ ul.nq-list li > .nq-icon {
 .page#login-file-success,
 .page#recovery-words-unlock {
     background-image: none;
-    background-color: rgb( 255, 255, 255, .0); /* transparent white */
+    background-color: rgba(255, 255, 255, .0); /* transparent white */
 }
 
 .page#login-file-success {
@@ -308,6 +335,7 @@ ul.nq-list li > .nq-icon {
 
 .page#login-file-success h1 {
     margin: 0;
+    text-align: center;
 }
 
 .page#login-file-success p {
