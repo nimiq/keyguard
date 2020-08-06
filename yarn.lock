@@ -28,10 +28,10 @@
   resolved "https://registry.yarnpkg.com/@nimiq/rpc/-/rpc-0.3.0.tgz#654c05acccc193b7d79fb09b2faf2114945ff872"
   integrity sha512-je7fv+wP4nLEgTcZwu3FaGre22qkZ9AYGbStglVaJAxOH+3CvDnnOIa9IjGFaCEhtRQKRaQEvFqa5vN4IVnH+Q==
 
-"@nimiq/style@^0.8.2":
-  version "0.8.2"
-  resolved "https://registry.yarnpkg.com/@nimiq/style/-/style-0.8.2.tgz#140ab7cbe71a9b1db6e0bca34ba880cfff64037a"
-  integrity sha512-nQjMQjmU3ZuYRMG+8uADM/fVv6Taq70qKdPGuRR/gLUJZMg/2qxZaGHDikg4kVNLFbo9pjzjotJDMqtNwlVSew==
+"@nimiq/style@^0.8.3":
+  version "0.8.3"
+  resolved "https://registry.yarnpkg.com/@nimiq/style/-/style-0.8.3.tgz#a360c7aa13f1f18d801d7461a32bb28a6bc61c38"
+  integrity sha512-NL/JeQ3f3koGqE0c6Q/ZyupAXvJfXGoZTkiCVnTGwgCN3lvUMHCJtp7qQPnvDldBLMORDA4Ck7wGgktKA9Fa9Q==
 
 "@types/jasmine@^2.8.8":
   version "2.8.16"
