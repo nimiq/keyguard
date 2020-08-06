@@ -35,9 +35,9 @@ class IdenticonSelector extends Nimiq.Observable {
 
         $el.innerHTML = TemplateTags.noVars`
             <div class="identicons"></div>
-            <h2 class="nq-h2 nq-blue" data-i18n="identicon-selector-avatars-hint">Avatars represent Addresses.</h2>
+            <h2 class="nq-h2 nq-blue" data-i18n="identicon-selector-avatars-hint">Avatars represent addresses.</h2>
             <button class="generate-more nq-button-s" data-i18n="identicon-selector-generate-new">
-                New Avatars
+                New avatars
             </button>`;
 
         I18n.translateDom($el);

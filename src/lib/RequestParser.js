@@ -192,7 +192,7 @@ class RequestParser { // eslint-disable-line no-unused-vars
             const nqAddress = new Nimiq.Address(address);
             return nqAddress;
         } catch (error) {
-            throw new Errors.InvalidRequestError(`${name} must be a valid Nimiq Address (${error.message})`);
+            throw new Errors.InvalidRequestError(`${name} must be a valid Nimiq address (${error.message})`);
         }
     }
 

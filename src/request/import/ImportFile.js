@@ -85,7 +85,7 @@ class ImportFile {
      */
     _onFileImported(decoded, src) {
         if (decoded.substr(0, 2) === '#2') {
-            // Imported file is a PIN-encrypted Account Access File
+            // Imported file is a PIN-encrypted account Access File
             decoded = decoded.substr(2);
             this._flags.hasPin = true;
         }
