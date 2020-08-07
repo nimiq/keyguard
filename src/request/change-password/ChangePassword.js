@@ -51,7 +51,7 @@ class ChangePassword {
         /** @type {HTMLDivElement} */
         const $downloadLoginFile = ($downloadFile.querySelector('.download-login-file'));
         /** @type {HTMLLinkElement} */
-        const $skipDownloadButton = ($downloadFile.querySelector('.skip'));
+        this.$skipDownloadButton = ($downloadFile.querySelector('.skip'));
 
         // Components
         this._passwordSetter = new PasswordSetterBox($passwordSetter);
@@ -100,10 +100,13 @@ class ChangePassword {
         this._passwordSetter.on(PasswordSetterBox.Events.SUBMIT, this._commitChangeAndOfferLoginFile.bind(this));
         this._passwordSetter.on(PasswordSetterBox.Events.RESET, this.backToEnterPassword.bind(this));
 
+        this._downloadLoginFile.on(DownloadLoginFile.Events.INITIATED, () => {
+            this.$skipDownloadButton.style.display = 'none';
+        });
         this._downloadLoginFile.on(DownloadLoginFile.Events.DOWNLOADED, () => {
             this._resolve({ success: true });
         });
-        $skipDownloadButton.addEventListener('click', e => {
+        this.$skipDownloadButton.addEventListener('click', e => {
             e.preventDefault();
             this._resolve({ success: true });
         });
@@ -193,6 +196,7 @@ class ChangePassword {
             this.key.defaultAddress,
         );
 
+        this.$skipDownloadButton.style.display = '';
         window.location.hash = ChangePassword.Pages.DOWNLOAD_FILE;
         TopLevelApi.setLoading(false);
     }
