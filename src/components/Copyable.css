@@ -6,6 +6,7 @@
 }
 
 .copyable:hover,
+.copyable:focus,
 .copyable.copied {
     color: var(--nimiq-light-blue) !important;
 }
@@ -23,6 +24,7 @@
 }
 
 .copyable:hover .copyable-background,
+.copyable:focus .copyable-background,
 .copyable.copied .copyable-background {
     opacity: .07;
 }

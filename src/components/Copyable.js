@@ -12,6 +12,10 @@ class Copyable { // eslint-disable-line no-unused-vars
 
         this.$el = Copyable._createElement($el);
         this.$el.addEventListener('click', () => this.copy());
+        this.$el.addEventListener('keydown', event => {
+            if (event.key !== ' ' /* Space */ && event.key !== 'Enter') return;
+            this.copy();
+        });
     }
 
     copy() {
@@ -39,6 +43,7 @@ class Copyable { // eslint-disable-line no-unused-vars
     static _createElement($el) {
         const $element = $el || document.createElement('div');
         $element.classList.add('copyable', 'tooltip', 'top', 'disable-auto-tooltip');
+        $element.tabIndex = 0;
         const $background = document.createElement('div');
         $background.classList.add('copyable-background');
         $element.appendChild($background);
