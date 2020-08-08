@@ -1,3 +1,4 @@
+/* global I18n */
 /* global ClipboardUtils */
 
 class Copyable { // eslint-disable-line no-unused-vars
@@ -17,8 +18,11 @@ class Copyable { // eslint-disable-line no-unused-vars
         ClipboardUtils.copy(this._text);
 
         window.clearTimeout(this._copiedResetTimeout);
-        this.$el.classList.add('copied');
-        this._copiedResetTimeout = window.setTimeout(() => this.$el.classList.remove('copied'), Copyable.DISPLAY_TIME);
+        this.$el.classList.add('copied', 'show-tooltip');
+        this._copiedResetTimeout = window.setTimeout(
+            () => this.$el.classList.remove('copied', 'show-tooltip'),
+            Copyable.DISPLAY_TIME,
+        );
     }
 
     /**
@@ -34,11 +38,18 @@ class Copyable { // eslint-disable-line no-unused-vars
      */
     static _createElement($el) {
         const $element = $el || document.createElement('div');
-        $element.classList.add('copyable');
+        $element.classList.add('copyable', 'tooltip', 'top', 'disable-auto-tooltip');
         const $background = document.createElement('div');
         $background.classList.add('copyable-background');
         $element.appendChild($background);
+        const $tooltipBox = document.createElement('div');
+        $tooltipBox.classList.add('tooltip-box');
+        // Apply the translation via translatePhrase such that the translationValidator finds it and additionally
+        // apply the data-i18n attribute such that the translation can be updated on language switch.
+        $tooltipBox.textContent = I18n.translatePhrase('copyable-copied');
+        $tooltipBox.dataset.i18n = 'copyable-copied';
+        $element.appendChild($tooltipBox);
         return $element;
     }
 }
-Copyable.DISPLAY_TIME = 1800;
+Copyable.DISPLAY_TIME = 800;
