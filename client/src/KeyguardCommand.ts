@@ -10,6 +10,7 @@ export enum KeyguardCommand {
 
     // Bitcoin
     SIGN_BTC_TRANSACTION = 'sign-btc-transaction',
+    DERIVE_BTC_XPUB = 'derive-btc-xpub',
 
     // Iframe requests
     LIST = 'list',

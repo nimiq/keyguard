@@ -1,0 +1,28 @@
+.page#unlock {
+    position: relative;
+}
+
+.page#unlock .lock-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.page#unlock .nq-icon.locked {
+    width: 8rem;
+    height: 11.52875rem;
+    flex-shrink: 0;
+    opacity: 0.4;
+}
+
+.page#unlock .page-header,
+.page#unlock .page-body,
+.page#unlock .page-footer {
+    z-index: 1;
+}
+
+.page#unlock .page-body {
+    display: flex;
+    flex-direction: column;
+}
