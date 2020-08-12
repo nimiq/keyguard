@@ -254,7 +254,7 @@ for DIR in src/request/*/ ; do
                 if("'$REQUEST'" != "iframe") {
                     print space[1] "<script defer src=\"/request/'${JS_TOPLEVEL_BUNDLE}'\" integrity=\"sha256-'${JS_TOPLEVEL_BUNDLE_HASH}'\"></script>"
                 }
-                if("'$REQUEST'" == "import" || "'$REQUEST'" == "sign-btc-transaction") {
+                if("'$REQUEST'" == "create" || "'$REQUEST'" == "import" || "'$REQUEST'" == "sign-btc-transaction" || "'$REQUEST'" == "derive-btc-xpub") {
                     print space[1] "<script defer src=\"/request/'${JS_BITCOIN_BUNDLE}'\" integrity=\"sha256-'${JS_BITCOIN_BUNDLE_HASH}'\"></script>"
                 }
                 print space[1] "<script defer src=\"/request/'${REQUEST}'/'${JS_BUNDLE_NAME}'\" integrity=\"sha256-'${JS_BUNDLE_HASH}'\"></script>"
