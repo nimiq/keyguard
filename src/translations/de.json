@@ -37,6 +37,8 @@
     "import-words-download-loginfile": "Lade dein Login-File herunter",
 
     "file-import-prompt": "Zum Hochladen hierher ziehen oder klicken",
+    "file-import-error-could-not-read": "Login-Datei nicht erkannt.",
+    "file-import-error-invalid": "Ungültige Login‑Datei.",
 
     "sign-tx-heading-tx": "Transaktion bestätigen",
     "sign-tx-heading-checkout": "Zahlung bestätigen",

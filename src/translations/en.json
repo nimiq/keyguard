@@ -37,6 +37,8 @@
     "import-words-download-loginfile": "Save your Login File",
 
     "file-import-prompt": "Drag here or click to import",
+    "file-import-error-could-not-read": "Could not read Login File.",
+    "file-import-error-invalid": "Invalid Login File.",
 
     "sign-tx-heading-tx": "Confirm Transaction",
     "sign-tx-heading-checkout": "Verify Payment",

@@ -37,6 +37,8 @@
     "import-words-download-loginfile": "Sauvegarder votre Fichier de Connexion",
 
     "file-import-prompt": "Glissez-deposez ici ou cliquez pour importer",
+    "file-import-error-could-not-read": "Could not read Login File.",
+    "file-import-error-invalid": "Invalid Login File.",
 
     "sign-tx-heading-tx": "Confirmer la Transaction",
     "sign-tx-heading-checkout": "Vérifier le Paiement",

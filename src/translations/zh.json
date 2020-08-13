@@ -37,6 +37,8 @@
     "import-words-download-loginfile": "储存您的登录文件",
 
     "file-import-prompt": "拖拽到此处或点击导入",
+    "file-import-error-could-not-read": "Could not read Login File.",
+    "file-import-error-invalid": "Invalid Login File.",
 
     "sign-tx-heading-tx": "确认交易",
     "sign-tx-heading-checkout": "验证付款",
