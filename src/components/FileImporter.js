@@ -76,6 +76,7 @@ class FileImporter extends Nimiq.Observable {
      * @param {File} file
      */
     async _handleFile(file) {
+        this.$errorMessage.style.display = '';
         this.$errorMessage.textContent = '';
         this.$fileInput.value = '';
 
@@ -88,6 +89,7 @@ class FileImporter extends Nimiq.Observable {
         if (!decoded) {
             AnimationUtils.animate('shake', this.$el);
             this.$errorMessage.textContent = 'Could not read Login File.';
+            this.$errorMessage.style.display = 'block';
             return;
         }
 
@@ -106,6 +108,7 @@ class FileImporter extends Nimiq.Observable {
             console.error(error);
             AnimationUtils.animate('shake', this.$el);
             this.$errorMessage.textContent = 'Invalid Login File.';
+            this.$errorMessage.style.display = 'block';
             return;
         }
 
@@ -152,7 +155,7 @@ class FileImporter extends Nimiq.Observable {
         event.stopPropagation();
         event.preventDefault();
 
-        // Remove the red message when background changes to blue
+        this.$errorMessage.style.display = '';
         this.$errorMessage.textContent = '';
 
         if (!event.dataTransfer) return;
