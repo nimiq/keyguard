@@ -155,6 +155,10 @@ a#goto-create {
     margin-bottom: 1.25rem;
 }
 
+.page#download-file .page-header {
+    padding-bottom: 3rem;
+}
+
 .page#download-file .page-body {
     display: flex;
     flex-direction: column;

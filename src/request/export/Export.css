@@ -165,6 +165,10 @@ ul.nq-list li > .nq-icon {
     justify-content: space-around;
 }
 
+.page#login-file-download .page-header {
+    padding-bottom: 3rem;
+}
+
 .page#login-file-download .page-body {
     display: flex;
     flex-direction: column;
