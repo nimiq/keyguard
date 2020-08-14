@@ -110,22 +110,26 @@ class SignBtcTransactionApi extends TopLevelApi {
         // Construct inputs
         return inputs.map((input, index) => {
             const script = NodeBuffer.Buffer.from(Nimiq.BufferUtils.fromAny(input.outputScript));
-            return {
+
+            /** @type {ParsedBitcoinTransactionInput} */
+            const parsed = {
                 hash: Nimiq.BufferUtils.toHex(Nimiq.BufferUtils.fromAny(input.transactionHash)),
                 index:
                     /** @type {number} */
                     (this.parseNonNegativeFiniteNumber(input.outputIndex, false, `input[${index}].outputIndex`)),
                 witnessUtxo: {
                     script,
-                    value:
+                    value: Math.round(
                         /** @type {number} */
                         (this.parseNonNegativeFiniteNumber(input.value, false, `input[${index}].value`)),
+                    ),
                 },
                 keyPath: this.parseBitcoinPath(input.keyPath, `input[${index}].keypath`),
                 // Address added only for display
                 // @ts-ignore Argument of type 'Uint8Array' is not assignable to parameter of type 'Buffer'.
                 address: BitcoinJS.address.fromOutputScript(script, BitcoinUtils.Network),
             };
+            return parsed;
         });
     }
 
@@ -180,18 +184,22 @@ class SignBtcTransactionApi extends TopLevelApi {
             throw new Error(`${parameterName} is not a valid output`);
         }
 
-        return {
+        /** @type {KeyguardRequest.BitcoinTransactionOutput} */
+        const parsed = {
             address: this.parseBitcoinAddress(
                 /** @type {{address: unknown}} */ (output).address,
                 `${parameterName}.address`,
             ),
             label: this.parseLabel(/** @type {{label: unknown}} */ (output).label),
-            value: /** @type {number} */ (this.parseNonNegativeFiniteNumber(
-                /** @type {{value: unknown}} */ (output).value,
-                false,
-                `${parameterName}.value`,
-            )),
+            value: Math.round(
+                /** @type {number} */ (this.parseNonNegativeFiniteNumber(
+                    /** @type {{value: unknown}} */ (output).value,
+                    false,
+                    `${parameterName}.value`,
+                )),
+            ),
         };
+        return parsed;
     }
 
     /**
@@ -209,7 +217,8 @@ class SignBtcTransactionApi extends TopLevelApi {
             throw new Error(`${parameterName} is not a valid output`);
         }
 
-        return {
+        /** @type {KeyguardRequest.BitcoinTransactionChangeOutput} */
+        const parsed = {
             keyPath: this.parseBitcoinPath(
                 /** @type {{keyPath: unknown}} */ (output).keyPath, `${parameterName}.keyPath`,
             ),
@@ -219,14 +228,16 @@ class SignBtcTransactionApi extends TopLevelApi {
                     `${parameterName}.address`,
                 )
                 : undefined,
-            value:
+            value: Math.round(
                 /** @type {number} */
                 (this.parseNonNegativeFiniteNumber(
                     /** @type {{value: unknown}} */ (output).value,
                     false,
                     `${parameterName}.value`,
                 )),
+            ),
         };
+        return parsed;
     }
 
     /**

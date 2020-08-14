@@ -251,6 +251,7 @@ class SignBtcTransaction {
             resolve(result);
         } catch (error) {
             TopLevelApi.setLoading(false);
+            console.error(error);
             alert(`ERROR: ${error.message}`);
             // return;
         }
