@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Secure storage for Nimiq private keys.",
   "scripts": {
+    "serve": "yarn i18n:build-dictionary && node serve.js",
     "build": "yarn i18n:build-dictionary && tools/build.sh",
     "test": "karma start",
     "typecheck": "tsc",

@@ -15,6 +15,7 @@ yarn
 
 Then you can:
 
+- serve the Keyguard locally with `yarn serve` (starts on port 8000).
 - run the build script with `yarn build [config]`.
 - run the tests with `yarn test`.
 - run the typechecker with `yarn typecheck`.
@@ -25,12 +26,10 @@ Then you can:
 - run `yarn pr` to run all three checks (`typecheck`, `lint`, `test`) as they
   would for a PR.
 
-For local testing of the Keyguard you can setup a local server, for example using
-[`python -m http.server 8000`](https://docs.python.org/3/library/http.server.html#http-server-cli).
 Note that it is mostly not necessary to run the build script for development purposes, as the code in `src` is fully
-functional and you can use it as an endpoint. Only (re)generating the translation dictionary needs to be triggered
-manually via `yarn i18n:build-dictionary`. For convenient testing of the Keyguard there are demos provided under
-`/demos`.
+functional and you can use it as an endpoint. Only regenerating the translation dictionary needs to be triggered
+manually by restarting `yarn serve` or by running `yarn i18n:build-dictionary`.
+For convenient testing of the Keyguard there are demos provided under `/demos`.
 
 ## Coding Style
 
