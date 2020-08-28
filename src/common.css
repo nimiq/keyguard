@@ -478,6 +478,11 @@ body.loading .page:target .page-footer > .loading-spinner {
         top: -5.5rem;
     }
 
+    .global-close::before {
+        /* avoid that the button overflows the page, causing vertical scrolling on mobile */
+        right: -1rem;
+    }
+
     .page {
         max-width: 100%;
     }
