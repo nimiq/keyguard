@@ -3,7 +3,15 @@
 
     "language-changed": "显示语言已更改。您要重新加载页面以更新所有翻译吗？否则，某些翻译可能不会自动更新。",
 
-    "back-to": "返回",
+    "back-to-app": "Back to {appName}",
+    "back-to-accounts": "Back to my accounts",
+    "back-to-wallet": "Back to {Wallet}",
+    "back-to-miner": "Back to {Nimiq Miner}",
+    "back-to-faucet": "Back to {Nimiq Faucet}",
+    "back-to-donation": "Back to Donation Button Creator",
+    "back-to-gift-card": "Back to Nimiq Gift Card",
+    "back-to-vote": "Back to Nimiq Vote",
+    "back-to-cpl": "Back to CryptoPayment.link",
 
     "funding-cashlink": "现金链接充值",
 

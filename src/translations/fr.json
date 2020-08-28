@@ -3,7 +3,15 @@
 
     "language-changed": "La langue d'affichage a changé. Voulez-vous recharger la page pour mettre à jours toutes les traductions ? Sinon certaines pourraient ne pas être mises à jour automatiquement.",
 
-    "back-to": "Retour à ",
+    "back-to-app": "Back to {appName}",
+    "back-to-accounts": "Back to my accounts",
+    "back-to-wallet": "Back to {Wallet}",
+    "back-to-miner": "Back to {Nimiq Miner}",
+    "back-to-faucet": "Back to {Nimiq Faucet}",
+    "back-to-donation": "Back to Donation Button Creator",
+    "back-to-gift-card": "Back to Nimiq Gift Card",
+    "back-to-vote": "Back to Nimiq Vote",
+    "back-to-cpl": "Back to CryptoPayment.link",
 
     "funding-cashlink": "Financement du cashlink",
 
