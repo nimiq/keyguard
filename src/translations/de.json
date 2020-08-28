@@ -166,8 +166,7 @@
     "remove-key-download-login-file": "Login-Datei herunterladen",
     "remove-key-recovery-words-question": "Weißt du, wo deine Wiederherstellungswörter sind?",
     "remove-key-show-recovery-words": "Backup anlegen",
-    "remove-key-enter-label-1": "Gib",
-    "remove-key-enter-label-2": "ein, um dich auszuloggen.",
+    "remove-key-label-confirm-instructions": "Gib \"{accountLabel}\" ein, um dich auszuloggen.",
     "remove-key-final-confirm": "Ausloggen",
 
     "derive-address-heading-password": "Entschlüssele dein Konto",

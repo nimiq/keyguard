@@ -117,9 +117,7 @@
     margin-top: 1.4rem;
 }
 
-.page#remove-key #remove-key-label-confirm #label {
-    margin-top: 1.4rem;
-    flex-grow: 1;
+.page#remove-key #remove-key-label-confirm .account-label {
     color: #fff;
 }
 

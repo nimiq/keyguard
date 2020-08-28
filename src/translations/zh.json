@@ -166,8 +166,7 @@
     "remove-key-download-login-file": "下载登录文件",
     "remove-key-recovery-words-question": "您知道您的助记词在哪吗？",
     "remove-key-show-recovery-words": "建立备份",
-    "remove-key-enter-label-1": "输入",
-    "remove-key-enter-label-2": "以登出",
+    "remove-key-label-confirm-instructions": "Type \"{accountLabel}\" to log out.",
     "remove-key-final-confirm": "登出",
 
     "derive-address-heading-password": "解锁新地址",

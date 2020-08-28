@@ -166,8 +166,7 @@
     "remove-key-download-login-file": "Télécharger",
     "remove-key-recovery-words-question": "Savez-vous où sont vos Mots de Récupération ?",
     "remove-key-show-recovery-words": "Créer une sauvegarde",
-    "remove-key-enter-label-1": "Écrivez",
-    "remove-key-enter-label-2": "pour vous déconnecter.",
+    "remove-key-label-confirm-instructions": "Type \"{accountLabel}\" to log out.",
     "remove-key-final-confirm": "Se déconnecter",
 
     "derive-address-heading-password": "Déverrouillez de nouvelles Adresses",

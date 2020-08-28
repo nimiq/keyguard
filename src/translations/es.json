@@ -166,8 +166,7 @@
     "remove-key-download-login-file": "Descargar",
     "remove-key-recovery-words-question": "¿Sabe usted donde están sus Palabras de Recuperación?",
     "remove-key-show-recovery-words": "Crear respaldo",
-    "remove-key-enter-label-1": "Ingrese",
-    "remove-key-enter-label-2": "para cerrar sesion.",
+    "remove-key-label-confirm-instructions": "Type \"{accountLabel}\" to log out.",
     "remove-key-final-confirm": "Cerrar sesión",
 
     "derive-address-heading-password": "Desbloquear nuevas Direcciones.",

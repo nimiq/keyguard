@@ -166,8 +166,7 @@
     "remove-key-download-login-file": "Download Login File",
     "remove-key-recovery-words-question": "Do you know where your Recovery Words are?",
     "remove-key-show-recovery-words": "Create a backup",
-    "remove-key-enter-label-1": "Type",
-    "remove-key-enter-label-2": "to log out.",
+    "remove-key-label-confirm-instructions": "Type \"{accountLabel}\" to log out.",
     "remove-key-final-confirm": "Log out",
 
     "derive-address-heading-password": "Unlock new Addresses",
