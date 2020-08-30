@@ -30,12 +30,12 @@
     "create-wallet-desc": "Das ist dein neues Konto mit deiner ersten Adresse.",
 
     "import-heading-enter-recovery-words": "Wiederherstellungswörter eingeben",
-    "import-import-login-file": "Importiere mittels Login‑Datei",
+    "import-import-login-file": "Mit Login-Datei einloggen",
     "import-login-to-continue": "Bitte logge dich neu ein um fortzufahren.",
     "import-unlock-account": "Entsperre dein Konto",
     "import-create-account": "Erstelle ein neues Konto",
 
-    "import-file-button-words": "Mit Wiederherstellungswörtern anmelden",
+    "import-file-button-words": "Mit Wiederherstellungswörtern einloggen",
 
     "import-words-file-available": "Die Wiederherstellungswörter erzeugen eine neue Login-Datei. Setze ein Passwort um sie zu schützen.",
     "import-words-file-unavailable": "Die Wiederherstellungswörter erzeugen ein neues Konto. Setze ein Passwort um es zu schützen.",
@@ -50,7 +50,7 @@
 
     "sign-tx-heading-tx": "Transaktion bestätigen",
     "sign-tx-heading-checkout": "Zahlung bestätigen",
-    "sign-tx-heading-cashlink": "Cashlink erzeugen",
+    "sign-tx-heading-cashlink": "Cashlink erstellen",
     "sign-tx-fee": "Gebühr",
     "sign-tx-cancel-payment": "Zahlung abbrechen",
 
@@ -60,6 +60,8 @@
     "tab-width-selector-label": "Tab-Breite",
 
     "address-info-new-cashlink": "Neuer Cashlink",
+
+    "copyable-copied": "Kopiert",
 
     "passwordbox-enter-password": "Gib dein Passwort ein",
     "passwordbox-enter-pin": "Gib deine PIN ein",
@@ -146,7 +148,7 @@
     "export-file-intro-blue-text": "Deine Login-Datei gewährt Zugang zu deinem Konto. Lade sie runter und speichere sie.",
     "export-file-intro-browser": "Dein Konto ist in deinem Browser gespeichert.",
     "export-file-intro-accident": "Als Teil deiner Browserdaten könnte es versehentlich gelöscht werden.",
-    "export-file-intro-download-file": "Lade zur Sicherheit deine Login-Datei runter und um dich damit in anderen Browsern und Geräten anzumelden.",
+    "export-file-intro-download-file": "Lade die Login-Datei runter, um deinen Zugang zu sichern.",
     "export-file-intro-orange-text": "Teile sie mit niemandem.\nVerliere sie nicht.",
     "export-file-success-set-password": "Passwort gesetzt",
     "export-file-success-save-file": "Login-Datei gespeichert",
@@ -154,8 +156,8 @@
     "export-file-success-heading": "Nimm dir 5 Minuten Zeit für ein Backup",
     "export-file-success-words-intro": "Es gibt keine Möglichkeit der Passwortwiederherstellung. Schreib dir 24 Wörter auf um ein sicheres Backup zu erstellen.",
     "export-words-intro-heading": "Es gibt keine Passwortwiederherstellung!",
-    "export-words-unlock-heading": "Backup entsperren",
-    "export-words-hint": "Runter scrollen zum fortfahren",
+    "export-words-unlock-heading": "Wiederherstellungswörter entsperren",
+    "export-words-hint": "Scroll runter, um fortzufahren",
     "go-to-recovery-words": "Erstelle ein Backup",
     "export-continue-to-login-file": "Weiter zur Login‑Datei",
     "export-show-recovery-words": "Wiederherstellungswörter anzeigen",

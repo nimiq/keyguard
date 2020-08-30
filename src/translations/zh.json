@@ -3,15 +3,15 @@
 
     "language-changed": "显示语言已更改。您要重新加载页面以更新所有翻译吗？否则，某些翻译可能不会自动更新。",
 
-    "back-to-app": "Back to {appName}",
-    "back-to-accounts": "Back to my accounts",
-    "back-to-wallet": "Back to {Wallet}",
-    "back-to-miner": "Back to {Nimiq Miner}",
-    "back-to-faucet": "Back to {Nimiq Faucet}",
-    "back-to-donation": "Back to Donation Button Creator",
-    "back-to-gift-card": "Back to Nimiq Gift Card",
-    "back-to-vote": "Back to Nimiq Vote",
-    "back-to-cpl": "Back to CryptoPayment.link",
+    "back-to-app": "返回 {appName}",
+    "back-to-accounts": "返回我的帐户",
+    "back-to-wallet": "返回 {Wallet}",
+    "back-to-miner": "返回 {Nimiq Miner}",
+    "back-to-faucet": "返回 {Nimiq Faucet}",
+    "back-to-donation": "返回捐赠按钮创建工具",
+    "back-to-gift-card": "返回Nimiq礼品卡",
+    "back-to-vote": "返回Nimiq投票",
+    "back-to-cpl": "返回 CryptoPayment.link",
 
     "funding-cashlink": "现金链接充值",
 
@@ -45,8 +45,8 @@
     "import-words-download-loginfile": "储存您的登录文件",
 
     "file-import-prompt": "拖拽到此处或点击导入",
-    "file-import-error-could-not-read": "Could not read Login File.",
-    "file-import-error-invalid": "Invalid Login File.",
+    "file-import-error-could-not-read": "无法读取登录文件",
+    "file-import-error-invalid": "无效的登录文件",
 
     "sign-tx-heading-tx": "确认交易",
     "sign-tx-heading-checkout": "验证付款",
@@ -60,6 +60,8 @@
     "tab-width-selector-label": "标签宽度",
 
     "address-info-new-cashlink": "新的现金链接",
+
+    "copyable-copied": "已复制",
 
     "passwordbox-enter-password": "输入您的密码",
     "passwordbox-enter-pin": "输入您的PIN码",
@@ -166,7 +168,7 @@
     "remove-key-download-login-file": "下载登录文件",
     "remove-key-recovery-words-question": "您知道您的助记词在哪吗？",
     "remove-key-show-recovery-words": "建立备份",
-    "remove-key-label-confirm-instructions": "Type \"{accountLabel}\" to log out.",
+    "remove-key-label-confirm-instructions": "输入\"{accountLabel}\"来登出",
     "remove-key-final-confirm": "登出",
 
     "derive-address-heading-password": "解锁新地址",

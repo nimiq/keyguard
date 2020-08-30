@@ -3,15 +3,15 @@
 
     "language-changed": "La langue d'affichage a changé. Voulez-vous recharger la page pour mettre à jours toutes les traductions ? Sinon certaines pourraient ne pas être mises à jour automatiquement.",
 
-    "back-to-app": "Back to {appName}",
-    "back-to-accounts": "Back to my accounts",
-    "back-to-wallet": "Back to {Wallet}",
-    "back-to-miner": "Back to {Nimiq Miner}",
-    "back-to-faucet": "Back to {Nimiq Faucet}",
-    "back-to-donation": "Back to Donation Button Creator",
-    "back-to-gift-card": "Back to Nimiq Gift Card",
-    "back-to-vote": "Back to Nimiq Vote",
-    "back-to-cpl": "Back to CryptoPayment.link",
+    "back-to-app": "Retour à {appName}",
+    "back-to-accounts": "Retour à mes comptes",
+    "back-to-wallet": "Retour au {Wallet}",
+    "back-to-miner": "Retour à {Nimiq Miner}",
+    "back-to-faucet": "Retour au {Nimiq Faucet}",
+    "back-to-donation": "Retour au Créateur de bouton de don",
+    "back-to-gift-card": "Retour à la Carte cadeau Nimiq",
+    "back-to-vote": "Retour à Nimiq Vote",
+    "back-to-cpl": "Retour à CryptoPayment.link",
 
     "funding-cashlink": "Financement du cashlink",
 
@@ -45,8 +45,8 @@
     "import-words-download-loginfile": "Sauvegarder votre Fichier de Connexion",
 
     "file-import-prompt": "Glissez-deposez ici ou cliquez pour importer",
-    "file-import-error-could-not-read": "Could not read Login File.",
-    "file-import-error-invalid": "Invalid Login File.",
+    "file-import-error-could-not-read": "Impossible de lire le fichier de connexion.",
+    "file-import-error-invalid": "Fichier de connexion invalide.",
 
     "sign-tx-heading-tx": "Confirmer la Transaction",
     "sign-tx-heading-checkout": "Vérifier le Paiement",
@@ -60,6 +60,8 @@
     "tab-width-selector-label": "Largeur de Tabulation",
 
     "address-info-new-cashlink": "Nouveau Cashlink",
+
+    "copyable-copied": "Copié",
 
     "passwordbox-enter-password": "Entrez votre mot de passe",
     "passwordbox-enter-pin": "Entrez votre PIN",
@@ -166,7 +168,7 @@
     "remove-key-download-login-file": "Télécharger",
     "remove-key-recovery-words-question": "Savez-vous où sont vos Mots de Récupération ?",
     "remove-key-show-recovery-words": "Créer une sauvegarde",
-    "remove-key-label-confirm-instructions": "Type \"{accountLabel}\" to log out.",
+    "remove-key-label-confirm-instructions": "Écrivez \"{accountLabel}\" pour vous déconnecter.",
     "remove-key-final-confirm": "Se déconnecter",
 
     "derive-address-heading-password": "Déverrouillez de nouvelles Adresses",
