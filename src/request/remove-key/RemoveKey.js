@@ -79,7 +79,7 @@ class RemoveKey {
         $labelConfirm.addEventListener('click', () => this.$labelInput.focus());
 
         this.$labelInput.addEventListener('input', () => {
-            if (this.$labelInput.value === this._request.keyLabel) {
+            if (this.$labelInput.value === this._normalizeLabel(this._request.keyLabel)) {
                 $removeKey.classList.add('show-final-confirm');
             }
         });
@@ -98,7 +98,7 @@ class RemoveKey {
     }
 
     async _finalConfirm() {
-        if (this.$labelInput.value === this._request.keyLabel) {
+        if (this.$labelInput.value === this._normalizeLabel(this._request.keyLabel)) {
             TopLevelApi.setLoading(true);
             await KeyStore.instance.remove(this._request.keyInfo.id);
 
@@ -110,6 +110,16 @@ class RemoveKey {
         } else {
             await AnimationUtils.animate('shake', this.$labelInput);
         }
+    }
+
+    /**
+     * @param {string} label
+     * @returns {string}
+     * @private
+     */
+    _normalizeLabel(label) {
+        // remove potential soft-hyphens in default names
+        return label.replace(/\u00ad/g, '');
     }
 }
 
