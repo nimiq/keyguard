@@ -3,7 +3,15 @@
 
     "language-changed": "The display language changed. Do you want to reload the page to update all translations? Otherwise, some translations might not be updated automatically.",
 
-    "back-to": "Back to",
+    "back-to-app": "Back to {appName}",
+    "back-to-accounts": "Back to my accounts",
+    "back-to-wallet": "Back to {Wallet}",
+    "back-to-miner": "Back to {Nimiq Miner}",
+    "back-to-faucet": "Back to {Nimiq Faucet}",
+    "back-to-donation": "Back to Donation Button Creator",
+    "back-to-gift-card": "Back to Nimiq Gift Card",
+    "back-to-vote": "Back to Nimiq Vote",
+    "back-to-cpl": "Back to CryptoPayment.link",
 
     "funding-cashlink": "Funding cashlink",
 
@@ -37,6 +45,8 @@
     "import-words-download-loginfile": "Save your Login File",
 
     "file-import-prompt": "Drag here or click to import",
+    "file-import-error-could-not-read": "Could not read Login File.",
+    "file-import-error-invalid": "Invalid Login File.",
 
     "sign-tx-heading-tx": "Confirm Transaction",
     "sign-tx-heading-checkout": "Verify Payment",
@@ -158,8 +168,7 @@
     "remove-key-download-login-file": "Download Login File",
     "remove-key-recovery-words-question": "Do you know where your Recovery Words are?",
     "remove-key-show-recovery-words": "Create a backup",
-    "remove-key-enter-label-1": "Type",
-    "remove-key-enter-label-2": "to log out.",
+    "remove-key-label-confirm-instructions": "Type \"{accountLabel}\" to log out.",
     "remove-key-final-confirm": "Log out",
 
     "derive-address-heading-password": "Unlock new Addresses",

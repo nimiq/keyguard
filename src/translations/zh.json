@@ -3,7 +3,15 @@
 
     "language-changed": "显示语言已更改。您要重新加载页面以更新所有翻译吗？否则，某些翻译可能不会自动更新。",
 
-    "back-to": "返回",
+    "back-to-app": "返回 {appName}",
+    "back-to-accounts": "返回我的帐户",
+    "back-to-wallet": "返回 {Wallet}",
+    "back-to-miner": "返回 {Nimiq Miner}",
+    "back-to-faucet": "返回 {Nimiq Faucet}",
+    "back-to-donation": "返回捐赠按钮创建工具",
+    "back-to-gift-card": "返回Nimiq礼品卡",
+    "back-to-vote": "返回Nimiq投票",
+    "back-to-cpl": "返回 CryptoPayment.link",
 
     "funding-cashlink": "现金链接充值",
 
@@ -37,6 +45,8 @@
     "import-words-download-loginfile": "储存您的登录文件",
 
     "file-import-prompt": "拖拽到此处或点击导入",
+    "file-import-error-could-not-read": "无法读取登录文件",
+    "file-import-error-invalid": "无效的登录文件",
 
     "sign-tx-heading-tx": "确认交易",
     "sign-tx-heading-checkout": "验证付款",
@@ -158,8 +168,7 @@
     "remove-key-download-login-file": "下载登录文件",
     "remove-key-recovery-words-question": "您知道您的助记词在哪吗？",
     "remove-key-show-recovery-words": "建立备份",
-    "remove-key-enter-label-1": "输入",
-    "remove-key-enter-label-2": "以登出",
+    "remove-key-label-confirm-instructions": "输入\"{accountLabel}\"来登出",
     "remove-key-final-confirm": "登出",
 
     "derive-address-heading-password": "解锁新地址",
@@ -178,16 +187,16 @@
     "error-no-request-heading": "出错了 :(",
     "error-no-request-message": "我们无法检测到有效的请求，请返回并再次尝试",
 
-    "login-file-color-orange": "Orange",
-    "login-file-color-red": "Red",
-    "login-file-color-yellow": "Yellow",
-    "login-file-color-indigo": "Indigo",
-    "login-file-color-blue": "Blue",
-    "login-file-color-purple": "Purple",
-    "login-file-color-teal": "Teal",
-    "login-file-color-pink": "Pink",
-    "login-file-color-green": "Green",
-    "login-file-color-brown": "Brown",
+    "login-file-color-orange": "橙",
+    "login-file-color-red": "红",
+    "login-file-color-yellow": "黄",
+    "login-file-color-indigo": "靛蓝",
+    "login-file-color-blue": "蓝",
+    "login-file-color-purple": "紫",
+    "login-file-color-teal": "青",
+    "login-file-color-pink": "粉红",
+    "login-file-color-green": "绿",
+    "login-file-color-brown": "棕",
 
-    "login-file-filename": "Nimiq-Login-File-{color}-Account.png"
+    "login-file-filename": "Nimiq-登录-文件-{color}-账户.png "
 }

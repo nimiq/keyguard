@@ -8,17 +8,18 @@
     text-align: center;
 }
 
-.download-loginfile .loginfile {
-    height: 40rem;
-    margin: auto;
-}
-
-.download-loginfile.maybe-downloaded .loginfile {
-    height: 38rem;
-}
-
-.download-button .loginfile-link {
+.download-loginfile .loginfile-link {
+    position: relative;
     flex-grow: 1;
+    min-height: 30rem;
+    max-height: 40rem;
+}
+
+.download-loginfile .loginfile {
+    position: absolute;
+    height: 100%;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .download-loginfile .long-touch-indicator {
@@ -49,12 +50,8 @@
 
 .download-loginfile button,
 .download-loginfile .download-button {
-    margin-top: 4rem;
+    margin-top: 3.5rem;
     margin-bottom: 1rem;
-}
-
-.download-loginfile .download-button {
-    line-height: 7.5rem;
 }
 
 .download-loginfile .download-button > .nq-icon {

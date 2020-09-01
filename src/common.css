@@ -160,6 +160,7 @@
     opacity: 0.4;
     transition: opacity .3s var(--nimiq-ease), transform .3s var(--nimiq-ease);
     color: inherit;
+    background: transparent !important;
 }
 
 .page-header-back-button .nq-icon {
@@ -475,6 +476,11 @@ body.loading .page:target .page-footer > .loading-spinner {
 
     #rotation-container + .global-close {
         top: -5.5rem;
+    }
+
+    .global-close::before {
+        /* avoid that the button overflows the page, causing vertical scrolling on mobile */
+        right: -1rem;
     }
 
     .page {

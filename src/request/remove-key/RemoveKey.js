@@ -2,6 +2,7 @@
 /* global ExportWords */
 /* global ExportFile */
 /* global KeyStore */
+/* global I18n */
 /* global Nimiq */
 /* global TopLevelApi */
 /* global Constants */
@@ -40,8 +41,8 @@ class RemoveKey {
         const $goToShowRecoveryWords = ($removeKey.querySelector('#show-recovery-words'));
         /** @type {HTMLDivElement} */
         const $labelConfirm = ($removeKey.querySelector('#remove-key-label-confirm'));
-        /** @type {HTMLSpanElement} */
-        const $labelSpan = ($labelConfirm.querySelector('#label'));
+        /** @type {HTMLDivElement} */
+        const $labelConfirmInstructions = ($labelConfirm.querySelector('#remove-key-label-confirm-instructions'));
         /** @type {HTMLInputElement} */
         this.$labelInput = ($labelConfirm.querySelector('input'));
         /** @type {HTMLButtonElement} */
@@ -58,7 +59,18 @@ class RemoveKey {
             $loginFileContainer.classList.add(colorClass);
         }
 
-        $labelSpan.textContent = this._request.keyLabel;
+        // eslint-disable-next-line require-jsdoc-except/require-jsdoc
+        const setLabelConfirmInstructions = () => {
+            $labelConfirmInstructions.textContent = ''; // clear
+            const instructions = I18n.translatePhrase('remove-key-label-confirm-instructions');
+            const instructionParts = instructions.split('{accountLabel}');
+            const $accountLabel = document.createElement('span');
+            $accountLabel.classList.add('account-label');
+            $accountLabel.textContent = this._request.keyLabel;
+            $labelConfirmInstructions.append(instructionParts[0], $accountLabel, instructionParts[1]);
+        };
+        setLabelConfirmInstructions();
+        I18n.observer.on(I18n.Events.LANGUAGE_CHANGED, setLabelConfirmInstructions);
 
         // events
         $goToShowRecoveryWords.addEventListener('click', () => this._exportWordsHandler.run());
@@ -67,7 +79,7 @@ class RemoveKey {
         $labelConfirm.addEventListener('click', () => this.$labelInput.focus());
 
         this.$labelInput.addEventListener('input', () => {
-            if (this.$labelInput.value === this._request.keyLabel) {
+            if (this.$labelInput.value === this._normalizeLabel(this._request.keyLabel)) {
                 $removeKey.classList.add('show-final-confirm');
             }
         });
@@ -86,7 +98,7 @@ class RemoveKey {
     }
 
     async _finalConfirm() {
-        if (this.$labelInput.value === this._request.keyLabel) {
+        if (this.$labelInput.value === this._normalizeLabel(this._request.keyLabel)) {
             TopLevelApi.setLoading(true);
             await KeyStore.instance.remove(this._request.keyInfo.id);
 
@@ -98,6 +110,16 @@ class RemoveKey {
         } else {
             await AnimationUtils.animate('shake', this.$labelInput);
         }
+    }
+
+    /**
+     * @param {string} label
+     * @returns {string}
+     * @private
+     */
+    _normalizeLabel(label) {
+        // remove potential soft-hyphens in default names
+        return label.replace(/\u00ad/g, '');
     }
 }
 
