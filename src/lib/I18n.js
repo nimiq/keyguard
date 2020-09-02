@@ -31,8 +31,7 @@ class I18n { // eslint-disable-line no-unused-vars
         const cookieMatch = document.cookie.match(new RegExp('(^| )lang=([^;]+)'));
         const cookieLang = cookieMatch && decodeURIComponent(cookieMatch[2]);
 
-        // TODO 'en' fallback just set temporarily, until language switching is enabled in wallet
-        const lang = cookieLang || 'en'; // || navigator.language.split('-')[0];
+        const lang = cookieLang || navigator.language.split('-')[0];
         return I18n.getClosestSupportedLanguage(lang);
     }
 

@@ -123,15 +123,19 @@ class ImportWords {
                 key.defaultAddress,
             );
 
-            downloadLoginFile.on(DownloadLoginFile.Events.DOWNLOADED, () => {
-                for (let i = 0; i < this._keyResults.length; i++) {
-                    this._keyResults[i].fileExported = true;
-                }
-                this._resolve(this._keyResults);
-            });
+            $skipDownloadButton.style.display = '';
             window.location.hash = ImportWords.Pages.DOWNLOAD_LOGINFILE;
         });
 
+        downloadLoginFile.on(DownloadLoginFile.Events.INITIATED, () => {
+            $skipDownloadButton.style.display = 'none';
+        });
+        downloadLoginFile.on(DownloadLoginFile.Events.DOWNLOADED, () => {
+            for (let i = 0; i < this._keyResults.length; i++) {
+                this._keyResults[i].fileExported = true;
+            }
+            this._resolve(this._keyResults);
+        });
         if (this._request.wordsOnly && 'expectedKeyId' in this._request) {
             $skipDownloadButton.remove();
         } else {

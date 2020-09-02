@@ -276,7 +276,7 @@ class SignBtcTransactionApi extends TopLevelApi {
      */
     async onBeforeRun(parsedRequest) {
         if (parsedRequest.layout === SignBtcTransactionApi.Layouts.CHECKOUT) {
-            this.setGlobalCloseButtonText(I18n.translatePhrase('sign-tx-cancel-payment'));
+            this.enableGlobalCloseButton(I18n.translatePhrase('sign-tx-cancel-payment'));
         }
     }
 }

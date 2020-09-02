@@ -156,7 +156,7 @@ class TopLevelApi extends RequestParser {
 
                 await this.onBeforeRun(parsedRequest);
 
-                this.setGlobalCloseButtonText(`${I18n.translatePhrase('back-to')} ${parsedRequest.appName}`);
+                this.enableGlobalCloseButton(parsedRequest);
 
                 this._handler.run();
 
@@ -229,15 +229,60 @@ class TopLevelApi extends RequestParser {
     }
 
     /**
-     * @param {string} buttonText
+     * @param {string|Parsed<T>} requestOrCustomButtonText
      */
-    setGlobalCloseButtonText(buttonText) {
+    enableGlobalCloseButton(requestOrCustomButtonText) {
         /** @type {HTMLElement} */
         const $globalCloseText = (document.querySelector('#global-close-text'));
         /** @type {HTMLSpanElement} */
         const $button = ($globalCloseText.parentNode);
         if (!$button.classList.contains('display-none')) return;
-        $globalCloseText.textContent = buttonText;
+
+        // eslint-disable-next-line require-jsdoc-except/require-jsdoc
+        const setButtonText = () => {
+            if (typeof requestOrCustomButtonText === 'string') {
+                $globalCloseText.textContent = requestOrCustomButtonText;
+                return;
+            }
+            // Special handling for some specific known app names to be able to adapt translations depending on the
+            // app, for example to adapt to an app's gender (e.g. German: "Zurück zur Wallet", "Zurück zum Miner").
+            // Note that the names that should not be translated are specified as a placeholder in the translation.
+            const appName = requestOrCustomButtonText.appName;
+            let buttonText;
+            switch (appName) {
+                case 'Accounts':
+                    buttonText = I18n.translatePhrase('back-to-accounts'); // Nimiq Safe
+                    break;
+                case 'Wallet':
+                    buttonText = I18n.translatePhrase('back-to-wallet');
+                    break;
+                case 'Nimiq Miner':
+                    buttonText = I18n.translatePhrase('back-to-miner');
+                    break;
+                case 'Nimiq Faucet':
+                    buttonText = I18n.translatePhrase('back-to-faucet');
+                    break;
+                case 'Donation Button Creator':
+                    buttonText = I18n.translatePhrase('back-to-donation');
+                    break;
+                case 'Nimiq Gift Card':
+                    buttonText = I18n.translatePhrase('back-to-gift-card');
+                    break;
+                case 'Nimiq Vote':
+                    buttonText = I18n.translatePhrase('back-to-vote');
+                    break;
+                case 'CryptoPayment.link':
+                    buttonText = I18n.translatePhrase('back-to-cpl');
+                    break;
+                default:
+                    buttonText = I18n.translatePhrase('back-to-app');
+            }
+            // replace potential placeholder in buttonText
+            $globalCloseText.textContent = buttonText.replace(/{[^}]+}/, appName);
+        };
+        setButtonText();
+        I18n.observer.on(I18n.Events.LANGUAGE_CHANGED, setButtonText);
+
         $button.addEventListener('click', () => this.onGlobalClose(this._handler));
         $button.classList.remove('display-none');
     }

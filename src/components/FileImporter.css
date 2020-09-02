@@ -9,10 +9,7 @@
     align-items: center;
     justify-content: space-between;
     text-align: center;
-    padding-bottom: 5rem;
-    padding-top: 7.5rem;
     position: relative;
-    background-color: white;
     transition: border-color 300ms;
 }
 
@@ -27,12 +24,14 @@
 
 .file-import h3 {
     line-height: 1.375;
-    margin: 0;
+    margin: auto 0;
     max-width: 15rem;
     font-weight: 600;
 }
 
 .file-import .error-message {
+    display: none;
+    margin-bottom: auto;
     font-size: 2rem;
     color: var(--nimiq-red);
 }
@@ -40,6 +39,7 @@
 .qr-code {
     width: 12.375rem;
     height: 12.375rem;
+    margin-bottom: 5rem;
     opacity: 0.2;
     transition: color 300ms;
 }

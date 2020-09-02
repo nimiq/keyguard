@@ -11,8 +11,19 @@
     position: absolute;
     width: 2.25rem;
     height: 2rem;
+    top: 100%;
     left: calc(50% - 1.125rem);
-    background: url('data:image/svg+xml,<svg viewBox="0 0 18 16" xmlns="http://www.w3.org/2000/svg"><path d="M9 7.12c-.47 0-.93.2-1.23.64L3.2 14.29A4 4 0 0 1 0 16h18a4 4 0 0 1-3.2-1.7l-4.57-6.54c-.3-.43-.76-.64-1.23-.64z" fill="%23201e45"/></svg>');
+    mask-image: url('data:image/svg+xml,<svg viewBox="0 0 18 16" xmlns="http://www.w3.org/2000/svg"><path d="M9 7.12c-.47 0-.93.2-1.23.64L3.2 14.29A4 4 0 0 1 0 16h18a4 4 0 0 1-3.2-1.7l-4.57-6.54c-.3-.43-.76-.64-1.23-.64z" fill="white"/></svg>');
+    -webkit-mask-image: url('data:image/svg+xml,<svg viewBox="0 0 18 16" xmlns="http://www.w3.org/2000/svg"><path d="M9 7.12c-.47 0-.93.2-1.23.64L3.2 14.29A4 4 0 0 1 0 16h18a4 4 0 0 1-3.2-1.7l-4.57-6.54c-.3-.43-.76-.64-1.23-.64z" fill="white"/></svg>');
+    z-index: 1000; /* move above tooltip-box's box-shadow */
+    background: #201e45; /* a color of the nimiq-blue-bg gradient in the upper area */
+}
+
+.tooltip.top::after {
+    top: unset;
+    bottom: 100%;
+    background: #250636; /* a color of the nimiq-blue-bg gradient in the lower area */
+    transform: scaleY(-1);
 }
 
 .tooltip .tooltip-box {
@@ -29,6 +40,11 @@
     box-shadow: 0 1.125rem 2.275rem rgba(0, 0, 0, 0.11);
 }
 
+.tooltip.top .tooltip-box {
+    top: unset;
+    bottom: calc(100% + 2rem);
+}
+
 .tooltip::after,
 .tooltip .tooltip-box {
     visibility: hidden;
@@ -36,10 +52,12 @@
     transition: opacity .3s var(--nimiq-ease), visibility .3s;
 }
 
-.tooltip:hover::after,
-.tooltip:focus::after,
-.tooltip:hover .tooltip-box,
-.tooltip:focus .tooltip-box {
+.tooltip.show-tooltip::after,
+.tooltip.show-tooltip .tooltip-box,
+.tooltip:not(.disable-auto-tooltip):hover::after,
+.tooltip:not(.disable-auto-tooltip):hover .tooltip-box,
+.tooltip:not(.disable-auto-tooltip):focus::after,
+.tooltip:not(.disable-auto-tooltip):focus .tooltip-box {
     visibility: visible;
     opacity: 1;
 }

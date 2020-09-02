@@ -3,7 +3,15 @@
 
     "language-changed": "La langue d'affichage a changé. Voulez-vous recharger la page pour mettre à jours toutes les traductions ? Sinon certaines pourraient ne pas être mises à jour automatiquement.",
 
-    "back-to": "Retour à ",
+    "back-to-app": "Retour à {appName}",
+    "back-to-accounts": "Retour à mes comptes",
+    "back-to-wallet": "Retour au {Wallet}",
+    "back-to-miner": "Retour à {Nimiq Miner}",
+    "back-to-faucet": "Retour au {Nimiq Faucet}",
+    "back-to-donation": "Retour au Créateur de bouton de don",
+    "back-to-gift-card": "Retour à la Carte cadeau Nimiq",
+    "back-to-vote": "Retour à Nimiq Vote",
+    "back-to-cpl": "Retour à CryptoPayment.link",
 
     "funding-cashlink": "Financement du cashlink",
 
@@ -17,7 +25,7 @@
 
     "create-heading-choose-identicon": "Choisissez un Avatar",
     "create-heading-create-password": "Créez un Mot de Passe",
-    "create-heading-repeat-password": "Confirmez votre Mot de Passe",
+    "create-heading-repeat-password": "Confirmez le Mot de Passe",
     "create-heading-validate-backup": "Validez votre Sauvegarde",
     "create-wallet-desc": "Ceci est votre Compte avec votre première Adresse.",
 
@@ -37,6 +45,8 @@
     "import-words-download-loginfile": "Sauvegarder votre Fichier de Connexion",
 
     "file-import-prompt": "Glissez-deposez ici ou cliquez pour importer",
+    "file-import-error-could-not-read": "Impossible de lire le fichier de connexion.",
+    "file-import-error-invalid": "Fichier de connexion invalide.",
 
     "sign-tx-heading-tx": "Confirmer la Transaction",
     "sign-tx-heading-checkout": "Vérifier le Paiement",
@@ -50,6 +60,8 @@
     "tab-width-selector-label": "Largeur de Tabulation",
 
     "address-info-new-cashlink": "Nouveau Cashlink",
+
+    "copyable-copied": "Copié",
 
     "passwordbox-enter-password": "Entrez votre mot de passe",
     "passwordbox-enter-pin": "Entrez votre PIN",
@@ -99,7 +111,7 @@
     "identicon-selector-avatars-hint": "Les avatars représentes les adresses.",
     "identicon-selector-generate-new": "Nouveaux avatars",
 
-    "download-loginfile-download": "Télécharger Fichier de Connexion",
+    "download-loginfile-download": "Télécharger",
     "download-loginfile-successful": "Téléchargement réussi ?",
     "download-loginfile-tap-and-hold": "Appuyez et maintenez l'image pour la télécharger",
     "download-loginfile-continue": "Continuez lorsque vous êtes prêt",
@@ -143,21 +155,20 @@
     "export-file-success-create-backup": "Créer la sauvegarde",
     "export-file-success-heading": "Prenez 5 Minutes pour une Sauvegarde",
     "export-file-success-words-intro": "Il n'y a pas d'option 'mot de passe oublié'. Notez 24 mots pour créer une sauvegarde sécurisée.",
-    "export-words-intro-heading": "Il n'y a pas de Récupération de Mot de Passe !",
+    "export-words-intro-heading": "Il n'y a pas de Récupéra­tion de Mot de Passe !",
     "export-words-unlock-heading": "Déverrouillez votre Sauvegarde",
     "export-words-hint": "Faites défiler pour continuer",
     "go-to-recovery-words": "Créer une sauvegarde",
-    "export-continue-to-login-file": "Continuer vers le Fichier de Connexion",
+    "export-continue-to-login-file": "Continuer",
     "export-show-recovery-words": "Afficher les Mots",
 
     "remove-key-heading": "Ne perdez pas l'Accès",
     "remove-key-intro-text": "Si vous vous déconnectez sans enregistrer votre compte, vous y perdrez irréversiblement l'accès !",
     "remove-key-login-file-question": "Votre Fichier de Connexion est-il stocké et accessible en toute sécurité ?",
-    "remove-key-download-login-file": "Télécharger le Fichier de Connexion",
+    "remove-key-download-login-file": "Télécharger",
     "remove-key-recovery-words-question": "Savez-vous où sont vos Mots de Récupération ?",
     "remove-key-show-recovery-words": "Créer une sauvegarde",
-    "remove-key-enter-label-1": "Écrivez",
-    "remove-key-enter-label-2": "pour vous déconnecter.",
+    "remove-key-label-confirm-instructions": "Écrivez \"{accountLabel}\" pour vous déconnecter.",
     "remove-key-final-confirm": "Se déconnecter",
 
     "derive-address-heading-password": "Déverrouillez de nouvelles Adresses",

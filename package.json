@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Secure storage for Nimiq private keys.",
   "scripts": {
+    "serve": "yarn i18n:build-dictionary && node serve.js",
     "build": "yarn i18n:build-dictionary && tools/build.sh",
     "test": "karma start",
     "typecheck": "tsc",
@@ -36,7 +37,7 @@
   "devDependencies": {
     "@nimiq/core-web": "1.5.3",
     "@nimiq/rpc": "^0.3.0",
-    "@nimiq/style": "^0.8.2",
+    "@nimiq/style": "^0.8.3",
     "@types/jasmine": "^2.8.8",
     "@types/node": "^10.5.2",
     "bitcoinjs-lib": "^5.1.7",
