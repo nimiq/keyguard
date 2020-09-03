@@ -28,15 +28,15 @@ export type SingleKeyResult = {
 export type TransactionInfo = {
     keyPath: string,
     senderLabel?: string,
-    sender: Uint8Array
-    senderType: Nimiq.Account.Type
-    recipient: Uint8Array
-    recipientType?: Nimiq.Account.Type
-    value: number
-    fee: number
-    validityStartHeight: number
-    data?: Uint8Array
-    flags?: number
+    sender: Uint8Array,
+    senderType: Nimiq.Account.Type,
+    recipient: Uint8Array,
+    recipientType?: Nimiq.Account.Type,
+    value: number,
+    fee: number,
+    validityStartHeight: number,
+    data?: Uint8Array,
+    flags?: number,
 };
 
 export type BitcoinTransactionInput = {
@@ -44,6 +44,7 @@ export type BitcoinTransactionInput = {
     transactionHash: string,
     outputIndex: number,
     outputScript: string,
+    witnessScript?: string,
     value: number,
 };
 
@@ -178,8 +179,10 @@ export type SignBtcTransactionRequest
     | SignBtcTransactionRequestCheckout;
 
 export type SignSwapRequest = SimpleRequest & {
-    fund: {type: 'NIM'} & Omit<TransactionInfo, 'recipient'> | {type: 'BTC'} & BitcoinTransactionInfo,
-    redeem: {type: 'NIM'} & Omit<TransactionInfo, 'recipient'> | {type: 'BTC'} & BitcoinTransactionInfo,
+    fund: {type: 'NIM'} & Omit<Omit<TransactionInfo, 'recipient'>, 'recipientType'>
+        | {type: 'BTC'} & BitcoinTransactionInfo,
+    redeem: {type: 'NIM'} & TransactionInfo
+        | {type: 'BTC'} & BitcoinTransactionInfo,
 
     // Data needed for display
     fiatCurrency: string,
@@ -194,7 +197,7 @@ export type SignSwapRequest = SimpleRequest & {
     bitcoin: {
         balance: number, // Sats
     },
-}
+};
 
 export type SignMessageRequest = SimpleRequest & {
     keyPath: string,
@@ -225,7 +228,8 @@ export type RedirectRequest
     | SignTransactionRequest
     | SignBtcTransactionRequest
     | SimpleRequest
-    | DeriveBtcXpubRequest;
+    | DeriveBtcXpubRequest
+    | SignSwapRequest;
 
 export type IFrameRequest = EmptyRequest | DeriveAddressesRequest | ReleaseKeyRequest;
 
@@ -261,6 +265,10 @@ export type SignedBitcoinTransaction = {
     transactionHash: string,
     raw: string,
 };
+export type SignSwapResult = {
+    nim: SignatureResult,
+    btc: SignedBitcoinTransaction,
+};
 
 // Result unions
 
@@ -277,7 +285,8 @@ export type RedirectResult
     | SignTransactionResult
     | SignedBitcoinTransaction
     | SimpleResult
-    | DeriveBtcXpubResult;
+    | DeriveBtcXpubResult
+    | SignSwapResult;
 
 export type Result = RedirectResult | IFrameResult;
 
@@ -291,6 +300,7 @@ export type ResultType<T extends RedirectRequest> =
     T extends Is<T, RemoveKeyRequest> | Is<T, SimpleRequest> ? SimpleResult :
     T extends Is<T, SignBtcTransactionRequest> ? SignedBitcoinTransaction :
     T extends Is<T, DeriveBtcXpubRequest> ? DeriveBtcXpubResult :
+    T extends Is<T, SignSwapRequest> ? SignSwapResult :
     never;
 
 export type ResultByCommand<T extends KeyguardCommand> =
@@ -301,6 +311,7 @@ export type ResultByCommand<T extends KeyguardCommand> =
     T extends KeyguardCommand.REMOVE ? SimpleResult :
     T extends KeyguardCommand.SIGN_BTC_TRANSACTION ? SignedBitcoinTransaction :
     T extends KeyguardCommand.DERIVE_BTC_XPUB ? DeriveBtcXpubResult :
+    T extends KeyguardCommand.SIGN_SWAP ? SignSwapResult :
     never;
 
 // Error constants

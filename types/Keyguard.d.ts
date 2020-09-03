@@ -51,6 +51,7 @@ type ParsedBitcoinTransactionInput = {
         value: number,
     },
     redeemScript?: Uint8Array,
+    witnessScript?: Uint8Array,
     keyPath: string,
     address: string,
 };
@@ -111,5 +112,42 @@ type Parsed<T extends KeyguardRequest.Request> =
                 KeyId2KeyInfo<KeyguardRequest.SignBtcTransactionRequestCheckout>,
                 'inputs', { inputs: ParsedBitcoinTransactionInput[] }
             >, 'shopLogoUrl', { shopLogoUrl?: URL }
+        > :
+    T extends Is<T, KeyguardRequest.SignSwapRequest> ?
+        Transform<
+            KeyId2KeyInfo<KeyguardRequest.SignSwapRequest>,
+            'fund' | 'redeem', {
+                fund: {
+                    type: 'NIM',
+                    keyPath: string,
+                    transaction: Nimiq.ExtendedTransaction,
+                } | {
+                    type: 'BTC',
+                    inputs: ParsedBitcoinTransactionInput[],
+                    recipientOutput: {
+                        address: string,
+                        value: number,
+                        label?: string,
+                    },
+                    changeOutput?: {
+                        keyPath: string,
+                        address?: string,
+                        value: number,
+                    },
+                },
+                redeem: {
+                    type: 'NIM',
+                    keyPath: string,
+                    transaction: Nimiq.ExtendedTransaction,
+                } | {
+                    type: 'BTC',
+                    input: ParsedBitcoinTransactionInput,
+                    recipientOutput: {
+                        address: string,
+                        value: number,
+                        label?: string,
+                    },
+                },
+            }
         > :
     T;

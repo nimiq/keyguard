@@ -1,9 +1,7 @@
-/* global Nimiq */
 /* global Key */
 /* global KeyStore */
 /* global SignBtcTransactionApi */
 /* global PasswordBox */
-/* global SignBtcTransactionApi */
 /* global Errors */
 /* global Utf8Tools */
 /* global TopLevelApi */
@@ -163,9 +161,6 @@ class SignBtcTransaction {
 
             // Add redeemScripts for BIP49 inputs
             const keyPair = btcKey.deriveKeyPair(input.keyPath);
-            const payment = BitcoinUtils.keyPairToNestedSegwit(keyPair);
-            console.debug('My address:', payment.address);
-            console.debug('My script:', Nimiq.BufferUtils.toHex(/** @type {Uint8Array} */ (payment.output)));
             const output = BitcoinUtils.keyPairToNativeSegwit(keyPair).output;
             if (!output) {
                 TopLevelApi.setLoading(false);

@@ -188,6 +188,10 @@ class RequestParser { // eslint-disable-line no-unused-vars
      * @returns {Nimiq.Address}
      */
     parseAddress(address, name) {
+        if (address === 'CONTRACT_CREATION') {
+            return Nimiq.Address.CONTRACT_CREATION;
+        }
+
         try {
             const nqAddress = new Nimiq.Address(address);
             return nqAddress;
