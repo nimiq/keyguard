@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Swap | Keyguard Demo</title>
+    <script src="../node_modules/@nimiq/rpc/dist/rpc.umd.js"></script>
+</head>
+<body>
+<link href="../src/nimiq-style.css" rel="stylesheet">
+
+<div>
+    Key ID: <input id="key-id"><br>
+    <button id="swap-nim-btc">Swap NIM -> BTC</button>
+    <button id="swap-btc-nim">Swap BTC -> NIM</button>
+    <br><br>
+    <textarea id="result" rows=20 cols=60></textarea>
+</div>
+
+<script>
+    document.querySelector('#swap-nim-btc').addEventListener('click', async () => {
+        const keyId = document.getElementById('key-id').value;
+        if (!keyId) {
+            alert('Key ID required');
+            return;
+        }
+
+        const keyguard = window.open('../src/request/swap/', 'SwapDemo',
+            `left=${window.innerWidth / 2 - 350},top=75,width=700,height=850,location=yes,dependent=yes`);
+        const rpc = new Rpc.PostMessageRpcClient(keyguard, '*');
+        await rpc.init();
+
+        try {
+            const result = await rpc.call('request', {
+                appName: 'Swap Demo',
+                keyId,
+                fund: {
+                    type: 'NIM',
+                    keyPath: "m/44'/242'/0'/0'",
+                    sender: new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]),
+                    senderType: 0, // Account.Type.BASIC
+                    value: 1000,
+                    fee: 0,
+                    validityStartHeight: 100,
+                    data: new Uint8Array([
+                        // Refund address (my own)
+                        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+                        // Redeem address (of swap partner)
+                        21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
+                        // Hash algorithm (Hash.Algorithm.SHA256)
+                        3,
+                        // Hash root (32 bytes)
+                        // new Uint8Array(await window.crypto.subtle.digest('SHA-256', new Uint8Array(32))),
+                        new Uint8Array(32),
+                        // Hash count
+                        1,
+                        // Timeout (in block height, as Uint32)
+                        0, 0, 0, 200,
+                    ]),
+                    flags: 0b1, // Transaction.Flag.CONTRACT_CREATION
+                },
+                redeem: {
+                    type: 'BTC',
+                    inputs: [{
+                        keyPath: "m/49'/0'/0'/0/0", // The path to the BTC HTLC redeem pubkey
+                        transactionHash: "0000000000000000000000000000000000000000000000000000000000000000",
+                        outputIndex: 0,
+                        outputScript: "0000000000000000000000000000000000000000000000", // HTLC address script
+                        value: 0.100004e8,
+                    }],
+                    recipientOutput: {
+                        address: "3DJoMSFT3GrDkUn3eLLKtEzWLQn3DWPtao",
+                        value: 0.1e8, // 400 sats fee
+                    },
+                },
+
+                // Data needed for display
+                // fiatCurrency: string,
+                // nimFiatRate: number,
+                // btcFiatRate: number,
+                // serviceNetworkFee: number, // Luna or Sats, depending which one gets funded
+                // nimiq: Array<{
+                //     address: string,
+                //     label: string,
+                //     balance: number, // Luna
+                // }>,
+                // bitcoin: {
+                //     balance: number, // Sats
+                // },
+            });
+            document.getElementById('result').value = JSON.stringify(result);
+            console.log('Keyguard result:', result);
+        } catch (e) {
+            alert(e.message);
+        }
+
+        keyguard.close();
+    });
+
+    document.querySelector('#swap-btc-nim').addEventListener('click', async () => {
+        const keyId = document.getElementById('key-id').value;
+        if (!keyId) {
+            alert('Key ID required');
+            return;
+        }
+
+        const keyguard = window.open('../src/request/swap/', 'SwapDemo',
+            `left=${window.innerWidth / 2 - 350},top=75,width=700,height=850,location=yes,dependent=yes`);
+        const rpc = new Rpc.PostMessageRpcClient(keyguard, '*');
+        await rpc.init();
+
+        try {
+            const result = await rpc.call('request', {
+                appName: 'Swap Demo',
+                keyId,
+                fund: {
+                    type: 'BTC',
+                    inputs: [{
+                        keyPath: "m/49'/0'/0'/0/0",
+                        transactionHash: "0000000000000000000000000000000000000000000000000000000000000000",
+                        outputIndex: 0,
+                        outputScript: "0000000000000000000000000000000000000000000000",
+                        value: 0.1e8,
+                    }, {
+                        keyPath: "m/49'/0'/0'/0/1",
+                        transactionHash: "0000000000000000000000000000000000000000000000000000000000000000",
+                        outputIndex: 1,
+                        outputScript: "0000000000000000000000000000000000000000000000",
+                        value: 0.1e8,
+                    }],
+                    recipientOutput: {
+                        address: "bc1q9szt96cq4vulpqu5m96sspcu0mt3rvv0qmwl5rxvyxejlw08zp7qnnyg3c", // HTLC address
+                        value: 0.1e8,
+                    },
+                    changeOutput: {
+                        keyPath: "m/49'/0'/0'/1/0",
+                        value: 0.099996e8, // 400 sats fee
+                    }
+                },
+
+                redeem: {
+                    type: 'NIM',
+                    keyPath: "m/44'/242'/0'/0'",
+                    sender: new Uint8Array(20), // HTLC address
+                    senderType: 2, // Account.Type.HTLC
+                    value: 1000,
+                    fee: 0,
+                    validityStartHeight: 100,
+                },
+
+                // Data needed for display
+                // fiatCurrency: string,
+                // nimFiatRate: number,
+                // btcFiatRate: number,
+                // serviceNetworkFee: number, // Luna or Sats, depending which one gets funded
+                // nimiq: Array<{
+                //     address: string,
+                //     label: string,
+                //     balance: number, // Luna
+                // }>,
+                // bitcoin: {
+                //     balance: number, // Sats
+                // },
+            });
+            document.getElementById('result').value = JSON.stringify(result);
+            console.log('Keyguard result:', result);
+        } catch (e) {
+            alert(e.message);
+        }
+
+        keyguard.close();
+    });
+</script>
+
+</body>
+</html>

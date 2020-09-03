@@ -26,15 +26,17 @@ export type SingleKeyResult = {
 };
 
 export type TransactionInfo = {
+    keyPath: string,
+    senderLabel?: string,
     sender: Uint8Array
     senderType: Nimiq.Account.Type
     recipient: Uint8Array
+    recipientType?: Nimiq.Account.Type
     value: number
     fee: number
     validityStartHeight: number
-    recipientType?: Nimiq.Account.Type
     data?: Uint8Array
-    flags?: number,
+    flags?: number
 };
 
 export type BitcoinTransactionInput = {
@@ -128,10 +130,7 @@ export type ExportResult = {
     wordsExported: boolean,
 };
 
-type SignTransactionRequestCommon = SimpleRequest & TransactionInfo & {
-    keyPath: string,
-    senderLabel?: string,
-};
+type SignTransactionRequestCommon = SimpleRequest & TransactionInfo;
 
 export type SignTransactionRequestStandard = SignTransactionRequestCommon & {
     layout?: 'standard',
@@ -177,6 +176,25 @@ export type SignBtcTransactionRequestCheckout = SimpleRequest & BitcoinTransacti
 export type SignBtcTransactionRequest
     = SignBtcTransactionRequestStandard
     | SignBtcTransactionRequestCheckout;
+
+export type SignSwapRequest = SimpleRequest & {
+    fund: {type: 'NIM'} & Omit<TransactionInfo, 'recipient'> | {type: 'BTC'} & BitcoinTransactionInfo,
+    redeem: {type: 'NIM'} & Omit<TransactionInfo, 'recipient'> | {type: 'BTC'} & BitcoinTransactionInfo,
+
+    // Data needed for display
+    fiatCurrency: string,
+    nimFiatRate: number,
+    btcFiatRate: number,
+    serviceNetworkFee: number, // Luna or Sats, depending which one gets funded
+    nimiq: Array<{
+        address: string,
+        label: string,
+        balance: number, // Luna
+    }>,
+    bitcoin: {
+        balance: number, // Sats
+    },
+}
 
 export type SignMessageRequest = SimpleRequest & {
     keyPath: string,
