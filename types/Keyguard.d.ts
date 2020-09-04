@@ -134,11 +134,13 @@ type Parsed<T extends KeyguardRequest.Request> =
                         address?: string,
                         value: number,
                     },
+                    htlcScript: Uint8Array,
                 },
                 redeem: {
                     type: 'NIM',
                     keyPath: string,
                     transaction: Nimiq.ExtendedTransaction,
+                    htlcData: Uint8Array,
                 } | {
                     type: 'BTC',
                     input: ParsedBitcoinTransactionInput,
