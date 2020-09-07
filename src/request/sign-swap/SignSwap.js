@@ -53,9 +53,8 @@ class SignSwap {
             )}`;
             $swapNimValue.classList.add('nq-red');
         } else {
-            const spendSats = fundTx.inputs.reduce((sum, input) => sum + input.witnessUtxo.value, 0);
             $swapBtcValue.textContent = `-${NumberFormatting.formatNumber(
-                BitcoinUtils.satoshisToCoins(spendSats),
+                BitcoinUtils.satoshisToCoins(fundTx.recipientOutput.value),
                 8,
             )}`;
             $swapBtcValue.classList.add('nq-red');
@@ -63,7 +62,7 @@ class SignSwap {
 
         if (redeemTx.type === 'NIM') {
             $swapNimValue.textContent = `+${NumberFormatting.formatNumber(
-                Nimiq.Policy.lunasToCoins(redeemTx.transaction.value / 1e5),
+                Nimiq.Policy.lunasToCoins(redeemTx.transaction.value),
             )}`;
             $swapNimValue.classList.add('nq-green');
         } else {
@@ -81,7 +80,7 @@ class SignSwap {
                 ? (redeemTx.transaction.value + redeemTx.transaction.fee) / 1e5
                 : 0; // Should never happen, if parsing works correctly
         const btcSwapValue = fundTx.type === 'BTC' // eslint-disable-line no-nested-ternary
-            ? (fundTx.inputs.reduce((sum, input) => sum + input.witnessUtxo.value, 0)/* - serviceNetworkFee */) / 1e8
+            ? fundTx.recipientOutput.value / 1e8
             : redeemTx.type === 'BTC'
                 ? redeemTx.input.witnessUtxo.value / 1e8
                 : 0; // Should never happen, if parsing works correctly

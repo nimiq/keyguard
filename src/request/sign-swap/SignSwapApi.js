@@ -130,9 +130,6 @@ class SignSwapApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         // Construct inputs
         return inputs.map((input, index) => {
             const script = NodeBuffer.Buffer.from(Nimiq.BufferUtils.fromAny(input.outputScript));
-            const witnessScript = input.witnessScript
-                ? NodeBuffer.Buffer.from(Nimiq.BufferUtils.fromAny(input.witnessScript))
-                : undefined;
 
             /** @type {ParsedBitcoinTransactionInput} */
             const parsed = {
@@ -147,12 +144,14 @@ class SignSwapApi extends TopLevelApi { // eslint-disable-line no-unused-vars
                         (this.parseNonNegativeFiniteNumber(input.value, false, `input[${index}].value`)),
                     ),
                 },
-                witnessScript,
                 keyPath: this.parseBitcoinPath(input.keyPath, `input[${index}].keypath`),
                 // Address added only for display
                 // @ts-ignore Argument of type 'Uint8Array' is not assignable to parameter of type 'Buffer'.
                 address: BitcoinJS.address.fromOutputScript(script, BitcoinUtils.Network),
             };
+            if (input.witnessScript) {
+                parsed.witnessScript = NodeBuffer.Buffer.from(Nimiq.BufferUtils.fromAny(input.witnessScript));
+            }
             return parsed;
         });
     }

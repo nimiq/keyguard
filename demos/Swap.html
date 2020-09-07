@@ -42,7 +42,7 @@
                     senderType: 0, // Account.Type.BASIC
                     value: 2709.79904e5,
                     fee: 0,
-                    validityStartHeight: 114000,
+                    validityStartHeight: 1140000,
                     data: Nimiq.BufferUtils.fromBase64('anlssPDlYuJ5R8hvRtmP3EVjywhona4vd7BI3MCOFNcxBOoUIitb4QMZNYm9TPJr6LpTyq2WJSLYwtBr6jaor6LrJjgvNFcr4gEAEWWF'),
                     // data: new Uint8Array([
                     //     // Refund address (my own)
@@ -120,36 +120,37 @@
                 fund: {
                     type: 'BTC',
                     inputs: [{
-                        keyPath: "m/49'/1'/0'/0/0",
+                        keyPath: "m/84'/1'/0'/0/0",
                         transactionHash: "0000000000000000000000000000000000000000000000000000000000000000",
                         outputIndex: 0,
-                        outputScript: "0000000000000000000000000000000000000000000000",
-                        value: 0.1e8,
+                        outputScript: "001484eb9bcbd90ce7d3360992259e4b9b818215a960",
+                        value: 0.001e8,
                     }, {
-                        keyPath: "m/49'/1'/0'/0/1",
+                        keyPath: "m/84'/1'/0'/0/0",
                         transactionHash: "0000000000000000000000000000000000000000000000000000000000000000",
                         outputIndex: 1,
-                        outputScript: "0000000000000000000000000000000000000000000000",
-                        value: 0.1e8,
+                        outputScript: "001484eb9bcbd90ce7d3360992259e4b9b818215a960",
+                        value: 0.001e8,
                     }],
                     recipientOutput: {
-                        address: "bc1q9szt96cq4vulpqu5m96sspcu0mt3rvv0qmwl5rxvyxejlw08zp7qnnyg3c", // HTLC address
-                        value: 0.1e8,
+                        address: "tb1qkg69q2pmq8yncjusk2h77vru99rk8n6pcxdxzzzseupaqc2x64ts4uhrj8", // HTLC address
+                        value: 0.00075736e8,
                     },
                     changeOutput: {
-                        keyPath: "m/49'/1'/0'/1/0",
-                        value: 0.099996e8, // 400 sats fee
+                        keyPath: "m/84'/1'/0'/1/0",
+                        value: 0.00123864e8, // 400 sats fee
                     }
                 },
 
                 redeem: {
                     type: 'NIM',
                     keyPath: "m/44'/242'/0'/0'",
-                    sender: new Uint8Array(20), // HTLC address
+                    sender: Nimiq.Address.fromUserFriendlyAddress('NQ32 71G4 AQ88 RVA4 4XYC CH39 V2AG HTAM S0YL').subarray(),
                     senderType: 2, // Account.Type.HTLC
-                    value: 1000e8,
+                    recipient: Nimiq.Address.fromUserFriendlyAddress('NQ41 D9UN RC7G UMHE 4XA7 R1PL DNCF TH2N 7JQ8').subarray(),
+                    value: 2000e5,
                     fee: 0,
-                    validityStartHeight: 100,
+                    validityStartHeight: 1140000,
                 },
 
                 // Data needed for display
