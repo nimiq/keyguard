@@ -6,6 +6,7 @@
 /* global Utf8Tools */
 /* global TopLevelApi */
 /* global NumberFormatting */
+/* global NodeBuffer */
 /* global BitcoinJS */
 /* global BitcoinConstants */
 /* global BitcoinUtils */
@@ -150,7 +151,8 @@ class SignSwap {
 
             // Validate that signing address is the refund address of the HTLC
             const refundAddress = new Nimiq.Address(
-                new Nimiq.SerialBuffer(request.fund.transaction.data).read(Nimiq.Address.SERIALIZED_SIZE));
+                new Nimiq.SerialBuffer(request.fund.transaction.data).read(Nimiq.Address.SERIALIZED_SIZE),
+            );
             const signerAddress = publicKey.toAddress();
 
             if (!signerAddress.equals(refundAddress)) {
@@ -286,15 +288,15 @@ class SignSwap {
             // Validate output address
 
             // Derive address
-            const keyPair = btcKey.deriveKeyPair(redeemTx.output.keyPath);
+            const outputKeyPair = btcKey.deriveKeyPair(redeemTx.output.keyPath);
             /** @type {string | undefined} */
             let address;
             switch (BitcoinUtils.parseBipFromDerivationPath(redeemTx.output.keyPath)) {
                 case BitcoinConstants.BIP.BIP49:
-                    address = BitcoinUtils.keyPairToNestedSegwit(keyPair).address;
+                    address = BitcoinUtils.keyPairToNestedSegwit(outputKeyPair).address;
                     break;
                 case BitcoinConstants.BIP.BIP84:
-                    address = BitcoinUtils.keyPairToNativeSegwit(keyPair).address;
+                    address = BitcoinUtils.keyPairToNativeSegwit(outputKeyPair).address;
                     break;
                 default:
                     throw new Errors.KeyguardError('UNEXPECTED: redeem output key path was not a supported BIP');
@@ -327,8 +329,8 @@ class SignSwap {
                 psbt.addOutput(output);
 
                 // Sign
-                const keyPair = btcKey.deriveKeyPair(redeemTx.input.keyPath);
-                psbt.signInput(0, keyPair);
+                const inputKeyPair = btcKey.deriveKeyPair(redeemTx.input.keyPath);
+                psbt.signInput(0, inputKeyPair);
 
                 // Verify that all inputs are signed
                 if (!psbt.validateSignaturesOfAllInputs()) {
@@ -336,7 +338,7 @@ class SignSwap {
                 }
 
                 // Finalize
-                psbt.finalizeInput(0, (inputIndex, input, script, isSegwit, isP2SH, isP2WSH) => {
+                psbt.finalizeInput(0, (inputIndex, input /* , script, isSegwit, isP2SH, isP2WSH */) => {
                     if (!input.partialSig) {
                         throw new Errors.KeyguardError('UNEXPECTED: Input does not have a partial signature');
                     }
@@ -345,7 +347,7 @@ class SignSwap {
                         throw new Errors.KeyguardError('UNEXPECTED: Input does not have a witnessScript');
                     }
 
-                    const witness = BitcoinJS.script.fromASM([
+                    const witnessBytes = BitcoinJS.script.fromASM([
                         input.partialSig[0].signature.toString('hex'),
                         input.partialSig[0].pubkey.toString('hex'),
                         // Use zero-bytes as a dummy secret for signing
@@ -354,7 +356,7 @@ class SignSwap {
                         input.witnessScript.toString('hex'),
                     ].join(' '));
 
-                    const stack = BitcoinJS.script.toStack(witness);
+                    const stack = BitcoinJS.script.toStack(witnessBytes);
 
                     /**
                      * @param {Buffer[]} witness
@@ -367,8 +369,8 @@ class SignSwap {
                         /**
                          * @param {Buffer} slice
                          */
-                        function writeSlice(slice){
-                            buffer = buffer.concat([...slice.subarray()]);
+                        function writeSlice(slice) {
+                            buffer = buffer.concat([...slice.subarray(0)]);
                         }
 
                         /**
@@ -401,23 +403,23 @@ class SignSwap {
                          * @param {Buffer} slice
                          */
                         function writeVarSlice(slice) {
-                          writeVarInt(slice.length);
-                          writeSlice(slice);
+                            writeVarInt(slice.length);
+                            writeSlice(slice);
                         }
 
                         /**
                          * @param {Buffer[]} vector
                          */
                         function writeVector(vector) {
-                          writeVarInt(vector.length);
-                          vector.forEach(writeVarSlice);
+                            writeVarInt(vector.length);
+                            vector.forEach(writeVarSlice);
                         }
 
                         writeVector(witness);
 
                         // @ts-ignore Type 'Buffer' is not assignable to type 'Buffer'.
                         return NodeBuffer.Buffer.from(buffer);
-                      }
+                    }
                     return {
                         finalScriptSig: undefined,
                         finalScriptWitness: witnessStackToScriptWitness(stack),
