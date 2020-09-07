@@ -134,20 +134,20 @@ type Parsed<T extends KeyguardRequest.Request> =
                         address?: string,
                         value: number,
                     },
-                    htlcScript: Uint8Array,
+                    // htlcScript: Uint8Array,
                 },
                 redeem: {
                     type: 'NIM',
                     keyPath: string,
                     transaction: Nimiq.ExtendedTransaction,
-                    htlcData: Uint8Array,
+                    // htlcData: Uint8Array,
                 } | {
                     type: 'BTC',
                     input: ParsedBitcoinTransactionInput,
-                    recipientOutput: {
-                        address: string,
+                    output: {
+                        keyPath: string, // We require a key path for the change output to make sure that this output goes to the same key.
+                        address?: string, // An address can still be passed in and will be checked against the derived address.
                         value: number,
-                        label?: string,
                     },
                 },
             }

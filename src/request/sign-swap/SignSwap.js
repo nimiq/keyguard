@@ -68,7 +68,7 @@ class SignSwap {
             $swapNimValue.classList.add('nq-green');
         } else {
             $swapBtcValue.textContent = `+${NumberFormatting.formatNumber(
-                BitcoinUtils.satoshisToCoins(redeemTx.recipientOutput.value),
+                BitcoinUtils.satoshisToCoins(redeemTx.output.value),
                 8,
             )}`;
             $swapBtcValue.classList.add('nq-green');
@@ -148,6 +148,16 @@ class SignSwap {
 
         if (request.fund.type === 'NIM') {
             const publicKey = key.derivePublicKey(request.fund.keyPath);
+
+            // Validate that signing address is the refund address of the HTLC
+            const refundAddress = new Nimiq.Address(
+                new Nimiq.SerialBuffer(request.fund.transaction.data).read(Nimiq.Address.SERIALIZED_SIZE));
+            const signerAddress = publicKey.toAddress();
+
+            if (!signerAddress.equals(refundAddress)) {
+                throw new Errors.InvalidRequestError('NIM HTLC must be signed by its refund address');
+            }
+
             const signature = key.sign(request.fund.keyPath, request.fund.transaction.serializeContent());
 
             /** @type {KeyguardRequest.SignatureResult} */
@@ -274,6 +284,39 @@ class SignSwap {
         if (request.redeem.type === 'BTC') {
             const redeemTx = request.redeem;
 
+            // Validate output address
+
+            // Derive address
+            const keyPair = btcKey.deriveKeyPair(redeemTx.output.keyPath);
+            /** @type {string | undefined} */
+            let address;
+            switch (BitcoinUtils.parseBipFromDerivationPath(redeemTx.output.keyPath)) {
+                case BitcoinConstants.BIP.BIP49:
+                    address = BitcoinUtils.keyPairToNestedSegwit(keyPair).address;
+                    break;
+                case BitcoinConstants.BIP.BIP84:
+                    address = BitcoinUtils.keyPairToNativeSegwit(keyPair).address;
+                    break;
+                default:
+                    throw new Errors.KeyguardError('UNEXPECTED: redeem output key path was not a supported BIP');
+            }
+
+            if (!address) {
+                throw new Errors.InvalidRequestError('Could not derive address for redeem output');
+            }
+
+            if (redeemTx.output.address && redeemTx.output.address !== address) {
+                throw new Errors.InvalidRequestError(
+                    'Given address is different from derived address for redeem output',
+                );
+            }
+
+            /** @type {KeyguardRequest.BitcoinTransactionOutput} */
+            const output = {
+                address,
+                value: redeemTx.output.value,
+            };
+
             try {
                 // Construct transaction
                 const psbt = new BitcoinJS.Psbt({ network: BitcoinUtils.Network });
@@ -282,7 +325,7 @@ class SignSwap {
                 // @ts-ignore Argument of type 'Uint8Array' is not assignable to parameter of type 'Buffer'.
                 psbt.addInput(redeemTx.input);
                 // Add outputs
-                psbt.addOutput(redeemTx.recipientOutput);
+                psbt.addOutput(output);
 
                 // Sign
                 const keyPair = btcKey.deriveKeyPair(redeemTx.input.keyPath);

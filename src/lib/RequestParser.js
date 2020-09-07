@@ -140,7 +140,7 @@ class RequestParser { // eslint-disable-line no-unused-vars
         const recipient = this.parseAddress(object.recipient, 'recipient');
         const recipientType = object.recipientType || Nimiq.Account.Type.BASIC;
         if (!accountTypes.has(recipientType)) {
-            throw new Errors.InvalidRequestError('Invalid sender type');
+            throw new Errors.InvalidRequestError('Invalid recipient type');
         }
 
         if (sender.equals(recipient)) {

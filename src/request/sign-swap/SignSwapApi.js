@@ -36,6 +36,7 @@ class SignSwapApi extends TopLevelApi { // eslint-disable-line no-unused-vars
                 keyPath: this.parsePath(request.fund.keyPath, 'keyPath'),
                 transaction: this.parseTransaction({
                     ...request.fund,
+                    flags: Nimiq.Transaction.Flag.CONTRACT_CREATION,
                     recipient: 'CONTRACT_CREATION',
                     recipientType: Nimiq.Account.Type.HTLC,
                 }),
@@ -47,7 +48,7 @@ class SignSwapApi extends TopLevelApi { // eslint-disable-line no-unused-vars
                 recipientOutput: /** @type {KeyguardRequest.BitcoinTransactionOutput} */ (
                     this.parseOutput(request.fund.recipientOutput, false, 'fund.recipientOutput')),
                 changeOutput: this.parseChangeOutput(request.fund.changeOutput, true, 'fund.changeOutput'),
-                htlcScript: request.fund.htlcScript,
+                // htlcScript: request.fund.htlcScript,
             };
         } else {
             throw new Errors.InvalidRequestError('Invalid funding type');
@@ -58,38 +59,38 @@ class SignSwapApi extends TopLevelApi { // eslint-disable-line no-unused-vars
                 type: 'NIM',
                 keyPath: this.parsePath(request.redeem.keyPath, 'keyPath'),
                 transaction: this.parseTransaction(request.redeem),
-                htlcData: request.redeem.htlcData,
+                // htlcData: request.redeem.htlcData,
             };
         } else if (request.redeem.type === 'BTC') {
             parsedRequest.redeem = {
                 type: 'BTC',
                 input: this.parseInputs([request.redeem.inputs[0]])[0],
-                recipientOutput: /** @type {KeyguardRequest.BitcoinTransactionOutput} */ (
-                    this.parseOutput(request.redeem.recipientOutput, false, 'redeem.recipientOutput')),
+                output: /** @type {KeyguardRequest.BitcoinTransactionChangeOutput} */ (
+                    this.parseChangeOutput(request.redeem.changeOutput, false, 'redeem.changeOutput')),
             };
         } else {
             throw new Errors.InvalidRequestError('Invalid redeeming type');
         }
 
-        // eslint-disable-next-line no-nested-ternary
-        const btcHtlcData = this.parseBtcHtlcScript(parsedRequest.redeem.type === 'BTC'
-            ? parsedRequest.redeem.input.witnessScript
-            : parsedRequest.fund.type === 'BTC'
-                ? parsedRequest.fund.htlcScript
-                : undefined);
+        // // eslint-disable-next-line no-nested-ternary
+        // const btcHtlcData = this.parseBtcHtlcScript(parsedRequest.redeem.type === 'BTC'
+        //     ? parsedRequest.redeem.input.witnessScript
+        //     : parsedRequest.fund.type === 'BTC'
+        //         ? parsedRequest.fund.htlcScript
+        //         : undefined);
 
-        // eslint-disable-next-line no-nested-ternary
-        const nimHtlcData = this.parseNimHtlcData(parsedRequest.fund.type === 'NIM'
-            ? parsedRequest.fund.transaction.data
-            : parsedRequest.redeem.type === 'NIM'
-                ? parsedRequest.redeem.htlcData
-                : undefined);
+        // // eslint-disable-next-line no-nested-ternary
+        // const nimHtlcData = this.parseNimHtlcData(parsedRequest.fund.type === 'NIM'
+        //     ? parsedRequest.fund.transaction.data
+        //     : parsedRequest.redeem.type === 'NIM'
+        //         ? parsedRequest.redeem.htlcData
+        //         : undefined);
 
-        // TODO: Verify HTLC contents
-        // - Verify refund address of fund HTLC is ours
-        // - Verify redeem address of redeem HTLC is ours
-        // - Verify hashRoot is the same across HTLCs
-        if (btcHtlcData.hash !== nimHtlcData.hash) throw new Errors.InvalidRequestError('HTLC hashes do not match');
+        // // TODO: Verify HTLC contents
+        // // - Verify refund address of fund HTLC is ours
+        // // - Verify redeem address of redeem HTLC is ours
+        // // - Verify hashRoot is the same across HTLCs
+        // if (btcHtlcData.hash !== nimHtlcData.hash) throw new Errors.InvalidRequestError('HTLC hashes do not match');
 
         // TODO: Parse display data
 
