@@ -329,7 +329,7 @@ class SignSwap {
 
                 // Sign
                 const keyPair = btcKey.deriveKeyPair(redeemTx.input.keyPath);
-                psbt.signInput(0, keyPair); // Force signing of single input
+                psbt.signInput(0, keyPair);
 
                 // Verify that all inputs are signed
                 if (!psbt.validateSignaturesOfAllInputs()) {
@@ -337,7 +337,93 @@ class SignSwap {
                 }
 
                 // Finalize
-                psbt.finalizeAllInputs();
+                psbt.finalizeInput(0, (inputIndex, input, script, isSegwit, isP2SH, isP2WSH) => {
+                    if (!input.partialSig) {
+                        throw new Errors.KeyguardError('UNEXPECTED: Input does not have a partial signature');
+                    }
+
+                    if (!input.witnessScript) {
+                        throw new Errors.KeyguardError('UNEXPECTED: Input does not have a witnessScript');
+                    }
+
+                    const witness = BitcoinJS.script.fromASM([
+                        input.partialSig[0].signature.toString('hex'),
+                        input.partialSig[0].pubkey.toString('hex'),
+                        // Use zero-bytes as a dummy secret for signing
+                        '0000000000000000000000000000000000000000000000000000000000000000',
+                        'OP_1',
+                        input.witnessScript.toString('hex'),
+                    ].join(' '));
+
+                    const stack = BitcoinJS.script.toStack(witness);
+
+                    /**
+                     * @param {Buffer[]} witness
+                     * @returns {Buffer}
+                     */
+                    function witnessStackToScriptWitness(witness) {
+                        /** @type {number[]} */
+                        let buffer = [];
+
+                        /**
+                         * @param {Buffer} slice
+                         */
+                        function writeSlice(slice){
+                            buffer = buffer.concat([...slice.subarray()]);
+                        }
+
+                        /**
+                         * Specification: https://en.bitcoin.it/wiki/Protocol_documentation#Variable_length_integer
+                         *
+                         * @param {number} i
+                         */
+                        function writeVarInt(i) {
+                            if (i < 0xFD) {
+                                buffer.push(i);
+                            } else if (i <= 0xFFFF) {
+                                buffer.push(0xFD);
+                                const number = new Nimiq.SerialBuffer(2);
+                                number.writeUint16(i);
+                                buffer = buffer.concat([...number.reverse()]);
+                            } else if (i <= 0xFFFFFFFF) {
+                                buffer.push(0xFE);
+                                const number = new Nimiq.SerialBuffer(4);
+                                number.writeUint32(i);
+                                buffer = buffer.concat([...number.reverse()]);
+                            } else {
+                                buffer.push(0xFF);
+                                const number = new Nimiq.SerialBuffer(8);
+                                number.writeUint64(i);
+                                buffer = buffer.concat([...number.reverse()]);
+                            }
+                        }
+
+                        /**
+                         * @param {Buffer} slice
+                         */
+                        function writeVarSlice(slice) {
+                          writeVarInt(slice.length);
+                          writeSlice(slice);
+                        }
+
+                        /**
+                         * @param {Buffer[]} vector
+                         */
+                        function writeVector(vector) {
+                          writeVarInt(vector.length);
+                          vector.forEach(writeVarSlice);
+                        }
+
+                        writeVector(witness);
+
+                        // @ts-ignore Type 'Buffer' is not assignable to type 'Buffer'.
+                        return NodeBuffer.Buffer.from(buffer);
+                      }
+                    return {
+                        finalScriptSig: undefined,
+                        finalScriptWitness: witnessStackToScriptWitness(stack),
+                    };
+                });
 
                 // Extract tx
                 const tx = psbt.extractTransaction();
