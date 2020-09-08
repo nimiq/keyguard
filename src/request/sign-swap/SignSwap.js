@@ -6,11 +6,11 @@
 /* global Utf8Tools */
 /* global TopLevelApi */
 /* global NumberFormatting */
-/* global NodeBuffer */
 /* global BitcoinJS */
 /* global BitcoinConstants */
 /* global BitcoinUtils */
 /* global BitcoinKey */
+/* global HtlcUtils */
 // /* global IqonHash */
 // /* global LoginFileConfig */
 
@@ -150,13 +150,8 @@ class SignSwap {
             const publicKey = key.derivePublicKey(request.fund.keyPath);
 
             // Validate that signing address is the refund address of the HTLC
-            const refundAddress = new Nimiq.Address(
-                new Nimiq.SerialBuffer(request.fund.transaction.data).read(Nimiq.Address.SERIALIZED_SIZE),
-            );
-            const signerAddress = publicKey.toAddress();
-
-            if (!signerAddress.equals(refundAddress)) {
-                throw new Errors.InvalidRequestError('NIM HTLC must be signed by its refund address');
+            if (publicKey.toAddress().toUserFriendlyAddress() !== request.nimHtlc.refundAddress) {
+                throw new Errors.InvalidRequestError('NIM HTLC funding must be signed by its refund address');
             }
 
             const signature = key.sign(request.fund.keyPath, request.fund.transaction.serializeContent());
@@ -169,6 +164,16 @@ class SignSwap {
         }
 
         if (request.fund.type === 'BTC') {
+            // Validate that we own the HTLC refund address
+            const givenRefundAddress = btcKey.deriveAddress(request.fund.refundKeyPath);
+            const scriptRefundAddress = BitcoinUtils.addressBytesToAddress(
+                request.btcHtlc.refundAddressBytes,
+                BitcoinUtils.parseBipFromDerivationPath(request.fund.refundKeyPath),
+            );
+            if (givenRefundAddress !== scriptRefundAddress) {
+                throw new Errors.InvalidRequestError('BTC HTLC refund address does not match refundKeyPath');
+            }
+
             const fundTx = request.fund;
             // For BIP49 (nested SegWit) inputs, a redeemScript needs to be added to inputs
             for (const input of fundTx.inputs) {
@@ -178,9 +183,7 @@ class SignSwap {
                 const keyPair = btcKey.deriveKeyPair(input.keyPath);
                 const output = BitcoinUtils.keyPairToNativeSegwit(keyPair).output;
                 if (!output) {
-                    TopLevelApi.setLoading(false);
-                    alert('UNEXPECTED: Failed to get native SegWit output for redeemScript');
-                    return;
+                    throw new Errors.KeyguardError('UNEXPECTED: Failed to get native SegWit output for redeemScript');
                 }
                 input.redeemScript = output;
             }
@@ -212,7 +215,7 @@ class SignSwap {
                 }
 
                 if (!address) {
-                    throw new Errors.InvalidRequestError('Could not derive address for change output');
+                    throw new Errors.InvalidRequestError('UNEXPECTED: Could not derive address for change output');
                 }
 
                 if (fundTx.changeOutput.address && fundTx.changeOutput.address !== address) {
@@ -233,46 +236,45 @@ class SignSwap {
             // Sort outputs by value ASC, then address ASC
             outputs.sort((a, b) => (a.value - b.value) || (a.address < b.address ? -1 : 1));
 
-            try {
-                // Construct transaction
-                const psbt = new BitcoinJS.Psbt({ network: BitcoinUtils.Network });
+            // Construct transaction
+            const psbt = new BitcoinJS.Psbt({ network: BitcoinUtils.Network });
 
-                // Add inputs
-                // @ts-ignore Argument of type 'Uint8Array' is not assignable to parameter of type 'Buffer'.
-                psbt.addInputs(fundTx.inputs);
-                // Add outputs
-                psbt.addOutputs(outputs);
+            // Add inputs
+            // @ts-ignore Argument of type 'Uint8Array' is not assignable to parameter of type 'Buffer'.
+            psbt.addInputs(fundTx.inputs);
+            // Add outputs
+            psbt.addOutputs(outputs);
 
-                // Sign
-                const paths = fundTx.inputs.map(input => input.keyPath);
-                btcKey.sign(paths, psbt);
+            // Sign
+            const paths = fundTx.inputs.map(input => input.keyPath);
+            btcKey.sign(paths, psbt);
 
-                // Verify that all inputs are signed
-                if (!psbt.validateSignaturesOfAllInputs()) {
-                    throw new Error('Invalid or missing signature(s).');
-                }
-
-                // Finalize
-                psbt.finalizeAllInputs();
-
-                // Extract tx
-                const tx = psbt.extractTransaction();
-
-                /** @type {KeyguardRequest.SignedBitcoinTransaction} */
-                result.btc = {
-                    transactionHash: tx.getId(),
-                    raw: tx.toHex(),
-                };
-            } catch (error) {
-                TopLevelApi.setLoading(false);
-                console.error(error);
-                alert(`ERROR: ${error.message}`);
-                return;
+            // Verify that all inputs are signed
+            if (!psbt.validateSignaturesOfAllInputs()) {
+                throw new Error('Invalid or missing signature(s) for BTC transaction.');
             }
+
+            // Finalize
+            psbt.finalizeAllInputs();
+
+            // Extract tx
+            const tx = psbt.extractTransaction();
+
+            /** @type {KeyguardRequest.SignedBitcoinTransaction} */
+            result.btc = {
+                transactionHash: tx.getId(),
+                raw: tx.toHex(),
+            };
         }
 
         if (request.redeem.type === 'NIM') {
             const publicKey = key.derivePublicKey(request.redeem.keyPath);
+
+            // Validate that this is the redeem address of the HTLC
+            if (publicKey.toAddress().toUserFriendlyAddress() !== request.nimHtlc.redeemAddress) {
+                throw new Errors.InvalidRequestError('NIM HTLC redeeming must be signed by its redeem address');
+            }
+
             const signature = key.sign(request.redeem.keyPath, request.redeem.transaction.serializeContent());
 
             /** @type {KeyguardRequest.SignatureResult} */
@@ -285,9 +287,7 @@ class SignSwap {
         if (request.redeem.type === 'BTC') {
             const redeemTx = request.redeem;
 
-            // Validate output address
-
-            // Derive address
+            // Derive output address
             const outputKeyPair = btcKey.deriveKeyPair(redeemTx.output.keyPath);
             /** @type {string | undefined} */
             let address;
@@ -303,7 +303,7 @@ class SignSwap {
             }
 
             if (!address) {
-                throw new Errors.InvalidRequestError('Could not derive address for redeem output');
+                throw new Errors.InvalidRequestError('UNEXPECTED: Could not derive address for redeem output');
             }
 
             if (redeemTx.output.address && redeemTx.output.address !== address) {
@@ -318,128 +318,80 @@ class SignSwap {
                 value: redeemTx.output.value,
             };
 
-            try {
-                // Construct transaction
-                const psbt = new BitcoinJS.Psbt({ network: BitcoinUtils.Network });
+            // Construct transaction
+            const psbt = new BitcoinJS.Psbt({ network: BitcoinUtils.Network });
 
-                // Add inputs
-                // @ts-ignore Argument of type 'Uint8Array' is not assignable to parameter of type 'Buffer'.
-                psbt.addInput(redeemTx.input);
-                // Add outputs
-                psbt.addOutput(output);
+            // Add inputs
+            // @ts-ignore Argument of type 'Uint8Array' is not assignable to parameter of type 'Buffer'.
+            psbt.addInput(redeemTx.input);
+            // Add outputs
+            psbt.addOutput(output);
 
-                // Sign
-                const inputKeyPair = btcKey.deriveKeyPair(redeemTx.input.keyPath);
-                psbt.signInput(0, inputKeyPair);
+            // Sign
+            const inputKeyPair = btcKey.deriveKeyPair(redeemTx.input.keyPath);
 
-                // Verify that all inputs are signed
-                if (!psbt.validateSignaturesOfAllInputs()) {
-                    throw new Error('Invalid or missing signature(s).');
+            // Validate that this is the redeem address of the HTLC
+            /** @type {string | undefined} */
+            let givenRedeemAddress;
+            switch (BitcoinUtils.parseBipFromDerivationPath(redeemTx.input.keyPath)) {
+                case BitcoinConstants.BIP.BIP49:
+                    givenRedeemAddress = BitcoinUtils.keyPairToNestedSegwit(inputKeyPair).address;
+                    break;
+                case BitcoinConstants.BIP.BIP84:
+                    givenRedeemAddress = BitcoinUtils.keyPairToNativeSegwit(inputKeyPair).address;
+                    break;
+                default: break;
+            }
+            const scriptRedeemAddress = BitcoinUtils.addressBytesToAddress(
+                request.btcHtlc.redeemAddressBytes,
+                BitcoinUtils.parseBipFromDerivationPath(redeemTx.input.keyPath),
+            );
+            if (givenRedeemAddress !== scriptRedeemAddress) {
+                throw new Errors.InvalidRequestError('BTC HTLC redeeming must be signed by its redeem address');
+            }
+
+            psbt.signInput(0, inputKeyPair);
+
+            // Verify that all inputs are signed
+            if (!psbt.validateSignaturesOfAllInputs()) {
+                throw new Error('Invalid or missing signature(s) for BTC transaction.');
+            }
+
+            // Finalize (with custom logic for the HTLC)
+            psbt.finalizeInput(0, (inputIndex, input /* , script, isSegwit, isP2SH, isP2WSH */) => {
+                if (!input.partialSig) {
+                    throw new Errors.KeyguardError('UNEXPECTED: Input does not have a partial signature');
                 }
 
-                // Finalize
-                psbt.finalizeInput(0, (inputIndex, input /* , script, isSegwit, isP2SH, isP2WSH */) => {
-                    if (!input.partialSig) {
-                        throw new Errors.KeyguardError('UNEXPECTED: Input does not have a partial signature');
-                    }
+                if (!input.witnessScript) {
+                    throw new Errors.KeyguardError('UNEXPECTED: Input does not have a witnessScript');
+                }
 
-                    if (!input.witnessScript) {
-                        throw new Errors.KeyguardError('UNEXPECTED: Input does not have a witnessScript');
-                    }
+                const witnessBytes = BitcoinJS.script.fromASM([
+                    input.partialSig[0].signature.toString('hex'),
+                    input.partialSig[0].pubkey.toString('hex'),
+                    // Use zero-bytes as a dummy secret, required for signing
+                    '0000000000000000000000000000000000000000000000000000000000000000',
+                    'OP_1', // OP_1 (true) activates the redeem branch in the HTLC script
+                    input.witnessScript.toString('hex'),
+                ].join(' '));
 
-                    const witnessBytes = BitcoinJS.script.fromASM([
-                        input.partialSig[0].signature.toString('hex'),
-                        input.partialSig[0].pubkey.toString('hex'),
-                        // Use zero-bytes as a dummy secret for signing
-                        '0000000000000000000000000000000000000000000000000000000000000000',
-                        'OP_1',
-                        input.witnessScript.toString('hex'),
-                    ].join(' '));
+                const witnessStack = BitcoinJS.script.toStack(witnessBytes);
 
-                    const stack = BitcoinJS.script.toStack(witnessBytes);
-
-                    /**
-                     * @param {Buffer[]} witness
-                     * @returns {Buffer}
-                     */
-                    function witnessStackToScriptWitness(witness) {
-                        /** @type {number[]} */
-                        let buffer = [];
-
-                        /**
-                         * @param {Buffer} slice
-                         */
-                        function writeSlice(slice) {
-                            buffer = buffer.concat([...slice.subarray(0)]);
-                        }
-
-                        /**
-                         * Specification: https://en.bitcoin.it/wiki/Protocol_documentation#Variable_length_integer
-                         *
-                         * @param {number} i
-                         */
-                        function writeVarInt(i) {
-                            if (i < 0xFD) {
-                                buffer.push(i);
-                            } else if (i <= 0xFFFF) {
-                                buffer.push(0xFD);
-                                const number = new Nimiq.SerialBuffer(2);
-                                number.writeUint16(i);
-                                buffer = buffer.concat([...number.reverse()]);
-                            } else if (i <= 0xFFFFFFFF) {
-                                buffer.push(0xFE);
-                                const number = new Nimiq.SerialBuffer(4);
-                                number.writeUint32(i);
-                                buffer = buffer.concat([...number.reverse()]);
-                            } else {
-                                buffer.push(0xFF);
-                                const number = new Nimiq.SerialBuffer(8);
-                                number.writeUint64(i);
-                                buffer = buffer.concat([...number.reverse()]);
-                            }
-                        }
-
-                        /**
-                         * @param {Buffer} slice
-                         */
-                        function writeVarSlice(slice) {
-                            writeVarInt(slice.length);
-                            writeSlice(slice);
-                        }
-
-                        /**
-                         * @param {Buffer[]} vector
-                         */
-                        function writeVector(vector) {
-                            writeVarInt(vector.length);
-                            vector.forEach(writeVarSlice);
-                        }
-
-                        writeVector(witness);
-
-                        // @ts-ignore Type 'Buffer' is not assignable to type 'Buffer'.
-                        return NodeBuffer.Buffer.from(buffer);
-                    }
-                    return {
-                        finalScriptSig: undefined,
-                        finalScriptWitness: witnessStackToScriptWitness(stack),
-                    };
-                });
-
-                // Extract tx
-                const tx = psbt.extractTransaction();
-
-                /** @type {KeyguardRequest.SignedBitcoinTransaction} */
-                result.btc = {
-                    transactionHash: tx.getId(),
-                    raw: tx.toHex(),
+                return {
+                    finalScriptSig: undefined,
+                    finalScriptWitness: HtlcUtils.witnessStackToScriptWitness(witnessStack),
                 };
-            } catch (error) {
-                TopLevelApi.setLoading(false);
-                console.error(error);
-                alert(`ERROR: ${error.message}`);
-                return;
-            }
+            });
+
+            // Extract tx
+            const tx = psbt.extractTransaction();
+
+            /** @type {KeyguardRequest.SignedBitcoinTransaction} */
+            result.btc = {
+                transactionHash: tx.getId(),
+                raw: tx.toHex(),
+            };
         }
 
         resolve(result);

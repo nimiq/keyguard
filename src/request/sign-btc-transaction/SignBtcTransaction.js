@@ -213,43 +213,37 @@ class SignBtcTransaction {
         // Sort outputs by value ASC, then address ASC
         outputs.sort((a, b) => (a.value - b.value) || (a.address < b.address ? -1 : 1));
 
-        try {
-            // Construct transaction
-            const psbt = new BitcoinJS.Psbt({ network: BitcoinUtils.Network });
 
-            // Add inputs
-            // @ts-ignore Argument of type 'Uint8Array' is not assignable to parameter of type 'Buffer'.
-            psbt.addInputs(request.inputs);
-            // Add outputs
-            psbt.addOutputs(outputs);
+        // Construct transaction
+        const psbt = new BitcoinJS.Psbt({ network: BitcoinUtils.Network });
 
-            // Sign
-            const paths = request.inputs.map(input => input.keyPath);
-            btcKey.sign(paths, psbt);
+        // Add inputs
+        // @ts-ignore Argument of type 'Uint8Array' is not assignable to parameter of type 'Buffer'.
+        psbt.addInputs(request.inputs);
+        // Add outputs
+        psbt.addOutputs(outputs);
 
-            // Verify that all inputs are signed
-            if (!psbt.validateSignaturesOfAllInputs()) {
-                throw new Error('Invalid or missing signature(s).');
-            }
+        // Sign
+        const paths = request.inputs.map(input => input.keyPath);
+        btcKey.sign(paths, psbt);
 
-            // Finalize
-            psbt.finalizeAllInputs();
-
-            // Extract tx
-            const tx = psbt.extractTransaction();
-
-            /** @type {KeyguardRequest.SignedBitcoinTransaction} */
-            const result = {
-                transactionHash: tx.getId(),
-                raw: tx.toHex(),
-            };
-            resolve(result);
-        } catch (error) {
-            TopLevelApi.setLoading(false);
-            console.error(error);
-            alert(`ERROR: ${error.message}`);
-            // return;
+        // Verify that all inputs are signed
+        if (!psbt.validateSignaturesOfAllInputs()) {
+            throw new Error('Invalid or missing signature(s) for BTC transaction.');
         }
+
+        // Finalize
+        psbt.finalizeAllInputs();
+
+        // Extract tx
+        const tx = psbt.extractTransaction();
+
+        /** @type {KeyguardRequest.SignedBitcoinTransaction} */
+        const result = {
+            transactionHash: tx.getId(),
+            raw: tx.toHex(),
+        };
+        resolve(result);
     }
 
     run() {

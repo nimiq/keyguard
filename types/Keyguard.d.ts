@@ -56,6 +56,20 @@ type ParsedBitcoinTransactionInput = {
     address: string,
 };
 
+type NimHtlcContents = {
+    refundAddress: string,
+    redeemAddress: string,
+    hash: string,
+    timeoutBlockHeight: number,
+};
+
+type BtcHtlcContents = {
+    refundAddressBytes: string,
+    redeemAddressBytes: string,
+    hash: string,
+    timeoutTimestamp: number,
+};
+
 type Transform<T, K extends keyof T, E> = Omit<T, K> & E;
 
 type KeyId2KeyInfo<T extends { keyId: string }> = Transform<T, 'keyId', { keyInfo: KeyInfo }>
@@ -134,13 +148,12 @@ type Parsed<T extends KeyguardRequest.Request> =
                         address?: string,
                         value: number,
                     },
-                    // htlcScript: Uint8Array,
+                    refundKeyPath: string,
                 },
                 redeem: {
                     type: 'NIM',
                     keyPath: string,
                     transaction: Nimiq.ExtendedTransaction,
-                    // htlcData: Uint8Array,
                 } | {
                     type: 'BTC',
                     input: ParsedBitcoinTransactionInput,
@@ -151,5 +164,8 @@ type Parsed<T extends KeyguardRequest.Request> =
                     },
                 },
             }
-        > :
+        > & {
+            nimHtlc: NimHtlcContents,
+            btcHtlc: BtcHtlcContents,
+        } :
     T;

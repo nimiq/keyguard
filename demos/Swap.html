@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <title>Swap | Keyguard Demo</title>
     <script src="../node_modules/@nimiq/rpc/dist/rpc.umd.js"></script>
-    <script src="../node_modules/@nimiq/core-web/web.js"></script>
+    <script src="../node_modules/@nimiq/core-web/web-offline.js"></script>
+    <script src="../src/lib/bitcoin/vendor/NodeBuffer.js"></script>
     <script src="../src/lib/bitcoin/vendor/BitcoinJS.js"></script>
 </head>
 <body>
@@ -44,21 +45,6 @@
                     fee: 0,
                     validityStartHeight: 1140000,
                     data: Nimiq.BufferUtils.fromBase64('anlssPDlYuJ5R8hvRtmP3EVjywhona4vd7BI3MCOFNcxBOoUIitb4QMZNYm9TPJr6LpTyq2WJSLYwtBr6jaor6LrJjgvNFcr4gEAEWWF'),
-                    // data: new Uint8Array([
-                    //     // Refund address (my own)
-                    //     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-                    //     // Redeem address (of swap partner)
-                    //     21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
-                    //     // Hash algorithm (Hash.Algorithm.SHA256)
-                    //     3,
-                    //     // Hash root (32 bytes)
-                    //     // new Uint8Array(await window.crypto.subtle.digest('SHA-256', new Uint8Array(32))),
-                    //     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                    //     // Hash count
-                    //     1,
-                    //     // Timeout (in block height, as Uint32)
-                    //     0, 0, 0, 200,
-                    // ]),
                     flags: Nimiq.Transaction.Flag.CONTRACT_CREATION,
                 },
                 redeem: {
@@ -73,7 +59,6 @@
                     }],
                     changeOutput: {
                         keyPath: "m/84'/1'/0'/0/1",
-                        address: "tb1qm37aps59r86g79jg5xh8ecgfqfncv92wzfyyx7",
                         value: 0.001000e8, // 400 sats fee
                     },
                 },
@@ -95,7 +80,7 @@
             document.getElementById('result').value = JSON.stringify(result);
             console.log('Keyguard result:', result);
         } catch (e) {
-            alert(e.message);
+            document.getElementById('result').value = `ERROR: ${e.message}`;
         }
 
         keyguard.close();
@@ -139,7 +124,9 @@
                     changeOutput: {
                         keyPath: "m/84'/1'/0'/1/0",
                         value: 0.00123864e8, // 400 sats fee
-                    }
+                    },
+                    htlcScript: Nimiq.BufferUtils.fromHex('6382012088a8204b268b25df99a2edb5d9fb59d4ad56402f429a47c751069918a9790743c16b788876a9146ec1c15aa31a3fe4da55ed81fc264a56bae75c7888ac6704cb53565fb17576a91484eb9bcbd90ce7d3360992259e4b9b818215a96088ac68'), // HTLC script
+                    refundKeyPath: "m/84'/1'/0'/0/0",
                 },
 
                 redeem: {
@@ -151,6 +138,7 @@
                     value: 2000e5,
                     fee: 0,
                     validityStartHeight: 1140000,
+                    htlcData: Nimiq.BufferUtils.fromBase64('aJ2uL3ewSNzAjhTXMQTqFCIrW+FqeWyw8OVi4nlHyG9G2Y/cRWPLCANLJosl35mi7bXZ+1nUrVZAL0KaR8dRBpkYqXkHQ8FreAEAEWYf'), // HTLC data
                 },
 
                 // Data needed for display
@@ -170,7 +158,7 @@
             document.getElementById('result').value = JSON.stringify(result);
             console.log('Keyguard result:', result);
         } catch (e) {
-            alert(e.message);
+            document.getElementById('result').value = `ERROR: ${e.message}`;
         }
 
         keyguard.close();

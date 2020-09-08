@@ -180,8 +180,8 @@ export type SignBtcTransactionRequest
 
 export type SignSwapRequest = SimpleRequest & {
     fund: {type: 'NIM'} & Omit<Omit<TransactionInfo, 'recipient'>, 'recipientType'>
-        | {type: 'BTC'} & BitcoinTransactionInfo /* & { htlcScript: Uint8Array } */,
-    redeem: {type: 'NIM'} & TransactionInfo /* & { htlcData: Uint8Array } */
+        | {type: 'BTC'} & BitcoinTransactionInfo & { htlcScript: Uint8Array, refundKeyPath: string },
+    redeem: {type: 'NIM'} & TransactionInfo & { htlcData: Uint8Array }
         | {type: 'BTC'} & Omit<BitcoinTransactionInfo, 'recipientOutput'>,
 
     // Data needed for display

@@ -5,6 +5,7 @@
 /* global NodeBuffer */
 /* global BitcoinJS */
 /* global BitcoinUtils */
+/* global HtlcUtils */
 
 /** @extends {TopLevelApi<KeyguardRequest.SignSwapRequest>} */
 class SignSwapApi extends TopLevelApi { // eslint-disable-line no-unused-vars
@@ -48,7 +49,7 @@ class SignSwapApi extends TopLevelApi { // eslint-disable-line no-unused-vars
                 recipientOutput: /** @type {KeyguardRequest.BitcoinTransactionOutput} */ (
                     this.parseOutput(request.fund.recipientOutput, false, 'fund.recipientOutput')),
                 changeOutput: this.parseChangeOutput(request.fund.changeOutput, true, 'fund.changeOutput'),
-                // htlcScript: request.fund.htlcScript,
+                refundKeyPath: this.parseBitcoinPath(request.fund.refundKeyPath, 'fund.refundKeyPath'),
             };
         } else {
             throw new Errors.InvalidRequestError('Invalid funding type');
@@ -59,7 +60,6 @@ class SignSwapApi extends TopLevelApi { // eslint-disable-line no-unused-vars
                 type: 'NIM',
                 keyPath: this.parsePath(request.redeem.keyPath, 'keyPath'),
                 transaction: this.parseTransaction(request.redeem),
-                // htlcData: request.redeem.htlcData,
             };
         } else if (request.redeem.type === 'BTC') {
             parsedRequest.redeem = {
@@ -72,25 +72,55 @@ class SignSwapApi extends TopLevelApi { // eslint-disable-line no-unused-vars
             throw new Errors.InvalidRequestError('Invalid redeeming type');
         }
 
-        // // eslint-disable-next-line no-nested-ternary
-        // const btcHtlcData = this.parseBtcHtlcScript(parsedRequest.redeem.type === 'BTC'
-        //     ? parsedRequest.redeem.input.witnessScript
-        //     : parsedRequest.fund.type === 'BTC'
-        //         ? parsedRequest.fund.htlcScript
-        //         : undefined);
+        // Decode HTLC contents
 
-        // // eslint-disable-next-line no-nested-ternary
-        // const nimHtlcData = this.parseNimHtlcData(parsedRequest.fund.type === 'NIM'
-        //     ? parsedRequest.fund.transaction.data
-        //     : parsedRequest.redeem.type === 'NIM'
-        //         ? parsedRequest.redeem.htlcData
-        //         : undefined);
+        // eslint-disable-next-line no-nested-ternary
+        parsedRequest.nimHtlc = HtlcUtils.decodeNimHtlcData(parsedRequest.fund.type === 'NIM'
+            ? parsedRequest.fund.transaction.data
+            : request.redeem.type === 'NIM' // Additional condition required for type safety
+                ? request.redeem.htlcData
+                : undefined);
 
-        // // TODO: Verify HTLC contents
-        // // - Verify refund address of fund HTLC is ours
-        // // - Verify redeem address of redeem HTLC is ours
-        // // - Verify hashRoot is the same across HTLCs
-        // if (btcHtlcData.hash !== nimHtlcData.hash) throw new Errors.InvalidRequestError('HTLC hashes do not match');
+        // eslint-disable-next-line no-nested-ternary
+        parsedRequest.btcHtlc = HtlcUtils.decodeBtcHtlcScript(parsedRequest.redeem.type === 'BTC'
+            ? parsedRequest.redeem.input.witnessScript
+            : request.fund.type === 'BTC' // Additional condition required for type safety
+                ? NodeBuffer.Buffer.from(Nimiq.BufferUtils.fromAny(request.fund.htlcScript))
+                : undefined);
+
+        // Verify HTLC contents
+
+        // Verify hashRoot is the same across HTLCs
+        if (parsedRequest.btcHtlc.hash !== parsedRequest.nimHtlc.hash) {
+            throw new Errors.InvalidRequestError('HTLC hashes do not match');
+        }
+
+        if (parsedRequest.fund.type === 'BTC' && request.fund.type === 'BTC') {
+            // Verify BTC HTLC address is correct from HTLC script
+            const givenAddress = parsedRequest.fund.recipientOutput.address;
+            const scriptAddress = BitcoinJS.payments.p2wsh({
+                // @ts-ignore Type 'Uint8Array' is not assignable to type 'Buffer'.
+                witness: [NodeBuffer.Buffer.from(request.fund.htlcScript)],
+                network: BitcoinUtils.Network,
+            }).address;
+
+            if (givenAddress !== scriptAddress) {
+                throw new Errors.InvalidRequestError('BTC output address does not match HTLC script');
+            }
+        }
+
+        // For BTC redeem transactions, the BitcoinJS lib validates that the output script of the input matches
+        // the witnessScript.
+
+        // Funding HTLC refund address and redeeming HTLC redeem address are validated in SignSwap.js,
+        // after the password was entered, before signing.
+
+        // TODO: Validate timeouts of the two contracts
+        // (Currently not possible because the NIM timeout is a block height, while the BTC timeout is a timestamp.
+        // And since we cannot trust the local device time to be accurate, and we don't have a reference for NIM blocks
+        // and their timestamps, we cannot compare the two.)
+        // When it becomes possible to compare (with Nimiq 2.0 Albatross), the redeem HTLC must have a higher timeout
+        // than the funding HTLC.
 
         // TODO: Parse display data
 
@@ -154,106 +184,6 @@ class SignSwapApi extends TopLevelApi { // eslint-disable-line no-unused-vars
             }
             return parsed;
         });
-    }
-
-    /**
-     * @param {unknown} script
-     * @returns {{
-     *  hash: string,
-     *  redeemAddressBytes: string,
-     *  timeout: number,
-     *  refundAddressBytes: string,
-     * }}
-     */
-    parseBtcHtlcScript(script) {
-        const error = new Errors.InvalidRequestError('Invalid BTC HTLC script');
-
-        if (!script || !(script instanceof Uint8Array) || !script.length) throw error;
-        const chunks = BitcoinJS.script.decompile(/** @type {Buffer} */ (script));
-        if (!chunks) throw error;
-        const asm = BitcoinJS.script.toASM(chunks).split(' ');
-
-        /* eslint-disable no-plusplus */
-        let i = 0;
-
-        // Start redeem branch
-        if (asm[i] !== 'OP_IF') throw error;
-
-        // Check secret size
-        if (asm[++i] !== 'OP_SIZE' || asm[++i] !== (32).toString(16) || asm[++i] !== 'OP_EQUALVERIFY') throw error;
-
-        // Check hash
-        if (asm[++i] !== 'OP_SHA256' || asm[i + 2] !== 'OP_EQUALVERIFY') throw error;
-        const hash = Nimiq.BufferUtils.toHex(Nimiq.BufferUtils.fromHex(asm[++i]).reverse());
-        ++i;
-
-        // Check redeem address
-        if (asm[++i] !== 'OP_DUP' || asm[++i] !== 'OP_HASH160') throw error;
-        const redeemAddressBytes = Nimiq.BufferUtils.toHex(Nimiq.BufferUtils.fromHex(asm[++i]).reverse());
-
-        // End redeem branch, start refund branch
-        if (asm[++i] !== 'OP_ELSE') {
-            if (asm[i] !== 'OP_EQUALVERIFY' || asm[++i] !== 'OP_CHECKSIG' || asm[++i] !== 'OP_ELSE') throw error;
-        }
-
-        // Check timeout
-        // @ts-ignore Argument of type 'Buffer' is not assignable to parameter of type 'Buffer'
-        const timeout = BitcoinJS.script.number.decode(NodeBuffer.Buffer.from(asm[++i], 'hex'));
-        if (asm[++i] !== 'OP_CHECKLOCKTIMEVERIFY' || asm[++i] !== 'OP_DROP') throw error;
-
-        // Check refund address
-        if (asm[++i] !== 'OP_DUP' || asm[++i] !== 'OP_HASH160') throw error;
-        const refundAddressBytes = Nimiq.BufferUtils.toHex(Nimiq.BufferUtils.fromHex(asm[++i]).reverse());
-
-        // End refund branch
-        if (asm[++i] !== 'OP_ENDIF') {
-            if (asm[i] !== 'OP_EQUALVERIFY' || asm[++i] !== 'OP_CHECKSIG' || asm[++i] !== 'OP_ENDIF') throw error;
-        } else {
-            // End contract
-            // eslint-disable-next-line no-lonely-if
-            if (asm[++i] !== 'OP_EQUALVERIFY' || asm[++i] !== 'OP_CHECKSIG') throw error;
-        }
-
-        if (asm.length !== ++i) throw error;
-        /* eslint-enable no-plusplus */
-
-        return {
-            hash,
-            redeemAddressBytes,
-            timeout,
-            refundAddressBytes,
-        };
-    }
-
-    /**
-     * @param {unknown} data
-     * @returns {{
-     *  refundAddress: string,
-     *  redeemAddress: string,
-     *  hash: string,
-     *  timeout: number,
-     * }}
-     */
-    parseNimHtlcData(data) {
-        const error = new Errors.InvalidRequestError('Invalid NIM HTLC data');
-
-        if (!data || !(data instanceof Uint8Array) || data.length !== 78) throw error;
-
-        const plain = Nimiq.HashedTimeLockedContract.dataToPlain(data);
-
-        if (!('sender' in plain) || !('recipient' in plain) || !('hashRoot' in plain) || !('timeout' in plain)) {
-            throw error;
-        }
-
-        if (plain.hashAlgorithm !== 'sha256') throw error;
-        if (plain.hashCount !== 1) throw error;
-
-        return {
-            refundAddress: plain.sender,
-            redeemAddress: plain.recipient,
-            hash: plain.hashRoot,
-            timeout: plain.timeout,
-        };
     }
 
     /**
