@@ -278,6 +278,42 @@ class RequestParser { // eslint-disable-line no-unused-vars
     }
 
     /**
+     * @param {unknown} int
+     * @param {boolean} [allowZero=true]
+     * @param {string} [parameterName='Value']
+     * @returns {number}
+     */
+    parsePositiveInteger(int, allowZero = true, parameterName = 'Value') {
+        const value = /** @type {number} */ (this.parseNonNegativeFiniteNumber(int, false, parameterName));
+        if (value === 0 && !allowZero) {
+            throw new Errors.InvalidRequestError(`${parameterName} must not be 0`);
+        }
+        if (Math.round(value) !== value) {
+            throw new Errors.InvalidRequestError(`${parameterName} must be a whole number (integer)`);
+        }
+        return value;
+    }
+
+    /**
+     * Parses that a currency info is valid.
+     * @param {unknown} fiatCurrency
+     * @param {boolean} [allowUndefined=true]
+     * @returns {string | undefined}
+     */
+    parseFiatCurrency(fiatCurrency, allowUndefined = true) {
+        if (fiatCurrency === undefined && allowUndefined) {
+            return undefined;
+        }
+
+        // parse currency code
+        if (typeof fiatCurrency !== 'string'
+            || !/^[a-z]{3}$/i.test(fiatCurrency)) {
+            throw new Errors.InvalidRequestError(`Invalid currency code ${fiatCurrency}`);
+        }
+        return fiatCurrency.toUpperCase();
+    }
+
+    /**
      * @param {string} id
      * @returns {boolean}
      */

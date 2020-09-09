@@ -122,27 +122,25 @@ class SignSwapApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         // When it becomes possible to compare (with Nimiq 2.0 Albatross), the redeem HTLC must have a higher timeout
         // than the funding HTLC.
 
-        // TODO: Parse display data
+        // Parse display data
+        parsedRequest.fiatCurrency = /** @type {string} */ (this.parseFiatCurrency(request.fiatCurrency, false));
+        parsedRequest.nimFiatRate = /** @type {number} */ (
+            this.parseNonNegativeFiniteNumber(request.nimFiatRate, false, 'nimFiatRate'));
+        parsedRequest.btcFiatRate = /** @type {number} */ (
+            this.parseNonNegativeFiniteNumber(request.btcFiatRate, false, 'btcFiatRate'));
+        parsedRequest.serviceNetworkFee = /** @type {number} */ (
+            this.parseNonNegativeFiniteNumber(request.serviceNetworkFee, false, 'serviceNetworkFee'));
+
+        parsedRequest.nimiqAddresses = request.nimiqAddresses.map(address => ({
+            address: Nimiq.Address.fromAny(address.address).toUserFriendlyAddress(),
+            label: /** @type {string} */ (this.parseLabel(address.label, false)),
+            balance: this.parsePositiveInteger(address.balance, false),
+        }));
+        parsedRequest.bitcoinAccount = {
+            balance: this.parsePositiveInteger(request.bitcoinAccount.balance),
+        };
 
         return parsedRequest;
-    }
-
-    /**
-     * Parses that a currency info is valid.
-     * @param {unknown} fiatCurrency
-     * @returns {string | undefined}
-     */
-    parseFiatCurrency(fiatCurrency) {
-        if (fiatCurrency === undefined) {
-            return undefined;
-        }
-
-        // parse currency code
-        if (typeof fiatCurrency !== 'string'
-            || !/^[a-z]{3}$/i.test(fiatCurrency)) {
-            throw new Errors.InvalidRequestError(`Invalid currency code ${fiatCurrency}`);
-        }
-        return fiatCurrency.toUpperCase();
     }
 
     /**

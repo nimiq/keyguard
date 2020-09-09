@@ -189,12 +189,12 @@ export type SignSwapRequest = SimpleRequest & {
     nimFiatRate: number,
     btcFiatRate: number,
     serviceNetworkFee: number, // Luna or Sats, depending which one gets funded
-    nimiq: Array<{
+    nimiqAddresses: Array<{
         address: string,
         label: string,
         balance: number, // Luna
     }>,
-    bitcoin: {
+    bitcoinAccount: {
         balance: number, // Sats
     },
 };
