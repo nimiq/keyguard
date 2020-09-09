@@ -11,8 +11,11 @@
 /* global BitcoinUtils */
 /* global BitcoinKey */
 /* global HtlcUtils */
-// /* global IqonHash */
-// /* global LoginFileConfig */
+/* global Identicon */
+/* global IqonHash */
+/* global LoginFileConfig */
+/* global TemplateTags */
+/* global I18n */
 
 /**
  * @callback SignSwap.resolve
@@ -35,72 +38,189 @@ class SignSwap {
 
         /** @type {HTMLDivElement} */
         const $exchangeRate = (this.$el.querySelector('#exchange-rate'));
-        // /** @type {HTMLDivElement} */
-        // const $currentNimBalance = (this.$el.querySelector('#current-nim-balance'));
         /** @type {HTMLDivElement} */
+        const $identicon = (this.$el.querySelector('.identicon'));
+        /** @type {HTMLSpanElement} */
+        const $nimLabel = (this.$el.querySelector('.nimiq-address .label'));
+        /** @type {HTMLDivElement} */
+        const $balanceBar = (this.$el.querySelector('.balance-bar'));
+        /** @type {HTMLDivElement} */
+        const $swapValues = (this.$el.querySelector('.swap-values'));
+        /** @type {HTMLSpanElement} */
         const $swapNimValue = (this.$el.querySelector('#swap-nim-value'));
-        // /** @type {HTMLDivElement} */
-        // const $newNimBalance = (this.$el.querySelector('#new-nim-balance'));
-        // /** @type {HTMLDivElement} */
-        // const $currentBtcBalance = (this.$el.querySelector('#current-btc-balance'));
-        /** @type {HTMLDivElement} */
+        /** @type {HTMLSpanElement} */
+        const $newNimBalance = (this.$el.querySelector('#new-nim-balance'));
+        /** @type {HTMLSpanElement} */
         const $swapBtcValue = (this.$el.querySelector('#swap-btc-value'));
-        // /** @type {HTMLDivElement} */
-        // const $newBtcBalance = (this.$el.querySelector('#new-btc-balance'));
+        /** @type {HTMLSpanElement} */
+        const $newBtcBalance = (this.$el.querySelector('#new-btc-balance'));
+        /** @type {HTMLSpanElement} */
+        const $swapNimValueFiat = (this.$el.querySelector('#swap-nim-value-fiat'));
+        /** @type {HTMLSpanElement} */
+        const $newNimBalanceFiat = (this.$el.querySelector('#new-nim-balance-fiat'));
+        /** @type {HTMLSpanElement} */
+        const $swapBtcValueFiat = (this.$el.querySelector('#swap-btc-value-fiat'));
+        /** @type {HTMLSpanElement} */
+        const $newBtcBalanceFiat = (this.$el.querySelector('#new-btc-balance-fiat'));
 
-        if (fundTx.type === 'NIM') {
-            $swapNimValue.textContent = `-${NumberFormatting.formatNumber(
-                Nimiq.Policy.lunasToCoins(fundTx.transaction.value),
-            )}`;
-            $swapNimValue.classList.add('nq-red');
-        } else {
-            $swapBtcValue.textContent = `-${NumberFormatting.formatNumber(
-                BitcoinUtils.satoshisToCoins(fundTx.recipientOutput.value),
-                8,
-            )}`;
-            $swapBtcValue.classList.add('nq-red');
-        }
+        const swapNimValue = fundTx.type === 'NIM' // eslint-disable-line no-nested-ternary
+            ? fundTx.transaction.value + fundTx.transaction.fee
+            : redeemTx.type === 'NIM'
+                ? redeemTx.transaction.value
+                : 0; // Should never happen, if parsing works correctly
 
-        if (redeemTx.type === 'NIM') {
-            $swapNimValue.textContent = `+${NumberFormatting.formatNumber(
-                Nimiq.Policy.lunasToCoins(redeemTx.transaction.value),
-            )}`;
-            $swapNimValue.classList.add('nq-green');
-        } else {
-            $swapBtcValue.textContent = `+${NumberFormatting.formatNumber(
-                BitcoinUtils.satoshisToCoins(redeemTx.output.value),
-                8,
-            )}`;
-            $swapBtcValue.classList.add('nq-green');
-        }
+        const swapBtcValue = fundTx.type === 'BTC' // eslint-disable-line no-nested-ternary
+            ? fundTx.inputs.reduce((sum, input) => sum + input.witnessUtxo.value, 0)
+                - (fundTx.changeOutput ? fundTx.changeOutput.value : 0)
+            : redeemTx.type === 'BTC'
+                ? redeemTx.output.value
+                : 0; // Should never happen, if parsing works correctly
+
+        $swapNimValue.textContent = `${fundTx.type === 'NIM' ? '-' : '+'}\u2009${NumberFormatting.formatNumber(
+            Nimiq.Policy.lunasToCoins(swapNimValue),
+        )}`;
+        $swapNimValueFiat.textContent = NumberFormatting.formatCurrency(
+            Nimiq.Policy.lunasToCoins(swapNimValue) * request.nimFiatRate,
+            request.fiatCurrency,
+        );
+
+        $swapBtcValue.textContent = `${fundTx.type === 'BTC' ? '-' : '+'}\u2009${NumberFormatting.formatNumber(
+            BitcoinUtils.satoshisToCoins(swapBtcValue),
+            8,
+        )}`;
+        $swapBtcValueFiat.textContent = NumberFormatting.formatCurrency(
+            BitcoinUtils.satoshisToCoins(swapBtcValue) * request.btcFiatRate,
+            request.fiatCurrency,
+        );
+
+        $swapValues.classList.add(`${fundTx.type.toLowerCase()}-to-${redeemTx.type.toLowerCase()}`);
 
         // Exchange rate
-        const nimSwapValue = fundTx.type === 'NIM' // eslint-disable-line no-nested-ternary
-            ? (fundTx.transaction.value/* - serviceNetworkFee */) / 1e5
+        const nimExchangeValue = fundTx.type === 'NIM' // eslint-disable-line no-nested-ternary
+            ? (fundTx.transaction.value - request.serviceNetworkFee) / 1e5
             : redeemTx.type === 'NIM'
                 ? (redeemTx.transaction.value + redeemTx.transaction.fee) / 1e5
                 : 0; // Should never happen, if parsing works correctly
-        const btcSwapValue = fundTx.type === 'BTC' // eslint-disable-line no-nested-ternary
-            ? fundTx.recipientOutput.value / 1e8
+        const btcExchangeValue = fundTx.type === 'BTC' // eslint-disable-line no-nested-ternary
+            ? (fundTx.recipientOutput.value - request.serviceNetworkFee) / 1e8
             : redeemTx.type === 'BTC'
                 ? redeemTx.input.witnessUtxo.value / 1e8
                 : 0; // Should never happen, if parsing works correctly
 
-        if (!nimSwapValue || !btcSwapValue) {
+        if (!nimExchangeValue || !btcExchangeValue) {
             throw new Errors.KeyguardError(
-                `UNEXPECTED: Swap values are invalid - NIM: ${nimSwapValue}, BTC: ${btcSwapValue}`,
+                `UNEXPECTED: Swap values are invalid - NIM: ${nimExchangeValue}, BTC: ${btcExchangeValue}`,
             );
         }
 
-        const exchangeRate = Math.round(btcSwapValue / nimSwapValue * 1e8) / 1e8;
-        $exchangeRate.textContent = `1 NIM = ${exchangeRate} BTC`;
+        const exchangeRate = Math.round(btcExchangeValue / nimExchangeValue * 1e8) / 1e8;
+        $exchangeRate.textContent = `1 NIM = ${NumberFormatting.formatNumber(
+            exchangeRate,
+            8, 8,
+        )} BTC`;
+
+        const swapNimAddress = fundTx.type === 'NIM' // eslint-disable-line no-nested-ternary
+            ? fundTx.transaction.sender.toUserFriendlyAddress()
+            : redeemTx.type === 'NIM'
+                ? redeemTx.transaction.recipient.toUserFriendlyAddress()
+                : ''; // Should never happen, if parsing works correctly
+        const nimAddressInfo = request.nimiqAddresses.find(address => address.address === swapNimAddress);
+        if (!nimAddressInfo) {
+            throw new Errors.KeyguardError('UNEXPECTED: Address info of swap NIM address not found');
+        }
+
+        // eslint-disable-next-line no-new
+        new Identicon(nimAddressInfo.address, $identicon);
+        $nimLabel.textContent = nimAddressInfo.label;
+
+        const newNimBalance = nimAddressInfo.balance + (swapNimValue * (fundTx.type === 'NIM' ? -1 : 1));
+        const newBtcBalance = request.bitcoinAccount.balance + (swapBtcValue * (fundTx.type === 'BTC' ? -1 : 1));
+
+        $newNimBalance.textContent = NumberFormatting.formatNumber(Nimiq.Policy.lunasToCoins(newNimBalance));
+        $newNimBalanceFiat.textContent = NumberFormatting.formatCurrency(
+            Nimiq.Policy.lunasToCoins(newNimBalance) * request.nimFiatRate,
+            request.fiatCurrency,
+        );
+        $newBtcBalance.textContent = NumberFormatting.formatNumber(BitcoinUtils.satoshisToCoins(newBtcBalance), 8);
+        const newBtcBalanceFiat = BitcoinUtils.satoshisToCoins(newBtcBalance) * request.btcFiatRate;
+        $newBtcBalanceFiat.textContent = NumberFormatting.formatCurrency(newBtcBalanceFiat, request.fiatCurrency);
+
+        // Draw distribution graph
+
+        const nimDistributionData = request.nimiqAddresses.map(addressInfo => {
+            const active = swapNimAddress === addressInfo.address;
+            const backgroundClass = LoginFileConfig[IqonHash.getBackgroundColorIndex(addressInfo.address)].className;
+            const oldBalance = Nimiq.Policy.lunasToCoins(addressInfo.balance) * request.nimFiatRate;
+            const newBalance = active
+                ? Nimiq.Policy.lunasToCoins(newNimBalance) * request.nimFiatRate
+                : oldBalance;
+
+            return {
+                oldBalance,
+                newBalance,
+                backgroundClass,
+                active,
+            };
+        });
+
+        const btcDistributionData = {
+            oldBalance: BitcoinUtils.satoshisToCoins(request.bitcoinAccount.balance) * request.btcFiatRate,
+            newBalance: newBtcBalanceFiat,
+            backgroundClass: 'bitcoin',
+            active: true,
+        };
+
+        const totalBalance = nimDistributionData.reduce((sum, data) => sum + data.newBalance, 0)
+            + btcDistributionData.newBalance;
+
+        /**
+         * @param {{oldBalance: number, newBalance: number, backgroundClass: string, active: boolean}} data
+         * @returns {HTMLDivElement}
+         */
+        function createBar(data) {
+            const $bar = document.createElement('div');
+            $bar.classList.add('bar', data.backgroundClass);
+            $bar.classList.toggle('active', data.active);
+            $bar.style.width = `${data.newBalance / totalBalance * 100}%`;
+            if (data.active && data.newBalance > data.oldBalance) {
+                const $change = document.createElement('div');
+                $change.classList.add('change');
+                $change.style.width = `${(data.newBalance - data.oldBalance) / data.newBalance * 100}%`;
+                $bar.appendChild($change);
+            }
+            return $bar;
+        }
+
+        const $bars = document.createDocumentFragment();
+        for (const data of nimDistributionData) {
+            $bars.appendChild(createBar(data));
+        }
+        const $separator = document.createElement('div');
+        $separator.classList.add('separator');
+        $bars.appendChild($separator);
+        $bars.appendChild(createBar(btcDistributionData));
+
+        $balanceBar.appendChild($bars);
+
+        /** @type {HTMLDivElement} */
+        let $fundingColumn;
+        if (fundTx.type === 'NIM') {
+            $fundingColumn = /** @type {HTMLDivElement} */ (this.$el.querySelector('.swap-values .left-column'));
+        } else {
+            $fundingColumn = /** @type {HTMLDivElement} */ (this.$el.querySelector('.swap-values .right-column'));
+        }
+        $fundingColumn.appendChild(
+            this._makeFeeTooltip(request, fundTx.type === 'NIM'
+                ? Nimiq.Policy.coinsToLunas(nimExchangeValue)
+                : BitcoinUtils.coinsToSatoshis(btcExchangeValue)),
+        );
 
         // Set up password box.
         /** @type {HTMLFormElement} */
         const $passwordBox = (document.querySelector('#password-box'));
         this._passwordBox = new PasswordBox($passwordBox, {
             hideInput: !request.keyInfo.encrypted,
-            buttonI18nTag: 'passwordbox-confirm-tx',
+            buttonI18nTag: 'passwordbox-perform-swap',
             minLength: request.keyInfo.hasPin ? Key.PIN_LENGTH : undefined,
         });
 
@@ -110,6 +230,110 @@ class SignSwap {
                 this._onConfirm(request, resolve, reject, password);
             },
         );
+    }
+
+    /**
+     * @param {Parsed<KeyguardRequest.SignSwapRequest>} request
+     * @param {number} exchangeAmount - In Luna or Satoshi, depending on which currency is funded
+     * @returns {HTMLDivElement}
+     */
+    _makeFeeTooltip(request, exchangeAmount) {
+        // eslint-disable-next-line object-curly-newline
+        const { fund: fundTx, redeem: redeemTx, serviceNetworkFee, serviceExchangeFee } = request;
+
+        const $tooltip = document.createElement('div');
+        $tooltip.classList.add('tooltip', 'top');
+        $tooltip.tabIndex = 0; // make the tooltip focusable
+
+        /* eslint-disable indent */
+        $tooltip.innerHTML = TemplateTags.hasVars(0)`
+            <svg class="info-circle nq-icon">
+                <use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-info-circle"/>
+            </svg>
+            <div class="tooltip-box">
+                <span data-i18n="sign-swap-fee-tooltip-heading">This amount includes:</span>
+                <div class="price-breakdown">
+                    <label data-i18n="sign-swap-btc-fees">BTC network fees</label>
+                    <div class="btc-fiat-fee"></div>
+                </div>
+                <p class="explainer" data-i18n="sign-swap-btc-fees-explainer">
+                    Atomic swaps require two BTC transactions.
+                </p>
+                <div class="price-breakdown">
+                    <label data-i18n="sign-swap-nim-fees">NIM network fees</label>
+                    <div class="nim-fiat-fee"></div>
+                </div>
+                <div class="price-breakdown">
+                    <label data-i18n="sign-swap-exchange-fee">Exchange fee</label>
+                    <div class="exchange-fiat-fee"></div>
+                </div>
+                <p class="explainer">
+                    <span class="exchange-percent-fee"></span>
+                    <span data-i18n="sign-swap-of-exchange-value">of exchange value.</span>
+                </p>
+                <hr>
+                <div class="price-breakdown">
+                    <label data-i18n="sign-swap-total-fees">Total fees</label>
+                    <div class="total-fees"></div>
+                </div>
+            </div>
+        `;
+        /* eslint-enable indent */
+
+        I18n.translateDom($tooltip);
+
+        // All variables are in FIAT!
+
+        const myNimFee = Nimiq.Policy.lunasToCoins(fundTx.type === 'NIM' // eslint-disable-line no-nested-ternary
+            ? fundTx.transaction.fee
+            : redeemTx.type === 'NIM'
+                ? redeemTx.transaction.fee
+                : 0) * request.nimFiatRate;
+        const myBtcFee = BitcoinUtils.satoshisToCoins(fundTx.type === 'BTC' // eslint-disable-line no-nested-ternary
+            ? fundTx.inputs.reduce((sum, input) => sum + input.witnessUtxo.value, 0)
+                - (fundTx.recipientOutput.value + (fundTx.changeOutput ? fundTx.changeOutput.value : 0))
+            : redeemTx.type === 'BTC'
+                ? redeemTx.input.witnessUtxo.value - redeemTx.output.value
+                : 0) * request.btcFiatRate;
+
+        const theirNetworkFee = fundTx.type === 'NIM'
+            ? Nimiq.Policy.lunasToCoins(serviceNetworkFee) * request.nimFiatRate
+            : BitcoinUtils.satoshisToCoins(serviceNetworkFee) * request.btcFiatRate;
+
+        // Since we cannot know how the service network fee is combined, we simply split the service network fee
+        // into NIM and BTC parts according to the ratio of our own fees (which are also suggested by the service,
+        // following the same calculation).
+        const theirNimFee = myNimFee / (myNimFee + myBtcFee) * theirNetworkFee;
+        const theirBtcFee = myBtcFee / (myNimFee + myBtcFee) * theirNetworkFee;
+
+        const theirExchangeFee = fundTx.type === 'NIM'
+            ? Nimiq.Policy.lunasToCoins(serviceExchangeFee) * request.nimFiatRate
+            : BitcoinUtils.satoshisToCoins(serviceExchangeFee) * request.btcFiatRate;
+
+        const theirExchangeFeePercentage = NumberFormatting.formatNumber(
+            request.serviceExchangeFee / (exchangeAmount - request.serviceExchangeFee) * 100,
+            1,
+        );
+
+        /** @type {HTMLDivElement} */ ($tooltip.querySelector('.btc-fiat-fee'))
+            .textContent = NumberFormatting.formatCurrency(myBtcFee + theirBtcFee, request.fiatCurrency);
+
+        /** @type {HTMLDivElement} */ ($tooltip.querySelector('.nim-fiat-fee'))
+            .textContent = NumberFormatting.formatCurrency(myNimFee + theirNimFee, request.fiatCurrency);
+
+        /** @type {HTMLDivElement} */ ($tooltip.querySelector('.exchange-fiat-fee'))
+            .textContent = NumberFormatting.formatCurrency(theirExchangeFee, request.fiatCurrency);
+
+        /** @type {HTMLDivElement} */ ($tooltip.querySelector('.exchange-percent-fee'))
+            .textContent = `${theirExchangeFeePercentage}%`;
+
+        /** @type {HTMLDivElement} */ ($tooltip.querySelector('.total-fees'))
+            .textContent = NumberFormatting.formatCurrency(
+                myNimFee + myBtcFee + theirNetworkFee + theirExchangeFee,
+                request.fiatCurrency,
+            );
+
+        return $tooltip;
     }
 
     /**

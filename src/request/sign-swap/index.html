@@ -49,9 +49,11 @@
     <script defer bundle-bitcoin src="../../lib/bitcoin/BitcoinKey.js"></script>
 
     <script defer src="../../lib/IqonHash.js"></script>
+    <script defer src="../../lib/Iqons.js"></script>
     <script defer src="../../lib/LoginFileConfig.js"></script>
     <script defer src="../../lib/NumberFormatting.js"></script>
     <script defer src="../../lib/swap/HtlcUtils.js"></script>
+    <script defer src="../../components/Identicon.js"></script>
     <script defer src="SignSwap.js"></script>
     <script defer src="SignSwapApi.js"></script>
     <script defer src="index.js"></script>
@@ -78,37 +80,59 @@
                 <a tabindex="0" class="page-header-back-button">
                     <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
                 </a>
-                <h1 data-i18n="sign-swap-heading" class="nq-h1">Swap NIM and BTC</h1>
+                <h1 data-i18n="sign-swap-heading" class="nq-h1">Confirm Swap</h1>
+                <div class="exchange-rate nq-notice">
+                    <span id="exchange-rate"></span>
+                    <div class="tooltip" tabindex="0">
+                        <svg class="info-circle nq-icon">
+                            <use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-info-circle"/>
+                        </svg>
+                        <div class="tooltip-box" data-i18n="sign-swap-exchange-rate-tooltip">This rate includes the exchange fee.</div>
+                    </div>
+                </div>
             </div>
 
-            <div class="page-body nq-card-body transaction">
-                <h3>Exchange Rate*</h3>
-                <div id="exchange-rate"></div>
+            <div class="page-body nq-card-body">
+                <div class="center">
 
-                <h3>NIM</h3>
-                <div id="current-nim-balance">
-                    Current NIM Balance: <i>not yet implemented</i>
-                </div>
-                <div>
-                    Swap NIM Value: <span id="swap-nim-value"></span><span class="nim-symbol"></span>
-                </div>
-                <div id="new-nim-balance">
-                    New NIM Balance: <i>not yet implemented</i>
                 </div>
 
-                <h3>BTC</h3>
-                <div id="current-btc-balance">
-                    Current BTC Balance: <i>not yet implemented</i>
-                </div>
-                <div>
-                    Swap BTC Value: <span id="swap-btc-value"></span><span class="btc-symbol"></span>
-                </div>
-                <div id="new-btc-balance">
-                    New BTC Balance: <i>not yet implemented</i>
+                <div class="address-infos columns">
+                    <div class="nimiq-address left-column">
+                        <div class="identicon"></div>
+                        <span class="label"></span>
+                    </div>
+                    <div class="bitcoin-account right-column">
+                        <span class="label" data-i18n="bitcoin">Bitcoin</span>
+                        <div class="identicon">
+                            <img src="../../assets/icons/bitcoin.svg">
+                        </div>
+                    </div>
                 </div>
 
-                <br><br>
-                <small>*Does not exclude network fees yet.</small>
+                <div class="balance-bar"></div>
+
+                <div class="swap-values columns">
+                    <div class="left-column">
+                        <span id="swap-nim-value"></span><span class="nim-symbol"></span><br>
+                        <span id="swap-nim-value-fiat" class="fiat"></span>
+                    </div>
+                    <div class="right-column">
+                        <span id="swap-btc-value"></span><span class="btc-symbol"></span><br>
+                        <span id="swap-btc-value-fiat" class="fiat"></span>
+                    </div>
+                </div>
+
+                <div class="new-balances columns">
+                    <div class="left-column">
+                        <span id="new-nim-balance"></span><span class="nim-symbol"></span><br>
+                        <span id="new-nim-balance-fiat" class="fiat"></span>
+                    </div>
+                    <div class="right-column">
+                        <span id="new-btc-balance"></span><span class="btc-symbol"></span><br>
+                        <span id="new-btc-balance-fiat" class="fiat"></span>
+                    </div>
+                </div>
             </div>
 
             <div class="page-footer nq-card-footer">

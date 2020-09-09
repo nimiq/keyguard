@@ -203,5 +203,7 @@
     "bitcoin-recipient-unlabelled": "Unlabelled",
 
     "derive-btc-xpub-heading": "Get your Bitcoinz on!",
-    "derive-btc-xpub-text": "Please enter your password so we can compute your Bitcoin addresses. (Wording is temporary)"
+    "derive-btc-xpub-text": "Please enter your password so we can compute your Bitcoin addresses. (Wording is temporary)",
+
+    "sign-swap-heading": "Confirm Swap"
 }

@@ -196,5 +196,12 @@
     "login-file-color-green": "Verde",
     "login-file-color-brown": "Marron",
 
-    "login-file-filename": "Nimiq-Archivo-Sesion-{color}.png"
+    "login-file-filename": "Nimiq-Archivo-Sesion-{color}.png",
+
+    "bitcoin-recipient-unlabelled": "Unlabelled",
+
+    "derive-btc-xpub-heading": "Get your Bitcoinz on!",
+    "derive-btc-xpub-text": "Please enter your password so we can compute your Bitcoin addresses. (Wording is temporary)",
+
+    "sign-swap-heading": "Confirm Swap"
 }

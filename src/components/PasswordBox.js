@@ -81,6 +81,7 @@ class PasswordBox extends Nimiq.Observable {
             'passwordbox-create-cashlink': '<button class="submit" data-i18n="passwordbox-create-cashlink">Create cashlink</button>',
             'passwordbox-show-words': '<button class="submit" data-i18n="passwordbox-show-words">Show recovery words</button>',
             'passwordbox-sign-msg': '<button class="submit" data-i18n="passwordbox-sign-msg">Sign message</button>',
+            'passwordbox-perform-swap': '<button class="submit" data-i18n="passwordbox-perform-swap">Perform swap</button>',
         };
 
         const resetPasswordHtml = options.showResetPassword

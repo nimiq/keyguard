@@ -129,16 +129,29 @@ class SignSwapApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         parsedRequest.btcFiatRate = /** @type {number} */ (
             this.parseNonNegativeFiniteNumber(request.btcFiatRate, false, 'btcFiatRate'));
         parsedRequest.serviceNetworkFee = /** @type {number} */ (
-            this.parseNonNegativeFiniteNumber(request.serviceNetworkFee, false, 'serviceNetworkFee'));
+            this.parsePositiveInteger(request.serviceNetworkFee, true, 'serviceNetworkFee'));
+        parsedRequest.serviceExchangeFee = /** @type {number} */ (
+            this.parsePositiveInteger(request.serviceExchangeFee, true, 'serviceExchangeFee'));
 
-        parsedRequest.nimiqAddresses = request.nimiqAddresses.map(address => ({
+        parsedRequest.nimiqAddresses = request.nimiqAddresses.map((address, index) => ({
             address: Nimiq.Address.fromAny(address.address).toUserFriendlyAddress(),
             label: /** @type {string} */ (this.parseLabel(address.label, false)),
-            balance: this.parsePositiveInteger(address.balance, false),
+            balance: this.parsePositiveInteger(address.balance, true, `nimiqAddresses[${index}].balance`),
         }));
         parsedRequest.bitcoinAccount = {
-            balance: this.parsePositiveInteger(request.bitcoinAccount.balance),
+            balance: this.parsePositiveInteger(request.bitcoinAccount.balance, true, 'bitcoinAccount.balance'),
         };
+
+        const nimAddress = parsedRequest.fund.type === 'NIM' // eslint-disable-line no-nested-ternary
+            ? parsedRequest.fund.transaction.sender.toUserFriendlyAddress()
+            : parsedRequest.redeem.type === 'NIM'
+                ? parsedRequest.redeem.transaction.recipient.toUserFriendlyAddress()
+                : ''; // Should never happen, if parsing works correctly
+        if (!parsedRequest.nimiqAddresses.some(addressInfo => addressInfo.address === nimAddress)) {
+            throw new Errors.InvalidRequestError(
+                'The address details of the NIM address doing the swap must be provided',
+            );
+        }
 
         return parsedRequest;
     }
@@ -162,15 +175,10 @@ class SignSwapApi extends TopLevelApi { // eslint-disable-line no-unused-vars
             /** @type {ParsedBitcoinTransactionInput} */
             const parsed = {
                 hash: Nimiq.BufferUtils.toHex(Nimiq.BufferUtils.fromAny(input.transactionHash)),
-                index:
-                    /** @type {number} */
-                    (this.parseNonNegativeFiniteNumber(input.outputIndex, false, `input[${index}].outputIndex`)),
+                index: this.parsePositiveInteger(input.outputIndex, true, `input[${index}].outputIndex`),
                 witnessUtxo: {
                     script,
-                    value: Math.round(
-                        /** @type {number} */
-                        (this.parseNonNegativeFiniteNumber(input.value, false, `input[${index}].value`)),
-                    ),
+                    value: this.parsePositiveInteger(input.value, false, `input[${index}].value`),
                 },
                 keyPath: this.parseBitcoinPath(input.keyPath, `input[${index}].keypath`),
                 // Address added only for display
@@ -242,12 +250,10 @@ class SignSwapApi extends TopLevelApi { // eslint-disable-line no-unused-vars
                 `${parameterName}.address`,
             ),
             label: this.parseLabel(/** @type {{label: unknown}} */ (output).label),
-            value: Math.round(
-                /** @type {number} */ (this.parseNonNegativeFiniteNumber(
-                    /** @type {{value: unknown}} */ (output).value,
-                    false,
-                    `${parameterName}.value`,
-                )),
+            value: this.parsePositiveInteger(
+                /** @type {{value: unknown}} */ (output).value,
+                false,
+                `${parameterName}.value`,
             ),
         };
         return parsed;
@@ -279,13 +285,10 @@ class SignSwapApi extends TopLevelApi { // eslint-disable-line no-unused-vars
                     `${parameterName}.address`,
                 )
                 : undefined,
-            value: Math.round(
-                /** @type {number} */
-                (this.parseNonNegativeFiniteNumber(
-                    /** @type {{value: unknown}} */ (output).value,
-                    false,
-                    `${parameterName}.value`,
-                )),
+            value: this.parsePositiveInteger(
+                /** @type {{value: unknown}} */ (output).value,
+                false,
+                `${parameterName}.value`,
             ),
         };
         return parsed;
