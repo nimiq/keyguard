@@ -112,6 +112,24 @@ class SignSwapApi extends TopLevelApi { // eslint-disable-line no-unused-vars
             }
         }
 
+        if (parsedRequest.fund.type === 'NIM') {
+            // Check that validityStartHeight is before HTLC timeout
+            if (parsedRequest.fund.transaction.validityStartHeight >= parsedRequest.nimHtlc.timeoutBlockHeight) {
+                throw new Errors.InvalidRequestError(
+                    'Fund validityStartHeight must be lower than HTLC timeout block height',
+                );
+            }
+        }
+
+        if (parsedRequest.redeem.type === 'NIM') {
+            // Check that validityStartHeight is before HTLC timeout
+            if (parsedRequest.redeem.transaction.validityStartHeight >= parsedRequest.nimHtlc.timeoutBlockHeight) {
+                throw new Errors.InvalidRequestError(
+                    'Redeem validityStartHeight must be lower than HTLC timeout block height',
+                );
+            }
+        }
+
         // For BTC redeem transactions, the BitcoinJS lib validates that the output script of the input matches
         // the witnessScript.
 
