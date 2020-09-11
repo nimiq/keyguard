@@ -131,7 +131,11 @@ class SignSwap {
 
         // eslint-disable-next-line no-new
         new Identicon(nimAddressInfo.address, $identicon);
-        $nimLabel.textContent = nimAddressInfo.label;
+        $nimLabel.textContent = fundTx.type === 'NIM' // eslint-disable-line no-nested-ternary
+            ? fundTx.senderLabel
+            : redeemTx.type === 'NIM'
+                ? redeemTx.recipientLabel
+                : ''; // Should never happen, if parsing works correctly
 
         const newNimBalance = nimAddressInfo.balance + (swapNimValue * (fundTx.type === 'NIM' ? -1 : 1));
         const newBtcBalance = request.bitcoinAccount.balance + (swapBtcValue * (fundTx.type === 'BTC' ? -1 : 1));

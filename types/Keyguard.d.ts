@@ -135,6 +135,7 @@ type Parsed<T extends KeyguardRequest.Request> =
                     type: 'NIM',
                     keyPath: string,
                     transaction: Nimiq.ExtendedTransaction,
+                    senderLabel: string,
                 } | {
                     type: 'BTC',
                     inputs: ParsedBitcoinTransactionInput[],
@@ -144,8 +145,8 @@ type Parsed<T extends KeyguardRequest.Request> =
                         label?: string,
                     },
                     changeOutput?: {
-                        keyPath: string,
-                        address?: string,
+                        keyPath: string, // We require a key path for the change output to make sure that this output goes to the same key.
+                        address?: string, // An address can still be passed in and will be checked against the derived address.
                         value: number,
                     },
                     refundKeyPath: string,
@@ -154,6 +155,7 @@ type Parsed<T extends KeyguardRequest.Request> =
                     type: 'NIM',
                     keyPath: string,
                     transaction: Nimiq.ExtendedTransaction,
+                    recipientLabel: string,
                 } | {
                     type: 'BTC',
                     input: ParsedBitcoinTransactionInput,

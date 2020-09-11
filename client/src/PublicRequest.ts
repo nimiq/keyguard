@@ -32,6 +32,7 @@ export type TransactionInfo = {
     senderType: Nimiq.Account.Type,
     recipient: Uint8Array,
     recipientType?: Nimiq.Account.Type,
+    recipientLabel?: string,
     value: number,
     fee: number,
     validityStartHeight: number,
@@ -135,7 +136,6 @@ type SignTransactionRequestCommon = SimpleRequest & TransactionInfo;
 
 export type SignTransactionRequestStandard = SignTransactionRequestCommon & {
     layout?: 'standard',
-    recipientLabel?: string,
 };
 
 export type SignTransactionRequestCheckout = SignTransactionRequestCommon & {
@@ -179,9 +179,10 @@ export type SignBtcTransactionRequest
     | SignBtcTransactionRequestCheckout;
 
 export type SignSwapRequest = SimpleRequest & {
-    fund: {type: 'NIM'} & Omit<Omit<TransactionInfo, 'recipient'>, 'recipientType'>
+    fund: {type: 'NIM'} & Omit<TransactionInfo, 'recipient' | 'recipientType' | 'recipientLabel'>
+        & { senderLabel: string }
         | {type: 'BTC'} & BitcoinTransactionInfo & { htlcScript: Uint8Array, refundKeyPath: string },
-    redeem: {type: 'NIM'} & TransactionInfo & { htlcData: Uint8Array }
+    redeem: {type: 'NIM'} & TransactionInfo & { htlcData: Uint8Array, recipientLabel: string }
         | {type: 'BTC'} & Omit<BitcoinTransactionInfo, 'recipientOutput'>,
 
     // Data needed for display
@@ -192,7 +193,6 @@ export type SignSwapRequest = SimpleRequest & {
     serviceExchangeFee: number, // Luna or Sats, depending which one gets funded
     nimiqAddresses: Array<{
         address: string,
-        label: string,
         balance: number, // Luna
     }>,
     bitcoinAccount: {

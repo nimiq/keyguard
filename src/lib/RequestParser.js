@@ -57,22 +57,19 @@ class RequestParser { // eslint-disable-line no-unused-vars
     /**
      * @param {any} label
      * @param {boolean} [allowEmpty = true]
+     * @param {string} [parameterName = 'Label']
      * @returns {string | undefined}
      */
-    parseLabel(label, allowEmpty = true) {
+    parseLabel(label, allowEmpty = true, parameterName = 'Label') {
         if (!label) {
-            if (!allowEmpty) throw new Errors.InvalidRequestError('Label must not be empty');
+            if (!allowEmpty) throw new Errors.InvalidRequestError(`${parameterName} must not be empty`);
             return undefined;
         }
         if (typeof label !== 'string') {
-            throw new Errors.InvalidRequestError('Label must be a string');
-        }
-        if (label.length === 0) {
-            if (!allowEmpty) throw new Errors.InvalidRequestError('Label must not be empty');
-            return undefined;
+            throw new Errors.InvalidRequestError(`${parameterName} must be a string`);
         }
         if (Utf8Tools.stringToUtf8ByteArray(label).byteLength > 63) {
-            throw new Errors.InvalidRequestError('Label must not exceed 63 bytes');
+            throw new Errors.InvalidRequestError(`${parameterName} must not exceed 63 bytes`);
         }
         return label;
     }

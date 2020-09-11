@@ -25,7 +25,7 @@ class SignSwapApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         if (parsedRequest.keyInfo.type !== Nimiq.Secret.Type.ENTROPY) {
             throw new Errors.InvalidRequestError('Bitcoin is only supported with modern accounts.');
         }
-        parsedRequest.keyLabel = this.parseLabel(request.keyLabel);
+        parsedRequest.keyLabel = this.parseLabel(request.keyLabel, true, 'keyLabel');
 
         if (request.fund.type === request.redeem.type) {
             throw new Errors.InvalidRequestError('Swap must be between two different currencies');
@@ -41,6 +41,7 @@ class SignSwapApi extends TopLevelApi { // eslint-disable-line no-unused-vars
                     recipient: 'CONTRACT_CREATION',
                     recipientType: Nimiq.Account.Type.HTLC,
                 }),
+                senderLabel: /** @type {string} */ (this.parseLabel(request.fund.senderLabel, false, 'senderLabel')),
             };
         } else if (request.fund.type === 'BTC') {
             parsedRequest.fund = {
@@ -60,6 +61,8 @@ class SignSwapApi extends TopLevelApi { // eslint-disable-line no-unused-vars
                 type: 'NIM',
                 keyPath: this.parsePath(request.redeem.keyPath, 'keyPath'),
                 transaction: this.parseTransaction(request.redeem),
+                recipientLabel: /** @type {string} */ (
+                    this.parseLabel(request.redeem.recipientLabel, false, 'recipientLabel')),
             };
         } else if (request.redeem.type === 'BTC') {
             parsedRequest.redeem = {
@@ -134,8 +137,7 @@ class SignSwapApi extends TopLevelApi { // eslint-disable-line no-unused-vars
             this.parsePositiveInteger(request.serviceExchangeFee, true, 'serviceExchangeFee'));
 
         parsedRequest.nimiqAddresses = request.nimiqAddresses.map((address, index) => ({
-            address: Nimiq.Address.fromAny(address.address).toUserFriendlyAddress(),
-            label: /** @type {string} */ (this.parseLabel(address.label, false)),
+            address: this.parseAddress(address.address, `nimiqAddresses[${index}].address`).toUserFriendlyAddress(),
             balance: this.parsePositiveInteger(address.balance, true, `nimiqAddresses[${index}].balance`),
         }));
         parsedRequest.bitcoinAccount = {
