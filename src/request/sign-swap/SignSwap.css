@@ -111,7 +111,7 @@
 }
 
 .balance-bar .bar .change {
-    background: repeating-linear-gradient(-60deg, transparent, transparent 0.25rem, white 0.25rem, white 0.5rem);
+    background: url('../../assets/swap-change-background.svg') repeat-x;
     height: calc(100% - 0.5rem);
     margin: 0 0.25rem;
     border-top-right-radius: 0.125rem;
