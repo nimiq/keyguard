@@ -190,8 +190,10 @@ class RequestParser { // eslint-disable-line no-unused-vars
         }
 
         try {
-            const nqAddress = new Nimiq.Address(address);
-            return nqAddress;
+            if (typeof address === 'string') {
+                return Nimiq.Address.fromString(address);
+            }
+            return new Nimiq.Address(address);
         } catch (error) {
             throw new Errors.InvalidRequestError(`${name} must be a valid Nimiq address (${error.message})`);
         }
