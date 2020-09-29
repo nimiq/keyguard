@@ -196,5 +196,10 @@
     "login-file-color-green": "Verde",
     "login-file-color-brown": "Marron",
 
-    "login-file-filename": "Nimiq-Archivo-Sesion-{color}.png"
+    "login-file-filename": "Nimiq-Archivo-Sesion-{color}.png",
+
+    "bitcoin-recipient-unlabelled": "Unlabelled",
+
+    "derive-btc-xpub-heading": "Add Bitcoin\nto your Account",
+    "derive-btc-xpub-text": "Easily swap between NIM, the super performant payment coin and BTC, the gold standard of crypto."
 }
