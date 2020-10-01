@@ -77,6 +77,7 @@
     "passwordbox-confirm-log-in": "Se connecter",
     "passwordbox-show-words": "Afficher les mots de récupération",
     "passwordbox-sign-msg": "Signer le message",
+    "passwordbox-perform-swap": "Perform swap",
     "passwordbox-password-strength-short": "Entrez 8 caractères ou plus",
     "passwordbox-password-strength-weak": "Mot de passe faible",
     "passwordbox-password-strength-good": "Mot de passe bon",
@@ -200,10 +201,19 @@
 
     "login-file-filename": "Fichier-de-Connexion-Nimiq-Compte-{color}.png",
 
+    "bitcoin": "Bitcoin",
     "bitcoin-recipient-unlabelled": "Unlabelled",
 
-    "derive-btc-xpub-heading": "Add Bitcoin\nto your account",
+    "derive-btc-xpub-heading": "Add Bitcoin\\nto your account",
     "derive-btc-xpub-text": "Easily swap between NIM, the super performant payment coin and BTC, the gold standard of crypto.",
 
-    "sign-swap-heading": "Confirm Swap"
+    "sign-swap-heading": "Confirm Swap",
+    "sign-swap-exchange-rate-tooltip": "This rate includes the exchange fee.",
+    "sign-swap-fee-tooltip-heading": "This amount includes:",
+    "sign-swap-btc-fees": "BTC network fees",
+    "sign-swap-btc-fees-explainer": "Atomic swaps require two BTC transactions.",
+    "sign-swap-nim-fees": "NIM network fees",
+    "sign-swap-exchange-fee": "Exchange fee",
+    "sign-swap-of-exchange-value": "of exchange value.",
+    "sign-swap-total-fees": "Total fees"
 }

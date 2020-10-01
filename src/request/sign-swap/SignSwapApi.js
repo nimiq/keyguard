@@ -2,7 +2,6 @@
 /* global TopLevelApi */
 /* global SignSwap */
 /* global Errors */
-/* global NodeBuffer */
 /* global BitcoinJS */
 /* global BitcoinUtils */
 /* global HtlcUtils */
@@ -88,7 +87,7 @@ class SignSwapApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         parsedRequest.btcHtlc = HtlcUtils.decodeBtcHtlcScript(parsedRequest.redeem.type === 'BTC'
             ? parsedRequest.redeem.input.witnessScript
             : request.fund.type === 'BTC' // Additional condition required for type safety
-                ? NodeBuffer.Buffer.from(Nimiq.BufferUtils.fromAny(request.fund.htlcScript))
+                ? BitcoinJS.Buffer.from(Nimiq.BufferUtils.fromAny(request.fund.htlcScript))
                 : undefined);
 
         // Verify HTLC contents
@@ -103,7 +102,7 @@ class SignSwapApi extends TopLevelApi { // eslint-disable-line no-unused-vars
             const givenAddress = parsedRequest.fund.recipientOutput.address;
             const scriptAddress = BitcoinJS.payments.p2wsh({
                 // @ts-ignore Type 'Uint8Array' is not assignable to type 'Buffer'.
-                witness: [NodeBuffer.Buffer.from(request.fund.htlcScript)],
+                witness: [BitcoinJS.Buffer.from(request.fund.htlcScript)],
                 network: BitcoinUtils.Network,
             }).address;
 
@@ -190,7 +189,7 @@ class SignSwapApi extends TopLevelApi { // eslint-disable-line no-unused-vars
 
         // Construct inputs
         return inputs.map((input, index) => {
-            const script = NodeBuffer.Buffer.from(Nimiq.BufferUtils.fromAny(input.outputScript));
+            const script = BitcoinJS.Buffer.from(Nimiq.BufferUtils.fromAny(input.outputScript));
 
             /** @type {ParsedBitcoinTransactionInput} */
             const parsed = {
@@ -206,7 +205,7 @@ class SignSwapApi extends TopLevelApi { // eslint-disable-line no-unused-vars
                 address: BitcoinJS.address.fromOutputScript(script, BitcoinUtils.Network),
             };
             if (input.witnessScript) {
-                parsed.witnessScript = NodeBuffer.Buffer.from(Nimiq.BufferUtils.fromAny(input.witnessScript));
+                parsed.witnessScript = BitcoinJS.Buffer.from(Nimiq.BufferUtils.fromAny(input.witnessScript));
             }
             return parsed;
         });
