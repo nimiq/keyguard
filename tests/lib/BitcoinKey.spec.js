@@ -49,42 +49,42 @@ fdescribe('BitcoinKey', () => {
             hash: '1683f5639e614ccd11b6542a502eb31ed0a76a04809d56c2ecbca5335c67eb32',
             index: 1, // Our output was the second in the input tx
             witnessUtxo: {
-                script: NodeBuffer.Buffer.from('001484eb9bcbd90ce7d3360992259e4b9b818215a960', 'hex'),
+                script: BitcoinJS.Buffer.from('001484eb9bcbd90ce7d3360992259e4b9b818215a960', 'hex'),
                 value: 1000000,
             },
         }, {
             hash: '18d7a602b06c9613412bc935c5fbe7a22ff4e670bc176f75fadbdf2fb9940b5d',
             index: 0, // Our output was the second in the input tx
             witnessUtxo: {
-                script: NodeBuffer.Buffer.from('001484eb9bcbd90ce7d3360992259e4b9b818215a960', 'hex'),
+                script: BitcoinJS.Buffer.from('001484eb9bcbd90ce7d3360992259e4b9b818215a960', 'hex'),
                 value: 4983992,
             },
         }, {
             hash: '550bce13e303ace1c45f5f2112a3098c62c08b132a7042f6b7b085102051c082',
             index: 1, // Our output was the second in the input tx
             witnessUtxo: {
-                script: NodeBuffer.Buffer.from('001484eb9bcbd90ce7d3360992259e4b9b818215a960', 'hex'),
+                script: BitcoinJS.Buffer.from('001484eb9bcbd90ce7d3360992259e4b9b818215a960', 'hex'),
                 value: 1000000,
             },
         }, {
             hash: '5fedaef5229799e18e351f76395bb7411e56da2291f99905e75dc72850ce2fdf',
             index: 0, // Our output was the second in the input tx
             witnessUtxo: {
-                script: NodeBuffer.Buffer.from('001484eb9bcbd90ce7d3360992259e4b9b818215a960', 'hex'),
+                script: BitcoinJS.Buffer.from('001484eb9bcbd90ce7d3360992259e4b9b818215a960', 'hex'),
                 value: 1000000,
             },
         }, {
             hash: '891adf338c070c5512fc28a9d77d648a8f25ad0d63e742b3fb0605eb9124aee8',
             index: 1, // Our output was the second in the input tx
             witnessUtxo: {
-                script: NodeBuffer.Buffer.from('001484eb9bcbd90ce7d3360992259e4b9b818215a960', 'hex'),
+                script: BitcoinJS.Buffer.from('001484eb9bcbd90ce7d3360992259e4b9b818215a960', 'hex'),
                 value: 22000,
             },
         }, {
             hash: '738b5c17758131b22d560ad6417defb830c3940bfc4074d0414b44798e880747',
             index: 25, // Our output was the second in the input tx
             witnessUtxo: {
-                script: NodeBuffer.Buffer.from('001484eb9bcbd90ce7d3360992259e4b9b818215a960', 'hex'),
+                script: BitcoinJS.Buffer.from('001484eb9bcbd90ce7d3360992259e4b9b818215a960', 'hex'),
                 value: 27738766,
             },
         }].sort((input1, input2) => {

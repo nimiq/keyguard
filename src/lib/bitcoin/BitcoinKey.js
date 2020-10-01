@@ -2,7 +2,6 @@
 /* global BitcoinJS */
 /* global BitcoinConstants */
 /* global BitcoinUtils */
-/* global NodeBuffer */
 /* global CONFIG */
 
 class BitcoinKey {
@@ -25,7 +24,7 @@ class BitcoinKey {
 
         const bip = BitcoinUtils.parseBipFromDerivationPath(path);
 
-        /** @type {BitcoinJS.Payment} */
+        /** @type {BitcoinJSTypes.Payment} */
         let payment;
 
         switch (bip) {
@@ -52,7 +51,7 @@ class BitcoinKey {
      */
     deriveExtendedPublicKey(path) {
         const bip = BitcoinUtils.parseBipFromDerivationPath(path);
-        /** @type {BitcoinJS.Network} */
+        /** @type {BitcoinJSTypes.Network} */
         const network = {
             ...BitcoinUtils.Network,
             bip32: BitcoinConstants.EXTENDED_KEY_PREFIXES[bip][CONFIG.BTC_NETWORK],
@@ -64,8 +63,8 @@ class BitcoinKey {
 
     /**
      * @param {string[]} paths
-     * @param {BitcoinJS.Psbt} psbt
-     * @returns {BitcoinJS.Psbt}
+     * @param {BitcoinJSTypes.Psbt} psbt
+     * @returns {BitcoinJSTypes.Psbt}
      */
     sign(paths, psbt) {
         // Dedupe paths
@@ -92,15 +91,15 @@ class BitcoinKey {
 
     /**
      * @param {string} path
-     * @param {BitcoinJS.Network} [network]
-     * @returns {BitcoinJS.BIP32Interface}
+     * @param {BitcoinJSTypes.Network} [network]
+     * @returns {BitcoinJSTypes.BIP32Interface}
      */
     deriveKeyPair(path, network = BitcoinUtils.Network) {
         const mnemonic = Nimiq.MnemonicUtils.entropyToMnemonic(this.secret);
         const seed = Nimiq.MnemonicUtils.mnemonicToSeed(mnemonic);
 
         // @ts-ignore Argument of type 'import("...").Buffer' is not assignable to parameter of type 'Buffer'.
-        const master = BitcoinJS.bip32.fromSeed(NodeBuffer.Buffer.from(seed), network);
+        const master = BitcoinJS.bip32.fromSeed(BitcoinJS.Buffer.from(seed), network);
         return master.derivePath(path);
     }
 
