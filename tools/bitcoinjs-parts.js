@@ -3,6 +3,7 @@ const {
     networks,
     payments,
     address,
+    script,
     Psbt,
 } = require('bitcoinjs-lib'); // eslint-disable-line import/no-extraneous-dependencies
 
@@ -13,6 +14,7 @@ module.exports = {
     networks,
     payments,
     address,
+    script,
     Psbt,
     Buffer,
 };
