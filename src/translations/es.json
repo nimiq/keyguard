@@ -3,15 +3,15 @@
 
     "language-changed": "El lenguaje ha cambiado. ¿Quieres volver a cargar la página para actualizar todas las traducciones? De no hacerlo, algunas traducciones podrían no ser actualizadas automáticamente.",
 
-    "back-to-app": "Back to {appName}",
-    "back-to-accounts": "Back to my accounts",
-    "back-to-wallet": "Back to {Wallet}",
-    "back-to-miner": "Back to {Nimiq Miner}",
-    "back-to-faucet": "Back to {Nimiq Faucet}",
-    "back-to-donation": "Back to Donation Button Creator",
-    "back-to-gift-card": "Back to Nimiq Gift Card",
-    "back-to-vote": "Back to Nimiq Vote",
-    "back-to-cpl": "Back to CryptoPayment.link",
+    "back-to-app": "Volver a {appName}",
+    "back-to-accounts": "Volver a mis cuentas",
+    "back-to-wallet": "Volver a la {Wallet}",
+    "back-to-miner": "Volver al {Nimiq Miner}",
+    "back-to-faucet": "Volver a la {Nimiq Faucet}",
+    "back-to-donation": "Volver al creador de Botón de Donación.",
+    "back-to-gift-card": "Volver a las Tarjetas de Regalo Nimiq",
+    "back-to-vote": "Volver a Votación Nimiq",
+    "back-to-cpl": "Volver a CryptoPayment.link",
 
     "funding-cashlink": "Fundando cashlink",
 
@@ -45,8 +45,8 @@
     "import-words-download-loginfile": "Guarde su Archivo de Sesión",
 
     "file-import-prompt": "Arrastre aquí o haga click para importar",
-    "file-import-error-could-not-read": "Could not read Login File.",
-    "file-import-error-invalid": "Invalid Login File.",
+    "file-import-error-could-not-read": "No se pudo leer el Archivo de Sesión.",
+    "file-import-error-invalid": "Archivo de Sesión inválido.",
 
     "sign-tx-heading-tx": "Confirme Transacción",
     "sign-tx-heading-checkout": "Verificar Pago",
@@ -60,6 +60,8 @@
     "tab-width-selector-label": "Ancho de Pestaña",
 
     "address-info-new-cashlink": "Nuevo Cashlink",
+
+    "copyable-copied": "Copiado",
 
     "passwordbox-enter-password": "Ingrese su contraseña",
     "passwordbox-enter-pin": "Ingrese su PIN",
@@ -166,7 +168,7 @@
     "remove-key-download-login-file": "Descargar",
     "remove-key-recovery-words-question": "¿Sabe usted donde están sus Palabras de Recuperación?",
     "remove-key-show-recovery-words": "Crear respaldo",
-    "remove-key-label-confirm-instructions": "Type \"{accountLabel}\" to log out.",
+    "remove-key-label-confirm-instructions": "Ingrese \"{accountLabel}\" para cerrar sesión.",
     "remove-key-final-confirm": "Cerrar sesión",
 
     "derive-address-heading-password": "Desbloquear nuevas Direcciones.",
@@ -200,8 +202,8 @@
 
     "bitcoin-recipient-unlabelled": "Unlabelled",
 
-    "derive-btc-xpub-heading": "Get your Bitcoinz on!",
-    "derive-btc-xpub-text": "Please enter your password so we can compute your Bitcoin addresses. (Wording is temporary)",
+    "derive-btc-xpub-heading": "Add Bitcoin\nto your account",
+    "derive-btc-xpub-text": "Easily swap between NIM, the super performant payment coin and BTC, the gold standard of crypto.",
 
     "sign-swap-heading": "Confirm Swap"
 }

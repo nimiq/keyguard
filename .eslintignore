@@ -1,2 +1,2 @@
 *.min.*
-src/lib/bitcoin/vendor/*.js
+src/lib/bitcoin/BitcoinJS.js

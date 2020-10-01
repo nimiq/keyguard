@@ -3,7 +3,6 @@
 /* global TopLevelApi */
 /* global SignBtcTransaction */
 /* global Errors */
-/* global NodeBuffer */
 /* global BitcoinJS */
 /* global BitcoinUtils */
 
@@ -91,7 +90,7 @@ class SignBtcTransactionApi extends TopLevelApi {
 
         // Construct inputs
         return inputs.map((input, index) => {
-            const script = NodeBuffer.Buffer.from(Nimiq.BufferUtils.fromAny(input.outputScript));
+            const script = BitcoinJS.Buffer.from(Nimiq.BufferUtils.fromAny(input.outputScript));
 
             /** @type {ParsedBitcoinTransactionInput} */
             const parsed = {

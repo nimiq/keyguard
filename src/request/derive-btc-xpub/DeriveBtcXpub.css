@@ -1,28 +1,24 @@
-.page#unlock {
-    position: relative;
-}
-
-.page#unlock .lock-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-grow: 1;
-}
-
-.page#unlock .nq-icon.locked {
-    width: 8rem;
-    height: 11.52875rem;
-    flex-shrink: 0;
-    opacity: 0.4;
-}
-
-.page#unlock .page-header,
-.page#unlock .page-body,
-.page#unlock .page-footer {
-    z-index: 1;
-}
-
 .page#unlock .page-body {
     display: flex;
     flex-direction: column;
+    align-items: center;
+    padding-top: 8rem;
+    text-align: center;
+}
+
+.page#unlock .page-body img {
+    width: 96px;
+    height: 96px;
+}
+
+.page#unlock .nq-h1 {
+    margin-top: 4rem;
+    margin-bottom: 2.25rem;
+    white-space: pre-line;
+}
+
+.page#unlock .nq-text {
+    color: var(--nimiq-blue);
+    margin: 0 0 2rem;
+    max-width: 34.5rem;
 }

@@ -101,18 +101,30 @@ make_file_hash() {
 # Before writing any files, verify integrity of Nimiq lib
 output "🧐  Validating Nimiq Core files integrity"
 
-# For Nimiq Core v1.4.3
-hashsums=\
+# For Nimiq Core v1.5.3
+nimiq_core_hashsums=\
 "2fc34cc4e1a42164417a1d8b108148e2c52ad26fa6e6c22e056659cad28d4810  node_modules/@nimiq/core-web/web-offline.js
  a658ca600c43789c8daff47578ea5758e7a1a2a5fee1b249e7bb5ce691d126cd  node_modules/@nimiq/core-web/worker-wasm.wasm
  d61df01adc927cb2832314ef5634b9ea97092acacb09beb7628b1a98a0962c70  node_modules/@nimiq/core-web/worker-wasm.js
  154b1251428363c8658c99acbf55b31eef177c0d447767a506952924a37494a9  node_modules/@nimiq/core-web/worker-js.js
  2123d109821661e758f091676670f29d905c7e24a177757288aaefcf59fefdda  node_modules/@nimiq/core-web/worker.js"
 
-echo "$hashsums" | ${SHA256SUM} --check
+echo "$nimiq_core_hashsums" | ${SHA256SUM} --check
 
 if [ ! $? -eq 0 ]; then
     output "💥  Nimiq Core file integrity check failed!"
+    exit 1;
+fi
+
+# Before writing any files, verify integrity of Nimiq lib
+output "🧐  Validating BitcoinJS file integrity"
+
+# For bitcoinjs-lib v5.2.0 and Buffer v5.6.0
+bitcoinjs_hashsum="9cb30b789ff1a79cc1925d7f49ee827b2e9eb89531a58c51ca6ca996b15597eb  src/lib/bitcoin/BitcoinJS.js"
+echo "$bitcoinjs_hashsum" | ${SHA256SUM} --check
+
+if [ ! $? -eq 0 ]; then
+    output "💥  BitcoinJS file integrity check failed!"
     exit 1;
 fi
 

@@ -61,7 +61,6 @@
     "types/ErrorContainer.d.ts",
     "types/MessagePrefix.d.ts",
     "types/BitcoinJS.d.ts",
-    "types/NodeBuffer.d.ts",
     "src/**/*.js",
     "tests/**/*.js"
   ],
@@ -73,6 +72,6 @@
     "coverage",
     "src/lib/QrScannerWorker.js",
     "src/translations/index.js",
-    "src/lib/bitcoin/vendor/*.js",
+    "src/lib/bitcoin/BitcoinJS.js",
   ]
 }

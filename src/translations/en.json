@@ -204,8 +204,8 @@
     "bitcoin": "Bitcoin",
     "bitcoin-recipient-unlabelled": "Unlabelled",
 
-    "derive-btc-xpub-heading": "Get your Bitcoinz on!",
-    "derive-btc-xpub-text": "Please enter your password so we can compute your Bitcoin addresses. (Wording is temporary)",
+    "derive-btc-xpub-heading": "Add Bitcoin\nto your account",
+    "derive-btc-xpub-text": "Easily swap between NIM, the super performant payment coin and BTC, the gold standard of crypto.",
 
     "sign-swap-heading": "Confirm Swap",
     "sign-swap-exchange-rate-tooltip": "This rate includes the exchange fee.",

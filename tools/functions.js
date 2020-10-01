@@ -54,7 +54,12 @@ function find(startPath, filter) {
  * @returns {string}
  */
 function stripExtension(fullPath) {
-    return fullPath.split('/').slice(-1)[0].split('.')[0];
+    const filename = fullPath.split('/').slice(-1)[0];
+
+    // Handle source-maps by returning their whole filename, so it doesn't get matched against its class name
+    if (filename.endsWith('.map')) return filename;
+
+    return filename.split('.')[0];
 }
 
 /**

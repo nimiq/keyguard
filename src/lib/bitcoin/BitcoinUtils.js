@@ -48,8 +48,8 @@ class BitcoinUtils { // eslint-disable-line no-unused-vars
     }
 
     /**
-     * @param {BitcoinJS.BIP32Interface} keyPair
-     * @returns {BitcoinJS.Payment}
+     * @param {BitcoinJSTypes.BIP32Interface} keyPair
+     * @returns {BitcoinJSTypes.Payment}
      */
     static keyPairToNestedSegwit(keyPair) {
         return BitcoinJS.payments.p2sh({
@@ -61,8 +61,8 @@ class BitcoinUtils { // eslint-disable-line no-unused-vars
     }
 
     /**
-     * @param {BitcoinJS.BIP32Interface} keyPair
-     * @returns {BitcoinJS.Payment}
+     * @param {BitcoinJSTypes.BIP32Interface} keyPair
+     * @returns {BitcoinJSTypes.Payment}
      */
     static keyPairToNativeSegwit(keyPair) {
         return BitcoinJS.payments.p2wpkh({
