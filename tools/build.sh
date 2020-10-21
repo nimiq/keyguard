@@ -120,7 +120,7 @@ fi
 output "🧐  Validating BitcoinJS file integrity"
 
 # For bitcoinjs-lib v5.2.0 and Buffer v5.6.0
-bitcoinjs_hashsum="4dd39dc25af42c5b65afe92e11f0d28977257d32becacf84c830291ec783bf34  src/lib/bitcoin/BitcoinJS.js"
+bitcoinjs_hashsum="5a02ae59046a7ee4f386f5828097aa21bdf52657acca4ae472d5e89e8332ba43  src/lib/bitcoin/BitcoinJS.js"
 echo "$bitcoinjs_hashsum" | ${SHA256SUM} --check
 
 if [ ! $? -eq 0 ]; then
@@ -241,7 +241,7 @@ for DIR in src/request/*/ ; do
     JS_BUNDLE_HASH=$(make_file_hash dist/request/$REQUEST/$JS_BUNDLE)
     JS_BUNDLE_NAME=$(add_hash_to_file_name dist/request/$REQUEST/$JS_BUNDLE)
 
-    if [ "$REQUEST" != "iframe" ]; then
+    if [ "$REQUEST" != "iframe" ] && [ "$REQUEST" != "swap-iframe" ]; then
         CSS_BUNDLE_HASH=$(make_file_hash dist/request/$REQUEST/$CSS_BUNDLE)
         CSS_BUNDLE_NAME=$(add_hash_to_file_name dist/request/$REQUEST/$CSS_BUNDLE)
     fi
@@ -263,10 +263,10 @@ for DIR in src/request/*/ ; do
                 skip_script = 1
                 split($0, space, "<") # Preserve intendation.
                 print space[1] "<script defer src=\"/request/'${JS_COMMON_BUNDLE}'\" integrity=\"sha256-'${JS_COMMON_BUNDLE_HASH}'\"></script>"
-                if("'$REQUEST'" != "iframe") {
+                if("'$REQUEST'" != "iframe" && "'$REQUEST'" != "swap-iframe") {
                     print space[1] "<script defer src=\"/request/'${JS_TOPLEVEL_BUNDLE}'\" integrity=\"sha256-'${JS_TOPLEVEL_BUNDLE_HASH}'\"></script>"
                 }
-                if("'$REQUEST'" == "create" || "'$REQUEST'" == "import" || "'$REQUEST'" == "derive-btc-xpub" || "'$REQUEST'" == "sign-btc-transaction" || "'$REQUEST'" == "sign-swap") {
+                if("'$REQUEST'" == "create" || "'$REQUEST'" == "import" || "'$REQUEST'" == "derive-btc-xpub" || "'$REQUEST'" == "sign-btc-transaction" || "'$REQUEST'" == "sign-swap" || "'$REQUEST'" == "swap-iframe") {
                     print space[1] "<script defer src=\"/request/'${JS_BITCOIN_BUNDLE}'\" integrity=\"sha256-'${JS_BITCOIN_BUNDLE_HASH}'\"></script>"
                 }
                 print space[1] "<script defer src=\"/request/'${REQUEST}'/'${JS_BUNDLE_NAME}'\" integrity=\"sha256-'${JS_BUNDLE_HASH}'\"></script>"

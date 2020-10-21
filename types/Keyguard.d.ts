@@ -138,18 +138,9 @@ type Parsed<T extends KeyguardRequest.Request> =
                     senderLabel: string,
                 } | {
                     type: 'BTC',
-                    inputs: ParsedBitcoinTransactionInput[],
-                    recipientOutput: {
-                        address: string,
-                        value: number,
-                        label?: string,
-                    },
-                    changeOutput?: {
-                        keyPath: string, // We require a key path for the change output to make sure that this output goes to the same key.
-                        address?: string, // An address can still be passed in and will be checked against the derived address.
-                        value: number,
-                    },
-                    refundKeyPath: string,
+                    keyPaths: string[],
+                    value: number,
+                    fee: number,
                 },
                 redeem: {
                     type: 'NIM',
@@ -158,16 +149,10 @@ type Parsed<T extends KeyguardRequest.Request> =
                     recipientLabel: string,
                 } | {
                     type: 'BTC',
-                    input: ParsedBitcoinTransactionInput,
-                    output: {
-                        keyPath: string, // We require a key path for the change output to make sure that this output goes to the same key.
-                        address?: string, // An address can still be passed in and will be checked against the derived address.
-                        value: number,
-                    },
+                    keyPaths: string[],
+                    value: number,
+                    fee: number,
                 },
             }
-        > & {
-            nimHtlc: NimHtlcContents,
-            btcHtlc: BtcHtlcContents,
-        } :
+        > :
     T;

@@ -21,6 +21,9 @@ export enum KeyguardCommand {
     DERIVE_ADDRESSES = 'deriveAddresses',
     RELEASE_KEY = 'releaseKey',
 
+    // SwapIframe requests
+    SIGN_SWAP_TRANSACTIONS = 'signSwapTransactions',
+
     // Deprecated iframe requests
     LIST_LEGACY_ACCOUNTS = 'listLegacyAccounts',
     HAS_LEGACY_ACCOUNTS = 'hasLegacyAccounts',

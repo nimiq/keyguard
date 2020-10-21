@@ -2,12 +2,10 @@
 /* global TopLevelApi */
 /* global SignSwap */
 /* global Errors */
-/* global BitcoinJS */
 /* global BitcoinUtils */
-/* global HtlcUtils */
 
 /** @extends {TopLevelApi<KeyguardRequest.SignSwapRequest>} */
-class SignSwapApi extends TopLevelApi { // eslint-disable-line no-unused-vars
+class SignSwapApi extends TopLevelApi {
     /**
      * @param {KeyguardRequest.SignSwapRequest} request
      * @returns {Promise<Parsed<KeyguardRequest.SignSwapRequest>>}
@@ -26,6 +24,8 @@ class SignSwapApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         }
         parsedRequest.keyLabel = this.parseLabel(request.keyLabel, true, 'keyLabel');
 
+        parsedRequest.swapId = /** @type {string} */ (this.parseLabel(request.swapId, false, 'swapId'));
+
         if (request.fund.type === request.redeem.type) {
             throw new Errors.InvalidRequestError('Swap must be between two different currencies');
         }
@@ -33,23 +33,24 @@ class SignSwapApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         if (request.fund.type === 'NIM') {
             parsedRequest.fund = {
                 type: 'NIM',
-                keyPath: this.parsePath(request.fund.keyPath, 'keyPath'),
+                keyPath: this.parsePath(request.fund.keyPath, 'fund.keyPath'),
                 transaction: this.parseTransaction({
+                    validityStartHeight: 0, // Dummy
                     ...request.fund,
                     flags: Nimiq.Transaction.Flag.CONTRACT_CREATION,
                     recipient: 'CONTRACT_CREATION',
                     recipientType: Nimiq.Account.Type.HTLC,
                 }),
-                senderLabel: /** @type {string} */ (this.parseLabel(request.fund.senderLabel, false, 'senderLabel')),
+                /** @type {string} */
+                senderLabel: (this.parseLabel(request.fund.senderLabel, false, 'fund.senderLabel')),
             };
         } else if (request.fund.type === 'BTC') {
             parsedRequest.fund = {
                 type: 'BTC',
-                inputs: this.parseInputs(request.fund.inputs),
-                recipientOutput: /** @type {KeyguardRequest.BitcoinTransactionOutput} */ (
-                    this.parseOutput(request.fund.recipientOutput, false, 'fund.recipientOutput')),
-                changeOutput: this.parseChangeOutput(request.fund.changeOutput, true, 'fund.changeOutput'),
-                refundKeyPath: this.parseBitcoinPath(request.fund.refundKeyPath, 'fund.refundKeyPath'),
+                keyPaths: this.parseBitcoinPathsArray(request.fund.keyPaths, 'fund.keyPaths'),
+                value: this.parsePositiveInteger(request.fund.value, false, 'fund.value'),
+                // Bitcoin transactions cannot have zero fees
+                fee: this.parsePositiveInteger(request.fund.fee, false, 'fund.fee'),
             };
         } else {
             throw new Errors.InvalidRequestError('Invalid funding type');
@@ -59,16 +60,21 @@ class SignSwapApi extends TopLevelApi { // eslint-disable-line no-unused-vars
             parsedRequest.redeem = {
                 type: 'NIM',
                 keyPath: this.parsePath(request.redeem.keyPath, 'keyPath'),
-                transaction: this.parseTransaction(request.redeem),
+                transaction: this.parseTransaction({
+                    sender: 'NQ07 0000 0000 0000 0000 0000 0000 0000 0000', // Dummy
+                    validityStartHeight: 0, // Dummy
+                    ...request.redeem,
+                }),
                 recipientLabel: /** @type {string} */ (
                     this.parseLabel(request.redeem.recipientLabel, false, 'recipientLabel')),
             };
         } else if (request.redeem.type === 'BTC') {
             parsedRequest.redeem = {
                 type: 'BTC',
-                input: this.parseInputs([request.redeem.inputs[0]])[0],
-                output: /** @type {KeyguardRequest.BitcoinTransactionChangeOutput} */ (
-                    this.parseChangeOutput(request.redeem.changeOutput, false, 'redeem.changeOutput')),
+                keyPaths: this.parseBitcoinPathsArray(request.redeem.keyPaths, 'redeem.keyPaths'),
+                value: this.parsePositiveInteger(request.redeem.value, false, 'redeem.value'),
+                // Bitcoin transactions cannot have zero fees
+                fee: this.parsePositiveInteger(request.redeem.fee, false, 'redeem.fee'),
             };
         } else {
             throw new Errors.InvalidRequestError('Invalid redeeming type');
@@ -76,58 +82,58 @@ class SignSwapApi extends TopLevelApi { // eslint-disable-line no-unused-vars
 
         // Decode HTLC contents
 
-        // eslint-disable-next-line no-nested-ternary
-        parsedRequest.nimHtlc = HtlcUtils.decodeNimHtlcData(parsedRequest.fund.type === 'NIM'
-            ? parsedRequest.fund.transaction.data
-            : request.redeem.type === 'NIM' // Additional condition required for type safety
-                ? request.redeem.htlcData
-                : undefined);
+        // // eslint-disable-next-line no-nested-ternary
+        // parsedRequest.nimHtlc = HtlcUtils.decodeNimHtlcData(parsedRequest.fund.type === 'NIM'
+        //     ? parsedRequest.fund.transaction.data
+        //     : request.redeem.type === 'NIM' // Additional condition required for type safety
+        //         ? request.redeem.htlcData
+        //         : undefined);
 
-        // eslint-disable-next-line no-nested-ternary
-        parsedRequest.btcHtlc = HtlcUtils.decodeBtcHtlcScript(parsedRequest.redeem.type === 'BTC'
-            ? parsedRequest.redeem.input.witnessScript
-            : request.fund.type === 'BTC' // Additional condition required for type safety
-                ? BitcoinJS.Buffer.from(Nimiq.BufferUtils.fromAny(request.fund.htlcScript))
-                : undefined);
+        // // eslint-disable-next-line no-nested-ternary
+        // parsedRequest.btcHtlc = HtlcUtils.decodeBtcHtlcScript(parsedRequest.redeem.type === 'BTC'
+        //     ? parsedRequest.redeem.input.witnessScript
+        //     : request.fund.type === 'BTC' // Additional condition required for type safety
+        //         ? BitcoinJS.Buffer.from(Nimiq.BufferUtils.fromAny(request.fund.htlcScript))
+        //         : undefined);
 
         // Verify HTLC contents
 
         // Verify hashRoot is the same across HTLCs
-        if (parsedRequest.btcHtlc.hash !== parsedRequest.nimHtlc.hash) {
-            throw new Errors.InvalidRequestError('HTLC hashes do not match');
-        }
+        // if (parsedRequest.btcHtlc.hash !== parsedRequest.nimHtlc.hash) {
+        //     throw new Errors.InvalidRequestError('HTLC hashes do not match');
+        // }
 
-        if (parsedRequest.fund.type === 'BTC' && request.fund.type === 'BTC') {
-            // Verify BTC HTLC address is correct from HTLC script
-            const givenAddress = parsedRequest.fund.recipientOutput.address;
-            const scriptAddress = BitcoinJS.payments.p2wsh({
-                // @ts-ignore Type 'Uint8Array' is not assignable to type 'Buffer'.
-                witness: [BitcoinJS.Buffer.from(request.fund.htlcScript)],
-                network: BitcoinUtils.Network,
-            }).address;
+        // if (parsedRequest.fund.type === 'BTC' && request.fund.type === 'BTC') {
+        //     // Verify BTC HTLC address is correct from HTLC script
+        //     const givenAddress = parsedRequest.fund.recipientOutput.address;
+        //     const scriptAddress = BitcoinJS.payments.p2wsh({
+        //         // @ts-ignore Type 'Uint8Array' is not assignable to type 'Buffer'.
+        //         witness: [BitcoinJS.Buffer.from(request.fund.htlcScript)],
+        //         network: BitcoinUtils.Network,
+        //     }).address;
 
-            if (givenAddress !== scriptAddress) {
-                throw new Errors.InvalidRequestError('BTC output address does not match HTLC script');
-            }
-        }
+        //     if (givenAddress !== scriptAddress) {
+        //         throw new Errors.InvalidRequestError('BTC output address does not match HTLC script');
+        //     }
+        // }
 
-        if (parsedRequest.fund.type === 'NIM') {
-            // Check that validityStartHeight is before HTLC timeout
-            if (parsedRequest.fund.transaction.validityStartHeight >= parsedRequest.nimHtlc.timeoutBlockHeight) {
-                throw new Errors.InvalidRequestError(
-                    'Fund validityStartHeight must be lower than HTLC timeout block height',
-                );
-            }
-        }
+        // if (parsedRequest.fund.type === 'NIM') {
+        //     // Check that validityStartHeight is before HTLC timeout
+        //     if (parsedRequest.fund.transaction.validityStartHeight >= parsedRequest.nimHtlc.timeoutBlockHeight) {
+        //         throw new Errors.InvalidRequestError(
+        //             'Fund validityStartHeight must be lower than HTLC timeout block height',
+        //         );
+        //     }
+        // }
 
-        if (parsedRequest.redeem.type === 'NIM') {
-            // Check that validityStartHeight is before HTLC timeout
-            if (parsedRequest.redeem.transaction.validityStartHeight >= parsedRequest.nimHtlc.timeoutBlockHeight) {
-                throw new Errors.InvalidRequestError(
-                    'Redeem validityStartHeight must be lower than HTLC timeout block height',
-                );
-            }
-        }
+        // if (parsedRequest.redeem.type === 'NIM') {
+        //     // Check that validityStartHeight is before HTLC timeout
+        //     if (parsedRequest.redeem.transaction.validityStartHeight >= parsedRequest.nimHtlc.timeoutBlockHeight) {
+        //         throw new Errors.InvalidRequestError(
+        //             'Redeem validityStartHeight must be lower than HTLC timeout block height',
+        //         );
+        //     }
+        // }
 
         // For BTC redeem transactions, the BitcoinJS lib validates that the output script of the input matches
         // the witnessScript.
@@ -176,39 +182,26 @@ class SignSwapApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     }
 
     /**
-     * @param {unknown} inputs
-     * @returns {ParsedBitcoinTransactionInput[]}
+     * @param {any} paths
+     * @param {string} name - name of the property, used in error case only
+     * @returns {string[]}
      */
-    parseInputs(inputs) {
-        if (!inputs || !Array.isArray(inputs)) {
-            throw new Errors.InvalidRequestError('inputs must be an array');
+    parseBitcoinPathsArray(paths, name) {
+        if (!paths || !Array.isArray(paths)) {
+            throw new Errors.InvalidRequestError(`${name} must be an array`);
         }
-        if (inputs.length === 0) {
-            throw new Errors.InvalidRequestError('inputs must not be empty');
+        if (paths.length === 0) {
+            throw new Errors.InvalidRequestError(`${name} must not be empty`);
         }
-
-        // Construct inputs
-        return inputs.map((input, index) => {
-            const script = BitcoinJS.Buffer.from(Nimiq.BufferUtils.fromAny(input.outputScript));
-
-            /** @type {ParsedBitcoinTransactionInput} */
-            const parsed = {
-                hash: Nimiq.BufferUtils.toHex(Nimiq.BufferUtils.fromAny(input.transactionHash)),
-                index: this.parsePositiveInteger(input.outputIndex, true, `input[${index}].outputIndex`),
-                witnessUtxo: {
-                    script,
-                    value: this.parsePositiveInteger(input.value, false, `input[${index}].value`),
-                },
-                keyPath: this.parseBitcoinPath(input.keyPath, `input[${index}].keypath`),
-                // Address added only for display
-                // @ts-ignore Argument of type 'Uint8Array' is not assignable to parameter of type 'Buffer'.
-                address: BitcoinJS.address.fromOutputScript(script, BitcoinUtils.Network),
-            };
-            if (input.witnessScript) {
-                parsed.witnessScript = BitcoinJS.Buffer.from(Nimiq.BufferUtils.fromAny(input.witnessScript));
-            }
-            return parsed;
-        });
+        const requestedKeyPaths = paths.map(
+            /**
+             * @param {any} path
+             * @param {number} index
+             * @returns {string}
+             */
+            (path, index) => this.parseBitcoinPath(path, `${name}[${index}]`),
+        );
+        return requestedKeyPaths;
     }
 
     /**
@@ -247,85 +240,9 @@ class SignSwapApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         return true;
     }
 
-    /**
-     * @param {unknown} output
-     * @param {boolean} allowUndefined
-     * @param {string} parameterName
-     * @returns {KeyguardRequest.BitcoinTransactionOutput | undefined}
-     */
-    parseOutput(output, allowUndefined, parameterName) {
-        if (output === undefined && allowUndefined) {
-            return undefined;
-        }
-
-        if (!output || typeof output !== 'object') {
-            throw new Error(`${parameterName} is not a valid output`);
-        }
-
-        /** @type {KeyguardRequest.BitcoinTransactionOutput} */
-        const parsed = {
-            address: this.parseBitcoinAddress(
-                /** @type {{address: unknown}} */ (output).address,
-                `${parameterName}.address`,
-            ),
-            label: this.parseLabel(/** @type {{label: unknown}} */ (output).label),
-            value: this.parsePositiveInteger(
-                /** @type {{value: unknown}} */ (output).value,
-                false,
-                `${parameterName}.value`,
-            ),
-        };
-        return parsed;
-    }
-
-    /**
-     * @param {unknown} output
-     * @param {boolean} allowUndefined
-     * @param {string} parameterName
-     * @returns {KeyguardRequest.BitcoinTransactionChangeOutput | undefined}
-     */
-    parseChangeOutput(output, allowUndefined, parameterName) {
-        if (output === undefined && allowUndefined) {
-            return undefined;
-        }
-
-        if (!output || typeof output !== 'object') {
-            throw new Error(`${parameterName} is not a valid output`);
-        }
-
-        /** @type {KeyguardRequest.BitcoinTransactionChangeOutput} */
-        const parsed = {
-            keyPath: this.parseBitcoinPath(
-                /** @type {{keyPath: unknown}} */ (output).keyPath, `${parameterName}.keyPath`,
-            ),
-            address: /** @type {{address: unknown}} */ (output).address !== undefined
-                ? this.parseBitcoinAddress(
-                    /** @type {{address: unknown}} */ (output).address,
-                    `${parameterName}.address`,
-                )
-                : undefined,
-            value: this.parsePositiveInteger(
-                /** @type {{value: unknown}} */ (output).value,
-                false,
-                `${parameterName}.value`,
-            ),
-        };
-        return parsed;
-    }
-
-    /**
-     * @param {unknown} address
-     * @param {string} parameterName
-     * @returns {string}
-     */
-    parseBitcoinAddress(address, parameterName) {
-        if (!BitcoinUtils.validateAddress(address)) {
-            throw new Errors.InvalidRequestError(`${parameterName} is not a valid Bitcoin address`);
-        }
-        return /** @type {string} */ (address);
-    }
-
     get Handler() {
         return SignSwap;
     }
 }
+
+SignSwapApi.SESSION_STORAGE_KEY_PREFIX = 'swap_id_';

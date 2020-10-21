@@ -4,6 +4,7 @@ import {
     RequestBehavior,
     RedirectRequestBehavior,
     IFrameRequestBehavior,
+    SwapIFrameRequestBehavior,
 } from './RequestBehavior';
 
 import { KeyguardCommand } from './KeyguardCommand';
@@ -34,6 +35,8 @@ import {
     SignBtcTransactionRequest,
     DeriveBtcXpubRequest,
     SignSwapRequest,
+    SignSwapTransactionsRequest,
+    SignSwapTransactionsResult,
 } from './PublicRequest';
 
 import Observable from './Observable';
@@ -165,6 +168,11 @@ export class KeyguardClient {
 
     public async migrateAccountsToKeys(): Promise<SimpleResult> {
         return this._iframeRequest<EmptyRequest, SimpleResult>(KeyguardCommand.MIGRATE_ACCOUNTS_TO_KEYS);
+    }
+
+    public async signSwapTransactions(request: SignSwapTransactionsRequest): Promise<SignSwapTransactionsResult> {
+        const swapIframeBehavior = new SwapIFrameRequestBehavior();
+        return swapIframeBehavior.request(this._endpoint, KeyguardCommand.SIGN_SWAP_TRANSACTIONS, [request]);
     }
 
     /* PRIVATE METHODS */

@@ -6,20 +6,18 @@
 /* global Utf8Tools */
 /* global TopLevelApi */
 /* global NumberFormatting */
-/* global BitcoinJS */
-/* global BitcoinConstants */
 /* global BitcoinUtils */
 /* global BitcoinKey */
-/* global HtlcUtils */
 /* global Identicon */
 /* global IqonHash */
 /* global LoginFileConfig */
 /* global TemplateTags */
 /* global I18n */
+/* global SignSwapApi */
 
 /**
  * @callback SignSwap.resolve
- * @param {KeyguardRequest.SignSwapResult} result
+ * @param {KeyguardRequest.SimpleResult} result
  */
 
 class SignSwap {
@@ -70,10 +68,9 @@ class SignSwap {
                 : 0; // Should never happen, if parsing works correctly
 
         const swapBtcValue = fundTx.type === 'BTC' // eslint-disable-line no-nested-ternary
-            ? fundTx.inputs.reduce((sum, input) => sum + input.witnessUtxo.value, 0)
-                - (fundTx.changeOutput ? fundTx.changeOutput.value : 0)
+            ? fundTx.value + fundTx.fee
             : redeemTx.type === 'BTC'
-                ? redeemTx.output.value
+                ? redeemTx.value + redeemTx.fee
                 : 0; // Should never happen, if parsing works correctly
 
         $swapNimValue.textContent = `${fundTx.type === 'NIM' ? '-' : '+'}\u2009${NumberFormatting.formatNumber(
@@ -99,12 +96,12 @@ class SignSwap {
         const nimExchangeValue = fundTx.type === 'NIM' // eslint-disable-line no-nested-ternary
             ? (fundTx.transaction.value - request.serviceNetworkFee) / 1e5
             : redeemTx.type === 'NIM'
-                ? (redeemTx.transaction.value + redeemTx.transaction.fee) / 1e5
+                ? (redeemTx.transaction.value + redeemTx.transaction.fee/* + redeemTx.serviceNetworkFee */) / 1e5
                 : 0; // Should never happen, if parsing works correctly
         const btcExchangeValue = fundTx.type === 'BTC' // eslint-disable-line no-nested-ternary
-            ? (fundTx.recipientOutput.value - request.serviceNetworkFee) / 1e8
+            ? (fundTx.value - request.serviceNetworkFee) / 1e8
             : redeemTx.type === 'BTC'
-                ? redeemTx.input.witnessUtxo.value / 1e8
+                ? (redeemTx.value + redeemTx.fee/* + redeemTx.serviceNetworkFee */) / 1e8
                 : 0; // Should never happen, if parsing works correctly
 
         if (!nimExchangeValue || !btcExchangeValue) {
@@ -294,10 +291,9 @@ class SignSwap {
                 ? redeemTx.transaction.fee
                 : 0) * request.nimFiatRate;
         const myBtcFee = BitcoinUtils.satoshisToCoins(fundTx.type === 'BTC' // eslint-disable-line no-nested-ternary
-            ? fundTx.inputs.reduce((sum, input) => sum + input.witnessUtxo.value, 0)
-                - (fundTx.recipientOutput.value + (fundTx.changeOutput ? fundTx.changeOutput.value : 0))
+            ? fundTx.fee
             : redeemTx.type === 'BTC'
-                ? redeemTx.input.witnessUtxo.value - redeemTx.output.value
+                ? redeemTx.fee
                 : 0) * request.btcFiatRate;
 
         const theirNetworkFee = fundTx.type === 'NIM'
@@ -371,258 +367,41 @@ class SignSwap {
 
         const btcKey = new BitcoinKey(key);
 
-        /** @type {KeyguardRequest.SignSwapResult} */
-        const result = {};
+        /** @type {{nim: string, btc: string[]}} */
+        const privateKeys = {};
 
         if (request.fund.type === 'NIM') {
-            const publicKey = key.derivePublicKey(request.fund.keyPath);
-
-            // Validate that signing address is the refund address of the HTLC
-            if (publicKey.toAddress().toUserFriendlyAddress() !== request.nimHtlc.refundAddress) {
-                throw new Errors.InvalidRequestError('NIM HTLC funding must be signed by its refund address');
-            }
-
-            const signature = key.sign(request.fund.keyPath, request.fund.transaction.serializeContent());
-
-            /** @type {KeyguardRequest.SignatureResult} */
-            result.nim = {
-                publicKey: publicKey.serialize(),
-                signature: signature.serialize(),
-            };
+            const privateKey = key.derivePrivateKey(request.fund.keyPath);
+            privateKeys.nim = privateKey.toHex();
         }
 
         if (request.fund.type === 'BTC') {
-            // Validate that we own the HTLC refund address
-            const givenRefundAddress = btcKey.deriveAddress(request.fund.refundKeyPath);
-            const scriptRefundAddress = BitcoinUtils.addressBytesToAddress(
-                request.btcHtlc.refundAddressBytes,
-                BitcoinUtils.parseBipFromDerivationPath(request.fund.refundKeyPath),
-            );
-            if (givenRefundAddress !== scriptRefundAddress) {
-                throw new Errors.InvalidRequestError('BTC HTLC refund address does not match refundKeyPath');
-            }
-
-            const fundTx = request.fund;
-            // For BIP49 (nested SegWit) inputs, a redeemScript needs to be added to inputs
-            for (const input of fundTx.inputs) {
-                if (BitcoinUtils.parseBipFromDerivationPath(input.keyPath) !== BitcoinConstants.BIP.BIP49) continue;
-
-                // Add redeemScripts for BIP49 inputs
-                const keyPair = btcKey.deriveKeyPair(input.keyPath);
-                const output = BitcoinUtils.keyPairToNativeSegwit(keyPair).output;
-                if (!output) {
-                    throw new Errors.KeyguardError('UNEXPECTED: Failed to get native SegWit output for redeemScript');
-                }
-                input.redeemScript = output;
-            }
-
-            // Sort inputs by tx hash ASC, then index ASC
-            fundTx.inputs.sort((a, b) => {
-                if (a.hash !== b.hash) return a.hash < b.hash ? -1 : 1;
-                return a.index - b.index;
-            });
-
-            // Construct outputs
-            const outputs = [fundTx.recipientOutput];
-
-            // Validate and add change output
-            if (fundTx.changeOutput) {
-                // Derive address
-                const keyPair = btcKey.deriveKeyPair(fundTx.changeOutput.keyPath);
-                /** @type {string | undefined} */
-                let address;
-                switch (BitcoinUtils.parseBipFromDerivationPath(fundTx.changeOutput.keyPath)) {
-                    case BitcoinConstants.BIP.BIP49:
-                        address = BitcoinUtils.keyPairToNestedSegwit(keyPair).address;
-                        break;
-                    case BitcoinConstants.BIP.BIP84:
-                        address = BitcoinUtils.keyPairToNativeSegwit(keyPair).address;
-                        break;
-                    default:
-                        throw new Errors.KeyguardError('UNEXPECTED: change output key path was not a supported BIP');
-                }
-
-                if (!address) {
-                    throw new Errors.InvalidRequestError('UNEXPECTED: Could not derive address for change output');
-                }
-
-                if (fundTx.changeOutput.address && fundTx.changeOutput.address !== address) {
-                    throw new Errors.InvalidRequestError(
-                        'Given address is different from derived address for change output',
-                    );
-                }
-
-                /** @type {KeyguardRequest.BitcoinTransactionOutput} */
-                const output = {
-                    address,
-                    value: fundTx.changeOutput.value,
-                };
-
-                outputs.push(output);
-            }
-
-            // Sort outputs by value ASC, then address ASC
-            outputs.sort((a, b) => (a.value - b.value) || (a.address < b.address ? -1 : 1));
-
-            // Construct transaction
-            const psbt = new BitcoinJS.Psbt({ network: BitcoinUtils.Network });
-
-            // Add inputs
-            // @ts-ignore Argument of type 'Uint8Array' is not assignable to parameter of type 'Buffer'.
-            psbt.addInputs(fundTx.inputs);
-            // Add outputs
-            psbt.addOutputs(outputs);
-
-            // Sign
-            const paths = fundTx.inputs.map(input => input.keyPath);
-            btcKey.sign(paths, psbt);
-
-            // Verify that all inputs are signed
-            if (!psbt.validateSignaturesOfAllInputs()) {
-                throw new Error('Invalid or missing signature(s) for BTC transaction.');
-            }
-
-            // Finalize
-            psbt.finalizeAllInputs();
-
-            // Extract tx
-            const tx = psbt.extractTransaction();
-
-            /** @type {KeyguardRequest.SignedBitcoinTransaction} */
-            result.btc = {
-                transactionHash: tx.getId(),
-                raw: tx.toHex(),
-            };
+            const keyPairs = request.fund.keyPaths.map(path => btcKey.deriveKeyPair(path));
+            const privKeys = keyPairs.map(keyPair => Nimiq.BufferUtils.toHex(
+                /** @type {Buffer} */ (keyPair.privateKey),
+            ));
+            privateKeys.btc = privKeys;
         }
 
         if (request.redeem.type === 'NIM') {
-            const publicKey = key.derivePublicKey(request.redeem.keyPath);
-
-            // Validate that this is the redeem address of the HTLC
-            if (publicKey.toAddress().toUserFriendlyAddress() !== request.nimHtlc.redeemAddress) {
-                throw new Errors.InvalidRequestError('NIM HTLC redeeming must be signed by its redeem address');
-            }
-
-            const signature = key.sign(request.redeem.keyPath, request.redeem.transaction.serializeContent());
-
-            /** @type {KeyguardRequest.SignatureResult} */
-            result.nim = {
-                publicKey: publicKey.serialize(),
-                signature: signature.serialize(),
-            };
+            const privateKey = key.derivePrivateKey(request.redeem.keyPath);
+            privateKeys.nim = privateKey.toHex();
         }
 
         if (request.redeem.type === 'BTC') {
-            const redeemTx = request.redeem;
-
-            // Derive output address
-            const outputKeyPair = btcKey.deriveKeyPair(redeemTx.output.keyPath);
-            /** @type {string | undefined} */
-            let address;
-            switch (BitcoinUtils.parseBipFromDerivationPath(redeemTx.output.keyPath)) {
-                case BitcoinConstants.BIP.BIP49:
-                    address = BitcoinUtils.keyPairToNestedSegwit(outputKeyPair).address;
-                    break;
-                case BitcoinConstants.BIP.BIP84:
-                    address = BitcoinUtils.keyPairToNativeSegwit(outputKeyPair).address;
-                    break;
-                default:
-                    throw new Errors.KeyguardError('UNEXPECTED: redeem output key path was not a supported BIP');
-            }
-
-            if (!address) {
-                throw new Errors.InvalidRequestError('UNEXPECTED: Could not derive address for redeem output');
-            }
-
-            if (redeemTx.output.address && redeemTx.output.address !== address) {
-                throw new Errors.InvalidRequestError(
-                    'Given address is different from derived address for redeem output',
-                );
-            }
-
-            /** @type {KeyguardRequest.BitcoinTransactionOutput} */
-            const output = {
-                address,
-                value: redeemTx.output.value,
-            };
-
-            // Construct transaction
-            const psbt = new BitcoinJS.Psbt({ network: BitcoinUtils.Network });
-
-            // Add inputs
-            // @ts-ignore Argument of type 'Uint8Array' is not assignable to parameter of type 'Buffer'.
-            psbt.addInput(redeemTx.input);
-            // Add outputs
-            psbt.addOutput(output);
-
-            // Sign
-            const inputKeyPair = btcKey.deriveKeyPair(redeemTx.input.keyPath);
-
-            // Validate that this is the redeem address of the HTLC
-            /** @type {string | undefined} */
-            let givenRedeemAddress;
-            switch (BitcoinUtils.parseBipFromDerivationPath(redeemTx.input.keyPath)) {
-                case BitcoinConstants.BIP.BIP49:
-                    givenRedeemAddress = BitcoinUtils.keyPairToNestedSegwit(inputKeyPair).address;
-                    break;
-                case BitcoinConstants.BIP.BIP84:
-                    givenRedeemAddress = BitcoinUtils.keyPairToNativeSegwit(inputKeyPair).address;
-                    break;
-                default: break;
-            }
-            const scriptRedeemAddress = BitcoinUtils.addressBytesToAddress(
-                request.btcHtlc.redeemAddressBytes,
-                BitcoinUtils.parseBipFromDerivationPath(redeemTx.input.keyPath),
-            );
-            if (givenRedeemAddress !== scriptRedeemAddress) {
-                throw new Errors.InvalidRequestError('BTC HTLC redeeming must be signed by its redeem address');
-            }
-
-            psbt.signInput(0, inputKeyPair);
-
-            // Verify that all inputs are signed
-            if (!psbt.validateSignaturesOfAllInputs()) {
-                throw new Error('Invalid or missing signature(s) for BTC transaction.');
-            }
-
-            // Finalize (with custom logic for the HTLC)
-            psbt.finalizeInput(0, (inputIndex, input /* , script, isSegwit, isP2SH, isP2WSH */) => {
-                if (!input.partialSig) {
-                    throw new Errors.KeyguardError('UNEXPECTED: Input does not have a partial signature');
-                }
-
-                if (!input.witnessScript) {
-                    throw new Errors.KeyguardError('UNEXPECTED: Input does not have a witnessScript');
-                }
-
-                const witnessBytes = BitcoinJS.script.fromASM([
-                    input.partialSig[0].signature.toString('hex'),
-                    input.partialSig[0].pubkey.toString('hex'),
-                    // Use zero-bytes as a dummy secret, required for signing
-                    '0000000000000000000000000000000000000000000000000000000000000000',
-                    'OP_1', // OP_1 (true) activates the redeem branch in the HTLC script
-                    input.witnessScript.toString('hex'),
-                ].join(' '));
-
-                const witnessStack = BitcoinJS.script.toStack(witnessBytes);
-
-                return {
-                    finalScriptSig: undefined,
-                    finalScriptWitness: HtlcUtils.witnessStackToScriptWitness(witnessStack),
-                };
-            });
-
-            // Extract tx
-            const tx = psbt.extractTransaction();
-
-            /** @type {KeyguardRequest.SignedBitcoinTransaction} */
-            result.btc = {
-                transactionHash: tx.getId(),
-                raw: tx.toHex(),
-            };
+            const keyPairs = request.redeem.keyPaths.map(path => btcKey.deriveKeyPair(path));
+            const privKeys = keyPairs.map(keyPair => Nimiq.BufferUtils.toHex(
+                /** @type {Buffer} */ (keyPair.privateKey),
+            ));
+            privateKeys.btc = privKeys;
         }
 
-        resolve(result);
+        sessionStorage.setItem(
+            SignSwapApi.SESSION_STORAGE_KEY_PREFIX + request.swapId,
+            JSON.stringify(privateKeys),
+        );
+
+        resolve({ success: true });
     }
 
     run() {

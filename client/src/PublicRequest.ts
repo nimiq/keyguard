@@ -179,11 +179,33 @@ export type SignBtcTransactionRequest
     | SignBtcTransactionRequestCheckout;
 
 export type SignSwapRequest = SimpleRequest & {
-    fund: {type: 'NIM'} & Omit<TransactionInfo, 'recipient' | 'recipientType' | 'recipientLabel'>
-        & { senderLabel: string }
-        | {type: 'BTC'} & BitcoinTransactionInfo & { htlcScript: Uint8Array, refundKeyPath: string },
-    redeem: {type: 'NIM'} & TransactionInfo & { htlcData: Uint8Array, recipientLabel: string }
-        | {type: 'BTC'} & Omit<BitcoinTransactionInfo, 'recipientOutput'>,
+    swapId: string,
+    fund:
+        {type: 'NIM'}
+            & Omit<TransactionInfo,
+                'senderType'
+                | 'recipient'
+                | 'recipientType'
+                | 'recipientLabel'
+                | 'validityStartHeight'
+                | 'data'
+                | 'flags'
+            >
+            & { senderLabel: string }
+        | {type: 'BTC', keyPaths: string[], value: number, fee: number },
+    redeem:
+        {type: 'NIM'}
+            & Omit<TransactionInfo,
+                'sender'
+                | 'senderType'
+                | 'senderLabel'
+                | 'recipientType'
+                | 'validityStartHeight'
+                | 'data'
+                | 'flags'
+            >
+            & { recipientLabel: string }
+        | {type: 'BTC', keyPaths: string[], value: number, fee: number },
 
     // Data needed for display
     fiatCurrency: string,
@@ -198,6 +220,28 @@ export type SignSwapRequest = SimpleRequest & {
     bitcoinAccount: {
         balance: number, // Sats
     },
+};
+
+// Used in swap-iframe
+export type SignSwapTransactionsRequest = {
+    swapId: string,
+    fund:
+        {type: 'NIM'}
+            & Omit<TransactionInfo, 'keyPath' | 'recipient' | 'recipientType' | 'data'>
+            & { data: Uint8Array }
+        | {
+            type: 'BTC',
+            inputs: Array<Omit<BitcoinTransactionInput, 'keyPath'>>,
+            recipientOutput: BitcoinTransactionOutput,
+            changeOutput?: BitcoinTransactionOutput,
+        },
+    redeem:
+        {type: 'NIM'} & Omit<TransactionInfo, 'keyPath'>
+        | {
+            type: 'BTC',
+            inputs: Array<Omit<BitcoinTransactionInput, 'keyPath'>>,
+            changeOutput: BitcoinTransactionOutput,
+        },
 };
 
 export type SignMessageRequest = SimpleRequest & {
@@ -232,7 +276,7 @@ export type RedirectRequest
     | DeriveBtcXpubRequest
     | SignSwapRequest;
 
-export type IFrameRequest = EmptyRequest | DeriveAddressesRequest | ReleaseKeyRequest;
+export type IFrameRequest = EmptyRequest | DeriveAddressesRequest | ReleaseKeyRequest | SignSwapTransactionsRequest;
 
 export type Request = RedirectRequest | IFrameRequest;
 
@@ -266,7 +310,7 @@ export type SignedBitcoinTransaction = {
     transactionHash: string,
     raw: string,
 };
-export type SignSwapResult = {
+export type SignSwapTransactionsResult = {
     nim: SignatureResult,
     btc: SignedBitcoinTransaction,
 };
@@ -277,7 +321,8 @@ export type IFrameResult
     = DerivedAddress[]
     | ListLegacyResult
     | ListResult
-    | SimpleResult;
+    | SimpleResult
+    | SignSwapTransactionsResult;
 
 export type RedirectResult
     = DerivedAddress[]
@@ -286,8 +331,7 @@ export type RedirectResult
     | SignTransactionResult
     | SignedBitcoinTransaction
     | SimpleResult
-    | DeriveBtcXpubResult
-    | SignSwapResult;
+    | DeriveBtcXpubResult;
 
 export type Result = RedirectResult | IFrameResult;
 
@@ -301,7 +345,7 @@ export type ResultType<T extends RedirectRequest> =
     T extends Is<T, RemoveKeyRequest> | Is<T, SimpleRequest> ? SimpleResult :
     T extends Is<T, SignBtcTransactionRequest> ? SignedBitcoinTransaction :
     T extends Is<T, DeriveBtcXpubRequest> ? DeriveBtcXpubResult :
-    T extends Is<T, SignSwapRequest> ? SignSwapResult :
+    T extends Is<T, SignSwapRequest> ? SimpleResult :
     never;
 
 export type ResultByCommand<T extends KeyguardCommand> =
@@ -312,7 +356,7 @@ export type ResultByCommand<T extends KeyguardCommand> =
     T extends KeyguardCommand.REMOVE ? SimpleResult :
     T extends KeyguardCommand.SIGN_BTC_TRANSACTION ? SignedBitcoinTransaction :
     T extends KeyguardCommand.DERIVE_BTC_XPUB ? DeriveBtcXpubResult :
-    T extends KeyguardCommand.SIGN_SWAP ? SignSwapResult :
+    T extends KeyguardCommand.SIGN_SWAP ? SimpleResult :
     never;
 
 // Error constants
