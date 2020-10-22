@@ -36,6 +36,7 @@ class SignSwapApi extends TopLevelApi {
                 keyPath: this.parsePath(request.fund.keyPath, 'fund.keyPath'),
                 transaction: this.parseTransaction({
                     validityStartHeight: 0, // Dummy
+                    data: new Uint8Array(78), // Dummy
                     ...request.fund,
                     flags: Nimiq.Transaction.Flag.CONTRACT_CREATION,
                     recipient: 'CONTRACT_CREATION',
