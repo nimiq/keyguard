@@ -2,6 +2,7 @@
 /* global ImportFile */
 /* global ImportWords */
 /* global Errors */
+/* global ErrorConstants */
 
 /** @extends {TopLevelApi<KeyguardRequest.ImportRequest>} */
 class ImportApi extends TopLevelApi {
@@ -12,6 +13,13 @@ class ImportApi extends TopLevelApi {
     async parseRequest(request) {
         if (!request) {
             throw new Errors.InvalidRequestError('request is required');
+        }
+
+        try {
+            sessionStorage.setItem('_test', 'write-access');
+            sessionStorage.removeItem('_test');
+        } catch (e) {
+            throw new Errors.BrowserError(ErrorConstants.Messages.NO_STORAGE_ACCESS);
         }
 
         const parsedRequest = {};
