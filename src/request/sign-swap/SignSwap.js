@@ -94,14 +94,14 @@ class SignSwap {
 
         // Exchange rate
         const nimExchangeValue = fundTx.type === 'NIM' // eslint-disable-line no-nested-ternary
-            ? (fundTx.transaction.value - request.serviceNetworkFee) / 1e5
+            ? (fundTx.transaction.value - request.serviceFundingNetworkFee) / 1e5
             : redeemTx.type === 'NIM'
-                ? (redeemTx.transaction.value + redeemTx.transaction.fee/* + redeemTx.serviceNetworkFee */) / 1e5
+                ? (redeemTx.transaction.value + redeemTx.transaction.fee + request.serviceRedeemingNetworkFee) / 1e5
                 : 0; // Should never happen, if parsing works correctly
         const btcExchangeValue = fundTx.type === 'BTC' // eslint-disable-line no-nested-ternary
-            ? (fundTx.value - request.serviceNetworkFee) / 1e8
+            ? (fundTx.value - request.serviceFundingNetworkFee) / 1e8
             : redeemTx.type === 'BTC'
-                ? (redeemTx.value + redeemTx.fee/* + redeemTx.serviceNetworkFee */) / 1e8
+                ? (redeemTx.value + redeemTx.fee + request.serviceRedeemingNetworkFee) / 1e8
                 : 0; // Should never happen, if parsing works correctly
 
         if (!nimExchangeValue || !btcExchangeValue) {
@@ -240,7 +240,13 @@ class SignSwap {
      */
     _makeFeeTooltip(request, exchangeAmount) {
         // eslint-disable-next-line object-curly-newline
-        const { fund: fundTx, redeem: redeemTx, serviceNetworkFee, serviceExchangeFee } = request;
+        const {
+            fund: fundTx,
+            redeem: redeemTx,
+            serviceFundingNetworkFee,
+            serviceRedeemingNetworkFee,
+            serviceExchangeFee,
+        } = request;
 
         const $tooltip = document.createElement('div');
         $tooltip.classList.add('tooltip', 'top');
@@ -296,15 +302,12 @@ class SignSwap {
                 ? redeemTx.fee
                 : 0) * request.btcFiatRate;
 
-        const theirNetworkFee = fundTx.type === 'NIM'
-            ? Nimiq.Policy.lunasToCoins(serviceNetworkFee) * request.nimFiatRate
-            : BitcoinUtils.satoshisToCoins(serviceNetworkFee) * request.btcFiatRate;
-
-        // Since we cannot know how the service network fee is combined, we simply split the service network fee
-        // into NIM and BTC parts according to the ratio of our own fees (which are also suggested by the service,
-        // following the same calculation).
-        const theirNimFee = myNimFee / (myNimFee + myBtcFee) * theirNetworkFee;
-        const theirBtcFee = myBtcFee / (myNimFee + myBtcFee) * theirNetworkFee;
+        const theirNimFee = Nimiq.Policy.lunasToCoins(fundTx.type === 'NIM'
+            ? serviceFundingNetworkFee
+            : serviceRedeemingNetworkFee) * request.nimFiatRate;
+        const theirBtcFee = BitcoinUtils.satoshisToCoins(fundTx.type === 'BTC'
+            ? serviceFundingNetworkFee
+            : serviceRedeemingNetworkFee) * request.btcFiatRate;
 
         const theirExchangeFee = fundTx.type === 'NIM'
             ? Nimiq.Policy.lunasToCoins(serviceExchangeFee) * request.nimFiatRate
@@ -315,11 +318,11 @@ class SignSwap {
             1,
         );
 
-        /** @type {HTMLDivElement} */ ($tooltip.querySelector('.btc-fiat-fee'))
-            .textContent = NumberFormatting.formatCurrency(myBtcFee + theirBtcFee, request.fiatCurrency);
-
         /** @type {HTMLDivElement} */ ($tooltip.querySelector('.nim-fiat-fee'))
             .textContent = NumberFormatting.formatCurrency(myNimFee + theirNimFee, request.fiatCurrency);
+
+        /** @type {HTMLDivElement} */ ($tooltip.querySelector('.btc-fiat-fee'))
+            .textContent = NumberFormatting.formatCurrency(myBtcFee + theirBtcFee, request.fiatCurrency);
 
         /** @type {HTMLDivElement} */ ($tooltip.querySelector('.exchange-fiat-fee'))
             .textContent = NumberFormatting.formatCurrency(theirExchangeFee, request.fiatCurrency);
@@ -329,7 +332,7 @@ class SignSwap {
 
         /** @type {HTMLDivElement} */ ($tooltip.querySelector('.total-fees'))
             .textContent = NumberFormatting.formatCurrency(
-                myNimFee + myBtcFee + theirNetworkFee + theirExchangeFee,
+                myNimFee + myBtcFee + theirNimFee + theirBtcFee + theirExchangeFee,
                 request.fiatCurrency,
             );
 

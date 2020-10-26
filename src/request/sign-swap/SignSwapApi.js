@@ -155,8 +155,10 @@ class SignSwapApi extends TopLevelApi {
             this.parseNonNegativeFiniteNumber(request.nimFiatRate, false, 'nimFiatRate'));
         parsedRequest.btcFiatRate = /** @type {number} */ (
             this.parseNonNegativeFiniteNumber(request.btcFiatRate, false, 'btcFiatRate'));
-        parsedRequest.serviceNetworkFee = /** @type {number} */ (
-            this.parsePositiveInteger(request.serviceNetworkFee, true, 'serviceNetworkFee'));
+        parsedRequest.serviceFundingNetworkFee = /** @type {number} */ (
+            this.parsePositiveInteger(request.serviceFundingNetworkFee, true, 'serviceFundingNetworkFee'));
+        parsedRequest.serviceRedeemingNetworkFee = /** @type {number} */ (
+            this.parsePositiveInteger(request.serviceRedeemingNetworkFee, true, 'serviceRedeemingNetworkFee'));
         parsedRequest.serviceExchangeFee = /** @type {number} */ (
             this.parsePositiveInteger(request.serviceExchangeFee, true, 'serviceExchangeFee'));
 
