@@ -40,13 +40,20 @@ export type TransactionInfo = {
     flags?: number,
 };
 
+export enum BitcoinTransactionInputType {
+    DEFAULT = 'default',
+    HTLC_REDEEM = 'htlc-redeem',
+    HTLC_REFUND = 'htlc-refund',
+}
+
 export type BitcoinTransactionInput = {
     keyPath: string,
     transactionHash: string,
     outputIndex: number,
     outputScript: string,
-    witnessScript?: string,
     value: number,
+    witnessScript?: string,
+    type?: BitcoinTransactionInputType,
 };
 
 export type BitcoinTransactionOutput = {

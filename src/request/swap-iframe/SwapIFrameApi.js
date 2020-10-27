@@ -195,6 +195,30 @@ class SwapIFrameApi extends RequestParser {
     }
 
     /**
+     * @param {unknown} type
+     * @returns {'default' | 'htlc-redeem' | 'htlc-refund'}
+     */
+    parseInputType(type) {
+        if (!type || type === 'default') return 'default';
+        if (typeof type !== 'string') {
+            throw new Errors.InvalidRequestError('Invalid input type');
+        }
+
+        const typeString = type.toLowerCase();
+
+        const validTypes = [
+            'htlc-redeem',
+            'htlc-refund',
+        ];
+
+        if (!validTypes.includes(typeString)) {
+            throw new Errors.InvalidRequestError('Invalid input type');
+        }
+
+        return /** @type {'htlc-redeem' | 'htlc-refund'} */ (typeString);
+    }
+
+    /**
      * @param {unknown} inputs
      * @returns {ParsedBitcoinTransactionInput[]}
      */
@@ -218,6 +242,7 @@ class SwapIFrameApi extends RequestParser {
                     script,
                     value: this.parsePositiveInteger(input.value, false, `input[${index}].value`),
                 },
+                type: this.parseInputType(input.type),
 
                 // Part of the type, but unused in code
                 keyPath: '',

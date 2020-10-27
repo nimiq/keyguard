@@ -77,6 +77,30 @@ class SignBtcTransactionApi extends TopLevelApi {
     }
 
     /**
+     * @param {unknown} type
+     * @returns {'default' | 'htlc-redeem' | 'htlc-refund'}
+     */
+    parseInputType(type) {
+        if (!type || type === 'default') return 'default';
+        if (typeof type !== 'string') {
+            throw new Errors.InvalidRequestError('Invalid input type');
+        }
+
+        const typeString = type.toLowerCase();
+
+        const validTypes = [
+            'htlc-redeem',
+            'htlc-refund',
+        ];
+
+        if (!validTypes.includes(typeString)) {
+            throw new Errors.InvalidRequestError('Invalid input type');
+        }
+
+        return /** @type {'htlc-redeem' | 'htlc-refund'} */ (typeString);
+    }
+
+    /**
      * @param {unknown} inputs
      * @returns {ParsedBitcoinTransactionInput[]}
      */
@@ -105,11 +129,17 @@ class SignBtcTransactionApi extends TopLevelApi {
                         (this.parseNonNegativeFiniteNumber(input.value, false, `input[${index}].value`)),
                     ),
                 },
+                type: this.parseInputType(input.type),
                 keyPath: this.parseBitcoinPath(input.keyPath, `input[${index}].keypath`),
                 // Address added only for display
                 // @ts-ignore Argument of type 'Uint8Array' is not assignable to parameter of type 'Buffer'.
                 address: BitcoinJS.address.fromOutputScript(script, BitcoinUtils.Network),
             };
+
+            if (input.witnessScript) {
+                parsed.witnessScript = BitcoinJS.Buffer.from(Nimiq.BufferUtils.fromAny(input.witnessScript));
+            }
+
             return parsed;
         });
     }
