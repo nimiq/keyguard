@@ -52,6 +52,7 @@ type ParsedBitcoinTransactionInput = {
     },
     redeemScript?: Uint8Array,
     witnessScript?: Uint8Array,
+    type: 'default' | 'htlc-redeem' | 'htlc-refund',
     keyPath: string,
     address: string,
 };

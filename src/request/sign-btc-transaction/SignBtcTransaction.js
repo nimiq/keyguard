@@ -11,6 +11,7 @@
 /* global BitcoinConstants */
 /* global BitcoinUtils */
 /* global BitcoinKey */
+/* global HtlcUtils */
 /* global IqonHash */
 /* global LoginFileConfig */
 /* global I18n */
@@ -223,6 +224,11 @@ class SignBtcTransaction {
         // Add outputs
         psbt.addOutputs(outputs);
 
+        if (request.inputs.length === 1 && request.inputs[0].type === 'htlc-refund') {
+            psbt.locktime = HtlcUtils.decodeBtcHtlcScript(request.inputs[0].witnessScript).timeoutTimestamp + 1;
+            psbt.setInputSequence(0, 0xfffffffe); // Signal to use locktime, but do not opt into replace-by-fee
+        }
+
         // Sign
         const paths = request.inputs.map(input => input.keyPath);
         btcKey.sign(paths, psbt);
@@ -233,7 +239,47 @@ class SignBtcTransaction {
         }
 
         // Finalize
-        psbt.finalizeAllInputs();
+        let i = 0;
+        for (const parsedInput of request.inputs) {
+            if (parsedInput.type === 'default') {
+                psbt.finalizeInput(i);
+            }
+            if (parsedInput.type === 'htlc-redeem' || parsedInput.type === 'htlc-refund') {
+                // eslint-disable-next-line no-loop-func
+                psbt.finalizeInput(i, (inputIndex, input /* , script, isSegwit, isP2SH, isP2WSH */) => {
+                    if (!input.partialSig) {
+                        throw new Errors.KeyguardError('UNEXPECTED: Input does not have a partial signature');
+                    }
+
+                    if (!input.witnessScript) {
+                        throw new Errors.KeyguardError('Input does not have a witnessScript');
+                    }
+
+                    const witnessBytes = BitcoinJS.script.fromASM([
+                        input.partialSig[0].signature.toString('hex'),
+                        input.partialSig[0].pubkey.toString('hex'),
+                        ...(parsedInput.type === 'htlc-redeem' ? [
+                            // Use zero-bytes as a dummy secret, required for signing
+                            '0000000000000000000000000000000000000000000000000000000000000000',
+                            'OP_1', // OP_1 (true) activates the redeem branch in the HTLC script
+                        ] : []),
+                        ...(parsedInput.type === 'htlc-refund' ? [
+                            'OP_0', // OP_0 (false) activates the refund branch in the HTLC script
+                        ] : []),
+                        input.witnessScript.toString('hex'),
+                    ].join(' '));
+
+                    const witnessStack = BitcoinJS.script.toStack(witnessBytes);
+
+                    return {
+                        finalScriptSig: undefined,
+                        finalScriptWitness: HtlcUtils.witnessStackToScriptWitness(witnessStack),
+                    };
+                });
+            }
+
+            i += 1;
+        }
 
         // Extract tx
         const tx = psbt.extractTransaction();
