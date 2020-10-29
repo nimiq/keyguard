@@ -399,10 +399,15 @@ class SignSwap {
             privateKeys.btc = privKeys;
         }
 
-        sessionStorage.setItem(
-            SignSwapApi.SESSION_STORAGE_KEY_PREFIX + request.swapId,
-            JSON.stringify(privateKeys),
-        );
+        try {
+            sessionStorage.setItem(
+                SignSwapApi.SESSION_STORAGE_KEY_PREFIX + request.swapId,
+                JSON.stringify(privateKeys),
+            );
+        } catch (error) {
+            reject(error);
+            return;
+        }
 
         resolve({ success: true });
     }

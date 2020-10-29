@@ -15,6 +15,15 @@ class SignSwapApi extends TopLevelApi {
             throw new Errors.InvalidRequestError('request is required');
         }
 
+        try {
+            sessionStorage.setItem('_test', 'write-access');
+            const stored = sessionStorage.getItem('_test');
+            if (stored !== 'write-access') throw new Error();
+            sessionStorage.removeItem('_test');
+        } catch (e) {
+            throw new Error('Cannot access browser storage because of privacy settings');
+        }
+
         /** @type {Parsed<KeyguardRequest.SignSwapRequest>} */
         const parsedRequest = {};
         parsedRequest.appName = this.parseAppName(request.appName);
@@ -185,7 +194,7 @@ class SignSwapApi extends TopLevelApi {
     }
 
     /**
-     * @param {any} paths
+     * @param {unknown} paths
      * @param {string} name - name of the property, used in error case only
      * @returns {string[]}
      */
@@ -198,7 +207,7 @@ class SignSwapApi extends TopLevelApi {
         }
         const requestedKeyPaths = paths.map(
             /**
-             * @param {any} path
+             * @param {unknown} path
              * @param {number} index
              * @returns {string}
              */
