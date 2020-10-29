@@ -23,6 +23,13 @@ class SwapIFrameApi extends RequestParser {
         /** @type {{nim: string, btc: string[]}} */
         const privateKeys = JSON.parse(storedPrivateKeys);
 
+        if (!privateKeys.nim) throw new Error('No NIM key stored in SessionStorage');
+        if (privateKeys.nim.length !== 64) throw new Error('Invalid NIM key stored in SessionStorage');
+        if (!privateKeys.btc) throw new Error('No BTC key list stored in SessionStorage');
+        if (!privateKeys.btc.length) throw new Error('No BTC keys stored in SessionStorage');
+        if (privateKeys.btc.some(key => !key)) throw new Error('Empty BTC key stored in SessionStorage');
+        if (privateKeys.btc.some(key => key.length !== 64)) throw new Error('Invalid BTC key stored in SessionStorage');
+
         /** @type {KeyguardRequest.SignSwapTransactionsResult} */
         const result = {};
 
@@ -147,7 +154,7 @@ class SwapIFrameApi extends RequestParser {
                 // @ts-ignore Argument of type 'import("...").Buffer' is not assignable to parameter of type 'Buffer'.
                 BitcoinJS.Buffer.from(privateKeys.btc[0], 'hex'),
             );
-            psbt.signAllInputs(keyPair);
+            psbt.signInput(0, keyPair);
 
             // Verify that all inputs are signed
             if (!psbt.validateSignaturesOfAllInputs()) {
