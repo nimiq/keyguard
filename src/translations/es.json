@@ -77,7 +77,7 @@
     "passwordbox-confirm-log-in": "Inicio de sesión",
     "passwordbox-show-words": "Mostrar Palabras de Recuperación",
     "passwordbox-sign-msg": "Firmar mensaje",
-    "passwordbox-confirm-swap": "Confirm swap",
+    "passwordbox-confirm-swap": "Confirmar intercambio",
     "passwordbox-password-strength-short": "Ingrese 8 caracteres o más",
     "passwordbox-password-strength-weak": "Contraseña débil",
     "passwordbox-password-strength-good": "Contraseña buena",
@@ -202,18 +202,18 @@
     "login-file-filename": "Nimiq-Archivo-Sesion-{color}.png",
 
     "bitcoin": "Bitcoin",
-    "bitcoin-recipient-unlabelled": "Unlabelled",
+    "bitcoin-recipient-unlabelled": "Sin etiqueta",
 
-    "derive-btc-xpub-heading": "Add Bitcoin\\nto your account",
-    "derive-btc-xpub-text": "Easily swap between NIM, the super performant payment coin and BTC, the gold standard of crypto.",
+    "derive-btc-xpub-heading": "Agregar Bitcoin\na su Cuenta",
+    "derive-btc-xpub-text": "Fácilmente intecambie entre NIM, la moneda de pago con super rendimiento y BTC, el estándar de oro en cripto.",
 
-    "sign-swap-heading": "Confirm Swap",
-    "sign-swap-exchange-rate-tooltip": "This rate includes the exchange fee.",
-    "sign-swap-fee-tooltip-heading": "This amount includes:",
-    "sign-swap-btc-fees": "BTC network fees",
-    "sign-swap-btc-fees-explainer": "Atomic swaps require two BTC transactions.",
-    "sign-swap-nim-fees": "NIM network fees",
-    "sign-swap-exchange-fee": "Exchange fee",
-    "sign-swap-of-exchange-value": "of exchange value.",
-    "sign-swap-total-fees": "Total fees"
+    "sign-swap-heading": "Confirmar Intercambio",
+    "sign-swap-exchange-rate-tooltip": "La taza de cambio incluye cuotas de intercambio.",
+    "sign-swap-fee-tooltip-heading": "Este monto incluye:",
+    "sign-swap-btc-fees": "Cuotas de red de BTC",
+    "sign-swap-btc-fees-explainer": "Los intercambios atómicos requieren dos transacciones BTC.",
+    "sign-swap-nim-fees": "Cuotas de red de NIM",
+    "sign-swap-exchange-fee": "Cuotas de intercambio",
+    "sign-swap-of-exchange-value": "del valor del intercambio.",
+    "sign-swap-total-fees": "Cuotas totales"
 }

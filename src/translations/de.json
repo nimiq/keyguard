@@ -1,7 +1,7 @@
 {
     "_language": "Deutsch",
 
-    "language-changed": "Die Anzeigesprache hat sich geändert. Möchtest du die Seite neu laden um alle Übersetzungen zu aktualisieren? Andernfalls könnten manche Übersetzungen nicht automatisch aktualisiert werden.",
+    "language-changed": "Die Anzeigesprache hat sich geändert. Möchtest du die Seite neu laden, um alle Übersetzungen zu aktualisieren? Andernfalls könnten manche Übersetzungen nicht automatisch aktualisiert werden.",
 
     "back-to-app": "Zurück zu {appName}",
     "back-to-accounts": "Zurück zu meinen Konten",
@@ -16,7 +16,7 @@
     "funding-cashlink": "Cashlink aufladen",
 
     "recovery-words-title": "Schreibe diese 24 Wörter auf Papier",
-    "recovery-words-intro-text": "Die Wiederherstellungswörter sind der EINZIGE Weg auf dein Konto zuzugreifen, wenn du deine Login-Datei oder dein Passwort verlierst.",
+    "recovery-words-intro-text": "Die Wiederherstellungswörter sind der EINZIGE Weg, auf dein Konto zuzugreifen, wenn du deine Login‑Datei oder dein Passwort verlierst.",
     "recovery-words-intro-offline": "Bewahre deine Wörter offline auf und gib sie auf keiner anderen Seite als [strong]keyguard[/strong].nimiq.com ein.",
     "recovery-words-intro-copy": "Erstelle eine Kopie und verwahre sie an einem sicheren Ort: Dem Haus deiner Familie, Bankschließfach, etc.",
     "recovery-words-intro-safety": "Schütze dich vor Wasser und Feuer und verwahre deine Wieder­herstellungs­wörter in einer verschlossenen Kiste.",
@@ -31,14 +31,14 @@
 
     "import-heading-enter-recovery-words": "Wiederherstellungswörter eingeben",
     "import-import-login-file": "Mit Login-Datei einloggen",
-    "import-login-to-continue": "Bitte logge dich neu ein um fortzufahren.",
+    "import-login-to-continue": "Bitte logge dich neu ein, um fortzufahren.",
     "import-unlock-account": "Entsperre dein Konto",
     "import-create-account": "Erstelle ein neues Konto",
 
     "import-file-button-words": "Mit Wiederherstellungswörtern einloggen",
 
-    "import-words-file-available": "Die Wiederherstellungswörter erzeugen eine neue Login-Datei. Setze ein Passwort um sie zu schützen.",
-    "import-words-file-unavailable": "Die Wiederherstellungswörter erzeugen ein neues Konto. Setze ein Passwort um es zu schützen.",
+    "import-words-file-available": "Die Wiederherstellungswörter erzeugen eine neue Login‑Datei. Setze ein Passwort, um sie zu schützen.",
+    "import-words-file-unavailable": "Die Wiederherstellungswörter erzeugen ein neues Konto. Setze ein Passwort, um es zu schützen.",
     "import-words-hint": "Springe mit Tab zwischen Feldern",
     "import-words-error": "Das ist kein gültiges Konto. Schreibfehler?",
     "import-words-wrong-seed-phrase": "Diese Wiederherstellungswörter gehören zu einem anderen Konto",
@@ -77,7 +77,7 @@
     "passwordbox-confirm-log-in": "Anmelden",
     "passwordbox-show-words": "Wiederherstellungswörter anzeigen",
     "passwordbox-sign-msg": "Nachricht signieren",
-    "passwordbox-confirm-swap": "Confirm swap",
+    "passwordbox-confirm-swap": "Tausch bestätigen",
     "passwordbox-password-strength-short": "Gib mindestens 8 Zeichen ein",
     "passwordbox-password-strength-weak": "Schlechtes Passwort",
     "passwordbox-password-strength-good": "Gutes Passwort",
@@ -155,7 +155,7 @@
     "export-file-success-save-file": "Login-Datei gespeichert",
     "export-file-success-create-backup": "Backup erstellt",
     "export-file-success-heading": "Nimm dir 5 Minuten Zeit für ein Backup",
-    "export-file-success-words-intro": "Es gibt keine Möglichkeit der Passwortwiederherstellung. Schreib dir 24 Wörter auf um ein sicheres Backup zu erstellen.",
+    "export-file-success-words-intro": "Es gibt keine Möglichkeit der Passwortwiederherstellung. Schreib dir 24 Wörter auf, um ein sicheres Backup zu erstellen.",
     "export-words-intro-heading": "Es gibt keine Passwortwiederherstellung!",
     "export-words-unlock-heading": "Wiederherstellungswörter entsperren",
     "export-words-hint": "Scroll runter, um fortzufahren",
@@ -173,7 +173,7 @@
     "remove-key-final-confirm": "Ausloggen",
 
     "derive-address-heading-password": "Entschlüssele dein Konto",
-    "derive-address-password-text": "Bitte gib dein Passwort ein um deinem[br]Konto eine weitere Adresse hinzuzufügen.",
+    "derive-address-password-text": "Bitte gib dein Passwort ein, um deinem[br]Konto eine weitere Adresse hinzuzufügen.",
 
     "change-password-heading": "Altes Passwort bestätigen",
     "change-password-paragraph": "Die Passwortänderung wird eine neue Login-Datei erstellen, welche die bisherige ersetzt.",
@@ -202,18 +202,18 @@
     "login-file-filename": "Nimiq-Login-Datei-{color}-Konto.png",
 
     "bitcoin": "Bitcoin",
-    "bitcoin-recipient-unlabelled": "Unlabelled",
+    "bitcoin-recipient-unlabelled": "Unbeschriftet",
 
-    "derive-btc-xpub-heading": "Add Bitcoin\\nto your account",
-    "derive-btc-xpub-text": "Easily swap between NIM, the super performant payment coin and BTC, the gold standard of crypto.",
+    "derive-btc-xpub-heading": "Füge deinem Account\nBitcoin hinzu",
+    "derive-btc-xpub-text": "Einfach zwischen NIM, dem superperformanten Zahlungscoin und BTC, dem Goldstandard der Krytowährungen tauschen.",
 
-    "sign-swap-heading": "Confirm Swap",
-    "sign-swap-exchange-rate-tooltip": "This rate includes the exchange fee.",
-    "sign-swap-fee-tooltip-heading": "This amount includes:",
-    "sign-swap-btc-fees": "BTC network fees",
-    "sign-swap-btc-fees-explainer": "Atomic swaps require two BTC transactions.",
-    "sign-swap-nim-fees": "NIM network fees",
-    "sign-swap-exchange-fee": "Exchange fee",
-    "sign-swap-of-exchange-value": "of exchange value.",
-    "sign-swap-total-fees": "Total fees"
+    "sign-swap-heading": "Tausch Bestätigen",
+    "sign-swap-exchange-rate-tooltip": "Dieser Kurs beinhaltet die Umtauschgebühren.",
+    "sign-swap-fee-tooltip-heading": "Dieser Betrag beinhaltet:",
+    "sign-swap-btc-fees": "BTC Netzwerkgebühren",
+    "sign-swap-btc-fees-explainer": "Ein sicherer Tausch benötigt zwei BTC Transaktionen.",
+    "sign-swap-nim-fees": "NIM Netzwerkgebühren",
+    "sign-swap-exchange-fee": "Umtauschgebühr",
+    "sign-swap-of-exchange-value": "des Tauschwerts.",
+    "sign-swap-total-fees": "Gebühren gesamt"
 }
