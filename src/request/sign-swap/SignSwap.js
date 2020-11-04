@@ -221,7 +221,7 @@ class SignSwap {
         const $passwordBox = (document.querySelector('#password-box'));
         this._passwordBox = new PasswordBox($passwordBox, {
             hideInput: !request.keyInfo.encrypted,
-            buttonI18nTag: 'passwordbox-perform-swap',
+            buttonI18nTag: 'passwordbox-confirm-swap',
             minLength: request.keyInfo.hasPin ? Key.PIN_LENGTH : undefined,
         });
 

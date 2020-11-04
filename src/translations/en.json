@@ -77,7 +77,7 @@
     "passwordbox-confirm-log-in": "Log in",
     "passwordbox-show-words": "Show recovery words",
     "passwordbox-sign-msg": "Sign message",
-    "passwordbox-perform-swap": "Perform swap",
+    "passwordbox-confirm-swap": "Confirm swap",
     "passwordbox-password-strength-short": "Enter 8 characters or more",
     "passwordbox-password-strength-weak": "Weak password",
     "passwordbox-password-strength-good": "Good password",
