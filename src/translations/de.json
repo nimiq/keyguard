@@ -16,7 +16,7 @@
     "funding-cashlink": "Cashlink aufladen",
 
     "recovery-words-title": "Schreibe diese 24 Wörter auf Papier",
-    "recovery-words-intro-text": "Die Wiederherstellungswörter sind der EINZIGE Weg, auf dein Konto zuzugreifen, wenn du deine Login-Datei oder dein Passwort verlierst.",
+    "recovery-words-intro-text": "Die Wiederherstellungswörter sind der EINZIGE Weg, auf dein Konto zuzugreifen, wenn du deine Login‑Datei oder dein Passwort verlierst.",
     "recovery-words-intro-offline": "Bewahre deine Wörter offline auf und gib sie auf keiner anderen Seite als [strong]keyguard[/strong].nimiq.com ein.",
     "recovery-words-intro-copy": "Erstelle eine Kopie und verwahre sie an einem sicheren Ort: Dem Haus deiner Familie, Bankschließfach, etc.",
     "recovery-words-intro-safety": "Schütze dich vor Wasser und Feuer und verwahre deine Wieder­herstellungs­wörter in einer verschlossenen Kiste.",
@@ -37,7 +37,7 @@
 
     "import-file-button-words": "Mit Wiederherstellungswörtern einloggen",
 
-    "import-words-file-available": "Die Wiederherstellungswörter erzeugen eine neue Login-Datei. Setze ein Passwort, um sie zu schützen.",
+    "import-words-file-available": "Die Wiederherstellungswörter erzeugen eine neue Login‑Datei. Setze ein Passwort, um sie zu schützen.",
     "import-words-file-unavailable": "Die Wiederherstellungswörter erzeugen ein neues Konto. Setze ein Passwort, um es zu schützen.",
     "import-words-hint": "Springe mit Tab zwischen Feldern",
     "import-words-error": "Das ist kein gültiges Konto. Schreibfehler?",
@@ -77,7 +77,7 @@
     "passwordbox-confirm-log-in": "Anmelden",
     "passwordbox-show-words": "Wiederherstellungswörter anzeigen",
     "passwordbox-sign-msg": "Nachricht signieren",
-    "passwordbox-perform-swap": "Tausch durchführen",
+    "passwordbox-confirm-swap": "Tausch bestätigen",
     "passwordbox-password-strength-short": "Gib mindestens 8 Zeichen ein",
     "passwordbox-password-strength-weak": "Schlechtes Passwort",
     "passwordbox-password-strength-good": "Gutes Passwort",
@@ -204,10 +204,10 @@
     "bitcoin": "Bitcoin",
     "bitcoin-recipient-unlabelled": "Unbeschriftet",
 
-    "derive-btc-xpub-heading": "Add Bitcoin\\nto your account",
+    "derive-btc-xpub-heading": "Füge deinem Account\nBitcoin hinzu",
     "derive-btc-xpub-text": "Einfach zwischen NIM, dem superperformanten Zahlungscoin und BTC, dem Goldstandard der Krytowährungen tauschen.",
 
-    "sign-swap-heading": "Tausch bestätigen",
+    "sign-swap-heading": "Tausch Bestätigen",
     "sign-swap-exchange-rate-tooltip": "Dieser Kurs beinhaltet die Umtauschgebühren.",
     "sign-swap-fee-tooltip-heading": "Dieser Betrag beinhaltet:",
     "sign-swap-btc-fees": "BTC Netzwerkgebühren",
