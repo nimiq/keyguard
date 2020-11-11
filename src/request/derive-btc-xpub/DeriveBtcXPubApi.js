@@ -1,13 +1,13 @@
 /* global Nimiq */
 /* global BitcoinEnabledTopLevelApi */
-/* global DeriveBtcXpub */
+/* global DeriveBtcXPub */
 /* global Errors */
 
-/** @extends {BitcoinEnabledTopLevelApi<KeyguardRequest.DeriveBtcXpubRequest>} */
-class DeriveBtcXpubApi extends BitcoinEnabledTopLevelApi { // eslint-disable-line no-unused-vars
+/** @extends {BitcoinEnabledTopLevelApi<KeyguardRequest.DeriveBtcXPubRequest>} */
+class DeriveBtcXPubApi extends BitcoinEnabledTopLevelApi { // eslint-disable-line no-unused-vars
     /**
-     * @param {KeyguardRequest.DeriveBtcXpubRequest} request
-     * @returns {Promise<Parsed<KeyguardRequest.DeriveBtcXpubRequest>>}
+     * @param {KeyguardRequest.DeriveBtcXPubRequest} request
+     * @returns {Promise<Parsed<KeyguardRequest.DeriveBtcXPubRequest>>}
      */
     async parseRequest(request) {
         if (!request) {
@@ -27,6 +27,6 @@ class DeriveBtcXpubApi extends BitcoinEnabledTopLevelApi { // eslint-disable-lin
     }
 
     get Handler() {
-        return DeriveBtcXpub;
+        return DeriveBtcXPub;
     }
 }

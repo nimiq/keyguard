@@ -187,11 +187,11 @@ export type SignMessageRequest = SimpleRequest & {
     signerLabel: string,
 };
 
-export type DeriveBtcXpubRequest = SimpleRequest & {
+export type DeriveBtcXPubRequest = SimpleRequest & {
     bitcoinXPubPath: string,
 };
 
-export type DeriveBtcXpubResult = {
+export type DeriveBtcXPubResult = {
     bitcoinXPub: string,
 };
 
@@ -207,7 +207,7 @@ export type RedirectRequest
     | SignTransactionRequest
     | SignBtcTransactionRequest
     | SimpleRequest
-    | DeriveBtcXpubRequest;
+    | DeriveBtcXPubRequest;
 
 export type IFrameRequest = EmptyRequest | DeriveAddressesRequest | ReleaseKeyRequest;
 
@@ -259,7 +259,7 @@ export type RedirectResult
     | SignTransactionResult
     | SignedBitcoinTransaction
     | SimpleResult
-    | DeriveBtcXpubResult;
+    | DeriveBtcXPubResult;
 
 export type Result = RedirectResult | IFrameResult;
 
@@ -272,7 +272,7 @@ export type ResultType<T extends RedirectRequest> =
     T extends Is<T, ExportRequest> ? ExportResult :
     T extends Is<T, RemoveKeyRequest> | Is<T, SimpleRequest> ? SimpleResult :
     T extends Is<T, SignBtcTransactionRequest> ? SignedBitcoinTransaction :
-    T extends Is<T, DeriveBtcXpubRequest> ? DeriveBtcXpubResult :
+    T extends Is<T, DeriveBtcXPubRequest> ? DeriveBtcXPubResult :
     never;
 
 export type ResultByCommand<T extends KeyguardCommand> =
@@ -282,7 +282,7 @@ export type ResultByCommand<T extends KeyguardCommand> =
     T extends KeyguardCommand.EXPORT ? ExportResult :
     T extends KeyguardCommand.REMOVE ? SimpleResult :
     T extends KeyguardCommand.SIGN_BTC_TRANSACTION ? SignedBitcoinTransaction :
-    T extends KeyguardCommand.DERIVE_BTC_XPUB ? DeriveBtcXpubResult :
+    T extends KeyguardCommand.DERIVE_BTC_XPUB ? DeriveBtcXPubResult :
     never;
 
 // Error constants

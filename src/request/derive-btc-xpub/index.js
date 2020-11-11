@@ -1,4 +1,4 @@
-/* global DeriveBtcXpubApi */
+/* global DeriveBtcXPubApi */
 /* global runKeyguard */
 
-runKeyguard(DeriveBtcXpubApi);
+runKeyguard(DeriveBtcXPubApi);
