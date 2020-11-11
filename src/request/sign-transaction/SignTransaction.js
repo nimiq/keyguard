@@ -82,7 +82,9 @@ class SignTransaction {
                 recipient: recipientAddress,
                 label: recipientLabel || recipientAddress,
                 imageUrl: request.shopLogoUrl,
-                lunaAmount: request.transaction.value,
+                amount: request.transaction.value,
+                currency: /** @type {'nim'} */ ('nim'),
+                unitsToCoins: Nimiq.Policy.lunasToCoins,
                 networkFee: request.transaction.fee,
             }), $paymentInfoLine);
         } else {

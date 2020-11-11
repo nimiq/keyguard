@@ -1,4 +1,3 @@
-/* global Nimiq */
 /* global I18n */
 /* global TemplateTags */
 /* global NumberFormatting */
@@ -10,7 +9,9 @@
  *      recipient: string,
  *      label?: string,
  *      imageUrl?: URL,
- *      lunaAmount: number,
+ *      amount: number,
+ *      currency: 'nim' | 'btc',
+ *      unitsToCoins: (units: number) => number,
  *      networkFee: number,
  *      fiatAmount?: number,
  *      fiatCurrency?: string,
@@ -29,9 +30,12 @@ class PaymentInfoLine { // eslint-disable-line no-unused-vars
         this.$el = PaymentInfoLine._createElement($el);
 
         /** @type HTMLElement */
-        const $nimAmount = (this.$el.querySelector('.nim-amount'));
-        const nimAmount = NumberFormatting.formatNumber(Nimiq.Policy.lunasToCoins(paymentInfo.lunaAmount), 4);
-        $nimAmount.textContent = `${nimAmount} NIM`;
+        const $amount = (this.$el.querySelector('.amount'));
+        const amount = NumberFormatting.formatNumber(
+            paymentInfo.unitsToCoins(paymentInfo.amount),
+            paymentInfo.currency === 'nim' ? 4 : 7,
+        );
+        $amount.textContent = `${amount} ${paymentInfo.currency.toUpperCase()}`;
 
         this._createPriceTooltip(/** @type {HTMLElement} */ (this.$el.querySelector('.amounts')));
 
@@ -63,7 +67,7 @@ class PaymentInfoLine { // eslint-disable-line no-unused-vars
 
         $el.innerHTML = TemplateTags.noVars`
             <div class="amounts">
-                <div class="nim-amount"></div>
+                <div class="amount"></div>
             </div>
             <div class="arrow-runway">
                 <svg class="nq-icon">
@@ -83,7 +87,7 @@ class PaymentInfoLine { // eslint-disable-line no-unused-vars
      */
     _createPriceTooltip($container) {
         // eslint-disable-next-line object-curly-newline
-        const { fiatAmount, fiatCurrency, vendorMarkup, lunaAmount, networkFee } = this.paymentInfo;
+        const { fiatAmount, fiatCurrency, vendorMarkup, amount, networkFee } = this.paymentInfo;
         if (!fiatAmount || !fiatCurrency) return;
 
         const $tooltip = document.createElement('div');
@@ -149,22 +153,30 @@ class PaymentInfoLine { // eslint-disable-line no-unused-vars
             $vendorMarkupTemplate.remove();
         }
 
+        const ticker = this.paymentInfo.currency.toUpperCase();
+
         /** @type {HTMLElement} */
         const $effectiveRate = ($tooltip.querySelector('.effective-rate'));
         // Fiat/crypto rate. Higher fiat/crypto rate means user is paying less crypto for the requested fiat amount
         // and is therefore better for the user. Note: precision loss should be acceptable here.
-        const effectiveRate = fiatAmount / Nimiq.Policy.lunasToCoins(lunaAmount);
-        $effectiveRate.textContent = `${NumberFormatting.formatCurrency(effectiveRate, fiatCurrency, 0.0001)} / NIM`;
+        const effectiveRate = fiatAmount / this.paymentInfo.unitsToCoins(amount);
+        $effectiveRate.textContent = `${NumberFormatting.formatCurrency(
+            effectiveRate,
+            fiatCurrency,
+            0.0001,
+        )} / ${ticker}`;
 
         /** @type {HTMLElement} */
         const $total = ($tooltip.querySelector('.total'));
-        $total.textContent = `${NumberFormatting.formatNumber(Nimiq.Policy.lunasToCoins(lunaAmount))} NIM`;
+        $total.textContent = `${NumberFormatting.formatNumber(this.paymentInfo.unitsToCoins(amount))} ${ticker}`;
 
         // Note that in the Keyguard the fee is never undefined.
         if (networkFee !== 0) {
             /** @type {HTMLElement} */
             const $networkFee = ($tooltip.querySelector('.network-fee'));
-            $networkFee.textContent = `${NumberFormatting.formatNumber(Nimiq.Policy.lunasToCoins(networkFee))} NIM`;
+            $networkFee.textContent = `${NumberFormatting.formatNumber(
+                this.paymentInfo.unitsToCoins(networkFee),
+            )} ${ticker}`;
         } else {
             /** @type {HTMLElement} */
             const $networkFeeInfo = ($tooltip.querySelector('.network-fee-info'));
@@ -196,7 +208,10 @@ class PaymentInfoLine { // eslint-disable-line no-unused-vars
         let referenceRate;
         try {
             /* eslint-disable object-curly-spacing */
-            const {nim: currencyRecord} = await FiatApi.getExchangeRates(['nim'], [fiatCurrency]);
+            const {[this.paymentInfo.currency]: currencyRecord} = await FiatApi.getExchangeRates(
+                [this.paymentInfo.currency],
+                [fiatCurrency],
+            );
             if (!currencyRecord) return;
             ({[fiatCurrency]: referenceRate} = currencyRecord);
             /* eslint-enable object-curly-spacing */

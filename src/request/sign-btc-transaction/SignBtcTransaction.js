@@ -6,7 +6,7 @@
 /* global Errors */
 /* global Utf8Tools */
 /* global TopLevelApi */
-/* global PaymentInfoLineBitcoin */
+/* global PaymentInfoLine */
 /* global NumberFormatting */
 /* global BitcoinJS */
 /* global BitcoinConstants */
@@ -79,11 +79,13 @@ class SignBtcTransaction {
         const $paymentInfoLine = (this.$el.querySelector('.payment-info-line'));
         if (request.layout === SignBtcTransactionApi.Layouts.CHECKOUT) {
             // eslint-disable-next-line no-new
-            new PaymentInfoLineBitcoin(Object.assign({}, request, {
+            new PaymentInfoLine(Object.assign({}, request, {
                 recipient: recipientAddress,
                 label: recipientLabel || recipientAddress,
                 imageUrl: request.shopLogoUrl,
-                satoshiAmount: recipientOutput.value,
+                amount: recipientOutput.value,
+                currency: /** @type {'btc'} */ ('btc'),
+                unitsToCoins: BitcoinUtils.satoshisToCoins,
                 networkFee: fee,
             }), $paymentInfoLine);
         } else {
