@@ -54,7 +54,7 @@ fdescribe('BitcoinKey', () => {
             },
         }, {
             hash: '18d7a602b06c9613412bc935c5fbe7a22ff4e670bc176f75fadbdf2fb9940b5d',
-            index: 0, // Our output was the second in the input tx
+            index: 0, // Our output was the first in the input tx
             witnessUtxo: {
                 script: BitcoinJS.Buffer.from('001484eb9bcbd90ce7d3360992259e4b9b818215a960', 'hex'),
                 value: 4983992,
@@ -68,7 +68,7 @@ fdescribe('BitcoinKey', () => {
             },
         }, {
             hash: '5fedaef5229799e18e351f76395bb7411e56da2291f99905e75dc72850ce2fdf',
-            index: 0, // Our output was the second in the input tx
+            index: 0, // Our output was the first in the input tx
             witnessUtxo: {
                 script: BitcoinJS.Buffer.from('001484eb9bcbd90ce7d3360992259e4b9b818215a960', 'hex'),
                 value: 1000000,
@@ -82,7 +82,7 @@ fdescribe('BitcoinKey', () => {
             },
         }, {
             hash: '738b5c17758131b22d560ad6417defb830c3940bfc4074d0414b44798e880747',
-            index: 25, // Our output was the second in the input tx
+            index: 25, // Our output was the 26th in the input tx
             witnessUtxo: {
                 script: BitcoinJS.Buffer.from('001484eb9bcbd90ce7d3360992259e4b9b818215a960', 'hex'),
                 value: 27738766,
