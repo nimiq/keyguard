@@ -1,4 +1,5 @@
 /* global Nimiq */
+/* global Errors */
 /* global BitcoinJS */
 /* global BitcoinConstants */
 /* global BitcoinUtils */
@@ -10,7 +11,7 @@ class BitcoinKey {
      */
     constructor(key) {
         if (key.type !== Nimiq.Secret.Type.ENTROPY) {
-            throw new Error('Key must be of type Nimiq.Entropy');
+            throw new Errors.KeyguardError('Key must be of type Nimiq.Entropy');
         }
         this._key = key;
     }
@@ -32,7 +33,7 @@ class BitcoinKey {
         }
 
         if (!address) {
-            throw new Error('UNEXPECTED: Failed to derive an address');
+            throw new Errors.KeyguardError('UNEXPECTED: Failed to derive an address');
         }
 
         return address;
@@ -79,7 +80,7 @@ class BitcoinKey {
      * @throws
      */
     signMessage(path, message) { // eslint-disable-line no-unused-vars
-        throw new Error('signMessage is not implemented for Bitcoin keys');
+        throw new Errors.KeyguardError('signMessage is not implemented for Bitcoin keys');
     }
 
     /**

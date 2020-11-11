@@ -76,21 +76,6 @@ class SignTransactionApi extends TopLevelApi {
         return /** @type KeyguardRequest.SignTransactionRequestLayout */ (layout);
     }
 
-    /**
-     * Parses that a value is a valid vendor markup.
-     * @param {unknown} value
-     * @returns {number | undefined}
-     */
-    parseVendorMarkup(value) {
-        if (value === undefined) {
-            return undefined;
-        }
-        if (typeof value !== 'number' || value <= -1 || !Number.isFinite(value)) {
-            throw new Errors.InvalidRequestError('Vendor markup must be a finite number > -1.');
-        }
-        return value;
-    }
-
     get Handler() {
         return SignTransaction;
     }

@@ -6,14 +6,14 @@
 /* global BitcoinKey */
 
 /**
- * @callback DeriveBtcXpub.resolve
- * @param {KeyguardRequest.DeriveBtcXpubResult} result
+ * @callback DeriveBtcXPub.resolve
+ * @param {KeyguardRequest.DeriveBtcXPubResult} result
  */
 
-class DeriveBtcXpub {
+class DeriveBtcXPub {
     /**
-     * @param {Parsed<KeyguardRequest.DeriveBtcXpubRequest>} request
-     * @param {DeriveBtcXpub.resolve} resolve
+     * @param {Parsed<KeyguardRequest.DeriveBtcXPubRequest>} request
+     * @param {DeriveBtcXPub.resolve} resolve
      * @param {reject} reject
      */
     constructor(request, resolve, reject) {
@@ -69,7 +69,7 @@ class DeriveBtcXpub {
 
         const bitcoinXPub = new BitcoinKey(key).deriveExtendedPublicKey(this._request.bitcoinXPubPath);
 
-        /** @type {KeyguardRequest.DeriveBtcXpubResult} */
+        /** @type {KeyguardRequest.DeriveBtcXPubResult} */
         const result = {
             bitcoinXPub,
         };
@@ -78,10 +78,10 @@ class DeriveBtcXpub {
     }
 
     async run() {
-        window.location.hash = DeriveBtcXpub.Pages.UNLOCK;
+        window.location.hash = DeriveBtcXPub.Pages.UNLOCK;
     }
 }
 
-DeriveBtcXpub.Pages = {
+DeriveBtcXPub.Pages = {
     UNLOCK: 'unlock',
 };

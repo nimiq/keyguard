@@ -101,7 +101,7 @@ type Parsed<T extends KeyguardRequest.Request> =
         > :
     T extends Is<T, KeyguardRequest.SimpleRequest>
         | Is<T, KeyguardRequest.DeriveAddressRequest>
-        | Is<T, KeyguardRequest.DeriveBtcXpubRequest>
+        | Is<T, KeyguardRequest.DeriveBtcXPubRequest>
         | Is<T, KeyguardRequest.RemoveKeyRequest>
         | Is<T, KeyguardRequest.ExportRequest> ? KeyId2KeyInfo<T> :
     T extends Is<T, KeyguardRequest.ImportRequest> ?
