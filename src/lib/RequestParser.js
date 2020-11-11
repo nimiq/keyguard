@@ -18,7 +18,7 @@ class RequestParser { // eslint-disable-line no-unused-vars
 
     /**
      * @param {any} path
-     * @param {string} name -  name of the property, used in error case only
+     * @param {string} name - name of the property, used in error case only
      * @returns {string}
      */
     parsePath(path, name) {
@@ -260,14 +260,48 @@ class RequestParser { // eslint-disable-line no-unused-vars
      * Checks that a given value is a non-negative finite number.
      * @param {any} value
      * @param {boolean} [allowUndefined=true]
+     * @param {string} [parameterName='Value']
      * @returns {number | undefined}
      */
-    parseNonNegativeFiniteNumber(value, allowUndefined = true) {
+    parseNonNegativeFiniteNumber(value, allowUndefined = true, parameterName = 'Value') {
         if (value === undefined && allowUndefined) {
             return undefined;
         }
         if (typeof value !== 'number' || value < 0 || !Number.isFinite(value)) {
-            throw new Errors.InvalidRequestError('Value must be a non-negative finite number.');
+            throw new Errors.InvalidRequestError(`${parameterName} must be a non-negative finite number.`);
+        }
+        return value;
+    }
+
+    /**
+     * Parses that a currency info is valid.
+     * @param {unknown} fiatCurrency
+     * @returns {string | undefined}
+     */
+    parseFiatCurrency(fiatCurrency) {
+        if (fiatCurrency === undefined) {
+            return undefined;
+        }
+
+        // parse currency code
+        if (typeof fiatCurrency !== 'string'
+            || !/^[a-z]{3}$/i.test(fiatCurrency)) {
+            throw new Errors.InvalidRequestError(`Invalid currency code ${fiatCurrency}`);
+        }
+        return fiatCurrency.toUpperCase();
+    }
+
+    /**
+     * Parses that a value is a valid vendor markup.
+     * @param {unknown} value
+     * @returns {number | undefined}
+     */
+    parseVendorMarkup(value) {
+        if (value === undefined) {
+            return undefined;
+        }
+        if (typeof value !== 'number' || value <= -1 || !Number.isFinite(value)) {
+            throw new Errors.InvalidRequestError('Vendor markup must be a finite number > -1.');
         }
         return value;
     }

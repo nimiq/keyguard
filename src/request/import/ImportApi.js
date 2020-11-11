@@ -1,10 +1,10 @@
-/* global TopLevelApi */
+/* global BitcoinEnabledTopLevelApi */
 /* global ImportFile */
 /* global ImportWords */
 /* global Errors */
 
-/** @extends {TopLevelApi<KeyguardRequest.ImportRequest>} */
-class ImportApi extends TopLevelApi {
+/** @extends {BitcoinEnabledTopLevelApi<KeyguardRequest.ImportRequest>} */
+class ImportApi extends BitcoinEnabledTopLevelApi {
     /**
      * @param {KeyguardRequest.ImportRequest | KeyguardRequest.ResetPasswordRequest} request
      * @returns {Promise<Parsed<KeyguardRequest.ImportRequest | KeyguardRequest.ResetPasswordRequest>>}
@@ -16,13 +16,14 @@ class ImportApi extends TopLevelApi {
 
         const parsedRequest = {};
         parsedRequest.appName = this.parseAppName(request.appName);
-        parsedRequest.requestedKeyPaths = this.parsePathsArray(request.requestedKeyPaths, ' requestedKeyPaths');
+        parsedRequest.requestedKeyPaths = this.parsePathsArray(request.requestedKeyPaths, 'requestedKeyPaths');
         parsedRequest.isKeyLost = this.parseBoolean(request.isKeyLost);
         parsedRequest.enableBackArrow = this.parseBoolean(request.enableBackArrow);
         parsedRequest.wordsOnly = this.parseBoolean(request.wordsOnly);
         if ('expectedKeyId' in request) {
             parsedRequest.expectedKeyId = (await this.parseKeyId(request.expectedKeyId)).id;
         }
+        parsedRequest.bitcoinXPubPath = this.parseBitcoinPath(request.bitcoinXPubPath, 'bitcoinXPubPath');
 
         this._handler = parsedRequest.wordsOnly ? ImportWords : ImportFile;
 

@@ -8,6 +8,10 @@ export enum KeyguardCommand {
     SIGN_MESSAGE = 'sign-message',
     DERIVE_ADDRESS = 'derive-address',
 
+    // Bitcoin
+    SIGN_BTC_TRANSACTION = 'sign-btc-transaction',
+    DERIVE_BTC_XPUB = 'derive-btc-xpub',
+
     // Iframe requests
     LIST = 'list',
     HAS_KEYS = 'hasKeys',

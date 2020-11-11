@@ -333,6 +333,14 @@ body.loading .page:target .page-footer > .loading-spinner {
     content: "NIM";
 }
 
+.btc-symbol::before {
+    content: "BTC";
+}
+
+.mbtc-symbol::before {
+    content: "mBTC";
+}
+
 .address {
     font-family: "Fira Mono", "Andale Mono", monospace;
     font-size: 1.625rem;

@@ -60,6 +60,7 @@
     "types/Keyguard.d.ts",
     "types/ErrorContainer.d.ts",
     "types/MessagePrefix.d.ts",
+    "types/BitcoinJS.d.ts",
     "src/**/*.js",
     "tests/**/*.js"
   ],
@@ -70,6 +71,7 @@
     "instrumented",
     "coverage",
     "src/lib/QrScannerWorker.js",
-    "src/translations/index.js"
+    "src/translations/index.js",
+    "src/lib/bitcoin/BitcoinJS.js",
   ]
 }

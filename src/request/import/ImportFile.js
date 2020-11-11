@@ -9,6 +9,7 @@
 /* global TopLevelApi */
 /* global Utf8Tools */
 /* global KeyStore */
+/* global BitcoinKey */
 
 /**
  * @callback ImportFile.resolve
@@ -129,6 +130,9 @@ class ImportFile {
         /** @type {{keyPath: string, address: Uint8Array}[]} */
         const addresses = [];
 
+        /** @type {string | undefined} */
+        let bitcoinXPub;
+
         if (key.secret instanceof Nimiq.PrivateKey) {
             addresses.push({
                 keyPath: Constants.LEGACY_DERIVATION_PATH,
@@ -142,6 +146,8 @@ class ImportFile {
                     address: /** @type {Key} */(key).deriveAddress(keyPath).serialize(),
                 });
             });
+
+            bitcoinXPub = new BitcoinKey(key).deriveExtendedPublicKey(this._request.bitcoinXPubPath);
 
             // Store entropy in SessionStorage so addresses can be derived in the KeyguardIframe
             const secretString = Nimiq.BufferUtils.toBase64(key.secret.serialize());
@@ -161,6 +167,7 @@ class ImportFile {
             // Therefore we set both flags to true.
             fileExported: true,
             wordsExported: true,
+            bitcoinXPub,
         }];
 
         this._resolve(result);

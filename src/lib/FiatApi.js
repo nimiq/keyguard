@@ -36,11 +36,12 @@ class FiatApi {
 
 /**
  * @readonly
- * @enum { 'nim' }
+ * @enum { 'nim' | 'btc' }
  * Crypto currencies supported by the coingecko api that are currently of interest for us.
  */
 FiatApi.SupportedCryptoCurrency = {
     NIM: /** @type {'nim'} */ ('nim'),
+    BTC: /** @type {'btc'} */ ('btc'),
 };
 
 /**
@@ -83,4 +84,5 @@ FiatApi.API_URL = 'https://api.coingecko.com/api/v3';
  */
 FiatApi.COINGECKO_COIN_IDS = {
     [FiatApi.SupportedCryptoCurrency.NIM]: 'nimiq-2',
+    [FiatApi.SupportedCryptoCurrency.BTC]: 'bitcoin',
 };

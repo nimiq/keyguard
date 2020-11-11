@@ -14,6 +14,7 @@
 /* global RecoveryWords */
 /* global TopLevelApi */
 /* global Utf8Tools */
+/* global BitcoinKey */
 
 /**
  * @callback ImportWords.resolve
@@ -177,6 +178,8 @@ class ImportWords {
                     address: key.deriveAddress(keyPath).serialize(),
                 }));
 
+                const bitcoinXPub = new BitcoinKey(key).deriveExtendedPublicKey(this._request.bitcoinXPubPath);
+
                 /** @type {KeyguardRequest.SingleKeyResult} */
                 const result = {
                     keyId: await KeyStore.instance.put(key, encryptionKey || undefined),
@@ -187,6 +190,7 @@ class ImportWords {
                     // Therefore we set both flags to true.
                     fileExported: true,
                     wordsExported: true,
+                    bitcoinXPub,
                 };
                 this._keyResults.push(result);
 

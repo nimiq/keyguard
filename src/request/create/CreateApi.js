@@ -1,9 +1,9 @@
-/* global TopLevelApi */
+/* global BitcoinEnabledTopLevelApi */
 /* global Create */
 /* global Errors */
 
-/** @extends {TopLevelApi<KeyguardRequest.CreateRequest>} */
-class CreateApi extends TopLevelApi { // eslint-disable-line no-unused-vars
+/** @extends {BitcoinEnabledTopLevelApi<KeyguardRequest.CreateRequest>} */
+class CreateApi extends BitcoinEnabledTopLevelApi { // eslint-disable-line no-unused-vars
     /**
      * @param {KeyguardRequest.CreateRequest} request
      * @returns {Promise<KeyguardRequest.CreateRequest>}
@@ -17,6 +17,7 @@ class CreateApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         parsedRequest.appName = this.parseAppName(request.appName);
         parsedRequest.defaultKeyPath = this.parsePath(request.defaultKeyPath, 'defaultKeyPath');
         parsedRequest.enableBackArrow = this.parseBoolean(request.enableBackArrow);
+        parsedRequest.bitcoinXPubPath = this.parseBitcoinPath(request.bitcoinXPubPath, 'bitcoinXPubPath');
 
         return parsedRequest;
     }

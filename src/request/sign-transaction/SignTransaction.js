@@ -82,7 +82,9 @@ class SignTransaction {
                 recipient: recipientAddress,
                 label: recipientLabel || recipientAddress,
                 imageUrl: request.shopLogoUrl,
-                lunaAmount: request.transaction.value,
+                amount: request.transaction.value,
+                currency: /** @type {'nim'} */ ('nim'),
+                unitsToCoins: Nimiq.Policy.lunasToCoins,
                 networkFee: request.transaction.fee,
             }), $paymentInfoLine);
         } else {
@@ -101,9 +103,9 @@ class SignTransaction {
         const $data = (this.$el.querySelector('#data'));
 
         // Set value and fee.
-        $value.textContent = NumberFormatting.formatNumber(Nimiq.Policy.satoshisToCoins(transaction.value));
+        $value.textContent = NumberFormatting.formatNumber(Nimiq.Policy.lunasToCoins(transaction.value));
         if ($fee && transaction.fee > 0) {
-            $fee.textContent = NumberFormatting.formatNumber(Nimiq.Policy.satoshisToCoins(transaction.fee));
+            $fee.textContent = NumberFormatting.formatNumber(Nimiq.Policy.lunasToCoins(transaction.fee));
             /** @type {HTMLDivElement} */
             const $feeSection = (this.$el.querySelector('.fee-section'));
             $feeSection.classList.remove('display-none');

@@ -1,1 +1,2 @@
 *.min.*
+src/lib/bitcoin/BitcoinJS.js

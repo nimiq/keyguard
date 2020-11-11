@@ -31,6 +31,8 @@ import {
     DerivedAddress,
     ObjectType,
     ResultByCommand,
+    SignBtcTransactionRequest,
+    DeriveBtcXPubRequest,
 } from './PublicRequest';
 
 import Observable from './Observable';
@@ -118,6 +120,14 @@ export class KeyguardClient {
 
     public signMessage(request: SignMessageRequest) {
         this._redirectRequest<SignMessageRequest>(KeyguardCommand.SIGN_MESSAGE, request);
+    }
+
+    public signBtcTransaction(request: SignBtcTransactionRequest) {
+        this._redirectRequest<SignBtcTransactionRequest>(KeyguardCommand.SIGN_BTC_TRANSACTION, request);
+    }
+
+    public deriveBtcXPub(request: DeriveBtcXPubRequest) {
+        this._redirectRequest<DeriveBtcXPubRequest>(KeyguardCommand.DERIVE_BTC_XPUB, request);
     }
 
     /* IFRAME REQUESTS */

@@ -6,6 +6,7 @@
 /* global Utf8Tools */
 /* global TopLevelApi */
 /* global Identicon */
+/* global BitcoinKey */
 
 /**
  * @callback Create.resolve
@@ -119,6 +120,7 @@ class Create {
             }],
             fileExported: false,
             wordsExported: false,
+            bitcoinXPub: new BitcoinKey(key).deriveExtendedPublicKey(request.bitcoinXPubPath),
         }];
 
         this._resolve(result);

@@ -1,33 +1,35 @@
+/* global Nimiq */
 /* global I18n */
-/* global TopLevelApi */
-/* global SignTransaction */
+/* global BitcoinEnabledTopLevelApi */
+/* global SignBtcTransaction */
 /* global Errors */
 
-/** @extends {TopLevelApi<KeyguardRequest.SignTransactionRequest>} */
-class SignTransactionApi extends TopLevelApi {
+/** @extends {BitcoinEnabledTopLevelApi<KeyguardRequest.SignBtcTransactionRequest>} */
+class SignBtcTransactionApi extends BitcoinEnabledTopLevelApi {
     /**
-     * @param {KeyguardRequest.SignTransactionRequest} request
-     * @returns {Promise<Parsed<KeyguardRequest.SignTransactionRequest>>}
+     * @param {KeyguardRequest.SignBtcTransactionRequest} request
+     * @returns {Promise<Parsed<KeyguardRequest.SignBtcTransactionRequest>>}
      */
     async parseRequest(request) {
         if (!request) {
             throw new Errors.InvalidRequestError('request is required');
         }
 
-        /** @type {Parsed<KeyguardRequest.SignTransactionRequest>} */
+        /** @type {Parsed<KeyguardRequest.SignBtcTransactionRequest>} */
         const parsedRequest = {};
         parsedRequest.appName = this.parseAppName(request.appName);
         parsedRequest.keyInfo = await this.parseKeyId(request.keyId);
+        if (parsedRequest.keyInfo.type !== Nimiq.Secret.Type.ENTROPY) {
+            throw new Errors.InvalidRequestError('Bitcoin is only supported with modern accounts.');
+        }
         parsedRequest.keyLabel = this.parseLabel(request.keyLabel);
-        parsedRequest.keyPath = this.parsePath(request.keyPath, 'keyPath');
-        parsedRequest.senderLabel = this.parseLabel(request.senderLabel);
-        parsedRequest.transaction = this.parseTransaction(request);
+        parsedRequest.inputs = this.parseInputs(request.inputs);
+        parsedRequest.recipientOutput = /** @type {KeyguardRequest.BitcoinTransactionOutput} */ (
+            this.parseOutput(request.recipientOutput, false, 'recipientOutput'));
+        parsedRequest.changeOutput = this.parseChangeOutput(request.changeOutput, true, 'changeOutput');
         parsedRequest.layout = this.parseLayout(request.layout);
-        if ((!request.layout || request.layout === SignTransactionApi.Layouts.STANDARD)
-            && parsedRequest.layout === SignTransactionApi.Layouts.STANDARD) {
-            parsedRequest.recipientLabel = this.parseLabel(request.recipientLabel);
-        } else if (request.layout === SignTransactionApi.Layouts.CHECKOUT
-            && parsedRequest.layout === SignTransactionApi.Layouts.CHECKOUT) {
+        if (request.layout === SignBtcTransactionApi.Layouts.CHECKOUT
+            && parsedRequest.layout === SignBtcTransactionApi.Layouts.CHECKOUT) {
             parsedRequest.shopOrigin = this.parseShopOrigin(request.shopOrigin);
             parsedRequest.shopLogoUrl = this.parseShopLogoUrl(request.shopLogoUrl);
             if (parsedRequest.shopLogoUrl && parsedRequest.shopLogoUrl.origin !== parsedRequest.shopOrigin) {
@@ -51,10 +53,6 @@ class SignTransactionApi extends TopLevelApi {
                     throw new Errors.InvalidRequestError('`expires` must be greater than `time`');
                 }
             }
-        } else if (request.layout === SignTransactionApi.Layouts.CASHLINK
-            && parsedRequest.layout === SignTransactionApi.Layouts.CASHLINK
-            && request.cashlinkMessage) {
-            parsedRequest.cashlinkMessage = /** @type {string} */(this.parseMessage(request.cashlinkMessage));
         }
 
         return parsedRequest;
@@ -63,39 +61,38 @@ class SignTransactionApi extends TopLevelApi {
     /**
      * Checks that the given layout is valid
      * @param {unknown} layout
-     * @returns {KeyguardRequest.SignTransactionRequestLayout}
+     * @returns {KeyguardRequest.SignBtcTransactionRequestLayout}
      */
     parseLayout(layout) {
         if (!layout) {
-            return SignTransactionApi.Layouts.STANDARD;
+            return SignBtcTransactionApi.Layouts.STANDARD;
         }
         // @ts-ignore (Property 'values' does not exist on type 'ObjectConstructor'.)
-        if (Object.values(SignTransactionApi.Layouts).indexOf(layout) === -1) {
+        if (Object.values(SignBtcTransactionApi.Layouts).indexOf(layout) === -1) {
             throw new Errors.InvalidRequestError('Invalid selected layout');
         }
-        return /** @type KeyguardRequest.SignTransactionRequestLayout */ (layout);
+        return /** @type KeyguardRequest.SignBtcTransactionRequestLayout */ (layout);
     }
 
     get Handler() {
-        return SignTransaction;
+        return SignBtcTransaction;
     }
 
     /**
-     * @param {Parsed<KeyguardRequest.SignTransactionRequest>} parsedRequest
+     * @param {Parsed<KeyguardRequest.SignBtcTransactionRequest>} parsedRequest
      */
     async onBeforeRun(parsedRequest) {
-        if (parsedRequest.layout === SignTransactionApi.Layouts.CHECKOUT) {
+        if (parsedRequest.layout === SignBtcTransactionApi.Layouts.CHECKOUT) {
             this.enableGlobalCloseButton(I18n.translatePhrase('sign-tx-cancel-payment'));
         }
     }
 }
 
 /**
- * @enum {KeyguardRequest.SignTransactionRequestLayout}
+ * @enum {KeyguardRequest.SignBtcTransactionRequestLayout}
  * @readonly
  */
-SignTransactionApi.Layouts = {
+SignBtcTransactionApi.Layouts = {
     STANDARD: /** @type {'standard'} */ ('standard'),
     CHECKOUT: /** @type {'checkout'} */ ('checkout'),
-    CASHLINK: /** @type {'cashlink'} */ ('cashlink'),
 };

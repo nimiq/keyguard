@@ -30,8 +30,9 @@
     <script defer bundle-common src="../../lib/AccountStore.js"></script>
     <script defer bundle-common src="../../common.js"></script>
 
-    <script defer bundle-toplevel src="../../components/PasswordInput.js"></script>
     <script defer bundle-toplevel src="../../components/NoRequestErrorPage.js"></script>
+    <script defer bundle-toplevel src="../../components/PasswordBox.js"></script>
+    <script defer bundle-toplevel src="../../components/PasswordInput.js"></script>
     <script defer bundle-toplevel src="../../lib/AnimationUtils.js"></script>
     <script defer bundle-toplevel src="../../lib/I18n.js"></script>
     <script defer bundle-toplevel src="../../lib/RequestParser.js"></script>
@@ -46,15 +47,8 @@
     <script defer bundle-bitcoin src="../../lib/bitcoin/BitcoinKey.js"></script>
     <script defer bundle-bitcoin src="../../lib/bitcoin/BitcoinEnabledTopLevelApi.js"></script>
 
-    <script defer src="../../lib/IqonHash.js"></script>
-    <script defer src="../../lib/Iqons.js"></script>
-    <script defer src="../../lib/PasswordStrength.js"></script>
-    <script defer src="../../components/Identicon.js"></script>
-    <script defer src="../../components/PasswordSetterBox.js"></script>
-    <script defer src="../../components/ProgressIndicator.js"></script>
-    <script defer src="IdenticonSelector.js"></script>
-    <script defer src="Create.js"></script>
-    <script defer src="CreateApi.js"></script>
+    <script defer src="DeriveBtcXPub.js"></script>
+    <script defer src="DeriveBtcXPubApi.js"></script>
     <script defer src="index.js"></script>
 
     <link rel="stylesheet" bundle-toplevel href="../../../node_modules/@nimiq/style/nimiq-style.min.css">
@@ -63,9 +57,7 @@
     <link rel="stylesheet" bundle-toplevel href="../../components/PasswordInput.css">
     <link rel="stylesheet" bundle-toplevel href="../../components/PasswordBox.css">
 
-    <link rel="stylesheet" href="../../components/ProgressIndicator.css">
-    <link rel="stylesheet" href="./IdenticonSelector.css">
-    <link rel="stylesheet" href="./Create.css">
+    <link rel="stylesheet" href="./DeriveBtcXPub.css">
 </head>
 <body class="loading">
     <div class="header-top">
@@ -75,41 +67,15 @@
     </div>
 
     <div id="app">
-        <div id="choose-identicon" class="page nq-card">
-            <div class="page-header nq-card-header">
-                <div class="progress-indicator"></div>
-                <a tabindex="0" class="page-header-back-button display-none">
-                    <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
-                </a>
-                <h1 data-i18n="create-heading-choose-identicon" class="nq-h1">Choose an Avatar</h1>
-            </div>
-
+        <div id="unlock" class="page nq-card">
             <div class="page-body nq-card-body">
-                <div class="identicon-selector">
-                </div>
-            </div>
-        </div>
+                <img src="../../assets/icons/bitcoin.svg" class="bitcoin-logo">
 
-        <div id="set-password" class="page nq-card">
-            <div class="page-header nq-card-header">
-                <div class="progress-indicator"></div>
-                <a tabindex="0" class="page-header-back-button">
-                    <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
-                </a>
-                <h1 class="nq-h1 hide-on-repetition" data-i18n="create-heading-create-password">Create a Password</h1>
-                <h1 class="nq-h1 show-on-repetition" data-i18n="create-heading-repeat-password">Confirm your Password</h1>
-            </div>
+                <h1 class="nq-h1" data-i18n="derive-btc-xpub-heading">Add Bitcoin\nto your account</h1>
 
-            <div class="page-body nq-card-body">
-                <div class="wallet-identifier">
-                    <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-hexagon"/></svg>
-                    <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-hexagon"/></svg>
-                    <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-hexagon"/></svg>
-                    <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-hexagon"/></svg>
-                    <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-hexagon"/></svg>
-                    <div class="identicon"></div>
-                </div>
-                <h2 class="nq-h2 nq-blue" data-i18n="create-wallet-desc">This is your Account with your first Address.</h2>
+                <p class="nq-text" data-i18n="derive-btc-xpub-text">
+                    Easily swap between NIM, the super performant payment coin and BTC, the gold standard of crypto.
+                </p>
             </div>
 
             <div class="page-footer nq-card-footer">
