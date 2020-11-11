@@ -274,6 +274,39 @@ class RequestParser { // eslint-disable-line no-unused-vars
     }
 
     /**
+     * Parses that a currency info is valid.
+     * @param {unknown} fiatCurrency
+     * @returns {string | undefined}
+     */
+    parseFiatCurrency(fiatCurrency) {
+        if (fiatCurrency === undefined) {
+            return undefined;
+        }
+
+        // parse currency code
+        if (typeof fiatCurrency !== 'string'
+            || !/^[a-z]{3}$/i.test(fiatCurrency)) {
+            throw new Errors.InvalidRequestError(`Invalid currency code ${fiatCurrency}`);
+        }
+        return fiatCurrency.toUpperCase();
+    }
+
+    /**
+     * Parses that a value is a valid vendor markup.
+     * @param {unknown} value
+     * @returns {number | undefined}
+     */
+    parseVendorMarkup(value) {
+        if (value === undefined) {
+            return undefined;
+        }
+        if (typeof value !== 'number' || value <= -1 || !Number.isFinite(value)) {
+            throw new Errors.InvalidRequestError('Vendor markup must be a finite number > -1.');
+        }
+        return value;
+    }
+
+    /**
      * @param {string} id
      * @returns {boolean}
      */
