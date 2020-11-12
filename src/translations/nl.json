@@ -17,8 +17,8 @@
 
     "recovery-words-title": "Schrijf deze 24 woorden op papier",
     "recovery-words-intro-text": "De herstelwoorden is de ENIGSTE manier om je account te herstellen in het geval dat je je Login File of wachtwoord verliest.",
-    "recovery-words-intro-offline": "Houd je woorden offline, voer ze nergens in dan op [strong] keyguard [/ strong] .nimiq.com.",
-    "recovery-words-intro-copy": "Kopiëer deze gegevens en bewaar het op een veilige plaats: thuis, bank kluis etc.",
+    "recovery-words-intro-offline": "Houd je woorden offline, voer ze nergens in dan op [strong] keyguard [/strong] .nimiq.com.",
+    "recovery-words-intro-copy": "Kopiëer deze gegevens en bewaar ze op een veilige plaats: thuis, bank kluis etc.",
     "recovery-words-intro-safety": "Let op water en vuur, gebruik een verzegelde kist om je herstelwoorden veilig te bewaren.",
     "recovery-words-text": "Iedereen met deze woorden heeft toegang tot uw account! Houd ze veilig.",
     "recovery-words-validate": "Valideer back-up",
@@ -27,7 +27,7 @@
     "create-heading-create-password": "Maak een wachtwoord",
     "create-heading-repeat-password": "Bevestig je wachtwoord",
     "create-heading-validate-backup": "Valideer je back-up",
-    "create-wallet-desc": "Dit is je account met je eerste adres.",
+    "create-wallet-desc": "Dit is je account met eerste adres.",
 
     "import-heading-enter-recovery-words": "Voer herstelwoorden in",
     "import-import-login-file": "Importeer je Login File",
@@ -54,7 +54,7 @@
     "sign-tx-fee": "transactiekosten",
     "sign-tx-cancel-payment": "Annuleer betaling",
 
-    "sign-msg-heading": "Signeer bericht",
+    "sign-msg-heading": "Bericht ondertekenen",
     "sign-msg-signer": "Ondertekenaar",
 
     "tab-width-selector-label": "Tab breedte",
@@ -76,7 +76,7 @@
     "passwordbox-confirm-create": "Creëer account",
     "passwordbox-confirm-log-in": "Log in",
     "passwordbox-show-words": "Toon herstelwoorden",
-    "passwordbox-sign-msg": "Signeer bericht",
+    "passwordbox-sign-msg": "Bericht ondertekenen",
     "passwordbox-confirm-swap": "Bevestig swap",
     "passwordbox-password-strength-short": "Voer 8 tekens of meer in",
     "passwordbox-password-strength-weak": "Zwak wachtwoord",
@@ -95,9 +95,9 @@
     "payment-info-line-free-service": "Nimiq biedt deze service gratis aan.",
     "payment-info-line-total": "Totaal",
     "payment-info-line-network-fee": "netwerkkosten",
-    "payment-info-line-paying-more": "U betaalt ongeveer % RATE_DEVIATION% meer dan de huidige marktkoers (coingecko.com).",
-    "payment-info-line-paying-less": "Je betaalt ongeveer % RATE_DEVIATION% minder dan het huidige markttarief (coingecko.com).",
-    "payment-info-line-actual-discount": "Je daadwerkelijke korting is ca. % RATE_DEVIATION% in vergelijking met het huidige markttarief (coingecko.com).",
+    "payment-info-line-paying-more": "U betaalt ongeveer %RATE_DEVIATION% meer dan de huidige marktkoers (coingecko.com).",
+    "payment-info-line-paying-less": "Je betaalt ongeveer %RATE_DEVIATION% minder dan het huidige markttarief (coingecko.com).",
+    "payment-info-line-actual-discount": "Je daadwerkelijke korting is ca. %RATE_DEVIATION% in vergelijking met het huidige markttarief (coingecko.com).",
 
     "timer-expiry": "Deze aanbieding vervalt over",
     "timer-second": "seconde",

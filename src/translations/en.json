@@ -208,7 +208,7 @@
     "derive-btc-xpub-text": "Easily swap between NIM, the super performant payment coin and BTC, the gold standard of crypto.",
 
     "sign-swap-heading": "Confirm Swap",
-    "sign-swap-exchange-rate-tooltip": "This rate includes the exchange fee.",
+    "sign-swap-exchange-rate-tooltip": "This rate includes the swap fee.",
     "sign-swap-fee-tooltip-heading": "This amount includes:",
     "sign-swap-btc-fees": "BTC network fees",
     "sign-swap-btc-fees-explainer": "Atomic swaps require two BTC transactions.",
