@@ -77,7 +77,7 @@
     "passwordbox-confirm-log-in": "Se connecter",
     "passwordbox-show-words": "Afficher les mots de récupération",
     "passwordbox-sign-msg": "Signer le message",
-    "passwordbox-confirm-swap": "Confirm swap",
+    "passwordbox-confirm-swap": "Confirmer le swap",
     "passwordbox-password-strength-short": "Entrez 8 caractères ou plus",
     "passwordbox-password-strength-weak": "Mot de passe faible",
     "passwordbox-password-strength-good": "Mot de passe bon",
@@ -202,18 +202,18 @@
     "login-file-filename": "Fichier-de-Connexion-Nimiq-Compte-{color}.png",
 
     "bitcoin": "Bitcoin",
-    "bitcoin-recipient-unlabelled": "Unlabelled",
+    "bitcoin-recipient-unlabelled": "Non-libellé",
 
-    "derive-btc-xpub-heading": "Add Bitcoin\nto your account",
-    "derive-btc-xpub-text": "Easily swap between NIM, the super performant payment coin and BTC, the gold standard of crypto.",
+    "derive-btc-xpub-heading": "Ajouter Bitcoin\nà votre compte",
+    "derive-btc-xpub-text": "Swappez facilement entre NIM, la monnaie de paiement super performante et BTC, l'étalon-or de la crypto.",
 
-    "sign-swap-heading": "Confirm Swap",
-    "sign-swap-exchange-rate-tooltip": "This rate includes the swap fee.",
-    "sign-swap-fee-tooltip-heading": "This amount includes:",
-    "sign-swap-btc-fees": "BTC network fees",
-    "sign-swap-btc-fees-explainer": "Atomic swaps require two BTC transactions.",
-    "sign-swap-nim-fees": "NIM network fees",
-    "sign-swap-exchange-fee": "Exchange fee",
-    "sign-swap-of-exchange-value": "of exchange value.",
-    "sign-swap-total-fees": "Total fees"
+    "sign-swap-heading": "Confirmer le swap",
+    "sign-swap-exchange-rate-tooltip": "Ce taux inclut les frais de swap.",
+    "sign-swap-fee-tooltip-heading": "Ce montant inclut :",
+    "sign-swap-btc-fees": "Frais de réseau BTC",
+    "sign-swap-btc-fees-explainer": "Un swap atomique nécessite 2 transactions BTC.",
+    "sign-swap-nim-fees": "Frais de réseau NIM",
+    "sign-swap-exchange-fee": "Frais d'échange",
+    "sign-swap-of-exchange-value": "de valeur d'échange.",
+    "sign-swap-total-fees": "Total des frais"
 }
