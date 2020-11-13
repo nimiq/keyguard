@@ -70,7 +70,7 @@ class SignSwap {
         const swapBtcValue = fundTx.type === 'BTC' // eslint-disable-line no-nested-ternary
             ? fundTx.value + fundTx.fee
             : redeemTx.type === 'BTC'
-                ? redeemTx.value + redeemTx.fee
+                ? redeemTx.value
                 : 0; // Should never happen, if parsing works correctly
 
         $swapNimValue.textContent = `${fundTx.type === 'NIM' ? '-' : '+'}\u2009${NumberFormatting.formatNumber(
