@@ -75,8 +75,10 @@ class HtlcUtils { // eslint-disable-line no-unused-vars
         }
 
         // Check timeout
+        // Bitcoin HTLC timeouts are backdated 1 hour, to account for Bitcoin's
+        // minimum age for valid transaction locktimes (6 blocks).
         // @ts-ignore Argument of type 'Buffer' is not assignable to parameter of type 'Buffer'
-        const timeoutTimestamp = BitcoinJS.script.number.decode(BitcoinJS.Buffer.from(asm[++i], 'hex'));
+        const timeoutTimestamp = BitcoinJS.script.number.decode(BitcoinJS.Buffer.from(asm[++i], 'hex')) + (60 * 60);
         if (asm[++i] !== 'OP_CHECKLOCKTIMEVERIFY' || asm[++i] !== 'OP_DROP') throw error;
 
         // Check refund address
