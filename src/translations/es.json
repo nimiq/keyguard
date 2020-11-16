@@ -209,7 +209,7 @@
 
     "sign-swap-heading": "Confirmar Intercambio",
     "sign-swap-exchange-rate-tooltip": "La taza de cambio incluye cuotas de intercambio.",
-    "sign-swap-fee-tooltip-heading": "Este monto incluye:",
+    "sign-swap-fees": "cuotas",
     "sign-swap-btc-fees": "Cuotas de red de BTC",
     "sign-swap-btc-fees-explainer": "Los intercambios atómicos requieren dos transacciones BTC.",
     "sign-swap-nim-fees": "Cuotas de red de NIM",

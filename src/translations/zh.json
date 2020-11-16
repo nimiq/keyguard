@@ -209,7 +209,7 @@
 
     "sign-swap-heading": "确认交换",
     "sign-swap-exchange-rate-tooltip": "此价格包括交换费用",
-    "sign-swap-fee-tooltip-heading": "此金额包括：",
+    "sign-swap-fees": "fees",
     "sign-swap-btc-fees": "比特币网络费用",
     "sign-swap-btc-fees-explainer": "原子交换需要进行两次比特币交易",
     "sign-swap-nim-fees": "NIM网络费用",

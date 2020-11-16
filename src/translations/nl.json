@@ -209,7 +209,7 @@
 
     "sign-swap-heading": "Swap bevestigen",
     "sign-swap-exchange-rate-tooltip": "Dit tarief is inclusief de wisselkosten.",
-    "sign-swap-fee-tooltip-heading": "Dit bedrag is inclusief:",
+    "sign-swap-fees": "kosten",
     "sign-swap-btc-fees": "BTC-netwerkkosten",
     "sign-swap-btc-fees-explainer": "Atomic swaps vereisen twee BTC-transacties.",
     "sign-swap-nim-fees": "NIM-netwerkkosten",

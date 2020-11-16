@@ -204,13 +204,8 @@ class SignSwap {
         $balanceBar.appendChild($bars);
 
         /** @type {HTMLDivElement} */
-        let $fundingColumn;
-        if (fundTx.type === 'NIM') {
-            $fundingColumn = /** @type {HTMLDivElement} */ (this.$el.querySelector('.swap-values .left-column'));
-        } else {
-            $fundingColumn = /** @type {HTMLDivElement} */ (this.$el.querySelector('.swap-values .right-column'));
-        }
-        $fundingColumn.appendChild(
+        const $topRow = (this.$el.querySelector('.nq-notice'));
+        $topRow.appendChild(
             this._makeFeeTooltip(request, fundTx.type === 'NIM'
                 ? Nimiq.Policy.coinsToLunas(nimExchangeValue)
                 : BitcoinUtils.coinsToSatoshis(btcExchangeValue)),
@@ -249,16 +244,15 @@ class SignSwap {
         } = request;
 
         const $tooltip = document.createElement('div');
-        $tooltip.classList.add('tooltip', 'top');
+        $tooltip.classList.add('tooltip', 'fee-breakdown', 'bottom');
         $tooltip.tabIndex = 0; // make the tooltip focusable
 
         /* eslint-disable indent */
         $tooltip.innerHTML = TemplateTags.hasVars(0)`
-            <svg class="info-circle nq-icon">
-                <use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-info-circle"/>
-            </svg>
+            <div class="pill">
+                <span class="fees"></span>&nbsp;<span data-i18n="sign-swap-fees">fees</span>
+            </div>
             <div class="tooltip-box">
-                <span data-i18n="sign-swap-fee-tooltip-heading">This amount includes:</span>
                 <div class="price-breakdown">
                     <label data-i18n="sign-swap-btc-fees">BTC network fees</label>
                     <div class="btc-fiat-fee"></div>
@@ -271,12 +265,12 @@ class SignSwap {
                     <div class="nim-fiat-fee"></div>
                 </div>
                 <div class="price-breakdown">
-                    <label data-i18n="sign-swap-exchange-fee">Exchange fee</label>
+                    <label data-i18n="sign-swap-exchange-fee">Swap fee</label>
                     <div class="exchange-fiat-fee"></div>
                 </div>
                 <p class="explainer">
                     <span class="exchange-percent-fee"></span>
-                    <span data-i18n="sign-swap-of-exchange-value">of exchange value.</span>
+                    <span data-i18n="sign-swap-of-exchange-value">of swap value.</span>
                 </p>
                 <hr>
                 <div class="price-breakdown">
@@ -330,11 +324,12 @@ class SignSwap {
         /** @type {HTMLDivElement} */ ($tooltip.querySelector('.exchange-percent-fee'))
             .textContent = `${theirExchangeFeePercentage}%`;
 
-        /** @type {HTMLDivElement} */ ($tooltip.querySelector('.total-fees'))
-            .textContent = NumberFormatting.formatCurrency(
-                myNimFee + myBtcFee + theirNimFee + theirBtcFee + theirExchangeFee,
-                request.fiatCurrency,
-            );
+        const totalFees = NumberFormatting.formatCurrency(
+            myNimFee + myBtcFee + theirNimFee + theirBtcFee + theirExchangeFee,
+            request.fiatCurrency,
+        );
+        /** @type {HTMLDivElement} */ ($tooltip.querySelector('.total-fees')).textContent = totalFees;
+        /** @type {HTMLDivElement} */ ($tooltip.querySelector('.fees')).textContent = totalFees;
 
         return $tooltip;
     }

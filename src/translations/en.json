@@ -209,11 +209,11 @@
 
     "sign-swap-heading": "Confirm Swap",
     "sign-swap-exchange-rate-tooltip": "This rate includes the swap fee.",
-    "sign-swap-fee-tooltip-heading": "This amount includes:",
+    "sign-swap-fees": "fees",
     "sign-swap-btc-fees": "BTC network fees",
     "sign-swap-btc-fees-explainer": "Atomic swaps require two BTC transactions.",
     "sign-swap-nim-fees": "NIM network fees",
-    "sign-swap-exchange-fee": "Exchange fee",
-    "sign-swap-of-exchange-value": "of exchange value.",
+    "sign-swap-exchange-fee": "Swap fee",
+    "sign-swap-of-exchange-value": "of swap value.",
     "sign-swap-total-fees": "Total fees"
 }

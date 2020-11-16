@@ -209,7 +209,7 @@
 
     "sign-swap-heading": "Подтвердить обмен",
     "sign-swap-exchange-rate-tooltip": "Эта ставка включает в \nсебя комиссию за обмен.",
-    "sign-swap-fee-tooltip-heading": "Эта ставка включает:",
+    "sign-swap-fees": "fees",
     "sign-swap-btc-fees": "Комиссия сети BTC",
     "sign-swap-btc-fees-explainer": " Обмен выполняется в 2 транзакции BTC.",
     "sign-swap-nim-fees": "Комиссия сети NIM",
