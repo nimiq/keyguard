@@ -16,100 +16,205 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) {
     async signSwapTransactions(state, request) {
         const storageKey = SwapIFrameApi.SESSION_STORAGE_KEY_PREFIX + request.swapId;
 
-        const storedPrivateKeys = sessionStorage.getItem(storageKey);
+        const storedData = sessionStorage.getItem(storageKey);
         sessionStorage.removeItem(storageKey); // Delete storage
 
-        if (!storedPrivateKeys) throw new Error('No keys stored in SessionStorage');
+        if (!storedData) throw new Error('No swap stored in SessionStorage');
 
-        /** @type {{nim: string, btc: string[]}} */
-        const privateKeys = JSON.parse(storedPrivateKeys);
+        /** @type {{keys: {nim: string, btc: string[]}, request: any}} */
+        const { keys: privateKeys, request: storedRawRequest } = (JSON.parse(storedData));
 
-        if (!privateKeys.nim) throw new Error('No NIM key stored in SessionStorage');
-        if (privateKeys.nim.length !== 64) throw new Error('Invalid NIM key stored in SessionStorage');
-        if (!privateKeys.btc) throw new Error('No BTC key list stored in SessionStorage');
-        if (!privateKeys.btc.length) throw new Error('No BTC keys stored in SessionStorage');
-        if (privateKeys.btc.some(key => !key)) throw new Error('Empty BTC key stored in SessionStorage');
-        if (privateKeys.btc.some(key => key.length !== 64)) throw new Error('Invalid BTC key stored in SessionStorage');
+        if (request.fund.type === 'NIM' || request.redeem.type === 'NIM') {
+            if (!privateKeys.nim) throw new Error('No NIM key stored in SessionStorage');
+            if (privateKeys.nim.length !== 64) throw new Error('Invalid NIM key stored in SessionStorage');
+        }
 
-        // Decode HTLC contents
+        if (request.fund.type === 'BTC' || request.redeem.type === 'BTC') {
+            if (!privateKeys.btc) throw new Error('No BTC key list stored in SessionStorage');
+            if (!privateKeys.btc.length) throw new Error('No BTC keys stored in SessionStorage');
+            if (privateKeys.btc.some(key => !key)) throw new Error('Empty BTC key stored in SessionStorage');
+            if (privateKeys.btc.some(key => key.length !== 64)) {
+                throw new Error('Invalid BTC key stored in SessionStorage');
+            }
+        }
 
-        // // eslint-disable-next-line no-nested-ternary
-        // parsedRequest.nimHtlc = HtlcUtils.decodeNimHtlcData(parsedRequest.fund.type === 'NIM'
-        //     ? parsedRequest.fund.transaction.data
-        //     : request.redeem.type === 'NIM' // Additional condition required for type safety
-        //         ? request.redeem.htlcData
-        //         : undefined);
+        // TODO: Deserialize stored request
+        /** @type {Parsed<KeyguardRequest.SignSwapRequest>} */
+        const storedRequest = {
+            ...storedRawRequest,
+            ...(storedRawRequest.fund.type === 'NIM'
+                ? {
+                    fund: {
+                        ...storedRawRequest.fund,
+                        transaction: Nimiq.Transaction.fromPlain(storedRawRequest.fund.transaction),
+                    },
+                } : {}
+            ),
+            ...(storedRawRequest.redeem.type === 'NIM'
+                ? {
+                    redeem: {
+                        ...storedRawRequest.redeem,
+                        transaction: Nimiq.Transaction.fromPlain(storedRawRequest.redeem.transaction),
+                    },
+                } : {}
+            ),
+            ...(storedRawRequest.fund.type === 'BTC'
+                ? {
+                    fund: {
+                        ...storedRawRequest.fund,
+                        inputs: storedRawRequest.fund.inputs.map(
+                            /**
+                             * @param {any} input
+                             * @returns {ParsedBitcoinTransactionInput}
+                             */
+                            input => ({
+                                ...input,
+                                witnessUtxo: {
+                                    ...input.witnessUtxo,
+                                    script: BitcoinJS.Buffer.from(input.witnessUtxo.script, 'hex'),
+                                },
+                            }),
+                        ),
+                    },
+                } : {}
+            ),
+        };
 
-        // // eslint-disable-next-line no-nested-ternary
-        // parsedRequest.btcHtlc = HtlcUtils.decodeBtcHtlcScript(parsedRequest.redeem.type === 'BTC'
-        //     ? parsedRequest.redeem.input.witnessScript
-        //     : request.fund.type === 'BTC' // Additional condition required for type safety
-        //         ? BitcoinJS.Buffer.from(Nimiq.BufferUtils.fromAny(request.fund.htlcScript))
-        //         : undefined);
+        // Parse request
+        /** @type {Parsed<KeyguardRequest.SignSwapTransactionsRequest>} */
+        // @ts-ignore Missing the following properties: fund, redeem
+        const parsedRequest = {
+            swapId: request.swapId,
+        };
 
-        // Verify HTLC contents
+        if (storedRequest.fund.type !== request.fund.type || storedRequest.redeem.type !== request.redeem.type) {
+            throw new Errors.InvalidRequestError('Different swap assets in iframe request than in top-level request');
+        }
 
-        // Verify hashRoot is the same across HTLCs
-        // if (parsedRequest.btcHtlc.hash !== parsedRequest.nimHtlc.hash) {
-        //     throw new Errors.InvalidRequestError('HTLC hashes do not match');
-        // }
+        if (request.fund.type === 'NIM' && storedRequest.fund.type === 'NIM') {
+            const htlcDetails = HtlcUtils.decodeNimHtlcData(request.fund.htlcData);
 
-        // if (parsedRequest.fund.type === 'BTC' && request.fund.type === 'BTC') {
-        //     // Verify BTC HTLC address is correct from HTLC script
-        //     const givenAddress = parsedRequest.fund.recipientOutput.address;
-        //     const scriptAddress = BitcoinJS.payments.p2wsh({
-        //         // @ts-ignore Type 'Uint8Array' is not assignable to type 'Buffer'.
-        //         witness: [BitcoinJS.Buffer.from(request.fund.htlcScript)],
-        //         network: BitcoinUtils.Network,
-        //     }).address;
+            if (htlcDetails.refundAddress !== storedRequest.fund.transaction.sender.toUserFriendlyAddress()) {
+                throw new Errors.InvalidRequestError('NIM HTLC refund address must be same as sender');
+            }
 
-        //     if (givenAddress !== scriptAddress) {
-        //         throw new Errors.InvalidRequestError('BTC output address does not match HTLC script');
-        //     }
-        // }
+            // Check that validityStartHeight is before HTLC timeout
+            if (storedRequest.fund.transaction.validityStartHeight >= htlcDetails.timeoutBlockHeight) {
+                throw new Errors.InvalidRequestError(
+                    'Fund validityStartHeight must be lower than HTLC timeout block height',
+                );
+            }
 
-        // if (parsedRequest.fund.type === 'NIM') {
-        //     // Check that validityStartHeight is before HTLC timeout
-        //     if (parsedRequest.fund.transaction.validityStartHeight >= parsedRequest.nimHtlc.timeoutBlockHeight) {
-        //         throw new Errors.InvalidRequestError(
-        //             'Fund validityStartHeight must be lower than HTLC timeout block height',
-        //         );
-        //     }
-        // }
+            parsedRequest.fund = {
+                type: 'NIM',
+                htlcDetails,
+                htlcData: request.fund.htlcData,
+            };
+        }
 
-        // if (parsedRequest.redeem.type === 'NIM') {
-        //     // Check that validityStartHeight is before HTLC timeout
-        //     if (parsedRequest.redeem.transaction.validityStartHeight >= parsedRequest.nimHtlc.timeoutBlockHeight) {
-        //         throw new Errors.InvalidRequestError(
-        //             'Redeem validityStartHeight must be lower than HTLC timeout block height',
-        //         );
-        //     }
-        // }
+        if (request.redeem.type === 'NIM' && storedRequest.redeem.type === 'NIM') {
+            const htlcDetails = HtlcUtils.decodeNimHtlcData(request.redeem.htlcData);
 
-        // For BTC redeem transactions, the BitcoinJS lib validates that the output script of the input matches
-        // the witnessScript.
+            if (htlcDetails.redeemAddress !== storedRequest.redeem.transaction.recipient.toUserFriendlyAddress()) {
+                throw new Errors.InvalidRequestError('NIM HTLC redeem address must be same as recipient');
+            }
+
+            // Check that validityStartHeight is before HTLC timeout
+            if (storedRequest.redeem.transaction.validityStartHeight >= htlcDetails.timeoutBlockHeight) {
+                throw new Errors.InvalidRequestError(
+                    'Redeem validityStartHeight must be lower than HTLC timeout block height',
+                );
+            }
+
+            parsedRequest.redeem = {
+                type: 'NIM',
+                htlcDetails,
+                htlcData: request.redeem.htlcData,
+                htlcAddress: this.parseAddress(request.redeem.htlcAddress, 'redeem.htlcAddress')
+                    .toUserFriendlyAddress(),
+            };
+        }
+
+        if (request.fund.type === 'BTC' && storedRequest.fund.type === 'BTC') {
+            const htlcDetails = HtlcUtils.decodeBtcHtlcScript(request.fund.htlcScript);
+
+            if (htlcDetails.refundAddress !== storedRequest.fund.refundAddress) {
+                throw new Errors.InvalidRequestError(
+                    'BTC HTLC refund address must be same as given in top-level request',
+                );
+            }
+
+            const htlcAddress = BitcoinJS.payments.p2wsh({
+                // @ts-ignore Type 'Uint8Array' is not assignable to type 'Buffer'.
+                witness: [BitcoinJS.Buffer.from(request.fund.htlcScript)],
+                network: BitcoinUtils.Network,
+            }).address;
+
+            if (!htlcAddress) {
+                throw new Errors.InvalidRequestError('Cannot derive HTLC address from BTC HTLC script');
+            }
+
+            parsedRequest.fund = {
+                type: 'BTC',
+                htlcDetails,
+                htlcScript: request.fund.htlcScript,
+                htlcAddress,
+            };
+        }
+
+        if (request.redeem.type === 'BTC' && storedRequest.redeem.type === 'BTC') {
+            const htlcDetails = HtlcUtils.decodeBtcHtlcScript(request.redeem.htlcScript);
+
+            if (htlcDetails.redeemAddress !== storedRequest.redeem.output.address) {
+                throw new Errors.InvalidRequestError('BTC HTLC redeem address must be same as recipient');
+            }
+
+            const outputScript = BitcoinJS.payments.p2wsh({
+                // @ts-ignore Type 'Uint8Array' is not assignable to type 'Buffer'.
+                witness: [BitcoinJS.Buffer.from(request.redeem.htlcScript)],
+                network: BitcoinUtils.Network,
+            }).output;
+
+            if (!outputScript) {
+                throw new Errors.InvalidRequestError('Cannot derive HTLC output script from BTC HTLC script');
+            }
+
+            parsedRequest.redeem = {
+                type: 'BTC',
+                htlcDetails,
+                htlcScript: request.redeem.htlcScript,
+                transactionHash: Nimiq.BufferUtils.toHex(Nimiq.BufferUtils.fromAny(request.redeem.transactionHash)),
+                outputIndex: this.parsePositiveInteger(request.redeem.outputIndex),
+                outputScript,
+            };
+        }
+
+        // Verify hash is the same across HTLCs
+        if (parsedRequest.fund.htlcDetails.hash !== parsedRequest.redeem.htlcDetails.hash) {
+            throw new Errors.InvalidRequestError('HTLC hashes do not match');
+        }
 
         // TODO: Validate timeouts of the two contracts
-        // (Currently not possible because the NIM timeout is a block height, while the BTC timeout is a timestamp.
+        // Currently not possible because the NIM timeout is a block height, while the BTC timeout is a timestamp.
         // And since we cannot trust the local device time to be accurate, and we don't have a reference for NIM blocks
-        // and their timestamps, we cannot compare the two.)
-        // When it becomes possible to compare (with Nimiq 2.0 Albatross), the redeem HTLC must have a higher timeout
+        // and their timestamps, we cannot compare the two.
+        // When it becomes possible to compare (with Nimiq 2.0 Albatross), the redeem HTLC must have a later timeout
         // than the funding HTLC.
 
         /** @type {KeyguardRequest.SignSwapTransactionsResult} */
         const result = {};
 
-        if (request.fund.type === 'NIM') {
+        if (parsedRequest.fund.type === 'NIM' && storedRequest.fund.type === 'NIM') {
             await loadNimiq();
 
             const privateKey = new Nimiq.PrivateKey(Nimiq.BufferUtils.fromHex(privateKeys.nim));
             const publicKey = Nimiq.PublicKey.derive(privateKey);
 
-            const transaction = this.parseTransaction({
-                ...request.fund,
-                flags: Nimiq.Transaction.Flag.CONTRACT_CREATION,
-                recipient: 'CONTRACT_CREATION',
-                recipientType: Nimiq.Account.Type.HTLC,
+            const transaction = Nimiq.Transaction.fromPlain({
+                ...storedRequest.fund.transaction.toPlain(),
+                data: parsedRequest.fund.htlcData,
+                // Must be the exact object reference, which gets lost with toPlain()
+                recipient: Nimiq.Address.CONTRACT_CREATION,
             });
 
             const signature = Nimiq.Signature.create(privateKey, publicKey, transaction.serializeContent());
@@ -121,14 +226,8 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) {
             };
         }
 
-        if (request.fund.type === 'BTC') {
-            const inputs = this.parseInputs(request.fund.inputs.map(input => ({
-                ...input,
-                // Dummy keyPath so the parsing doesn't fail.
-                // The keyPath is not used in the iframe, as the key at the path was already derived
-                // (and stored) in the top-level sign-swap request.
-                keyPath: 'm/84\'/0',
-            })));
+        if (parsedRequest.fund.type === 'BTC' && storedRequest.fund.type === 'BTC') {
+            const inputs = storedRequest.fund.inputs;
 
             // Sort inputs by tx hash ASC, then index ASC
             inputs.sort((a, b) => {
@@ -137,17 +236,15 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) {
             });
 
             // Construct outputs
-            const outputs = [
-                /** @type {KeyguardRequest.BitcoinTransactionOutput} */
-                (this.parseOutput(request.fund.recipientOutput, false, 'fund.recipientOutput')),
-            ];
+            const outputs = [{
+                address: parsedRequest.fund.htlcAddress,
+                value: storedRequest.fund.recipientOutput.value,
+            }];
 
-            // Validate and add change output
-            if (request.fund.changeOutput) {
-                outputs.push(
-                    /** @type {KeyguardRequest.BitcoinTransactionOutput} */
-                    (this.parseOutput(request.fund.changeOutput, false, 'fund.changeOutput')),
-                );
+            // Add change output
+            if (storedRequest.fund.changeOutput) {
+                // The address is set in SignSwap after password entry.
+                outputs.push(/** @type {{address: string, value: number}} */ (storedRequest.fund.changeOutput));
             }
 
             // Sort outputs by value ASC, then address ASC
@@ -189,13 +286,16 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) {
             };
         }
 
-        if (request.redeem.type === 'NIM') {
+        if (parsedRequest.redeem.type === 'NIM' && storedRequest.redeem.type === 'NIM') {
             await loadNimiq();
 
             const privateKey = new Nimiq.PrivateKey(Nimiq.BufferUtils.fromHex(privateKeys.nim));
             const publicKey = Nimiq.PublicKey.derive(privateKey);
 
-            const transaction = this.parseTransaction(request.redeem);
+            const transaction = Nimiq.Transaction.fromPlain({
+                ...storedRequest.redeem.transaction.toPlain(),
+                sender: parsedRequest.redeem.htlcAddress,
+            });
 
             const signature = Nimiq.Signature.create(privateKey, publicKey, transaction.serializeContent());
 
@@ -206,17 +306,19 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) {
             };
         }
 
-        if (request.redeem.type === 'BTC') {
-            const inputs = this.parseInputs(request.redeem.inputs.map(input => ({
-                ...input,
-                // Dummy keyPath so the parsing doesn't fail.
-                // The keyPath is not used in the iframe, as the key at the path was already derived
-                // (and stored) in the top-level sign-swap request.
-                keyPath: 'm/84\'/0',
-            })));
+        if (parsedRequest.redeem.type === 'BTC' && storedRequest.redeem.type === 'BTC') {
+            const inputs = [{
+                hash: parsedRequest.redeem.transactionHash,
+                index: parsedRequest.redeem.outputIndex,
+                witnessUtxo: {
+                    script: parsedRequest.redeem.outputScript,
+                    value: storedRequest.redeem.input.witnessUtxo.value,
+                },
+                witnessScript: BitcoinJS.Buffer.from(parsedRequest.redeem.htlcScript),
+            }];
 
-            /** @type {KeyguardRequest.BitcoinTransactionOutput} */
-            const output = (this.parseOutput(request.redeem.changeOutput, false, 'redeem.changeOutput'));
+            // The address is set in SignSwap after password entry.
+            const output = /** @type {{address: string, value: number}} */ (storedRequest.redeem.output);
 
             // Construct transaction
             const psbt = new BitcoinJS.Psbt({ network: BitcoinUtils.Network });

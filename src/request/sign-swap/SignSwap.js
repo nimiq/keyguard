@@ -61,16 +61,19 @@ class SignSwap {
         /** @type {HTMLSpanElement} */
         const $newBtcBalanceFiat = (this.$el.querySelector('#new-btc-balance-fiat'));
 
+        // The total amount of NIM the user loses/receives
         const swapNimValue = fundTx.type === 'NIM' // eslint-disable-line no-nested-ternary
             ? fundTx.transaction.value + fundTx.transaction.fee
             : redeemTx.type === 'NIM'
                 ? redeemTx.transaction.value
                 : 0; // Should never happen, if parsing works correctly
 
+        // The total amount of BTC the user loses/receives
         const swapBtcValue = fundTx.type === 'BTC' // eslint-disable-line no-nested-ternary
-            ? fundTx.value + fundTx.fee
+            ? fundTx.inputs.reduce((sum, input) => sum + input.witnessUtxo.value, 0)
+                - (fundTx.changeOutput ? fundTx.changeOutput.value : 0)
             : redeemTx.type === 'BTC'
-                ? redeemTx.value
+                ? redeemTx.output.value
                 : 0; // Should never happen, if parsing works correctly
 
         $swapNimValue.textContent = `${fundTx.type === 'NIM' ? '-' : '+'}\u2009${NumberFormatting.formatNumber(
@@ -94,14 +97,22 @@ class SignSwap {
 
         // Exchange rate
         const nimExchangeValue = fundTx.type === 'NIM' // eslint-disable-line no-nested-ternary
+            // When the user funds NIM, the service receives the HTLC balance - their network fee.
             ? (fundTx.transaction.value - request.serviceFundingNetworkFee) / 1e5
             : redeemTx.type === 'NIM'
+                // When the user redeems NIM, the service lost the HTLC balance + their network fee.
+                // The transaction value is "HTLC balance - tx fee", therefore the "HTLC balance"
+                // is the transaction value + tx fee.
                 ? (redeemTx.transaction.value + redeemTx.transaction.fee + request.serviceRedeemingNetworkFee) / 1e5
                 : 0; // Should never happen, if parsing works correctly
+
         const btcExchangeValue = fundTx.type === 'BTC' // eslint-disable-line no-nested-ternary
-            ? (fundTx.value - request.serviceFundingNetworkFee) / 1e8
+            // When the user funds BTC, the service receives the HTLC balance - their network fee.
+            ? (fundTx.recipientOutput.value - request.serviceFundingNetworkFee) / 1e8
             : redeemTx.type === 'BTC'
-                ? (redeemTx.value + redeemTx.fee + request.serviceRedeemingNetworkFee) / 1e8
+                // When the user redeems BTC, the service lost the HTLC balance + their network fee.
+                // The HTLC balance is represented by the redeeming tx input value.
+                ? (redeemTx.input.witnessUtxo.value + request.serviceRedeemingNetworkFee) / 1e8
                 : 0; // Should never happen, if parsing works correctly
 
         if (!nimExchangeValue || !btcExchangeValue) {
@@ -113,7 +124,7 @@ class SignSwap {
         const exchangeRate = Math.round(btcExchangeValue / nimExchangeValue * 1e8) / 1e8;
         $exchangeRate.textContent = `1 NIM = ${NumberFormatting.formatNumber(
             exchangeRate,
-            8, 8,
+            8, 8, // max decimals, min decimals (always show all BTC decimals for the exchange rate)
         )} BTC`;
 
         const swapNimAddress = fundTx.type === 'NIM' // eslint-disable-line no-nested-ternary
@@ -290,10 +301,13 @@ class SignSwap {
             : redeemTx.type === 'NIM'
                 ? redeemTx.transaction.fee
                 : 0) * request.nimFiatRate;
+
         const myBtcFee = BitcoinUtils.satoshisToCoins(fundTx.type === 'BTC' // eslint-disable-line no-nested-ternary
-            ? fundTx.fee
+            ? fundTx.inputs.reduce((sum, input) => sum + input.witnessUtxo.value, 0)
+                - fundTx.recipientOutput.value
+                - (fundTx.changeOutput ? fundTx.changeOutput.value : 0)
             : redeemTx.type === 'BTC'
-                ? redeemTx.fee
+                ? redeemTx.input.witnessUtxo.value - redeemTx.output.value
                 : 0) * request.btcFiatRate;
 
         const theirNimFee = Nimiq.Policy.lunasToCoins(fundTx.type === 'NIM'
@@ -374,11 +388,25 @@ class SignSwap {
         }
 
         if (request.fund.type === 'BTC') {
-            const keyPairs = request.fund.keyPaths.map(path => btcKey.deriveKeyPair(path));
+            const keyPairs = request.fund.inputs.map(input => btcKey.deriveKeyPair(input.keyPath));
             const privKeys = keyPairs.map(keyPair => Nimiq.BufferUtils.toHex(
                 /** @type {Buffer} */ (keyPair.privateKey),
             ));
             privateKeys.btc = privKeys;
+
+            if (request.fund.changeOutput) {
+                // Calculate, validate and store output address
+                const address = btcKey.deriveAddress(request.fund.changeOutput.keyPath);
+                if (request.fund.changeOutput.address && request.fund.changeOutput.address !== address) {
+                    throw new Errors.InvalidRequestError(
+                        'Given address is different from derived address for change output',
+                    );
+                }
+                request.fund.changeOutput.address = address;
+            }
+
+            // Calculate and store refund address from refundKeyPath
+            request.fund.refundAddress = btcKey.deriveAddress(request.fund.refundKeyPath);
         }
 
         if (request.redeem.type === 'NIM') {
@@ -387,17 +415,63 @@ class SignSwap {
         }
 
         if (request.redeem.type === 'BTC') {
-            const keyPairs = request.redeem.keyPaths.map(path => btcKey.deriveKeyPair(path));
+            const keyPairs = [btcKey.deriveKeyPair(request.redeem.input.keyPath)];
             const privKeys = keyPairs.map(keyPair => Nimiq.BufferUtils.toHex(
                 /** @type {Buffer} */ (keyPair.privateKey),
             ));
             privateKeys.btc = privKeys;
+
+            // Calculate, validate and store output address
+            const address = btcKey.deriveAddress(request.redeem.output.keyPath);
+            if (request.redeem.output.address && request.redeem.output.address !== address) {
+                throw new Errors.InvalidRequestError(
+                    'Given address is different from derived address for output',
+                );
+            }
+            request.redeem.output.address = address;
         }
+
+        // TODO: Serialize request to store
 
         try {
             sessionStorage.setItem(
                 SignSwapApi.SESSION_STORAGE_KEY_PREFIX + request.swapId,
-                JSON.stringify(privateKeys),
+                JSON.stringify({
+                    keys: privateKeys,
+                    request: {
+                        ...request,
+                        ...(request.fund.type === 'NIM'
+                            ? {
+                                fund: {
+                                    ...request.fund,
+                                    transaction: request.fund.transaction.toPlain(),
+                                },
+                            } : {}
+                        ),
+                        ...(request.redeem.type === 'NIM'
+                            ? {
+                                redeem: {
+                                    ...request.redeem,
+                                    transaction: request.redeem.transaction.toPlain(),
+                                },
+                            } : {}
+                        ),
+                        ...(request.fund.type === 'BTC'
+                            ? {
+                                fund: {
+                                    ...request.fund,
+                                    inputs: request.fund.inputs.map(input => ({
+                                        ...input,
+                                        witnessUtxo: {
+                                            ...input.witnessUtxo,
+                                            script: Nimiq.BufferUtils.toHex(input.witnessUtxo.script),
+                                        },
+                                    })),
+                                },
+                            } : {}
+                        ),
+                    },
+                }),
             );
         } catch (error) {
             reject(error);

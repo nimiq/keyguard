@@ -62,15 +62,10 @@ function BitcoinRequestParserMixin(clazz) { // eslint-disable-line no-unused-var
                 /** @type {ParsedBitcoinTransactionInput} */
                 const parsed = {
                     hash: Nimiq.BufferUtils.toHex(Nimiq.BufferUtils.fromAny(input.transactionHash)),
-                    index:
-                        /** @type {number} */
-                        (this.parseNonNegativeFiniteNumber(input.outputIndex, false, `input[${index}].outputIndex`)),
+                    index: this.parsePositiveInteger(input.outputIndex, true, `input[${index}].outputIndex`),
                     witnessUtxo: {
                         script,
-                        value: Math.round(
-                            /** @type {number} */
-                            (this.parseNonNegativeFiniteNumber(input.value, false, `input[${index}].value`)),
-                        ),
+                        value: this.parsePositiveInteger(input.value, false, `input[${index}].value`),
                     },
                     type: this.parseInputType(input.type, `input[${index}].type`),
                     keyPath: this.parseBitcoinPath(input.keyPath, `input[${index}].keypath`),
@@ -172,12 +167,10 @@ function BitcoinRequestParserMixin(clazz) { // eslint-disable-line no-unused-var
                     `${parameterName}.address`,
                 ),
                 label: this.parseLabel(/** @type {{label: unknown}} */ (output).label),
-                value: Math.round(
-                    /** @type {number} */ (this.parseNonNegativeFiniteNumber(
-                        /** @type {{value: unknown}} */ (output).value,
-                        false,
-                        `${parameterName}.value`,
-                    )),
+                value: this.parsePositiveInteger(
+                    /** @type {{value: unknown}} */ (output).value,
+                    false,
+                    `${parameterName}.value`,
                 ),
             };
             return parsed;
@@ -209,13 +202,10 @@ function BitcoinRequestParserMixin(clazz) { // eslint-disable-line no-unused-var
                         `${parameterName}.address`,
                     )
                     : undefined,
-                value: Math.round(
-                    /** @type {number} */
-                    (this.parseNonNegativeFiniteNumber(
-                        /** @type {{value: unknown}} */ (output).value,
-                        false,
-                        `${parameterName}.value`,
-                    )),
+                value: this.parsePositiveInteger(
+                    /** @type {{value: unknown}} */ (output).value,
+                    false,
+                    `${parameterName}.value`,
                 ),
             };
             return parsed;

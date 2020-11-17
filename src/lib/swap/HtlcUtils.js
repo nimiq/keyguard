@@ -1,5 +1,7 @@
 /* global Nimiq */
 /* global BitcoinJS */
+/* global BitcoinUtils */
+/* global BitcoinConstants */
 /* global Errors */
 
 class HtlcUtils { // eslint-disable-line no-unused-vars
@@ -44,7 +46,8 @@ class HtlcUtils { // eslint-disable-line no-unused-vars
         const error = new Errors.InvalidRequestError('Invalid BTC HTLC script');
 
         if (!script || !(script instanceof Uint8Array) || !script.length) throw error;
-        const chunks = BitcoinJS.script.decompile(/** @type {Buffer} */ (script));
+        // @ts-ignore Type 'import(...).Buffer' is not assignable to type 'Buffer'.
+        const chunks = BitcoinJS.script.decompile(BitcoinJS.Buffer.from(script));
         if (!chunks) throw error;
         const asm = BitcoinJS.script.toASM(chunks).split(' ');
 
@@ -98,8 +101,8 @@ class HtlcUtils { // eslint-disable-line no-unused-vars
         /* eslint-enable no-plusplus */
 
         return {
-            refundAddressBytes,
-            redeemAddressBytes,
+            refundAddress: BitcoinUtils.addressBytesToAddress(refundAddressBytes, BitcoinConstants.BIP.BIP84),
+            redeemAddress: BitcoinUtils.addressBytesToAddress(redeemAddressBytes, BitcoinConstants.BIP.BIP84),
             hash,
             timeoutTimestamp,
         };

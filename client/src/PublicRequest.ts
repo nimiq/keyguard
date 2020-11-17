@@ -187,32 +187,52 @@ export type SignBtcTransactionRequest
 
 export type SignSwapRequest = SimpleRequest & {
     swapId: string,
-    fund:
+    fund: (
         {type: 'NIM'}
-            & Omit<TransactionInfo,
-                'senderType'
-                | 'recipient'
-                | 'recipientType'
-                | 'recipientLabel'
-                | 'validityStartHeight'
-                | 'data'
-                | 'flags'
-            >
-            & { senderLabel: string }
-        | {type: 'BTC', keyPaths: string[], value: number, fee: number },
-    redeem:
+        & Omit<TransactionInfo,
+            | 'recipient' // Only known in second step (in swap-iframe), derived from htlcData
+            | 'recipientType' // Must be HTLC
+            | 'recipientLabel' // Not used
+            | 'data' // Only known in second step (in swap-iframe)
+            | 'flags' // Must be CONTRACT_CREATION
+        >
+        & { senderLabel: string }
+    ) | (
+        {type: 'BTC'}
+        & Omit<BitcoinTransactionInfo,
+            | 'recipientOutput' // Replaced below
+        >
+        & {
+            recipientOutput: Omit<BitcoinTransactionOutput,
+                | 'address' // Only known in second step (in swap-iframe), derived from htlcScript
+                | 'label' // Not used
+            >,
+            refundKeyPath: string, // To validate that we own the HTLC script's refund address
+        }
+    ),
+    redeem: (
         {type: 'NIM'}
-            & Omit<TransactionInfo,
-                'sender'
-                | 'senderType'
-                | 'senderLabel'
-                | 'recipientType'
-                | 'validityStartHeight'
-                | 'data'
-                | 'flags'
-            >
-            & { recipientLabel: string }
-        | {type: 'BTC', keyPaths: string[], value: number, fee: number },
+        & Omit<TransactionInfo,
+            | 'sender' // Only known in second step (in swap-iframe), derived from htlcScript
+            | 'senderType' // Must be HTLC
+            | 'senderLabel' // Not used
+            | 'recipientType' // Must by BASIC (can only redeem to signer adress)
+            | 'flags' // Must be NONE, as it cannot be CONTRACT_CREATION
+        >
+        & { recipientLabel: string }
+    ) | (
+        {type: 'BTC'}
+        & {
+            input: Omit<BitcoinTransactionInput, // Only allow one input (the HTLC UTXO)
+                | 'transactionHash' // Only known in second step (in swap-iframe)
+                | 'outputIndex' // Only known in second step (in swap-iframe)
+                | 'outputScript' // Only known in second step (in swap-iframe), derived from htlcScript
+                | 'witnessScript' // Only known in second step (in swap-iframe)
+                | 'type' // Must be 'htlc-redeem'
+            >,
+            output: BitcoinTransactionChangeOutput,
+        }
+    ),
 
     // Data needed for display
     fiatCurrency: string,
@@ -233,23 +253,23 @@ export type SignSwapRequest = SimpleRequest & {
 // Used in swap-iframe
 export type SignSwapTransactionsRequest = {
     swapId: string,
-    fund:
-        {type: 'NIM'}
-            & Omit<TransactionInfo, 'keyPath' | 'recipient' | 'recipientType' | 'data'>
-            & { data: Uint8Array }
-        | {
-            type: 'BTC',
-            inputs: Array<Omit<BitcoinTransactionInput, 'keyPath'>>,
-            recipientOutput: BitcoinTransactionOutput,
-            changeOutput?: BitcoinTransactionOutput,
-        },
-    redeem:
-        {type: 'NIM'} & Omit<TransactionInfo, 'keyPath'>
-        | {
-            type: 'BTC',
-            inputs: Array<Omit<BitcoinTransactionInput, 'keyPath'>>,
-            changeOutput: BitcoinTransactionOutput,
-        },
+    fund: ({
+        type: 'NIM'
+        htlcData: Uint8Array,
+    }) | ({
+        type: 'BTC',
+        htlcScript: Uint8Array,
+    }),
+    redeem: ({
+        type: 'NIM',
+        htlcData: Uint8Array,
+        htlcAddress: string,
+    }) | ({
+        type: 'BTC',
+        htlcScript: Uint8Array,
+        transactionHash: string,
+        outputIndex: number;
+    }),
 };
 
 export type SignMessageRequest = SimpleRequest & {
@@ -284,7 +304,11 @@ export type RedirectRequest
     | DeriveBtcXPubRequest
     | SignSwapRequest;
 
-export type IFrameRequest = EmptyRequest | DeriveAddressesRequest | ReleaseKeyRequest | SignSwapTransactionsRequest;
+export type IFrameRequest
+    = EmptyRequest
+    | DeriveAddressesRequest
+    | ReleaseKeyRequest
+    | SignSwapTransactionsRequest;
 
 export type Request = RedirectRequest | IFrameRequest;
 

@@ -43,12 +43,12 @@ class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) {
                 type: 'NIM',
                 keyPath: this.parsePath(request.fund.keyPath, 'fund.keyPath'),
                 transaction: this.parseTransaction({
-                    validityStartHeight: 0, // Dummy
-                    data: new Uint8Array(78), // Dummy
+                    data: new Uint8Array(78), // Dummy, required for CONTRACT_CREATION flag
                     ...request.fund,
-                    flags: Nimiq.Transaction.Flag.CONTRACT_CREATION,
+                    // Enforced properties
                     recipient: 'CONTRACT_CREATION',
                     recipientType: Nimiq.Account.Type.HTLC,
+                    flags: Nimiq.Transaction.Flag.CONTRACT_CREATION,
                 }),
                 /** @type {string} */
                 senderLabel: (this.parseLabel(request.fund.senderLabel, false, 'fund.senderLabel')),
@@ -56,10 +56,13 @@ class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) {
         } else if (request.fund.type === 'BTC') {
             parsedRequest.fund = {
                 type: 'BTC',
-                keyPaths: this.parseBitcoinPathsArray(request.fund.keyPaths, 'fund.keyPaths'),
-                value: this.parsePositiveInteger(request.fund.value, false, 'fund.value'),
-                // Bitcoin transactions cannot have zero fees
-                fee: this.parsePositiveInteger(request.fund.fee, false, 'fund.fee'),
+                inputs: this.parseInputs(request.fund.inputs),
+                recipientOutput: {
+                    value: this.parsePositiveInteger(request.fund.recipientOutput.value),
+                },
+                changeOutput: this.parseChangeOutput(request.fund.changeOutput, true, 'fund.changeOutput'),
+                refundKeyPath: this.parseBitcoinPath(request.fund.refundKeyPath, 'fund.refundKeyPath'),
+                refundAddress: '', // Will be filled out after password entry
             };
         } else {
             throw new Errors.InvalidRequestError('Invalid funding type');
@@ -68,22 +71,29 @@ class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) {
         if (request.redeem.type === 'NIM') {
             parsedRequest.redeem = {
                 type: 'NIM',
-                keyPath: this.parsePath(request.redeem.keyPath, 'keyPath'),
+                keyPath: this.parsePath(request.redeem.keyPath, 'redeem.keyPath'),
                 transaction: this.parseTransaction({
-                    sender: 'NQ07 0000 0000 0000 0000 0000 0000 0000 0000', // Dummy
-                    validityStartHeight: 0, // Dummy
+                    sender: Nimiq.Address.NULL.toUserFriendlyAddress(), // Dummy
                     ...request.redeem,
+                    // Enforced properties
+                    senderType: Nimiq.Account.Type.HTLC,
+                    recipientType: Nimiq.Account.Type.BASIC,
+                    flags: Nimiq.Transaction.Flag.NONE,
                 }),
-                recipientLabel: /** @type {string} */ (
-                    this.parseLabel(request.redeem.recipientLabel, false, 'recipientLabel')),
+                /** @type {string} */
+                recipientLabel: (this.parseLabel(request.redeem.recipientLabel, false, 'recipientLabel')),
             };
         } else if (request.redeem.type === 'BTC') {
             parsedRequest.redeem = {
                 type: 'BTC',
-                keyPaths: this.parseBitcoinPathsArray(request.redeem.keyPaths, 'redeem.keyPaths'),
-                value: this.parsePositiveInteger(request.redeem.value, false, 'redeem.value'),
-                // Bitcoin transactions cannot have zero fees
-                fee: this.parsePositiveInteger(request.redeem.fee, false, 'redeem.fee'),
+                input: {
+                    witnessUtxo: {
+                        value: this.parsePositiveInteger(request.redeem.input.value, false, 'redeem.input.value'),
+                    },
+                    keyPath: this.parseBitcoinPath(request.redeem.input.keyPath, 'redeem.input.keyPath'),
+                },
+                /** @type {KeyguardRequest.BitcoinTransactionChangeOutput} */
+                output: (this.parseChangeOutput(request.redeem.output, false, 'redeem.output')),
             };
         } else {
             throw new Errors.InvalidRequestError('Invalid redeeming type');

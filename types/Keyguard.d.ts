@@ -65,8 +65,8 @@ type NimHtlcContents = {
 };
 
 type BtcHtlcContents = {
-    refundAddressBytes: string,
-    redeemAddressBytes: string,
+    refundAddress: string,
+    redeemAddress: string,
     hash: string,
     timeoutTimestamp: number,
 };
@@ -139,9 +139,13 @@ type Parsed<T extends KeyguardRequest.Request> =
                     senderLabel: string,
                 } | {
                     type: 'BTC',
-                    keyPaths: string[],
-                    value: number,
-                    fee: number,
+                    inputs: ParsedBitcoinTransactionInput[],
+                    recipientOutput: { // Cannot parse an output with most of it's required properties missing
+                        value: number,
+                    },
+                    changeOutput?: KeyguardRequest.BitcoinTransactionChangeOutput,
+                    refundKeyPath: string,
+                    refundAddress: string,
                 },
                 redeem: {
                     type: 'NIM',
@@ -150,9 +154,42 @@ type Parsed<T extends KeyguardRequest.Request> =
                     recipientLabel: string,
                 } | {
                     type: 'BTC',
-                    keyPaths: string[],
-                    value: number,
-                    fee: number,
+                    input: { // Cannot parse an input with most of it's required properties missing
+                        witnessUtxo: {
+                            value: number,
+                        },
+                        keyPath: string,
+                    },
+                    output: KeyguardRequest.BitcoinTransactionChangeOutput,
+                },
+            }
+        > :
+    T extends Is<T, KeyguardRequest.SignSwapTransactionsRequest> ?
+        Transform<
+            KeyguardRequest.SignSwapTransactionsRequest,
+            'fund' | 'redeem', {
+                fund: {
+                    type: 'NIM',
+                    htlcDetails: NimHtlcContents,
+                    htlcData: Uint8Array,
+                } | {
+                    type: 'BTC',
+                    htlcDetails: BtcHtlcContents,
+                    htlcScript: Uint8Array,
+                    htlcAddress: string,
+                },
+                redeem: {
+                    type: 'NIM',
+                    htlcDetails: NimHtlcContents,
+                    htlcData: Uint8Array,
+                    htlcAddress: string,
+                } | {
+                    type: 'BTC',
+                    htlcDetails: BtcHtlcContents,
+                    htlcScript: Uint8Array,
+                    transactionHash: string,
+                    outputIndex: number,
+                    outputScript: Buffer,
                 },
             }
         > :
