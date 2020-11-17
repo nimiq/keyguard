@@ -16,7 +16,7 @@
     "funding-cashlink": "Финансирование Cashlink",
 
     "recovery-words-title": "Запишите эти 24 слова на бумаге",
-    "recovery-words-intro-text": "При потере Файла Авторизации и/или пароля доступ к аккаунту можно восстановить ТОЛЬКО с помощью Защитной Фразы из 24 слов.",
+    "recovery-words-intro-text": "При потере Файла и/или пароля аккайнт можно восстановить ТОЛЬКО Защитной Фразой из 24 слов.",
     "recovery-words-intro-offline": "Храните Защитную Фразу в оффлайне, не вводите слова безопасности только в [strong]keyguard[/strong].nimiq.com.",
     "recovery-words-intro-copy": "Сделайте несколько копий и спрячьте их в надёжных местах: например, в банковской ячейке. ",
     "recovery-words-intro-safety": "Чтобы ваша Защитная Фраза не сгорела и не утопла, храните её герметичной ёмкости.",
@@ -39,7 +39,7 @@
 
     "import-words-file-available": "Каждый раз, когда вы используете для восстановления Защитную Фразу, создаётся новый Файл Авторизации. Чтобы обезопасить его, создайте пароль.",
     "import-words-file-unavailable": "Каждый раз, когда вы используете для восстановления Защитную Фразу, создаётся новый Файл Авторизации. Чтобы обезопасить его, создайте пароль.",
-    "import-words-hint": "Нажмите Tab, чтобы перейти на следующее поле",
+    "import-words-hint": "Tab, чтобы перейти дальше",
     "import-words-error": "Это некорректный аккаунт. Опечатались?",
     "import-words-wrong-seed-phrase": "Эта Защитная Фраза - от другого аккаунта",
     "import-words-download-loginfile": "Сохраните свой Файл Авторизации",
@@ -152,11 +152,11 @@
     "export-file-intro-download-file": "Скачайте Файл Авторизации, чтобы защитить доступ к своему аккаунту.",
     "export-file-intro-orange-text": "Сохраните его в надежном месте.",
     "export-file-success-set-password": "Установите пароль",
-    "export-file-success-save-file": "Сохранить Файл Авторизации",
+    "export-file-success-save-file": "Сохранить",
     "export-file-success-create-backup": "Создать резервную копию",
     "export-file-success-heading": "Потратьте 5 минут и создайте Резервную Копию",
     "export-file-success-words-intro": "Пароль забывать нельзя! Запишите 24 фразы восстановления доступа.",
-    "export-words-intro-heading": "Утерянный пароль восстановить невозможно!",
+    "export-words-intro-heading": "Утерянный пароль не восстановить!",
     "export-words-unlock-heading": "Разблокировать резервную копию",
     "export-words-hint": "Прокрутите, чтобы продолжить",
     "go-to-recovery-words": "Создать резервную копию",
@@ -166,9 +166,9 @@
     "remove-key-heading": "Не потеряйте доступ",
     "remove-key-intro-text": "Не выходите из учётной записи, не сохранив данные доступа к своему аккаунту! Так вы рискуете навсегда потерять к нему доступ!",
     "remove-key-login-file-question": "Вы точно сохранили свой Файл Авторизации? Убедитесь, что у вас всегда есть доступ к нему.",
-    "remove-key-download-login-file": "Скачать Файл Авторизации",
+    "remove-key-download-login-file": "Скачать",
     "remove-key-recovery-words-question": "Известно ли вам, где хранится ваша Защитная Фраза?",
-    "remove-key-show-recovery-words": "Создать резервную копию",
+    "remove-key-show-recovery-words": "Бэкап",
     "remove-key-label-confirm-instructions": "Введите \"{accountLabel}\", чтобы выйти из учётной записи.",
     "remove-key-final-confirm": "Выйти",
 
@@ -199,7 +199,7 @@
     "login-file-color-green": "Зеленый",
     "login-file-color-brown": "Коричневый",
 
-    "login-file-filename": "Nimiq-Login-File-{color}-Account.png",
+    "login-file-filename": "Nimiq-Файл-Авторизации-{color}-аккаунт.png",
 
     "bitcoin": "Bitcoin",
     "bitcoin-recipient-unlabelled": "Немаркированный",
@@ -209,7 +209,7 @@
 
     "sign-swap-heading": "Подтвердить обмен",
     "sign-swap-exchange-rate-tooltip": "Эта ставка включает в \nсебя комиссию за обмен.",
-    "sign-swap-fee-tooltip-heading": "Эта ставка включает:",
+    "sign-swap-fees": "комиссии",
     "sign-swap-btc-fees": "Комиссия сети BTC",
     "sign-swap-btc-fees-explainer": " Обмен выполняется в 2 транзакции BTC.",
     "sign-swap-nim-fees": "Комиссия сети NIM",

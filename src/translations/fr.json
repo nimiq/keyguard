@@ -15,7 +15,7 @@
 
     "funding-cashlink": "Financement du cashlink",
 
-    "recovery-words-title": "Écrivez ces 24 Mots sur du Papier",
+    "recovery-words-title": "Écrivez ces 24 Mots sur du papier",
     "recovery-words-intro-text": "Les Mots de Récupération sont le SEUL moyen de restorer votre compte dans le cas où vous perdriez votre Ficher de Connexion ou votre mot de passe.",
     "recovery-words-intro-offline": "Gardez vos mots hors-ligne, ne les renseignez nulle part hormis sur [strong]keyguard[/strong].nimiq.com.",
     "recovery-words-intro-copy": "Créez une copie et stockez-la dans un endroit sûr: maison familiale, coffre de banque, etc.",
@@ -44,7 +44,7 @@
     "import-words-wrong-seed-phrase": "Ces Mots de Récupération appartiennent à un autre compte",
     "import-words-download-loginfile": "Sauvegarder votre Fichier de Connexion",
 
-    "file-import-prompt": "Glissez-deposez ici ou cliquez pour importer",
+    "file-import-prompt": "Glissez-déposez ici ou cliquez pour importer",
     "file-import-error-could-not-read": "Impossible de lire le fichier de connexion.",
     "file-import-error-invalid": "Fichier de connexion invalide.",
 
@@ -77,11 +77,12 @@
     "passwordbox-confirm-log-in": "Se connecter",
     "passwordbox-show-words": "Afficher les mots de récupération",
     "passwordbox-sign-msg": "Signer le message",
+    "passwordbox-confirm-swap": "Confirmer le swap",
     "passwordbox-password-strength-short": "Entrez 8 caractères ou plus",
-    "passwordbox-password-strength-weak": "Mot de passe faible",
-    "passwordbox-password-strength-good": "Mot de passe bon",
-    "passwordbox-password-strength-strong": "Mot de passe fort",
-    "passwordbox-password-strength-secure": "Mot de passe sécurisé",
+    "passwordbox-password-strength-weak": "Faible mot de passe",
+    "passwordbox-password-strength-good": "Bon mot de passe",
+    "passwordbox-password-strength-strong": "Très bon mot de passe",
+    "passwordbox-password-strength-secure": "Excellent mot de passe",
     "passwordbox-repeat-password-long": "Pas de correspondance, veuillez essayer à nouveau",
     "passwordbox-repeat-password-short": "Le mot de passe est trop court",
     "passwordbox-password-skip": "Ignorer pour l'instant",
@@ -143,7 +144,7 @@
     "validate-words-23-hint": "Quel est le 23ème mot ?",
     "validate-words-24-hint": "Quel est le 24ème mot ?",
 
-    "export-file-heading": "Accédez votre Fichier de Connexion",
+    "export-file-heading": "Accédez à votre Fichier de Connexion",
     "export-file-intro-heading": "Sauvegardez votre Compte",
     "export-file-intro-blue-text": "Votre Fichier de Connexion donne accès à votre compte. Téléchargez et enregistrez-le.",
     "export-file-intro-browser": "Votre compte est stocké dans votre navigateur.",
@@ -200,8 +201,19 @@
 
     "login-file-filename": "Fichier-de-Connexion-Nimiq-Compte-{color}.png",
 
-    "bitcoin-recipient-unlabelled": "Unlabelled",
+    "bitcoin": "Bitcoin",
+    "bitcoin-recipient-unlabelled": "Non-libellé",
 
-    "derive-btc-xpub-heading": "Add Bitcoin\nto your account",
-    "derive-btc-xpub-text": "Easily swap between NIM, the super performant payment coin and BTC, the gold standard of crypto."
+    "derive-btc-xpub-heading": "Ajouter Bitcoin\nà votre compte",
+    "derive-btc-xpub-text": "Swappez facilement entre NIM, la monnaie de paiement super performante et BTC, l'étalon-or de la crypto.",
+
+    "sign-swap-heading": "Confirmer le swap",
+    "sign-swap-exchange-rate-tooltip": "Ce taux inclut les frais de swap.",
+    "sign-swap-fees": "frais",
+    "sign-swap-btc-fees": "Frais de réseau BTC",
+    "sign-swap-btc-fees-explainer": "Un swap atomique nécessite 2 transactions BTC.",
+    "sign-swap-nim-fees": "Frais de réseau NIM",
+    "sign-swap-exchange-fee": "Frais d'échange",
+    "sign-swap-of-exchange-value": "de valeur d'échange.",
+    "sign-swap-total-fees": "Total des frais"
 }
