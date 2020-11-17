@@ -213,7 +213,7 @@ export type SignSwapRequest = SimpleRequest & {
     redeem: (
         {type: 'NIM'}
         & Omit<TransactionInfo,
-            | 'sender' // Only known in second step (in swap-iframe), derived from htlcScript
+            | 'sender' // Only known in second step (in swap-iframe)
             | 'senderType' // Must be HTLC
             | 'senderLabel' // Not used
             | 'recipientType' // Must by BASIC (can only redeem to signer adress)

@@ -38,7 +38,7 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) {
             }
         }
 
-        // TODO: Deserialize stored request
+        // Deserialize stored request
         /** @type {Parsed<KeyguardRequest.SignSwapRequest>} */
         const storedRequest = {
             ...storedRawRequest,

@@ -431,13 +431,13 @@ class SignSwap {
             request.redeem.output.address = address;
         }
 
-        // TODO: Serialize request to store
-
         try {
             sessionStorage.setItem(
                 SignSwapApi.SESSION_STORAGE_KEY_PREFIX + request.swapId,
                 JSON.stringify({
                     keys: privateKeys,
+
+                    // Serialize request to store in SessionStorage
                     request: {
                         ...request,
                         ...(request.fund.type === 'NIM'
