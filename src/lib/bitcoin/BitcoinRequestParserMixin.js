@@ -17,6 +17,11 @@
  * @returns {typeof Clazz}
  */
 function BitcoinRequestParserMixin(clazz) { // eslint-disable-line no-unused-vars
+    const BitcoinHTLCInputTypes = [
+        'htlc-redeem',
+        'htlc-refund',
+    ];
+
     class Clazz extends clazz {
         /**
          * @param {unknown} type
@@ -31,12 +36,7 @@ function BitcoinRequestParserMixin(clazz) { // eslint-disable-line no-unused-var
 
             const typeString = type.toLowerCase();
 
-            const validTypes = [
-                'htlc-redeem',
-                'htlc-refund',
-            ];
-
-            if (!validTypes.includes(typeString)) {
+            if (!BitcoinHTLCInputTypes.includes(typeString)) {
                 throw new Errors.InvalidRequestError(`${name}: Invalid input type ${type}`);
             }
 
@@ -78,6 +78,10 @@ function BitcoinRequestParserMixin(clazz) { // eslint-disable-line no-unused-var
                     // @ts-ignore Argument of type 'Uint8Array' is not assignable to parameter of type 'Buffer'.
                     address: BitcoinJS.address.fromOutputScript(script, BitcoinUtils.Network),
                 };
+
+                if (BitcoinHTLCInputTypes.includes(parsed.type) && !input.witnessScript) {
+                    throw new Errors.InvalidRequestError(`input[${index}].witnessScript is required for HTLC inputs`);
+                }
 
                 if (input.witnessScript) {
                     parsed.witnessScript = BitcoinJS.Buffer.from(Nimiq.BufferUtils.fromAny(input.witnessScript));
