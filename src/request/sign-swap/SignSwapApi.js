@@ -28,7 +28,7 @@ class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) {
         parsedRequest.appName = this.parseAppName(request.appName);
         parsedRequest.keyInfo = await this.parseKeyId(request.keyId);
         if (parsedRequest.keyInfo.type !== Nimiq.Secret.Type.ENTROPY) {
-            throw new Errors.InvalidRequestError('Bitcoin is only supported with modern accounts.');
+            throw new Errors.InvalidRequestError('Swaps are only supported with modern accounts.');
         }
         parsedRequest.keyLabel = this.parseLabel(request.keyLabel, true, 'keyLabel');
 
@@ -63,6 +63,13 @@ class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) {
                 changeOutput: this.parseChangeOutput(request.fund.changeOutput, true, 'fund.changeOutput'),
                 refundKeyPath: this.parseBitcoinPath(request.fund.refundKeyPath, 'fund.refundKeyPath'),
                 refundAddress: '', // Will be filled out after password entry
+            };
+        } else if (request.fund.type === 'EUR') {
+            parsedRequest.fund = {
+                type: 'EUR',
+                amount: this.parsePositiveInteger(request.fund.amount, false, 'fund.amount'),
+                fee: this.parsePositiveInteger(request.fund.fee, true, 'fund.fee'),
+                bankLabel: this.parseLabel(request.fund.bankLabel, true, 'fund.bankLabel'),
             };
         } else {
             throw new Errors.InvalidRequestError('Invalid funding type');
@@ -101,42 +108,79 @@ class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) {
 
         // Parse display data
         parsedRequest.fiatCurrency = /** @type {string} */ (this.parseFiatCurrency(request.fiatCurrency, false));
-        parsedRequest.nimFiatRate = /** @type {number} */ (
-            this.parseNonNegativeFiniteNumber(request.nimFiatRate, false, 'nimFiatRate'));
-        parsedRequest.btcFiatRate = /** @type {number} */ (
-            this.parseNonNegativeFiniteNumber(request.btcFiatRate, false, 'btcFiatRate'));
-        parsedRequest.serviceFundingNetworkFee = /** @type {number} */ (
-            this.parsePositiveInteger(request.serviceFundingNetworkFee, true, 'serviceFundingNetworkFee'));
-        parsedRequest.serviceRedeemingNetworkFee = /** @type {number} */ (
-            this.parsePositiveInteger(request.serviceRedeemingNetworkFee, true, 'serviceRedeemingNetworkFee'));
-        parsedRequest.serviceExchangeFee = /** @type {number} */ (
-            this.parsePositiveInteger(request.serviceExchangeFee, true, 'serviceExchangeFee'));
+        parsedRequest.fundingFiatRate = /** @type {number} */ (
+            this.parseNonNegativeFiniteNumber(request.fundingFiatRate, false, 'fundingFiatRate'));
+        parsedRequest.redeemingFiatRate = /** @type {number} */ (
+            this.parseNonNegativeFiniteNumber(request.redeemingFiatRate, false, 'redeemingFiatRate'));
+        parsedRequest.serviceFundingFee = /** @type {number} */ (
+            this.parsePositiveInteger(request.serviceFundingFee, true, 'serviceFundingFee'));
+        parsedRequest.serviceRedeemingFee = /** @type {number} */ (
+            this.parsePositiveInteger(request.serviceRedeemingFee, true, 'serviceRedeemingFee'));
+        parsedRequest.serviceSwapFee = /** @type {number} */ (
+            this.parsePositiveInteger(request.serviceSwapFee, true, 'serviceSwapFee'));
 
-        parsedRequest.nimiqAddresses = request.nimiqAddresses.map((address, index) => ({
-            address: this.parseAddress(address.address, `nimiqAddresses[${index}].address`).toUserFriendlyAddress(),
-            balance: this.parsePositiveInteger(address.balance, true, `nimiqAddresses[${index}].balance`),
-        }));
-        parsedRequest.bitcoinAccount = {
-            balance: this.parsePositiveInteger(request.bitcoinAccount.balance, true, 'bitcoinAccount.balance'),
-        };
+        parsedRequest.layout = this.parseLayout(request.layout);
 
-        const nimAddress = parsedRequest.fund.type === 'NIM' // eslint-disable-line no-nested-ternary
-            ? parsedRequest.fund.transaction.sender.toUserFriendlyAddress()
-            : parsedRequest.redeem.type === 'NIM'
-                ? parsedRequest.redeem.transaction.recipient.toUserFriendlyAddress()
-                : ''; // Should never happen, if parsing works correctly
-        if (!parsedRequest.nimiqAddresses.some(addressInfo => addressInfo.address === nimAddress)) {
-            throw new Errors.InvalidRequestError(
-                'The address details of the NIM address doing the swap must be provided',
-            );
+        if (request.layout === SignSwapApi.Layouts.SLIDER && parsedRequest.layout === SignSwapApi.Layouts.SLIDER) {
+            // SLIDER layout is only allowed for NIM-BTC swaps
+            const assets = ['NIM', 'BTC'];
+            if (!assets.includes(parsedRequest.fund.type) || !assets.includes(parsedRequest.redeem.type)) {
+                throw new Errors.InvalidRequestError(
+                    'The \'slider\' layout is only allowed for swaps between NIM and BTC',
+                );
+            }
+
+            parsedRequest.nimiqAddresses = request.nimiqAddresses.map((address, index) => ({
+                address: this.parseAddress(address.address, `nimiqAddresses[${index}].address`).toUserFriendlyAddress(),
+                balance: this.parsePositiveInteger(address.balance, true, `nimiqAddresses[${index}].balance`),
+            }));
+            parsedRequest.bitcoinAccount = {
+                balance: this.parsePositiveInteger(request.bitcoinAccount.balance, true, 'bitcoinAccount.balance'),
+            };
+
+            const nimAddress = parsedRequest.fund.type === 'NIM' // eslint-disable-line no-nested-ternary
+                ? parsedRequest.fund.transaction.sender.toUserFriendlyAddress()
+                : parsedRequest.redeem.type === 'NIM'
+                    ? parsedRequest.redeem.transaction.recipient.toUserFriendlyAddress()
+                    : ''; // Should never happen, if parsing works correctly
+            if (!parsedRequest.nimiqAddresses.some(addressInfo => addressInfo.address === nimAddress)) {
+                throw new Errors.InvalidRequestError(
+                    'The address details of the NIM address doing the swap must be provided',
+                );
+            }
         }
 
         return parsedRequest;
+    }
+
+    /**
+     * Checks that the given layout is valid
+     * @param {unknown} layout
+     * @returns {KeyguardRequest.SignSwapRequestLayout}
+     */
+    parseLayout(layout) {
+        if (!layout) {
+            return SignSwapApi.Layouts.STANDARD;
+        }
+        // @ts-ignore (Property 'values' does not exist on type 'ObjectConstructor'.)
+        if (Object.values(SignSwapApi.Layouts).indexOf(layout) === -1) {
+            throw new Errors.InvalidRequestError('Invalid selected layout');
+        }
+        return /** @type KeyguardRequest.SignSwapRequestLayout */ (layout);
     }
 
     get Handler() {
         return SignSwap;
     }
 }
+
+/**
+ * @enum {KeyguardRequest.SignSwapRequestLayout}
+ * @readonly
+ */
+SignSwapApi.Layouts = {
+    STANDARD: /** @type {'standard'} */ ('standard'),
+    SLIDER: /** @type {'slider'} */ ('slider'),
+};
 
 SignSwapApi.SESSION_STORAGE_KEY_PREFIX = 'swap_id_';

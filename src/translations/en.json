@@ -212,6 +212,8 @@
     "sign-swap-fees": "fees",
     "sign-swap-btc-fees": "BTC network fees",
     "sign-swap-btc-fees-explainer": "Atomic swaps require two BTC transactions.",
+    "sign-swap-oasis-fees": "OASIS fees",
+    "sign-swap-oasis-fees-explainer": "Processing fees for the EUR HTLC",
     "sign-swap-nim-fees": "NIM network fees",
     "sign-swap-exchange-fee": "Swap fee",
     "sign-swap-of-exchange-value": "of swap value.",
