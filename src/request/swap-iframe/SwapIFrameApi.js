@@ -167,6 +167,23 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) {
             };
         }
 
+        if (request.fund.type === 'EUR' && storedRequest.fund.type === 'EUR') {
+            parsedRequest.fund = {
+                type: 'EUR',
+                htlcDetails: {
+                    hash: Nimiq.BufferUtils.toHex(Nimiq.BufferUtils.fromAny(request.fund.hash)),
+                    timeoutTimestamp: this.parsePositiveInteger(request.fund.timeout, false, 'fund.timeout'),
+                },
+                htlcId: /** @type {string} */ (this.parseLabel(request.fund.htlcId, false, 'fund.htlcId')),
+            };
+        }
+
+        // if (request.redeem.type === 'EUR' && storedRequest.redeem.type === 'EUR') {
+        //     parsedRequest.redeem = {
+        //         type: 'EUR',
+        //     };
+        // }
+
         // Verify hash is the same across HTLCs
         if (parsedRequest.fund.htlcDetails.hash !== parsedRequest.redeem.htlcDetails.hash) {
             throw new Errors.InvalidRequestError('HTLC hashes do not match');
@@ -264,6 +281,11 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) {
             };
         }
 
+        if (parsedRequest.fund.type === 'EUR' && storedRequest.fund.type === 'EUR') {
+            // Nothing to do for funding EUR
+            result.eur = '';
+        }
+
         if (parsedRequest.redeem.type === 'NIM' && storedRequest.redeem.type === 'NIM') {
             await loadNimiq();
 
@@ -355,6 +377,13 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) {
                 raw: tx.toHex(),
             };
         }
+
+        // if (parsedRequest.redeem.type === 'EUR' && storedRequest.redeem.type === 'EUR') {
+        //     // TODO: Create and sign a JWS of the settlement instructions
+        //     const jws = ...
+        //
+        //     result.eur = jws;
+        // }
 
         return result;
     }

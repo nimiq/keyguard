@@ -274,23 +274,28 @@ export type SignSwapRequest = SignSwapRequestStandard | SignSwapRequestSlider;
 // Used in swap-iframe
 export type SignSwapTransactionsRequest = {
     swapId: string,
-    fund: ({
+    fund: {
         type: 'NIM'
         htlcData: Uint8Array,
-    }) | ({
+    } | {
         type: 'BTC',
         htlcScript: Uint8Array,
-    }),
-    redeem: ({
+    } | {
+        type: 'EUR',
+        hash: string,
+        timeout: number,
+        htlcId: string,
+    },
+    redeem: {
         type: 'NIM',
         htlcData: Uint8Array,
         htlcAddress: string,
-    }) | ({
+    } | {
         type: 'BTC',
         htlcScript: Uint8Array,
         transactionHash: string,
         outputIndex: number;
-    }),
+    },
 };
 
 export type SignMessageRequest = SimpleRequest & {
@@ -364,8 +369,9 @@ export type SignedBitcoinTransaction = {
     raw: string,
 };
 export type SignSwapTransactionsResult = {
-    nim: SignatureResult,
-    btc: SignedBitcoinTransaction,
+    nim?: SignatureResult,
+    btc?: SignedBitcoinTransaction,
+    eur?: string, // When funding EUR: empty string, when redeeming EUR: JWS of the settlement instructions
 };
 
 // Result unions

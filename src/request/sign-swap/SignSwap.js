@@ -430,6 +430,10 @@ class SignSwap {
             request.fund.refundAddress = btcKey.deriveAddress(request.fund.refundKeyPath);
         }
 
+        if (request.fund.type === 'EUR') {
+            // No action required
+        }
+
         if (request.redeem.type === 'NIM') {
             const privateKey = key.derivePrivateKey(request.redeem.keyPath);
             privateKeys.nim = privateKey.toHex();
@@ -451,6 +455,10 @@ class SignSwap {
             }
             request.redeem.output.address = address;
         }
+
+        // if (request.redeem.type === 'EUR') {
+        //     // Derive private key to sign settlement instructions and return its public key to Hub
+        // }
 
         try {
             // Serialize request to store in SessionStorage

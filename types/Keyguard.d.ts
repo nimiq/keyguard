@@ -71,6 +71,11 @@ type BtcHtlcContents = {
     timeoutTimestamp: number,
 };
 
+type EurHtlcContents = {
+    hash: string,
+    timeoutTimestamp: number,
+};
+
 type Transform<T, K extends keyof T, E> = Omit<T, K> & E;
 
 type KeyId2KeyInfo<T extends { keyId: string }> = Transform<T, 'keyId', { keyInfo: KeyInfo }>
@@ -196,6 +201,10 @@ type Parsed<T extends KeyguardRequest.Request> =
                     htlcDetails: BtcHtlcContents,
                     htlcScript: Uint8Array,
                     htlcAddress: string,
+                } | {
+                    type: 'EUR',
+                    htlcDetails: EurHtlcContents,
+                    htlcId: string,
                 },
                 redeem: {
                     type: 'NIM',
