@@ -212,8 +212,11 @@
     "sign-swap-fees": "kosten",
     "sign-swap-btc-fees": "BTC-netwerkkosten",
     "sign-swap-btc-fees-explainer": "Atomic swaps vereisen twee BTC-transacties.",
+    "sign-swap-oasis-fees": "OASIS fees",
+    "sign-swap-oasis-fees-explainer": "Processing fees for the EUR HTLC",
     "sign-swap-nim-fees": "NIM-netwerkkosten",
     "sign-swap-exchange-fee": "Wisselkosten",
     "sign-swap-of-exchange-value": "van ruilwaarde.",
-    "sign-swap-total-fees": "Totale kosten"
+    "sign-swap-total-fees": "Totale kosten",
+    "sign-swap-your-bank": "Your bank"
 }

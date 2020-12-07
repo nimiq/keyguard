@@ -217,5 +217,6 @@
     "sign-swap-nim-fees": "NIM network fees",
     "sign-swap-exchange-fee": "Swap fee",
     "sign-swap-of-exchange-value": "of swap value.",
-    "sign-swap-total-fees": "Total fees"
+    "sign-swap-total-fees": "Total fees",
+    "sign-swap-your-bank": "Your bank"
 }

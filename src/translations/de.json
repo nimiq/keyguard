@@ -212,8 +212,11 @@
     "sign-swap-fees": "Gebühren",
     "sign-swap-btc-fees": "BTC Netzwerkgebühren",
     "sign-swap-btc-fees-explainer": "Ein sicherer Tausch benötigt zwei BTC Transaktionen.",
+    "sign-swap-oasis-fees": "OASIS fees",
+    "sign-swap-oasis-fees-explainer": "Processing fees for the EUR HTLC",
     "sign-swap-nim-fees": "NIM Netzwerkgebühren",
     "sign-swap-exchange-fee": "Tauschgebühr",
     "sign-swap-of-exchange-value": "des Tauschwerts.",
-    "sign-swap-total-fees": "Gebühren gesamt"
+    "sign-swap-total-fees": "Gebühren gesamt",
+    "sign-swap-your-bank": "Your bank"
 }

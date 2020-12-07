@@ -38,16 +38,30 @@ class SignSwap {
         const fundTx = request.fund;
         const redeemTx = request.redeem;
 
+        // Remove unused layout HTML before getting DOM nodes
+        if (request.layout === SignSwapApi.Layouts.STANDARD) {
+            /** @type {HTMLDivElement} */
+            const sliderLayout = (this.$el.querySelector('.layout-slider'));
+            this.$el.removeChild(sliderLayout);
+        }
+        if (request.layout === SignSwapApi.Layouts.SLIDER) {
+            /** @type {HTMLDivElement} */
+            const standardLayout = (this.$el.querySelector('.layout-standard'));
+            this.$el.removeChild(standardLayout);
+        }
+
+        this.$el.classList.add(`layout-${request.layout}`);
+
         /** @type {HTMLDivElement} */
         const $exchangeRate = (this.$el.querySelector('#exchange-rate'));
         /** @type {HTMLDivElement} */
-        const $leftIdenticon = (this.$el.querySelector('.nimiq-address .identicon'));
+        const $leftIdenticon = (this.$el.querySelector('.left-account .identicon'));
         /** @type {HTMLDivElement} */
-        const $rightIdenticon = (this.$el.querySelector('.bitcoin-account .identicon'));
+        const $rightIdenticon = (this.$el.querySelector('.right-account .identicon'));
         /** @type {HTMLSpanElement} */
-        const $leftLabel = (this.$el.querySelector('.nimiq-address .label'));
+        const $leftLabel = (this.$el.querySelector('.left-account .label'));
         /** @type {HTMLSpanElement} */
-        const $rightLabel = (this.$el.querySelector('.bitcoin-account .label'));
+        const $rightLabel = (this.$el.querySelector('.right-account .label'));
         /** @type {HTMLDivElement} */
         const $swapValues = (this.$el.querySelector('.swap-values'));
         /** @type {HTMLSpanElement} */
@@ -83,11 +97,13 @@ class SignSwap {
         $swapLeftValue.textContent = NumberFormatting.formatNumber(
             this._unitsToCoins(leftAsset, leftAmount),
             this._assetDecimals(leftAsset),
+            leftAsset === 'EUR' ? this._assetDecimals(leftAsset) : 0,
         );
 
         $swapRightValue.textContent = NumberFormatting.formatNumber(
             this._unitsToCoins(rightAsset, rightAmount),
             this._assetDecimals(rightAsset),
+            // rightAsset === 'EUR'? this._assetDecimals(rightAsset) : 0,
         );
 
         $swapValues.classList.add(`${fundTx.type.toLowerCase()}-to-${redeemTx.type.toLowerCase()}`);
@@ -178,34 +194,13 @@ class SignSwap {
             );
         }
 
-        const multiplier = 10 ** this._assetDecimals(exchangeOtherAsset);
-        const exchangeRate = Math.round(
-            this._unitsToCoins(exchangeOtherAsset, exchangeOtherValue)
-                / this._unitsToCoins(exchangeBaseAsset, exchangeBaseValue)
-                * multiplier,
-        ) / multiplier;
+        const exchangeRate = this._unitsToCoins(exchangeOtherAsset, exchangeOtherValue)
+            / this._unitsToCoins(exchangeBaseAsset, exchangeBaseValue);
         $exchangeRate.textContent = `1 ${exchangeBaseAsset} = ${NumberFormatting.formatNumber(
             exchangeRate,
-            this._assetDecimals(exchangeOtherAsset),
+            Math.max(this._assetDecimals(exchangeOtherAsset), 5),
             this._assetDecimals(exchangeOtherAsset),
         )} ${exchangeOtherAsset}`;
-
-        const swapNimAddress = fundTx.type === 'NIM' // eslint-disable-line no-nested-ternary
-            ? fundTx.transaction.sender.toUserFriendlyAddress()
-            : redeemTx.type === 'NIM'
-                ? redeemTx.transaction.recipient.toUserFriendlyAddress()
-                : ''; // Should never happen, if parsing works correctly
-
-        // eslint-disable-next-line no-new
-        new Identicon(swapNimAddress, $leftIdenticon);
-        $leftLabel.textContent = fundTx.type === 'NIM' // eslint-disable-line no-nested-ternary
-            ? fundTx.senderLabel
-            : redeemTx.type === 'NIM'
-                ? redeemTx.recipientLabel
-                : ''; // Should never happen, if parsing works correctly
-
-        $rightIdenticon.innerHTML = TemplateTags.hasVars(0)`<img src="../../assets/icons/bitcoin.svg"></img>`;
-        $rightLabel.textContent = I18n.translatePhrase('bitcoin');
 
         /** @type {HTMLDivElement} */
         const $topRow = (this.$el.querySelector('.nq-notice'));
@@ -215,6 +210,49 @@ class SignSwap {
                 fundTx.type === exchangeBaseAsset ? exchangeBaseValue : exchangeOtherValue,
             ).$el,
         );
+
+        if (request.layout === SignSwapApi.Layouts.STANDARD) {
+            /** @type {HTMLDivElement} */
+            const $leftAccount = (this.$el.querySelector('.left-account'));
+            /** @type {HTMLDivElement} */
+            const $rightAccount = (this.$el.querySelector('.right-account'));
+
+            $leftAccount.classList.add(request.fund.type.toLocaleLowerCase());
+            $rightAccount.classList.add(request.redeem.type.toLocaleLowerCase());
+
+            // Add ticker symbols
+            /** @type {HTMLSpanElement} */
+            const $fromSymbol = (this.$el.querySelector('.swap-values .from-symbol'));
+            /** @type {HTMLSpanElement} */
+            const $toSymbol = (this.$el.querySelector('.swap-values .to-symbol'));
+
+            $fromSymbol.classList.add(`${request.fund.type.toLowerCase()}-symbol`);
+            $toSymbol.classList.add(`${request.redeem.type.toLowerCase()}-symbol`);
+
+            if (request.fund.type === 'NIM') {
+                const address = request.fund.transaction.sender.toUserFriendlyAddress();
+                new Identicon(address, $leftIdenticon); // eslint-disable-line no-new
+                $leftLabel.textContent = request.fund.senderLabel;
+            } else if (request.fund.type === 'BTC') {
+                $leftIdenticon.innerHTML = TemplateTags.hasVars(0)`<img src="../../assets/icons/bitcoin.svg"></img>`;
+                $leftLabel.textContent = I18n.translatePhrase('bitcoin');
+            } else if (request.fund.type === 'EUR') {
+                $leftIdenticon.innerHTML = TemplateTags.hasVars(0)`<img src="../../assets/icons/bank.svg"></img>`;
+                $leftLabel.textContent = request.fund.bankLabel || I18n.translatePhrase('sign-swap-your-bank');
+            }
+
+            if (request.redeem.type === 'NIM') {
+                const address = request.redeem.transaction.recipient.toUserFriendlyAddress();
+                new Identicon(address, $rightIdenticon); // eslint-disable-line no-new
+                $rightLabel.textContent = request.redeem.recipientLabel;
+            } else if (request.redeem.type === 'BTC') {
+                $rightIdenticon.innerHTML = TemplateTags.hasVars(0)`<img src="../../assets/icons/bitcoin.svg"></img>`;
+                $rightLabel.textContent = I18n.translatePhrase('bitcoin');
+            // } else if (request.redeem.type === 'EUR') {
+            //     $rightIdenticon.innerHTML = TemplateTags.hasVars(0)`<img src="../../assets/icons/bank.svg"></img>`;
+            //     $rightLabel.textContent = request.redeem.bankLabel || I18n.translatePhrase('sign-swap-your-bank');
+            }
+        }
 
         if (request.layout === SignSwapApi.Layouts.SLIDER) {
             /** @type {HTMLDivElement} */
@@ -231,6 +269,23 @@ class SignSwap {
             const $swapLeftValueFiat = (this.$el.querySelector('#swap-nim-value-fiat'));
             /** @type {HTMLSpanElement} */
             const $swapRightValueFiat = (this.$el.querySelector('#swap-btc-value-fiat'));
+
+            const swapNimAddress = fundTx.type === 'NIM' // eslint-disable-line no-nested-ternary
+                ? fundTx.transaction.sender.toUserFriendlyAddress()
+                : redeemTx.type === 'NIM'
+                    ? redeemTx.transaction.recipient.toUserFriendlyAddress()
+                    : ''; // Should never happen, if parsing works correctly
+
+            // eslint-disable-next-line no-new
+            new Identicon(swapNimAddress, $leftIdenticon);
+            $leftLabel.textContent = fundTx.type === 'NIM' // eslint-disable-line no-nested-ternary
+                ? fundTx.senderLabel
+                : redeemTx.type === 'NIM'
+                    ? redeemTx.recipientLabel
+                    : ''; // Should never happen, if parsing works correctly
+
+            $rightIdenticon.innerHTML = TemplateTags.hasVars(0)`<img src="../../assets/icons/bitcoin.svg"></img>`;
+            $rightLabel.textContent = I18n.translatePhrase('bitcoin');
 
             // Add signs in front of swap amounts
             $swapLeftValue.textContent = `${fundTx.type === leftAsset ? '-' : '+'}\u2009`

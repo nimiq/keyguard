@@ -212,8 +212,11 @@
     "sign-swap-fees": "комиссии",
     "sign-swap-btc-fees": "Комиссия сети BTC",
     "sign-swap-btc-fees-explainer": " Обмен выполняется в 2 транзакции BTC.",
+    "sign-swap-oasis-fees": "OASIS fees",
+    "sign-swap-oasis-fees-explainer": "Processing fees for the EUR HTLC",
     "sign-swap-nim-fees": "Комиссия сети NIM",
     "sign-swap-exchange-fee": "Комиссия",
     "sign-swap-of-exchange-value": "от суммы обмена.",
-    "sign-swap-total-fees": "Итого"
+    "sign-swap-total-fees": "Итого",
+    "sign-swap-your-bank": "Your bank"
 }
