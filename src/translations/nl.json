@@ -1,5 +1,5 @@
 {
-    "_language": "Engels",
+    "_language": "Nederlands",
 
     "language-changed": "De weergavetaal is gewijzigd. Wil je de pagina opnieuw laden om alle vertalingen bij te werken? Anders worden sommige vertalingen mogelijk niet automatisch bijgewerkt.",
 
@@ -17,7 +17,7 @@
 
     "recovery-words-title": "Schrijf deze 24 woorden op papier",
     "recovery-words-intro-text": "De herstelwoorden is de ENIGSTE manier om je account te herstellen in het geval dat je je Login File of wachtwoord verliest.",
-    "recovery-words-intro-offline": "Houd je woorden offline, voer ze nergens in dan op [strong] keyguard [/strong] .nimiq.com.",
+    "recovery-words-intro-offline": "Houd je woorden offline, voer ze nergens in dan op [strong]keyguard[/strong].nimiq.com.",
     "recovery-words-intro-copy": "Kopiëer deze gegevens en bewaar ze op een veilige plaats: thuis, bank kluis etc.",
     "recovery-words-intro-safety": "Let op water en vuur, gebruik een verzegelde kist om je herstelwoorden veilig te bewaren.",
     "recovery-words-text": "Iedereen met deze woorden heeft toegang tot uw account! Houd ze veilig.",
@@ -46,7 +46,7 @@
 
     "file-import-prompt": "Sleep hierheen of klik om te importeren",
     "file-import-error-could-not-read": "Kan Login File niet lezen.",
-    "file-import-error-invalid": "Ongeldige Login File",
+    "file-import-error-invalid": "Ongeldige Login File.",
 
     "sign-tx-heading-tx": "Bevestig transactie",
     "sign-tx-heading-checkout": "Verifieer betaling",
@@ -109,13 +109,13 @@
     "timer-day": "dag",
     "timer-days": "dagen",
 
-    "identicon-selector-avatars-hint": "Avatars representeren adressen",
+    "identicon-selector-avatars-hint": "Avatars representeren adressen.",
     "identicon-selector-generate-new": "Nieuwe avatar",
 
     "download-loginfile-download": "Download Login File",
     "download-loginfile-successful": "Download succesvol?",
     "download-loginfile-tap-and-hold": "Tik en houd de afbeelding vast om te downloaden",
-    "download-loginfile-continue": "Ga verder als je klaar bent",
+    "download-loginfile-continue": "Doorgaan",
     "download-loginfile-download-again": "Opnieuw downloaden",
 
     "validate-words-text": "Selecteer het juiste woord uit je lijst met herstelwoorden.",
@@ -160,7 +160,7 @@
     "export-words-unlock-heading": "Back-up ontgrendelen",
     "export-words-hint": "Scroll om door te gaan",
     "go-to-recovery-words": "Back-up maken",
-    "export-continue-to-login-file": "Ga verder naar Login File",
+    "export-continue-to-login-file": "Ga naar Login File",
     "export-show-recovery-words": "Laat herstelwoorden zien",
 
     "remove-key-heading": "Verlies geen toegang",
@@ -173,7 +173,7 @@
     "remove-key-final-confirm": "Uitloggen",
 
     "derive-address-heading-password": "Ontgrendel nieuwe adressen",
-    "derive-address-password-text": "Om een nieuw adres toe te voegen, moet je eerst [br] je account ontgrendelen.",
+    "derive-address-password-text": "Om een nieuw adres toe te voegen, moet je eerst je account ontgrendelen.",
 
     "change-password-heading": "Bevestig het oude wachtwoord",
     "change-password-paragraph": "Als je het wachtwoord wijzigt, wordt een nieuwe Login File aangemaakt dat het huidige vervangt.",
