@@ -39,46 +39,24 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) {
         }
 
         // Deserialize stored request
+        if (storedRawRequest.fund.type === 'NIM') {
+            storedRawRequest.fund.transaction = Nimiq.Transaction.fromPlain(storedRawRequest.fund.transaction);
+        }
+        if (storedRawRequest.fund.type === 'BTC') {
+            // Plainify BTC input script buffers
+            for (let i = 0; i < storedRawRequest.fund.inputs.length; i++) {
+                storedRawRequest.fund.inputs[i].witnessUtxo.script = BitcoinJS.Buffer.from(
+                    storedRawRequest.fund.inputs[i].witnessUtxo.script,
+                    'hex',
+                );
+            }
+        }
+        if (storedRawRequest.redeem.type === 'NIM') {
+            storedRawRequest.redeem.transaction = Nimiq.Transaction.fromPlain(storedRawRequest.redeem.transaction);
+        }
+
         /** @type {Parsed<KeyguardRequest.SignSwapRequest>} */
-        const storedRequest = {
-            ...storedRawRequest,
-            ...(storedRawRequest.fund.type === 'NIM'
-                ? {
-                    fund: {
-                        ...storedRawRequest.fund,
-                        transaction: Nimiq.Transaction.fromPlain(storedRawRequest.fund.transaction),
-                    },
-                } : {}
-            ),
-            ...(storedRawRequest.redeem.type === 'NIM'
-                ? {
-                    redeem: {
-                        ...storedRawRequest.redeem,
-                        transaction: Nimiq.Transaction.fromPlain(storedRawRequest.redeem.transaction),
-                    },
-                } : {}
-            ),
-            ...(storedRawRequest.fund.type === 'BTC'
-                ? {
-                    fund: {
-                        ...storedRawRequest.fund,
-                        inputs: storedRawRequest.fund.inputs.map(
-                            /**
-                             * @param {any} input
-                             * @returns {ParsedBitcoinTransactionInput}
-                             */
-                            input => ({
-                                ...input,
-                                witnessUtxo: {
-                                    ...input.witnessUtxo,
-                                    script: BitcoinJS.Buffer.from(input.witnessUtxo.script, 'hex'),
-                                },
-                            }),
-                        ),
-                    },
-                } : {}
-            ),
-        };
+        const storedRequest = storedRawRequest;
 
         // Parse request
         /** @type {Parsed<KeyguardRequest.SignSwapTransactionsRequest>} */

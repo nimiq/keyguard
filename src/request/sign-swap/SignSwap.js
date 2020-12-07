@@ -453,45 +453,31 @@ class SignSwap {
         }
 
         try {
+            // Serialize request to store in SessionStorage
+            /** @type {any} */
+            const plainRequest = request;
+            if (request.fund.type === 'NIM') {
+                // Plainify Nimiq.Transaction
+                plainRequest.fund.transaction = request.fund.transaction.toPlain();
+            }
+            if (request.fund.type === 'BTC') {
+                // Plainify BTC input script buffers
+                for (let i = 0; i < request.fund.inputs.length; i++) {
+                    plainRequest.fund.inputs[i].witnessUtxo.script = Nimiq.BufferUtils.toHex(
+                        request.fund.inputs[i].witnessUtxo.script,
+                    );
+                }
+            }
+            if (request.redeem.type === 'NIM') {
+                // Plainify Nimiq.Transaction
+                plainRequest.redeem.transaction = request.redeem.transaction.toPlain();
+            }
+
             sessionStorage.setItem(
                 SignSwapApi.SESSION_STORAGE_KEY_PREFIX + request.swapId,
                 JSON.stringify({
                     keys: privateKeys,
-
-                    // Serialize request to store in SessionStorage
-                    request: {
-                        ...request,
-                        ...(request.fund.type === 'NIM'
-                            ? {
-                                fund: {
-                                    ...request.fund,
-                                    transaction: request.fund.transaction.toPlain(),
-                                },
-                            } : {}
-                        ),
-                        ...(request.redeem.type === 'NIM'
-                            ? {
-                                redeem: {
-                                    ...request.redeem,
-                                    transaction: request.redeem.transaction.toPlain(),
-                                },
-                            } : {}
-                        ),
-                        ...(request.fund.type === 'BTC'
-                            ? {
-                                fund: {
-                                    ...request.fund,
-                                    inputs: request.fund.inputs.map(input => ({
-                                        ...input,
-                                        witnessUtxo: {
-                                            ...input.witnessUtxo,
-                                            script: Nimiq.BufferUtils.toHex(input.witnessUtxo.script),
-                                        },
-                                    })),
-                                },
-                            } : {}
-                        ),
-                    },
+                    request: plainRequest,
                 }),
             );
         } catch (error) {
