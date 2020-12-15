@@ -164,7 +164,7 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
         $div.classList.add('price-breakdown');
 
         $div.innerHTML = TemplateTags.hasVars(1)`
-            <label data-i18n="sign-swap-btc-fees">BTC network fees</label>
+            <label data-i18n="sign-swap-btc-fees">BTC network fee</label>
             <div>${NumberFormatting.formatCurrency(fiatFee, fiatCurrency)}</div>
         `;
         I18n.translateDom($div);
@@ -186,7 +186,7 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
         $div.classList.add('price-breakdown');
 
         $div.innerHTML = TemplateTags.hasVars(1)`
-            <label data-i18n="sign-swap-oasis-fees">OASIS fees</label>
+            <label data-i18n="sign-swap-oasis-fees">OASIS service fee</label>
             <div>${NumberFormatting.formatCurrency(fiatFee, fiatCurrency)}</div>
         `;
         I18n.translateDom($div);
@@ -208,7 +208,7 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
         $div.classList.add('price-breakdown');
 
         $div.innerHTML = TemplateTags.hasVars(1)`
-            <label data-i18n="sign-swap-nim-fees">NIM network fees</label>
+            <label data-i18n="sign-swap-nim-fees">NIM network fee</label>
             <div>${NumberFormatting.formatCurrency(fiatFee, fiatCurrency)}</div>
         `;
         I18n.translateDom($div);
