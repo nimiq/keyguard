@@ -196,11 +196,10 @@ class SignSwap {
 
         const exchangeRate = this._unitsToCoins(exchangeOtherAsset, exchangeOtherValue)
             / this._unitsToCoins(exchangeBaseAsset, exchangeBaseValue);
-        $exchangeRate.textContent = `1 ${exchangeBaseAsset} = ${NumberFormatting.formatNumber(
+        $exchangeRate.textContent = `1 ${exchangeBaseAsset} = ${NumberFormatting.formatCurrency(
             exchangeRate,
-            Math.max(this._assetDecimals(exchangeOtherAsset), 5),
-            this._assetDecimals(exchangeOtherAsset),
-        )} ${exchangeOtherAsset}`;
+            exchangeOtherAsset.toLocaleLowerCase(),
+        )}`;
 
         /** @type {HTMLDivElement} */
         const $topRow = (this.$el.querySelector('.nq-notice'));
