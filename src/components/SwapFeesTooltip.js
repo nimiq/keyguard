@@ -69,9 +69,13 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
             const fiatRate = fundTx.type === 'EUR' ? fundingFiatRate : redeemingFiatRate;
             const fiatFee = this._unitsToCoins('EUR', myFee + theirFee) * fiatRate;
 
-            const rows = this._createOasisLine(fiatFee, fiatCurrency);
+            const rows = this._createOasisLine(
+                fiatFee,
+                fiatCurrency,
+                (myFee + theirFee) / exchangeAmount,
+            );
             this.$tooltip.appendChild(rows[0]);
-            // this.$tooltip.appendChild(rows[1]);
+            this.$tooltip.appendChild(rows[1]);
 
             totalFiatFees += fiatFee;
         }
@@ -179,9 +183,10 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
     /**
      * @param {number} fiatFee
      * @param {string} fiatCurrency
-     * @returns {[HTMLDivElement]}
+     * @param {number} percentage
+     * @returns {[HTMLDivElement, HTMLParagraphElement]}
      */
-    _createOasisLine(fiatFee, fiatCurrency) {
+    _createOasisLine(fiatFee, fiatCurrency, percentage) {
         const $div = document.createElement('div');
         $div.classList.add('price-breakdown');
 
@@ -191,11 +196,12 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
         `;
         I18n.translateDom($div);
 
-        // const $p = document.createElement('p');
-        // $p.classList.add('explainer');
-        // $p.textContent = I18n.translatePhrase('sign-swap-oasis-fees-explainer');
+        const $p = document.createElement('p');
+        $p.classList.add('explainer');
+        $p.textContent = `${NumberFormatting.formatNumber(percentage * 100, 1)}%`
+            + ` ${I18n.translatePhrase('sign-swap-oasis-fees-explainer')}`;
 
-        return [$div/* , $p */];
+        return [$div, $p];
     }
 
     /**

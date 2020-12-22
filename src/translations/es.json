@@ -213,7 +213,7 @@
     "sign-swap-btc-fees": "Cuotas de red de BTC",
     "sign-swap-btc-fees-explainer": "Los intercambios atómicos requieren dos transacciones BTC.",
     "sign-swap-oasis-fees": "OASIS fees",
-    "sign-swap-oasis-fees-explainer": "Processing fees for the EUR HTLC",
+    "sign-swap-oasis-fees-explainer": "del valor del intercambio.",
     "sign-swap-nim-fees": "Cuotas de red de NIM",
     "sign-swap-exchange-fee": "Cuotas de intercambio",
     "sign-swap-of-exchange-value": "del valor del intercambio.",

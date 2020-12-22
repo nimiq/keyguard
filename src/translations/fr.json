@@ -213,7 +213,7 @@
     "sign-swap-btc-fees": "Frais de réseau BTC",
     "sign-swap-btc-fees-explainer": "Un swap atomique nécessite 2 transactions BTC.",
     "sign-swap-oasis-fees": "OASIS fees",
-    "sign-swap-oasis-fees-explainer": "Processing fees for the EUR HTLC",
+    "sign-swap-oasis-fees-explainer": "de la valeur du swap.",
     "sign-swap-nim-fees": "Frais de réseau NIM",
     "sign-swap-exchange-fee": "Frais de swap",
     "sign-swap-of-exchange-value": "de la valeur du swap.",

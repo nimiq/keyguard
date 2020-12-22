@@ -213,7 +213,7 @@
     "sign-swap-btc-fees": "比特币网络费用",
     "sign-swap-btc-fees-explainer": "原子交换需要进行两次比特币交易",
     "sign-swap-oasis-fees": "OASIS fees",
-    "sign-swap-oasis-fees-explainer": "Processing fees for the EUR HTLC",
+    "sign-swap-oasis-fees-explainer": "交换价值",
     "sign-swap-nim-fees": "NIM网络费用",
     "sign-swap-exchange-fee": "交换费用",
     "sign-swap-of-exchange-value": "交换价值",
