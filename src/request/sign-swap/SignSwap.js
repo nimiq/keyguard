@@ -454,7 +454,7 @@ class SignSwap {
 
         const btcKey = new BitcoinKey(key);
 
-        /** @type {{nim: string, btc: string[]}} */
+        /** @type {{nim: string, btc: string[], btc_refund?: string}} */
         const privateKeys = {};
 
         if (request.fund.type === 'NIM') {
@@ -480,7 +480,14 @@ class SignSwap {
                 request.fund.changeOutput.address = address;
             }
 
-            // Calculate and store refund address from refundKeyPath
+            // Calculate and store refund key
+            const refundKeyPair = btcKey.deriveKeyPair(request.fund.refundKeyPath);
+            const privKey = Nimiq.BufferUtils.toHex(
+                /** @type {Buffer} */ (refundKeyPair.privateKey),
+            );
+            privateKeys.btc_refund = privKey;
+
+            // Calculate and store refund address
             request.fund.refundAddress = btcKey.deriveAddress(request.fund.refundKeyPath);
         }
 

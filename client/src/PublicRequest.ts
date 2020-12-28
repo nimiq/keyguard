@@ -372,6 +372,7 @@ export type SignSwapTransactionsResult = {
     nim?: SignatureResult,
     btc?: SignedBitcoinTransaction,
     eur?: string, // When funding EUR: empty string, when redeeming EUR: JWS of the settlement instructions
+    refundTx?: string,
 };
 
 // Result unions

@@ -21,7 +21,7 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) {
 
         if (!storedData) throw new Error('No swap stored in SessionStorage');
 
-        /** @type {{keys: {nim: string, btc: string[]}, request: any}} */
+        /** @type {{keys: {nim: string, btc: string[], btc_refund?: string}, request: any}} */
         const { keys: privateKeys, request: storedRawRequest } = (JSON.parse(storedData));
 
         if (request.fund.type === 'NIM' || request.redeem.type === 'NIM') {
@@ -219,6 +219,36 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) {
                 publicKey: publicKey.serialize(),
                 signature: signature.serialize(),
             };
+
+            if (transaction.senderType === Nimiq.Account.Type.BASIC) {
+                const feePerUnit = transaction.fee / transaction.serializedSize;
+                const fee = Math.ceil(feePerUnit * 167); // 167 = NIM HTLC refunding tx size
+
+                // Create refund transaction
+                const refundTransaction = new Nimiq.ExtendedTransaction(
+                    transaction.recipient, Nimiq.Account.Type.HTLC,
+                    transaction.sender, Nimiq.Account.Type.BASIC,
+                    transaction.value - fee, fee,
+                    parsedRequest.fund.htlcDetails.timeoutBlockHeight,
+                    Nimiq.Transaction.Flag.NONE,
+                    new Uint8Array(0),
+                );
+
+                const refundSignature = Nimiq.Signature.create(
+                    privateKey,
+                    publicKey,
+                    refundTransaction.serializeContent(),
+                );
+                const refundSignatureProof = Nimiq.SignatureProof.singleSig(publicKey, refundSignature);
+
+                const proof = new Nimiq.SerialBuffer(1 + Nimiq.SignatureProof.SINGLE_SIG_SIZE);
+                // FIXME: Use constant when HTLC is part of CoreJS web-offline build
+                proof.writeUint8(3 /* Nimiq.HashedTimeLockedContract.ProofType.TIMEOUT_RESOLVE */);
+                refundSignatureProof.serialize(proof);
+                refundTransaction.proof = proof;
+
+                result.refundTx = Nimiq.BufferUtils.toHex(refundTransaction.serialize());
+            }
         }
 
         if (parsedRequest.fund.type === 'BTC' && storedRequest.fund.type === 'BTC') {
@@ -279,6 +309,83 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) {
                 transactionHash: tx.getId(),
                 raw: tx.toHex(),
             };
+
+            if (privateKeys.btc_refund && privateKeys.btc_refund.length === 64) {
+                const sumInputs = storedRequest.fund.inputs.reduce((sum, input) => sum + input.witnessUtxo.value, 0);
+                const sumOutputs = storedRequest.fund.recipientOutput.value + (storedRequest.fund.changeOutput
+                    ? storedRequest.fund.changeOutput.value
+                    : 0);
+                const feePerUnit = (sumInputs - sumOutputs) / tx.weight();
+                const fee = Math.ceil(feePerUnit * 540); // 540 = BTC HTLC refunding tx weight units
+
+                const htlcAddress = parsedRequest.fund.htlcAddress;
+
+                // Construct refund transaction
+                const refundPsbt = new BitcoinJS.Psbt({ network: BitcoinUtils.Network });
+
+                // Add HTLC UTXO as input
+                refundPsbt.addInput({
+                    hash: tx.getId(),
+                    index: outputs.findIndex(output => output.address === htlcAddress),
+                    witnessUtxo: {
+                        script: BitcoinJS.address.toOutputScript(htlcAddress),
+                        value: storedRequest.fund.recipientOutput.value,
+                    },
+                    // @ts-ignore Argument of type 'import("...").Buffer' is not assignable to parameter of
+                    //            type 'Buffer'.
+                    witnessScript: BitcoinJS.Buffer.from(parsedRequest.fund.htlcScript),
+                });
+
+                // Add refund output
+                refundPsbt.addOutput({
+                    address: storedRequest.fund.refundAddress,
+                    value: storedRequest.fund.recipientOutput.value - fee,
+                });
+
+                refundPsbt.locktime = parsedRequest.fund.htlcDetails.timeoutTimestamp + 1;
+                // Signal to use locktime, but to not opt into replace-by-fee
+                refundPsbt.setInputSequence(0, 0xfffffffe);
+
+                // Sign
+                const refundKeyPair = BitcoinJS.ECPair.fromPrivateKey(
+                    // @ts-ignore Argument of type 'import("...").Buffer' is not assignable to parameter of
+                    //            type 'Buffer'.
+                    BitcoinJS.Buffer.from(privateKeys.btc_refund, 'hex'),
+                );
+                refundPsbt.signInput(0, refundKeyPair);
+
+                // Verify that all inputs are signed
+                if (!refundPsbt.validateSignaturesOfAllInputs()) {
+                    throw new Error('Invalid or missing signature(s) for BTC transaction.');
+                }
+
+                // Finalize (with custom logic for the HTLC)
+                refundPsbt.finalizeInput(0, (inputIndex, input /* , script, isSegwit, isP2SH, isP2WSH */) => {
+                    if (!input.partialSig) {
+                        throw new Errors.KeyguardError('UNEXPECTED: Input does not have a partial signature');
+                    }
+
+                    if (!input.witnessScript) {
+                        throw new Errors.KeyguardError('UNEXPECTED: Input does not have a witnessScript');
+                    }
+
+                    const witnessBytes = BitcoinJS.script.fromASM([
+                        input.partialSig[0].signature.toString('hex'),
+                        input.partialSig[0].pubkey.toString('hex'),
+                        'OP_0', // OP_0 (false) activates the refund branch in the HTLC script
+                        input.witnessScript.toString('hex'),
+                    ].join(' '));
+
+                    const witnessStack = BitcoinJS.script.toStack(witnessBytes);
+
+                    return {
+                        finalScriptSig: undefined,
+                        finalScriptWitness: HtlcUtils.witnessStackToScriptWitness(witnessStack),
+                    };
+                });
+
+                result.refundTx = refundPsbt.extractTransaction().toHex();
+            }
         }
 
         if (parsedRequest.fund.type === 'EUR' && storedRequest.fund.type === 'EUR') {
