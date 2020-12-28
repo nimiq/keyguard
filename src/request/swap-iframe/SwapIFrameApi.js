@@ -346,7 +346,11 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) {
                     value: storedRequest.fund.recipientOutput.value - fee,
                 });
 
-                refundPsbt.locktime = parsedRequest.fund.htlcDetails.timeoutTimestamp + 1;
+                // The timeoutTimestamp we parse from the BTC HTLC script is forwarded one hour
+                // (because the timeout in the script itself is set back one hour, because the BTC
+                // network only accepts locktimes that are at least one hour old). So we need to
+                // remove this added hour before using it as the transaction's locktime.
+                refundPsbt.locktime = parsedRequest.fund.htlcDetails.timeoutTimestamp - (60 * 60) + 1;
                 // Signal to use locktime, but to not opt into replace-by-fee
                 refundPsbt.setInputSequence(0, 0xfffffffe);
 

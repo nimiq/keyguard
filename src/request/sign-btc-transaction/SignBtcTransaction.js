@@ -232,7 +232,13 @@ class SignBtcTransaction {
             psbt.addOutputs(outputs);
 
             if (request.inputs.length === 1 && request.inputs[0].type === 'htlc-refund') {
-                psbt.locktime = HtlcUtils.decodeBtcHtlcScript(request.inputs[0].witnessScript).timeoutTimestamp + 1;
+                const htlcDetails = HtlcUtils.decodeBtcHtlcScript(request.inputs[0].witnessScript);
+
+                // The timeoutTimestamp we parse from the BTC HTLC script is forwarded one hour
+                // (because the timeout in the script itself is set back one hour, because the BTC
+                // network only accepts locktimes that are at least one hour old). So we need to
+                // remove this added hour before using it as the transaction's locktime.
+                psbt.locktime = htlcDetails.timeoutTimestamp - (60 * 60) + 1;
                 psbt.setInputSequence(0, 0xfffffffe); // Signal to use locktime, but do not opt into replace-by-fee
             }
 
