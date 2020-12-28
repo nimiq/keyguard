@@ -319,6 +319,11 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) {
                 const fee = Math.ceil(feePerUnit * 540); // 540 = BTC HTLC refunding tx weight units
 
                 const htlcAddress = parsedRequest.fund.htlcAddress;
+                const htlcScript = /** @type {Buffer} */ (BitcoinJS.payments.p2wsh({
+                    // @ts-ignore Type 'import("...").Buffer' is not assignable to type 'Buffer'.
+                    witness: [BitcoinJS.Buffer.from(parsedRequest.fund.htlcScript, 'hex')],
+                    network: BitcoinUtils.Network,
+                }).output);
 
                 // Construct refund transaction
                 const refundPsbt = new BitcoinJS.Psbt({ network: BitcoinUtils.Network });
@@ -328,11 +333,10 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) {
                     hash: tx.getId(),
                     index: outputs.findIndex(output => output.address === htlcAddress),
                     witnessUtxo: {
-                        script: BitcoinJS.address.toOutputScript(htlcAddress),
+                        script: htlcScript,
                         value: storedRequest.fund.recipientOutput.value,
                     },
-                    // @ts-ignore Argument of type 'import("...").Buffer' is not assignable to parameter of
-                    //            type 'Buffer'.
+                    // @ts-ignore Type of type 'import("...").Buffer' is not assignable to type 'Buffer'.
                     witnessScript: BitcoinJS.Buffer.from(parsedRequest.fund.htlcScript),
                 });
 
