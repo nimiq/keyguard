@@ -45,8 +45,8 @@
     "import-words-download-loginfile": "Збережіть файл-ключ",
 
     "file-import-prompt": "Перетягніть сюди або клацніть щоб завантажити",
-    "file-import-error-could-not-read": "Неможливо прочитати файл-ключ",
-    "file-import-error-invalid": "Невірний файл-ключ",
+    "file-import-error-could-not-read": "Неможливо прочитати файл-ключ.",
+    "file-import-error-invalid": "Невірний файл-ключ.",
 
     "sign-tx-heading-tx": "Підтвердіть переказ",
     "sign-tx-heading-checkout": "Підтвердіть платіж",
@@ -92,7 +92,7 @@
     "payment-info-line-vendor-markup": "Націнка від постачальника",
     "payment-info-line-vendor-discount": "Знижка від постачальника",
     "payment-info-line-effective-rate": "Дійсний курс",
-    "payment-info-line-free-service": "Німік надає цю послугу безплатно",
+    "payment-info-line-free-service": "Німік надає цю послугу безплатно.",
     "payment-info-line-total": "сума",
     "payment-info-line-network-fee": "комісія мережі",
     "payment-info-line-paying-more": "У вас знижка приблизно %RATE_DEVIATION% більше в порівнянні з поточним ринковим курсом (coingecko.com).",
@@ -109,7 +109,7 @@
     "timer-day": "день",
     "timer-days": "дні",
 
-    "identicon-selector-avatars-hint": "Піктограми представляють адреси",
+    "identicon-selector-avatars-hint": "Піктограми представляють адреси.",
     "identicon-selector-generate-new": "Нові адреси",
 
     "download-loginfile-download": "Завантажити файл-ключ",
@@ -208,15 +208,15 @@
     "derive-btc-xpub-text": "З легкістю обмінюйте NIM - ефективну платіжну монету та BTC - золотий стандарт криптовалюти.",
 
     "sign-swap-heading": "Підтвердити обмін",
-    "sign-swap-exchange-rate-tooltip": "Курс включає комісію за обмін",
+    "sign-swap-exchange-rate-tooltip": "Курс включає комісію за обмін.",
     "sign-swap-fees": "комісія",
-    "sign-swap-btc-fees": "BTC network fee",
+    "sign-swap-btc-fees": "Комісія BTC",
     "sign-swap-btc-fees-explainer": "Атомарний обмін потребує двох транзакцій BTC.",
-    "sign-swap-oasis-fees": "OASIS service fee",
+    "sign-swap-oasis-fees": "Комісія OASIS",
     "sign-swap-oasis-fees-explainer": "суми обміну.",
-    "sign-swap-nim-fees": "NIM network fee",
+    "sign-swap-nim-fees": "Комісія NIM",
     "sign-swap-exchange-fee": "Комісія обміну",
     "sign-swap-of-exchange-value": "суми обміну.",
     "sign-swap-total-fees": "Сумарна комісія",
-    "sign-swap-your-bank": "Your bank"
+    "sign-swap-your-bank": "Ваш банк"
 }
