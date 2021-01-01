@@ -210,10 +210,13 @@
     "sign-swap-heading": "Confirmar Intercambio",
     "sign-swap-exchange-rate-tooltip": "La taza de cambio incluye cuotas de intercambio.",
     "sign-swap-fees": "cuotas",
-    "sign-swap-btc-fees": "Cuotas de red de BTC",
+    "sign-swap-btc-fees": "Cuota de red de BTC",
     "sign-swap-btc-fees-explainer": "Los intercambios atómicos requieren dos transacciones BTC.",
-    "sign-swap-nim-fees": "Cuotas de red de NIM",
+    "sign-swap-oasis-fees": "OASIS service fee",
+    "sign-swap-oasis-fees-explainer": "del valor del intercambio.",
+    "sign-swap-nim-fees": "Cuota de red de NIM",
     "sign-swap-exchange-fee": "Cuotas de intercambio",
     "sign-swap-of-exchange-value": "del valor del intercambio.",
-    "sign-swap-total-fees": "Cuotas totales"
+    "sign-swap-total-fees": "Cuotas totales",
+    "sign-swap-your-bank": "Your bank"
 }

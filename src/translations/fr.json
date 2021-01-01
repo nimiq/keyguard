@@ -210,10 +210,13 @@
     "sign-swap-heading": "Confirmer le swap",
     "sign-swap-exchange-rate-tooltip": "Ce taux inclut les frais de swap.",
     "sign-swap-fees": "frais",
-    "sign-swap-btc-fees": "Frais de réseau BTC",
+    "sign-swap-btc-fees": "BTC network fee",
     "sign-swap-btc-fees-explainer": "Un swap atomique nécessite 2 transactions BTC.",
-    "sign-swap-nim-fees": "Frais de réseau NIM",
+    "sign-swap-oasis-fees": "OASIS service fee",
+    "sign-swap-oasis-fees-explainer": "de la valeur du swap.",
+    "sign-swap-nim-fees": "NIM network fee",
     "sign-swap-exchange-fee": "Frais de swap",
     "sign-swap-of-exchange-value": "de la valeur du swap.",
-    "sign-swap-total-fees": "Total des frais"
+    "sign-swap-total-fees": "Total des frais",
+    "sign-swap-your-bank": "Your bank"
 }
