@@ -68,6 +68,9 @@ function BitcoinRequestParserMixin(clazz) { // eslint-disable-line no-unused-var
                         value: this.parsePositiveInteger(input.value, false, `input[${index}].value`),
                     },
                     type: this.parseInputType(input.type, `input[${index}].type`),
+                    sequence: input.sequence !== undefined
+                        ? this.parseUint32(input.sequence, `input[${index}].sequence`)
+                        : undefined,
                     keyPath: this.parseBitcoinPath(input.keyPath, `input[${index}].keypath`),
                     // Address added only for display
                     // @ts-ignore Argument of type 'Uint8Array' is not assignable to parameter of type 'Buffer'.
@@ -221,6 +224,18 @@ function BitcoinRequestParserMixin(clazz) { // eslint-disable-line no-unused-var
                 throw new Errors.InvalidRequestError(`${parameterName} is not a valid Bitcoin address`);
             }
             return /** @type {string} */ (address);
+        }
+
+        /**
+         * @param {unknown} int
+         * @param {string} name
+         * @returns {number}
+         */
+        parseUint32(int, name) {
+            if (typeof int !== 'number' || !Nimiq.NumberUtils.isUint32(int)) {
+                throw new Errors.InvalidRequestError(`${name}: Invalid uint32 ${int}`);
+            }
+            return int;
         }
     }
 

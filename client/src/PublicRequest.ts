@@ -53,6 +53,7 @@ export type BitcoinTransactionInput = {
     outputScript: string,
     value: number,
     witnessScript?: string,
+    sequence?: number,
     type?: BitcoinTransactionInputType,
 };
 
@@ -72,6 +73,7 @@ export type BitcoinTransactionInfo = {
     inputs: BitcoinTransactionInput[],
     recipientOutput: BitcoinTransactionOutput,
     changeOutput?: BitcoinTransactionChangeOutput,
+    locktime?: number,
 };
 
 export type SignTransactionRequestLayout = 'standard' | 'checkout' | 'cashlink';

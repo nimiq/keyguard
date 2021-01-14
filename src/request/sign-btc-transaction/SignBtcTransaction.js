@@ -230,6 +230,10 @@ class SignBtcTransaction {
             psbt.addInputs(request.inputs);
             // Add outputs
             psbt.addOutputs(outputs);
+            // Set locktime
+            if (request.locktime) {
+                psbt.locktime = request.locktime;
+            }
 
             if (request.inputs.length === 1 && request.inputs[0].type === 'htlc-refund') {
                 const htlcDetails = HtlcUtils.decodeBtcHtlcScript(request.inputs[0].witnessScript);
@@ -238,8 +242,18 @@ class SignBtcTransaction {
                 // (because the timeout in the script itself is set back one hour, because the BTC
                 // network only accepts locktimes that are at least one hour old). So we need to
                 // remove this added hour before using it as the transaction's locktime.
-                psbt.locktime = htlcDetails.timeoutTimestamp - (60 * 60) + 1;
-                psbt.setInputSequence(0, 0xfffffffe); // Signal to use locktime, but do not opt into replace-by-fee
+                const htlcRefundLocktime = htlcDetails.timeoutTimestamp - (60 * 60) + 1;
+                const htlcRefundInputSequence = 0xfffffffe; // Signal to use locktime but do not opt into replace-by-fee
+                if (request.locktime && request.locktime !== htlcRefundLocktime) {
+                    throw new Errors.InvalidRequestError(`Requested locktime ${request.locktime} differs from default `
+                        + ` HTLC refund locktime ${htlcRefundLocktime}`);
+                }
+                if (request.inputs[0].sequence && request.inputs[0].sequence !== htlcRefundInputSequence) {
+                    throw new Errors.InvalidRequestError(`Requested input sequence ${request.inputs[0].sequence} `
+                        + ` differs from default HTLC refund input sequence ${htlcRefundInputSequence}`);
+                }
+                psbt.locktime = htlcRefundLocktime;
+                psbt.setInputSequence(0, htlcRefundInputSequence);
             }
 
             // Sign

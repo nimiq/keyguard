@@ -52,6 +52,7 @@ type ParsedBitcoinTransactionInput = {
     },
     redeemScript?: Uint8Array,
     witnessScript?: Uint8Array,
+    sequence?: number,
     type: 'default' | 'htlc-redeem' | 'htlc-refund',
     keyPath: string,
     address: string,
@@ -98,6 +99,7 @@ type ConstructSwap<T extends KeyguardRequest.SignSwapRequestCommon> = Transform<
                 value: number,
             },
             changeOutput?: KeyguardRequest.BitcoinTransactionChangeOutput,
+            locktime?: number;
             refundKeyPath: string,
             refundAddress: string,
         } | {

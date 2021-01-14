@@ -283,6 +283,10 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) {
             psbt.addInputs(inputs);
             // Add outputs
             psbt.addOutputs(outputs);
+            // Set locktime
+            if (storedRequest.fund.locktime) {
+                psbt.locktime = storedRequest.fund.locktime;
+            }
 
             // Sign
             const keyPairs = privateKeys.btc.map(privateKey => BitcoinJS.ECPair.fromPrivateKey(

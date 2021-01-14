@@ -61,9 +61,17 @@ class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) {
                     value: this.parsePositiveInteger(request.fund.recipientOutput.value),
                 },
                 changeOutput: this.parseChangeOutput(request.fund.changeOutput, true, 'fund.changeOutput'),
+                locktime: request.fund.locktime !== undefined
+                    ? this.parseUint32(request.fund.locktime, 'fund.locktime')
+                    : undefined,
                 refundKeyPath: this.parseBitcoinPath(request.fund.refundKeyPath, 'fund.refundKeyPath'),
                 refundAddress: '', // Will be filled out after password entry
             };
+            if (parsedRequest.fund.locktime
+                && !parsedRequest.fund.inputs.some(({ sequence }) => sequence && sequence < 0xffffffff)) {
+                throw new Errors.InvalidRequestError('For locktime to be effective, at least one input must have a '
+                    + 'sequence number < 0xffffffff');
+            }
         } else if (request.fund.type === 'EUR') {
             parsedRequest.fund = {
                 type: 'EUR',
