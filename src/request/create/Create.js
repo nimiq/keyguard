@@ -7,6 +7,8 @@
 /* global TopLevelApi */
 /* global Identicon */
 /* global BitcoinKey */
+/* global IqonHash */
+/* global LoginfileAnimation */
 
 /**
  * @callback Create.resolve
@@ -28,18 +30,28 @@ class Create {
         /** @type {HTMLDivElement} */
         this.$identiconSelector = (document.querySelector('.identicon-selector'));
 
+        /** @type {HTMLDivElement} */
+        this.$overlayContainer = (document.querySelector('.overlay-container'));
+
+        /** @type {HTMLButtonElement} */
+        this.$overlayCloseButton = (document.querySelector('.overlay-container .overlay .close-overlay'));
+
+        /** @type {HTMLButtonElement} */
+        this.$confirmAddressButton = (document.querySelector('.confirm-address'));
+
+        /** @type {HTMLDivElement} */
+        this.$loginfileAnimation = (document.querySelector('.loginfile-animation'));
+
         /** @type {HTMLFormElement} */
         const $setPassword = (document.querySelector('.password-box'));
 
         /** @type {HTMLFormElement} */
         this.$setPasswordPage = (document.getElementById('set-password'));
 
-        /** @type {HTMLFormElement} */
-        this.$walletIdentifier = (document.querySelector('.wallet-identifier'));
-
         // Create components
 
         this._identiconSelector = new IdenticonSelector(this.$identiconSelector, request.defaultKeyPath);
+        this._loginfileAnimation = new LoginfileAnimation(this.$loginfileAnimation);
         this._passwordSetter = new PasswordSetterBox($setPassword, { buttonI18nTag: 'passwordbox-confirm-create' });
         // Set up progress indicators
         /* eslint-disable-next-line no-new */
@@ -60,18 +72,33 @@ class Create {
             */
             (entropy, address) => {
                 this._selectedEntropy = entropy;
-                window.location.hash = Create.Pages.SET_PASSWORD;
+                this._selectedAddress = address;
+
                 // eslint-disable-next-line no-new
                 new Identicon(
                     address,
-                    /** @type {HTMLDivElement} */(this.$walletIdentifier.querySelector('.identicon')),
+                    /** @type {HTMLDivElement} */(this.$overlayContainer.querySelector('#identicon')),
                 );
-                this.progressIndicator.setStep(2);
-                this._passwordSetter.reset();
 
-                TopLevelApi.focusPasswordBox();
+                /** @type {HTMLDivElement} */
+                const $address = (this.$overlayContainer.querySelector('#address'));
+                // last space is necessary for the rendering to work properly with white-space: pre-wrap.
+                $address.textContent = `${address} `;
+
+                this.$overlayContainer.classList.add('show-overlay');
             },
         );
+
+        this.$overlayCloseButton.addEventListener('click', () => {
+            this.$overlayContainer.classList.remove('show-overlay');
+        });
+
+        this.$confirmAddressButton.addEventListener('click', () => {
+            window.location.hash = Create.Pages.SET_PASSWORD;
+            this.progressIndicator.setStep(2);
+            this._passwordSetter.reset();
+            TopLevelApi.focusPasswordBox();
+        });
 
         this._passwordSetter.on(PasswordSetterBox.Events.SUBMIT, /** @param {string} password */ password => {
             this._password = password;
@@ -80,10 +107,13 @@ class Create {
 
         this._passwordSetter.on(PasswordSetterBox.Events.ENTERED, () => {
             this.$setPasswordPage.classList.add('repeat-password');
+            this._loginfileAnimation.setColor(IqonHash.getBackgroundColorIndex(this._selectedAddress));
             this.progressIndicator.setStep(3);
         });
 
         this._passwordSetter.on(PasswordSetterBox.Events.RESET, this.backToEnterPassword.bind(this));
+
+        this._passwordSetter.on(PasswordSetterBox.Events.LENGTH, length => this._loginfileAnimation.setStep(length));
 
         if (request.enableBackArrow) {
             /** @type {HTMLElement} */
@@ -94,6 +124,7 @@ class Create {
     backToEnterPassword() {
         this.progressIndicator.setStep(2);
         this.$setPasswordPage.classList.remove('repeat-password');
+        this._loginfileAnimation.reset();
         this._passwordSetter.reset();
 
         TopLevelApi.focusPasswordBox();

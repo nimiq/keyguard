@@ -10,10 +10,11 @@
     align-items: center;
 }
 
-.page#set-password .page-body h2 {
+.page#set-password .page-body p {
     text-align: center;
-    font-weight: normal;
     margin-top: 3rem;
+    font-size: 2rem;
+    white-space: pre-line;
 }
 
 .page#set-password.repeat-password .hide-on-repetition,
@@ -21,36 +22,34 @@
     display: none;
 }
 
-.wallet-identifier {
-    width: 20rem;
-    height: 20rem;
-    text-align: center;
+.overlay {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-.wallet-identifier .identicon {
-    width: 7rem;
-    height: 7rem;
-    position: absolute;
-    animation: wallet-identifier-pop-in .7s ease;
-    animation-delay: 150ms;
-    animation-fill-mode: both;
+.overlay .identicon {
+    width: 18rem;
+    height: 18rem;
+    margin-top: 5rem;
+    margin-bottom: -0.75rem;
 }
 
-@keyframes wallet-identifier-pop-in {
-    0%   { transform: translate(-0.5rem, 2.5rem) scale(0); opacity: 0; }
-    30%  { transform: translate( 0.2rem, 3.5rem) scale(1.2); }
-    80%  { transform: translate( 0.2rem, 3.5rem) scale(1); opacity: 1; }
-    100% { transform: translate( 0.2rem, 3.5rem) scale(1); }
+.overlay .address {
+    width: 100%;
+    max-width: 27.375rem;
+    box-sizing: content-box;
+    text-transform: uppercase;
+    line-height: 1.75;
+    opacity: 1;
+    color: rgba(31, 35, 72, .5);
+    margin-top: 3rem;
+    font-size: 3rem;
+    white-space: pre-wrap;
+    word-spacing: 0.75rem;
+    padding-left: 0.75rem;
 }
 
-.wallet-identifier .nq-icon {
-    font-size: 7rem;
-    position: absolute;
-    opacity: 0.08;
+.overlay .nq-button {
+    margin-bottom: 4rem;
 }
-
-.wallet-identifier .nq-icon:nth-child(1) { transform: translate(-3.5rem, 0rem); }
-.wallet-identifier .nq-icon:nth-child(2) { transform: translate( 3rem, 3.5rem); }
-.wallet-identifier .nq-icon:nth-child(3) { transform: translate( 3rem, 10.75rem); }
-.wallet-identifier .nq-icon:nth-child(4) { transform: translate(-3.5rem, 14.25rem); }
-.wallet-identifier .nq-icon:nth-child(5) { transform: translate(-10rem, 10.75rem); }

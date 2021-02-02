@@ -24,10 +24,11 @@
     "recovery-words-validate": "Validate backup",
 
     "create-heading-choose-identicon": "Choose an Avatar",
+    "create-confirm-address": "Select and continue",
     "create-heading-create-password": "Create a Password",
     "create-heading-repeat-password": "Confirm your Password",
     "create-heading-validate-backup": "Validate your Backup",
-    "create-wallet-desc": "This is your Account with your first Address.",
+    "create-loginfile-description": "The password protects your Login File,\nconsider it a keycard to your account.",
 
     "import-heading-enter-recovery-words": "Enter Recovery Words",
     "import-import-login-file": "Import your Login File",

@@ -48,8 +48,10 @@
 
     <script defer src="../../lib/IqonHash.js"></script>
     <script defer src="../../lib/Iqons.js"></script>
+    <script defer src="../../lib/LoginFileConfig.js"></script>
     <script defer src="../../lib/PasswordStrength.js"></script>
     <script defer src="../../components/Identicon.js"></script>
+    <script defer src="../../components/LoginfileAnimation.js"></script>
     <script defer src="../../components/PasswordSetterBox.js"></script>
     <script defer src="../../components/ProgressIndicator.js"></script>
     <script defer src="IdenticonSelector.js"></script>
@@ -64,6 +66,8 @@
     <link rel="stylesheet" bundle-toplevel href="../../components/PasswordBox.css">
 
     <link rel="stylesheet" href="../../components/ProgressIndicator.css">
+    <link rel="stylesheet" href="../../components/Overlay.css">
+    <link rel="stylesheet" href="../../components/LoginfileAnimation.css">
     <link rel="stylesheet" href="./IdenticonSelector.css">
     <link rel="stylesheet" href="./Create.css">
 </head>
@@ -75,18 +79,30 @@
     </div>
 
     <div id="app">
-        <div id="choose-identicon" class="page nq-card">
-            <div class="page-header nq-card-header">
-                <div class="progress-indicator"></div>
-                <a tabindex="0" class="page-header-back-button display-none">
-                    <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
-                </a>
-                <h1 data-i18n="create-heading-choose-identicon" class="nq-h1">Choose an Avatar</h1>
-            </div>
-
-            <div class="page-body nq-card-body">
-                <div class="identicon-selector">
+        <div id="choose-identicon" class="overlay-container page">
+            <div class="nq-card">
+                <div class="page-header nq-card-header">
+                    <div class="progress-indicator"></div>
+                    <a tabindex="0" class="page-header-back-button display-none">
+                        <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
+                    </a>
+                    <h1 data-i18n="create-heading-choose-identicon" class="nq-h1">Choose an Avatar</h1>
                 </div>
+
+                <div class="page-body nq-card-body">
+                    <div class="identicon-selector">
+                    </div>
+                </div>
+            </div>
+            <div class="overlay nq-card">
+                <button class="nq-button-s close-overlay">
+                    <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-close"/></svg>
+                </button>
+                <div class="flex-grow"></div>
+                <div id="identicon"></div>
+                <div id="address" class="address"></div>
+                <div class="flex-grow"></div>
+                <button class="nq-button light-blue confirm-address" data-i18n="create-confirm-address">Select and continue</button>
             </div>
         </div>
 
@@ -101,15 +117,11 @@
             </div>
 
             <div class="page-body nq-card-body">
-                <div class="wallet-identifier">
-                    <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-hexagon"/></svg>
-                    <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-hexagon"/></svg>
-                    <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-hexagon"/></svg>
-                    <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-hexagon"/></svg>
-                    <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-hexagon"/></svg>
-                    <div class="identicon"></div>
-                </div>
-                <h2 class="nq-h2 nq-blue" data-i18n="create-wallet-desc">This is your Account with your first Address.</h2>
+                <div class="loginfile-animation"></div>
+                <p data-i18n="create-loginfile-description">
+                    The password protects your Login File,
+                    consider it a keycard to your account.
+                </p>
             </div>
 
             <div class="page-footer nq-card-footer">
