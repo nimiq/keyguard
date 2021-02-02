@@ -1,13 +1,16 @@
-.page#set-password .page-body,
 .page#choose-identicon .page-body {
+    padding-bottom: 3rem;
+}
+
+.page#choose-identicon .page-body,
+.page#set-password .page-body {
     position: relative;
     display:flex;
     flex-direction: column;
     align-items: center;
 }
 
-.page#set-password .page-body h2,
-.page#choose-identicon .page-body h2 {
+.page#set-password .page-body h2 {
     text-align: center;
     font-weight: normal;
     margin-top: 3rem;
