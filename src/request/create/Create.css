@@ -53,3 +53,13 @@
 .overlay .nq-button {
     margin-bottom: 4rem;
 }
+
+.page#login-file-download .page-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.page#login-file-download.loginfile-download-initiated .page-header .nq-h1:not(.confirm-download),
+.page#login-file-download:not(.loginfile-download-initiated) .page-header .confirm-download {
+    display: none;
+}

@@ -9,6 +9,8 @@
 /* global BitcoinKey */
 /* global IqonHash */
 /* global LoginfileAnimation */
+/* global DownloadLoginFile */
+/* global I18n */
 
 /**
  * @callback Create.resolve
@@ -48,19 +50,28 @@ class Create {
         /** @type {HTMLFormElement} */
         this.$setPasswordPage = (document.getElementById('set-password'));
 
+        /** @type {HTMLElement} */
+        this.$downloadFilePage = (document.getElementById(Create.Pages.LOGIN_FILE_DOWNLOAD));
+        /** @type {HTMLDivElement} */
+        const $downloadLoginFile = (document.querySelector('.download-loginfile'));
+
         // Create components
 
         this._identiconSelector = new IdenticonSelector(this.$identiconSelector, request.defaultKeyPath);
         this._loginfileAnimation = new LoginfileAnimation(this.$loginfileAnimation);
         this._passwordSetter = new PasswordSetterBox($setPassword, { buttonI18nTag: 'passwordbox-confirm-create' });
-        // Set up progress indicators
-        /* eslint-disable-next-line no-new */
-        new ProgressIndicator(document.querySelector(`#${Create.Pages.CHOOSE_IDENTICON} .progress-indicator`), 3, 1);
-        this.progressIndicator = new ProgressIndicator(
-            document.querySelector(`#${Create.Pages.SET_PASSWORD} .progress-indicator`),
-            3,
-            2,
+        this._downloadLoginFile = new DownloadLoginFile(
+            $downloadLoginFile,
+            undefined,
+            undefined,
+            I18n.translatePhrase('create-loginfile-any-device'),
         );
+        // Set up progress indicators
+        /* eslint-disable no-new */
+        new ProgressIndicator(document.querySelector(`#${Create.Pages.CHOOSE_IDENTICON} .progress-indicator`), 3, 1);
+        new ProgressIndicator(document.querySelector(`#${Create.Pages.SET_PASSWORD} .progress-indicator`), 3, 2);
+        new ProgressIndicator(document.querySelector(`#${Create.Pages.LOGIN_FILE_DOWNLOAD} .progress-indicator`), 3, 3);
+        /* eslint-enable no-new */
 
         // Wire up logic
 
@@ -95,20 +106,39 @@ class Create {
 
         this.$confirmAddressButton.addEventListener('click', () => {
             window.location.hash = Create.Pages.SET_PASSWORD;
-            this.progressIndicator.setStep(2);
             this._passwordSetter.reset();
             TopLevelApi.focusPasswordBox();
         });
 
-        this._passwordSetter.on(PasswordSetterBox.Events.SUBMIT, /** @param {string} password */ password => {
+        this._passwordSetter.on(PasswordSetterBox.Events.SUBMIT, /** @param {string} password */ async password => {
+            // TODO: Save key to disk here?
             this._password = password;
-            this.finish(request);
+
+            // Set up LoginFile
+            const key = new Key(this._selectedEntropy);
+            const passwordBuffer = Utf8Tools.stringToUtf8ByteArray(password);
+            const encryptedSecret = await key.secret.exportEncrypted(passwordBuffer);
+
+            this._downloadLoginFile.setEncryptedEntropy(encryptedSecret, key.defaultAddress);
+            // reset initial state
+            this.$downloadFilePage.classList.remove(DownloadLoginFile.Events.INITIATED);
+            // add Events
+            this._downloadLoginFile.on(DownloadLoginFile.Events.INITIATED, () => {
+                this.$downloadFilePage.classList.add(DownloadLoginFile.Events.INITIATED);
+            });
+            this._downloadLoginFile.on(DownloadLoginFile.Events.RESET, () => {
+                this.$downloadFilePage.classList.remove(DownloadLoginFile.Events.INITIATED);
+            });
+            this._downloadLoginFile.on(DownloadLoginFile.Events.DOWNLOADED, () => {
+                this.finish(request);
+            });
+
+            window.location.hash = Create.Pages.LOGIN_FILE_DOWNLOAD;
         });
 
         this._passwordSetter.on(PasswordSetterBox.Events.ENTERED, () => {
             this.$setPasswordPage.classList.add('repeat-password');
             this._loginfileAnimation.setColor(IqonHash.getBackgroundColorIndex(this._selectedAddress));
-            this.progressIndicator.setStep(3);
         });
 
         this._passwordSetter.on(PasswordSetterBox.Events.RESET, this.backToEnterPassword.bind(this));
@@ -122,7 +152,6 @@ class Create {
     } // constructor
 
     backToEnterPassword() {
-        this.progressIndicator.setStep(2);
         this.$setPasswordPage.classList.remove('repeat-password');
         this._loginfileAnimation.reset();
         this._passwordSetter.reset();
@@ -149,7 +178,7 @@ class Create {
                 address: key.deriveAddress(keyPath).serialize(),
                 keyPath,
             }],
-            fileExported: false,
+            fileExported: true,
             wordsExported: false,
             bitcoinXPub: new BitcoinKey(key).deriveExtendedPublicKey(request.bitcoinXPubPath),
         }];
@@ -167,4 +196,5 @@ class Create {
 Create.Pages = {
     CHOOSE_IDENTICON: 'choose-identicon',
     SET_PASSWORD: 'set-password',
+    LOGIN_FILE_DOWNLOAD: 'login-file-download',
 };

@@ -74,7 +74,7 @@
 
 .loginfile-animation.step-8 .border:nth-child(1), .loginfile-animation.colored .border:nth-child(1) { stroke-dasharray: 102 345 585 0; }
 .loginfile-animation.step-8 .border:nth-child(3), .loginfile-animation.colored .border:nth-child(3) { stroke-dasharray: 0 152 295 585; }
-.loginfile-animation.step-8 .key, svg.step-8 .stars { opacity: 1; }
+.loginfile-animation.step-8 .key, .loginfile-animation.step-8 .stars { opacity: 1; }
 
 .loginfile-animation.step-1 .qr:nth-child(1),
 .loginfile-animation.step-2 .qr:nth-child(2),
@@ -86,8 +86,6 @@
 .loginfile-animation.step-8 .qr:nth-child(8) { opacity: 1; }
 
 .loginfile-animation.colored .background {
-    --nimiq-orange: #FC8702;
-    background: radial-gradient(100% 100% at bottom right, #FD6216, var(--nimiq-orange));
     opacity: 1;
 }
 

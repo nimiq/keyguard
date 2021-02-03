@@ -217,10 +217,7 @@ class ExportFile extends Nimiq.Observable {
             const passwordBuffer = Utf8Tools.stringToUtf8ByteArray(password);
             const encryptedSecret = await key.secret.exportEncrypted(passwordBuffer);
 
-            this._downloadLoginFile.setEncryptedEntropy(
-                /** @type {Nimiq.SerialBuffer} */ (encryptedSecret),
-                key.defaultAddress,
-            );
+            this._downloadLoginFile.setEncryptedEntropy(encryptedSecret, key.defaultAddress);
             // reset initial state
             this.$downloadFilePage.classList.remove(DownloadLoginFile.Events.INITIATED);
             // add Events

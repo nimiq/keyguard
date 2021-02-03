@@ -66,7 +66,7 @@ class LoginfileAnimation { // eslint-disable-line no-unused-vars
         const $element = $el || document.createElement('div');
         $element.classList.add('loginfile-animation');
         /* eslint-disable max-len */
-        $element.innerHTML = TemplateTags.hasVars(0)`
+        $element.innerHTML = TemplateTags.noVars`
             <div class="background"></div>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 114 186">
                 <g class="waves" fill="none" stroke="currentColor" stroke-width="0.6">
