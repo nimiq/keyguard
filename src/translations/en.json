@@ -35,6 +35,7 @@
     "create-login-file-paragraph-1": "Nimiq does not store your data. The Login File replaces email as the way to log in.",
     "create-login-file-paragraph-2": "The Login File is stored in your browser. Unlock it with your password.",
     "create-login-file-paragraph-3": "You might get logged out by accident. Download and store the Login File safely to stay in control.",
+    "create-login-file-return": "Got it",
 
     "import-heading-enter-recovery-words": "Enter Recovery Words",
     "import-import-login-file": "Import your Login File",

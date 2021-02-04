@@ -157,10 +157,7 @@ class Create {
 
         this._passwordSetter.on(PasswordSetterBox.Events.LENGTH, length => this._loginfileAnimation.setStep(length));
 
-        $loginfilePreviewBackButton.addEventListener('click', event => {
-            event.preventDefault();
-            window.history.back();
-        });
+        $loginfilePreviewBackButton.addEventListener('click', () => window.history.back());
 
         if (request.enableBackArrow) {
             /** @type {HTMLElement} */

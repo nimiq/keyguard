@@ -93,12 +93,3 @@
     border-bottom-right-radius: 0.615rem;
     margin: 0.5rem 4rem 0 0;
 }
-
-.page#login-file-explainer .page-footer .nq-button {
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.page#login-file-explainer .page-footer .nq-button .nq-icon {
-    margin-right: 1.5rem;
-}
