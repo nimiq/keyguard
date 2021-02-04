@@ -82,6 +82,7 @@
     "passwordbox-password-strength-good": "Good password",
     "passwordbox-password-strength-strong": "Strong password",
     "passwordbox-password-strength-secure": "Secure password",
+    "passwordbox-password-too-long": "Max. 256 characters",
     "passwordbox-repeat-password-long": "No match, please try again",
     "passwordbox-repeat-password-short": "Password is too short",
     "passwordbox-password-skip": "Skip for now",
