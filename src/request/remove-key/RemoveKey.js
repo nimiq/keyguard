@@ -81,6 +81,7 @@ class RemoveKey {
         this.$labelInput.addEventListener('input', () => {
             if (this.$labelInput.value === this._normalizeLabel(this._request.keyLabel)) {
                 $removeKey.classList.add('show-final-confirm');
+                $finalConfirmButton.focus();
             }
         });
 
