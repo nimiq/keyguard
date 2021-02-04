@@ -18,7 +18,7 @@
 }
 
 .page#set-password.repeat-password .hide-on-repetition,
-.page#set-password:not(.repeat-password) .show-on-repetition  {
+.page#set-password:not(.repeat-password) .show-on-repetition {
     display: none;
 }
 
@@ -60,6 +60,45 @@
 }
 
 .page#login-file-download.loginfile-download-initiated .page-header .nq-h1:not(.confirm-download),
-.page#login-file-download:not(.loginfile-download-initiated) .page-header .confirm-download {
+.page#login-file-download:not(.loginfile-download-initiated) .page-header .confirm-download,
+.page#login-file-download.loginfile-download-initiated .skip {
     display: none;
+}
+
+.page#login-file-download .skip {
+    margin-top: -2.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.page#login-file-explainer .nq-notice {
+    margin-top: 2rem;
+}
+
+.page#login-file-explainer .page-body {
+    padding-top: 2rem;
+    padding-left: 0;
+}
+
+.page#login-file-explainer .page-body p {
+    color: white;
+}
+
+.page#login-file-explainer .page-body p + p {
+    margin-top: 2.5rem;
+}
+
+.page#login-file-explainer .page-body img {
+    float: left;
+    border-top-right-radius: 0.615rem;
+    border-bottom-right-radius: 0.615rem;
+    margin: 0.5rem 4rem 0 0;
+}
+
+.page#login-file-explainer .page-footer .nq-button {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.page#login-file-explainer .page-footer .nq-button .nq-icon {
+    margin-right: 1.5rem;
 }

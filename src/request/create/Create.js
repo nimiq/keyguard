@@ -11,6 +11,8 @@
 /* global LoginfileAnimation */
 /* global DownloadLoginFile */
 /* global I18n */
+/* global FlippableHandler */
+/* global LoginFileConfig */
 
 /**
  * @callback Create.resolve
@@ -29,17 +31,19 @@ class Create {
 
         this._password = '';
 
+        FlippableHandler.init();
+
         /** @type {HTMLDivElement} */
         this.$identiconSelector = (document.querySelector('.identicon-selector'));
 
         /** @type {HTMLDivElement} */
-        this.$overlayContainer = (document.querySelector('.overlay-container'));
+        const $overlayContainer = (document.querySelector('.overlay-container'));
 
         /** @type {HTMLButtonElement} */
-        this.$overlayCloseButton = (document.querySelector('.overlay-container .overlay .close-overlay'));
+        const $overlayCloseButton = (document.querySelector('.overlay-container .overlay .close-overlay'));
 
         /** @type {HTMLButtonElement} */
-        this.$confirmAddressButton = (document.querySelector('.confirm-address'));
+        const $confirmAddressButton = (document.querySelector('.confirm-address'));
 
         /** @type {HTMLDivElement} */
         this.$loginfileAnimation = (document.querySelector('.loginfile-animation'));
@@ -51,9 +55,15 @@ class Create {
         this.$setPasswordPage = (document.getElementById('set-password'));
 
         /** @type {HTMLElement} */
-        this.$downloadFilePage = (document.getElementById(Create.Pages.LOGIN_FILE_DOWNLOAD));
+        const $downloadFilePage = (document.getElementById(Create.Pages.LOGIN_FILE_DOWNLOAD));
         /** @type {HTMLDivElement} */
         const $downloadLoginFile = (document.querySelector('.download-loginfile'));
+
+        /** @type {HTMLButtonElement} */
+        const $loginfilePreviewBackButton = (document.getElementById('loginfile-explainer-go-back'));
+
+        /** @type {HTMLImageElement} */
+        const $loginfilePreviewImage = (document.getElementById('loginfile-preview'));
 
         // Create components
 
@@ -88,23 +98,23 @@ class Create {
                 // eslint-disable-next-line no-new
                 new Identicon(
                     address,
-                    /** @type {HTMLDivElement} */(this.$overlayContainer.querySelector('#identicon')),
+                    /** @type {HTMLDivElement} */($overlayContainer.querySelector('#identicon')),
                 );
 
                 /** @type {HTMLDivElement} */
-                const $address = (this.$overlayContainer.querySelector('#address'));
+                const $address = ($overlayContainer.querySelector('#address'));
                 // last space is necessary for the rendering to work properly with white-space: pre-wrap.
                 $address.textContent = `${address} `;
 
-                this.$overlayContainer.classList.add('show-overlay');
+                $overlayContainer.classList.add('show-overlay');
             },
         );
 
-        this.$overlayCloseButton.addEventListener('click', () => {
-            this.$overlayContainer.classList.remove('show-overlay');
+        $overlayCloseButton.addEventListener('click', () => {
+            $overlayContainer.classList.remove('show-overlay');
         });
 
-        this.$confirmAddressButton.addEventListener('click', () => {
+        $confirmAddressButton.addEventListener('click', () => {
             window.location.hash = Create.Pages.SET_PASSWORD;
             this._passwordSetter.reset();
             TopLevelApi.focusPasswordBox();
@@ -121,13 +131,13 @@ class Create {
 
             this._downloadLoginFile.setEncryptedEntropy(encryptedSecret, key.defaultAddress);
             // reset initial state
-            this.$downloadFilePage.classList.remove(DownloadLoginFile.Events.INITIATED);
+            $downloadFilePage.classList.remove(DownloadLoginFile.Events.INITIATED);
             // add Events
             this._downloadLoginFile.on(DownloadLoginFile.Events.INITIATED, () => {
-                this.$downloadFilePage.classList.add(DownloadLoginFile.Events.INITIATED);
+                $downloadFilePage.classList.add(DownloadLoginFile.Events.INITIATED);
             });
             this._downloadLoginFile.on(DownloadLoginFile.Events.RESET, () => {
-                this.$downloadFilePage.classList.remove(DownloadLoginFile.Events.INITIATED);
+                $downloadFilePage.classList.remove(DownloadLoginFile.Events.INITIATED);
             });
             this._downloadLoginFile.on(DownloadLoginFile.Events.DOWNLOADED, () => {
                 this.finish(request);
@@ -138,12 +148,19 @@ class Create {
 
         this._passwordSetter.on(PasswordSetterBox.Events.ENTERED, () => {
             this.$setPasswordPage.classList.add('repeat-password');
-            this._loginfileAnimation.setColor(IqonHash.getBackgroundColorIndex(this._selectedAddress));
+            const colorIndex = IqonHash.getBackgroundColorIndex(this._selectedAddress);
+            this._loginfileAnimation.setColor(colorIndex);
+            $loginfilePreviewImage.classList.add(LoginFileConfig[colorIndex].className);
         });
 
         this._passwordSetter.on(PasswordSetterBox.Events.RESET, this.backToEnterPassword.bind(this));
 
         this._passwordSetter.on(PasswordSetterBox.Events.LENGTH, length => this._loginfileAnimation.setStep(length));
+
+        $loginfilePreviewBackButton.addEventListener('click', event => {
+            event.preventDefault();
+            window.history.back();
+        });
 
         if (request.enableBackArrow) {
             /** @type {HTMLElement} */
