@@ -66,8 +66,6 @@ class LoginFile {
         this._drawDateText();
         this._drawWarningText();
 
-        await this._drawIWLogo();
-
         this._drawQrCode(encodedSecret);
     }
 
@@ -153,7 +151,7 @@ class LoginFile {
             this._width - LoginFile.BORDER_WIDTH * 2,
             this._height - LoginFile.BORDER_WIDTH * 2,
             LoginFile.RADIUS,
-            true, false, true,
+            true, false,
         );
     }
 
@@ -173,14 +171,6 @@ class LoginFile {
         );
     }
 
-    async _drawIWLogo() {
-        await this._drawDataUrlImage(
-            // eslint-disable-next-line max-len
-            'data:image/svg+xml,<svg width="20" height="12" fill="none" xmlns="http://www.w3.org/2000/svg"><g opacity=".7" clip-path="url(%23clip0)" fill="%231F2348"><path d="M2.3.1l4.6 11c.2.5.4.9 1.2.9.8 0 1-.4 1.2-1l1.5-3.6 1.6 3.7c.2.5.4.9 1.1.9.8 0 1-.3 1.3-1l3.8-9 .8-1.8c-2.2-.4-2.2-.4-2.9 1.4L14.3 7l-.8 1.7-.6-1.6c-.8-1.3-.8-2.5-.1-3.8l1.2-3c-2.6-1.1-2.3 1.3-3.2 2.5C10 1.7 10.2-.7 7.6.3l1.7 4.2c.1.4.3.8.1 1.1L8.1 9l-3-7.2C4.6-.1 4.6-.1 2.4.1zM0 0V12h1.9V0H0z"/></g><defs><clipPath id="clip0"><path fill="white" d="M0 0h19.3v12H0z"/></clipPath></defs></svg>',
-            570, 1014, 40, 24,
-        );
-    }
-
     /**
      * @param {string} dataUrl
      * @param {number} x
@@ -192,7 +182,7 @@ class LoginFile {
     async _drawDataUrlImage(dataUrl, x, y, w, h) {
         const img = new Image();
         const loaded = new Promise(resolve => {
-            img.onload = () => resolve();
+            img.onload = () => resolve(true);
         });
         img.src = dataUrl;
         await loaded;
@@ -207,29 +197,16 @@ class LoginFile {
      * @param {number} [radius = 5]
      * @param {boolean} [fill = false]
      * @param {boolean} [stroke = false]
-     * @param {boolean} [withIWCorner = false]
      */
-    _roundRect(x, y, width, height, radius = 5, fill = false, stroke = false, withIWCorner = false) {
+    _roundRect(x, y, width, height, radius = 5, fill = false, stroke = false) {
         const ctx = this._ctx;
 
         ctx.beginPath();
         ctx.moveTo(x + radius, y); // Top left
         ctx.lineTo(x + width - radius, y); // Top right
         ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-        if (!withIWCorner) {
-            ctx.lineTo(x + width, y + height - radius); // Bottom right
-            ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-        } else {
-            const cornerWidth = LoginFile.RADIUS * 4;
-            const cornerHeight = LoginFile.OUTER_RADIUS * 2;
-            ctx.lineTo(x + width, y + height - cornerHeight - radius); // Bottom right corner entry corner
-            ctx.quadraticCurveTo(x + width, y + height - cornerHeight, x + width - radius, y + height - cornerHeight);
-            ctx.lineTo(x + width - cornerWidth + radius, y + height - cornerHeight); // Inner corner corner
-            ctx.quadraticCurveTo(x + width - cornerWidth, y + height - cornerHeight,
-                x + width - cornerWidth, y + height - cornerHeight + radius);
-            ctx.lineTo(x + width - cornerWidth, y + height - radius); // Corner exit corner
-            ctx.quadraticCurveTo(x + width - cornerWidth, y + height, x + width - cornerWidth - radius, y + height);
-        }
+        ctx.lineTo(x + width, y + height - radius); // Bottom right
+        ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
         ctx.lineTo(x + radius, y + height); // Bottom left
         ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
         ctx.lineTo(x, y + radius); // Top left
