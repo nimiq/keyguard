@@ -59,11 +59,11 @@ class Create {
         /** @type {HTMLDivElement} */
         const $downloadLoginFile = (document.querySelector('.download-loginfile'));
 
-        /** @type {HTMLButtonElement} */
-        const $loginfilePreviewBackButton = (document.getElementById('loginfile-explainer-go-back'));
-
         /** @type {HTMLImageElement} */
         const $loginfilePreviewImage = (document.getElementById('loginfile-preview'));
+
+        /** @type {HTMLButtonElement} */
+        const $loginfileExplainerBackButton = (document.getElementById('loginfile-explainer-go-back'));
 
         // Create components
 
@@ -155,7 +155,7 @@ class Create {
 
         this._passwordSetter.on(PasswordSetterBox.Events.LENGTH, length => this._loginfileAnimation.setStep(length));
 
-        $loginfilePreviewBackButton.addEventListener('click', () => window.history.back());
+        $loginfileExplainerBackButton.addEventListener('click', () => window.history.back());
 
         if (request.enableBackArrow) {
             /** @type {HTMLElement} */
@@ -210,4 +210,5 @@ Create.Pages = {
     CONFIRM_IDENTICON: 'confirm-identicon',
     SET_PASSWORD: 'set-password',
     LOGIN_FILE_DOWNLOAD: 'login-file-download',
+    LOGIN_FILE_EXPLAINER: 'login-file-explainer',
 };

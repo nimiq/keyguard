@@ -472,7 +472,6 @@ body.loading .page:target .page-footer > .loading-spinner {
     #app {
         padding: 0;
         justify-content: flex-end;
-        overflow: hidden; /* To prevent overlays from being visible below their page and causing window scrolling */
     }
 
     .global-close {
