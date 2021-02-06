@@ -106,13 +106,11 @@ class Create {
                 // last space is necessary for the rendering to work properly with white-space: pre-wrap.
                 $address.textContent = `${address} `;
 
-                $overlayContainer.classList.add('show-overlay');
+                window.location.hash = Create.Pages.CONFIRM_IDENTICON;
             },
         );
 
-        $overlayCloseButton.addEventListener('click', () => {
-            $overlayContainer.classList.remove('show-overlay');
-        });
+        $overlayCloseButton.addEventListener('click', () => window.history.back());
 
         $confirmAddressButton.addEventListener('click', () => {
             window.location.hash = Create.Pages.SET_PASSWORD;
@@ -209,6 +207,7 @@ class Create {
 
 Create.Pages = {
     CHOOSE_IDENTICON: 'choose-identicon',
+    CONFIRM_IDENTICON: 'confirm-identicon',
     SET_PASSWORD: 'set-password',
     LOGIN_FILE_DOWNLOAD: 'login-file-download',
 };

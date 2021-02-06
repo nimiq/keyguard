@@ -28,7 +28,7 @@
     position: absolute;
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
-    /* overflow: hidden; */
+    overflow: hidden;
     margin: inherit;
 }
 
