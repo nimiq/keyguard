@@ -22,9 +22,31 @@
     position: relative;
 }
 
-.loginfile-animation .border:nth-child(1) { stroke-dasharray: 92 440 585 0; }
-.loginfile-animation .border:nth-child(2) { stroke-dasharray: 0 102 50 585; }
-.loginfile-animation .border:nth-child(3) { stroke-dasharray: 0 230 195 585; }
+.loginfile-animation .border:nth-child(1) { stroke-dasharray: 92 440 585 0; animation: border-1 3s ease-in-out infinite; }
+.loginfile-animation .border:nth-child(2) { stroke-dasharray: 0 102 50 585; animation: border-2 3s ease-in-out infinite; }
+.loginfile-animation .border:nth-child(3) { stroke-dasharray: 0 230 195 585; animation: border-3 3s ease-in-out infinite; }
+
+@keyframes border-1 {
+    from { stroke-dasharray: 62 440 585 0; }
+    50%  { stroke-dasharray: 122 440 585 0; }
+    to   { stroke-dasharray: 62 440 585 0; }
+}
+
+@keyframes border-2 {
+    from { stroke-dasharray: 0 72 50 585; }
+    50%  { stroke-dasharray: 0 132 50 585; }
+    to   { stroke-dasharray: 0 72 50 585; }
+}
+
+@keyframes border-3 {
+    from { stroke-dasharray: 0 200 195 585; }
+    50%  { stroke-dasharray: 0 260 195 585; }
+    to   { stroke-dasharray: 0 200 195 585; }
+}
+
+.loginfile-animation.step-1 .border:nth-child(1),
+.loginfile-animation.step-1 .border:nth-child(2),
+.loginfile-animation.step-1 .border:nth-child(3) { animation: none; }
 
 .loginfile-animation .border {
     transition: stroke-dasharray 0.3s, opacity 0.3s 0.12s;
