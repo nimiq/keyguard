@@ -110,6 +110,18 @@ class Create {
             },
         );
 
+        this._downloadLoginFile.on(DownloadLoginFile.Events.INITIATED, () => {
+            $downloadFilePage.classList.add(DownloadLoginFile.Events.INITIATED);
+        });
+
+        this._downloadLoginFile.on(DownloadLoginFile.Events.RESET, () => {
+            $downloadFilePage.classList.remove(DownloadLoginFile.Events.INITIATED);
+        });
+
+        this._downloadLoginFile.on(DownloadLoginFile.Events.DOWNLOADED, () => {
+            this.finish(request);
+        });
+
         $overlayCloseButton.addEventListener('click', () => window.history.back());
 
         $confirmAddressButton.addEventListener('click', () => {
@@ -127,18 +139,8 @@ class Create {
             const encryptedSecret = await key.secret.exportEncrypted(passwordBuffer);
 
             this._downloadLoginFile.setEncryptedEntropy(encryptedSecret, key.defaultAddress);
-            // reset initial state
+            // Reset to initial state
             $downloadFilePage.classList.remove(DownloadLoginFile.Events.INITIATED);
-            // add Events
-            this._downloadLoginFile.on(DownloadLoginFile.Events.INITIATED, () => {
-                $downloadFilePage.classList.add(DownloadLoginFile.Events.INITIATED);
-            });
-            this._downloadLoginFile.on(DownloadLoginFile.Events.RESET, () => {
-                $downloadFilePage.classList.remove(DownloadLoginFile.Events.INITIATED);
-            });
-            this._downloadLoginFile.on(DownloadLoginFile.Events.DOWNLOADED, () => {
-                this.finish(request);
-            });
 
             window.location.hash = Create.Pages.LOGIN_FILE_DOWNLOAD;
         });

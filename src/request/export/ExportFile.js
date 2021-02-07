@@ -127,6 +127,18 @@ class ExportFile extends Nimiq.Observable {
         });
 
         this._passwordSetterBox.on(PasswordSetterBox.Events.RESET, this.backToEnterPassword.bind(this));
+
+        this._downloadLoginFile.on(DownloadLoginFile.Events.INITIATED, () => {
+            this.$downloadFilePage.classList.add(DownloadLoginFile.Events.INITIATED);
+        });
+
+        this._downloadLoginFile.on(DownloadLoginFile.Events.RESET, () => {
+            this.$downloadFilePage.classList.remove(DownloadLoginFile.Events.INITIATED);
+        });
+
+        this._downloadLoginFile.on(DownloadLoginFile.Events.DOWNLOADED, () => {
+            this._resolve({ success: true });
+        });
     }
 
     run() {
@@ -218,18 +230,8 @@ class ExportFile extends Nimiq.Observable {
             const encryptedSecret = await key.secret.exportEncrypted(passwordBuffer);
 
             this._downloadLoginFile.setEncryptedEntropy(encryptedSecret, key.defaultAddress);
-            // reset initial state
+            // Reset to initial state
             this.$downloadFilePage.classList.remove(DownloadLoginFile.Events.INITIATED);
-            // add Events
-            this._downloadLoginFile.on(DownloadLoginFile.Events.INITIATED, () => {
-                this.$downloadFilePage.classList.add(DownloadLoginFile.Events.INITIATED);
-            });
-            this._downloadLoginFile.on(DownloadLoginFile.Events.RESET, () => {
-                this.$downloadFilePage.classList.remove(DownloadLoginFile.Events.INITIATED);
-            });
-            this._downloadLoginFile.on(DownloadLoginFile.Events.DOWNLOADED, () => {
-                this._resolve({ success: true });
-            });
 
             window.location.hash = ExportFile.Pages.LOGIN_FILE_DOWNLOAD;
         } else {
