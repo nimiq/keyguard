@@ -1,13 +1,13 @@
 /* global TemplateTags */
 /* global LoginFileConfig */
 
-class LoginfileAnimation { // eslint-disable-line no-unused-vars
+class LoginFileAnimation { // eslint-disable-line no-unused-vars
     /**
      * @param {HTMLDivElement} [$el]
      */
     constructor($el) {
         this._color = 0;
-        this.$el = LoginfileAnimation._createElement($el);
+        this.$el = LoginFileAnimation._createElement($el);
 
         /** @type {HTMLDivElement} */
         this.$background = (this.$el.querySelector('.background'));
@@ -64,7 +64,7 @@ class LoginfileAnimation { // eslint-disable-line no-unused-vars
      */
     static _createElement($el) {
         const $element = $el || document.createElement('div');
-        $element.classList.add('loginfile-animation');
+        $element.classList.add('login-file-animation');
         /* eslint-disable max-len */
         $element.innerHTML = TemplateTags.noVars`
             <div class="background"></div>

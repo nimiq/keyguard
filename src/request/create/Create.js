@@ -8,7 +8,7 @@
 /* global Identicon */
 /* global BitcoinKey */
 /* global IqonHash */
-/* global LoginfileAnimation */
+/* global LoginFileAnimation */
 /* global DownloadLoginFile */
 /* global I18n */
 /* global FlippableHandler */
@@ -46,7 +46,7 @@ class Create {
         const $confirmAddressButton = (document.querySelector('.confirm-address'));
 
         /** @type {HTMLDivElement} */
-        this.$loginfileAnimation = (document.querySelector('.loginfile-animation'));
+        this.$loginFileAnimation = (document.querySelector('.login-file-animation'));
 
         /** @type {HTMLFormElement} */
         const $setPassword = (document.querySelector('.password-box'));
@@ -68,7 +68,7 @@ class Create {
         // Create components
 
         this._identiconSelector = new IdenticonSelector(this.$identiconSelector, request.defaultKeyPath);
-        this._loginfileAnimation = new LoginfileAnimation(this.$loginfileAnimation);
+        this._loginFileAnimation = new LoginFileAnimation(this.$loginFileAnimation);
         this._passwordSetter = new PasswordSetterBox($setPassword, { buttonI18nTag: 'passwordbox-confirm-create' });
         this._downloadLoginFile = new DownloadLoginFile(
             $downloadLoginFile,
@@ -147,13 +147,13 @@ class Create {
         this._passwordSetter.on(PasswordSetterBox.Events.ENTERED, () => {
             this.$setPasswordPage.classList.add('repeat-password');
             const colorIndex = IqonHash.getBackgroundColorIndex(this._selectedAddress);
-            this._loginfileAnimation.setColor(colorIndex);
+            this._loginFileAnimation.setColor(colorIndex);
             $loginfilePreviewImage.classList.add(LoginFileConfig[colorIndex].className);
         });
 
         this._passwordSetter.on(PasswordSetterBox.Events.RESET, this.backToEnterPassword.bind(this));
 
-        this._passwordSetter.on(PasswordSetterBox.Events.LENGTH, length => this._loginfileAnimation.setStep(length));
+        this._passwordSetter.on(PasswordSetterBox.Events.LENGTH, length => this._loginFileAnimation.setStep(length));
 
         $loginfileExplainerBackButton.addEventListener('click', () => window.history.back());
 
@@ -165,7 +165,7 @@ class Create {
 
     backToEnterPassword() {
         this.$setPasswordPage.classList.remove('repeat-password');
-        this._loginfileAnimation.reset();
+        this._loginFileAnimation.reset();
         this._passwordSetter.reset();
 
         TopLevelApi.focusPasswordBox();

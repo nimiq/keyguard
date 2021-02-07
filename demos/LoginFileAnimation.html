@@ -14,13 +14,13 @@
 
     <script src="../src/lib/TemplateTags.js"></script>
     <script src="../src/lib/LoginFileConfig.js"></script>
-    <script src="../src/components/LoginfileAnimation.js"></script>
+    <script src="../src/components/LoginFileAnimation.js"></script>
 
     <link rel="stylesheet" href="../node_modules/@nimiq/style/nimiq-style.min.css">
     <link rel="stylesheet" href="../src/nimiq-style.css">
     <link rel="stylesheet" href="../src/common.css">
 
-    <link rel="stylesheet" href="../src/components/LoginfileAnimation.css">
+    <link rel="stylesheet" href="../src/components/LoginFileAnimation.css">
     <style>
         html, body {
             height: 100%;
@@ -34,9 +34,9 @@
             align-items: center;
         }
 
-        .loginfile-animation {
+        .login-file-animation {
             transform: scale(1.5);
-            margin-bottom: 6%;
+            margin-bottom: 12rem;
         }
 
         input {
@@ -53,13 +53,13 @@
     </style>
 </head>
 <body>
-    <div class="loginfile-animation"></div>
+    <div class="login-file-animation"></div>
     <input type="password" value=""/>
     <small>Hit Enter to confirm password.</small>
 
     <script>
-        const $loginfileAnimation = document.querySelector('.loginfile-animation');
-        const component = new LoginfileAnimation($loginfileAnimation);
+        const $loginFileAnimation = document.querySelector('.login-file-animation');
+        const component = new LoginFileAnimation($loginFileAnimation);
         const $input = document.querySelector('input[type="password"]');
 
         $input.addEventListener('input', (event) => {
