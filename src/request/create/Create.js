@@ -119,7 +119,6 @@ class Create {
         });
 
         this._passwordSetter.on(PasswordSetterBox.Events.SUBMIT, /** @param {string} password */ async password => {
-            // TODO: Save key to disk here?
             this._password = password;
 
             // Set up LoginFile
