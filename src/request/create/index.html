@@ -88,14 +88,18 @@
         <div id="rotation-container" class="overlay-container">
             <div id="confirm-identicon" class="page overlay-frame">
                 <div class="page nq-card overlay">
-                    <a class="nq-button-s close-overlay">
+                    <button class="nq-button-s close-overlay" prevent-tabbing>
                         <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-close"/></svg>
-                    </a>
+                    </button>
                     <div class="flex-grow"></div>
                     <div id="identicon"></div>
                     <div id="address" class="address"></div>
                     <div class="flex-grow"></div>
-                    <button class="nq-button light-blue confirm-address" data-i18n="create-confirm-address">Select and continue</button>
+                    <button
+                        class="nq-button light-blue confirm-address"
+                        prevent-tabbing
+                        data-i18n="create-confirm-address"
+                    >Select and continue</button>
                 </div>
             </div>
 

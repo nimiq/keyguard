@@ -42,6 +42,10 @@
         opacity 0s var(--overlay-transition-time);
 }
 
+.overlay-frame:not(:target) .overlay [prevent-tabbing] {
+    display: none !important;
+}
+
 .underlay {
     position: relative;
     overflow: hidden;
