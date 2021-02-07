@@ -1,7 +1,7 @@
 /* global TemplateTags */
 /* global LoginFileConfig */
 
-class LoginFileAnimation { // eslint-disable-line no-unused-vars
+class LoginFileAnimation {
     /**
      * @param {HTMLDivElement} [$el]
      */
@@ -20,10 +20,10 @@ class LoginFileAnimation { // eslint-disable-line no-unused-vars
      * @param {number} step
      */
     setStep(step) {
-        for (let i = 8; i > step; i--) {
+        for (let i = LoginFileAnimation.STEPS; i > step; i--) {
             this.$el.classList.remove(`step-${i}`);
         }
-        for (let i = 0; i <= Math.min(step, 8); i++) {
+        for (let i = 0; i <= Math.min(step, LoginFileAnimation.STEPS); i++) {
             this.$el.classList.add(`step-${i}`);
         }
     }
@@ -107,3 +107,5 @@ class LoginFileAnimation { // eslint-disable-line no-unused-vars
         return $element;
     }
 }
+
+LoginFileAnimation.STEPS = 8;
