@@ -60,10 +60,10 @@ class Create {
         const $downloadLoginFile = (document.querySelector('.download-loginfile'));
 
         /** @type {HTMLImageElement} */
-        const $loginfilePreviewImage = (document.getElementById('loginfile-preview'));
+        const $loginFilePreviewImage = (document.getElementById('loginfile-preview'));
 
         /** @type {HTMLButtonElement} */
-        const $loginfileExplainerBackButton = (document.getElementById('loginfile-explainer-go-back'));
+        const $loginFileExplainerBackButton = (document.getElementById('loginfile-explainer-go-back'));
 
         // Create components
 
@@ -149,14 +149,14 @@ class Create {
             this.$setPasswordPage.classList.add('repeat-password');
             const colorIndex = IqonHash.getBackgroundColorIndex(this._selectedAddress);
             this._loginFileAnimation.setColor(colorIndex);
-            $loginfilePreviewImage.classList.add(LoginFileConfig[colorIndex].className);
+            $loginFilePreviewImage.classList.add(LoginFileConfig[colorIndex].className);
         });
 
         this._passwordSetter.on(PasswordSetterBox.Events.RESET, this.backToEnterPassword.bind(this));
 
         this._passwordSetter.on(PasswordSetterBox.Events.LENGTH, length => this._loginFileAnimation.setStep(length));
 
-        $loginfileExplainerBackButton.addEventListener('click', () => window.history.back());
+        $loginFileExplainerBackButton.addEventListener('click', () => window.history.back());
 
         if (request.enableBackArrow) {
             /** @type {HTMLElement} */
