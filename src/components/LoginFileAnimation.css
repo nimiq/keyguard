@@ -46,7 +46,8 @@
 
 .login-file-animation.step-1 .border:nth-child(1),
 .login-file-animation.step-1 .border:nth-child(2),
-.login-file-animation.step-1 .border:nth-child(3) { animation: none; }
+.login-file-animation.step-1 .border:nth-child(3),
+.login-file-animation.colored .border { animation: none; }
 
 .login-file-animation .border {
     transition: stroke-dasharray 0.3s, opacity 0.3s 0.12s;
