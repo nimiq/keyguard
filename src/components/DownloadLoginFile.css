@@ -1,7 +1,7 @@
 .download-loginfile {
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
+    justify-content: space-between;
     text-decoration: none;
     outline: none;
     flex-grow: 1;
@@ -48,10 +48,19 @@
     }
 }
 
+.download-loginfile .loginfile-description {
+    font-size: 2rem;
+    margin: 3rem 0 0;
+}
+
+.download-loginfile .loginfile-description:not(.visible) {
+    display: none;
+}
+
 .download-loginfile button,
 .download-loginfile .download-button {
-    margin-top: 3.5rem;
-    margin-bottom: 1rem;
+    margin-top: 3rem;
+    margin-bottom: 0;
 }
 
 .download-loginfile .download-button > .nq-icon {
@@ -73,7 +82,7 @@
 }
 
 .download-loginfile.maybe-downloaded .back-to-download {
-    margin: 1rem auto -1rem;
+    margin: 2rem auto -2rem;
 }
 
 .download-loginfile.maybe-downloaded .tap-and-hold {
