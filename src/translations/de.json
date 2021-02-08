@@ -85,6 +85,7 @@
     "passwordbox-confirm-log-in": "Anmelden",
     "passwordbox-show-words": "Wiederherstellungswörter anzeigen",
     "passwordbox-sign-msg": "Nachricht signieren",
+    "passwordbox-confirm-swap": "Tausch bestätigen",
     "passwordbox-password-strength-short": "Gib mindestens 8 Zeichen ein",
     "passwordbox-password-strength-weak": "Schlechtes Passwort",
     "passwordbox-password-strength-good": "Gutes Passwort",
@@ -210,8 +211,22 @@
 
     "login-file-filename": "Nimiq-Login-Datei-{color}-Konto.png",
 
+    "bitcoin": "Bitcoin",
     "bitcoin-recipient-unlabelled": "Unbeschriftet",
 
     "derive-btc-xpub-heading": "Füge deinem Account\nBitcoin hinzu",
-    "derive-btc-xpub-text": "Einfach zwischen NIM, dem superperformanten Zahlungscoin und BTC, dem Goldstandard der Krytowährungen tauschen."
+    "derive-btc-xpub-text": "Einfach zwischen NIM, dem superperformanten Zahlungscoin und BTC, dem Goldstandard der Krytowährungen tauschen.",
+
+    "sign-swap-heading": "Tausch Bestätigen",
+    "sign-swap-exchange-rate-tooltip": "Dieser Kurs beinhaltet die Tauschgebühren.",
+    "sign-swap-fees": "Gebühren",
+    "sign-swap-btc-fees": "BTC Netzwerkgebühr",
+    "sign-swap-btc-fees-explainer": "Ein sicherer Tausch benötigt zwei BTC Transaktionen.",
+    "sign-swap-oasis-fees": "OASIS Servicegebühr",
+    "sign-swap-oasis-fees-explainer": "des Tauschwerts.",
+    "sign-swap-nim-fees": "NIM Netzwerkgebühr",
+    "sign-swap-exchange-fee": "Tauschgebühr",
+    "sign-swap-of-exchange-value": "des Tauschwerts.",
+    "sign-swap-total-fees": "Gebühren gesamt",
+    "sign-swap-your-bank": "Deine Bank"
 }

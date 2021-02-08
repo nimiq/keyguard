@@ -85,6 +85,7 @@
     "passwordbox-confirm-log-in": "Se connecter",
     "passwordbox-show-words": "Afficher les mots de récupération",
     "passwordbox-sign-msg": "Signer le message",
+    "passwordbox-confirm-swap": "Confirmer le swap",
     "passwordbox-password-strength-short": "Entrez 8 caractères ou plus",
     "passwordbox-password-strength-weak": "Faible mot de passe",
     "passwordbox-password-strength-good": "Bon mot de passe",
@@ -210,8 +211,22 @@
 
     "login-file-filename": "Fichier-de-Connexion-Nimiq-Compte-{color}.png",
 
+    "bitcoin": "Bitcoin",
     "bitcoin-recipient-unlabelled": "Non-libellé",
 
     "derive-btc-xpub-heading": "Ajouter Bitcoin\nà votre compte",
-    "derive-btc-xpub-text": "Swappez facilement entre NIM, la monnaie de paiement super performante et BTC, l'étalon-or de la crypto."
+    "derive-btc-xpub-text": "Swappez facilement entre NIM, la monnaie de paiement super performante et BTC, l'étalon-or de la crypto.",
+
+    "sign-swap-heading": "Confirmer le swap",
+    "sign-swap-exchange-rate-tooltip": "Ce taux inclut les frais de swap.",
+    "sign-swap-fees": "frais",
+    "sign-swap-btc-fees": "frais de réseau BTC",
+    "sign-swap-btc-fees-explainer": "Un swap atomique nécessite 2 transactions BTC.",
+    "sign-swap-oasis-fees": "frais de service OASIS",
+    "sign-swap-oasis-fees-explainer": "de la valeur du swap.",
+    "sign-swap-nim-fees": "frais de réseau NIM",
+    "sign-swap-exchange-fee": "Frais de swap",
+    "sign-swap-of-exchange-value": "de la valeur du swap.",
+    "sign-swap-total-fees": "Total des frais",
+    "sign-swap-your-bank": "Votre banque"
 }

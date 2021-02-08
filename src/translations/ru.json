@@ -85,6 +85,7 @@
     "passwordbox-confirm-log-in": "Войти",
     "passwordbox-show-words": "Показать Защитную Фразу",
     "passwordbox-sign-msg": "Подписать сообщение",
+    "passwordbox-confirm-swap": "Подтвердить обмен",
     "passwordbox-password-strength-short": "Введите 8 или более символов",
     "passwordbox-password-strength-weak": "Пароль ненадёжный",
     "passwordbox-password-strength-good": "Пароль надёжный",
@@ -210,8 +211,22 @@
 
     "login-file-filename": "Nimiq-Файл-Авторизации-{color}-аккаунт.png",
 
+    "bitcoin": "Bitcoin",
     "bitcoin-recipient-unlabelled": "Немаркированный",
 
     "derive-btc-xpub-heading": "Добавьте Биткоин\nна свой аккаунт",
-    "derive-btc-xpub-text": "NIM - супербыстрая платёжная монета. BTC - золотой криптовалютный стандарт. Меняйте NIM на BTC - и обратно. Это легко и просто!"
+    "derive-btc-xpub-text": "NIM - супербыстрая платёжная монета. BTC - золотой криптовалютный стандарт. Меняйте NIM на BTC - и обратно. Это легко и просто!",
+
+    "sign-swap-heading": "Подтвердить обмен",
+    "sign-swap-exchange-rate-tooltip": "Эта ставка включает в \nсебя комиссию за обмен.",
+    "sign-swap-fees": "комиссии",
+    "sign-swap-btc-fees": "BTC network fee",
+    "sign-swap-btc-fees-explainer": " Обмен выполняется в 2 транзакции BTC.",
+    "sign-swap-oasis-fees": "OASIS service fee",
+    "sign-swap-oasis-fees-explainer": "от суммы обмена.",
+    "sign-swap-nim-fees": "NIM network fee",
+    "sign-swap-exchange-fee": "Комиссия",
+    "sign-swap-of-exchange-value": "от суммы обмена.",
+    "sign-swap-total-fees": "Итого",
+    "sign-swap-your-bank": "Your bank"
 }
