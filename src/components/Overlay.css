@@ -1,0 +1,139 @@
+.overlay-container {
+    --transition-time: 0.75s;
+    --overlay-transition-time: 0.65s;
+    position: relative;
+    width: 100%;
+    max-width: 56.5rem; /* 420px + 2 * 2rem because of .nq-card margin*/
+    height: 70.5rem; /* 564px */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.overlay-frame {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000 !important;
+    pointer-events: none;
+    display: flex;
+    overflow: visible !important;
+}
+
+.overlay {
+    display: flex;
+    opacity: 0;
+
+    /**
+     * 100% is the height of the overlay
+     * 100vh is the height of the viewport
+     *
+     * To adapt the animation distance to the screen height (because we don't want the overlay to only
+     * animate part of the way on larger screens, or ultra-fast on smaller screens), we calculcate the
+     * distance between the top of the overlay to the top of the viewport [(100vh - 100%) / 2] and add
+     * the height of the overlay to it [+ 100%]. Then we just turn it around into a negative distance
+     * [-1 *] so it animates from and to the top, and we add a little extra [1.1 = +10%] so the easing
+     * doesn't stop at the top of the viewport.
+     */
+    transform: translate3D(0, calc(-1.1 * ((100vh - 100%) / 2 + 100%)), 0);
+    transition: transform var(--overlay-transition-time) cubic-bezier(0.3, 0, 0, 1),
+        opacity 0s var(--overlay-transition-time);
+}
+
+.overlay-frame:not(:target) .overlay [prevent-tabbing] {
+    display: none !important;
+}
+
+.underlay {
+    position: relative;
+    overflow: hidden;
+    transition: transform var(--transition-time) var(--nimiq-ease);
+    transform-origin: center bottom;
+}
+
+.underlay::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(31, 35, 72, 0.25);
+    opacity: 0;
+    pointer-events: none;
+
+    transition: opacity var(--transition-time) cubic-bezier(0.5, 0, 0.15, 1);
+}
+
+.overlay-frame:target .overlay {
+    pointer-events: all;
+    opacity: 1;
+    transform: translate3D(0, 0, 0);
+    transition: transform var(--overlay-transition-time) cubic-bezier(.3, 1, 0.2, 1);
+}
+
+.overlay-frame:target ~ .underlay {
+    display: flex;
+    transform: scale(0.942857143) translateY(1.5rem) !important;
+}
+
+.overlay-frame:target ~ .underlay::after {
+    opacity: 1;
+}
+
+.overlay .close-overlay {
+    position: absolute;
+    right: 2rem;
+    top: 2rem;
+    border: 0;
+    padding: 0;
+    height: 3rem;
+    font-size: 3rem;
+    background-color: unset;
+}
+
+.overlay .close-overlay .nq-icon {
+    opacity: .2;
+    transition: opacity .3s var(--nimiq-ease);
+}
+
+.overlay .close-overlay:hover .nq-icon,
+.overlay .close-overlay:active .nq-icon,
+.overlay .close-overlay:focus .nq-icon {
+    opacity: .4;
+}
+
+@media (max-width: 450px) {
+    .overlay-container {
+        --transition-time: 0.5s;
+    }
+
+    .overlay-frame {
+        overflow: hidden !important;
+    }
+
+    .overlay-frame .overlay {
+        /**
+         * 100% is the height of the overlay
+         */
+        transform: translate3D(0, 100%, 0);
+    }
+
+    .underlay {
+        transform-origin: center top;
+    }
+
+    .overlay-frame:target ~ .underlay {
+        transform: scale(0.942857143) translateY(-1.5rem) !important;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    /* Instead of translating the overlay, simply fade it in */
+    .overlay,
+    .overlay-frame:target .overlay {
+        transition: opacity var(--overlay-transition-time) var(--nimiq-ease);
+    }
+}

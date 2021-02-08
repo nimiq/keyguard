@@ -66,8 +66,6 @@ class LoginFile {
         this._drawDateText();
         this._drawWarningText();
 
-        await this._drawIWLogo();
-
         this._drawQrCode(encodedSecret);
     }
 
@@ -153,7 +151,7 @@ class LoginFile {
             this._width - LoginFile.BORDER_WIDTH * 2,
             this._height - LoginFile.BORDER_WIDTH * 2,
             LoginFile.RADIUS,
-            true, false, true,
+            true, false,
         );
     }
 
@@ -161,23 +159,15 @@ class LoginFile {
         // Security waves
         await this._drawDataUrlImage(
             // eslint-disable-next-line max-len
-            `data:image/svg+xml,<svg width="303" height="288" fill="none" stroke="white" stroke-miterlimit="10" opacity="${this._config.opacityLines}" xmlns="http://www.w3.org/2000/svg"><path d="M365.7-158.8c-43 43-57.1 28.8-100 71.8-43 43-29 57.1-72 100.1-43 43-57 28.9-100 71.9-43 43-29 57.1-71.9 100-43 43-57.1 29-100.1 72"/><path d="M360-164.5c-43 43-59.9 26-102.9 69-43 43-26 60-69 103s-60 26-103 69-26 60-69 103-60 26-103 69"/><path d="M354.4-170.2c-43 43-62.8 23.2-105.8 66.2S225.4-41.2 182.5 1.8c-43 43-62.8 23.2-105.8 66.2s-23.2 62.8-66.2 105.8S-52.3 197-95.3 240"/><path d="M348.8-175.8c-43 43-65.7 20.3-108.6 63.3-43 43-20.4 65.7-63.4 108.7S111.2 16.5 68.2 59.5 47.8 125.1 4.8 168.1s-65.6 20.4-108.6 63.4"/><path d="M343.1-181.5c-43 43-68.4 17.6-111.4 60.6S214-52.5 171-9.5 102.7 8 59.7 51 42.2 119.5-.8 162.5-69.3 180-112.3 223"/><path d="M337.5-187.1c-43 43-71.3 14.7-114.3 57.7s-14.7 71.2-57.7 114.2S94.2-.5 51.2 42.5 36.5 113.8-6.5 156.8s-71.3 14.7-114.3 57.7"/><path d="M331.8-192.8c-43 43-74.1 11.9-117.1 54.9s-11.9 74-54.9 117-74 12-117 55-12 74-55 117-74 12-117 55"/><path d="M326.1-198.4c-43 43-76.9 9-119.9 52s-9 77-52 120-77 9-120 52-9 76.9-52 119.9-77 9-120 52"/><path d="M320.5-204.1c-43 43-79.8 6.2-122.8 49.2S191.5-75 148.5-32 68.8-26 25.8 17s-6.3 79.7-49.3 122.7-79.7 6.3-122.7 49.3"/><path d="M314.8-209.8c-43 43-82.6 3.4-125.6 46.4S185.8-80.8 143-37.8c-43 43-82.6 3.4-125.6 46.4s-3.4 82.6-46.4 125.6-82.6 3.4-125.6 46.4"/></svg>`,
+            `data:image/svg+xml,<svg width="303" height="288" fill="none" stroke="white" opacity="${this._config.opacityLines}" xmlns="http://www.w3.org/2000/svg"><path d="M365.7-158.8c-43 43-57.1 28.8-100 71.8-43 43-29 57.1-72 100.1-43 43-57 28.9-100 71.9-43 43-29 57.1-71.9 100-43 43-57.1 29-100.1 72"/><path d="M360-164.5c-43 43-59.9 26-102.9 69-43 43-26 60-69 103s-60 26-103 69-26 60-69 103-60 26-103 69"/><path d="M354.4-170.2c-43 43-62.8 23.2-105.8 66.2S225.4-41.2 182.5 1.8c-43 43-62.8 23.2-105.8 66.2s-23.2 62.8-66.2 105.8S-52.3 197-95.3 240"/><path d="M348.8-175.8c-43 43-65.7 20.3-108.6 63.3-43 43-20.4 65.7-63.4 108.7S111.2 16.5 68.2 59.5 47.8 125.1 4.8 168.1s-65.6 20.4-108.6 63.4"/><path d="M343.1-181.5c-43 43-68.4 17.6-111.4 60.6S214-52.5 171-9.5 102.7 8 59.7 51 42.2 119.5-.8 162.5-69.3 180-112.3 223"/><path d="M337.5-187.1c-43 43-71.3 14.7-114.3 57.7s-14.7 71.2-57.7 114.2S94.2-.5 51.2 42.5 36.5 113.8-6.5 156.8s-71.3 14.7-114.3 57.7"/><path d="M331.8-192.8c-43 43-74.1 11.9-117.1 54.9s-11.9 74-54.9 117-74 12-117 55-12 74-55 117-74 12-117 55"/><path d="M326.1-198.4c-43 43-76.9 9-119.9 52s-9 77-52 120-77 9-120 52-9 76.9-52 119.9-77 9-120 52"/><path d="M320.5-204.1c-43 43-79.8 6.2-122.8 49.2S191.5-75 148.5-32 68.8-26 25.8 17s-6.3 79.7-49.3 122.7-79.7 6.3-122.7 49.3"/><path d="M314.8-209.8c-43 43-82.6 3.4-125.6 46.4S185.8-80.8 143-37.8c-43 43-82.6 3.4-125.6 46.4s-3.4 82.6-46.4 125.6-82.6 3.4-125.6 46.4"/></svg>`,
             LoginFile.BORDER_WIDTH, LoginFile.BORDER_WIDTH, 606, 576,
         );
 
-        // Wallet symbol
+        // Key and Stars
         await this._drawDataUrlImage(
             // eslint-disable-next-line max-len
-            `data:image/svg+xml,<svg width="99" height="104" opacity="${this._config.opacityWallet}" fill="white" xmlns="http://www.w3.org/2000/svg"><path opacity=".7" d="M66 14L58.8 1.4A2.9 2.9 0 0 0 56.2 0H41.8c-1 0-2 .6-2.5 1.4L32 14c-.5.9-.5 2 0 2.9l7.2 12.6c.6.9 1.5 1.4 2.6 1.4h14.4c1 0 2-.5 2.6-1.4L66 16.9c.5-.9.5-2 0-2.9z"/><path opacity=".8" d="M66 87l-7.2-12.5a2.9 2.9 0 0 0-2.6-1.4H41.8c-1 0-2 .5-2.5 1.4L32 87.1c-.5.9-.5 2 0 2.9l7.2 12.5c.6 1 1.5 1.5 2.6 1.5h14.4c1 0 2-.6 2.6-1.5L66 90c.5-1 .5-2 0-3z"/><path opacity=".5" d="M34.4 32.3L27 19.7a2.9 2.9 0 0 0-2.5-1.4H10.1c-1 0-2 .5-2.5 1.4L.4 32.3c-.5.9-.5 2 0 2.9l7.2 12.5c.5 1 1.5 1.5 2.5 1.5h14.5c1 0 2-.6 2.5-1.5l7.3-12.5c.5-1 .5-2 0-3z"/><path opacity=".6" d="M34.4 68.8L27 56.2a2.9 2.9 0 0 0-2.5-1.4H10.1c-1 0-2 .6-2.5 1.4L.4 68.8c-.5.9-.5 2 0 2.9l7.2 12.6c.5.9 1.5 1.4 2.5 1.4h14.5c1 0 2-.5 2.5-1.4l7.3-12.6c.5-.9.5-2 0-2.9z"/><path opacity=".8" d="M97.6 32.3l-7.2-12.6a2.9 2.9 0 0 0-2.5-1.4H73.4c-1 0-2 .5-2.5 1.4l-7.3 12.6c-.5.9-.5 2 0 2.9L71 47.7c.5 1 1.4 1.5 2.5 1.5h14.5c1 0 2-.6 2.5-1.5l7.2-12.5c.5-1 .5-2 0-3z"/><path opacity=".6" d="M97.6 68.8l-7.2-12.6a2.9 2.9 0 0 0-2.5-1.4H73.4c-1 0-2 .6-2.5 1.4l-7.3 12.6c-.5.9-.5 2 0 2.9L71 84.3c.5.9 1.4 1.4 2.5 1.4h14.5c1 0 2-.5 2.5-1.4l7.2-12.6c.5-.9.5-2 0-2.9z"/></svg>`,
+            `data:image/svg+xml,<svg width="47" height="49" opacity="${this._config.opacityKeyStars}" fill="white" xmlns="http://www.w3.org/2000/svg"><path opacity=".57" d="M3.35 8.21h.98a.49.49 0 01.49.5v.97a1.47 1.47 0 102.93 0V8.7a.49.49 0 01.49-.49h.98a1.47 1.47 0 100-2.93h-.98a.49.49 0 01-.5-.49v-.97a1.47 1.47 0 10-2.92 0v.97a.49.49 0 01-.5.5h-.97a1.47 1.47 0 000 2.92z"/><path opacity=".71" d="M43.12 40.47h-1.1a.59.59 0 01-.39-.14.46.46 0 01-.16-.35V39c0-.39-.17-.76-.48-1.03-.31-.28-.73-.43-1.17-.43-.44 0-.86.15-1.16.43-.31.27-.49.64-.49 1.03v.98c0 .06-.01.13-.04.19a.49.49 0 01-.12.16.6.6 0 01-.39.14h-1.1c-.43 0-.85.15-1.16.43-.31.27-.49.65-.49 1.03 0 .4.18.77.49 1.04.3.28.73.43 1.16.43h1.1a.6.6 0 01.4.14l.11.16c.03.06.04.13.04.19v.98c0 .39.18.76.49 1.03.3.28.72.43 1.16.43.44 0 .86-.15 1.17-.43.3-.27.48-.64.48-1.03v-.98c0-.13.06-.25.16-.35.1-.09.24-.14.4-.14h1.09c.44 0 .86-.15 1.17-.43.3-.27.48-.65.48-1.04 0-.38-.17-.76-.48-1.03-.31-.28-.73-.43-1.17-.43z"/><path d="M46.97 14.27a14 14 0 00-5.34-11.03 14.28 14.28 0 00-17.73-.03 14.12 14.12 0 00-5.38 11.01 14 14 0 001.4 6.12 1 1 0 01-.2 1.15L1.91 39.12a4.01 4.01 0 002.82 6.83 4.09 4.09 0 002.86-1.06 1.02 1.02 0 011.4.04L12 47.92a2.03 2.03 0 002.9.02 2.01 2.01 0 00-.02-2.87l-3.02-2.98a1 1 0 010-1.42l1.27-1.27a1.02 1.02 0 011.44 0l3.01 2.99a2.04 2.04 0 003.45-1.44 2 2 0 00-.57-1.41l-3.02-2.99a1 1 0 010-1.42l8.02-7.95a1.02 1.02 0 011.15-.2 14.31 14.31 0 0018.59-5.9 13.98 13.98 0 001.76-6.8zm-14.23 6.05a6.13 6.13 0 01-5.63-3.73A6 6 0 0128.43 10a6.11 6.11 0 0110.41 4.27c0 1.6-.64 3.14-1.78 4.28a6.12 6.12 0 01-4.32 1.77z"/></svg>`,
             220, 266, 198, 208,
-        );
-    }
-
-    async _drawIWLogo() {
-        await this._drawDataUrlImage(
-            // eslint-disable-next-line max-len
-            'data:image/svg+xml,<svg width="20" height="12" fill="none" xmlns="http://www.w3.org/2000/svg"><g opacity=".7" clip-path="url(%23clip0)" fill="%231F2348"><path d="M2.3.1l4.6 11c.2.5.4.9 1.2.9.8 0 1-.4 1.2-1l1.5-3.6 1.6 3.7c.2.5.4.9 1.1.9.8 0 1-.3 1.3-1l3.8-9 .8-1.8c-2.2-.4-2.2-.4-2.9 1.4L14.3 7l-.8 1.7-.6-1.6c-.8-1.3-.8-2.5-.1-3.8l1.2-3c-2.6-1.1-2.3 1.3-3.2 2.5C10 1.7 10.2-.7 7.6.3l1.7 4.2c.1.4.3.8.1 1.1L8.1 9l-3-7.2C4.6-.1 4.6-.1 2.4.1zM0 0V12h1.9V0H0z"/></g><defs><clipPath id="clip0"><path fill="white" d="M0 0h19.3v12H0z"/></clipPath></defs></svg>',
-            570, 1014, 40, 24,
         );
     }
 
@@ -192,7 +182,7 @@ class LoginFile {
     async _drawDataUrlImage(dataUrl, x, y, w, h) {
         const img = new Image();
         const loaded = new Promise(resolve => {
-            img.onload = () => resolve();
+            img.onload = () => resolve(true);
         });
         img.src = dataUrl;
         await loaded;
@@ -207,29 +197,16 @@ class LoginFile {
      * @param {number} [radius = 5]
      * @param {boolean} [fill = false]
      * @param {boolean} [stroke = false]
-     * @param {boolean} [withIWCorner = false]
      */
-    _roundRect(x, y, width, height, radius = 5, fill = false, stroke = false, withIWCorner = false) {
+    _roundRect(x, y, width, height, radius = 5, fill = false, stroke = false) {
         const ctx = this._ctx;
 
         ctx.beginPath();
         ctx.moveTo(x + radius, y); // Top left
         ctx.lineTo(x + width - radius, y); // Top right
         ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-        if (!withIWCorner) {
-            ctx.lineTo(x + width, y + height - radius); // Bottom right
-            ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-        } else {
-            const cornerWidth = LoginFile.RADIUS * 4;
-            const cornerHeight = LoginFile.OUTER_RADIUS * 2;
-            ctx.lineTo(x + width, y + height - cornerHeight - radius); // Bottom right corner entry corner
-            ctx.quadraticCurveTo(x + width, y + height - cornerHeight, x + width - radius, y + height - cornerHeight);
-            ctx.lineTo(x + width - cornerWidth + radius, y + height - cornerHeight); // Inner corner corner
-            ctx.quadraticCurveTo(x + width - cornerWidth, y + height - cornerHeight,
-                x + width - cornerWidth, y + height - cornerHeight + radius);
-            ctx.lineTo(x + width - cornerWidth, y + height - radius); // Corner exit corner
-            ctx.quadraticCurveTo(x + width - cornerWidth, y + height, x + width - cornerWidth - radius, y + height);
-        }
+        ctx.lineTo(x + width, y + height - radius); // Bottom right
+        ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
         ctx.lineTo(x + radius, y + height); // Bottom left
         ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
         ctx.lineTo(x, y + radius); // Top left

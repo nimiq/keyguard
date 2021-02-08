@@ -12,11 +12,12 @@ class DownloadLoginFile extends Nimiq.Observable {
      * @param {HTMLDivElement} [$el]
      * @param {Uint8Array} [encryptedEntropy]
      * @param {Nimiq.Address} [firstAddress]
+     * @param {string} [description]
      */
-    constructor($el, encryptedEntropy, firstAddress) {
+    constructor($el, encryptedEntropy, firstAddress, description) {
         super();
 
-        this.$el = DownloadLoginFile._createElement($el);
+        this.$el = DownloadLoginFile._createElement($el, description);
 
         /** @type {LoginFile | null} */
         this._file = null;
@@ -56,9 +57,10 @@ class DownloadLoginFile extends Nimiq.Observable {
 
     /**
      * @param {?HTMLDivElement} [$el]
+     * @param {?string} [description]
      * @returns {HTMLDivElement}
      */
-    static _createElement($el) {
+    static _createElement($el, description) {
         $el = $el || document.createElement('div');
         $el.classList.add('download-loginfile');
 
@@ -78,6 +80,8 @@ class DownloadLoginFile extends Nimiq.Observable {
                 </g>
             </svg>
 
+            <p class="loginfile-description"></p>
+
             <a class="nq-button light-blue download-button">
                 <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-download"/></svg>
                 <span data-i18n="download-loginfile-download">Download Login File</span>
@@ -87,6 +91,13 @@ class DownloadLoginFile extends Nimiq.Observable {
             <button class="nq-button-s back-to-download" data-i18n="download-loginfile-download-again">Download again</button>
         `;
         /* eslint-enable max-len */
+
+        if (description) {
+            /** @type {HTMLParagraphElement} */
+            const $description = ($el.querySelector('.loginfile-description'));
+            $description.textContent = description;
+            $description.classList.add('visible');
+        }
 
         I18n.translateDom($el);
         return $el;

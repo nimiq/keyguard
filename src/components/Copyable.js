@@ -1,7 +1,7 @@
 /* global I18n */
 /* global ClipboardUtils */
 
-class Copyable { // eslint-disable-line no-unused-vars
+class Copyable {
     /**
      * @param {string} text
      * @param {HTMLDivElement} [$el]
@@ -57,4 +57,5 @@ class Copyable { // eslint-disable-line no-unused-vars
         return $element;
     }
 }
+
 Copyable.DISPLAY_TIME = 800;

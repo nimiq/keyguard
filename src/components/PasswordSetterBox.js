@@ -21,7 +21,7 @@ class PasswordSetterBox extends Nimiq.Observable {
 
         this._password = '';
 
-        /** @type {object} */
+        /** @type {{bgColor: string, buttonI18nTag: string}} */
         this.options = Object.assign(defaults, options);
 
         this.$el = PasswordSetterBox._createElement($el, this.options);
@@ -31,9 +31,12 @@ class PasswordSetterBox extends Nimiq.Observable {
             PasswordSetterBox.PASSWORD_MAX_LENGTH,
         );
         this._passwordInput.on(PasswordInput.Events.VALID, isValid => this._onInputChangeValidity(isValid));
+        this._passwordInput.on(
+            PasswordInput.Events.LENGTH,
+            length => this.fire(PasswordSetterBox.Events.LENGTH, length),
+        );
 
         this.$el.addEventListener('submit', event => this._onSubmit(event));
-
 
         this._onInputChangeValidity(false);
 
@@ -213,7 +216,8 @@ class PasswordSetterBox extends Nimiq.Observable {
 PasswordSetterBox.Events = {
     SUBMIT: 'passwordbox-submit',
     ENTERED: 'passwordbox-entered',
-    RESET: 'passsordbox-reset',
+    RESET: 'passwordbox-reset',
+    LENGTH: 'passwordbox-length',
 };
 
 PasswordSetterBox.PASSWORD_MAX_LENGTH = 256;
