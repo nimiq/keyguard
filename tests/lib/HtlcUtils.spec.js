@@ -1,6 +1,6 @@
 /* global Nimiq */
 
-fdescribe('HtlcUtils', () => {
+describe('HtlcUtils', () => {
     it('can decode NIM HTLC data', () => {
         const vectors = [{
             // Branches verified individually

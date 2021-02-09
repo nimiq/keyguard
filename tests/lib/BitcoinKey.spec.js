@@ -3,7 +3,7 @@
 /* global BitcoinConstants */
 /* global Dummy */
 
-fdescribe('BitcoinKey', () => {
+describe('BitcoinKey', () => {
     it('can split prefix from suffixes correctly', () => {
         const paths = ['m/0/0', 'm/0/1'];
         expect(BitcoinUtils.pathsToPrefixAndSuffixes(paths)).toEqual({prefix: 'm/0', suffixes: ['0', '1']});
