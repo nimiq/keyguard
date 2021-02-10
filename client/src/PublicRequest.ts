@@ -191,6 +191,22 @@ export type SignBtcTransactionRequest
     = SignBtcTransactionRequestStandard
     | SignBtcTransactionRequestCheckout;
 
+export type MockSettlementInstruction = {
+    type: 'mock',
+    contractId: string,
+}
+
+export type SepaSettlementInstruction = {
+    type: 'sepa',
+    contractId: string,
+    recipient: {
+        name: string,
+        iban: string,
+    },
+}
+
+export type SettlementInstruction = MockSettlementInstruction | SepaSettlementInstruction;
+
 export type SignSwapRequestLayout = 'standard' | 'slider';
 
 export type SignSwapRequestCommon = SimpleRequest & {
@@ -249,6 +265,19 @@ export type SignSwapRequestCommon = SimpleRequest & {
             >,
             output: BitcoinTransactionChangeOutput,
         }
+    ) | (
+        {type: 'EUR'}
+        & {
+            keyPath: string,
+            // A SettlementInstruction contains a `type`, so cannot be in the
+            // root of the object (it conflicts with the 'EUR' type).
+            settlement: Omit<SettlementInstruction, 'contractId'>,
+            amount: number,
+            fee: number,
+            bankLabel?: string,
+            // bankLogoUrl?: string,
+            // bankColor?: string,
+        }
     ),
 
     // Data needed for display
@@ -301,6 +330,11 @@ export type SignSwapTransactionsRequest = {
         htlcScript: Uint8Array,
         transactionHash: string,
         outputIndex: number;
+    } | {
+        type: 'EUR',
+        hash: string,
+        timeout: number,
+        htlcId: string,
     },
 };
 
