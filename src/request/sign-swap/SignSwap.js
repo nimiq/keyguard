@@ -84,7 +84,7 @@ class SignSwap {
         switch (redeemTx.type) {
             case 'NIM': swapToValue = redeemTx.transaction.value; break;
             case 'BTC': swapToValue = redeemTx.output.value; break;
-            // case 'EUR': swapToValue = redeemTx.amount - redeemTx.fee; break;
+            case 'EUR': swapToValue = redeemTx.amount - redeemTx.fee; break;
             default: throw new Errors.KeyguardError('Invalid asset');
         }
 
@@ -103,7 +103,7 @@ class SignSwap {
         $swapRightValue.textContent = NumberFormatting.formatNumber(
             this._unitsToCoins(rightAsset, rightAmount),
             this._assetDecimals(rightAsset),
-            // rightAsset === 'EUR'? this._assetDecimals(rightAsset) : 0,
+            rightAsset === 'EUR' ? this._assetDecimals(rightAsset) : 0,
         );
 
         $swapValues.classList.add(`${fundTx.type.toLowerCase()}-to-${redeemTx.type.toLowerCase()}`);
@@ -112,7 +112,7 @@ class SignSwap {
         let exchangeBaseAsset;
         // If EUR is part of the swap, the other currency is the base asset
         if (fundTx.type === 'EUR') exchangeBaseAsset = redeemTx.type;
-        // else if (redeemTx.type === 'EUR') exchangeRateBaseAsset = fundTx.type; // TODO: Enable when swapping to EUR
+        else if (redeemTx.type === 'EUR') exchangeBaseAsset = fundTx.type;
         // If NIM is part of the swap, it is the base asset
         else if (fundTx.type === 'NIM' || redeemTx.type === 'NIM') exchangeBaseAsset = 'NIM';
         else exchangeBaseAsset = fundTx.type;
@@ -144,9 +144,13 @@ class SignSwap {
                         ? redeemTx.input.witnessUtxo.value + request.serviceRedeemingFee
                         : 0; // Should never happen, if parsing works correctly
                 break;
-            // case 'EUR':
-            //      exchangeBaseValue = ...
-            //      break;
+            case 'EUR':
+                exchangeBaseValue = fundTx.type === 'EUR'
+                    ? fundTx.amount - request.serviceFundingFee
+                    : redeemTx.type === 'EUR'
+                        ? redeemTx.amount + request.serviceRedeemingFee
+                        : 0; // Should never happen, if parsing works correctly
+                break;
             default:
                 throw new Errors.KeyguardError('UNEXPECTED: Unsupported exchange rate base asset');
         }
@@ -178,9 +182,9 @@ class SignSwap {
             case 'EUR':
                 exchangeOtherValue = fundTx.type === 'EUR'
                     ? fundTx.amount - request.serviceFundingFee
-                    // : redeemTx.type === 'EUR'
-                    //     ? redeemTx.amount + request.serviceRedeemingFee
-                    : 0; // Should never happen, if parsing works correctly
+                    : redeemTx.type === 'EUR'
+                        ? redeemTx.amount + request.serviceRedeemingFee
+                        : 0; // Should never happen, if parsing works correctly
                 break;
             default:
                 throw new Errors.KeyguardError('UNEXPECTED: Unsupported exchange rate other asset');
@@ -248,9 +252,9 @@ class SignSwap {
             } else if (request.redeem.type === 'BTC') {
                 $rightIdenticon.innerHTML = TemplateTags.hasVars(0)`<img src="../../assets/icons/bitcoin.svg"></img>`;
                 $rightLabel.textContent = I18n.translatePhrase('bitcoin');
-            // } else if (request.redeem.type === 'EUR') {
-            //     $rightIdenticon.innerHTML = TemplateTags.hasVars(0)`<img src="../../assets/icons/bank.svg"></img>`;
-            //     $rightLabel.textContent = request.redeem.bankLabel || I18n.translatePhrase('sign-swap-your-bank');
+            } else if (request.redeem.type === 'EUR') {
+                $rightIdenticon.innerHTML = TemplateTags.hasVars(0)`<img src="../../assets/icons/bank.svg"></img>`;
+                $rightLabel.textContent = request.redeem.bankLabel || I18n.translatePhrase('sign-swap-your-bank');
             }
         }
 
@@ -455,7 +459,7 @@ class SignSwap {
 
         const btcKey = new BitcoinKey(key);
 
-        /** @type {{nim: string, btc: string[], btc_refund?: string}} */
+        /** @type {{nim: string, btc: string[], eur: string, btc_refund?: string}} */
         const privateKeys = {};
 
         if (request.fund.type === 'NIM') {
@@ -493,7 +497,7 @@ class SignSwap {
         }
 
         if (request.fund.type === 'EUR') {
-            // No action required
+            // No signature required
         }
 
         if (request.redeem.type === 'NIM') {
@@ -518,9 +522,12 @@ class SignSwap {
             request.redeem.output.address = address;
         }
 
-        // if (request.redeem.type === 'EUR') {
-        //     // Derive private key to sign settlement instructions and return its public key to Hub
-        // }
+        if (request.redeem.type === 'EUR') {
+            const privateKey = key.derivePrivateKey(request.redeem.keyPath);
+            privateKeys.eur = privateKey.toHex();
+
+            // TODO: Return public key from request for confirming the swap with Fastspot
+        }
 
         try {
             // Serialize request to store in SessionStorage

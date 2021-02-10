@@ -57,12 +57,12 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
         }
 
         // Show Euro fees second
-        if (fundTx.type === 'EUR'/* || redeemTx.type === 'EUR' */) {
+        if (fundTx.type === 'EUR' || redeemTx.type === 'EUR') {
             const myFee = fundTx.type === 'EUR'
                 ? fundTx.fee
-                // : redeemTx.type === 'EUR'
-                //     ? redeemTx.fee
-                : 0;
+                : redeemTx.type === 'EUR'
+                    ? redeemTx.fee
+                    : 0;
 
             const theirFee = fundTx.type === 'EUR' ? serviceFundingFee : serviceRedeemingFee;
 
