@@ -124,7 +124,7 @@ class SignSwap {
         let exchangeBaseValue;
         switch (exchangeBaseAsset) {
             case 'NIM':
-                exchangeBaseValue = fundTx.type === 'NIM' // eslint-disable-line no-nested-ternary
+                exchangeBaseValue = fundTx.type === 'NIM'
                     // When the user funds NIM, the service receives the HTLC balance - their network fee.
                     ? fundTx.transaction.value - request.serviceFundingFee
                     : redeemTx.type === 'NIM'
@@ -135,7 +135,7 @@ class SignSwap {
                         : 0; // Should never happen, if parsing works correctly
                 break;
             case 'BTC':
-                exchangeBaseValue = fundTx.type === 'BTC' // eslint-disable-line no-nested-ternary
+                exchangeBaseValue = fundTx.type === 'BTC'
                     // When the user funds BTC, the service receives the HTLC balance - their network fee.
                     ? fundTx.recipientOutput.value - request.serviceFundingFee
                     : redeemTx.type === 'BTC'
@@ -155,7 +155,7 @@ class SignSwap {
         let exchangeOtherValue;
         switch (exchangeOtherAsset) {
             case 'NIM':
-                exchangeOtherValue = fundTx.type === 'NIM' // eslint-disable-line no-nested-ternary
+                exchangeOtherValue = fundTx.type === 'NIM'
                     // When the user funds NIM, the service receives the HTLC balance - their network fee.
                     ? fundTx.transaction.value - request.serviceFundingFee
                     : redeemTx.type === 'NIM'
@@ -166,7 +166,7 @@ class SignSwap {
                         : 0; // Should never happen, if parsing works correctly
                 break;
             case 'BTC':
-                exchangeOtherValue = fundTx.type === 'BTC' // eslint-disable-line no-nested-ternary
+                exchangeOtherValue = fundTx.type === 'BTC'
                     // When the user funds BTC, the service receives the HTLC balance - their network fee.
                     ? fundTx.recipientOutput.value - request.serviceFundingFee
                     : redeemTx.type === 'BTC'
@@ -269,7 +269,7 @@ class SignSwap {
             /** @type {HTMLSpanElement} */
             const $swapRightValueFiat = (this.$el.querySelector('#swap-btc-value-fiat'));
 
-            const swapNimAddress = fundTx.type === 'NIM' // eslint-disable-line no-nested-ternary
+            const swapNimAddress = fundTx.type === 'NIM'
                 ? fundTx.transaction.sender.toUserFriendlyAddress()
                 : redeemTx.type === 'NIM'
                     ? redeemTx.transaction.recipient.toUserFriendlyAddress()
@@ -277,7 +277,7 @@ class SignSwap {
 
             // eslint-disable-next-line no-new
             new Identicon(swapNimAddress, $leftIdenticon);
-            $leftLabel.textContent = fundTx.type === 'NIM' // eslint-disable-line no-nested-ternary
+            $leftLabel.textContent = fundTx.type === 'NIM'
                 ? fundTx.senderLabel
                 : redeemTx.type === 'NIM'
                     ? redeemTx.recipientLabel

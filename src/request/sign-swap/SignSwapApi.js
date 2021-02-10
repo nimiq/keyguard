@@ -146,7 +146,7 @@ class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) {
                 balance: this.parsePositiveInteger(request.bitcoinAccount.balance, true, 'bitcoinAccount.balance'),
             };
 
-            const nimAddress = parsedRequest.fund.type === 'NIM' // eslint-disable-line no-nested-ternary
+            const nimAddress = parsedRequest.fund.type === 'NIM'
                 ? parsedRequest.fund.transaction.sender.toUserFriendlyAddress()
                 : parsedRequest.redeem.type === 'NIM'
                     ? parsedRequest.redeem.transaction.recipient.toUserFriendlyAddress()

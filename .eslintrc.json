@@ -19,6 +19,7 @@
     "no-warning-comments": ["warn"],
     "no-restricted-syntax": ["error", "ForInStatement", "LabeledStatement", "WithStatement"],
     "no-continue": ["off"],
+    "no-nested-ternary": ["off"],
     "require-jsdoc-except/require-jsdoc": ["error", {
       "require": {
         "FunctionDeclaration": true,

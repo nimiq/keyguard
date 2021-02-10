@@ -36,7 +36,7 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
 
         // Show Bitcoin fees first
         if (fundTx.type === 'BTC' || redeemTx.type === 'BTC') {
-            const myFee = fundTx.type === 'BTC' // eslint-disable-line no-nested-ternary
+            const myFee = fundTx.type === 'BTC'
                 ? fundTx.inputs.reduce((sum, input) => sum + input.witnessUtxo.value, 0)
                     - fundTx.recipientOutput.value
                     - (fundTx.changeOutput ? fundTx.changeOutput.value : 0)
@@ -58,7 +58,7 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
 
         // Show Euro fees second
         if (fundTx.type === 'EUR'/* || redeemTx.type === 'EUR' */) {
-            const myFee = fundTx.type === 'EUR' // eslint-disable-line no-nested-ternary
+            const myFee = fundTx.type === 'EUR'
                 ? fundTx.fee
                 // : redeemTx.type === 'EUR'
                 //     ? redeemTx.fee
@@ -82,7 +82,7 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
 
         // Show Nimiq fees last
         if (fundTx.type === 'NIM' || redeemTx.type === 'NIM') {
-            const myFee = fundTx.type === 'NIM' // eslint-disable-line no-nested-ternary
+            const myFee = fundTx.type === 'NIM'
                 ? fundTx.transaction.fee
                 : redeemTx.type === 'NIM'
                     ? redeemTx.transaction.fee
