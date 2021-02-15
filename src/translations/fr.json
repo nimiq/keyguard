@@ -163,7 +163,7 @@
     "export-file-intro-orange-text": "Gardez-le sûr et confidentiel.",
     "export-file-success-set-password": "Définir le mot de passe",
     "export-file-success-save-file": "Enregistrer le Fichier de Connexion",
-    "export-file-success-create-backup": "Créer la sauvegarde",
+    "export-file-success-create-backup": "Créer sauvegarde",
     "export-file-success-heading": "Prenez 5 Minutes pour une Sauvegarde",
     "export-file-success-words-intro": "Il n'y a pas d'option 'mot de passe oublié'. Notez 24 mots pour créer une sauvegarde sécurisée.",
     "export-words-intro-heading": "Il n'y a pas de Récupéra­tion de Mot de Passe !",
@@ -178,7 +178,7 @@
     "remove-key-login-file-question": "Votre Fichier de Connexion est-il stocké et accessible en toute sécurité ?",
     "remove-key-download-login-file": "Télécharger",
     "remove-key-recovery-words-question": "Savez-vous où sont vos Mots de Récupération ?",
-    "remove-key-show-recovery-words": "Créer une sauvegarde",
+    "remove-key-show-recovery-words": "Créer sauvegarde",
     "remove-key-label-confirm-instructions": "Écrivez \"{accountLabel}\" pour vous déconnecter.",
     "remove-key-final-confirm": "Se déconnecter",
 
