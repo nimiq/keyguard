@@ -240,7 +240,7 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
 
         const $p = document.createElement('p');
         $p.classList.add('explainer');
-        $p.textContent = `${NumberFormatting.formatNumber(percentage * 100, 1)}%`
+        $p.textContent = `${NumberFormatting.formatNumber(percentage * 100, 2)}%`
             + ` ${I18n.translatePhrase('sign-swap-of-exchange-value')}`;
 
         return [$div, $p];
