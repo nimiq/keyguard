@@ -175,6 +175,8 @@ class I18n { // eslint-disable-line no-unused-vars
                     this.translateDom();
                 });
             }
+            /** @type {HTMLHtmlElement} */
+            (document.querySelector('html')).setAttribute('lang', this._language);
             I18n.observer.fire(I18n.Events.LANGUAGE_CHANGED, this._language);
         }
     }
