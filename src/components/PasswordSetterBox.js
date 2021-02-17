@@ -21,16 +21,22 @@ class PasswordSetterBox extends Nimiq.Observable {
 
         this._password = '';
 
-        /** @type {object} */
+        /** @type {{bgColor: string, buttonI18nTag: string}} */
         this.options = Object.assign(defaults, options);
 
         this.$el = PasswordSetterBox._createElement($el, this.options);
 
-        this._passwordInput = new PasswordInput(this.$el.querySelector('[password-input]'));
+        this._passwordInput = new PasswordInput(
+            this.$el.querySelector('[password-input]'),
+            PasswordSetterBox.PASSWORD_MAX_LENGTH,
+        );
         this._passwordInput.on(PasswordInput.Events.VALID, isValid => this._onInputChangeValidity(isValid));
+        this._passwordInput.on(
+            PasswordInput.Events.LENGTH,
+            length => this.fire(PasswordSetterBox.Events.LENGTH, length),
+        );
 
         this.$el.addEventListener('submit', event => this._onSubmit(event));
-
 
         this._onInputChangeValidity(false);
 
@@ -68,6 +74,7 @@ class PasswordSetterBox extends Nimiq.Observable {
             <div class="password-strength strength-good   nq-text-s" data-i18n="passwordbox-password-strength-good"  >Good password</div>
             <div class="password-strength strength-strong nq-text-s" data-i18n="passwordbox-password-strength-strong">Strong password</div>
             <div class="password-strength strength-secure nq-text-s" data-i18n="passwordbox-password-strength-secure">Secure password</div>
+            <div class="password-strength too-long nq-text-s" data-i18n="passwordbox-password-too-long">Max. 256 characters</div>
 
             <div class="repeat-long nq-text-s" data-i18n="passwordbox-repeat-password-long">No match, please try again</div>
             <div class="repeat-short nq-text-s" data-i18n="passwordbox-repeat-password-short">Password is too short</div>
@@ -148,13 +155,15 @@ class PasswordSetterBox extends Nimiq.Observable {
         }
 
         const score = PasswordStrength.strength(this._passwordInput.text);
+        const length = this._passwordInput.text.length;
 
         this.$el.classList.toggle(
             'input-eligible',
             isValid && (!this._password || this._passwordInput.text.length >= this._password.length),
         );
 
-        this.$el.classList.toggle('strength-short', !isValid);
+        this.$el.classList.toggle('too-long', length > PasswordSetterBox.PASSWORD_MAX_LENGTH);
+        this.$el.classList.toggle('strength-short', !isValid && length <= PasswordSetterBox.PASSWORD_MAX_LENGTH);
         this.$el.classList.toggle('strength-weak', isValid && score < PasswordStrength.Score.MINIMUM);
         this.$el.classList.toggle('strength-good',
             isValid
@@ -207,5 +216,8 @@ class PasswordSetterBox extends Nimiq.Observable {
 PasswordSetterBox.Events = {
     SUBMIT: 'passwordbox-submit',
     ENTERED: 'passwordbox-entered',
-    RESET: 'passsordbox-reset',
+    RESET: 'passwordbox-reset',
+    LENGTH: 'passwordbox-length',
 };
+
+PasswordSetterBox.PASSWORD_MAX_LENGTH = 256;

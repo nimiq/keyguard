@@ -52,6 +52,7 @@ type ParsedBitcoinTransactionInput = {
     },
     redeemScript?: Uint8Array,
     witnessScript?: Uint8Array,
+    sequence?: number,
     type: 'default' | 'htlc-redeem' | 'htlc-refund',
     keyPath: string,
     address: string,
@@ -71,6 +72,11 @@ type BtcHtlcContents = {
     timeoutTimestamp: number,
 };
 
+type EurHtlcContents = {
+    hash: string,
+    timeoutTimestamp: number,
+};
+
 type Transform<T, K extends keyof T, E> = Omit<T, K> & E;
 
 type KeyId2KeyInfo<T extends { keyId: string }> = Transform<T, 'keyId', { keyInfo: KeyInfo }>
@@ -78,6 +84,48 @@ type ConstructTransaction<T extends KeyguardRequest.TransactionInfo> = Transform
     'sender' | 'senderType' | 'recipient' | 'recipientType' | 'value' | 'fee' |
     'validityStartHeight' | 'data' | 'flags',
     { transaction: Nimiq.ExtendedTransaction }>
+
+type ConstructSwap<T extends KeyguardRequest.SignSwapRequestCommon> = Transform<T,
+    'fund' | 'redeem', {
+        fund: {
+            type: 'NIM',
+            keyPath: string,
+            transaction: Nimiq.ExtendedTransaction,
+            senderLabel: string,
+        } | {
+            type: 'BTC',
+            inputs: ParsedBitcoinTransactionInput[],
+            recipientOutput: { // Cannot parse an output with most of it's required properties missing
+                value: number,
+            },
+            changeOutput?: KeyguardRequest.BitcoinTransactionChangeOutput,
+            locktime?: number;
+            refundKeyPath: string,
+            refundAddress: string,
+        } | {
+            type: 'EUR',
+            amount: number,
+            fee: number,
+            bankLabel?: string,
+            // bankLogoUrl?: string,
+            // bankColor?: string,
+        },
+        redeem: {
+            type: 'NIM',
+            keyPath: string,
+            transaction: Nimiq.ExtendedTransaction,
+            recipientLabel: string,
+        } | {
+            type: 'BTC',
+            input: { // Cannot parse an input with most of it's required properties missing
+                witnessUtxo: {
+                    value: number,
+                },
+                keyPath: string,
+            },
+            output: KeyguardRequest.BitcoinTransactionChangeOutput,
+        },
+    }>
 
 type Is<T, B> = KeyguardRequest.Is<T, B>;
 
@@ -128,42 +176,20 @@ type Parsed<T extends KeyguardRequest.Request> =
                 'inputs', { inputs: ParsedBitcoinTransactionInput[] }
             >, 'shopLogoUrl', { shopLogoUrl?: URL }
         > :
-    T extends Is<T, KeyguardRequest.SignSwapRequest> ?
-        Transform<
-            KeyId2KeyInfo<KeyguardRequest.SignSwapRequest>,
-            'fund' | 'redeem', {
-                fund: {
-                    type: 'NIM',
-                    keyPath: string,
-                    transaction: Nimiq.ExtendedTransaction,
-                    senderLabel: string,
-                } | {
-                    type: 'BTC',
-                    inputs: ParsedBitcoinTransactionInput[],
-                    recipientOutput: { // Cannot parse an output with most of it's required properties missing
-                        value: number,
-                    },
-                    changeOutput?: KeyguardRequest.BitcoinTransactionChangeOutput,
-                    refundKeyPath: string,
-                    refundAddress: string,
-                },
-                redeem: {
-                    type: 'NIM',
-                    keyPath: string,
-                    transaction: Nimiq.ExtendedTransaction,
-                    recipientLabel: string,
-                } | {
-                    type: 'BTC',
-                    input: { // Cannot parse an input with most of it's required properties missing
-                        witnessUtxo: {
-                            value: number,
-                        },
-                        keyPath: string,
-                    },
-                    output: KeyguardRequest.BitcoinTransactionChangeOutput,
-                },
-            }
-        > :
+    T extends Is<T, KeyguardRequest.SignSwapRequestStandard> ?
+        KeyId2KeyInfo<ConstructSwap<KeyguardRequest.SignSwapRequestStandard>>
+        & { layout: KeyguardRequest.SignSwapRequestLayout } :
+    T extends Is<T, KeyguardRequest.SignSwapRequestSlider> ?
+        KeyId2KeyInfo<ConstructSwap<KeyguardRequest.SignSwapRequestSlider>>
+        & {
+            nimiqAddresses: Array<{
+                address: string,
+                balance: number, // Luna
+            }>,
+            bitcoinAccount: {
+                balance: number, // Sats
+            },
+        } :
     T extends Is<T, KeyguardRequest.SignSwapTransactionsRequest> ?
         Transform<
             KeyguardRequest.SignSwapTransactionsRequest,
@@ -177,6 +203,10 @@ type Parsed<T extends KeyguardRequest.Request> =
                     htlcDetails: BtcHtlcContents,
                     htlcScript: Uint8Array,
                     htlcAddress: string,
+                } | {
+                    type: 'EUR',
+                    htlcDetails: EurHtlcContents,
+                    htlcId: string,
                 },
                 redeem: {
                     type: 'NIM',

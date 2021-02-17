@@ -27,6 +27,13 @@ class SignBtcTransactionApi extends BitcoinRequestParserMixin(TopLevelApi) {
         parsedRequest.recipientOutput = /** @type {KeyguardRequest.BitcoinTransactionOutput} */ (
             this.parseOutput(request.recipientOutput, false, 'recipientOutput'));
         parsedRequest.changeOutput = this.parseChangeOutput(request.changeOutput, true, 'changeOutput');
+        parsedRequest.locktime = request.locktime !== undefined
+            ? this.parseUint32(request.locktime, 'locktime')
+            : undefined;
+        if (parsedRequest.locktime && !parsedRequest.inputs.some(({ sequence }) => sequence && sequence < 0xffffffff)) {
+            throw new Errors.InvalidRequestError('For locktime to be effective, at least one input must have a '
+                + 'sequence number < 0xffffffff');
+        }
         parsedRequest.layout = this.parseLayout(request.layout);
         if (request.layout === SignBtcTransactionApi.Layouts.CHECKOUT
             && parsedRequest.layout === SignBtcTransactionApi.Layouts.CHECKOUT) {

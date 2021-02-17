@@ -30,7 +30,6 @@ class NumberFormatting { // eslint-disable-line no-unused-vars
      * @returns {string}
      */
     static formatCurrency(value, currency, maxRelativeDeviation = 0.1, locale = I18n.language) {
-        const localeWithLatinNumbers = `${locale}-u-nu-latn`;
         const formattingOptions = {
             style: 'currency',
             currency,
@@ -44,7 +43,12 @@ class NumberFormatting { // eslint-disable-line no-unused-vars
         let relativeDeviation;
 
         do {
-            formatted = value.toLocaleString([localeWithLatinNumbers, 'en-US'], formattingOptions)
+            // formatted = value.toLocaleString([localeWithLatinNumbers, 'en-US'], formattingOptions)
+            formatted = value.toLocaleString([
+                `${this._currencyToLocale(currency)}-u-nu-latn`,
+                `${locale}-u-nu-latn`,
+                'en-US',
+            ], formattingOptions)
                 // Enforce a dot as decimal separator for consistency and parseFloat. Using capturing groups instead of
                 // lookahead/lookbehind to avoid browser support limitations.
                 .replace(/(\d)\D(\d)/, '$1.$2');
@@ -63,5 +67,25 @@ class NumberFormatting { // eslint-disable-line no-unused-vars
         // apply integer grouping
         if (integers.length <= 4) return formatted;
         return formatted.replace(integers, NumberFormatting.formatNumber(parseInt(integers, 10)));
+    }
+
+    /**
+     * @param {string} currency
+     * @returns {string}
+     */
+    static _currencyToLocale(currency) {
+        currency = currency.toLowerCase();
+        switch (currency) {
+            case 'eur':
+            case 'chf':
+                return 'de';
+            case 'gbp':
+            case 'usd':
+                return 'en';
+            case 'cny':
+                return 'zh';
+            default:
+                return currency.substr(0, 2);
+        }
     }
 }

@@ -24,10 +24,18 @@
     "recovery-words-validate": "Wörter überprüfen",
 
     "create-heading-choose-identicon": "Wähle einen Avatar",
+    "create-confirm-address": "Auswählen und weiter",
     "create-heading-create-password": "Erstelle ein Passwort",
     "create-heading-repeat-password": "Bestätige dein Passwort",
     "create-heading-validate-backup": "Überprüfe dein Backup",
-    "create-wallet-desc": "Das ist dein neues Konto mit deiner ersten Adresse.",
+    "create-loginfile-keycard": "Das Passwort schützt deine Login-Datei,\nbetrachte es als eine Schlüsselkarte zu deinem Account.",
+    "create-loginfile-any-device": "Mit dieser Datei kannst du dich von jedem Gerät aus einloggen.",
+    "create-heading-what-is-loginfile": "Was ist eine Login-Datei?",
+    "create-login-file-explainer-intro": "Eine Bilddatei, die dir in Kombination mit deinem Passwort den Zugang zu deinem Account gewährt.",
+    "create-login-file-paragraph-1": "Nimiq speichert deine Daten nicht. Die Login-Datei ersetzt die E-Mail als Möglichkeit, sich einzuloggen.",
+    "create-login-file-paragraph-2": "Die Login-Datei ist in deinem Browser gespeichert. Entsprerre sie mit deinem Passwort.",
+    "create-login-file-paragraph-3": "Du könntest versehentlich ausgeloggt werden. Lade die Login-Datei herunter und speichere sie sicher, um die Kontrolle zu behalten.",
+    "create-login-file-return": "Verstanden",
 
     "import-heading-enter-recovery-words": "Wiederherstellungswörter eingeben",
     "import-import-login-file": "Mit Login-Datei einloggen",
@@ -83,6 +91,7 @@
     "passwordbox-password-strength-good": "Gutes Passwort",
     "passwordbox-password-strength-strong": "Starkes Passwort",
     "passwordbox-password-strength-secure": "Sicheres Passwort",
+    "passwordbox-password-too-long": "Max. 256 Zeichen",
     "passwordbox-repeat-password-long": "Keine Übereinstimmung, bitte versuche es erneut",
     "passwordbox-repeat-password-short": "Das Passwort ist zu kurz",
     "passwordbox-password-skip": "Erstmal überspringen",
@@ -109,7 +118,8 @@
     "timer-day": "Tag",
     "timer-days": "Tagen",
 
-    "identicon-selector-avatars-hint": "Avatare repräsentieren Adressen.",
+    "identicon-selector-avatars-hint": "Avatare repräsentieren NIM-Adressen",
+    "identicon-selector-avatars-hint-2": "Stelle sie dir wie Kontonummern vor.",
     "identicon-selector-generate-new": "Neue Avatare",
 
     "download-loginfile-download": "Herunterladen",
@@ -210,10 +220,13 @@
     "sign-swap-heading": "Tausch Bestätigen",
     "sign-swap-exchange-rate-tooltip": "Dieser Kurs beinhaltet die Tauschgebühren.",
     "sign-swap-fees": "Gebühren",
-    "sign-swap-btc-fees": "BTC Netzwerkgebühren",
+    "sign-swap-btc-fees": "BTC Netzwerkgebühr",
     "sign-swap-btc-fees-explainer": "Ein sicherer Tausch benötigt zwei BTC Transaktionen.",
-    "sign-swap-nim-fees": "NIM Netzwerkgebühren",
+    "sign-swap-oasis-fees": "OASIS Servicegebühr",
+    "sign-swap-oasis-fees-explainer": "des Tauschwerts.",
+    "sign-swap-nim-fees": "NIM Netzwerkgebühr",
     "sign-swap-exchange-fee": "Tauschgebühr",
     "sign-swap-of-exchange-value": "des Tauschwerts.",
-    "sign-swap-total-fees": "Gebühren gesamt"
+    "sign-swap-total-fees": "Gebühren gesamt",
+    "sign-swap-your-bank": "Deine Bank"
 }

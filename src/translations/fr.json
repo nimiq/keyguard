@@ -1,7 +1,7 @@
 {
     "_language": "Français",
 
-    "language-changed": "La langue d'affichage a changé. Voulez-vous recharger la page pour mettre à jours toutes les traductions ? Sinon certaines pourraient ne pas être mises à jour automatiquement.",
+    "language-changed": "La langue d'affichage a changé. Voulez-vous recharger la page pour mettre à jour toutes les traductions ? Certaines pourraient ne pas être mises à jour automatiquement.",
 
     "back-to-app": "Retour à {appName}",
     "back-to-accounts": "Retour à mes comptes",
@@ -16,18 +16,26 @@
     "funding-cashlink": "Financement du cashlink",
 
     "recovery-words-title": "Écrivez ces 24 Mots sur du papier",
-    "recovery-words-intro-text": "Les Mots de Récupération sont le SEUL moyen de restorer votre compte dans le cas où vous perdriez votre Ficher de Connexion ou votre mot de passe.",
-    "recovery-words-intro-offline": "Gardez vos mots hors-ligne, ne les renseignez nulle part hormis sur [strong]keyguard[/strong].nimiq.com.",
+    "recovery-words-intro-text": "Les Mots de Récupération sont le SEUL moyen de restaurer votre compte dans le cas où vous perdriez votre Ficher de Connexion ou votre mot de passe.",
+    "recovery-words-intro-offline": "Gardez vos mots hors-ligne, ne les renseignez nul part hormis sur [strong]keyguard[/strong].nimiq.com.",
     "recovery-words-intro-copy": "Créez une copie et stockez-la dans un endroit sûr: maison familiale, coffre de banque, etc.",
     "recovery-words-intro-safety": "Faites attention à l'eau et au feu, utilisez une boîte scellée pour protéger vos Mots de Récupération.",
     "recovery-words-text": "N'importe qui avec ces mots peut accéder à votre compte ! Gardez-les en lieu sûr.",
     "recovery-words-validate": "Valider la sauvegarde",
 
     "create-heading-choose-identicon": "Choisissez un Avatar",
+    "create-confirm-address": "Sélectionner et continuer",
     "create-heading-create-password": "Créez un Mot de Passe",
     "create-heading-repeat-password": "Confirmez le Mot de Passe",
     "create-heading-validate-backup": "Validez votre Sauvegarde",
-    "create-wallet-desc": "Ceci est votre Compte avec votre première Adresse.",
+    "create-loginfile-keycard": "Le mot de passe protège votre fichier de connexion. Considérez-le comme un code d'accès pour votre compte.",
+    "create-loginfile-any-device": "Ce fichier vous permet de vous connecter à partir de n'importe quel appareil.",
+    "create-heading-what-is-loginfile": "Qu'est-ce qu'un fichier de connexion ?",
+    "create-login-file-explainer-intro": "Un fichier image, combiné avec votre mot de passe, vous garanti l'accès à votre compte.",
+    "create-login-file-paragraph-1": "Nimiq ne conserve pas vos données. Le fichier de connexion remplace une adresse mail pour vous connecter.",
+    "create-login-file-paragraph-2": "Le fichier de connexion est stocké dans votre navigateur. Débloquez-le avec votre mot de passe.",
+    "create-login-file-paragraph-3": "Vous pourriez vous être déconnecté par accident. Téléchargez et conservez le fichier de connexion en toute sécurité pour converser votre accès au compte.",
+    "create-login-file-return": "J'ai compris",
 
     "import-heading-enter-recovery-words": "Entrez vos Mots de Récupération",
     "import-import-login-file": "Importez votre Fichier de Connexion",
@@ -83,6 +91,7 @@
     "passwordbox-password-strength-good": "Bon mot de passe",
     "passwordbox-password-strength-strong": "Très bon mot de passe",
     "passwordbox-password-strength-secure": "Excellent mot de passe",
+    "passwordbox-password-too-long": "Maximum 256 caractères",
     "passwordbox-repeat-password-long": "Pas de correspondance, veuillez essayer à nouveau",
     "passwordbox-repeat-password-short": "Le mot de passe est trop court",
     "passwordbox-password-skip": "Ignorer pour l'instant",
@@ -109,7 +118,8 @@
     "timer-day": "jour",
     "timer-days": "jours",
 
-    "identicon-selector-avatars-hint": "Les avatars représentes les adresses.",
+    "identicon-selector-avatars-hint": "Les Avatars représentent des adresses NIM.",
+    "identicon-selector-avatars-hint-2": "Rappelez-vous en comme des numéros de compte.",
     "identicon-selector-generate-new": "Nouveaux avatars",
 
     "download-loginfile-download": "Télécharger",
@@ -153,7 +163,7 @@
     "export-file-intro-orange-text": "Gardez-le sûr et confidentiel.",
     "export-file-success-set-password": "Définir le mot de passe",
     "export-file-success-save-file": "Enregistrer le Fichier de Connexion",
-    "export-file-success-create-backup": "Créer la sauvegarde",
+    "export-file-success-create-backup": "Créer sauvegarde",
     "export-file-success-heading": "Prenez 5 Minutes pour une Sauvegarde",
     "export-file-success-words-intro": "Il n'y a pas d'option 'mot de passe oublié'. Notez 24 mots pour créer une sauvegarde sécurisée.",
     "export-words-intro-heading": "Il n'y a pas de Récupéra­tion de Mot de Passe !",
@@ -168,7 +178,7 @@
     "remove-key-login-file-question": "Votre Fichier de Connexion est-il stocké et accessible en toute sécurité ?",
     "remove-key-download-login-file": "Télécharger",
     "remove-key-recovery-words-question": "Savez-vous où sont vos Mots de Récupération ?",
-    "remove-key-show-recovery-words": "Créer une sauvegarde",
+    "remove-key-show-recovery-words": "Créer sauvegarde",
     "remove-key-label-confirm-instructions": "Écrivez \"{accountLabel}\" pour vous déconnecter.",
     "remove-key-final-confirm": "Se déconnecter",
 
@@ -210,10 +220,13 @@
     "sign-swap-heading": "Confirmer le swap",
     "sign-swap-exchange-rate-tooltip": "Ce taux inclut les frais de swap.",
     "sign-swap-fees": "frais",
-    "sign-swap-btc-fees": "Frais de réseau BTC",
+    "sign-swap-btc-fees": "frais de réseau BTC",
     "sign-swap-btc-fees-explainer": "Un swap atomique nécessite 2 transactions BTC.",
-    "sign-swap-nim-fees": "Frais de réseau NIM",
+    "sign-swap-oasis-fees": "frais de service OASIS",
+    "sign-swap-oasis-fees-explainer": "de la valeur du swap.",
+    "sign-swap-nim-fees": "frais de réseau NIM",
     "sign-swap-exchange-fee": "Frais de swap",
     "sign-swap-of-exchange-value": "de la valeur du swap.",
-    "sign-swap-total-fees": "Total des frais"
+    "sign-swap-total-fees": "Total des frais",
+    "sign-swap-your-bank": "Votre banque"
 }

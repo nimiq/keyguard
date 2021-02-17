@@ -8,7 +8,7 @@ set -e
 # operating system.
 export LC_ALL=C
 
-SUPPORTED_LANGUAGES="de en es fr ru zh uk nl"
+SUPPORTED_LANGUAGES="de en es fr nl ru uk zh"
 OUTPUT_FILE=src/translations/index.js
 
 echo "/* eslint-disable */

@@ -24,10 +24,18 @@
     "recovery-words-validate": "Valideer back-up",
 
     "create-heading-choose-identicon": "Kies een avatar",
+    "create-confirm-address": "Selecteer en ga verder",
     "create-heading-create-password": "Maak een wachtwoord",
     "create-heading-repeat-password": "Bevestig je wachtwoord",
     "create-heading-validate-backup": "Valideer je back-up",
-    "create-wallet-desc": "Dit is je account met eerste adres.",
+    "create-loginfile-keycard": "Het wachtwoord beschermt je Login File,\nbeschouw het als een keycard voor je account.",
+    "create-loginfile-any-device": "Met dit bestand kunt u vanaf elk apparaat inloggen.",
+    "create-heading-what-is-loginfile": "Wat is een Login File?",
+    "create-login-file-explainer-intro": "Een Login File, in combinatie met je wachtwoord, toegang geeft tot je account.",
+    "create-login-file-paragraph-1": "Nimiq bewaart je gegevens niet. De Login File vervangt je e-mail als manier om in te loggen.",
+    "create-login-file-paragraph-2": "Het aanmeldingsbestand wordt opgeslagen in je browser. Ontgrendel het met je wachtwoord.",
+    "create-login-file-paragraph-3": "Je kunt per ongeluk worden uitgelogd. Download en bewaar de Login File veilig om geen toegang te verliezen.",
+    "create-login-file-return": "Begrepen",
 
     "import-heading-enter-recovery-words": "Voer herstelwoorden in",
     "import-import-login-file": "Importeer je Login File",
@@ -83,6 +91,7 @@
     "passwordbox-password-strength-good": "Goed wachtwoord",
     "passwordbox-password-strength-strong": "Sterk wachtwoord",
     "passwordbox-password-strength-secure": "Veilig wachtwoord",
+    "passwordbox-password-too-long": "Max. 256 tekens",
     "passwordbox-repeat-password-long": "Geen overeenkomst, probeer het opnieuw",
     "passwordbox-repeat-password-short": "Wachtwoord is te kort",
     "passwordbox-password-skip": "Voor nu overslaan",
@@ -109,7 +118,8 @@
     "timer-day": "dag",
     "timer-days": "dagen",
 
-    "identicon-selector-avatars-hint": "Avatars representeren adressen.",
+    "identicon-selector-avatars-hint": "Avatars stellen NIM-adressen voor.",
+    "identicon-selector-avatars-hint-2": "Beschouw ze als bankrekeningnummers.",
     "identicon-selector-generate-new": "Nieuwe avatar",
 
     "download-loginfile-download": "Download Login File",
@@ -210,10 +220,13 @@
     "sign-swap-heading": "Swap bevestigen",
     "sign-swap-exchange-rate-tooltip": "Dit tarief is inclusief de wisselkosten.",
     "sign-swap-fees": "kosten",
-    "sign-swap-btc-fees": "BTC-netwerkkosten",
+    "sign-swap-btc-fees": "BTC netwerk fee",
     "sign-swap-btc-fees-explainer": "Atomic swaps vereisen twee BTC-transacties.",
-    "sign-swap-nim-fees": "NIM-netwerkkosten",
+    "sign-swap-oasis-fees": "OASIS servicekosten",
+    "sign-swap-oasis-fees-explainer": "van ruilwaarde.",
+    "sign-swap-nim-fees": "NIM netwerk fee",
     "sign-swap-exchange-fee": "Wisselkosten",
     "sign-swap-of-exchange-value": "van ruilwaarde.",
-    "sign-swap-total-fees": "Totale kosten"
+    "sign-swap-total-fees": "Totale kosten",
+    "sign-swap-your-bank": "Jouw bank"
 }

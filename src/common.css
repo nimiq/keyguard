@@ -219,7 +219,6 @@
 .page:target {
     display: flex;
     justify-content: center;
-    box-shadow: 0 0.5rem 3.5rem rgba(0,0,0,.111158);
 }
 
 #loading {
@@ -339,6 +338,10 @@ body.loading .page:target .page-footer > .loading-spinner {
 
 .mbtc-symbol::before {
     content: "mBTC";
+}
+
+.eur-symbol::before {
+    content: "EUR";
 }
 
 .address {

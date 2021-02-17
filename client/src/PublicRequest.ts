@@ -53,6 +53,7 @@ export type BitcoinTransactionInput = {
     outputScript: string,
     value: number,
     witnessScript?: string,
+    sequence?: number,
     type?: BitcoinTransactionInputType,
 };
 
@@ -72,6 +73,7 @@ export type BitcoinTransactionInfo = {
     inputs: BitcoinTransactionInput[],
     recipientOutput: BitcoinTransactionOutput,
     changeOutput?: BitcoinTransactionChangeOutput,
+    locktime?: number,
 };
 
 export type SignTransactionRequestLayout = 'standard' | 'checkout' | 'cashlink';
@@ -83,7 +85,7 @@ export type CreateRequest = BasicRequest & {
     defaultKeyPath: string,
     enableBackArrow?: boolean,
     bitcoinXPubPath: string,
- };
+};
 
 export type DeriveAddressRequest = SimpleRequest & {
     baseKeyPath: string
@@ -185,7 +187,9 @@ export type SignBtcTransactionRequest
     = SignBtcTransactionRequestStandard
     | SignBtcTransactionRequestCheckout;
 
-export type SignSwapRequest = SimpleRequest & {
+export type SignSwapRequestLayout = 'standard' | 'slider';
+
+export type SignSwapRequestCommon = SimpleRequest & {
     swapId: string,
     fund: (
         {type: 'NIM'}
@@ -208,6 +212,15 @@ export type SignSwapRequest = SimpleRequest & {
                 | 'label' // Not used
             >,
             refundKeyPath: string, // To validate that we own the HTLC script's refund address
+        }
+    ) | (
+        {type: 'EUR'}
+        & {
+            amount: number,
+            fee: number,
+            bankLabel?: string,
+            // bankLogoUrl?: string,
+            // bankColor?: string,
         }
     ),
     redeem: (
@@ -236,11 +249,19 @@ export type SignSwapRequest = SimpleRequest & {
 
     // Data needed for display
     fiatCurrency: string,
-    nimFiatRate: number,
-    btcFiatRate: number,
-    serviceFundingNetworkFee: number, // Luna or Sats, depending which one gets funded
-    serviceRedeemingNetworkFee: number, // Luna or Sats, depending which one gets redeemed
-    serviceExchangeFee: number, // Luna or Sats, depending which one gets funded
+    fundingFiatRate: number,
+    redeemingFiatRate: number,
+    serviceFundingFee: number, // Luna, Sats or Cents, depending which one gets funded
+    serviceRedeemingFee: number, // Luna, Sats or Cents, depending which one gets redeemed
+    serviceSwapFee: number, // Luna, Sats or Cents, depending which one gets funded
+};
+
+export type SignSwapRequestStandard = SignSwapRequestCommon & {
+    layout: 'standard',
+};
+
+export type SignSwapRequestSlider = SignSwapRequestCommon & {
+    layout: 'slider',
     nimiqAddresses: Array<{
         address: string,
         balance: number, // Luna
@@ -250,26 +271,33 @@ export type SignSwapRequest = SimpleRequest & {
     },
 };
 
+export type SignSwapRequest = SignSwapRequestStandard | SignSwapRequestSlider;
+
 // Used in swap-iframe
 export type SignSwapTransactionsRequest = {
     swapId: string,
-    fund: ({
+    fund: {
         type: 'NIM'
         htlcData: Uint8Array,
-    }) | ({
+    } | {
         type: 'BTC',
         htlcScript: Uint8Array,
-    }),
-    redeem: ({
+    } | {
+        type: 'EUR',
+        hash: string,
+        timeout: number,
+        htlcId: string,
+    },
+    redeem: {
         type: 'NIM',
         htlcData: Uint8Array,
         htlcAddress: string,
-    }) | ({
+    } | {
         type: 'BTC',
         htlcScript: Uint8Array,
         transactionHash: string,
         outputIndex: number;
-    }),
+    },
 };
 
 export type SignMessageRequest = SimpleRequest & {
@@ -343,8 +371,10 @@ export type SignedBitcoinTransaction = {
     raw: string,
 };
 export type SignSwapTransactionsResult = {
-    nim: SignatureResult,
-    btc: SignedBitcoinTransaction,
+    nim?: SignatureResult,
+    btc?: SignedBitcoinTransaction,
+    eur?: string, // When funding EUR: empty string, when redeeming EUR: JWS of the settlement instructions
+    refundTx?: string,
 };
 
 // Result unions

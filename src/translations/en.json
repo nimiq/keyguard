@@ -24,10 +24,18 @@
     "recovery-words-validate": "Validate backup",
 
     "create-heading-choose-identicon": "Choose an Avatar",
+    "create-confirm-address": "Select and continue",
     "create-heading-create-password": "Create a Password",
     "create-heading-repeat-password": "Confirm your Password",
     "create-heading-validate-backup": "Validate your Backup",
-    "create-wallet-desc": "This is your Account with your first Address.",
+    "create-loginfile-keycard": "The password protects your Login File,\nconsider it a keycard to your account.",
+    "create-loginfile-any-device": "This file allows you to login from any device.",
+    "create-heading-what-is-loginfile": "What is a Login File?",
+    "create-login-file-explainer-intro": "An image file that, in combination with your password, grants access to your account.",
+    "create-login-file-paragraph-1": "Nimiq does not store your data. The Login File replaces email as the way to log in.",
+    "create-login-file-paragraph-2": "The Login File is stored in your browser. Unlock it with your password.",
+    "create-login-file-paragraph-3": "You might get logged out by accident. Download and store the Login File safely to stay in control.",
+    "create-login-file-return": "Got it",
 
     "import-heading-enter-recovery-words": "Enter Recovery Words",
     "import-import-login-file": "Import your Login File",
@@ -83,6 +91,7 @@
     "passwordbox-password-strength-good": "Good password",
     "passwordbox-password-strength-strong": "Strong password",
     "passwordbox-password-strength-secure": "Secure password",
+    "passwordbox-password-too-long": "Max. 256 characters",
     "passwordbox-repeat-password-long": "No match, please try again",
     "passwordbox-repeat-password-short": "Password is too short",
     "passwordbox-password-skip": "Skip for now",
@@ -109,7 +118,8 @@
     "timer-day": "day",
     "timer-days": "days",
 
-    "identicon-selector-avatars-hint": "Avatars represent addresses.",
+    "identicon-selector-avatars-hint": "Avatars represent NIM addresses.",
+    "identicon-selector-avatars-hint-2": "Think of them as bank account numbers.",
     "identicon-selector-generate-new": "New avatars",
 
     "download-loginfile-download": "Download Login File",
@@ -210,10 +220,13 @@
     "sign-swap-heading": "Confirm Swap",
     "sign-swap-exchange-rate-tooltip": "This rate includes the swap fee.",
     "sign-swap-fees": "fees",
-    "sign-swap-btc-fees": "BTC network fees",
+    "sign-swap-btc-fees": "BTC network fee",
     "sign-swap-btc-fees-explainer": "Atomic swaps require two BTC transactions.",
-    "sign-swap-nim-fees": "NIM network fees",
+    "sign-swap-oasis-fees": "OASIS service fee",
+    "sign-swap-oasis-fees-explainer": "of swap value.",
+    "sign-swap-nim-fees": "NIM network fee",
     "sign-swap-exchange-fee": "Swap fee",
     "sign-swap-of-exchange-value": "of swap value.",
-    "sign-swap-total-fees": "Total fees"
+    "sign-swap-total-fees": "Total fees",
+    "sign-swap-your-bank": "Your bank"
 }
