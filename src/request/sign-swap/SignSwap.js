@@ -199,6 +199,7 @@ class SignSwap {
         $exchangeRate.textContent = `1 ${exchangeBaseAsset} = ${NumberFormatting.formatCurrency(
             exchangeRate,
             exchangeOtherAsset.toLocaleLowerCase(),
+            0.01,
         )}`;
 
         /** @type {HTMLDivElement} */
