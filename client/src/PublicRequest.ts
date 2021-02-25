@@ -194,7 +194,7 @@ export type SignBtcTransactionRequest
 export type MockSettlementInstruction = {
     type: 'mock',
     contractId: string,
-}
+};
 
 export type SepaSettlementInstruction = {
     type: 'sepa',
@@ -203,7 +203,7 @@ export type SepaSettlementInstruction = {
         name: string,
         iban: string,
     },
-}
+};
 
 export type SettlementInstruction = MockSettlementInstruction | SepaSettlementInstruction;
 
