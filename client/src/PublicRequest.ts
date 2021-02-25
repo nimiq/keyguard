@@ -306,6 +306,10 @@ export type SignSwapRequestSlider = SignSwapRequestCommon & {
 
 export type SignSwapRequest = SignSwapRequestStandard | SignSwapRequestSlider;
 
+export type SignSwapResult = SimpleResult & {
+    eurPubKey?: string,
+};
+
 // Used in swap-iframe
 export type SignSwapTransactionsRequest = {
     swapId: string,
@@ -431,7 +435,8 @@ export type RedirectResult
     | SignTransactionResult
     | SignedBitcoinTransaction
     | SimpleResult
-    | DeriveBtcXPubResult;
+    | DeriveBtcXPubResult
+    | SignSwapResult;
 
 export type Result = RedirectResult | IFrameResult;
 
@@ -445,7 +450,7 @@ export type ResultType<T extends RedirectRequest> =
     T extends Is<T, RemoveKeyRequest> | Is<T, SimpleRequest> ? SimpleResult :
     T extends Is<T, SignBtcTransactionRequest> ? SignedBitcoinTransaction :
     T extends Is<T, DeriveBtcXPubRequest> ? DeriveBtcXPubResult :
-    T extends Is<T, SignSwapRequest> ? SimpleResult :
+    T extends Is<T, SignSwapRequest> ? SignSwapResult :
     never;
 
 export type ResultByCommand<T extends KeyguardCommand> =
@@ -456,7 +461,7 @@ export type ResultByCommand<T extends KeyguardCommand> =
     T extends KeyguardCommand.REMOVE ? SimpleResult :
     T extends KeyguardCommand.SIGN_BTC_TRANSACTION ? SignedBitcoinTransaction :
     T extends KeyguardCommand.DERIVE_BTC_XPUB ? DeriveBtcXPubResult :
-    T extends KeyguardCommand.SIGN_SWAP ? SimpleResult :
+    T extends KeyguardCommand.SIGN_SWAP ? SignSwapResult :
     never;
 
 // Error constants
