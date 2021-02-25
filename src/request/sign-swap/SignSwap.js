@@ -84,7 +84,7 @@ class SignSwap {
         switch (redeemTx.type) {
             case 'NIM': swapToValue = redeemTx.transaction.value; break;
             case 'BTC': swapToValue = redeemTx.output.value; break;
-            case 'EUR': swapToValue = redeemTx.amount - redeemTx.fee; break;
+            case 'EUR': swapToValue = redeemTx.amount; break;
             default: throw new Errors.KeyguardError('Invalid asset');
         }
 
