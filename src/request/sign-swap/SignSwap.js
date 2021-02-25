@@ -21,7 +21,7 @@
 
 /**
  * @callback SignSwap.resolve
- * @param {KeyguardRequest.SimpleResult} result
+ * @param {KeyguardRequest.SignSwapResult} result
  */
 
 class SignSwap {
@@ -522,11 +522,16 @@ class SignSwap {
             request.redeem.output.address = address;
         }
 
+        /** @type {string | undefined} */
+        let eurPubKey;
+
         if (request.redeem.type === 'EUR') {
             const privateKey = key.derivePrivateKey(request.redeem.keyPath);
             privateKeys.eur = privateKey.toHex();
 
-            // TODO: Return public key from request for confirming the swap with Fastspot
+            // Public key of EUR signing key is required as the contract recipient
+            // when confirming a swap to Fastspot from the Hub.
+            eurPubKey = Nimiq.PublicKey.derive(privateKey).toHex();
         }
 
         try {
@@ -562,7 +567,10 @@ class SignSwap {
             return;
         }
 
-        resolve({ success: true });
+        resolve({
+            success: true,
+            eurPubKey,
+        });
     }
 
     run() {
