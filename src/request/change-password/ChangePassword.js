@@ -194,6 +194,7 @@ class ChangePassword {
         this._downloadLoginFile.setEncryptedEntropy(
             /** @type {Nimiq.SerialBuffer} */(encryptedEntropy),
             this.key.defaultAddress,
+            this._request.keyLabel
         );
 
         this.$skipDownloadButton.style.display = '';
