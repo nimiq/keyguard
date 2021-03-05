@@ -106,8 +106,9 @@ class DownloadLoginFile extends Nimiq.Observable {
     /**
      * @param {Uint8Array} encryptedEntropy
      * @param {Nimiq.Address} firstAddress
+     * @param {string} label
      */
-    setEncryptedEntropy(encryptedEntropy, firstAddress) {
+    setEncryptedEntropy(encryptedEntropy, firstAddress, label = '') {
         if (encryptedEntropy.byteLength !== KeyStore.ENCRYPTED_SECRET_SIZE) {
             throw new Errors.KeyguardError('Can only export encrypted Entropies');
         }
@@ -115,7 +116,7 @@ class DownloadLoginFile extends Nimiq.Observable {
         this._reset();
 
         const color = IqonHash.getBackgroundColorIndex(firstAddress.toUserFriendlyAddress());
-        this.file = new LoginFile(Nimiq.BufferUtils.toBase64(encryptedEntropy), color);
+        this.file = new LoginFile(Nimiq.BufferUtils.toBase64(encryptedEntropy), color, label);
     }
 
     /**
