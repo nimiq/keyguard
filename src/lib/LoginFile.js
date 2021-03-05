@@ -17,6 +17,9 @@ class LoginFile {
         this.$canvas = $canvas;
         this._label = label;
         this._config = LoginFileConfig[color];
+        if (label === '') {
+            this._label = this._config.name;
+        }
         if (!this._config) throw new Error(`Invalid color index: ${color}`);
         /** @type {CanvasRenderingContext2D} */
         this._ctx = ($canvas.getContext('2d'));
