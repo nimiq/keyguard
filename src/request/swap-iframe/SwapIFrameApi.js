@@ -510,6 +510,8 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) {
         }
 
         if (parsedRequest.redeem.type === 'EUR' && storedRequest.redeem.type === 'EUR') {
+            await loadNimiq();
+
             // Create and sign a JWS of the settlement instructions
             const privateKey = new Nimiq.PrivateKey(Nimiq.BufferUtils.fromHex(privateKeys.eur));
             const key = new Key(privateKey);
