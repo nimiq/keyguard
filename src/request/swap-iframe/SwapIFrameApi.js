@@ -295,8 +295,7 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
                 const refundSignatureProof = Nimiq.SignatureProof.singleSig(publicKey, refundSignature);
 
                 const proof = new Nimiq.SerialBuffer(1 + Nimiq.SignatureProof.SINGLE_SIG_SIZE);
-                // FIXME: Use constant when HTLC is part of CoreJS web-offline build
-                proof.writeUint8(3 /* Nimiq.HashedTimeLockedContract.ProofType.TIMEOUT_RESOLVE */);
+                proof.writeUint8(Nimiq.HashedTimeLockedContract.ProofType.TIMEOUT_RESOLVE);
                 refundSignatureProof.serialize(proof);
                 refundTransaction.proof = proof;
 
