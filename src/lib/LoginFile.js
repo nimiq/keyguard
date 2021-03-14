@@ -90,7 +90,7 @@ class LoginFile {
 
     _drawDateText() {
         const x = LoginFile.WIDTH - LoginFile.BORDER_WIDTH - 40;
-        const y = LoginFile.HEIGHT / 2
+        const y = LoginFile.HEIGHT / 2;
         const date = new Date();
         /**
          * @param {number} num
