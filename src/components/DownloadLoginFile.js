@@ -180,8 +180,8 @@ class DownloadLoginFile extends Nimiq.Observable {
                     // ("Save as" always opens a dialog.)
 
                     // If no download dialog opens, consider the download successful after a delay. On Macs it takes a
-                    // bit longer until the dialog gets focused and the window blurred, therefore waiting 1s.
-                    window.setTimeout(resolve, 1000);
+                    // bit longer until the dialog gets focused and the window blurred, therefore waiting 1.5s.
+                    window.setTimeout(resolve, 1500);
                 }
                 window.addEventListener('blur', resolve, { once: true });
                 this._cancelDownload = reject;
