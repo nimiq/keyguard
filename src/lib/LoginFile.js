@@ -108,7 +108,7 @@ class LoginFile {
         this._ctx.translate(-x, -y);
 
         this._ctx.font = `600 24px ${LoginFile.FONT_FAMILY}`;
-        this._ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+        this._ctx.fillStyle = `rgba(255, 255, 255, ${this._config.opacityDateText})`;
         this._ctx.fillText(datestring, x, y);
 
         this._ctx.setTransform(1, 0, 0, 1, 0, 0);
