@@ -89,31 +89,37 @@ class LoginFile {
     }
 
     _drawDateText() {
-        const x = LoginFile.WIDTH - LoginFile.BORDER_WIDTH - 40;
-        const y = LoginFile.HEIGHT / 2;
-        const date = new Date();
+        const qrPosition = LoginFile.calculateQrPosition();
+        const padding = qrPosition.padding;
+        const x = LoginFile.WIDTH - LoginFile.BORDER_WIDTH - 20;
+        const y = qrPosition.y + padding + qrPosition.height / 2;
+
         /**
          * @param {number} num
          * @returns {string}
          */
         const leftPad = num => `${num < 10 ? '0' : ''}${num}`;
+
+        const date = new Date();
         const datestring = `${date.getFullYear()}-${leftPad(date.getMonth() + 1)}-${leftPad(date.getDate())}`;
 
         this._ctx.translate(x, y);
-        this._ctx.rotate(Math.PI / 2);
+        this._ctx.rotate(-Math.PI / 2);
         this._ctx.translate(-x, -y);
 
+        this._ctx.font = `600 24px ${LoginFile.FONT_FAMILY}`;
         this._ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
         this._ctx.fillText(datestring, x, y);
 
         this._ctx.setTransform(1, 0, 0, 1, 0, 0);
+        this._setFont(); // reset font
     }
 
     _drawLabelText() {
         const x = LoginFile.WIDTH / 2;
-        const y = 194;
-        this._ctx.fillStyle = 'white';
-        this._ctx.font = `400 38px ${LoginFile.FONT_FAMILY}`;
+        const y = 200;
+        this._ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+        this._ctx.font = `600 36px ${LoginFile.FONT_FAMILY}`;
         this._ctx.fillText(this._label, x, y);
         this._setFont(); // reset font
     }
