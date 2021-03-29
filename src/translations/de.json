@@ -123,9 +123,8 @@
 
     "download-loginfile-download": "Herunterladen",
     "download-loginfile-successful": "Download erfolgreich?",
-    "download-loginfile-tap-and-hold": "Zum Herunterladen Bild gedrückt halten",
+    "download-loginfile-tap-and-hold": "Zum Herunterladen Bild\ngedrückt halten",
     "download-loginfile-continue": "Weiter",
-    "download-loginfile-download-again": "Erneut herunterladen",
 
     "validate-words-text": "Bitte wähle das richtige Wort aus deiner Liste von Wiederherstellungswörtern aus.",
     "validate-words-1-hint": "Was ist das 1. Wort?",

@@ -57,42 +57,51 @@
     display: none;
 }
 
-.download-loginfile button,
-.download-loginfile .download-button {
+.download-loginfile .actions {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.download-loginfile .nq-button {
     margin-top: 3rem;
     margin-bottom: 0;
+}
+
+.download-loginfile .download-button {
+    margin-right: 1rem;
 }
 
 .download-loginfile .download-button > .nq-icon {
     margin-right: 1.5rem;
 }
 
+.download-loginfile .continue {
+    min-width: 0;
+    font-size: 3rem;
+    padding: 0 2rem;
+    margin-left: 1rem;
+    flex-shrink: 0;
+}
+
+.download-loginfile .continue > .nq-icon {
+    margin-right: 0.5rem;
+}
+
 .download-loginfile .tap-and-hold,
-.download-loginfile .continue,
-.download-loginfile .back-to-download,
-.download-loginfile.fallback-download .download-button,
-.download-loginfile.maybe-downloaded .download-button {
+.download-loginfile.fallback-download .download-button {
     display: none;
 }
 
-.download-loginfile.fallback-download .tap-and-hold,
-.download-loginfile.maybe-downloaded .continue,
-.download-loginfile.maybe-downloaded .back-to-download {
+.download-loginfile.fallback-download .tap-and-hold {
     display: block;
 }
 
-.download-loginfile.maybe-downloaded .back-to-download {
-    margin: 2rem auto -2rem;
-}
-
-.download-loginfile.maybe-downloaded .tap-and-hold {
-    display: none; /* needs to come _after_ "display: block" above to overwrite it */
-}
-
-.download-loginfile .nq-label {
+.download-loginfile .tap-and-hold {
     text-align: center;
-    margin: 6rem 0 2rem;
+    margin: 3rem 1rem 0 auto;
     font-size: 2rem;
     line-height: 1.25;
     color: rgba(31, 35, 72, .5) !important; /* important is necessary for iOS to overwrite <a> colors; based on Nimiq Blue */
+    white-space: pre-line;
 }

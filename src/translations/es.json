@@ -123,9 +123,8 @@
 
     "download-loginfile-download": "Descargar",
     "download-loginfile-successful": "¿Descarga exitosa?",
-    "download-loginfile-tap-and-hold": "Toca la pantalla y mantén presionado para descargar.",
-    "download-loginfile-continue": "Continue cuando este listo",
-    "download-loginfile-download-again": "Descargar de nuevo",
+    "download-loginfile-tap-and-hold": "Toca la pantalla y mantén\npresionado para descargar.",
+    "download-loginfile-continue": "Continue",
 
     "validate-words-text": "Por favor seleccione la palabra correcta de su lista de Palabras de Recuperación.",
     "validate-words-1-hint": "¿Cual es la primer palabra?",

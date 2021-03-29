@@ -121,11 +121,10 @@
     "identicon-selector-avatars-hint-2": "Think of them as bank account numbers.",
     "identicon-selector-generate-new": "New avatars",
 
-    "download-loginfile-download": "Download Login File",
+    "download-loginfile-download": "Download",
     "download-loginfile-successful": "Download successful?",
-    "download-loginfile-tap-and-hold": "Tap and hold image to download",
-    "download-loginfile-continue": "Continue when ready",
-    "download-loginfile-download-again": "Download again",
+    "download-loginfile-tap-and-hold": "Tap and hold image\nto download",
+    "download-loginfile-continue": "Continue",
 
     "validate-words-text": "Please select the correct word from your list of recovery words.",
     "validate-words-1-hint": "What is the 1st word?",
