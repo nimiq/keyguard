@@ -11,11 +11,9 @@
 class DownloadLoginFile extends Nimiq.Observable {
     /**
      * @param {HTMLDivElement} [$el]
-     * @param {Uint8Array} [encryptedEntropy]
-     * @param {Nimiq.Address} [firstAddress]
      * @param {string} [description]
      */
-    constructor($el, encryptedEntropy, firstAddress, description) {
+    constructor($el, description) {
         super();
 
         this.$el = DownloadLoginFile._createElement($el, description);
@@ -37,10 +35,6 @@ class DownloadLoginFile extends Nimiq.Observable {
 
         /** @type {HTMLButtonElement} */
         const $backToDownloadButton = (this.$el.querySelector('.back-to-download'));
-
-        if (encryptedEntropy && firstAddress) {
-            this.setEncryptedEntropy(encryptedEntropy, firstAddress);
-        }
 
         /** @type {SVGElement} */
         this.$longTouchIndicator = (this.$el.querySelector('.long-touch-indicator'));
