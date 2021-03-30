@@ -137,8 +137,11 @@ class LoginFile {
             return label.replace('{color}', this._config.name);
         }
 
-        // The length 25 is chosen arbitrarily to what still looks good with wide characters
-        if (this._label.length > 25) return `${this._label.substring(0, 24)}…`;
+        if (this._label.length > 25) {
+            // The length 25 is chosen arbitrarily to what still looks good with wide characters
+            return `${this._label.substring(0, 24)}…`;
+        }
+
         return this._label;
     }
 
@@ -209,7 +212,7 @@ class LoginFile {
             LoginFile.BORDER_WIDTH, LoginFile.BORDER_WIDTH, 606, 576,
         );
 
-        // Key and Stars
+        // Key
         await this._drawDataUrlImage(
             // eslint-disable-next-line max-len
             'data:image/svg+xml,<svg width="47" height="49" opacity="0.6" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M46.97 14.27a14 14 0 00-5.34-11.03 14.28 14.28 0 00-17.73-.03 14.12 14.12 0 00-5.38 11.01 14 14 0 001.4 6.12 1 1 0 01-.2 1.15L1.91 39.12a4.01 4.01 0 002.82 6.83 4.09 4.09 0 002.86-1.06 1.02 1.02 0 011.4.04L12 47.92a2.03 2.03 0 002.9.02 2.01 2.01 0 00-.02-2.87l-3.02-2.98a1 1 0 010-1.42l1.27-1.27a1.02 1.02 0 011.44 0l3.01 2.99a2.04 2.04 0 003.45-1.44 2 2 0 00-.57-1.41l-3.02-2.99a1 1 0 010-1.42l8.02-7.95a1.02 1.02 0 011.15-.2 14.31 14.31 0 0018.59-5.9 13.98 13.98 0 001.76-6.8zm-14.23 6.05a6.13 6.13 0 01-5.63-3.73A6 6 0 0128.43 10a6.11 6.11 0 0110.41 4.27c0 1.6-.64 3.14-1.78 4.28a6.12 6.12 0 01-4.32 1.77z"/></svg>',

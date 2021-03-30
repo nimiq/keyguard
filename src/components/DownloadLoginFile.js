@@ -101,7 +101,7 @@ class DownloadLoginFile extends Nimiq.Observable {
     /**
      * @param {Uint8Array} encryptedEntropy
      * @param {Nimiq.Address} firstAddress
-     * @param {string} label
+     * @param {string} [label = '']
      */
     setEncryptedEntropy(encryptedEntropy, firstAddress, label = '') {
         if (encryptedEntropy.byteLength !== KeyStore.ENCRYPTED_SECRET_SIZE) {
