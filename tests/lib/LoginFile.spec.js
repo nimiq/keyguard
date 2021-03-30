@@ -5,28 +5,35 @@
 
 describe('LoginFile', () => {
 
-    it('can generate a Wallet File', async () => {
+    beforeAll(() => {
+        I18n.initialize(window.TRANSLATIONS, 'en');
+    });
+
+    it('can generate a Login File', async () => {
         const entropy = new Nimiq.Entropy(Dummy.keys[0]);
 
         self.NIMIQ_IQONS_SVG_PATH = '/base/src/assets/Iqons.min.svg';
 
-        const walletFile = new LoginFile(entropy.toBase64());
-        const dataUrl = await walletFile.toDataUrl();
+        const loginFile = new LoginFile(entropy.toBase64());
+        const dataUrl = await loginFile.toDataUrl();
         expect(typeof dataUrl === 'string' && dataUrl.length > 100).toBe(true);
     });
 
-    it('can read a generated Wallet File', async () => {
+    it('can read a generated Login File', async () => {
         const entropy = new Nimiq.Entropy(Dummy.keys[0]);
 
         const serializedKey = entropy.toBase64();
-        const walletFile = new LoginFile(serializedKey, 2);
-        const dataUrl = await walletFile.toDataUrl();
+        const loginFile = new LoginFile(serializedKey, 2);
+        const dataUrl = await loginFile.toObjectUrl();
 
+        /** @type {HTMLImageElement} */
         const $img = await new Promise(resolve => {
             const _$img = new Image();
             _$img.onload = () => resolve(_$img);
             _$img.src = dataUrl;
         });
+
+        // const file = new File([await fetch(dataUrl).then(r => r.blob())], 'LoginFile.png');
 
         const qrPosition = LoginFile.calculateQrPosition();
 
