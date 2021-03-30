@@ -39,11 +39,17 @@ class LoginFile {
         return filename.replace('{color}', this._config.name);
     }
 
+    /**
+     * @returns {Promise<string>}
+     */
     async toDataUrl() {
         await this._drawPromise;
         return this.$canvas.toDataURL().replace(/#/g, '%23');
     }
 
+    /**
+     * @returns {Promise<string>}
+     */
     async toObjectUrl() {
         await this._drawPromise;
 

@@ -103,7 +103,9 @@ class FileImporter extends Nimiq.Observable {
 
             // Make sure the data size is correct
             if (bytes.byteLength !== KeyStore.ENCRYPTED_SECRET_SIZE
-                && bytes.byteLength !== KeyStore.ENCRYPTED_SECRET_SIZE_V2) {
+                && bytes.byteLength !== KeyStore.ENCRYPTED_SECRET_SIZE_V2
+                // If an extension is present, it must consist of at least one length byte and one character byte
+                && bytes.byteLength < KeyStore.ENCRYPTED_SECRET_SIZE + 2) {
                 throw new Error('Invalid encrypted secret size');
             }
         } catch (error) {

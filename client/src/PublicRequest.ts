@@ -16,6 +16,7 @@ export type BasicRequest = {
 export type SingleKeyResult = {
     keyId: string;
     keyType: Nimiq.Secret.Type;
+    keyLabel?: string;
     addresses: Array<{
         keyPath: string,
         address: Uint8Array,
