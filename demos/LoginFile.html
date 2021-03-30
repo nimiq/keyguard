@@ -17,6 +17,7 @@
     <script src="../src/lib/QrEncoder.js"></script>
     <script src="../src/lib/LoginFileConfig.js"></script>
     <script src="../src/lib/LoginFile.js"></script>
+    <script src="../src/lib/Utf8Tools.js"></script>
 
     <link rel="stylesheet" href="../node_modules/@nimiq/style/nimiq-style.min.css">
     <link rel="stylesheet" href="../src/nimiq-style.css">
@@ -41,24 +42,46 @@
         <p class="nq-label">Rendering...</p>
     </div>
     <script>
-        I18n = { translatePhrase: (phrase) => "Fake Account" };
+        I18n = { translatePhrase: (phrase) => {
+            switch (phrase) {
+                case "login-file-color-orange": return "Orange";
+                case "login-file-color-red": return "Red";
+                case "login-file-color-yellow": return "Yellow";
+                case "login-file-color-indigo": return "Indigo";
+                case "login-file-color-blue": return "Blue";
+                case "login-file-color-purple": return "Purple";
+                case "login-file-color-teal": return "Teal";
+                case "login-file-color-pink": return "Pink";
+                case "login-file-color-green": return "Green";
+                case "login-file-color-brown": return "Brown";
+                case "login-file-account-name": return "{color} Account";
+            }
+            return "! unhandled phrase !";
+        } };
         (async () => {
             console.warn("This demo needs to be run from localhost.");
 
             self.NIMIQ_IQONS_SVG_PATH = '/src/assets/Iqons.min.svg';
 
+            const label = 'My example account (the best account!)';
+            const labelBytes = Utf8Tools.stringToUtf8ByteArray(label);
+
             const entropy = Nimiq.Entropy.generate();
-            const encryptedKey = new Nimiq.SerialBuffer(56);
+            const encryptedKey = new Nimiq.SerialBuffer(56 + (label ? 1 + labelBytes.length : 0));
             encryptedKey.writeUint8(1); // Version
             encryptedKey.writeUint8(6); // KDF rounds log2
             encryptedKey.write(new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16])); // Salt
             encryptedKey.writeUint32(242); // Purpose ID
             entropy.serialize(encryptedKey); // Secret (usually encrypted)
             encryptedKey.writeUint16(0); // Checksum
+            if (label) {
+                encryptedKey.writeUint8(labelBytes.length)
+                encryptedKey.write(labelBytes)
+            }
             console.log('Encrypted Key:', encryptedKey);
             const encryptedString = Nimiq.BufferUtils.toBase64(encryptedKey);
             console.log('Encrypted String:', encryptedString);
-            const loginFile = new LoginFile(encryptedString, Math.floor(Math.random() * 10));
+            const loginFile = new LoginFile(encryptedString, Math.floor(Math.random() * 10), label);
             const dataUrl = await loginFile.toDataUrl();
 
             const img = new Image();

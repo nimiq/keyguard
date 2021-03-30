@@ -209,6 +209,7 @@
     "login-file-color-brown": "Коричневий",
 
     "login-file-filename": "Файл-Ключ-Німік-{color}-Рахунок.png",
+    "login-file-account-name": "{color} Рахунок",
 
     "bitcoin-recipient-unlabelled": "Без назви",
 

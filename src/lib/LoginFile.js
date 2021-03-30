@@ -6,7 +6,7 @@ class LoginFile {
     /**
      * @param {string} encodedSecret - Base64-encoded and encrypted secret
      * @param {number} [color = 0]
-     * @param {string} label - Login file label
+     * @param {string} [label = ''] - Login file label
      */
     constructor(encodedSecret, color = 0, label = '') {
         this._width = LoginFile.WIDTH;
@@ -17,9 +17,6 @@ class LoginFile {
         this.$canvas = $canvas;
         this._label = label;
         this._config = LoginFileConfig[color];
-        if (label === '') {
-            this._label = this._config.name;
-        }
         if (!this._config) throw new Error(`Invalid color index: ${color}`);
         /** @type {CanvasRenderingContext2D} */
         this._ctx = ($canvas.getContext('2d'));
@@ -120,8 +117,23 @@ class LoginFile {
         const y = 200;
         this._ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
         this._ctx.font = `600 36px ${LoginFile.FONT_FAMILY}`;
-        this._ctx.fillText(this._label, x, y);
+        this._ctx.fillText(this._getLabelForDisplay(), x, y, LoginFile.WIDTH - LoginFile.BORDER_WIDTH * 4);
         this._setFont(); // reset font
+    }
+
+    /**
+     * @returns {string}
+     */
+    _getLabelForDisplay() {
+        if (!this._label) {
+            // Generate default account label
+            const label = I18n.translatePhrase('login-file-account-name');
+            return label.replace('{color}', this._config.name);
+        }
+
+        // The length 25 is chosen arbitrarily to what still looks good with wide characters
+        if (this._label.length > 25) return `${this._label.substring(0, 24)}…`;
+        return this._label;
     }
 
     _drawWarningText() {

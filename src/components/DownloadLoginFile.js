@@ -6,6 +6,7 @@
 /* global Errors */
 /* global IqonHash */
 /* global TemplateTags */
+/* global Utf8Tools */
 
 class DownloadLoginFile extends Nimiq.Observable {
     /**
@@ -114,6 +115,16 @@ class DownloadLoginFile extends Nimiq.Observable {
         }
         // Remove previously added classes to restore the initial state.
         this._reset();
+
+        if (label) {
+            // Add label bytes to the end of the encrypted entropy
+            const labelBytes = Utf8Tools.stringToUtf8ByteArray(label.substring(0, 256));
+            const newData = new Nimiq.SerialBuffer(encryptedEntropy.byteLength + 1 + labelBytes.byteLength);
+            newData.write(encryptedEntropy);
+            newData.writeUint8(labelBytes.byteLength);
+            newData.write(labelBytes);
+            encryptedEntropy = newData;
+        }
 
         const color = IqonHash.getBackgroundColorIndex(firstAddress.toUserFriendlyAddress());
         this.file = new LoginFile(Nimiq.BufferUtils.toBase64(encryptedEntropy), color, label);
