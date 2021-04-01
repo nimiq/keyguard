@@ -57,8 +57,8 @@ describe('LoginFile', () => {
         const qrPosition = LoginFile.calculateQrPosition();
 
         QrScanner.WORKER_PATH = '/base/src/lib/QrScannerWorker.js';
-        const decoded1 = await QrScanner.scanImage($img1, qrPosition, undefined, undefined, true);
-        const decoded2 = await QrScanner.scanImage($img2, qrPosition, undefined, undefined, true);
+        const decoded1 = await QrScanner.scanImage($img1, qrPosition, undefined, undefined, undefined, true);
+        const decoded2 = await QrScanner.scanImage($img2, qrPosition, undefined, undefined, undefined, true);
         expect(decoded1).toEqual(serializedEntropy);
         expect(decoded2).toEqual(serializedEntropyWithLabel);
 
