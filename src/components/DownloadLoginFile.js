@@ -1,4 +1,3 @@
-/* global BrowserDetection */
 /* global Nimiq */
 /* global I18n */
 /* global LoginFile */
