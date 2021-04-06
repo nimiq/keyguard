@@ -82,7 +82,8 @@ class DownloadLoginFile extends Nimiq.Observable {
                     <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-download"/></svg>
                     <span data-i18n="download-loginfile-download">Download</span>
                 </a>
-                <button class="nq-button green continue" disabled>
+                <button class="nq-button light-blue continue" disabled>
+                    <span data-i18n="download-loginfile-continue">Continue</span>
                     <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-caret-right-small"/></svg>
                 </button>
             </div>
