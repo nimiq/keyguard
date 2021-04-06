@@ -199,16 +199,7 @@ class DownloadLoginFile extends Nimiq.Observable {
                 this._cancelDownload = reject;
             });
 
-            // If window gets blurred, show 'Continue' button in interface and do not automatically
-            // consider the download successful.
-            // As mobile Safari on iOS 13.x+ does support the download attribute, it no longer uses the long tap
-            // fallback. However, if the page changes its hash in the background while the prompt asking to download
-            // the file was not confirmed yet, the download will simply do nothing. To prevent that behaviour the
-            // hash change is delayed by the .maybe-downloaded confirmation mechanism.
-            if (!document.hasFocus()
-                || (BrowserDetection.isIOS() && BrowserDetection.iOSVersion()[0] > 12)) {
-                this.fire(DownloadLoginFile.Events.INITIATED);
-            }
+            this.fire(DownloadLoginFile.Events.INITIATED);
 
             this._maybeDownloaded();
         } catch (e) {
