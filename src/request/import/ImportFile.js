@@ -96,7 +96,10 @@ class ImportFile {
         if (buffer.byteLength > KeyStore.ENCRYPTED_SECRET_SIZE) {
             this._encryptedKey = new Nimiq.SerialBuffer(buffer.read(KeyStore.ENCRYPTED_SECRET_SIZE));
             const labelLength = buffer.readUint8();
-            this._label = Utf8Tools.utf8ByteArrayToString(buffer.read(labelLength));
+            const labelBytes = buffer.read(labelLength);
+            if (Utf8Tools.isValidUtf8(labelBytes)) {
+                this._label = Utf8Tools.utf8ByteArrayToString(labelBytes);
+            }
         } else {
             this._encryptedKey = buffer;
         }

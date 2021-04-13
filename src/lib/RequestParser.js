@@ -67,12 +67,12 @@ class RequestParser { // eslint-disable-line no-unused-vars
         if (typeof label !== 'string') {
             throw new Errors.InvalidRequestError('Label must be a string');
         }
-        if (label.length === 0) {
-            if (!allowEmpty) throw new Errors.InvalidRequestError('Label must not be empty');
-            return undefined;
-        }
         if (Utf8Tools.stringToUtf8ByteArray(label).byteLength > 63) {
             throw new Errors.InvalidRequestError('Label must not exceed 63 bytes');
+        }
+        // eslint-disable-next-line no-control-regex
+        if (/[\x00-\x1F\x7F]/.test(label)) {
+            throw new Errors.InvalidRequestError('Label cannot contain control characters');
         }
         return label;
     }

@@ -102,10 +102,17 @@ class FileImporter extends Nimiq.Observable {
             const bytes = Nimiq.BufferUtils.fromBase64(decoded.substr(0, 2) === '#2' ? decoded.substr(2) : decoded);
 
             // Make sure the data size is correct
-            if (bytes.byteLength !== KeyStore.ENCRYPTED_SECRET_SIZE
+            if (bytes.byteLength !== KeyStore.ENCRYPTED_SECRET_SIZE // not a secret without label
+                // not a secret with label
+                && (
+                    bytes.byteLength < KeyStore.ENCRYPTED_SECRET_SIZE + /* label length field */ 1
+                    || bytes.byteLength !== KeyStore.ENCRYPTED_SECRET_SIZE
+                        + /* label length field */ 1
+                        + /* label length */ bytes[KeyStore.ENCRYPTED_SECRET_SIZE]
+                )
+                // not a legacy secret
                 && bytes.byteLength !== KeyStore.ENCRYPTED_SECRET_SIZE_V2
-                // If an extension is present, it must consist of at least one length byte and one character byte
-                && bytes.byteLength < KeyStore.ENCRYPTED_SECRET_SIZE + 2) {
+            ) {
                 throw new Error('Invalid encrypted secret size');
             }
         } catch (error) {
