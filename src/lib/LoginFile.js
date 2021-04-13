@@ -137,11 +137,17 @@ class LoginFile {
             return label.replace('{color}', this._config.name);
         }
 
-        if (this._label.length > 25) {
-            // The length 25 is chosen arbitrarily to what still looks good with wide characters
-            return `${this._label.substring(0, 24)}…`;
+        // Truncate the label if necessary. To handle unicode astral symbols consisting of two surrogate chars (like
+        // emojis) correctly we split the string into its symbols rather than using label.length and label.substring
+        // (see https://mathiasbynens.be/notes/javascript-unicode#accounting-for-astral-symbols). Additionally, we
+        // normalize combined symbols into their single symbol equivalents. Note that this can still break for joined
+        // emojis consisting of multiple codepoints like https://emojipedia.org/family-man-woman-girl-boy/. To handle
+        // those, an exhaustive regex like https://github.com/mathiasbynens/emoji-regex would need to be used.
+        // The length 25 is chosen arbitrarily to what still looks good with wide characters.
+        const symbols = [...this._label.normalize()];
+        if (symbols.length > 25) {
+            return [...symbols.slice(0, 24), '…'].join('');
         }
-
         return this._label;
     }
 

@@ -112,7 +112,11 @@ class DownloadLoginFile extends Nimiq.Observable {
 
         if (label) {
             // Add label bytes to the end of the encrypted entropy
-            const labelBytes = Utf8Tools.stringToUtf8ByteArray(label.substring(0, 256));
+            const labelBytes = Utf8Tools.stringToUtf8ByteArray(label);
+            if (labelBytes.byteLength > 255) {
+                // Should not happen for labels parsed via RequestParser.parseLabel as these are restricted to 63 bytes.
+                throw new Errors.KeyguardError('Account label too long.');
+            }
             const newData = new Nimiq.SerialBuffer(encryptedEntropy.byteLength + 1 + labelBytes.byteLength);
             newData.write(encryptedEntropy);
             newData.writeUint8(labelBytes.byteLength);
