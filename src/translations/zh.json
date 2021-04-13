@@ -208,8 +208,8 @@
     "login-file-color-green": "绿",
     "login-file-color-brown": "棕",
 
-    "login-file-filename": "Nimiq-登录-文件-{color}-账户.png",
-    "login-file-account-name": "{color} 帐户",
+    "login-file-filename": "Nimiq-登录-文件-{accountLabel}.png",
+    "login-file-default-account-label": "{color}帐户",
 
     "bitcoin-recipient-unlabelled": "未标签",
 

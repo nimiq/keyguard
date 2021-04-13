@@ -208,8 +208,8 @@
     "login-file-color-green": "Зеленый",
     "login-file-color-brown": "Коричневый",
 
-    "login-file-filename": "Nimiq-Файл-Авторизации-{color}-аккаунт.png",
-    "login-file-account-name": "{color} Аккаунт",
+    "login-file-filename": "Nimiq-Файл-Авторизации-{accountLabel}.png",
+    "login-file-default-account-label": "{color} Аккаунт",
 
     "bitcoin-recipient-unlabelled": "Немаркированный",
 

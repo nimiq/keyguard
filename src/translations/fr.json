@@ -208,8 +208,8 @@
     "login-file-color-green": "Vert",
     "login-file-color-brown": "Marron",
 
-    "login-file-filename": "Fichier-de-Connexion-Nimiq-Compte-{color}.png",
-    "login-file-account-name": "Compte {color}",
+    "login-file-filename": "Fichier-de-Connexion-Nimiq-{accountLabel}.png",
+    "login-file-default-account-label": "Compte {color}",
 
     "bitcoin-recipient-unlabelled": "Non-libellé",
 

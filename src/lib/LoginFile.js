@@ -6,18 +6,20 @@ class LoginFile {
     /**
      * @param {string} encodedSecret - Base64-encoded and encrypted secret
      * @param {number} [color = 0]
-     * @param {string} [label = ''] - Login file label
+     * @param {string} [label] - Login file label
      */
-    constructor(encodedSecret, color = 0, label = '') {
+    constructor(encodedSecret, color = 0, label) {
         this._width = LoginFile.WIDTH;
         this._height = LoginFile.HEIGHT;
         const $canvas = document.createElement('canvas');
         $canvas.width = this._width;
         $canvas.height = this._height;
         this.$canvas = $canvas;
-        this._label = label;
         this._config = LoginFileConfig[color];
         if (!this._config) throw new Error(`Invalid color index: ${color}`);
+        this._label = label && label.trim()
+            ? label.trim()
+            : I18n.translatePhrase('login-file-default-account-label').replace('{color}', this._config.name);
         /** @type {CanvasRenderingContext2D} */
         this._ctx = ($canvas.getContext('2d'));
         this._drawPromise = this._draw(encodedSecret);
@@ -36,7 +38,15 @@ class LoginFile {
 
     filename() {
         const filename = I18n.translatePhrase('login-file-filename');
-        return filename.replace('{color}', this._config.name);
+        return filename.replace(
+            '{accountLabel}',
+            // Replace spaces and sanitize file name (see https://stackoverflow.com/a/31976060).
+            // However, sanitizing the file name would not be strictly necessary as the browser also takes care of it.
+            // Note that the browser sanitization seems to also replace zero width joiners \u200D which breaks joined
+            // symbols like some emojis (https://en.wikipedia.org/wiki/Zero-width_joiner) into their components.
+            // eslint-disable-next-line no-control-regex
+            this._label.replace(/\s+/gu, '-').replace(/[<>:"/\\|?*\x00-\x1F]/gu, '_'),
+        );
     }
 
     /**
@@ -133,7 +143,7 @@ class LoginFile {
     _getLabelForDisplay() {
         if (!this._label) {
             // Generate default account label
-            const label = I18n.translatePhrase('login-file-account-name');
+            const label = I18n.translatePhrase('login-file-default-account-label');
             return label.replace('{color}', this._config.name);
         }
 
