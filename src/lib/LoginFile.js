@@ -124,7 +124,7 @@ class LoginFile {
         this._ctx.fillStyle = `rgba(255, 255, 255, ${this._config.opacityDate})`;
         this._ctx.fillText(datestring, x, y);
 
-        this._ctx.setTransform(1, 0, 0, 1, 0, 0);
+        this._ctx.setTransform(1, 0, 0, 1, 0, 0); // reset transform
         this._setFont(); // reset font
     }
 
@@ -133,8 +133,13 @@ class LoginFile {
         const y = 200;
         this._ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
         this._ctx.font = `600 36px ${LoginFile.FONT_FAMILY}`;
+        this._ctx.filter = 'grayscale(100%) brightness(160%)';
+        this._ctx.globalCompositeOperation = 'screen';
         this._ctx.fillText(this._getLabelForDisplay(), x, y, LoginFile.WIDTH - LoginFile.BORDER_WIDTH * 4);
-        this._setFont(); // reset font
+        // reset filter, composite operation and font
+        this._ctx.filter = '';
+        this._ctx.globalCompositeOperation = '';
+        this._setFont();
     }
 
     /**
