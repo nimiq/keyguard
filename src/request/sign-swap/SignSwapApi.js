@@ -58,7 +58,11 @@ class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) { // eslint-dis
                 type: 'BTC',
                 inputs: this.parseInputs(request.fund.inputs),
                 recipientOutput: {
-                    value: this.parsePositiveInteger(request.fund.recipientOutput.value),
+                    value: this.parsePositiveInteger(
+                        request.fund.recipientOutput.value,
+                        false,
+                        'fund.recipientOutput.value',
+                    ),
                 },
                 changeOutput: this.parseChangeOutput(request.fund.changeOutput, true, 'fund.changeOutput'),
                 refundKeyPath: this.parseBitcoinPath(request.fund.refundKeyPath, 'fund.refundKeyPath'),
@@ -125,10 +129,17 @@ class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) { // eslint-dis
             : parsedRequest.redeem.type === 'NIM'
                 ? parsedRequest.redeem.transaction.recipient.toUserFriendlyAddress()
                 : ''; // Should never happen, if parsing works correctly
-        if (!parsedRequest.nimiqAddresses.some(addressInfo => addressInfo.address === nimAddress)) {
+        const activeNimiqAddress = parsedRequest.nimiqAddresses.find(addressInfo => addressInfo.address === nimAddress);
+        if (!activeNimiqAddress) {
             throw new Errors.InvalidRequestError(
                 'The address details of the NIM address doing the swap must be provided',
             );
+        }
+        if (
+            parsedRequest.fund.type === 'NIM'
+            && activeNimiqAddress.balance < (parsedRequest.fund.transaction.value + parsedRequest.fund.transaction.fee)
+        ) {
+            throw new Errors.InvalidRequestError('The sending NIM address does not have enough balance');
         }
 
         return parsedRequest;

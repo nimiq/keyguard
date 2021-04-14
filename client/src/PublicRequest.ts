@@ -32,7 +32,6 @@ export type TransactionInfo = {
     senderType: Nimiq.Account.Type,
     recipient: Uint8Array,
     recipientType?: Nimiq.Account.Type,
-    recipientLabel?: string,
     value: number,
     fee: number,
     validityStartHeight: number,
@@ -41,7 +40,7 @@ export type TransactionInfo = {
 };
 
 export enum BitcoinTransactionInputType {
-    DEFAULT = 'default',
+    STANDARD = 'standard',
     HTLC_REDEEM = 'htlc-redeem',
     HTLC_REFUND = 'htlc-refund',
 }
@@ -52,9 +51,12 @@ export type BitcoinTransactionInput = {
     outputIndex: number,
     outputScript: string,
     value: number,
-    witnessScript?: string,
-    type?: BitcoinTransactionInputType,
-};
+} & ({
+    type?: BitcoinTransactionInputType.STANDARD,
+} | {
+    type: BitcoinTransactionInputType.HTLC_REDEEM | BitcoinTransactionInputType.HTLC_REFUND,
+    witnessScript: string,
+});
 
 export type BitcoinTransactionOutput = {
     address: string,
@@ -143,6 +145,7 @@ type SignTransactionRequestCommon = SimpleRequest & TransactionInfo;
 
 export type SignTransactionRequestStandard = SignTransactionRequestCommon & {
     layout?: 'standard',
+    recipientLabel?: string,
 };
 
 export type SignTransactionRequestCheckout = SignTransactionRequestCommon & {

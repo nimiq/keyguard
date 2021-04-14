@@ -171,8 +171,10 @@ export class KeyguardClient {
     }
 
     public async signSwapTransactions(request: SignSwapTransactionsRequest): Promise<SignSwapTransactionsResult> {
-        const swapIframeBehavior = new SwapIFrameRequestBehavior();
-        return swapIframeBehavior.request(this._endpoint, KeyguardCommand.SIGN_SWAP_TRANSACTIONS, [request]);
+        return this._iframeRequest<SignSwapTransactionsRequest, SignSwapTransactionsResult>(
+            KeyguardCommand.SIGN_SWAP_TRANSACTIONS,
+            request,
+        );
     }
 
     /* PRIVATE METHODS */
@@ -190,7 +192,12 @@ export class KeyguardClient {
         request?: T1,
     ): Promise<T2> {
         const args = request ? [request] : [];
-        return this._iframeBehavior.request(this._endpoint, command, args);
+
+        const behavior = command === KeyguardCommand.SIGN_SWAP_TRANSACTIONS
+            ? new SwapIFrameRequestBehavior()
+            : this._iframeBehavior;
+
+        return behavior.request(this._endpoint, command, args);
     }
 
     private _onReject(

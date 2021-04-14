@@ -98,21 +98,23 @@ class SignSwap {
         // Exchange rate
         const nimExchangeValue = fundTx.type === 'NIM' // eslint-disable-line no-nested-ternary
             // When the user funds NIM, the service receives the HTLC balance - their network fee.
-            ? (fundTx.transaction.value - request.serviceFundingNetworkFee) / 1e5
+            ? Nimiq.Policy.lunasToCoins(fundTx.transaction.value - request.serviceFundingNetworkFee)
             : redeemTx.type === 'NIM'
                 // When the user redeems NIM, the service lost the HTLC balance + their network fee.
                 // The transaction value is "HTLC balance - tx fee", therefore the "HTLC balance"
                 // is the transaction value + tx fee.
-                ? (redeemTx.transaction.value + redeemTx.transaction.fee + request.serviceRedeemingNetworkFee) / 1e5
+                ? Nimiq.Policy.lunasToCoins(
+                    redeemTx.transaction.value + redeemTx.transaction.fee + request.serviceRedeemingNetworkFee,
+                )
                 : 0; // Should never happen, if parsing works correctly
 
         const btcExchangeValue = fundTx.type === 'BTC' // eslint-disable-line no-nested-ternary
             // When the user funds BTC, the service receives the HTLC balance - their network fee.
-            ? (fundTx.recipientOutput.value - request.serviceFundingNetworkFee) / 1e8
+            ? BitcoinUtils.satoshisToCoins(fundTx.recipientOutput.value - request.serviceFundingNetworkFee)
             : redeemTx.type === 'BTC'
                 // When the user redeems BTC, the service lost the HTLC balance + their network fee.
                 // The HTLC balance is represented by the redeeming tx input value.
-                ? (redeemTx.input.witnessUtxo.value + request.serviceRedeemingNetworkFee) / 1e8
+                ? BitcoinUtils.satoshisToCoins(redeemTx.input.witnessUtxo.value + request.serviceRedeemingNetworkFee)
                 : 0; // Should never happen, if parsing works correctly
 
         if (!nimExchangeValue || !btcExchangeValue) {
@@ -121,7 +123,9 @@ class SignSwap {
             );
         }
 
-        const exchangeRate = Math.round(btcExchangeValue / nimExchangeValue * 1e8) / 1e8;
+        const exchangeRate = BitcoinUtils.satoshisToCoins(
+            Math.round(BitcoinUtils.coinsToSatoshis(btcExchangeValue / nimExchangeValue)),
+        );
         $exchangeRate.textContent = `1 NIM = ${NumberFormatting.formatNumber(
             exchangeRate,
             8, 8, // max decimals, min decimals (always show all BTC decimals for the exchange rate)
@@ -322,7 +326,7 @@ class SignSwap {
             : BitcoinUtils.satoshisToCoins(serviceExchangeFee) * request.btcFiatRate;
 
         const theirExchangeFeePercentage = NumberFormatting.formatNumber(
-            request.serviceExchangeFee / (exchangeAmount - request.serviceExchangeFee) * 100,
+            serviceExchangeFee / (exchangeAmount - serviceExchangeFee) * 100,
             1,
         );
 
@@ -389,9 +393,7 @@ class SignSwap {
 
         if (request.fund.type === 'BTC') {
             const keyPairs = request.fund.inputs.map(input => btcKey.deriveKeyPair(input.keyPath));
-            const privKeys = keyPairs.map(keyPair => Nimiq.BufferUtils.toHex(
-                /** @type {Buffer} */ (keyPair.privateKey),
-            ));
+            const privKeys = keyPairs.map(keyPair => /** @type {Buffer} */ (keyPair.privateKey).toString('hex'));
             privateKeys.btc = privKeys;
 
             if (request.fund.changeOutput) {
@@ -416,9 +418,7 @@ class SignSwap {
 
         if (request.redeem.type === 'BTC') {
             const keyPairs = [btcKey.deriveKeyPair(request.redeem.input.keyPath)];
-            const privKeys = keyPairs.map(keyPair => Nimiq.BufferUtils.toHex(
-                /** @type {Buffer} */ (keyPair.privateKey),
-            ));
+            const privKeys = keyPairs.map(keyPair => /** @type {Buffer} */ (keyPair.privateKey).toString('hex'));
             privateKeys.btc = privKeys;
 
             // Calculate, validate and store output address
@@ -432,27 +432,20 @@ class SignSwap {
         }
 
         try {
-            // Convert request to plain object to convert to JSON
-            /** @type {any} */
-            const plainRequest = request;
-            if (request.fund.type === 'NIM') {
-                plainRequest.fund.transaction = request.fund.transaction.toPlain();
-            }
-            if (request.redeem.type === 'NIM') {
-                plainRequest.redeem.transaction = request.redeem.transaction.toPlain();
-            }
-            if (request.fund.type === 'BTC') {
-                request.fund.inputs.forEach((input, i) => {
-                    plainRequest.fund.inputs[i].witnessUtxo.script = Nimiq.BufferUtils.toHex(input.witnessUtxo.script);
-                });
-            }
-
             sessionStorage.setItem(
                 Constants.SWAP_IFRAME_SESSION_STORAGE_KEY_PREFIX + request.swapId,
                 JSON.stringify({
                     keys: privateKeys,
                     // Serialize request to store in SessionStorage
-                    request: plainRequest,
+                    request,
+                }, (_, value) => {
+                    if (value instanceof Nimiq.Transaction) {
+                        return value.toPlain();
+                    }
+                    if (value instanceof Uint8Array) {
+                        return Nimiq.BufferUtils.toHex(value);
+                    }
+                    return value;
                 }),
             );
         } catch (error) {

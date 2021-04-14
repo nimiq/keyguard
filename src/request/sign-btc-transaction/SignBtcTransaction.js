@@ -248,7 +248,7 @@ class SignBtcTransaction {
             let i = 0;
             for (const parsedInput of request.inputs) {
                 switch (parsedInput.type) {
-                    case 'default':
+                    case 'standard':
                         psbt.finalizeInput(i);
                         break;
                     case 'htlc-redeem':

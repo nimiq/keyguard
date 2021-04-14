@@ -16,7 +16,7 @@
  * @param {TBase} clazz
  * @returns {typeof Clazz}
  */
-function BitcoinRequestParserMixin(clazz) { // eslint-disable-line no-unused-vars
+function BitcoinRequestParserMixin(clazz) {
     const BitcoinHTLCInputTypes = [
         'htlc-redeem',
         'htlc-refund',
@@ -26,10 +26,10 @@ function BitcoinRequestParserMixin(clazz) { // eslint-disable-line no-unused-var
         /**
          * @param {unknown} type
          * @param {string} name
-         * @returns {'default' | 'htlc-redeem' | 'htlc-refund'}
+         * @returns {'standard' | 'htlc-redeem' | 'htlc-refund'}
          */
         parseInputType(type, name) {
-            if (!type || type === 'default') return 'default';
+            if (!type || type === 'standard') return 'standard';
             if (typeof type !== 'string') {
                 throw new Errors.InvalidRequestError(`${name}: Invalid input type ${type}`);
             }
@@ -48,7 +48,7 @@ function BitcoinRequestParserMixin(clazz) { // eslint-disable-line no-unused-var
          * @returns {ParsedBitcoinTransactionInput[]}
          */
         parseInputs(inputs) {
-            if (!inputs || !Array.isArray(inputs)) {
+            if (!Array.isArray(inputs)) {
                 throw new Errors.InvalidRequestError('inputs must be an array');
             }
             if (inputs.length === 0) {
@@ -92,7 +92,7 @@ function BitcoinRequestParserMixin(clazz) { // eslint-disable-line no-unused-var
          * @returns {string[]}
          */
         parseBitcoinPathsArray(paths, name) {
-            if (!paths || !Array.isArray(paths)) {
+            if (!Array.isArray(paths)) {
                 throw new Errors.InvalidRequestError(`${name} must be an array`);
             }
             if (paths.length === 0) {
@@ -115,7 +115,7 @@ function BitcoinRequestParserMixin(clazz) { // eslint-disable-line no-unused-var
          * @returns {string}
          */
         parseBitcoinPath(path, name) {
-            if (!path || typeof path !== 'string') {
+            if (typeof path !== 'string' || path === '') {
                 throw new Errors.InvalidRequestError(`${name} must be a string`);
             }
             if (!this.isValidBitcoinPath(path)) {
@@ -138,8 +138,9 @@ function BitcoinRequestParserMixin(clazz) { // eslint-disable-line no-unused-var
 
             // Overflow check.
             const segments = path.split('/');
-            for (let i = 1; i < segments.length; i++) {
-                if (!Nimiq.NumberUtils.isUint32(parseInt(segments[i], 10))) return false;
+            for (const segment of segments) {
+                const index = parseInt(segment, 10);
+                if (index < 0 || index > BitcoinRequestParserMixin.DERIVATION_INDEX_MAX) return false;
             }
 
             return true;
@@ -156,7 +157,7 @@ function BitcoinRequestParserMixin(clazz) { // eslint-disable-line no-unused-var
                 return undefined;
             }
 
-            if (!output || typeof output !== 'object') {
+            if (typeof output !== 'object' || output === null) {
                 throw new Error(`${parameterName} is not a valid output`);
             }
 
@@ -166,7 +167,7 @@ function BitcoinRequestParserMixin(clazz) { // eslint-disable-line no-unused-var
                     /** @type {{address: unknown}} */ (output).address,
                     `${parameterName}.address`,
                 ),
-                label: this.parseLabel(/** @type {{label: unknown}} */ (output).label),
+                label: this.parseLabel(/** @type {{label: unknown}} */ (output).label, true, `${parameterName}.label`),
                 value: this.parsePositiveInteger(
                     /** @type {{value: unknown}} */ (output).value,
                     false,
@@ -187,7 +188,7 @@ function BitcoinRequestParserMixin(clazz) { // eslint-disable-line no-unused-var
                 return undefined;
             }
 
-            if (!output || typeof output !== 'object') {
+            if (typeof output !== 'object' || output === null) {
                 throw new Error(`${parameterName} is not a valid output`);
             }
 
@@ -226,3 +227,5 @@ function BitcoinRequestParserMixin(clazz) { // eslint-disable-line no-unused-var
 
     return Clazz;
 }
+
+BitcoinRequestParserMixin.DERIVATION_INDEX_MAX = 2147483647; // 2**31 - 1
