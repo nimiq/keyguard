@@ -12,12 +12,11 @@
 /* global EuroConstants */
 /* global EuroUtils */
 /* global Identicon */
-/* global IqonHash */
-/* global LoginFileConfig */
 /* global TemplateTags */
 /* global I18n */
 /* global SignSwapApi */
 /* global SwapFeesTooltip */
+/* global BalanceDistributionBar */
 
 /**
  * @callback SignSwap.resolve
@@ -256,7 +255,7 @@ class SignSwap {
 
         if (request.layout === SignSwapApi.Layouts.SLIDER) {
             /** @type {HTMLDivElement} */
-            const $balanceBar = (this.$el.querySelector('.balance-bar'));
+            const $balanceDistributionBar = (this.$el.querySelector('.balance-distribution-bar'));
             /** @type {HTMLSpanElement} */
             const $newNimBalance = (this.$el.querySelector('#new-nim-balance'));
             /** @type {HTMLSpanElement} */
@@ -276,8 +275,7 @@ class SignSwap {
                     ? redeemTx.transaction.recipient.toUserFriendlyAddress()
                     : ''; // Should never happen, if parsing works correctly
 
-            // eslint-disable-next-line no-new
-            new Identicon(swapNimAddress, $leftIdenticon);
+            new Identicon(swapNimAddress, $leftIdenticon); // eslint-disable-line no-new
             $leftLabel.textContent = fundTx.type === 'NIM'
                 ? fundTx.senderLabel
                 : redeemTx.type === 'NIM'
@@ -322,62 +320,15 @@ class SignSwap {
             const newBtcBalanceFiat = BitcoinUtils.satoshisToCoins(newBtcBalance) * rightFiatRate;
             $newBtcBalanceFiat.textContent = NumberFormatting.formatCurrency(newBtcBalanceFiat, request.fiatCurrency);
 
-            // Draw distribution graph
-            const nimDistributionData = request.nimiqAddresses.map(addressInfo => {
-                const active = swapNimAddress === addressInfo.address;
-                const backgroundClass = LoginFileConfig[IqonHash.getBackgroundColorIndex(addressInfo.address)]
-                    .className;
-                const oldBalance = Nimiq.Policy.lunasToCoins(addressInfo.balance) * leftFiatRate;
-                const newBalance = active
-                    ? Nimiq.Policy.lunasToCoins(newNimBalance) * leftFiatRate
-                    : oldBalance;
-
-                return {
-                    oldBalance,
-                    newBalance,
-                    backgroundClass,
-                    active,
-                };
-            });
-
-            const btcDistributionData = {
-                oldBalance: BitcoinUtils.satoshisToCoins(request.bitcoinAccount.balance) * rightFiatRate,
-                newBalance: newBtcBalanceFiat,
-                backgroundClass: 'bitcoin',
-                active: true,
-            };
-
-            const totalBalance = nimDistributionData.reduce((sum, data) => sum + data.newBalance, 0)
-                + btcDistributionData.newBalance;
-
-            /**
-             * @param {{oldBalance: number, newBalance: number, backgroundClass: string, active: boolean}} data
-             * @returns {HTMLDivElement}
-             */
-            function createBar(data) { // eslint-disable-line no-inner-declarations
-                const $bar = document.createElement('div');
-                $bar.classList.add('bar', data.backgroundClass);
-                $bar.classList.toggle('active', data.active);
-                $bar.style.width = `${data.newBalance / totalBalance * 100}%`;
-                if (data.active && data.newBalance > data.oldBalance) {
-                    const $change = document.createElement('div');
-                    $change.classList.add('change');
-                    $change.style.width = `${(data.newBalance - data.oldBalance) / data.newBalance * 100}%`;
-                    $bar.appendChild($change);
-                }
-                return $bar;
-            }
-
-            const $bars = document.createDocumentFragment();
-            for (const data of nimDistributionData) {
-                $bars.appendChild(createBar(data));
-            }
-            const $separator = document.createElement('div');
-            $separator.classList.add('separator');
-            $bars.appendChild($separator);
-            $bars.appendChild(createBar(btcDistributionData));
-
-            $balanceBar.appendChild($bars);
+            new BalanceDistributionBar({ // eslint-disable-line no-new
+                nimiqAddresses: request.nimiqAddresses,
+                bitcoinAccount: request.bitcoinAccount,
+                swapNimAddress,
+                nimFiatRate: leftFiatRate,
+                btcFiatRate: rightFiatRate,
+                newNimBalance,
+                newBtcBalanceFiat,
+            }, $balanceDistributionBar);
         }
 
         // Set up password box.
