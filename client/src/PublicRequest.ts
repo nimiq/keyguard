@@ -253,23 +253,23 @@ export type SignSwapRequest = SimpleRequest & {
 // Used in swap-iframe
 export type SignSwapTransactionsRequest = {
     swapId: string,
-    fund: ({
+    fund: {
         type: 'NIM'
         htlcData: Uint8Array,
-    }) | ({
+    } | {
         type: 'BTC',
         htlcScript: Uint8Array,
-    }),
-    redeem: ({
+    },
+    redeem: {
         type: 'NIM',
         htlcData: Uint8Array,
         htlcAddress: string,
-    }) | ({
+    } | {
         type: 'BTC',
         htlcScript: Uint8Array,
         transactionHash: string,
         outputIndex: number;
-    }),
+    },
 };
 
 export type SignMessageRequest = SimpleRequest & {

@@ -4,7 +4,7 @@
 /* global SignSwap */
 /* global Errors */
 
-class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) {
+class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) { // eslint-disable-line no-unused-vars
     /**
      * @param {KeyguardRequest.SignSwapRequest} request
      * @returns {Promise<Parsed<KeyguardRequest.SignSwapRequest>>}
@@ -138,5 +138,3 @@ class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) {
         return SignSwap;
     }
 }
-
-SignSwapApi.SESSION_STORAGE_KEY_PREFIX = 'swap_id_';
