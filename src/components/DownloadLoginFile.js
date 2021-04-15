@@ -6,15 +6,14 @@
 /* global Errors */
 /* global IqonHash */
 /* global TemplateTags */
+/* global Utf8Tools */
 
 class DownloadLoginFile extends Nimiq.Observable {
     /**
      * @param {HTMLDivElement} [$el]
-     * @param {Uint8Array} [encryptedEntropy]
-     * @param {Nimiq.Address} [firstAddress]
      * @param {string} [description]
      */
-    constructor($el, encryptedEntropy, firstAddress, description) {
+    constructor($el, description) {
         super();
 
         this.$el = DownloadLoginFile._createElement($el, description);
@@ -36,10 +35,6 @@ class DownloadLoginFile extends Nimiq.Observable {
 
         /** @type {HTMLButtonElement} */
         const $backToDownloadButton = (this.$el.querySelector('.back-to-download'));
-
-        if (encryptedEntropy && firstAddress) {
-            this.setEncryptedEntropy(encryptedEntropy, firstAddress);
-        }
 
         /** @type {SVGElement} */
         this.$longTouchIndicator = (this.$el.querySelector('.long-touch-indicator'));
@@ -106,16 +101,31 @@ class DownloadLoginFile extends Nimiq.Observable {
     /**
      * @param {Uint8Array} encryptedEntropy
      * @param {Nimiq.Address} firstAddress
+     * @param {string} [label = '']
      */
-    setEncryptedEntropy(encryptedEntropy, firstAddress) {
+    setEncryptedEntropy(encryptedEntropy, firstAddress, label = '') {
         if (encryptedEntropy.byteLength !== KeyStore.ENCRYPTED_SECRET_SIZE) {
             throw new Errors.KeyguardError('Can only export encrypted Entropies');
         }
         // Remove previously added classes to restore the initial state.
         this._reset();
 
+        if (label) {
+            // Add label bytes to the end of the encrypted entropy
+            const labelBytes = Utf8Tools.stringToUtf8ByteArray(label.trim());
+            if (labelBytes.byteLength > 255) {
+                // Should not happen for labels parsed via RequestParser.parseLabel as these are restricted to 63 bytes.
+                throw new Errors.KeyguardError('Account label too long.');
+            }
+            const newData = new Nimiq.SerialBuffer(encryptedEntropy.byteLength + 1 + labelBytes.byteLength);
+            newData.write(encryptedEntropy);
+            newData.writeUint8(labelBytes.byteLength);
+            newData.write(labelBytes);
+            encryptedEntropy = newData;
+        }
+
         const color = IqonHash.getBackgroundColorIndex(firstAddress.toUserFriendlyAddress());
-        this.file = new LoginFile(Nimiq.BufferUtils.toBase64(encryptedEntropy), color);
+        this.file = new LoginFile(Nimiq.BufferUtils.toBase64(encryptedEntropy), color, label);
     }
 
     /**

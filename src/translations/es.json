@@ -198,17 +198,18 @@
     "error-no-request-message": "No pudimos detectar una petición válida. Por favor intente de nuevo.",
 
     "login-file-color-orange": "Naranja",
-    "login-file-color-red": "Rojo",
-    "login-file-color-yellow": "Amarillo",
+    "login-file-color-red": "Roja",
+    "login-file-color-yellow": "Amarilla",
     "login-file-color-indigo": "Indigo",
     "login-file-color-blue": "Azul",
-    "login-file-color-purple": "Morado",
+    "login-file-color-purple": "Morada",
     "login-file-color-teal": "Turquesa",
-    "login-file-color-pink": "Rosado",
+    "login-file-color-pink": "Rosada",
     "login-file-color-green": "Verde",
     "login-file-color-brown": "Marron",
 
-    "login-file-filename": "Nimiq-Archivo-Sesion-{color}.png",
+    "login-file-filename": "Nimiq-Archivo-Sesion-{accountLabel}.png",
+    "login-file-default-account-label": "Cuenta {color}",
 
     "bitcoin-recipient-unlabelled": "Sin etiqueta",
 

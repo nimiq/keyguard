@@ -6,8 +6,9 @@ class LoginFile {
     /**
      * @param {string} encodedSecret - Base64-encoded and encrypted secret
      * @param {number} [color = 0]
+     * @param {string} [label] - Login file label
      */
-    constructor(encodedSecret, color = 0) {
+    constructor(encodedSecret, color = 0, label) {
         this._width = LoginFile.WIDTH;
         this._height = LoginFile.HEIGHT;
         const $canvas = document.createElement('canvas');
@@ -16,6 +17,9 @@ class LoginFile {
         this.$canvas = $canvas;
         this._config = LoginFileConfig[color];
         if (!this._config) throw new Error(`Invalid color index: ${color}`);
+        this._label = label && label.trim()
+            ? label.trim()
+            : I18n.translatePhrase('login-file-default-account-label').replace('{color}', this._config.name);
         /** @type {CanvasRenderingContext2D} */
         this._ctx = ($canvas.getContext('2d'));
         this._drawPromise = this._draw(encodedSecret);
@@ -34,14 +38,28 @@ class LoginFile {
 
     filename() {
         const filename = I18n.translatePhrase('login-file-filename');
-        return filename.replace('{color}', this._config.name);
+        return filename.replace(
+            '{accountLabel}',
+            // Replace spaces and sanitize file name (see https://stackoverflow.com/a/31976060).
+            // However, sanitizing the file name would not be strictly necessary as the browser also takes care of it.
+            // Note that the browser sanitization seems to also replace zero width joiners \u200D which breaks joined
+            // symbols like some emojis (https://en.wikipedia.org/wiki/Zero-width_joiner) into their components.
+            // eslint-disable-next-line no-control-regex
+            this._label.replace(/\s+/gu, '-').replace(/[<>:"/\\|?*\x00-\x1F]/gu, '_'),
+        );
     }
 
+    /**
+     * @returns {Promise<string>}
+     */
     async toDataUrl() {
         await this._drawPromise;
         return this.$canvas.toDataURL().replace(/#/g, '%23');
     }
 
+    /**
+     * @returns {Promise<string>}
+     */
     async toObjectUrl() {
         await this._drawPromise;
 
@@ -64,6 +82,7 @@ class LoginFile {
 
         this._setFont();
         this._drawDateText();
+        this._drawLabelText();
         this._drawWarningText();
 
         this._drawQrCode(encodedSecret);
@@ -83,24 +102,75 @@ class LoginFile {
     }
 
     _drawDateText() {
-        const x = LoginFile.WIDTH / 2;
-        const y = 194;
-        const date = new Date();
+        const qrPosition = LoginFile.calculateQrPosition();
+        const padding = qrPosition.padding;
+        const x = LoginFile.WIDTH - LoginFile.BORDER_WIDTH * 2;
+        const y = qrPosition.y + padding + qrPosition.height / 2;
+
         /**
          * @param {number} num
          * @returns {string}
          */
         const leftPad = num => `${num < 10 ? '0' : ''}${num}`;
+
+        const date = new Date();
         const datestring = `${date.getFullYear()}-${leftPad(date.getMonth() + 1)}-${leftPad(date.getDate())}`;
-        this._ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+
+        this._ctx.translate(x, y);
+        this._ctx.rotate(-Math.PI / 2);
+        this._ctx.translate(-x, -y);
+
+        this._ctx.font = `600 24px ${LoginFile.FONT_FAMILY}`;
+        this._ctx.fillStyle = `rgba(255, 255, 255, ${this._config.opacityDate})`;
         this._ctx.fillText(datestring, x, y);
+
+        this._ctx.setTransform(1, 0, 0, 1, 0, 0); // reset transform
+        this._setFont(); // reset font
+    }
+
+    _drawLabelText() {
+        const x = LoginFile.WIDTH / 2;
+        const y = 200;
+        this._ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+        this._ctx.font = `600 36px ${LoginFile.FONT_FAMILY}`;
+        this._ctx.filter = 'grayscale(100%) brightness(160%)';
+        this._ctx.globalCompositeOperation = 'screen';
+        this._ctx.fillText(this._getLabelForDisplay(), x, y, LoginFile.WIDTH - LoginFile.BORDER_WIDTH * 4);
+        // reset filter, composite operation and font
+        this._ctx.filter = '';
+        this._ctx.globalCompositeOperation = '';
+        this._setFont();
+    }
+
+    /**
+     * @returns {string}
+     */
+    _getLabelForDisplay() {
+        if (!this._label) {
+            // Generate default account label
+            const label = I18n.translatePhrase('login-file-default-account-label');
+            return label.replace('{color}', this._config.name);
+        }
+
+        // Truncate the label if necessary. To handle unicode astral symbols consisting of two surrogate chars (like
+        // emojis) correctly we split the string into its symbols rather than using label.length and label.substring
+        // (see https://mathiasbynens.be/notes/javascript-unicode#accounting-for-astral-symbols). Additionally, we
+        // normalize combined symbols into their single symbol equivalents. Note that this can still break for joined
+        // emojis consisting of multiple codepoints like https://emojipedia.org/family-man-woman-girl-boy/. To handle
+        // those, an exhaustive regex like https://github.com/mathiasbynens/emoji-regex would need to be used.
+        // The length 25 is chosen arbitrarily to what still looks good with wide characters.
+        const symbols = [...this._label.normalize()];
+        if (symbols.length > 25) {
+            return [...symbols.slice(0, 24), '…'].join('');
+        }
+        return this._label;
     }
 
     _drawWarningText() {
         const x = LoginFile.WIDTH / 2;
         const y = LoginFile.HEIGHT - 86 - 2;
         this._ctx.fillStyle = 'white';
-        this._ctx.fillText('Keep safe and confidential.', x, y);
+        this._ctx.fillText('Keep safe and confidential', x, y);
     }
 
     /**
@@ -163,11 +233,11 @@ class LoginFile {
             LoginFile.BORDER_WIDTH, LoginFile.BORDER_WIDTH, 606, 576,
         );
 
-        // Key and Stars
+        // Key
         await this._drawDataUrlImage(
             // eslint-disable-next-line max-len
-            `data:image/svg+xml,<svg width="47" height="49" opacity="${this._config.opacityKeyStars}" fill="white" xmlns="http://www.w3.org/2000/svg"><path opacity=".57" d="M3.35 8.21h.98a.49.49 0 01.49.5v.97a1.47 1.47 0 102.93 0V8.7a.49.49 0 01.49-.49h.98a1.47 1.47 0 100-2.93h-.98a.49.49 0 01-.5-.49v-.97a1.47 1.47 0 10-2.92 0v.97a.49.49 0 01-.5.5h-.97a1.47 1.47 0 000 2.92z"/><path opacity=".71" d="M43.12 40.47h-1.1a.59.59 0 01-.39-.14.46.46 0 01-.16-.35V39c0-.39-.17-.76-.48-1.03-.31-.28-.73-.43-1.17-.43-.44 0-.86.15-1.16.43-.31.27-.49.64-.49 1.03v.98c0 .06-.01.13-.04.19a.49.49 0 01-.12.16.6.6 0 01-.39.14h-1.1c-.43 0-.85.15-1.16.43-.31.27-.49.65-.49 1.03 0 .4.18.77.49 1.04.3.28.73.43 1.16.43h1.1a.6.6 0 01.4.14l.11.16c.03.06.04.13.04.19v.98c0 .39.18.76.49 1.03.3.28.72.43 1.16.43.44 0 .86-.15 1.17-.43.3-.27.48-.64.48-1.03v-.98c0-.13.06-.25.16-.35.1-.09.24-.14.4-.14h1.09c.44 0 .86-.15 1.17-.43.3-.27.48-.65.48-1.04 0-.38-.17-.76-.48-1.03-.31-.28-.73-.43-1.17-.43z"/><path d="M46.97 14.27a14 14 0 00-5.34-11.03 14.28 14.28 0 00-17.73-.03 14.12 14.12 0 00-5.38 11.01 14 14 0 001.4 6.12 1 1 0 01-.2 1.15L1.91 39.12a4.01 4.01 0 002.82 6.83 4.09 4.09 0 002.86-1.06 1.02 1.02 0 011.4.04L12 47.92a2.03 2.03 0 002.9.02 2.01 2.01 0 00-.02-2.87l-3.02-2.98a1 1 0 010-1.42l1.27-1.27a1.02 1.02 0 011.44 0l3.01 2.99a2.04 2.04 0 003.45-1.44 2 2 0 00-.57-1.41l-3.02-2.99a1 1 0 010-1.42l8.02-7.95a1.02 1.02 0 011.15-.2 14.31 14.31 0 0018.59-5.9 13.98 13.98 0 001.76-6.8zm-14.23 6.05a6.13 6.13 0 01-5.63-3.73A6 6 0 0128.43 10a6.11 6.11 0 0110.41 4.27c0 1.6-.64 3.14-1.78 4.28a6.12 6.12 0 01-4.32 1.77z"/></svg>`,
-            220, 266, 198, 208,
+            'data:image/svg+xml,<svg width="47" height="49" opacity="0.6" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M46.97 14.27a14 14 0 00-5.34-11.03 14.28 14.28 0 00-17.73-.03 14.12 14.12 0 00-5.38 11.01 14 14 0 001.4 6.12 1 1 0 01-.2 1.15L1.91 39.12a4.01 4.01 0 002.82 6.83 4.09 4.09 0 002.86-1.06 1.02 1.02 0 011.4.04L12 47.92a2.03 2.03 0 002.9.02 2.01 2.01 0 00-.02-2.87l-3.02-2.98a1 1 0 010-1.42l1.27-1.27a1.02 1.02 0 011.44 0l3.01 2.99a2.04 2.04 0 003.45-1.44 2 2 0 00-.57-1.41l-3.02-2.99a1 1 0 010-1.42l8.02-7.95a1.02 1.02 0 011.15-.2 14.31 14.31 0 0018.59-5.9 13.98 13.98 0 001.76-6.8zm-14.23 6.05a6.13 6.13 0 01-5.63-3.73A6 6 0 0128.43 10a6.11 6.11 0 0110.41 4.27c0 1.6-.64 3.14-1.78 4.28a6.12 6.12 0 01-4.32 1.77z"/></svg>',
+            244, 291, 150, 158,
         );
     }
 

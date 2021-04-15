@@ -59,8 +59,7 @@
 }
 
 .login-file-animation .logo,
-.login-file-animation .key,
-.login-file-animation .stars {
+.login-file-animation .key {
     transition: opacity 0.3s, fill 0.3s;
 }
 
@@ -69,7 +68,6 @@
 }
 
 .login-file-animation .key,
-.login-file-animation .stars,
 .login-file-animation .qr {
     opacity: 0;
 }
@@ -97,7 +95,7 @@
 
 .login-file-animation.step-8 .border:nth-child(1), .login-file-animation.colored .border:nth-child(1) { stroke-dasharray: 102 345 585 0; }
 .login-file-animation.step-8 .border:nth-child(3), .login-file-animation.colored .border:nth-child(3) { stroke-dasharray: 0 152 295 585; }
-.login-file-animation.step-8 .key, .login-file-animation.step-8 .stars { opacity: 1; }
+.login-file-animation.step-8 .key { opacity: 1; }
 
 .login-file-animation.step-1 .qr:nth-child(1),
 .login-file-animation.step-2 .qr:nth-child(2),
@@ -142,8 +140,7 @@
     fill: rgba(255, 255, 255, 0.5);
 }
 
-.login-file-animation.colored .key,
-.login-file-animation.colored .stars {
+.login-file-animation.colored .key {
     opacity: 1;
     fill: rgba(255, 255, 255, 0.4);
 }
