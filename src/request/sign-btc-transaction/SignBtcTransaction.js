@@ -167,7 +167,6 @@ class SignBtcTransaction {
                 const keyPair = btcKey.deriveKeyPair(input.keyPath);
                 const output = BitcoinUtils.keyPairToNativeSegwit(keyPair).output;
                 if (!output) {
-                    TopLevelApi.setLoading(false);
                     throw new Error('UNEXPECTED: Failed to get native SegWit output for redeemScript');
                 }
                 input.redeemScript = output;
@@ -268,41 +267,46 @@ class SignBtcTransaction {
             // Finalize
             let i = 0;
             for (const parsedInput of request.inputs) {
-                if (parsedInput.type === 'default') {
-                    psbt.finalizeInput(i);
-                }
-                if (parsedInput.type === 'htlc-redeem' || parsedInput.type === 'htlc-refund') {
-                    // eslint-disable-next-line no-loop-func
-                    psbt.finalizeInput(i, (inputIndex, input /* , script, isSegwit, isP2SH, isP2WSH */) => {
-                        if (!input.partialSig) {
-                            throw new Errors.KeyguardError('UNEXPECTED: Input does not have a partial signature');
-                        }
+                switch (parsedInput.type) {
+                    case 'standard':
+                        psbt.finalizeInput(i);
+                        break;
+                    case 'htlc-redeem':
+                    case 'htlc-refund':
+                        // eslint-disable-next-line no-loop-func
+                        psbt.finalizeInput(i, (inputIndex, input /* , script, isSegwit, isP2SH, isP2WSH */) => {
+                            if (!input.partialSig) {
+                                throw new Errors.KeyguardError('UNEXPECTED: Input does not have a partial signature');
+                            }
 
-                        if (!input.witnessScript) {
-                            throw new Errors.KeyguardError('UNEXPECTED: Input does not have a witnessScript');
-                        }
+                            if (!input.witnessScript) {
+                                throw new Errors.KeyguardError('UNEXPECTED: Input does not have a witnessScript');
+                            }
 
-                        const witnessBytes = BitcoinJS.script.fromASM([
-                            input.partialSig[0].signature.toString('hex'),
-                            input.partialSig[0].pubkey.toString('hex'),
-                            ...(parsedInput.type === 'htlc-redeem' ? [
-                                // Use zero-bytes as a dummy secret, required for signing
-                                '0000000000000000000000000000000000000000000000000000000000000000',
-                                'OP_1', // OP_1 (true) activates the redeem branch in the HTLC script
-                            ] : []),
-                            ...(parsedInput.type === 'htlc-refund' ? [
-                                'OP_0', // OP_0 (false) activates the refund branch in the HTLC script
-                            ] : []),
-                            input.witnessScript.toString('hex'),
-                        ].join(' '));
+                            const witnessBytes = BitcoinJS.script.fromASM([
+                                input.partialSig[0].signature.toString('hex'),
+                                input.partialSig[0].pubkey.toString('hex'),
+                                ...(parsedInput.type === 'htlc-redeem' ? [
+                                    // Use zero-bytes as a dummy secret, required for signing
+                                    '0000000000000000000000000000000000000000000000000000000000000000',
+                                    'OP_1', // OP_1 (true) activates the redeem branch in the HTLC script
+                                ] : []),
+                                ...(parsedInput.type === 'htlc-refund' ? [
+                                    'OP_0', // OP_0 (false) activates the refund branch in the HTLC script
+                                ] : []),
+                                input.witnessScript.toString('hex'),
+                            ].join(' '));
 
-                        const witnessStack = BitcoinJS.script.toStack(witnessBytes);
+                            const witnessStack = BitcoinJS.script.toStack(witnessBytes);
 
-                        return {
-                            finalScriptSig: undefined,
-                            finalScriptWitness: HtlcUtils.witnessStackToScriptWitness(witnessStack),
-                        };
-                    });
+                            return {
+                                finalScriptSig: undefined,
+                                finalScriptWitness: HtlcUtils.witnessStackToScriptWitness(witnessStack),
+                            };
+                        });
+                        break;
+                    default:
+                        throw new Errors.KeyguardError('Unsupported input type');
                 }
 
                 i += 1;

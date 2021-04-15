@@ -122,11 +122,10 @@
     "identicon-selector-avatars-hint-2": "Think of them as bank account numbers.",
     "identicon-selector-generate-new": "Новые аватары",
 
-    "download-loginfile-download": "Скачать Файл Авторизации",
+    "download-loginfile-download": "Скачать",
     "download-loginfile-successful": "Скачивание прошло успешно?",
-    "download-loginfile-tap-and-hold": "Удерживайте изображение, чтобы скачать его",
-    "download-loginfile-continue": "Продолжить, когда готово",
-    "download-loginfile-download-again": "Скачать повторно",
+    "download-loginfile-tap-and-hold": "Удерживайте изображение,\nчтобы скачать его",
+    "download-loginfile-continue": "Продолжить",
 
     "validate-words-text": "Для восстановления выберите верное слово из списка.",
     "validate-words-1-hint": "Введите 1 слово",
@@ -209,7 +208,8 @@
     "login-file-color-green": "Зеленый",
     "login-file-color-brown": "Коричневый",
 
-    "login-file-filename": "Nimiq-Файл-Авторизации-{color}-аккаунт.png",
+    "login-file-filename": "Nimiq-Файл-Авторизации-{accountLabel}.png",
+    "login-file-default-account-label": "{color} Аккаунт",
 
     "bitcoin": "Bitcoin",
     "bitcoin-recipient-unlabelled": "Немаркированный",

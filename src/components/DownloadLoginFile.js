@@ -1,4 +1,3 @@
-/* global BrowserDetection */
 /* global Nimiq */
 /* global I18n */
 /* global LoginFile */
@@ -6,15 +5,14 @@
 /* global Errors */
 /* global IqonHash */
 /* global TemplateTags */
+/* global Utf8Tools */
 
 class DownloadLoginFile extends Nimiq.Observable {
     /**
      * @param {HTMLDivElement} [$el]
-     * @param {Uint8Array} [encryptedEntropy]
-     * @param {Nimiq.Address} [firstAddress]
      * @param {string} [description]
      */
-    constructor($el, encryptedEntropy, firstAddress, description) {
+    constructor($el, description) {
         super();
 
         this.$el = DownloadLoginFile._createElement($el, description);
@@ -32,14 +30,7 @@ class DownloadLoginFile extends Nimiq.Observable {
         this.$downloadButton = (this.$el.querySelector('.download-button'));
 
         /** @type {HTMLButtonElement} */
-        const $continueButton = (this.$el.querySelector('.continue'));
-
-        /** @type {HTMLButtonElement} */
-        const $backToDownloadButton = (this.$el.querySelector('.back-to-download'));
-
-        if (encryptedEntropy && firstAddress) {
-            this.setEncryptedEntropy(encryptedEntropy, firstAddress);
-        }
+        this.$continueButton = (this.$el.querySelector('.continue'));
 
         /** @type {SVGElement} */
         this.$longTouchIndicator = (this.$el.querySelector('.long-touch-indicator'));
@@ -47,12 +38,11 @@ class DownloadLoginFile extends Nimiq.Observable {
         this.$loginfile.addEventListener('mousedown', e => this._onMouseDown(e));
         this.$loginfile.addEventListener('touchstart', () => this._onTouchStart());
         this.$downloadButton.addEventListener('click', () => this._onDownloadStart());
-        $continueButton.addEventListener('click', () => {
+        this.$continueButton.addEventListener('click', () => {
             this._onDownloadEnd();
             // Remove previously added classes after a short delay to restore the initial state.
             window.setTimeout(this._reset.bind(this), 300);
         });
-        $backToDownloadButton.addEventListener('click', () => this.$downloadButton.click());
     }
 
     /**
@@ -82,13 +72,20 @@ class DownloadLoginFile extends Nimiq.Observable {
 
             <p class="loginfile-description"></p>
 
-            <a class="nq-button light-blue download-button">
-                <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-download"/></svg>
-                <span data-i18n="download-loginfile-download">Download Login File</span>
-            </a>
-            <span class="nq-label tap-and-hold" data-i18n="download-loginfile-tap-and-hold">Tap and hold image to download</span>
-            <button class="nq-button light-blue continue" data-i18n="download-loginfile-continue">Continue when ready</button>
-            <button class="nq-button-s back-to-download" data-i18n="download-loginfile-download-again">Download again</button>
+            <div class="actions">
+                <span class="nq-label tap-and-hold" data-i18n="download-loginfile-tap-and-hold">
+                    Tap and hold image
+                    to download
+                </span>
+                <a class="nq-button light-blue download-button">
+                    <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-download"/></svg>
+                    <span data-i18n="download-loginfile-download">Download</span>
+                </a>
+                <button class="nq-button light-blue continue" disabled>
+                    <span data-i18n="download-loginfile-continue">Continue</span>
+                    <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-caret-right-small"/></svg>
+                </button>
+            </div>
         `;
         /* eslint-enable max-len */
 
@@ -106,16 +103,31 @@ class DownloadLoginFile extends Nimiq.Observable {
     /**
      * @param {Uint8Array} encryptedEntropy
      * @param {Nimiq.Address} firstAddress
+     * @param {string} [label = '']
      */
-    setEncryptedEntropy(encryptedEntropy, firstAddress) {
+    setEncryptedEntropy(encryptedEntropy, firstAddress, label = '') {
         if (encryptedEntropy.byteLength !== KeyStore.ENCRYPTED_SECRET_SIZE) {
             throw new Errors.KeyguardError('Can only export encrypted Entropies');
         }
         // Remove previously added classes to restore the initial state.
         this._reset();
 
+        if (label) {
+            // Add label bytes to the end of the encrypted entropy
+            const labelBytes = Utf8Tools.stringToUtf8ByteArray(label.trim());
+            if (labelBytes.byteLength > 255) {
+                // Should not happen for labels parsed via RequestParser.parseLabel as these are restricted to 63 bytes.
+                throw new Errors.KeyguardError('Account label too long.');
+            }
+            const newData = new Nimiq.SerialBuffer(encryptedEntropy.byteLength + 1 + labelBytes.byteLength);
+            newData.write(encryptedEntropy);
+            newData.writeUint8(labelBytes.byteLength);
+            newData.write(labelBytes);
+            encryptedEntropy = newData;
+        }
+
         const color = IqonHash.getBackgroundColorIndex(firstAddress.toUserFriendlyAddress());
-        this.file = new LoginFile(Nimiq.BufferUtils.toBase64(encryptedEntropy), color);
+        this.file = new LoginFile(Nimiq.BufferUtils.toBase64(encryptedEntropy), color, label);
     }
 
     /**
@@ -187,20 +199,9 @@ class DownloadLoginFile extends Nimiq.Observable {
                 this._cancelDownload = reject;
             });
 
-            // If window gets blurred, show 'Continue' button in interface and do not automatically
-            // consider the download successful.
-            // As mobile Safari on iOS 13.x+ does support the download attribute, it no longer uses the long tap
-            // fallback. However, if the page changes its hash in the background while the prompt asking to download
-            // the file was not confirmed yet, the download will simply do nothing. To prevent that behaviour the
-            // hash change is delayed by the .maybe-downloaded confirmation mechanism.
-            if (!document.hasFocus()
-                || (BrowserDetection.isIOS() && BrowserDetection.iOSVersion()[0] > 12)) {
-                this.$el.classList.add('maybe-downloaded');
-                this.fire(DownloadLoginFile.Events.INITIATED);
-                return;
-            }
+            this.fire(DownloadLoginFile.Events.INITIATED);
 
-            this._onDownloadEnd();
+            this._maybeDownloaded();
         } catch (e) {
             // do nothing
         } finally {
@@ -235,7 +236,7 @@ class DownloadLoginFile extends Nimiq.Observable {
                 this.$loginfile.addEventListener('touchend', reject, { once: true });
             });
 
-            this.$el.classList.add('maybe-downloaded');
+            this._maybeDownloaded();
         } catch (e) {
             // do nothing
         } finally {
@@ -244,8 +245,14 @@ class DownloadLoginFile extends Nimiq.Observable {
         }
     }
 
+    _maybeDownloaded() {
+        this.$el.classList.add('maybe-downloaded');
+        this.$continueButton.disabled = false;
+    }
+
     _reset() {
         this.$el.classList.remove('maybe-downloaded');
+        this.$continueButton.disabled = true;
         this.fire(DownloadLoginFile.Events.RESET);
     }
 

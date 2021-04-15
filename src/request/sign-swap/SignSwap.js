@@ -17,6 +17,7 @@
 /* global SignSwapApi */
 /* global SwapFeesTooltip */
 /* global BalanceDistributionBar */
+/* global Constants */
 
 /**
  * @callback SignSwap.resolve
@@ -178,7 +179,6 @@ class SignSwap {
                 exchangeOtherValue = fundTx.type === 'EUR'
                     ? fundTx.amount - request.serviceFundingFee
                     // : redeemTx.type === 'EUR'
-                    //     ? redeemTx.amount + request.serviceRedeemingFee
                     : 0; // Should never happen, if parsing works correctly
                 break;
             default:
@@ -416,9 +416,7 @@ class SignSwap {
 
         if (request.fund.type === 'BTC') {
             const keyPairs = request.fund.inputs.map(input => btcKey.deriveKeyPair(input.keyPath));
-            const privKeys = keyPairs.map(keyPair => Nimiq.BufferUtils.toHex(
-                /** @type {Buffer} */ (keyPair.privateKey),
-            ));
+            const privKeys = keyPairs.map(keyPair => /** @type {Buffer} */ (keyPair.privateKey).toString('hex'));
             privateKeys.btc = privKeys;
 
             if (request.fund.changeOutput) {
@@ -454,9 +452,7 @@ class SignSwap {
 
         if (request.redeem.type === 'BTC') {
             const keyPairs = [btcKey.deriveKeyPair(request.redeem.input.keyPath)];
-            const privKeys = keyPairs.map(keyPair => Nimiq.BufferUtils.toHex(
-                /** @type {Buffer} */ (keyPair.privateKey),
-            ));
+            const privKeys = keyPairs.map(keyPair => /** @type {Buffer} */ (keyPair.privateKey).toString('hex'));
             privateKeys.btc = privKeys;
 
             // Calculate, validate and store output address
@@ -474,31 +470,20 @@ class SignSwap {
         // }
 
         try {
-            // Serialize request to store in SessionStorage
-            /** @type {any} */
-            const plainRequest = request;
-            if (request.fund.type === 'NIM') {
-                // Plainify Nimiq.Transaction
-                plainRequest.fund.transaction = request.fund.transaction.toPlain();
-            }
-            if (request.fund.type === 'BTC') {
-                // Plainify BTC input script buffers
-                for (let i = 0; i < request.fund.inputs.length; i++) {
-                    plainRequest.fund.inputs[i].witnessUtxo.script = Nimiq.BufferUtils.toHex(
-                        request.fund.inputs[i].witnessUtxo.script,
-                    );
-                }
-            }
-            if (request.redeem.type === 'NIM') {
-                // Plainify Nimiq.Transaction
-                plainRequest.redeem.transaction = request.redeem.transaction.toPlain();
-            }
-
             sessionStorage.setItem(
-                SignSwapApi.SESSION_STORAGE_KEY_PREFIX + request.swapId,
+                Constants.SWAP_IFRAME_SESSION_STORAGE_KEY_PREFIX + request.swapId,
                 JSON.stringify({
                     keys: privateKeys,
-                    request: plainRequest,
+                    // Serialize request to store in SessionStorage
+                    request,
+                }, (_, value) => {
+                    if (value instanceof Nimiq.Transaction) {
+                        return value.toPlain();
+                    }
+                    if (value instanceof Uint8Array) {
+                        return Nimiq.BufferUtils.toHex(value);
+                    }
+                    return value;
                 }),
             );
         } catch (error) {

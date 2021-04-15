@@ -124,9 +124,8 @@
 
     "download-loginfile-download": "Descargar",
     "download-loginfile-successful": "¿Descarga exitosa?",
-    "download-loginfile-tap-and-hold": "Toca la pantalla y mantén presionado para descargar.",
-    "download-loginfile-continue": "Continue cuando este listo",
-    "download-loginfile-download-again": "Descargar de nuevo",
+    "download-loginfile-tap-and-hold": "Toca la pantalla y mantén\npresionado para descargar.",
+    "download-loginfile-continue": "Continue",
 
     "validate-words-text": "Por favor seleccione la palabra correcta de su lista de Palabras de Recuperación.",
     "validate-words-1-hint": "¿Cual es la primer palabra?",
@@ -199,17 +198,18 @@
     "error-no-request-message": "No pudimos detectar una petición válida. Por favor intente de nuevo.",
 
     "login-file-color-orange": "Naranja",
-    "login-file-color-red": "Rojo",
-    "login-file-color-yellow": "Amarillo",
+    "login-file-color-red": "Roja",
+    "login-file-color-yellow": "Amarilla",
     "login-file-color-indigo": "Indigo",
     "login-file-color-blue": "Azul",
-    "login-file-color-purple": "Morado",
+    "login-file-color-purple": "Morada",
     "login-file-color-teal": "Turquesa",
-    "login-file-color-pink": "Rosado",
+    "login-file-color-pink": "Rosada",
     "login-file-color-green": "Verde",
     "login-file-color-brown": "Marron",
 
-    "login-file-filename": "Nimiq-Archivo-Sesion-{color}.png",
+    "login-file-filename": "Nimiq-Archivo-Sesion-{accountLabel}.png",
+    "login-file-default-account-label": "Cuenta {color}",
 
     "bitcoin": "Bitcoin",
     "bitcoin-recipient-unlabelled": "Sin etiqueta",

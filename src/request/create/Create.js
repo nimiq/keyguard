@@ -72,8 +72,6 @@ class Create {
         this._passwordSetter = new PasswordSetterBox($setPassword, { buttonI18nTag: 'passwordbox-confirm-create' });
         this._downloadLoginFile = new DownloadLoginFile(
             $downloadLoginFile,
-            undefined,
-            undefined,
             I18n.translatePhrase('create-loginfile-any-device'),
         );
         // Set up progress indicators

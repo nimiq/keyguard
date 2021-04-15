@@ -126,7 +126,6 @@
     "download-loginfile-successful": "是否成功下载？",
     "download-loginfile-tap-and-hold": "点击并按住图片下载",
     "download-loginfile-continue": "准备好后继续",
-    "download-loginfile-download-again": "再次下载",
 
     "validate-words-text": "请从助记词列表中选出正确的单词",
     "validate-words-1-hint": "第一个单词是什么？",
@@ -209,7 +208,8 @@
     "login-file-color-green": "绿",
     "login-file-color-brown": "棕",
 
-    "login-file-filename": "Nimiq-登录-文件-{color}-账户.png",
+    "login-file-filename": "Nimiq-登录-文件-{accountLabel}.png",
+    "login-file-default-account-label": "{color}帐户",
 
     "bitcoin": "比特币",
     "bitcoin-recipient-unlabelled": "未标签",

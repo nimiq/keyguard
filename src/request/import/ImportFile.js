@@ -28,6 +28,8 @@ class ImportFile {
         this._reject = reject;
 
         this._encryptedKey = new Nimiq.SerialBuffer(0);
+        /** @type {string | undefined} */
+        this._label = undefined;
         this._flags = {
             hasPin: false,
         };
@@ -90,7 +92,17 @@ class ImportFile {
             this._flags.hasPin = true;
         }
 
-        this._encryptedKey = Nimiq.BufferUtils.fromBase64(decoded);
+        const buffer = Nimiq.BufferUtils.fromBase64(decoded);
+        if (buffer.byteLength > KeyStore.ENCRYPTED_SECRET_SIZE) {
+            this._encryptedKey = new Nimiq.SerialBuffer(buffer.read(KeyStore.ENCRYPTED_SECRET_SIZE));
+            const labelLength = buffer.readUint8();
+            const labelBytes = buffer.read(labelLength);
+            if (Utf8Tools.isValidUtf8(labelBytes)) {
+                this._label = Utf8Tools.utf8ByteArrayToString(labelBytes);
+            }
+        } else {
+            this._encryptedKey = buffer;
+        }
 
         // Prepare next page
         this.$loginFileImage.src = src;
@@ -160,6 +172,7 @@ class ImportFile {
         const result = [{
             keyId: key.id,
             keyType: key.type,
+            ...(this._label ? { keyLabel: this._label } : {}),
             addresses,
 
             // Backup warnings should not be shown for imported accounts, only for newly created accounts.
