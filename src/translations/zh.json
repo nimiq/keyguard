@@ -122,10 +122,10 @@
     "identicon-selector-avatars-hint-2": "請将它们视为银行帐号。",
     "identicon-selector-generate-new": "新的头像",
 
-    "download-loginfile-download": "下载登录文件",
+    "download-loginfile-download": "下载",
     "download-loginfile-successful": "是否成功下载？",
     "download-loginfile-tap-and-hold": "点击并按住图片下载",
-    "download-loginfile-continue": "准备好后继续",
+    "download-loginfile-continue": "继续",
 
     "validate-words-text": "请从助记词列表中选出正确的单词",
     "validate-words-1-hint": "第一个单词是什么？",
