@@ -121,11 +121,10 @@
     "identicon-selector-avatars-hint-2": "Think of them as bank account numbers.",
     "identicon-selector-generate-new": "Нові адреси",
 
-    "download-loginfile-download": "Завантажити файл-ключ",
+    "download-loginfile-download": "Завантажити",
     "download-loginfile-successful": "Завантажено успішно?",
-    "download-loginfile-tap-and-hold": "Натисніть і утримуйте на малюнку щоб завантажити",
-    "download-loginfile-continue": "Продовжити коли готово",
-    "download-loginfile-download-again": "Завантажити знову",
+    "download-loginfile-tap-and-hold": "Натисніть і утримуйте на\nмалюнку щоб завантажити",
+    "download-loginfile-continue": "Продовжити",
 
     "validate-words-text": "Будь ласка, вкажіть слово з ваших секретних слів для доступу до рахунку.",
     "validate-words-1-hint": "Вкажіть слово №1",

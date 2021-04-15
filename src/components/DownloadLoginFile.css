@@ -57,42 +57,81 @@
     display: none;
 }
 
-.download-loginfile button,
-.download-loginfile .download-button {
+.download-loginfile .actions {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.download-loginfile .nq-button {
     margin-top: 3rem;
     margin-bottom: 0;
 }
 
-.download-loginfile .download-button > .nq-icon {
-    margin-right: 1.5rem;
+.download-loginfile .download-button {
+    min-width: 0;
+    margin-right: 1rem;
+    flex-shrink: 0;
+    padding-left: 3rem;
 }
 
-.download-loginfile .tap-and-hold,
-.download-loginfile .continue,
-.download-loginfile .back-to-download,
-.download-loginfile.fallback-download .download-button,
+.download-loginfile .download-button > .nq-icon {
+    margin-right: 1.5rem;
+    font-size: 2.5rem;
+}
+
 .download-loginfile.maybe-downloaded .download-button {
+    padding: 0 1rem 0 2.5rem;
+    background: rgba(31, 35, 72, .07);
+    color: var(--nimiq-blue);
+    box-shadow: none;
+    transform: none;
+    transition: background 0.3s var(--nimiq-ease);
+}
+
+.download-loginfile.maybe-downloaded .download-button::before {
     display: none;
 }
 
-.download-loginfile.fallback-download .tap-and-hold,
-.download-loginfile.maybe-downloaded .continue,
-.download-loginfile.maybe-downloaded .back-to-download {
-    display: block;
+.download-loginfile.maybe-downloaded .download-button:hover,
+.download-loginfile.maybe-downloaded .download-button:focus {
+    background: rgba(31, 35, 72, .12);
 }
 
-.download-loginfile.maybe-downloaded .back-to-download {
-    margin: 2rem auto -2rem;
+.download-loginfile .continue {
+    display: inline-flex;
+    align-items: center;
+    min-width: 0;
+    margin-left: 1rem;
+    flex-shrink: 0;
+    padding-right: 2.25rem;
 }
 
-.download-loginfile.maybe-downloaded .tap-and-hold {
-    display: none; /* needs to come _after_ "display: block" above to overwrite it */
+.download-loginfile:not(.maybe-downloaded) .continue {
+    padding-left: 2.25rem;
 }
 
-.download-loginfile .nq-label {
+.download-loginfile .continue > span {
+    margin-right: 1rem;
+}
+
+.download-loginfile .continue > .nq-icon {
+    margin-right: 0.5rem; /* To visually center the icon, which itself has more space on the left than on the right */
+    font-size: 2.5rem;
+}
+
+.download-loginfile:not(.fallback-download) .tap-and-hold,
+.download-loginfile.fallback-download .download-button,
+.download-loginfile:not(.maybe-downloaded) .continue > span,
+.download-loginfile.maybe-downloaded .download-button > span {
+    display: none;
+}
+
+.download-loginfile .tap-and-hold {
     text-align: center;
-    margin: 6rem 0 2rem;
+    margin: 3rem 1rem 0 auto;
     font-size: 2rem;
     line-height: 1.25;
     color: rgba(31, 35, 72, .5) !important; /* important is necessary for iOS to overwrite <a> colors; based on Nimiq Blue */
+    white-space: pre-line;
 }
