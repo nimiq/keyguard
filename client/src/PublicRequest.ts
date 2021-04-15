@@ -202,6 +202,7 @@ export type SepaSettlementInstruction = {
     recipient: {
         name: string,
         iban: string,
+        bic: string,
     },
 };
 

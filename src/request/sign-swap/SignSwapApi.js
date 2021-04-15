@@ -241,6 +241,10 @@ class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) {
                             /** @type {{iban: unknown}} */ (recipient).iban,
                             `${parameterName}.recipient.iban`,
                         ),
+                        bic: this.parseBic(
+                            /** @type {{bic: unknown}} */ (recipient).bic,
+                            `${parameterName}.recipient.bic`,
+                        ),
                     },
                 };
                 return settlement;
@@ -263,6 +267,22 @@ class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) {
 
     get Handler() {
         return SignSwap;
+    }
+
+    /**
+     * @param {unknown} bic
+     * @param {string} parameterName
+     * @returns {string}
+     */
+    parseBic(bic, parameterName) {
+        if (typeof bic !== 'string') {
+            throw new Errors.InvalidRequestError(`${parameterName} must be a string`);
+        }
+        // Regex from https://github.com/jquery-validation/jquery-validation/blob/master/src/additional/bic.js
+        if (!/^([A-Z]{6}[A-Z2-9][A-NP-Z1-9])(X{3}|[A-WY-Z0-9][A-Z0-9]{2})?$/.test(bic)) {
+            throw new Errors.InvalidRequestError(`${parameterName} is not a valid BIC`);
+        }
+        return bic;
     }
 }
 
