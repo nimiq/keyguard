@@ -212,6 +212,7 @@ class SignSwap {
             new SwapFeesTooltip(
                 request,
                 fundTx.type === exchangeBaseAsset ? exchangeBaseValue : exchangeOtherValue,
+                fundTx.type === exchangeBaseAsset ? exchangeOtherValue : exchangeBaseValue,
             ).$el,
         );
 
