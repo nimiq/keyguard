@@ -124,9 +124,8 @@
 
     "download-loginfile-download": "Download Login File",
     "download-loginfile-successful": "Download succesvol?",
-    "download-loginfile-tap-and-hold": "Tik en houd de afbeelding vast om te downloaden",
+    "download-loginfile-tap-and-hold": "Tik en houd de afbeelding\nvast om te downloaden",
     "download-loginfile-continue": "Doorgaan",
-    "download-loginfile-download-again": "Opnieuw downloaden",
 
     "validate-words-text": "Selecteer het juiste woord uit je lijst met herstelwoorden.",
     "validate-words-1-hint": "Wat is het 1e woord?",

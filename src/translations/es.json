@@ -98,8 +98,8 @@
     "passwordbox-reset-password": "Reiniciar con Palabras de Recuperación",
 
     "payment-info-line-order-amount": "Monto de orden",
-    "payment-info-line-vendor-markup": "Margen del vendedor en crypto",
-    "payment-info-line-vendor-discount": "Descuento del vendedor en crypto",
+    "payment-info-line-vendor-markup": "Margen del vendedor en cripto",
+    "payment-info-line-vendor-discount": "Descuento del vendedor en cripto",
     "payment-info-line-effective-rate": "Taza efectiva",
     "payment-info-line-free-service": "Nimiq provee este servicio libre de costo",
     "payment-info-line-total": "Total",
