@@ -18,7 +18,7 @@ describe("I18n", function () {
         }
     });
 
-    xit("dictionary entries are complete", function () { // Checked by tools/translationValidator
+    it("dictionary entries are complete", function () { // Checked by tools/translationValidator
         const BASELINE = 'en';
         const english = I18n.dictionary[BASELINE];
         const languages = I18n.availableLanguages();

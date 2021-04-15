@@ -1,7 +1,7 @@
 {
     "_language": "Français",
 
-    "language-changed": "La langue d'affichage a changé. Voulez-vous recharger la page pour mettre à jours toutes les traductions ? Sinon certaines pourraient ne pas être mises à jour automatiquement.",
+    "language-changed": "La langue d'affichage a changé. Voulez-vous recharger la page pour mettre à jour toutes les traductions ? Certaines pourraient ne pas être mises à jour automatiquement.",
 
     "back-to-app": "Retour à {appName}",
     "back-to-accounts": "Retour à mes comptes",
@@ -16,18 +16,26 @@
     "funding-cashlink": "Financement du cashlink",
 
     "recovery-words-title": "Écrivez ces 24 Mots sur du papier",
-    "recovery-words-intro-text": "Les Mots de Récupération sont le SEUL moyen de restorer votre compte dans le cas où vous perdriez votre Ficher de Connexion ou votre mot de passe.",
-    "recovery-words-intro-offline": "Gardez vos mots hors-ligne, ne les renseignez nulle part hormis sur [strong]keyguard[/strong].nimiq.com.",
+    "recovery-words-intro-text": "Les Mots de Récupération sont le SEUL moyen de restaurer votre compte dans le cas où vous perdriez votre Ficher de Connexion ou votre mot de passe.",
+    "recovery-words-intro-offline": "Gardez vos mots hors-ligne, ne les renseignez nul part hormis sur [strong]keyguard[/strong].nimiq.com.",
     "recovery-words-intro-copy": "Créez une copie et stockez-la dans un endroit sûr: maison familiale, coffre de banque, etc.",
     "recovery-words-intro-safety": "Faites attention à l'eau et au feu, utilisez une boîte scellée pour protéger vos Mots de Récupération.",
     "recovery-words-text": "N'importe qui avec ces mots peut accéder à votre compte ! Gardez-les en lieu sûr.",
     "recovery-words-validate": "Valider la sauvegarde",
 
     "create-heading-choose-identicon": "Choisissez un Avatar",
+    "create-confirm-address": "Select and continue",
     "create-heading-create-password": "Créez un Mot de Passe",
     "create-heading-repeat-password": "Confirmez le Mot de Passe",
     "create-heading-validate-backup": "Validez votre Sauvegarde",
-    "create-wallet-desc": "Ceci est votre Compte avec votre première Adresse.",
+    "create-loginfile-keycard": "The password protects your Login File,\nconsider it a keycard to your account.",
+    "create-loginfile-any-device": "This file allows you to login from any device.",
+    "create-heading-what-is-loginfile": "What is a Login File?",
+    "create-login-file-explainer-intro": "An image file that, in combination with your password, grants access to your account.",
+    "create-login-file-paragraph-1": "Nimiq does not store your data. The Login File replaces email as the way to log in.",
+    "create-login-file-paragraph-2": "The Login File is stored in your browser. Unlock it with your password.",
+    "create-login-file-paragraph-3": "You might get logged out by accident. Download and store the Login File safely to stay in control.",
+    "create-login-file-return": "Got it",
 
     "import-heading-enter-recovery-words": "Entrez vos Mots de Récupération",
     "import-import-login-file": "Importez votre Fichier de Connexion",
@@ -77,12 +85,12 @@
     "passwordbox-confirm-log-in": "Se connecter",
     "passwordbox-show-words": "Afficher les mots de récupération",
     "passwordbox-sign-msg": "Signer le message",
-    "passwordbox-confirm-swap": "Confirmer le swap",
     "passwordbox-password-strength-short": "Entrez 8 caractères ou plus",
     "passwordbox-password-strength-weak": "Faible mot de passe",
     "passwordbox-password-strength-good": "Bon mot de passe",
     "passwordbox-password-strength-strong": "Très bon mot de passe",
     "passwordbox-password-strength-secure": "Excellent mot de passe",
+    "passwordbox-password-too-long": "Max. 256 characters",
     "passwordbox-repeat-password-long": "Pas de correspondance, veuillez essayer à nouveau",
     "passwordbox-repeat-password-short": "Le mot de passe est trop court",
     "passwordbox-password-skip": "Ignorer pour l'instant",
@@ -109,14 +117,14 @@
     "timer-day": "jour",
     "timer-days": "jours",
 
-    "identicon-selector-avatars-hint": "Les avatars représentes les adresses.",
+    "identicon-selector-avatars-hint": "Avatars represent NIM addresses.",
+    "identicon-selector-avatars-hint-2": "Think of them as bank account numbers.",
     "identicon-selector-generate-new": "Nouveaux avatars",
 
     "download-loginfile-download": "Télécharger",
     "download-loginfile-successful": "Téléchargement réussi ?",
-    "download-loginfile-tap-and-hold": "Appuyez et maintenez l'image pour la télécharger",
-    "download-loginfile-continue": "Continuez lorsque vous êtes prêt",
-    "download-loginfile-download-again": "Télécharger à nouveau",
+    "download-loginfile-tap-and-hold": "Appuyez et maintenez l'image\npour la télécharger",
+    "download-loginfile-continue": "Continuez",
 
     "validate-words-text": "Veuillez sélectionner le mot correct dans votre liste de mots de récupération.",
     "validate-words-1-hint": "Quel est le 1er mot ?",
@@ -199,21 +207,11 @@
     "login-file-color-green": "Vert",
     "login-file-color-brown": "Marron",
 
-    "login-file-filename": "Fichier-de-Connexion-Nimiq-Compte-{color}.png",
+    "login-file-filename": "Fichier-de-Connexion-Nimiq-{accountLabel}.png",
+    "login-file-default-account-label": "Compte {color}",
 
-    "bitcoin": "Bitcoin",
     "bitcoin-recipient-unlabelled": "Non-libellé",
 
     "derive-btc-xpub-heading": "Ajouter Bitcoin\nà votre compte",
-    "derive-btc-xpub-text": "Swappez facilement entre NIM, la monnaie de paiement super performante et BTC, l'étalon-or de la crypto.",
-
-    "sign-swap-heading": "Confirmer le swap",
-    "sign-swap-exchange-rate-tooltip": "Ce taux inclut les frais de swap.",
-    "sign-swap-fees": "frais",
-    "sign-swap-btc-fees": "Frais de réseau BTC",
-    "sign-swap-btc-fees-explainer": "Un swap atomique nécessite 2 transactions BTC.",
-    "sign-swap-nim-fees": "Frais de réseau NIM",
-    "sign-swap-exchange-fee": "Frais de swap",
-    "sign-swap-of-exchange-value": "de la valeur du swap.",
-    "sign-swap-total-fees": "Total des frais"
+    "derive-btc-xpub-text": "Swappez facilement entre NIM, la monnaie de paiement super performante et BTC, l'étalon-or de la crypto."
 }

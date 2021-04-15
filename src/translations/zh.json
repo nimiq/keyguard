@@ -24,10 +24,18 @@
     "recovery-words-validate": "验证备份",
 
     "create-heading-choose-identicon": "选择头像",
+    "create-confirm-address": "选择并继续",
     "create-heading-create-password": "设置密码",
     "create-heading-repeat-password": "确认您的密码",
     "create-heading-validate-backup": "验证您的备份",
-    "create-wallet-desc": "这是您的帐户和您的第一个地址",
+    "create-loginfile-keycard": "密码会保护您的登录文件，\n請將它視為您账户的钥匙卡。",
+    "create-loginfile-any-device": "该文件允许您从任何设备登录。",
+    "create-heading-what-is-loginfile": "登录文件是什么？",
+    "create-login-file-explainer-intro": "一个结合您的密码的图像文件，将允许访问您的帐户。",
+    "create-login-file-paragraph-1": "Nimiq不会存储您的数据。 登录文件代替电子邮件作为登录方式。",
+    "create-login-file-paragraph-2": "登录文件存储在浏览器中。 用您的密码解锁。",
+    "create-login-file-paragraph-3": "你可能会不小心登出。下载并安全地存储登录文件，以保持您对帐户的控制。",
+    "create-login-file-return": "完成",
 
     "import-heading-enter-recovery-words": "输入助记词",
     "import-import-login-file": "导入您的登录文件",
@@ -77,12 +85,12 @@
     "passwordbox-confirm-log-in": "登录",
     "passwordbox-show-words": "显示助记词",
     "passwordbox-sign-msg": "签署信息",
-    "passwordbox-confirm-swap": "确认交换",
     "passwordbox-password-strength-short": "输入8个字符或更多",
     "passwordbox-password-strength-weak": "密码强度低",
     "passwordbox-password-strength-good": "密码强度中",
     "passwordbox-password-strength-strong": "密码强度高",
     "passwordbox-password-strength-secure": "安全密码",
+    "passwordbox-password-too-long": "最多256个字符",
     "passwordbox-repeat-password-long": "没有匹配项，请重试",
     "passwordbox-repeat-password-short": "密码太短",
     "passwordbox-password-skip": "现在跳过",
@@ -109,14 +117,14 @@
     "timer-day": "天",
     "timer-days": "天",
 
-    "identicon-selector-avatars-hint": "头像代表地址。",
+    "identicon-selector-avatars-hint": "头像表現您的NIM地址。",
+    "identicon-selector-avatars-hint-2": "請将它们视为银行帐号。",
     "identicon-selector-generate-new": "新的头像",
 
     "download-loginfile-download": "下载登录文件",
     "download-loginfile-successful": "是否成功下载？",
     "download-loginfile-tap-and-hold": "点击并按住图片下载",
     "download-loginfile-continue": "准备好后继续",
-    "download-loginfile-download-again": "再次下载",
 
     "validate-words-text": "请从助记词列表中选出正确的单词",
     "validate-words-1-hint": "第一个单词是什么？",
@@ -199,21 +207,11 @@
     "login-file-color-green": "绿",
     "login-file-color-brown": "棕",
 
-    "login-file-filename": "Nimiq-登录-文件-{color}-账户.png",
+    "login-file-filename": "Nimiq-登录-文件-{accountLabel}.png",
+    "login-file-default-account-label": "{color}帐户",
 
-    "bitcoin": "比特币",
     "bitcoin-recipient-unlabelled": "未标签",
 
     "derive-btc-xpub-heading": "添加比特币\n到您的帐户",
-    "derive-btc-xpub-text": "在超级高性能的支付硬币：NIM，与加密的黄金标准：比特币之间轻松交换。",
-
-    "sign-swap-heading": "确认交换",
-    "sign-swap-exchange-rate-tooltip": "此价格包括交换费用",
-    "sign-swap-fees": "fees",
-    "sign-swap-btc-fees": "比特币网络费用",
-    "sign-swap-btc-fees-explainer": "原子交换需要进行两次比特币交易",
-    "sign-swap-nim-fees": "NIM网络费用",
-    "sign-swap-exchange-fee": "交换费用",
-    "sign-swap-of-exchange-value": "交换价值",
-    "sign-swap-total-fees": "总费用"
+    "derive-btc-xpub-text": "在超级高性能的支付硬币：NIM，与加密的黄金标准：比特币之间轻松交换。"
 }

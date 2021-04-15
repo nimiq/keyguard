@@ -48,10 +48,16 @@
 
     <script defer src="../../lib/IqonHash.js"></script>
     <script defer src="../../lib/Iqons.js"></script>
+    <script defer src="../../lib/LoginFileConfig.js"></script>
     <script defer src="../../lib/PasswordStrength.js"></script>
+    <script defer src="../../lib/QrEncoder.js"></script>
+    <script defer src="../../lib/LoginFile.js"></script>
     <script defer src="../../components/Identicon.js"></script>
+    <script defer src="../../components/LoginFileAnimation.js"></script>
     <script defer src="../../components/PasswordSetterBox.js"></script>
     <script defer src="../../components/ProgressIndicator.js"></script>
+    <script defer src="../../components/DownloadLoginFile.js"></script>
+    <script defer src="../../components/FlippableHandler.js"></script>
     <script defer src="IdenticonSelector.js"></script>
     <script defer src="Create.js"></script>
     <script defer src="CreateApi.js"></script>
@@ -64,6 +70,10 @@
     <link rel="stylesheet" bundle-toplevel href="../../components/PasswordBox.css">
 
     <link rel="stylesheet" href="../../components/ProgressIndicator.css">
+    <link rel="stylesheet" href="../../components/Overlay.css">
+    <link rel="stylesheet" href="../../components/LoginFileAnimation.css">
+    <link rel="stylesheet" href="../../components/DownloadLoginFile.css">
+    <link rel="stylesheet" href="../../components/FlippableHandler.css">
     <link rel="stylesheet" href="./IdenticonSelector.css">
     <link rel="stylesheet" href="./Create.css">
 </head>
@@ -75,45 +85,112 @@
     </div>
 
     <div id="app">
-        <div id="choose-identicon" class="page nq-card">
-            <div class="page-header nq-card-header">
-                <div class="progress-indicator"></div>
-                <a tabindex="0" class="page-header-back-button display-none">
-                    <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
-                </a>
-                <h1 data-i18n="create-heading-choose-identicon" class="nq-h1">Choose an Avatar</h1>
-            </div>
-
-            <div class="page-body nq-card-body">
-                <div class="identicon-selector">
+        <div id="rotation-container" class="overlay-container">
+            <div id="confirm-identicon" class="page overlay-frame">
+                <div class="page nq-card overlay">
+                    <button class="nq-button-s close-overlay" prevent-tabbing>
+                        <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-close"/></svg>
+                    </button>
+                    <div class="flex-grow"></div>
+                    <div id="identicon"></div>
+                    <div id="address" class="address"></div>
+                    <div class="flex-grow"></div>
+                    <button
+                        class="nq-button light-blue confirm-address"
+                        prevent-tabbing
+                        data-i18n="create-confirm-address"
+                    >Select and continue</button>
                 </div>
             </div>
-        </div>
 
-        <div id="set-password" class="page nq-card">
-            <div class="page-header nq-card-header">
-                <div class="progress-indicator"></div>
-                <a tabindex="0" class="page-header-back-button">
-                    <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
-                </a>
-                <h1 class="nq-h1 hide-on-repetition" data-i18n="create-heading-create-password">Create a Password</h1>
-                <h1 class="nq-h1 show-on-repetition" data-i18n="create-heading-repeat-password">Confirm your Password</h1>
-            </div>
-
-            <div class="page-body nq-card-body">
-                <div class="wallet-identifier">
-                    <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-hexagon"/></svg>
-                    <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-hexagon"/></svg>
-                    <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-hexagon"/></svg>
-                    <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-hexagon"/></svg>
-                    <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-hexagon"/></svg>
-                    <div class="identicon"></div>
+            <div id="choose-identicon" class="page nq-card underlay">
+                <div class="page-header nq-card-header">
+                    <div class="progress-indicator"></div>
+                    <a tabindex="0" class="page-header-back-button display-none">
+                        <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
+                    </a>
+                    <h1 data-i18n="create-heading-choose-identicon" class="nq-h1">Choose an Avatar</h1>
                 </div>
-                <h2 class="nq-h2 nq-blue" data-i18n="create-wallet-desc">This is your Account with your first Address.</h2>
+
+                <div class="page-body nq-card-body">
+                    <div class="identicon-selector">
+                    </div>
+                </div>
             </div>
 
-            <div class="page-footer nq-card-footer">
-                <form class="password-box"></form>
+            <div id="set-password" class="page nq-card">
+                <div class="page-header nq-card-header">
+                    <div class="progress-indicator"></div>
+                    <a tabindex="0" class="page-header-back-button">
+                        <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
+                    </a>
+                    <h1 class="nq-h1 hide-on-repetition" data-i18n="create-heading-create-password">Create a Password</h1>
+                    <h1 class="nq-h1 show-on-repetition" data-i18n="create-heading-repeat-password">Confirm your Password</h1>
+                </div>
+
+                <div class="page-body nq-card-body">
+                    <div class="login-file-animation"></div>
+                    <p data-i18n="create-loginfile-keycard">
+                        The password protects your Login File,
+                        consider it a keycard to your account.
+                    </p>
+                </div>
+
+                <div class="page-footer nq-card-footer">
+                    <form class="password-box"></form>
+                </div>
+            </div>
+
+            <div id="login-file-download" class="page nq-card">
+                <div class="page-header nq-card-header">
+                    <div class="progress-indicator"></div>
+                    <a tabindex="0" class="page-header-back-button">
+                        <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
+                    </a>
+                    <h1 class="nq-h1" data-i18n="import-words-download-loginfile">Save your Login File</h1>
+                    <h1 class="nq-h1 confirm-download" data-i18n="download-loginfile-successful">Download successful?</h1>
+                </div>
+
+                <div class="page-body nq-card-body">
+                    <div class="download-loginfile"></div>
+                </div>
+                <a href="#login-file-explainer" class="nq-link skip">
+                    <span data-i18n="create-heading-what-is-loginfile">What is a Login File?</span>
+                    <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-caret-right-small"/></svg>
+                </a>
+            </div>
+
+            <div id="login-file-explainer" class="page nq-card flipped nq-blue-bg">
+                <div class="page-header nq-card-header">
+                    <a tabindex="0" class="page-header-back-button">
+                        <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
+                    </a>
+                    <h1 data-i18n="create-heading-what-is-loginfile" class="nq-h1">What is a Login File?</h1>
+                    <p class="nq-notice nq-orange" data-i18n="create-login-file-explainer-intro">
+                        An image file that, in combination with your password, grants access to your account.
+                    </p>
+                </div>
+
+                <div class="page-body nq-card-body">
+                    <img src="../../assets/loginfile-half.svg" alt="Login File example" id="loginfile-preview">
+                    <p class="nq-text" data-i18n="create-login-file-paragraph-1">
+                        Nimiq does not store your data. The Login File replaces email as the way to log in.
+                    </p>
+                    <p class="nq-text" data-i18n="create-login-file-paragraph-2">
+                        The Login File is stored in your browser. Unlock it with your password.
+                    </p>
+                    <p class="nq-text" data-i18n="create-login-file-paragraph-3">
+                        You might get logged out by accident. Download and store the Login File safely to stay in control.
+                    </p>
+                </div>
+                <div class="page-footer nq-card-footer">
+                    <button
+                        id="loginfile-explainer-go-back"
+                        class="nq-button light-blue"
+                        href="#login-file-download"
+                        data-i18n="create-login-file-return"
+                    >Got it</button>
+                </div>
             </div>
         </div>
 

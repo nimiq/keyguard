@@ -5,11 +5,13 @@
 class PasswordInput extends Nimiq.Observable {
     /**
      * @param {?HTMLElement} $el
-     * @param {string} placeholder
+     * @param {number} [maxLength]
+     * @param {string} [placeholder]
      */
-    constructor($el, placeholder = '••••••••') {
+    constructor($el, maxLength, placeholder = '••••••••') {
         super();
         this._minLength = PasswordInput.DEFAULT_MIN_LENGTH;
+        this._maxLength = maxLength || Infinity;
         this.$el = PasswordInput._createElement($el);
 
         this.$input = /** @type {HTMLInputElement} */ (this.$el.querySelector('input.password'));
@@ -87,8 +89,9 @@ class PasswordInput extends Nimiq.Observable {
 
     _onInputChanged() {
         const passwordLength = this.$input.value.length;
-        this.valid = passwordLength >= this._minLength;
+        this.valid = passwordLength >= this._minLength && passwordLength <= this._maxLength;
 
+        this.fire(PasswordInput.Events.LENGTH, passwordLength);
         this.fire(PasswordInput.Events.VALID, this.valid);
     }
 
@@ -109,6 +112,7 @@ class PasswordInput extends Nimiq.Observable {
 
 PasswordInput.Events = {
     VALID: 'passwordinput-valid',
+    LENGTH: 'passwordinput-length',
 };
 
 PasswordInput.DEFAULT_MIN_LENGTH = 8;

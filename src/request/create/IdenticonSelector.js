@@ -35,7 +35,8 @@ class IdenticonSelector extends Nimiq.Observable {
 
         $el.innerHTML = TemplateTags.noVars`
             <div class="identicons"></div>
-            <h2 class="nq-h2 nq-blue" data-i18n="identicon-selector-avatars-hint">Avatars represent addresses.</h2>
+            <p data-i18n="identicon-selector-avatars-hint">Avatars represent NIM addresses.</p>
+            <p data-i18n="identicon-selector-avatars-hint-2">Think of them as bank account numbers.</p>
             <button class="generate-more nq-button-s" data-i18n="identicon-selector-generate-new">
                 New avatars
             </button>`;

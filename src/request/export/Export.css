@@ -165,14 +165,9 @@ ul.nq-list li > .nq-icon {
     justify-content: space-around;
 }
 
-.page#login-file-download .page-header {
-    padding-bottom: 3rem;
-}
-
 .page#login-file-download .page-body {
     display: flex;
     flex-direction: column;
-    padding-bottom: 3rem;
 }
 
 .page#login-file-download img {
@@ -239,8 +234,7 @@ ul.nq-list li > .nq-icon {
 .page#login-file-download .page-header,
 .page#login-file-download button,
 .page#login-file-download .download-button,
-.page#login-file-download .continue,
-.page#login-file-download .back-to-download {
+.page#login-file-download .continue {
     opacity: 0;
 }
 

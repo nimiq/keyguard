@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy"
+          content="default-src 'self' 'unsafe-eval' 'unsafe-inline';
+          img-src http: https: blob: data:;
+          child-src 'self' blob:;
+          style-src 'self' 'unsafe-inline';
+          font-src 'self';">
+    <title>Login File Animation | Keyguard Demo</title>
+
+    <script src="../src/lib/TemplateTags.js"></script>
+    <script src="../src/lib/LoginFileConfig.js"></script>
+    <script src="../src/components/LoginFileAnimation.js"></script>
+
+    <link rel="stylesheet" href="../node_modules/@nimiq/style/nimiq-style.min.css">
+    <link rel="stylesheet" href="../src/nimiq-style.css">
+    <link rel="stylesheet" href="../src/common.css">
+
+    <link rel="stylesheet" href="../src/components/LoginFileAnimation.css">
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-file-animation {
+            transform: scale(1.5);
+            margin-bottom: 12rem;
+        }
+
+        input {
+            font-size: 3rem;
+            padding: 1rem 2rem;
+            letter-spacing: 0.25rem;
+            text-align: center;
+        }
+
+        small {
+            margin-top: 1rem;
+            opacity: 0.4;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-file-animation"></div>
+    <input type="password" value=""/>
+    <small>Hit Enter to confirm password.</small>
+
+    <script>
+        const $loginFileAnimation = document.querySelector('.login-file-animation');
+        const component = new LoginFileAnimation($loginFileAnimation);
+        const $input = document.querySelector('input[type="password"]');
+
+        $input.addEventListener('input', (event) => {
+            component.setStep(event.target.value.length);
+        });
+
+        let isColored = false;
+
+        $input.addEventListener('keypress', (event) => {
+            if (event.key !== 'Enter') return;
+
+            if (isColored) {
+                component.reset();
+                isColored = false;
+            } else {
+                component.setColor(0);
+                isColored = true;
+            }
+
+            $input.value = '';
+        });
+
+        // Setup
+        $input.focus();
+    </script>
+</body>
+</html>
