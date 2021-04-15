@@ -7,6 +7,8 @@
 /* global HtlcUtils */
 /* global Errors */
 /* global Constants */
+/* global Key */
+/* global OasisSettlementInstructionUtils */
 
 class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint-disable-line no-unused-vars
     /**
@@ -22,7 +24,7 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
 
         if (!storedData) throw new Error('No swap stored in SessionStorage');
 
-        /** @type {{keys: {nim: string, btc: string[], btc_refund?: string}, request: any}} */
+        /** @type {{keys: {nim: string, btc: string[], eur: string, btc_refund?: string}, request: any}} */
         const { keys: privateKeys, request: storedRawRequest } = (JSON.parse(storedData));
 
         if (request.fund.type === 'NIM' || request.redeem.type === 'NIM') {
@@ -37,6 +39,11 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
             if (privateKeys.btc.some(key => key.length !== 64)) {
                 throw new Error('Invalid BTC key stored in SessionStorage');
             }
+        }
+
+        if (request.redeem.type === 'EUR') {
+            if (!privateKeys.eur) throw new Error('No EUR key stored in SessionStorage');
+            if (privateKeys.eur.length !== 64) throw new Error('Invalid EUR key stored in SessionStorage');
         }
 
         // Deserialize stored request
@@ -87,6 +94,10 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
             transactionHash: string,
             outputIndex: number,
             outputScript: Buffer,
+        } | {
+            type: 'EUR',
+            htlcDetails: EurHtlcContents,
+            htlcId: string,
         } | undefined } */
         let redeem;
 
@@ -204,11 +215,16 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
             };
         }
 
-        // if (request.redeem.type === 'EUR' && storedRequest.redeem.type === 'EUR') {
-        //     redeem = {
-        //         type: 'EUR',
-        //     };
-        // }
+        if (request.redeem.type === 'EUR' && storedRequest.redeem.type === 'EUR') {
+            redeem = {
+                type: 'EUR',
+                htlcDetails: {
+                    hash: Nimiq.BufferUtils.toHex(Nimiq.BufferUtils.fromAny(request.redeem.hash)),
+                    timeoutTimestamp: this.parsePositiveInteger(request.redeem.timeout, false, 'redeem.timeout'),
+                },
+                htlcId: /** @type {string} */ (this.parseLabel(request.redeem.htlcId, false, 'redeem.htlcId')),
+            };
+        }
 
         if (!fund || !redeem) {
             throw new Errors.InvalidRequestError('No funding or redeeming data');
@@ -534,12 +550,24 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
             };
         }
 
-        // if (parsedRequest.redeem.type === 'EUR' && storedRequest.redeem.type === 'EUR') {
-        //     // TODO: Create and sign a JWS of the settlement instructions
-        //     const jws = ...
-        //
-        //     result.eur = jws;
-        // }
+        if (parsedRequest.redeem.type === 'EUR' && storedRequest.redeem.type === 'EUR') {
+            // Create and sign a JWS of the settlement instructions
+            const privateKey = new Nimiq.PrivateKey(Nimiq.BufferUtils.fromHex(privateKeys.eur));
+            const key = new Key(privateKey);
+
+            /** @type {KeyguardRequest.SettlementInstruction} */
+            const settlement = {
+                ...storedRequest.redeem.settlement,
+                contractId: parsedRequest.redeem.htlcId,
+            };
+
+            if (settlement.type === 'sepa') {
+                // Remove spaces from IBAN
+                settlement.recipient.iban = settlement.recipient.iban.replace(/\s/g, '');
+            }
+
+            result.eur = OasisSettlementInstructionUtils.signSettlementInstruction(key, 'm', settlement);
+        }
 
         return result;
     }
