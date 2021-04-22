@@ -255,7 +255,15 @@ class SignSwap {
                 $rightLabel.textContent = I18n.translatePhrase('bitcoin');
             } else if (request.redeem.type === 'EUR') {
                 $rightIdenticon.innerHTML = TemplateTags.hasVars(0)`<img src="../../assets/icons/bank.svg"></img>`;
-                $rightLabel.textContent = request.redeem.bankLabel || I18n.translatePhrase('sign-swap-your-bank');
+
+                let label = request.redeem.bankLabel || I18n.translatePhrase('sign-swap-your-bank');
+
+                // Display IBAN as recipient label if available
+                if (request.redeem.settlement.type === 'sepa') {
+                    label = request.redeem.settlement.recipient.iban;
+                }
+
+                $rightLabel.textContent = label;
             }
         }
 
