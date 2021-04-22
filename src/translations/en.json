@@ -224,6 +224,8 @@
     "sign-swap-btc-fees-explainer": "Atomic swaps require two BTC transactions.",
     "sign-swap-oasis-fees": "OASIS service fee",
     "sign-swap-oasis-fees-explainer": "of swap value.",
+    "sign-swap-bank-fees": "fee",
+    "sign-swap-bank-fees-explainer": "Banking network fee.",
     "sign-swap-nim-fees": "NIM network fee",
     "sign-swap-exchange-fee": "Swap fee",
     "sign-swap-of-exchange-value": "of swap value.",

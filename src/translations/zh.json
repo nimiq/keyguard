@@ -224,6 +224,8 @@
     "sign-swap-btc-fees-explainer": "原子交换需要进行两次比特币交易",
     "sign-swap-oasis-fees": "OASIS服务费",
     "sign-swap-oasis-fees-explainer": "交换价值",
+    "sign-swap-bank-fees": "手续费",
+    "sign-swap-bank-fees-explainer": "Banking network fee.",
     "sign-swap-nim-fees": "NIM网络费",
     "sign-swap-exchange-fee": "交换费用",
     "sign-swap-of-exchange-value": "交换价值",

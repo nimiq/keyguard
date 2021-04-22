@@ -18,8 +18,8 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
             redeem: redeemTx,
             fundingFiatRate,
             redeemingFiatRate,
-            serviceFundingFee,
-            serviceRedeemingFee,
+            fundFees,
+            redeemFees,
             serviceSwapFee,
             fiatCurrency,
         } = request;
@@ -45,7 +45,7 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
                     ? redeemTx.input.witnessUtxo.value - redeemTx.output.value
                     : 0;
 
-            const theirFee = fundTx.type === 'BTC' ? serviceFundingFee : serviceRedeemingFee;
+            const theirFee = fundTx.type === 'BTC' ? fundFees.redeeming : redeemFees.funding;
 
             const fiatRate = fundTx.type === 'BTC' ? fundingFiatRate : redeemingFiatRate;
             const fiatFee = this._unitsToCoins('BTC', myFee + theirFee) * fiatRate;
@@ -57,7 +57,7 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
             totalFiatFees += fiatFee;
         }
 
-        // Show Euro fees second
+        // Show OASIS fees second
         if (fundTx.type === 'EUR' || redeemTx.type === 'EUR') {
             const myFee = fundTx.type === 'EUR'
                 ? fundTx.fee
@@ -65,7 +65,7 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
                     ? redeemTx.fee
                     : 0;
 
-            const theirFee = fundTx.type === 'EUR' ? serviceFundingFee : serviceRedeemingFee;
+            const theirFee = fundTx.type === 'EUR' ? fundFees.processing : redeemFees.processing;
 
             const fiatRate = fundTx.type === 'EUR' ? fundingFiatRate : redeemingFiatRate;
             const fiatFee = this._unitsToCoins('EUR', myFee + theirFee) * fiatRate;
@@ -81,6 +81,20 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
             totalFiatFees += fiatFee;
         }
 
+        // Show SEPA Instant fees
+        if (redeemTx.type === 'EUR' && redeemFees.funding > 0) {
+            const theirFee = redeemFees.funding;
+
+            const fiatRate = redeemingFiatRate;
+            const fiatFee = this._unitsToCoins('EUR', theirFee) * fiatRate;
+
+            const rows = this._createBankNetworkLine(fiatFee, fiatCurrency, 'SEPA Instant');
+            this.$tooltip.appendChild(rows[0]);
+            // this.$tooltip.appendChild(rows[1]);
+
+            totalFiatFees += fiatFee;
+        }
+
         // Show Nimiq fees last
         if (fundTx.type === 'NIM' || redeemTx.type === 'NIM') {
             const myFee = fundTx.type === 'NIM'
@@ -89,7 +103,7 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
                     ? redeemTx.transaction.fee
                     : 0;
 
-            const theirFee = fundTx.type === 'NIM' ? serviceFundingFee : serviceRedeemingFee;
+            const theirFee = fundTx.type === 'NIM' ? fundFees.redeeming : redeemFees.funding;
 
             const fiatRate = fundTx.type === 'NIM' ? fundingFiatRate : redeemingFiatRate;
             const fiatFee = this._unitsToCoins('NIM', myFee + theirFee) * fiatRate;
@@ -203,6 +217,30 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
             + ` ${I18n.translatePhrase('sign-swap-oasis-fees-explainer')}`;
 
         return [$div, $p];
+    }
+
+    /**
+     * @param {number} fiatFee
+     * @param {string} fiatCurrency
+     * @param {'SEPA Instant'} network
+     * @returns {[HTMLDivElement]}
+     */
+    _createBankNetworkLine(fiatFee, fiatCurrency, network) {
+        const $div = document.createElement('div');
+        $div.classList.add('price-breakdown');
+
+        $div.innerHTML = TemplateTags.hasVars(2)`
+            <label>${network} <span data-i18n="sign-swap-bank-fees">fee</span></label>
+            <div>${NumberFormatting.formatCurrency(fiatFee, fiatCurrency)}</div>
+        `;
+        I18n.translateDom($div);
+
+        // const $p = document.createElement('p');
+        // $p.classList.add('explainer');
+        // $p.textContent = `${NumberFormatting.formatNumber(percentage * 100, 1)}%`
+        //     + ` ${I18n.translatePhrase('sign-swap-bank-fees-explainer')}`;
+
+        return [$div/* , $p */];
     }
 
     /**

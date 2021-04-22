@@ -134,10 +134,18 @@ class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) {
             this.parseNonNegativeFiniteNumber(request.fundingFiatRate, false, 'fundingFiatRate'));
         parsedRequest.redeemingFiatRate = /** @type {number} */ (
             this.parseNonNegativeFiniteNumber(request.redeemingFiatRate, false, 'redeemingFiatRate'));
-        parsedRequest.serviceFundingFee = /** @type {number} */ (
-            this.parsePositiveInteger(request.serviceFundingFee, true, 'serviceFundingFee'));
-        parsedRequest.serviceRedeemingFee = /** @type {number} */ (
-            this.parsePositiveInteger(request.serviceRedeemingFee, true, 'serviceRedeemingFee'));
+        parsedRequest.fundFees = {
+            processing: /** @type {number} */ (
+                this.parsePositiveInteger(request.fundFees.processing, true, 'fundFees.processing')),
+            redeeming: /** @type {number} */ (
+                this.parsePositiveInteger(request.fundFees.redeeming, true, 'fundFees.redeeming')),
+        };
+        parsedRequest.redeemFees = {
+            funding: /** @type {number} */ (
+                this.parsePositiveInteger(request.redeemFees.funding, true, 'redeemFees.funding')),
+            processing: /** @type {number} */ (
+                this.parsePositiveInteger(request.redeemFees.processing, true, 'redeemFees.processing')),
+        };
         parsedRequest.serviceSwapFee = /** @type {number} */ (
             this.parsePositiveInteger(request.serviceSwapFee, true, 'serviceSwapFee'));
 

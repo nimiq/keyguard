@@ -285,8 +285,14 @@ export type SignSwapRequestCommon = SimpleRequest & {
     fiatCurrency: string,
     fundingFiatRate: number,
     redeemingFiatRate: number,
-    serviceFundingFee: number, // Luna, Sats or Cents, depending which one gets funded
-    serviceRedeemingFee: number, // Luna, Sats or Cents, depending which one gets redeemed
+    fundFees: { // In the currency that gets funded
+        processing: number,
+        redeeming: number,
+    },
+    redeemFees: { // In the currency that gets redeemed
+        funding: number,
+        processing: number,
+    },
     serviceSwapFee: number, // Luna, Sats or Cents, depending which one gets funded
 };
 

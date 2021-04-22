@@ -224,6 +224,8 @@
     "sign-swap-btc-fees-explainer": "Ein sicherer Tausch benötigt zwei BTC Transaktionen.",
     "sign-swap-oasis-fees": "OASIS Servicegebühr",
     "sign-swap-oasis-fees-explainer": "des Tauschwerts.",
+    "sign-swap-bank-fees": "Gebühr",
+    "sign-swap-bank-fees-explainer": "Bankennetzwerk-Gebühr.",
     "sign-swap-nim-fees": "NIM Netzwerkgebühr",
     "sign-swap-exchange-fee": "Tauschgebühr",
     "sign-swap-of-exchange-value": "des Tauschwerts.",

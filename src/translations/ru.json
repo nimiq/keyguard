@@ -224,6 +224,8 @@
     "sign-swap-btc-fees-explainer": " Обмен выполняется в 2 транзакции BTC.",
     "sign-swap-oasis-fees": "Комиссия сервиса OASIS",
     "sign-swap-oasis-fees-explainer": "от суммы обмена.",
+    "sign-swap-bank-fees": "комиссия",
+    "sign-swap-bank-fees-explainer": "Banking network fee.",
     "sign-swap-nim-fees": "Комиссия сети NIM",
     "sign-swap-exchange-fee": "Комиссия",
     "sign-swap-of-exchange-value": "от суммы обмена.",

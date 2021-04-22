@@ -59,7 +59,7 @@
     "sign-tx-heading-tx": "Bevestig transactie",
     "sign-tx-heading-checkout": "Verifieer betaling",
     "sign-tx-heading-cashlink": "Maak een Cashlink",
-    "sign-tx-fee": "transactiekosten",
+    "sign-tx-fee": "kosten",
     "sign-tx-cancel-payment": "Annuleer betaling",
 
     "sign-msg-heading": "Bericht ondertekenen",
@@ -224,6 +224,8 @@
     "sign-swap-btc-fees-explainer": "Atomic swaps vereisen twee BTC-transacties.",
     "sign-swap-oasis-fees": "OASIS servicekosten",
     "sign-swap-oasis-fees-explainer": "van ruilwaarde.",
+    "sign-swap-bank-fees": "kosten",
+    "sign-swap-bank-fees-explainer": "Banking network fee.",
     "sign-swap-nim-fees": "NIM netwerk fee",
     "sign-swap-exchange-fee": "Wisselkosten",
     "sign-swap-of-exchange-value": "van ruilwaarde.",

@@ -126,29 +126,29 @@ class SignSwap {
             case 'NIM':
                 exchangeBaseValue = fundTx.type === 'NIM'
                     // When the user funds NIM, the service receives the HTLC balance - their network fee.
-                    ? fundTx.transaction.value - request.serviceFundingFee
+                    ? fundTx.transaction.value - request.fundFees.redeeming
                     : redeemTx.type === 'NIM'
                         // When the user redeems NIM, the service lost the HTLC balance + their network fee.
                         // The transaction value is "HTLC balance - tx fee", therefore the "HTLC balance"
                         // is the transaction value + tx fee.
-                        ? redeemTx.transaction.value + redeemTx.transaction.fee + request.serviceRedeemingFee
+                        ? redeemTx.transaction.value + redeemTx.transaction.fee + request.redeemFees.funding
                         : 0; // Should never happen, if parsing works correctly
                 break;
             case 'BTC':
                 exchangeBaseValue = fundTx.type === 'BTC'
                     // When the user funds BTC, the service receives the HTLC balance - their network fee.
-                    ? fundTx.recipientOutput.value - request.serviceFundingFee
+                    ? fundTx.recipientOutput.value - request.fundFees.redeeming
                     : redeemTx.type === 'BTC'
                         // When the user redeems BTC, the service lost the HTLC balance + their network fee.
                         // The HTLC balance is represented by the redeeming tx input value.
-                        ? redeemTx.input.witnessUtxo.value + request.serviceRedeemingFee
+                        ? redeemTx.input.witnessUtxo.value + request.redeemFees.funding
                         : 0; // Should never happen, if parsing works correctly
                 break;
             case 'EUR':
                 exchangeBaseValue = fundTx.type === 'EUR'
-                    ? fundTx.amount - request.serviceFundingFee
+                    ? fundTx.amount - request.fundFees.redeeming
                     : redeemTx.type === 'EUR'
-                        ? redeemTx.amount + request.serviceRedeemingFee
+                        ? redeemTx.amount + request.redeemFees.processing + request.redeemFees.funding
                         : 0; // Should never happen, if parsing works correctly
                 break;
             default:
@@ -161,29 +161,29 @@ class SignSwap {
             case 'NIM':
                 exchangeOtherValue = fundTx.type === 'NIM'
                     // When the user funds NIM, the service receives the HTLC balance - their network fee.
-                    ? fundTx.transaction.value - request.serviceFundingFee
+                    ? fundTx.transaction.value - request.fundFees.redeeming
                     : redeemTx.type === 'NIM'
                         // When the user redeems NIM, the service lost the HTLC balance + their network fee.
                         // The transaction value is "HTLC balance - tx fee", therefore the "HTLC balance"
                         // is the transaction value + tx fee.
-                        ? redeemTx.transaction.value + redeemTx.transaction.fee + request.serviceRedeemingFee
+                        ? redeemTx.transaction.value + redeemTx.transaction.fee + request.redeemFees.funding
                         : 0; // Should never happen, if parsing works correctly
                 break;
             case 'BTC':
                 exchangeOtherValue = fundTx.type === 'BTC'
                     // When the user funds BTC, the service receives the HTLC balance - their network fee.
-                    ? fundTx.recipientOutput.value - request.serviceFundingFee
+                    ? fundTx.recipientOutput.value - request.fundFees.redeeming
                     : redeemTx.type === 'BTC'
                         // When the user redeems BTC, the service lost the HTLC balance + their network fee.
                         // The HTLC balance is represented by the redeeming tx input value.
-                        ? redeemTx.input.witnessUtxo.value + request.serviceRedeemingFee
+                        ? redeemTx.input.witnessUtxo.value + request.redeemFees.funding
                         : 0; // Should never happen, if parsing works correctly
                 break;
             case 'EUR':
                 exchangeOtherValue = fundTx.type === 'EUR'
-                    ? fundTx.amount - request.serviceFundingFee
+                    ? fundTx.amount - request.fundFees.redeeming
                     : redeemTx.type === 'EUR'
-                        ? redeemTx.amount + request.serviceRedeemingFee
+                        ? redeemTx.amount + request.redeemFees.processing + request.redeemFees.funding
                         : 0; // Should never happen, if parsing works correctly
                 break;
             default:
