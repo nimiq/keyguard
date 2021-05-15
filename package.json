@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Secure storage for Nimiq private keys.",
   "scripts": {
-    "pre": "yarn i18n:build-dictionary && if [ ! -f src/lib/bitcoin/BitcoinJS.js ]; then yarn build:bitcoinjs; fi",
+    "pre": "yarn i18n:build-dictionary && test -e src/lib/bitcoin/BitcoinJS.js || yarn build:bitcoinjs",
     "serve": "yarn pre && node serve.js",
     "build": "yarn pre && tools/build.sh",
     "build:bitcoinjs": "yarn --silent browserify tools/bitcoinjs-parts.js -s BitcoinJS | yarn terser --compress --mangle --source-map --output src/lib/bitcoin/BitcoinJS.js",
