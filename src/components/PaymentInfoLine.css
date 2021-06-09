@@ -16,7 +16,7 @@
     cursor: default;
 }
 
-.payment-info-line .nim-amount {
+.payment-info-line .amount {
     font-weight: bold;
     color: var(--nimiq-light-blue);
     white-space: nowrap;
