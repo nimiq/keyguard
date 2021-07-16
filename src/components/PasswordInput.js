@@ -1,6 +1,7 @@
 /* global Nimiq */
 /* global I18n */
 /* global TemplateTags */
+/* global BrowserDetection */
 
 class PasswordInput extends Nimiq.Observable {
     /**
@@ -26,6 +27,14 @@ class PasswordInput extends Nimiq.Observable {
 
         this._onInputChanged();
         this.$input.addEventListener('input', () => this._onInputChanged());
+
+        // Scroll down on mobile devices when input is focused
+        // to prevent the submit button from being (partially) hidden between the virtual keyboard
+        if (BrowserDetection.isMobile() && BrowserDetection.isTouchDevice()) {
+            this.$input.addEventListener('input', () => {
+                window.scrollTo(0, window.outerHeight);
+            });
+        }
     }
 
     /**
