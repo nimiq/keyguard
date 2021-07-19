@@ -242,12 +242,18 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
             throw new Errors.InvalidRequestError('HTLC hashes do not match');
         }
 
-        // TODO: Validate timeouts of the two contracts
-        // Currently not possible because the NIM timeout is a block height, while the BTC timeout is a timestamp.
-        // And since we cannot trust the local device time to be accurate, and we don't have a reference for NIM blocks
-        // and their timestamps, we cannot compare the two.
-        // When it becomes possible to compare (with Nimiq 2.0 Albatross), the redeem HTLC must have a later timeout
-        // than the funding HTLC.
+        // Validate timeouts of the two contracts
+        // The redeem HTLC must have a later timeout than the funding HTLC.
+        if ('timeoutTimestamp' in fund.htlcDetails && 'timeoutTimestamp' in redeem.htlcDetails) {
+            const diff = redeem.htlcDetails.timeoutTimestamp - fund.htlcDetails.timeoutTimestamp;
+
+            // Validate that the difference is at least 15 minutes
+            if (diff < 15 * 60) {
+                throw new Errors.InvalidRequestError(
+                    'HTLC redeem timeout must be 15 min or more after the funding timeout',
+                );
+            }
+        }
 
         /** @type {KeyguardRequest.SignSwapTransactionsResult} */
         const result = {};
