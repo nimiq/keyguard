@@ -388,8 +388,6 @@ class QrScanner {
                     this._scanRegion,
                     this._qrEnginePromise,
                     this.$canvas,
-                    /* fixedCanvasSize */ true,
-                    /* alsoTryWitoutScanRegion */ false,
                 );
             } catch (error) {
                 if (!this._active) return;
