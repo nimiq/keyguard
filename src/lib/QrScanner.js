@@ -430,16 +430,9 @@ class QrScanner {
         }, {}];
 
         if (facingMode) {
-            if (exact) {
-                const exactFacingMode = { exact: facingMode };
-                constraintsToTry.forEach(constraint => {
-                    constraint.facingMode = exactFacingMode;
-                });
-            } else {
-                constraintsToTry.forEach(constraint => {
-                    constraint.facingMode = facingMode;
-                });
-            }
+            constraintsToTry.forEach(constraint => {
+                constraint.facingMode = exact ? { exact: facingMode } : facingMode;
+            });
         }
         return this._getMatchingCameraStream(constraintsToTry);
     }
@@ -448,13 +441,17 @@ class QrScanner {
      * @param {MediaTrackConstraints[]} constraintsToTry
      * @returns {Promise<MediaStream>}
      */
-    _getMatchingCameraStream(constraintsToTry) {
+    async _getMatchingCameraStream(constraintsToTry) {
         if (!navigator.mediaDevices || constraintsToTry.length === 0) {
-            return Promise.reject('Camera not found.');
+            throw 'Camera not found.';
         }
-        return navigator.mediaDevices.getUserMedia({
-            video: constraintsToTry.shift(),
-        }).catch(() => this._getMatchingCameraStream(constraintsToTry));
+        try {
+            return await navigator.mediaDevices.getUserMedia({
+                video: constraintsToTry.shift(),
+            });
+        } catch (error) {
+            return this._getMatchingCameraStream(constraintsToTry);
+        }
     }
 
     /**
