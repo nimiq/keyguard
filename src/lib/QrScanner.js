@@ -30,43 +30,25 @@ class QrScanner {
     /**
      * @param {HTMLVideoElement} video
      * @param {(result: string) => any} onDecode
-     * @param {number | ((error: string) => any)} [canvasSizeOrOnDecodeError]
-     * @param {number | ((video: HTMLVideoElement) => RectArea)} [canvasSizeOrCalculateScanRegion]
+     * @param {(error: string) => any} [onDecodeError]
+     * @param {(video: HTMLVideoElement) => RectArea} [calculateScanRegion]
      * @param {'environment' | 'user'} [preferredFacingMode = 'environment']
      */
     constructor(
         video,
         onDecode,
-        canvasSizeOrOnDecodeError,
-        canvasSizeOrCalculateScanRegion,
+        onDecodeError,
+        calculateScanRegion,
         preferredFacingMode = 'environment',
     ) {
         this.$video = video;
         this.$canvas = document.createElement('canvas');
         this._onDecode = onDecode;
-        this._legacyCanvasSize = QrScanner.DEFAULT_CANVAS_SIZE;
+        this._onDecodeError = onDecodeError || this._onDecodeError;
+        this._calculateScanRegion = calculateScanRegion || this._calculateScanRegion;
         this._preferredFacingMode = preferredFacingMode;
         this._active = false;
         this._paused = false;
-        this._flashOn = false;
-
-        if (typeof canvasSizeOrOnDecodeError === 'number') {
-            // legacy function signature where the third argument is the canvas size
-            this._legacyCanvasSize = canvasSizeOrOnDecodeError;
-            console.warn('You\'re using a deprecated version of the QrScanner constructor which will be removed in '
-                + 'the future');
-        } else if (canvasSizeOrOnDecodeError) {
-            this._onDecodeError = canvasSizeOrOnDecodeError;
-        }
-
-        if (typeof canvasSizeOrCalculateScanRegion === 'number') {
-            // legacy function signature where the fourth argument is the canvas size
-            this._legacyCanvasSize = canvasSizeOrCalculateScanRegion;
-            console.warn('You\'re using a deprecated version of the QrScanner constructor which will be removed in '
-                + 'the future');
-        } else if (canvasSizeOrCalculateScanRegion) {
-            this._calculateScanRegion = canvasSizeOrCalculateScanRegion;
-        }
 
         this._scanRegion = this._calculateScanRegion(video);
 
@@ -88,47 +70,6 @@ class QrScanner {
         document.addEventListener('visibilitychange', this._onVisibilityChange);
 
         this._qrEnginePromise = QrScanner.createQrEngine();
-    }
-
-    /**
-     * @returns {Promise<boolean>}
-     */
-    async hasFlash() {
-        if (!('ImageCapture' in window)) return false;
-
-        const track = this.$video.srcObject && this.$video.srcObject instanceof MediaStream
-            ? this.$video.srcObject.getVideoTracks()[0]
-            : null;
-
-        if (!track) {
-            throw 'Camera not started or not available';
-        }
-
-        try {
-            // @ts-ignore Property 'ImageCapture' does not exist on type 'Window & typeof globalThis'
-            const imageCapture = new window.ImageCapture(track);
-            const result = await imageCapture.getPhotoCapabilities();
-            return result.fillLightMode.includes('flash');
-        } catch (error) {
-            console.warn(error);
-            return false;
-        }
-    }
-
-    isFlashOn() {
-        return this._flashOn;
-    }
-
-    async toggleFlash() {
-        return this._setFlash(!this._flashOn);
-    }
-
-    async turnFlashOff() {
-        return this._setFlash(false);
-    }
-
-    async turnFlashOn() {
-        return this._setFlash(true);
     }
 
     destroy() {
@@ -202,7 +143,7 @@ class QrScanner {
                 ? this.$video.srcObject.getTracks()
                 : [];
             for (const track of tracks) {
-                track.stop(); //  note that this will also automatically turn the flashlight off
+                track.stop();
             }
             this.$video.srcObject = null;
             this._offTimeout = undefined;
@@ -210,29 +151,27 @@ class QrScanner {
     }
 
     /**
-     * @param {HTMLImageElement | HTMLVideoElement | string} imageOrFileOrUrl
+     * @param {HTMLImageElement | HTMLVideoElement | string} imageOrVideoOrUrl
      * @param {RectArea} [scanRegion]
      * @param {Promise<Worker>} [givenEngine] // TODO: Or BarcodeDetector
      * @param {HTMLCanvasElement} [givenCanvas]
-     * @param {boolean} [fixedCanvasSize = false]
      * @param {boolean} [alsoTryWithoutScanRegion = false]
      * @returns {Promise<string>}
      */
     static scanImage(
-        imageOrFileOrUrl,
+        imageOrVideoOrUrl,
         scanRegion,
         givenEngine,
         givenCanvas,
-        fixedCanvasSize = false,
         alsoTryWithoutScanRegion = false,
     ) {
         const qrEngine = givenEngine || QrScanner.createQrEngine();
 
         let promise = Promise.all([
             qrEngine,
-            QrScanner._loadImage(imageOrFileOrUrl),
+            QrScanner._loadImage(imageOrVideoOrUrl),
         ]).then(([engine, image]) => {
-            const [canvas, canvasContext] = this._drawToCanvas(image, scanRegion, givenCanvas, fixedCanvasSize);
+            const [canvas, canvasContext] = this._drawToCanvas(image, scanRegion, givenCanvas);
 
             if (engine instanceof Worker) {
                 return new Promise((resolve, reject) => {
@@ -302,11 +241,10 @@ class QrScanner {
 
         if (scanRegion && alsoTryWithoutScanRegion) {
             promise = promise.catch(() => QrScanner.scanImage(
-                imageOrFileOrUrl,
+                imageOrVideoOrUrl,
                 undefined,
                 givenEngine,
                 givenCanvas,
-                fixedCanvasSize,
                 false,
             ));
         }
@@ -363,8 +301,8 @@ class QrScanner {
             y: (video.videoHeight - scanRegionSize) / 2,
             width: scanRegionSize,
             height: scanRegionSize,
-            downScaledWidth: this._legacyCanvasSize,
-            downScaledHeight: this._legacyCanvasSize,
+            downScaledWidth: QrScanner.DEFAULT_CANVAS_SIZE,
+            downScaledHeight: QrScanner.DEFAULT_CANVAS_SIZE,
         };
     }
 
@@ -455,24 +393,6 @@ class QrScanner {
     }
 
     /**
-     * @param {boolean} on
-     * @returns {Promise<void>}
-     */
-    async _setFlash(on) {
-        const hasFlash = await this.hasFlash();
-
-        if (!hasFlash) throw 'No flash available';
-
-        // Note that the video track is guaranteed to exist at this point
-        await /** @type {MediaStream} */ (this.$video.srcObject).getVideoTracks()[0].applyConstraints({
-            // @ts-ignore Type '{ torch: boolean; }' is not assignable to type 'MediaTrackConstraintSet'
-            advanced: [{ torch: on }],
-        });
-
-        this._flashOn = on;
-    }
-
-    /**
      * @param {'environment' | 'user'} facingMode
      */
     _setVideoMirror(facingMode) {
@@ -498,10 +418,9 @@ class QrScanner {
      * @param {HTMLImageElement | HTMLVideoElement} image
      * @param {RectArea?} scanRegion
      * @param {HTMLCanvasElement?} canvas
-     * @param {boolean} [fixedCanvasSize = false]
      * @returns {[HTMLCanvasElement, CanvasRenderingContext2D]}
      */
-    static _drawToCanvas(image, scanRegion = null, canvas = null, fixedCanvasSize = false) {
+    static _drawToCanvas(image, scanRegion = null, canvas = null) {
         canvas = canvas || document.createElement('canvas');
         const scanRegionX = scanRegion && scanRegion.x ? scanRegion.x : 0;
         const scanRegionY = scanRegion && scanRegion.y ? scanRegion.y : 0;
@@ -511,14 +430,12 @@ class QrScanner {
         const scanRegionHeight = scanRegion && scanRegion.height
             ? scanRegion.height
             : image.height || /** @type {HTMLVideoElement} */ (image).videoHeight;
-        if (!fixedCanvasSize) {
-            canvas.width = scanRegion && scanRegion.downScaledWidth
-                ? scanRegion.downScaledWidth
-                : scanRegionWidth;
-            canvas.height = scanRegion && scanRegion.downScaledHeight
-                ? scanRegion.downScaledHeight
-                : scanRegionHeight;
-        }
+        canvas.width = scanRegion && scanRegion.downScaledWidth
+            ? scanRegion.downScaledWidth
+            : scanRegionWidth;
+        canvas.height = scanRegion && scanRegion.downScaledHeight
+            ? scanRegion.downScaledHeight
+            : scanRegionHeight;
         const context = canvas.getContext('2d', { alpha: false });
         if (!context) throw 'Unable to get canvas context';
         context.imageSmoothingEnabled = false; // gives less blurry images
