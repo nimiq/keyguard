@@ -9,10 +9,13 @@
  *     height?: number,
  *     downScaledWidth?: number,
  *     downScaledHeight?: number,
- * }} RectArea
+ * }} ScanRegion
  */
 
 class QrScanner {
+    /**
+     * @returns {Promise<boolean>}
+     */
     static async hasCamera() {
         if (!navigator.mediaDevices) return false;
         // note that enumerateDevices can always be called and does not prompt the user for permission. However, device
@@ -31,7 +34,7 @@ class QrScanner {
      * @param {HTMLVideoElement} video
      * @param {(result: string) => any} onDecode
      * @param {(error: string) => any} [onDecodeError]
-     * @param {(video: HTMLVideoElement) => RectArea} [calculateScanRegion]
+     * @param {(video: HTMLVideoElement) => ScanRegion} [calculateScanRegion]
      * @param {'environment' | 'user'} [preferredFacingMode = 'environment']
      */
     constructor(
@@ -152,8 +155,8 @@ class QrScanner {
 
     /**
      * @param {HTMLImageElement | HTMLVideoElement | string} imageOrVideoOrUrl
-     * @param {RectArea} [scanRegion]
-     * @param {Promise<Worker>} [givenEngine] // TODO: Or BarcodeDetector
+     * @param {ScanRegion} [scanRegion]
+     * @param {Promise<Worker | BarcodeDetector>} [givenEngine]
      * @param {HTMLCanvasElement} [givenCanvas]
      * @param {boolean} [alsoTryWithoutScanRegion = false]
      * @returns {Promise<string>}
@@ -219,12 +222,9 @@ class QrScanner {
                 });
             }
             return new Promise((resolve, reject) => {
-                /** @type {any} */ // TODO: BarcodeDetector
-                const decoder = engine;
                 const timeout = window.setTimeout(() => reject('Scanner error: timeout'), 10000);
 
-                /** @param {string[]} scanResults */
-                decoder.detect(canvas)
+                engine.detect(canvas)
                     .then(/** @param {{rawValue: string}[]} scanResults */ scanResults => {
                         if (!scanResults.length) {
                             reject(QrScanner.NO_QR_CODE_FOUND);
@@ -259,12 +259,10 @@ class QrScanner {
 
     /**
      * @param {string} [workerPath]
-     * @returns {Promise<Worker>} // TODO: Or BarcodeDetector
+     * @returns {Promise<Worker | BarcodeDetector>}
      */
     static async createQrEngine(workerPath = QrScanner.WORKER_PATH) {
-        // @ts-ignore Cannot find name 'BarcodeDetector'
         if ('BarcodeDetector' in window && (await BarcodeDetector.getSupportedFormats()).includes('qr_code')) {
-            // @ts-ignore Cannot find name 'BarcodeDetector'
             return new BarcodeDetector({ formats: ['qr_code'] });
         }
 
@@ -290,7 +288,7 @@ class QrScanner {
 
     /**
      * @param {HTMLVideoElement} video
-     * @returns {RectArea}
+     * @returns {ScanRegion}
      */
     _calculateScanRegion(video) {
         // Default scan region calculation. Note that this can be overwritten in the constructor.
@@ -416,7 +414,7 @@ class QrScanner {
 
     /**
      * @param {HTMLImageElement | HTMLVideoElement} image
-     * @param {RectArea?} scanRegion
+     * @param {ScanRegion?} scanRegion
      * @param {HTMLCanvasElement?} canvas
      * @returns {[HTMLCanvasElement, CanvasRenderingContext2D]}
      */
@@ -496,7 +494,7 @@ class QrScanner {
     }
 
     /**
-     * @param {Worker | Promise<Worker>} qrEngineOrQrEnginePromise
+     * @param {Worker | BarcodeDetector | Promise<Worker | BarcodeDetector>} qrEngineOrQrEnginePromise
      * @param {string} type
      * @param {any} [data]
      * @returns {Promise<void>}

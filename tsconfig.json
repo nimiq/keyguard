@@ -60,6 +60,7 @@
     "types/Keyguard.d.ts",
     "types/ErrorContainer.d.ts",
     "types/MessagePrefix.d.ts",
+    "types/BarcodeScanner.d.ts",
     "types/BitcoinJS.d.ts",
     "src/**/*.js",
     "tests/**/*.js"
