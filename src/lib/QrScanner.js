@@ -161,7 +161,7 @@ class QrScanner {
      * @param {boolean} [alsoTryWithoutScanRegion = false]
      * @returns {Promise<string>}
      */
-    static scanImage(
+    static async scanImage(
         imageOrVideoOrUrl,
         scanRegion,
         givenEngine,
@@ -169,19 +169,19 @@ class QrScanner {
         alsoTryWithoutScanRegion = false,
     ) {
         const qrEngine = givenEngine || QrScanner.createQrEngine();
-        /** @type {HTMLCanvasElement} */
-        let canvas;
+        /** @type {HTMLCanvasElement | undefined} */
+        let usedCanvas;
 
-        let promise = Promise.all([
-            qrEngine,
-            QrScanner._loadImage(imageOrVideoOrUrl),
-        ]).then(([engine, image]) => {
-            /** @type {CanvasRenderingContext2D} */
-            let canvasContext;
-            [canvas, canvasContext] = this._drawToCanvas(image, scanRegion, givenCanvas);
+        try {
+            const [engine, image] = await Promise.all([
+                qrEngine,
+                QrScanner._loadImage(imageOrVideoOrUrl),
+            ]);
+            const [canvas, canvasContext] = this._drawToCanvas(image, scanRegion, givenCanvas);
+            usedCanvas = canvas;
 
             if (engine instanceof Worker) {
-                return new Promise((resolve, reject) => {
+                return await new Promise((resolve, reject) => {
                     /** @type {(error: string | ErrorEvent) => any} */
                     let onError;
 
@@ -225,40 +225,33 @@ class QrScanner {
                     }, [imageData.data.buffer]);
                 });
             }
-            return new Promise((resolve, reject) => {
-                const timeout = window.setTimeout(() => reject('Scanner error: timeout'), 10000);
 
-                engine.detect(canvas)
-                    .then(/** @param {{rawValue: string}[]} scanResults */ scanResults => {
-                        if (!scanResults.length) {
-                            reject(QrScanner.NO_QR_CODE_FOUND);
-                        } else {
-                            resolve(scanResults[0].rawValue);
-                        }
-                    })
-                    .catch(/** @param {string | Error} e */ e => {
-                        reject(`Scanner error: ${e instanceof Error ? e.message : e}`);
-                    })
-                    .finally(() => window.clearTimeout(timeout));
-            });
-        });
-
-        if (scanRegion && alsoTryWithoutScanRegion) {
-            promise = promise.catch(() => QrScanner.scanImage(
+            return await Promise.race([
+                new Promise((resolve, reject) => window.setTimeout(() => reject('Scanner error: timeout'), 10000)),
+                (async () => {
+                    try {
+                        const [scanResult] = await engine.detect(canvas);
+                        if (!scanResult) throw QrScanner.NO_QR_CODE_FOUND;
+                        return scanResult.rawValue;
+                    } catch (e) {
+                        throw `Scanner error: ${e instanceof Error ? e.message : e}`;
+                    }
+                })(),
+            ]);
+        } catch (e) {
+            if (!alsoTryWithoutScanRegion) throw e;
+            return await QrScanner.scanImage(
                 imageOrVideoOrUrl,
                 undefined,
                 qrEngine,
-                canvas,
+                usedCanvas,
                 false,
-            ));
+            );
+        } finally {
+            if (qrEngine !== givenEngine) {
+                QrScanner._postWorkerMessage(qrEngine, 'close').catch(() => {});
+            }
         }
-
-        promise = promise.finally(async () => {
-            if (givenEngine) return;
-            QrScanner._postWorkerMessage(qrEngine, 'close').catch(() => {});
-        });
-
-        return promise;
     }
 
     /**
