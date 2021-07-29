@@ -169,12 +169,16 @@ class QrScanner {
         alsoTryWithoutScanRegion = false,
     ) {
         const qrEngine = givenEngine || QrScanner.createQrEngine();
+        /** @type {HTMLCanvasElement} */
+        let canvas;
 
         let promise = Promise.all([
             qrEngine,
             QrScanner._loadImage(imageOrVideoOrUrl),
         ]).then(([engine, image]) => {
-            const [canvas, canvasContext] = this._drawToCanvas(image, scanRegion, givenCanvas);
+            /** @type {CanvasRenderingContext2D} */
+            let canvasContext;
+            [canvas, canvasContext] = this._drawToCanvas(image, scanRegion, givenCanvas);
 
             if (engine instanceof Worker) {
                 return new Promise((resolve, reject) => {
@@ -243,8 +247,8 @@ class QrScanner {
             promise = promise.catch(() => QrScanner.scanImage(
                 imageOrVideoOrUrl,
                 undefined,
-                givenEngine,
-                givenCanvas,
+                qrEngine,
+                canvas,
                 false,
             ));
         }
@@ -295,8 +299,8 @@ class QrScanner {
         const smallestDimension = Math.min(video.videoWidth, video.videoHeight);
         const scanRegionSize = Math.round(2 / 3 * smallestDimension);
         return {
-            x: (video.videoWidth - scanRegionSize) / 2,
-            y: (video.videoHeight - scanRegionSize) / 2,
+            x: Math.round((video.videoWidth - scanRegionSize) / 2),
+            y: Math.round((video.videoHeight - scanRegionSize) / 2),
             width: scanRegionSize,
             height: scanRegionSize,
             downScaledWidth: QrScanner.DEFAULT_CANVAS_SIZE,
@@ -428,12 +432,22 @@ class QrScanner {
         const scanRegionHeight = scanRegion && scanRegion.height
             ? scanRegion.height
             : image.height || /** @type {HTMLVideoElement} */ (image).videoHeight;
-        canvas.width = scanRegion && scanRegion.downScaledWidth
+        const canvasWidth = scanRegion && scanRegion.downScaledWidth
             ? scanRegion.downScaledWidth
             : scanRegionWidth;
-        canvas.height = scanRegion && scanRegion.downScaledHeight
+        const canvasHeight = scanRegion && scanRegion.downScaledHeight
             ? scanRegion.downScaledHeight
             : scanRegionHeight;
+
+        // Setting the canvas width or height clears the canvas, even if the values didn't change, therefore only set
+        // them if they actually changed.
+        if (canvas.width !== canvasWidth) {
+            canvas.width = canvasWidth;
+        }
+        if (canvas.height !== canvasHeight) {
+            canvas.height = canvasHeight;
+        }
+
         const context = canvas.getContext('2d', { alpha: false });
         if (!context) throw 'Unable to get canvas context';
         context.imageSmoothingEnabled = false; // gives less blurry images
