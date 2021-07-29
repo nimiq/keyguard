@@ -47,13 +47,28 @@
     cursor: pointer;
 
     font-size: 3.75rem;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.page#import-file .qr-video-button .nq-icon {
     opacity: 0.6;
     transition: opacity 0.3s var(--nimiq-ease);
 }
 
-.page#import-file .qr-video-button:hover,
-.page#import-file .qr-video-button:focus {
+.page#import-file .qr-video-button:hover .nq-icon,
+.page#import-file .qr-video-button:focus .nq-icon {
     opacity: 0.8;
+}
+
+.page#import-file .qr-video-button .tooltip-box {
+    right: -.5rem;
+    width: 24rem;
+}
+
+.page#import-file .qr-video-button.hide-tooltip::after,
+.page#import-file .qr-video-button.hide-tooltip .tooltip-box {
+    visibility: hidden;
+    opacity: 0;
 }
 
 .page#import-file .qr-video-scanner {

@@ -42,6 +42,7 @@
     "import-login-to-continue": "Bitte logge dich neu ein, um fortzufahren.",
     "import-unlock-account": "Entsperre dein Konto",
     "import-create-account": "Erstelle ein neues Konto",
+    "import-qr-video-tooltip": "Scanne deine Login-Datei mittels der Kamera deines Geräts.",
 
     "import-file-button-words": "Mit Wiederherstellungswörtern einloggen",
 

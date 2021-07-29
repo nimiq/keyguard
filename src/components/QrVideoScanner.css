@@ -47,6 +47,7 @@
     left: 50%;
     transform: translateX(-50%);
     color: var(--nimiq-blue);
+    -webkit-tap-highlight-color: transparent;
 }
 
 .qr-video-scanner .cancel-button:hover,

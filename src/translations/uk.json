@@ -42,6 +42,7 @@
     "import-login-to-continue": "Будь ласка, увійдіть ще раз, щоб продовжити.",
     "import-unlock-account": "Розблокувати рахунок",
     "import-create-account": "Створити новий рахунок",
+    "import-qr-video-tooltip": "Scan your Login File with your device's camera.",
 
     "import-file-button-words": "Увійти за допомогою секретних слів",
 

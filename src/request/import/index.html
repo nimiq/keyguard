@@ -74,6 +74,7 @@
     <link rel="stylesheet" bundle-toplevel href="../../components/PasswordBox.css">
 
     <link rel="stylesheet" href="../../components/FileImporter.css">
+    <link rel="stylesheet" href="../../components/Tooltip.css">
     <link rel="stylesheet" href="../../components/QrVideoScanner.css">
     <link rel="stylesheet" href="../../components/FlippableHandler.css">
     <link rel="stylesheet" href="../../components/LoginFileIcon.css">
@@ -172,8 +173,11 @@
                     </a>
                 </div>
 
-                <button class="qr-video-button">
+                <button class="qr-video-button tooltip top">
                     <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-scan-qr-code"/></svg>
+                    <div data-i18n="import-qr-video-tooltip" class="tooltip-box" >
+                        Scan your Login File with your device's camera.
+                    </div>
                 </button>
                 <div class="qr-video-scanner"></div>
             </div>

@@ -42,6 +42,7 @@
     "import-login-to-continue": "Por favor inicie sesión de nuevo para continuar.",
     "import-unlock-account": "Desbloquear su Cuenta",
     "import-create-account": "Crear nueva cuenta",
+    "import-qr-video-tooltip": "Scan your Login File with your device's camera.",
 
     "import-file-button-words": "Inicie sesión con Palabras de Recuperación",
 

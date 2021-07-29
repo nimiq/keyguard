@@ -42,6 +42,7 @@
     "import-login-to-continue": "请再次登录以继续",
     "import-unlock-account": "解锁您的账户",
     "import-create-account": "建立新帐户",
+    "import-qr-video-tooltip": "Scan your Login File with your device's camera.",
 
     "import-file-button-words": "使用助记词登录",
 

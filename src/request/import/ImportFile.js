@@ -52,7 +52,7 @@ class ImportFile {
         const fileImport = new FileImporter($fileImport, false);
 
         /** @type {HTMLButtonElement} */
-        const $qrVideoButton = (this.$importFilePage.querySelector('.qr-video-button'));
+        this.$qrVideoButton = (this.$importFilePage.querySelector('.qr-video-button'));
 
         /** @type {HTMLDivElement} */
         this.$qrVideoScanner = (this.$importFilePage.querySelector('.qr-video-scanner'));
@@ -85,7 +85,7 @@ class ImportFile {
         });
         this.qrVideoScanner.on(QrVideoScanner.Events.CANCEL, this._stopQrVideo.bind(this));
 
-        $qrVideoButton.addEventListener('click', this._startQrVideo.bind(this));
+        this.$qrVideoButton.addEventListener('click', this._startQrVideo.bind(this));
 
         if (request.enableBackArrow) {
             /** @type {HTMLElement} */
@@ -141,10 +141,12 @@ class ImportFile {
         this.qrVideoScanner.start();
         this.qrVideoScanner.repositionOverlay();
         this.$qrVideoScanner.classList.add('active');
+        this.$qrVideoButton.classList.add('hide-tooltip');
     }
 
     _stopQrVideo() {
         this.$qrVideoScanner.classList.remove('active');
+        this.$qrVideoButton.classList.remove('hide-tooltip');
         window.setTimeout(() => this.qrVideoScanner.stop(), 1000);
     }
 
