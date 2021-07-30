@@ -9,17 +9,16 @@
 
 class FileImporter extends Nimiq.Observable {
     /**
-     * @param {string | Uint8Array} data
+     * @param {string} str
      * @returns {boolean}
      */
-    static isLoginFileData(data) {
+    static isLoginFileData(str) {
         try {
-            if (typeof data === 'string') {
-                // Make sure it is base64.
-                // This throws an atob() exception if data is not in base64 format.
-                // Skip prefix for PIN-encrypted Login Files.
-                data = Nimiq.BufferUtils.fromBase64(data.substr(0, 2) === '#2' ? data.substr(2) : data);
-            }
+            // Make sure it is base64.
+            // This throws an atob() exception if data is not in base64 format.
+            // Skip prefix for PIN-encrypted Login Files.
+            /** @type {Uint8Array} */
+            const data = Nimiq.BufferUtils.fromBase64(str.substr(0, 2) === '#2' ? str.substr(2) : str);
 
             // Make sure the data size is correct and that a potential label is correctly encoded.
             return data.byteLength === KeyStore.ENCRYPTED_SECRET_SIZE // a secret without label

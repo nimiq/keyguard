@@ -56,7 +56,7 @@ class ImportFile {
 
         /** @type {HTMLDivElement} */
         this.$qrVideoScanner = (this.$importFilePage.querySelector('.qr-video-scanner'));
-        this.qrVideoScanner = new QrVideoScanner(this.$qrVideoScanner, 7000, FileImporter.isLoginFileData);
+        this.qrVideoScanner = new QrVideoScanner(this.$qrVideoScanner, FileImporter.isLoginFileData);
 
         /** @type {HTMLElement} */
         const $gotoWords = (this.$importFilePage.querySelector('#goto-words'));

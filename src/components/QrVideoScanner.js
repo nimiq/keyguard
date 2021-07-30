@@ -7,10 +7,10 @@ class QrVideoScanner extends Nimiq.Observable {
     // eslint-disable-next-line valid-jsdoc
     /**
      * @param {HTMLDivElement} [$el]
-     * @param {number} [reportFrequency = 7000]
      * @param {(result: string) => boolean} [validator]
+     * @param {number} [reportFrequency = 7000]
      */
-    constructor($el, reportFrequency = 7000, validator = /** @param {string} result */ result => !!result) {
+    constructor($el, validator = /** @param {string} result */ result => !!result, reportFrequency = 7000) {
         super();
 
         this._reportFrequency = reportFrequency;
