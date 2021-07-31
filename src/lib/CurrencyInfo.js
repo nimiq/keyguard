@@ -3,11 +3,36 @@
 // This file should also be updated whenever CurrencyInfo in @nimiq/utils is updated.
 class CurrencyInfo {
     /**
+     * @private
+     * @param {number} value
+     * @param {string | string[]} [locales]
+     * @param {Intl.NumberFormatOptions} [options]
+     * @returns {string | null}
+     */
+    static _failsafeNumberToLocaleString(value, locales, options) {
+        try {
+            // toLocaleString can fail for example for invalid locales or currency codes or unsupported currencyDisplay
+            // options in older browsers. Older Chrome versions also had a bug, where some option combinations lead to
+            // a "Internal error. Icu error." exception.
+            return value.toLocaleString(
+                locales,
+                options,
+            );
+        } catch (e) {
+            return null;
+        }
+    }
+
+    /**
      * @param {string} currencyCode 3-letter currency code
      * @param {string} [locale] The locale to use for auto-detecting the name and symbol
      * @throws If currency code is not a well-formed currency code.
      */
     constructor(currencyCode, locale) {
+        if (!CurrencyInfo.CURRENCY_CODE_REGEX.test(currencyCode)) {
+            throw new Error(`Invalid currency code ${currencyCode}`);
+        }
+
         /** @type {string} */
         this.code = currencyCode.toUpperCase();
         /** @type {string} */
@@ -29,11 +54,19 @@ class CurrencyInfo {
             navigator.language, // fallback
             'en-US', // en-US as last resort
         ];
+        let supportsDisplayNames = 'DisplayNames' in Intl;
         // also normalizes the locales
-        [this.locale] = 'DisplayNames' in Intl
+        [this.locale] = supportsDisplayNames
             // @ts-ignore TODO use proper types once https://github.com/microsoft/TypeScript/pull/44022 is available
             ? Intl.DisplayNames.supportedLocalesOf(nameLocalesToTry)
             : Intl.NumberFormat.supportedLocalesOf(nameLocalesToTry);
+        if (supportsDisplayNames && !this.locale) {
+            // DisplayNames does not support any of the tried locales, not even en. This can happen especially if
+            // DisplayNames was polyfilled, e.g. by @formatjs/intl-displaynames, but no data was (lazy)loaded for any
+            // of our locales.
+            supportsDisplayNames = false;
+            [this.locale] = Intl.NumberFormat.supportedLocalesOf(nameLocalesToTry);
+        }
 
         const cacheKey = `${this.code} ${this.locale}`;
         const cachedCurrencyInfo = CurrencyInfo.CACHED_AUTO_GENERATED_CURRENCY_INFOS[cacheKey];
@@ -49,19 +82,25 @@ class CurrencyInfo {
             numberingSystem: 'latn',
         };
 
-        if ('DisplayNames' in Intl) {
-            // Use DisplayNames if available as it provides better names.
-            // @ts-ignore TODO use proper types once https://github.com/microsoft/TypeScript/pull/44022 is merged
-            this.name = new Intl.DisplayNames(this.locale, { type: 'currency' }).of(currencyCode);
-        } else {
-            // Note that toLocaleString throws for not well-formatted currency codes
-            // (see https://www.ecma-international.org/ecma-402/1.0/#sec-6.3.1).
-            formattedString = (0).toLocaleString(
+        if (supportsDisplayNames) {
+            try {
+                // Use DisplayNames if available as it provides better names.
+                // @ts-ignore TODO use proper types once https://github.com/microsoft/TypeScript/pull/44022 is merged
+                this.name = new Intl.DisplayNames(this.locale, { type: 'currency' }).of(currencyCode);
+            } catch (e) {
+                // Ignore and continue with if block below.
+            }
+        }
+        if (!this.name) {
+            formattedString = CurrencyInfo._failsafeNumberToLocaleString(
+                0,
                 this.locale,
                 { currencyDisplay: 'name', ...formatterOptions },
             );
-            // Using regex parsing instead of NumberFormat.formatToParts which has less browser support.
-            this.name = formattedString.replace(CurrencyInfo.NUMBER_REGEX, '').trim();
+            this.name = formattedString
+                // Using regex parsing instead of NumberFormat.formatToParts which has less browser support.
+                ? formattedString.replace(CurrencyInfo.NUMBER_REGEX, '').trim()
+                : this.code;
         }
 
         const extraSymbol = CurrencyInfo.EXTRA_SYMBOLS[this.code];
@@ -73,29 +112,46 @@ class CurrencyInfo {
                 && CurrencyInfo.RIGHT_TO_LEFT_DETECTION_REGEX.test(this.name);
             this.symbol = extraSymbol[useRightToLeft ? 1 : 0];
         } else {
-            formattedString = (0).toLocaleString(
-                // Unless a locale was specifically requested, use `en-${currencyCountry}` for the symbol detection
-                // instead of this.locale which is based on navigator.language, as the EXTRA_SYMBOLS have been
-                // created based on en.
-                [
-                    ...(locale ? [locale] : []), // try requested locale
-                    `en-${currencyCountry}`,
-                    'en',
-                ],
-                { currencyDisplay: 'narrowSymbol', ...formatterOptions },
+            // Unless a locale was specifically requested, use `en-${currencyCountry}` for the symbol detection
+            // instead of this.locale which is based on navigator.language, as the EXTRA_SYMBOLS have been
+            // created based on en.
+            const symbolLocalesToTry = [
+                ...(locale ? [locale] : []), // try requested locale
+                `en-${currencyCountry}`,
+                'en',
+            ];
+            const symbolFormattedString = CurrencyInfo._failsafeNumberToLocaleString(
+                0,
+                symbolLocalesToTry,
+                { currencyDisplay: 'narrowSymbol', ...formatterOptions }, // not supported on older browsers
+            ) || CurrencyInfo._failsafeNumberToLocaleString(
+                0,
+                symbolLocalesToTry,
+                { currencyDisplay: 'symbol', ...formatterOptions },
             );
-            this.symbol = formattedString.replace(CurrencyInfo.NUMBER_REGEX, '').trim();
+            if (symbolFormattedString) {
+                formattedString = symbolFormattedString;
+                this.symbol = formattedString.replace(CurrencyInfo.NUMBER_REGEX, '').trim();
+            } else {
+                this.symbol = this.code;
+            }
         }
 
         if (CurrencyInfo.CUSTOM_DECIMAL_LESS_CURRENCIES.has(this.code)) {
             this.decimals = 0;
         } else {
-            if (!formattedString) {
-                // As we only need the number, the used locale and currencyDisplay don't matter.
-                formattedString = (0).toLocaleString('en', formatterOptions);
+            // As we only need the number, the used locale and currencyDisplay don't matter.
+            formattedString = formattedString || CurrencyInfo._failsafeNumberToLocaleString(
+                0,
+                'en',
+                { currencyDisplay: 'code', ...formatterOptions },
+            );
+            if (formattedString) {
+                const numberMatch = formattedString.match(CurrencyInfo.NUMBER_REGEX);
+                this.decimals = numberMatch ? (numberMatch[1] || '').length : 2;
+            } else {
+                this.decimals = 2;
             }
-            const numberMatch = formattedString.match(CurrencyInfo.NUMBER_REGEX);
-            this.decimals = numberMatch ? (numberMatch[1] || '').length : 2;
         }
 
         CurrencyInfo.CACHED_AUTO_GENERATED_CURRENCY_INFOS[cacheKey] = this;
@@ -221,6 +277,14 @@ CurrencyInfo.CUSTOM_DECIMAL_LESS_CURRENCIES = new Set([
  * @type {{[currencyAndLocale: string]: CurrencyInfo}}
  */
 CurrencyInfo.CACHED_AUTO_GENERATED_CURRENCY_INFOS = {};
+
+/**
+ * Regex for detecting valid currency codes.
+ * @private
+ * @readonly
+ * @type {RegExp}
+ */
+CurrencyInfo.CURRENCY_CODE_REGEX = /[A-Z]{3}/i;
 
 /**
  * Regex for detecting the number with optional decimals in a formatted string for useGrouping: false
