@@ -42,6 +42,7 @@
     "import-login-to-continue": "Log opnieuw in om door te gaan.",
     "import-unlock-account": "Ontgrendel je account",
     "import-create-account": "Creëer nieuw account",
+    "import-qr-video-tooltip": "Scan your Login File with your device's camera.",
 
     "import-file-button-words": "Inloggen met herstelwoorden",
 
@@ -55,6 +56,10 @@
     "file-import-prompt": "Sleep hierheen of klik om te importeren",
     "file-import-error-could-not-read": "Kan Login File niet lezen.",
     "file-import-error-invalid": "Ongeldige Login File.",
+
+    "qr-video-scanner-cancel": "Annuleer",
+    "qr-video-scanner-no-camera": "Uw apparaat heeft geen toegankelijke camera.",
+    "qr-video-scanner-enable-camera": "Deblokkeer de camera zodat deze website QR-codes kan scannen.",
 
     "sign-tx-heading-tx": "Bevestig transactie",
     "sign-tx-heading-checkout": "Verifieer betaling",

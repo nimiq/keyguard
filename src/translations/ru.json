@@ -42,6 +42,7 @@
     "import-login-to-continue": "Чтобы продолжить, войдите снова",
     "import-unlock-account": "Разблокировать ваш Аккаунт",
     "import-create-account": "Создать новый аккаунт",
+    "import-qr-video-tooltip": "Scan your Login File with your device's camera.",
 
     "import-file-button-words": "Войти с помощью Защитной Фразы",
 
@@ -55,6 +56,10 @@
     "file-import-prompt": "Перетащите сюда или кликните для импорта",
     "file-import-error-could-not-read": "Файл Авторизации не прочитался",
     "file-import-error-invalid": "Некорретный Файл Авторизации",
+
+    "qr-video-scanner-cancel": "Отменить",
+    "qr-video-scanner-no-camera": "Камера вашего устройства недоступна.",
+    "qr-video-scanner-enable-camera": "Разблокируйте камеру для этого сайта, чтобы сканировать QR-коды.",
 
     "sign-tx-heading-tx": "Подтвердите транзакцию",
     "sign-tx-heading-checkout": "Проверьте Платёж",
@@ -225,7 +230,7 @@
     "sign-swap-oasis-fees": "Комиссия сервиса OASIS",
     "sign-swap-oasis-fees-explainer": "от суммы обмена.",
     "sign-swap-bank-fees": "комиссия",
-    "sign-swap-bank-fees-explainer": "Banking network fee.",
+    "sign-swap-bank-fees-explainer": "Комиссия банка.",
     "sign-swap-nim-fees": "Комиссия сети NIM",
     "sign-swap-exchange-fee": "Комиссия",
     "sign-swap-of-exchange-value": "от суммы обмена.",

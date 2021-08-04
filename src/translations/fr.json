@@ -42,6 +42,7 @@
     "import-login-to-continue": "Veuillez vous reconnecter pour continuer.",
     "import-unlock-account": "Déverrouiller votre Compte",
     "import-create-account": "Créer un nouveau compte",
+    "import-qr-video-tooltip": "Scan your Login File with your device's camera.",
 
     "import-file-button-words": "Se connecter avec les Mots de Récupération",
 
@@ -55,6 +56,10 @@
     "file-import-prompt": "Glissez-déposez ici ou cliquez pour importer",
     "file-import-error-could-not-read": "Impossible de lire le fichier de connexion.",
     "file-import-error-invalid": "Fichier de connexion invalide.",
+
+    "qr-video-scanner-cancel": "Annuler",
+    "qr-video-scanner-no-camera": "Votre appareil n'a pas de caméra accessible.",
+    "qr-video-scanner-enable-camera": "Débloquez la caméra pour ce site de façon à scanner les QR codes.",
 
     "sign-tx-heading-tx": "Confirmer la Transaction",
     "sign-tx-heading-checkout": "Vérifier le Paiement",
@@ -225,7 +230,7 @@
     "sign-swap-oasis-fees": "frais de service OASIS",
     "sign-swap-oasis-fees-explainer": "de la valeur du swap.",
     "sign-swap-bank-fees": "frais",
-    "sign-swap-bank-fees-explainer": "Banking network fee.",
+    "sign-swap-bank-fees-explainer": "Frais du réseau bancaire.",
     "sign-swap-nim-fees": "frais de réseau NIM",
     "sign-swap-exchange-fee": "Frais de swap",
     "sign-swap-of-exchange-value": "de la valeur du swap.",

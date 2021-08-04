@@ -42,6 +42,7 @@
     "import-login-to-continue": "Будь ласка, увійдіть ще раз, щоб продовжити.",
     "import-unlock-account": "Розблокувати рахунок",
     "import-create-account": "Створити новий рахунок",
+    "import-qr-video-tooltip": "Scan your Login File with your device's camera.",
 
     "import-file-button-words": "Увійти за допомогою секретних слів",
 
@@ -55,6 +56,10 @@
     "file-import-prompt": "Перетягніть сюди або клацніть щоб завантажити",
     "file-import-error-could-not-read": "Неможливо прочитати файл-ключ.",
     "file-import-error-invalid": "Невірний файл-ключ.",
+
+    "qr-video-scanner-cancel": "Скасувати",
+    "qr-video-scanner-no-camera": "Ваш пристрій не має доступної камери.",
+    "qr-video-scanner-enable-camera": "Розблокуйте камеру для цього веб-сайту, щоб сканувати QR-коди.",
 
     "sign-tx-heading-tx": "Підтвердіть переказ",
     "sign-tx-heading-checkout": "Підтвердіть платіж",

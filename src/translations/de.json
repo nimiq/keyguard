@@ -42,6 +42,7 @@
     "import-login-to-continue": "Bitte logge dich neu ein, um fortzufahren.",
     "import-unlock-account": "Entsperre dein Konto",
     "import-create-account": "Erstelle ein neues Konto",
+    "import-qr-video-tooltip": "Scanne deine Login‑Datei mit der Kamera deines Geräts.",
 
     "import-file-button-words": "Mit Wiederherstellungswörtern einloggen",
 
@@ -55,6 +56,10 @@
     "file-import-prompt": "Zum Hochladen hierher ziehen oder klicken",
     "file-import-error-could-not-read": "Login-Datei nicht erkannt.",
     "file-import-error-invalid": "Ungültige Login‑Datei.",
+
+    "qr-video-scanner-cancel": "Abbrechen",
+    "qr-video-scanner-no-camera": "Dein Endgerät verfügt über keine verwendbare Kamera.",
+    "qr-video-scanner-enable-camera": "Erlaube den Zugriff auf deine Kamera, um QR-Codes zu scannen.",
 
     "sign-tx-heading-tx": "Transaktion bestätigen",
     "sign-tx-heading-checkout": "Zahlung bestätigen",
