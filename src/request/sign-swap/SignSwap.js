@@ -431,7 +431,8 @@ class SignSwap {
         if (request.fund.type === 'BTC') {
             const keyPaths = request.fund.inputs.map(input => input.keyPath);
             const dedupedKeyPaths = keyPaths.filter(
-                (path, index) => keyPaths.indexOf(path) == index);
+                (path, index) => keyPaths.indexOf(path) === index,
+            );
             const keyPairs = dedupedKeyPaths.map(path => btcKey.deriveKeyPair(path));
             const privKeys = keyPairs.map(keyPair => /** @type {Buffer} */ (keyPair.privateKey).toString('hex'));
             privateKeys.btc = privKeys;
