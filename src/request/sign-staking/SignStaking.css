@@ -1,0 +1,156 @@
+#confirm-staking {
+    position: relative;
+    overflow: hidden;
+}
+
+#confirm-staking.standard .hide-standard,
+#confirm-staking.checkout .hide-checkout,
+#confirm-staking.cashlink .hide-cashlink {
+    display: none;
+}
+
+#confirm-staking .payment-info-line + .nq-card-header {
+    padding-top: 2rem;
+}
+
+#confirm-staking .nq-card-body {
+    padding-bottom: 2rem;
+}
+
+#confirm-staking .transaction {
+    display: flex;
+    flex-direction: column;
+}
+
+#confirm-staking .value-fee-data {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-top: 2rem;
+    flex-grow: 1;
+}
+
+#confirm-staking > #account-details {
+    position: absolute;
+    overflow: hidden;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    border-radius: 1rem;
+    background-color: rgba(255,255,255, 0.75);
+    z-index: -1;
+    opacity: 0;
+    padding: 4rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: opacity .4s 0s, z-index 0s .4s;
+}
+
+#confirm-staking.account-details-open > #account-details {
+    z-index: 3;
+    transition-delay: 0s;
+    opacity: 1;
+}
+
+#confirm-staking #details {
+    flex-direction: column;
+    align-items: center;
+}
+
+#confirm-staking #effect-container {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: 1rem;
+    flex-grow: 1;
+}
+
+#confirm-staking > #effect-container > * {
+    transition: filter .4s, opacity .4s;
+    opacity: 1;
+}
+
+#confirm-staking.account-details-open > #effect-container > .page-header,
+#confirm-staking.account-details-open > #effect-container > .payment-info-line,
+#confirm-staking.account-details-open > #effect-container > .page-body {
+    -webkit-filter: blur(20px);
+    -moz-filter: blur(20px);
+    -o-filter: blur(20px);
+    -ms-filter: blur(20px);
+    filter: blur(20px);
+    opacity: 0.5;
+}
+
+#confirm-staking.account-details-open > #effect-container > .page-footer {
+    -webkit-filter: blur(35px);
+    -moz-filter: blur(35px);
+    -o-filter: blur(35px);
+    -ms-filter: blur(35px);
+    filter: blur(35px);
+    opacity: 0.5;
+}
+
+#confirm-staking #account-details #close-details {
+    position: absolute;
+    right: 2rem;
+    top: 2rem;
+    border: 0;
+    padding: 0;
+    height: 3rem;
+    font-size: 3rem;
+    background-color: unset;
+}
+
+#confirm-staking #account-details #close-details .nq-icon {
+    opacity: .2;
+    transition: opacity .3s var(--nimiq-ease);
+}
+
+#confirm-staking #account-details #close-details:hover .nq-icon,
+#confirm-staking #account-details #close-details:active .nq-icon,
+#confirm-staking #account-details #close-details:focus .nq-icon {
+    opacity: .4;
+}
+
+#confirm-staking .accounts {
+    flex-direction: row;
+    align-items: flex-start;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid rgba(31, 35, 72, 0.1);
+    flex-shrink: 0;
+}
+
+#confirm-staking .accounts .address-info {
+    width: calc(50% - 1.5rem);
+}
+
+#confirm-staking .arrow {
+    margin-top: 4rem;
+    height: 2.25rem;
+    width: 3rem;
+    color: var(--nimiq-light-blue);
+}
+
+#confirm-staking .total #value {
+    font-size: 5rem;
+}
+
+#confirm-staking .total .nim-symbol {
+    margin-left: 1rem;
+    font-weight: 700;
+}
+
+#confirm-staking .fee-section {
+    opacity: 0.5;
+    margin-bottom: 0.25rem;
+}
+
+#confirm-staking .data-section {
+    margin: 1rem 3rem;
+    text-align: center;
+    max-width: 100%;
+    overflow-wrap: break-word;
+}
