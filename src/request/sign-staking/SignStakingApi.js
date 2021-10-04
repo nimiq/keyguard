@@ -1,7 +1,7 @@
-/* global I18n */
 /* global TopLevelApi */
 /* global SignStaking */
 /* global Errors */
+/* global Nimiq */
 
 /** @extends {TopLevelApi<KeyguardRequest.SignStakingRequest>} */
 class SignStakingApi extends TopLevelApi {
@@ -21,81 +21,91 @@ class SignStakingApi extends TopLevelApi {
         parsedRequest.keyLabel = this.parseLabel(request.keyLabel);
         parsedRequest.keyPath = this.parsePath(request.keyPath, 'keyPath');
         parsedRequest.senderLabel = this.parseLabel(request.senderLabel);
-        parsedRequest.transaction = this.parseTransaction(request);
-        parsedRequest.layout = this.parseLayout(request.layout);
-        if ((!request.layout || request.layout === SignStakingApi.Layouts.STANDARD)
-            && parsedRequest.layout === SignStakingApi.Layouts.STANDARD) {
-            parsedRequest.recipientLabel = this.parseLabel(request.recipientLabel);
-        } else if (request.layout === SignStakingApi.Layouts.CHECKOUT
-            && parsedRequest.layout === SignStakingApi.Layouts.CHECKOUT) {
-            parsedRequest.shopOrigin = this.parseShopOrigin(request.shopOrigin);
-            parsedRequest.shopLogoUrl = this.parseShopLogoUrl(request.shopLogoUrl);
-            if (parsedRequest.shopLogoUrl && parsedRequest.shopLogoUrl.origin !== parsedRequest.shopOrigin) {
-                throw new Errors.InvalidRequestError('origin of shopLogoUrl must be same as shopOrigin');
-            }
+        parsedRequest.recipientLabel = this.parseLabel(request.recipientLabel);
 
-            parsedRequest.fiatAmount = this.parseNonNegativeFiniteNumber(request.fiatAmount);
-            parsedRequest.fiatCurrency = this.parseFiatCurrency(request.fiatCurrency);
-            if ((parsedRequest.fiatAmount === undefined) !== (parsedRequest.fiatCurrency === undefined)) {
-                throw new Errors.InvalidRequestError('fiatAmount and fiatCurrency must be both defined or undefined.');
-            }
-
-            parsedRequest.vendorMarkup = this.parseVendorMarkup(request.vendorMarkup);
-
-            parsedRequest.time = this.parseNonNegativeFiniteNumber(request.time);
-            parsedRequest.expires = this.parseNonNegativeFiniteNumber(request.expires);
-            if (parsedRequest.expires !== undefined) {
-                if (parsedRequest.time === undefined) {
-                    throw new Errors.InvalidRequestError('If `expires` is given, `time` must be given too.');
-                } else if (parsedRequest.time >= parsedRequest.expires) {
-                    throw new Errors.InvalidRequestError('`expires` must be greater than `time`');
+        const type = this.parseStakingType(request.type);
+        parsedRequest.type = type;
+        switch (type) {
+            case SignStakingApi.IncomingStakingType.CREATE_STAKER:
+            case SignStakingApi.IncomingStakingType.UPDATE_STAKER: {
+                const delegation = this.parseAddress(request.delegation, 'delegation');
+                const data = new Nimiq.SerialBuffer(
+                    1 // Data type
+                    + 1 // Option<> indicator
+                    + Nimiq.Address.SERIALIZED_SIZE // Validator address (delegation)
+                    + Nimiq.SignatureProof.SINGLE_SIG_SIZE, // Staker signature
+                );
+                data.writeUint8(type);
+                data.writeUint8(1); // Delegation is optional, this signals that we are including it.
+                data.write(delegation.serialize());
+                data.writeUint8(1); // The first byte of the signature proof must be 0x01
+                request.data = data;
+                if (type === SignStakingApi.IncomingStakingType.UPDATE_STAKER) {
+                    request.value = 0;
+                    request.flags = 0b10; // Signalling flag
                 }
+                break;
             }
-        } else if (request.layout === SignStakingApi.Layouts.CASHLINK
-            && parsedRequest.layout === SignStakingApi.Layouts.CASHLINK
-            && request.cashlinkMessage) {
-            parsedRequest.cashlinkMessage = /** @type {string} */(this.parseMessage(request.cashlinkMessage));
+            case SignStakingApi.IncomingStakingType.STAKE: {
+                const sender = this.parseAddress(request.sender, 'sender');
+                const data = new Nimiq.SerialBuffer(
+                    1 // Data type
+                    + Nimiq.Address.SERIALIZED_SIZE, // Staker address
+                );
+                data.writeUint8(type);
+                data.write(sender.serialize());
+                request.data = data;
+                break;
+            }
+            case SignStakingApi.IncomingStakingType.RETIRE_STAKER:
+            case SignStakingApi.IncomingStakingType.REACTIVATE_STAKER: {
+                const value = this.parsePositiveInteger(request.value, false, 'value');
+                const data = new Nimiq.SerialBuffer(
+                    1 // Data type
+                    + 8 // NIM value (uint64)
+                    + Nimiq.SignatureProof.SINGLE_SIG_SIZE, // Staker signature
+                );
+                data.writeUint8(type);
+                data.writeUint64(value);
+                data.writeUint8(1); // The first byte of the signature proof must be 0x01
+                request.data = data;
+                request.value = 0;
+                request.flags = 0b10; // Signalling flag
+                break;
+            }
+            default:
+                throw new Errors.KeyguardError('Unreachable');
         }
+
+        parsedRequest.transaction = this.parseTransaction(request);
 
         return parsedRequest;
     }
 
     /**
      * Checks that the given layout is valid
-     * @param {unknown} layout
-     * @returns {KeyguardRequest.SignStakingRequestLayout}
+     * @param {unknown} type
+     * @returns {number}
      */
-    parseLayout(layout) {
-        if (!layout) {
-            return SignStakingApi.Layouts.STANDARD;
+    parseStakingType(type) {
+        if (!type || typeof type !== 'number') {
+            throw new Errors.InvalidRequestError('Staking type must be a number');
         }
-        // @ts-ignore (Property 'values' does not exist on type 'ObjectConstructor'.)
-        if (Object.values(SignStakingApi.Layouts).indexOf(layout) === -1) {
-            throw new Errors.InvalidRequestError('Invalid selected layout');
+        if (Object.values(SignStakingApi.IncomingStakingType).indexOf(type) === -1) {
+            throw new Errors.InvalidRequestError('Invalid staking type');
         }
-        return /** @type KeyguardRequest.SignStakingRequestLayout */ (layout);
+        return type;
     }
 
     get Handler() {
         return SignStaking;
     }
-
-    /**
-     * @param {Parsed<KeyguardRequest.SignStakingRequest>} parsedRequest
-     */
-    async onBeforeRun(parsedRequest) {
-        if (parsedRequest.layout === SignStakingApi.Layouts.CHECKOUT) {
-            this.enableGlobalCloseButton(I18n.translatePhrase('sign-tx-cancel-payment'));
-        }
-    }
 }
 
-/**
- * @enum {KeyguardRequest.SignStakingRequestLayout}
- * @readonly
- */
-SignStakingApi.Layouts = {
-    STANDARD: /** @type {'standard'} */ ('standard'),
-    CHECKOUT: /** @type {'checkout'} */ ('checkout'),
-    CASHLINK: /** @type {'cashlink'} */ ('cashlink'),
+SignStakingApi.IncomingStakingType = {
+    CREATE_STAKER: 5,
+    STAKE: 6,
+    UPDATE_STAKER: 7,
+    RETIRE_STAKER: 8,
+    REACTIVATE_STAKER: 9,
 };

@@ -7,10 +7,7 @@
 /* global Utf8Tools */
 /* global TopLevelApi */
 /* global AddressInfo */
-/* global PaymentInfoLine */
-/* global Constants */
 /* global NumberFormatting */
-/* global I18n */
 
 /**
  * @callback SignStaking.resolve
@@ -26,8 +23,7 @@ class SignStaking {
     constructor(request, resolve, reject) {
         this._request = request;
         /** @type {HTMLElement} */
-        this.$el = (document.getElementById(SignStaking.Pages.CONFIRM_TRANSACTION));
-        this.$el.classList.add(request.layout);
+        this.$el = (document.getElementById(SignStaking.Pages.CONFIRM_STAKING));
 
         const transaction = request.transaction;
 
@@ -50,45 +46,19 @@ class SignStaking {
         /** @type {HTMLLinkElement} */
         const $recipient = (this.$el.querySelector('.accounts .recipient'));
         const recipientAddress = transaction.recipient.toUserFriendlyAddress();
-        /* eslint-disable no-nested-ternary */
-        const recipientLabel = 'shopOrigin' in request && !!request.shopOrigin
-            ? request.shopOrigin.split('://')[1]
-            : 'recipientLabel' in request && !!request.recipientLabel
-                ? request.recipientLabel
-                : null;
-        /* eslint-enable no-nested-ternary */
-        const recipientImage = 'shopLogoUrl' in request && !!request.shopLogoUrl
-            ? request.shopLogoUrl
+        const recipientLabel = 'recipientLabel' in request && !!request.recipientLabel
+            ? request.recipientLabel
             : null;
         this._recipientAddressInfo = new AddressInfo({
             userFriendlyAddress: recipientAddress,
             label: recipientLabel,
-            imageUrl: recipientImage,
+            imageUrl: null,
             accountLabel: null,
-        }, request.layout === SignStakingApi.Layouts.CASHLINK);
+        });
         this._recipientAddressInfo.renderTo($recipient);
-        if (request.layout !== SignStakingApi.Layouts.CASHLINK) {
-            $recipient.addEventListener('click', () => {
-                this._openDetails(this._recipientAddressInfo);
-            });
-        }
-
-        /** @type {HTMLElement} */
-        const $paymentInfoLine = (this.$el.querySelector('.payment-info-line'));
-        if (request.layout === SignStakingApi.Layouts.CHECKOUT) {
-            // eslint-disable-next-line no-new
-            new PaymentInfoLine(Object.assign({}, request, {
-                recipient: recipientAddress,
-                label: recipientLabel || recipientAddress,
-                imageUrl: request.shopLogoUrl,
-                amount: request.transaction.value,
-                currency: /** @type {'nim'} */ ('nim'),
-                unitsToCoins: Nimiq.Policy.lunasToCoins,
-                networkFee: request.transaction.fee,
-            }), $paymentInfoLine);
-        } else {
-            $paymentInfoLine.remove();
-        }
+        $recipient.addEventListener('click', () => {
+            this._openDetails(this._recipientAddressInfo);
+        });
 
         /** @type {HTMLButtonElement} */
         const $closeDetails = (this.$accountDetails.querySelector('#close-details'));
@@ -110,15 +80,7 @@ class SignStaking {
             $feeSection.classList.remove('display-none');
         }
 
-        if (request.layout === SignStakingApi.Layouts.CASHLINK
-         && Nimiq.BufferUtils.equals(transaction.data, Constants.CASHLINK_FUNDING_DATA)) {
-            if (request.cashlinkMessage) {
-                $data.textContent = request.cashlinkMessage;
-                /** @type {HTMLDivElement} */
-                const $dataSection = (this.$el.querySelector('.data-section'));
-                $dataSection.classList.remove('display-none');
-            }
-        } else if ($data && transaction.data.byteLength > 0) {
+        if ($data && transaction.data.byteLength > 0) {
             // Set transaction extra data.
             $data.textContent = this._formatData(transaction);
             /** @type {HTMLDivElement} */
@@ -131,9 +93,7 @@ class SignStaking {
         const $passwordBox = (document.querySelector('#password-box'));
         this._passwordBox = new PasswordBox($passwordBox, {
             hideInput: !request.keyInfo.encrypted,
-            buttonI18nTag: request.layout === SignStakingApi.Layouts.CASHLINK
-                ? 'passwordbox-create-cashlink'
-                : 'passwordbox-confirm-tx',
+            buttonI18nTag: 'passwordbox-confirm-tx',
             minLength: request.keyInfo.hasPin ? Key.PIN_LENGTH : undefined,
         });
 
@@ -143,10 +103,6 @@ class SignStaking {
                 this._onConfirm(request, resolve, reject, password);
             },
         );
-
-        if ('expires' in request && request.expires) {
-            setTimeout(() => reject(new Errors.RequestExpired()), request.expires - Date.now());
-        }
     }
 
     /**
@@ -194,19 +150,50 @@ class SignStaking {
         }
 
         const publicKey = key.derivePublicKey(request.keyPath);
+
+        const stakingTypesWithSignatureData = [
+            SignStakingApi.IncomingStakingType.CREATE_STAKER,
+            SignStakingApi.IncomingStakingType.UPDATE_STAKER,
+            SignStakingApi.IncomingStakingType.RETIRE_STAKER,
+            SignStakingApi.IncomingStakingType.REACTIVATE_STAKER,
+        ];
+
+        if (stakingTypesWithSignatureData.includes(request.type)) {
+            // The tx signature of the staker is set in the data
+            const signature = key.sign(request.keyPath, request.transaction.serializeContent());
+            const proof = Nimiq.SignatureProof.singleSig(publicKey, signature);
+
+            const data = new Nimiq.SerialBuffer(request.transaction.data);
+            data.writePos = data.length - Nimiq.SignatureProof.SINGLE_SIG_SIZE;
+            data.write(proof.serialize());
+
+            // Reconstruct transaction (as transaction.data is readonly)
+            const tx = request.transaction;
+            request.transaction = new Nimiq.ExtendedTransaction(
+                tx.sender, tx.senderType,
+                tx.recipient, tx.recipientType,
+                tx.value, tx.fee,
+                tx.validityStartHeight, tx.flags,
+                data, // <= data replaced here
+                tx.proof, tx.networkId,
+            );
+        }
+
+        // Regular tx signature of the sender
         const signature = key.sign(request.keyPath, request.transaction.serializeContent());
 
         /** @type {KeyguardRequest.SignStakingResult} */
         const result = {
             publicKey: publicKey.serialize(),
             signature: signature.serialize(),
+            data: request.transaction.data,
         };
         resolve(result);
     }
 
     run() {
         // Go to start page
-        window.location.hash = SignStaking.Pages.CONFIRM_TRANSACTION;
+        window.location.hash = SignStaking.Pages.CONFIRM_STAKING;
     }
 
     /**
@@ -214,14 +201,7 @@ class SignStaking {
      * @returns {string}
      */
     _formatData(transaction) {
-        if (Nimiq.BufferUtils.equals(transaction.data, Constants.CASHLINK_FUNDING_DATA)) {
-            return I18n.translatePhrase('funding-cashlink');
-        }
-
-        if (transaction.hasFlag(Nimiq.Transaction.Flag.CONTRACT_CREATION)) {
-            // TODO: Decode contract creation transactions
-            // return ...
-        }
+        // TODO: Decode staking data
 
         return Utf8Tools.isValidUtf8(transaction.data)
             ? Utf8Tools.utf8ByteArrayToString(transaction.data)
@@ -230,5 +210,5 @@ class SignStaking {
 }
 
 SignStaking.Pages = {
-    CONFIRM_TRANSACTION: 'confirm-transaction',
+    CONFIRM_STAKING: 'confirm-staking',
 };

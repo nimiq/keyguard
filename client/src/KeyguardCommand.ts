@@ -5,6 +5,7 @@ export enum KeyguardCommand {
     EXPORT = 'export',
     CHANGE_PASSWORD = 'change-password',
     SIGN_TRANSACTION = 'sign-transaction',
+    SIGN_STAKING = 'sign-staking',
     SIGN_MESSAGE = 'sign-message',
     DERIVE_ADDRESS = 'derive-address',
 

@@ -20,6 +20,7 @@ import {
     ReleaseKeyRequest,
     ResetPasswordRequest,
     SignTransactionRequest,
+    SignStakingRequest,
     SignMessageRequest,
     SimpleRequest,
     IFrameRequest,
@@ -118,6 +119,10 @@ export class KeyguardClient {
 
     public signTransaction(request: SignTransactionRequest) {
         this._redirectRequest<SignTransactionRequest>(KeyguardCommand.SIGN_TRANSACTION, request);
+    }
+
+    public signStaking(request: SignStakingRequest) {
+        this._redirectRequest<SignStakingRequest>(KeyguardCommand.SIGN_STAKING, request);
     }
 
     public deriveAddress(request: DeriveAddressRequest) {

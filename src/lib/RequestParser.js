@@ -127,7 +127,12 @@ class RequestParser { // eslint-disable-line no-unused-vars
      * @returns {Nimiq.ExtendedTransaction}
      */
     parseTransaction(object) {
-        const accountTypes = new Set([Nimiq.Account.Type.BASIC, Nimiq.Account.Type.VESTING, Nimiq.Account.Type.HTLC]);
+        const accountTypes = new Set([
+            Nimiq.Account.Type.BASIC,
+            Nimiq.Account.Type.VESTING,
+            Nimiq.Account.Type.HTLC,
+            3 /* Staking */,
+        ]);
         if (!object || typeof object !== 'object' || object === null) {
             throw new Errors.InvalidRequestError('Request must be an object');
         }
@@ -154,7 +159,7 @@ class RequestParser { // eslint-disable-line no-unused-vars
             ? Utf8Tools.stringToUtf8ByteArray(object.data)
             : object.data || new Uint8Array(0);
 
-        if (flags === Nimiq.Transaction.Flag.NONE && data.byteLength > 64) {
+        if (flags === Nimiq.Transaction.Flag.NONE && recipientType < 3 && data.byteLength > 64) {
             throw new Errors.InvalidRequestError('Data must not exceed 64 bytes');
         }
         if (flags === Nimiq.Transaction.Flag.CONTRACT_CREATION
