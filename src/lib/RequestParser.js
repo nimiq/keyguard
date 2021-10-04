@@ -183,6 +183,8 @@ class RequestParser { // eslint-disable-line no-unused-vars
                 object.validityStartHeight,
                 flags,
                 data,
+                undefined,
+                6,
             );
         } catch (error) {
             throw new Errors.InvalidRequestError(error instanceof Error ? error : String(error));
