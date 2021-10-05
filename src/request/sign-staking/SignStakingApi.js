@@ -25,6 +25,7 @@ class SignStakingApi extends TopLevelApi {
 
         const type = this.parseStakingType(request.type);
         parsedRequest.type = type;
+        let isSignalling = false;
         switch (type) {
             case SignStakingApi.IncomingStakingType.CREATE_STAKER:
             case SignStakingApi.IncomingStakingType.UPDATE_STAKER: {
@@ -40,10 +41,7 @@ class SignStakingApi extends TopLevelApi {
                 data.write(delegation.serialize());
                 data.writeUint8(1); // The first byte of the signature proof must be 0x01
                 request.data = data;
-                if (type === SignStakingApi.IncomingStakingType.UPDATE_STAKER) {
-                    request.value = 0;
-                    request.flags = 0b10; // Signalling flag
-                }
+                isSignalling = type === SignStakingApi.IncomingStakingType.UPDATE_STAKER;
                 break;
             }
             case SignStakingApi.IncomingStakingType.STAKE: {
@@ -69,8 +67,7 @@ class SignStakingApi extends TopLevelApi {
                 data.writeUint64(value);
                 data.writeUint8(1); // The first byte of the signature proof must be 0x01
                 request.data = data;
-                request.value = 0;
-                request.flags = 0b10; // Signalling flag
+                isSignalling = true;
                 break;
             }
             default:
@@ -78,6 +75,13 @@ class SignStakingApi extends TopLevelApi {
         }
 
         parsedRequest.transaction = this.parseTransaction(request);
+
+        if (isSignalling) {
+            // @ts-ignore Private property access
+            parsedRequest.transaction._value = 0;
+            // @ts-ignore Private property access
+            parsedRequest.transaction._flags = 0b10; // Signalling flag
+        }
 
         return parsedRequest;
     }

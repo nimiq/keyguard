@@ -169,14 +169,23 @@ class SignStaking {
 
             // Reconstruct transaction (as transaction.data is readonly)
             const tx = request.transaction;
+            const value = tx.value;
+            const flags = tx.flags;
             request.transaction = new Nimiq.ExtendedTransaction(
                 tx.sender, tx.senderType,
                 tx.recipient, tx.recipientType,
-                tx.value, tx.fee,
-                tx.validityStartHeight, tx.flags,
+                /* value */ 1, tx.fee,
+                tx.validityStartHeight, /* flags */ 0,
                 data, // <= data replaced here
                 tx.proof, tx.networkId,
             );
+
+            // The Nimiq 1.0 Transaction constructor does not allow 0 value or the signalling flag,
+            // so we are setting value and flags here.
+            // @ts-ignore Private property access
+            request.transaction._value = value;
+            // @ts-ignore Private property access
+            request.transaction._flags = flags;
         }
 
         // Regular tx signature of the sender
