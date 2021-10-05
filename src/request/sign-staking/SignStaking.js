@@ -210,11 +210,45 @@ class SignStaking {
      * @returns {string}
      */
     _formatData(transaction) {
-        // TODO: Decode staking data
-
-        return Utf8Tools.isValidUtf8(transaction.data)
-            ? Utf8Tools.utf8ByteArrayToString(transaction.data)
-            : Nimiq.BufferUtils.toHex(transaction.data);
+        const buf = new Nimiq.SerialBuffer(transaction.data);
+        const type = buf.readUint8();
+        switch (type) {
+            case SignStakingApi.IncomingStakingType.CREATE_STAKER: {
+                let text = 'Start staking';
+                const hasDelegation = buf.readUint8() === 1;
+                if (hasDelegation) {
+                    const delegation = Nimiq.Address.unserialize(buf);
+                    text += ` with validator ${delegation.toUserFriendlyAddress()}`;
+                } else {
+                    text += ' with no validator';
+                }
+                return text;
+            }
+            case SignStakingApi.IncomingStakingType.UPDATE_STAKER: {
+                let text = 'Change validator';
+                const hasDelegation = buf.readUint8() === 1;
+                if (hasDelegation) {
+                    const delegation = Nimiq.Address.unserialize(buf);
+                    text += ` to validator ${delegation.toUserFriendlyAddress()}`;
+                } else {
+                    text += ' to no validator';
+                }
+                return text;
+            }
+            case SignStakingApi.IncomingStakingType.STAKE: {
+                const staker = Nimiq.Address.unserialize(buf);
+                return `Add stake for ${staker.toUserFriendlyAddress()}`;
+            }
+            case SignStakingApi.IncomingStakingType.RETIRE_STAKER: {
+                const value = buf.readUint64();
+                return `Retire ${value / 1e5} NIM`;
+            }
+            case SignStakingApi.IncomingStakingType.REACTIVATE_STAKER: {
+                const value = buf.readUint64();
+                return `Reactivate ${value / 1e5} NIM`;
+            }
+            default: return Nimiq.BufferUtils.toHex(transaction.data);
+        }
     }
 }
 
