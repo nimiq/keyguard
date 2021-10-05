@@ -74,6 +74,10 @@ class SignStakingApi extends TopLevelApi {
                 isSignalling = true;
                 break;
             }
+            case SignStakingApi.IncomingStakingType.UNSTAKE: {
+                // No special data format is required for unstaking
+                break;
+            }
             default:
                 throw new Errors.KeyguardError('Unreachable');
         }
@@ -111,6 +115,8 @@ class SignStakingApi extends TopLevelApi {
 }
 
 SignStakingApi.IncomingStakingType = {
+    UNSTAKE: 1,
+
     CREATE_STAKER: 5,
     STAKE: 6,
     UPDATE_STAKER: 7,

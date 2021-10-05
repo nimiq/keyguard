@@ -43,7 +43,7 @@ export type TransactionInfo = {
     keyPath: string,
     senderLabel?: string,
     sender: Uint8Array,
-    senderType: Nimiq.Account.Type,
+    senderType: Nimiq.Account.Type | 3,
     recipient: Uint8Array,
     recipientType?: Nimiq.Account.Type,
     value: number,
