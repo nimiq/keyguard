@@ -29,7 +29,7 @@ class SignStakingApi extends TopLevelApi {
         switch (type) {
             case SignStakingApi.IncomingStakingType.CREATE_STAKER:
             case SignStakingApi.IncomingStakingType.UPDATE_STAKER: {
-                const delegation = this.parseAddress(request.delegation, 'delegation');
+                parsedRequest.delegation = this.parseAddress(request.delegation, 'delegation');
                 const data = new Nimiq.SerialBuffer(
                     1 // Data type
                     + 1 // Option<> indicator
@@ -38,8 +38,10 @@ class SignStakingApi extends TopLevelApi {
                 );
                 data.writeUint8(type);
                 data.writeUint8(1); // Delegation is optional, this signals that we are including it.
-                data.write(delegation.serialize());
-                data.writeUint8(1); // The first byte of the signature proof must be 0x01
+                data.write(parsedRequest.delegation.serialize());
+                // The first byte of the signature proof must be 0x01
+                // https://github.com/dalek-cryptography/curve25519-dalek/blob/main/src/edwards.rs#L335-L338
+                data.writeUint8(1);
                 request.data = data;
                 isSignalling = type === SignStakingApi.IncomingStakingType.UPDATE_STAKER;
                 break;
@@ -65,7 +67,9 @@ class SignStakingApi extends TopLevelApi {
                 );
                 data.writeUint8(type);
                 data.writeUint64(value);
-                data.writeUint8(1); // The first byte of the signature proof must be 0x01
+                // The first byte of the signature proof must be 0x01
+                // https://github.com/dalek-cryptography/curve25519-dalek/blob/main/src/edwards.rs#L335-L338
+                data.writeUint8(1);
                 request.data = data;
                 isSignalling = true;
                 break;
