@@ -39,9 +39,6 @@ class SignStakingApi extends TopLevelApi {
                 data.writeUint8(type);
                 data.writeUint8(1); // Delegation is optional, this signals that we are including it.
                 data.write(parsedRequest.delegation.serialize());
-                // The first byte of the signature proof must be 0x01
-                // https://github.com/dalek-cryptography/curve25519-dalek/blob/main/src/edwards.rs#L335-L338
-                data.writeUint8(1);
                 request.data = data;
                 isSignalling = type === SignStakingApi.IncomingStakingType.UPDATE_STAKER;
                 break;
@@ -67,9 +64,6 @@ class SignStakingApi extends TopLevelApi {
                 );
                 data.writeUint8(type);
                 data.writeUint64(value);
-                // The first byte of the signature proof must be 0x01
-                // https://github.com/dalek-cryptography/curve25519-dalek/blob/main/src/edwards.rs#L335-L338
-                data.writeUint8(1);
                 request.data = data;
                 isSignalling = true;
                 break;
