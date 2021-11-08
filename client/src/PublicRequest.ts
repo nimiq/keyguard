@@ -58,6 +58,7 @@ export type BitcoinTransactionInput = {
 } | {
     type: BitcoinTransactionInputType.HTLC_REDEEM | BitcoinTransactionInputType.HTLC_REFUND,
     witnessScript: string,
+    sequence?: number,
 });
 
 export type BitcoinTransactionOutput = {
@@ -76,6 +77,7 @@ export type BitcoinTransactionInfo = {
     inputs: BitcoinTransactionInput[],
     recipientOutput: BitcoinTransactionOutput,
     changeOutput?: BitcoinTransactionChangeOutput,
+    locktime?: number,
 };
 
 export type SignTransactionRequestLayout = 'standard' | 'checkout' | 'cashlink';
@@ -87,7 +89,7 @@ export type CreateRequest = BasicRequest & {
     defaultKeyPath: string,
     enableBackArrow?: boolean,
     bitcoinXPubPath: string,
- };
+};
 
 export type DeriveAddressRequest = SimpleRequest & {
     baseKeyPath: string
@@ -190,7 +192,26 @@ export type SignBtcTransactionRequest
     = SignBtcTransactionRequestStandard
     | SignBtcTransactionRequestCheckout;
 
-export type SignSwapRequest = SimpleRequest & {
+export type MockSettlementInstruction = {
+    type: 'mock',
+    contractId: string,
+};
+
+export type SepaSettlementInstruction = {
+    type: 'sepa',
+    contractId: string,
+    recipient: {
+        name: string,
+        iban: string,
+        bic: string,
+    },
+};
+
+export type SettlementInstruction = MockSettlementInstruction | SepaSettlementInstruction;
+
+export type SignSwapRequestLayout = 'standard' | 'slider';
+
+export type SignSwapRequestCommon = SimpleRequest & {
     swapId: string,
     fund: (
         {type: 'NIM'}
@@ -211,6 +232,15 @@ export type SignSwapRequest = SimpleRequest & {
             >,
             refundKeyPath: string, // To validate that we own the HTLC script's refund address
         }>
+    ) | (
+        {type: 'EUR'}
+        & {
+            amount: number,
+            fee: number,
+            bankLabel?: string,
+            // bankLogoUrl?: string,
+            // bankColor?: string,
+        }
     ),
     redeem: (
         {type: 'NIM'}
@@ -234,15 +264,42 @@ export type SignSwapRequest = SimpleRequest & {
             >,
             output: BitcoinTransactionChangeOutput,
         }
+    ) | (
+        {type: 'EUR'}
+        & {
+            keyPath: string,
+            // A SettlementInstruction contains a `type`, so cannot be in the
+            // root of the object (it conflicts with the 'EUR' type).
+            settlement: Omit<SettlementInstruction, 'contractId'>,
+            amount: number,
+            fee: number,
+            bankLabel?: string,
+            // bankLogoUrl?: string,
+            // bankColor?: string,
+        }
     ),
 
     // Data needed for display
     fiatCurrency: string,
-    nimFiatRate: number,
-    btcFiatRate: number,
-    serviceFundingNetworkFee: number, // Luna or Sats, depending which one gets funded
-    serviceRedeemingNetworkFee: number, // Luna or Sats, depending which one gets redeemed
-    serviceExchangeFee: number, // Luna or Sats, depending which one gets funded
+    fundingFiatRate: number,
+    redeemingFiatRate: number,
+    fundFees: { // In the currency that gets funded
+        processing: number,
+        redeeming: number,
+    },
+    redeemFees: { // In the currency that gets redeemed
+        funding: number,
+        processing: number,
+    },
+    serviceSwapFee: number, // Luna, Sats or Cents, depending which one gets funded
+};
+
+export type SignSwapRequestStandard = SignSwapRequestCommon & {
+    layout: 'standard',
+};
+
+export type SignSwapRequestSlider = SignSwapRequestCommon & {
+    layout: 'slider',
     nimiqAddresses: Array<{
         address: string,
         balance: number, // Luna
@@ -250,6 +307,12 @@ export type SignSwapRequest = SimpleRequest & {
     bitcoinAccount: {
         balance: number, // Sats
     },
+};
+
+export type SignSwapRequest = SignSwapRequestStandard | SignSwapRequestSlider;
+
+export type SignSwapResult = SimpleResult & {
+    eurPubKey?: string,
 };
 
 // Used in swap-iframe
@@ -261,6 +324,11 @@ export type SignSwapTransactionsRequest = {
     } | {
         type: 'BTC',
         htlcScript: Uint8Array,
+    } | {
+        type: 'EUR',
+        hash: string,
+        timeout: number,
+        htlcId: string,
     },
     redeem: {
         type: 'NIM',
@@ -271,6 +339,11 @@ export type SignSwapTransactionsRequest = {
         htlcScript: Uint8Array,
         transactionHash: string,
         outputIndex: number;
+    } | {
+        type: 'EUR',
+        hash: string,
+        timeout: number,
+        htlcId: string,
     },
 };
 
@@ -345,8 +418,10 @@ export type SignedBitcoinTransaction = {
     raw: string,
 };
 export type SignSwapTransactionsResult = {
-    nim: SignatureResult,
-    btc: SignedBitcoinTransaction,
+    nim?: SignatureResult,
+    btc?: SignedBitcoinTransaction,
+    eur?: string, // When funding EUR: empty string, when redeeming EUR: JWS of the settlement instructions
+    refundTx?: string,
 };
 
 // Result unions
@@ -365,7 +440,8 @@ export type RedirectResult
     | SignTransactionResult
     | SignedBitcoinTransaction
     | SimpleResult
-    | DeriveBtcXPubResult;
+    | DeriveBtcXPubResult
+    | SignSwapResult;
 
 export type Result = RedirectResult | IFrameResult;
 
@@ -379,7 +455,7 @@ export type ResultType<T extends RedirectRequest> =
     T extends Is<T, RemoveKeyRequest> | Is<T, SimpleRequest> ? SimpleResult :
     T extends Is<T, SignBtcTransactionRequest> ? SignedBitcoinTransaction :
     T extends Is<T, DeriveBtcXPubRequest> ? DeriveBtcXPubResult :
-    T extends Is<T, SignSwapRequest> ? SimpleResult :
+    T extends Is<T, SignSwapRequest> ? SignSwapResult :
     never;
 
 export type ResultByCommand<T extends KeyguardCommand> =
@@ -390,7 +466,7 @@ export type ResultByCommand<T extends KeyguardCommand> =
     T extends KeyguardCommand.REMOVE ? SimpleResult :
     T extends KeyguardCommand.SIGN_BTC_TRANSACTION ? SignedBitcoinTransaction :
     T extends KeyguardCommand.DERIVE_BTC_XPUB ? DeriveBtcXPubResult :
-    T extends KeyguardCommand.SIGN_SWAP ? SimpleResult :
+    T extends KeyguardCommand.SIGN_SWAP ? SignSwapResult :
     never;
 
 // Error constants

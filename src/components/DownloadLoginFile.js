@@ -264,9 +264,9 @@ class DownloadLoginFile extends Nimiq.Observable {
         this._file = file;
 
         if (file) {
-            file.toDataUrl().then(dataUrl => {
-                this.$loginfile.src = dataUrl;
-                this._setupDownload(dataUrl, file.filename());
+            file.toObjectUrl().then(objectUrl => {
+                this.$loginfile.src = objectUrl;
+                this._setupDownload(objectUrl, file.filename());
             });
         } else {
             this.$loginfile.src = '';

@@ -36,6 +36,9 @@ class LoginFile {
         };
     }
 
+    /**
+     * @returns {string}
+     */
     filename() {
         const filename = I18n.translatePhrase('login-file-filename');
         return filename.replace(

@@ -130,7 +130,7 @@
     "download-loginfile-download": "Télécharger",
     "download-loginfile-successful": "Téléchargement réussi ?",
     "download-loginfile-tap-and-hold": "Appuyez et maintenez l'image\npour la télécharger",
-    "download-loginfile-continue": "Continuez",
+    "download-loginfile-continue": "Continuer",
 
     "validate-words-text": "Veuillez sélectionner le mot correct dans votre liste de mots de récupération.",
     "validate-words-1-hint": "Quel est le 1er mot ?",
@@ -229,6 +229,8 @@
     "sign-swap-btc-fees-explainer": "Un swap atomique nécessite 2 transactions BTC.",
     "sign-swap-oasis-fees": "frais de service OASIS",
     "sign-swap-oasis-fees-explainer": "de la valeur du swap.",
+    "sign-swap-bank-fees": "frais",
+    "sign-swap-bank-fees-explainer": "Frais du réseau bancaire.",
     "sign-swap-nim-fees": "frais de réseau NIM",
     "sign-swap-exchange-fee": "Frais de swap",
     "sign-swap-of-exchange-value": "de la valeur du swap.",

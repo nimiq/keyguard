@@ -79,6 +79,8 @@ class Timer extends Nimiq.Observable {
             </div>
         `;
 
+        I18n.translateDom($el);
+
         return $el;
     }
 

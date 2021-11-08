@@ -42,7 +42,7 @@
     "import-login-to-continue": "Por favor inicie sesión de nuevo para continuar.",
     "import-unlock-account": "Desbloquear su Cuenta",
     "import-create-account": "Crear nueva cuenta",
-    "import-qr-video-tooltip": "Scan your Login File with your device's camera.",
+    "import-qr-video-tooltip": "Escanee su Archivo de Sesión con la cámara de su dispositivo.",
 
     "import-file-button-words": "Inicie sesión con Palabras de Recuperación",
 
@@ -229,6 +229,8 @@
     "sign-swap-btc-fees-explainer": "Los intercambios atómicos requieren dos transacciones BTC.",
     "sign-swap-oasis-fees": "Cuota de servicio de OASIS",
     "sign-swap-oasis-fees-explainer": "del valor del intercambio.",
+    "sign-swap-bank-fees": "cuota",
+    "sign-swap-bank-fees-explainer": "Cuotas de la red bancarias.",
     "sign-swap-nim-fees": "Cuota de red de NIM",
     "sign-swap-exchange-fee": "Cuotas de intercambio",
     "sign-swap-of-exchange-value": "del valor del intercambio.",

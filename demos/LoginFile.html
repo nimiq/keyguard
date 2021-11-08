@@ -104,10 +104,10 @@
                 ? Math.floor(Math.random() * LoginFileConfig.length)
                 : Number.parseInt(colorSelector.value);
             const loginFile = new LoginFile(encryptedString, color, label);
-            const dataUrl = await loginFile.toDataUrl();
+            const objectUrl = await loginFile.toObjectUrl();
 
             const img = new Image();
-            img.src = dataUrl;
+            img.src = objectUrl;
             loginFileContainer.textContent = ''; // clear
             loginFileContainer.appendChild(img);
             filename.textContent = loginFile.filename();

@@ -53,7 +53,12 @@
     <script defer src="../../lib/LoginFileConfig.js"></script>
     <script defer src="../../lib/CurrencyInfo.js"></script>
     <script defer src="../../lib/NumberFormatting.js"></script>
+    <script defer src="../../lib/euro/EuroConstants.js"></script>
+    <script defer src="../../lib/euro/EuroUtils.js"></script>
+    <script defer src="../../lib/euro/Iban.js"></script>
     <script defer src="../../components/Identicon.js"></script>
+    <script defer src="../../components/SwapFeesTooltip.js"></script>
+    <script defer src="../../components/BalanceDistributionBar.js"></script>
     <script defer src="SignSwap.js"></script>
     <script defer src="SignSwapApi.js"></script>
     <script defer src="index.js"></script>
@@ -65,6 +70,8 @@
     <link rel="stylesheet" bundle-toplevel href="../../components/PasswordBox.css">
 
     <link rel="stylesheet" href="../../components/Tooltip.css">
+    <link rel="stylesheet" href="../../components/SwapFeesTooltip.css">
+    <link rel="stylesheet" href="../../components/BalanceDistributionBar.css">
     <link rel="stylesheet" href="SignSwap.css">
 </head>
 <body class="loading">
@@ -91,25 +98,51 @@
                 </div>
             </div>
 
-            <div class="page-body nq-card-body">
-                <div class="center">
-
-                </div>
-
-                <div class="address-infos columns">
-                    <div class="nimiq-address left-column">
+            <div class="page-body nq-card-body layout-standard">
+                <div class="center accounts">
+                    <div class="account left-account">
                         <div class="identicon"></div>
                         <span class="label"></span>
                     </div>
-                    <div class="bitcoin-account right-column">
-                        <span class="label" data-i18n="bitcoin">Bitcoin</span>
-                        <div class="identicon">
-                            <img src="../../assets/icons/bitcoin.svg">
-                        </div>
+                    <svg class="nq-icon arrow"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-right"/></svg>
+                    <div class="account right-account">
+                        <div class="identicon"></div>
+                        <span class="label"></span>
                     </div>
                 </div>
 
-                <div class="balance-bar"></div>
+                <div class="flex-grow"></div>
+
+                <div class="swap-values center">
+                    <div class="from-value nq-light-blue">
+                        <span id="swap-nim-value"></span><span class="from-symbol"></span>
+                    </div>
+
+                    <div class="to-value nq-gray">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="27" height="21" viewBox="0 0 27 21">
+                            <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5">
+                                <path d="M.75.75v6a8 8 0 008 8h17"/>
+                                <path d="M20.75 9.25l5.5 5.5-5.5 5.5" stroke-linejoin="round"/>
+                            </g>
+                        </svg>
+                        <span id="swap-btc-value"></span><span class="to-symbol"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-body nq-card-body layout-slider">
+                <div class="address-infos columns">
+                    <div class="left-account nim left-column">
+                        <div class="identicon"></div>
+                        <span class="label"></span>
+                    </div>
+                    <div class="right-account btc right-column">
+                        <span class="label"></span>
+                        <div class="identicon"></div>
+                    </div>
+                </div>
+
+                <div class="balance-distribution-bar"></div>
 
                 <div class="swap-values columns">
                     <div class="left-column">

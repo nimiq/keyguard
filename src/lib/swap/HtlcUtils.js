@@ -60,13 +60,13 @@ class HtlcUtils { // eslint-disable-line no-unused-vars
 
         // Check hash
         if (asm[++i] !== 'OP_SHA256' || asm[i + 2] !== 'OP_EQUALVERIFY') throw error;
-        const hash = Nimiq.BufferUtils.toHex(Nimiq.BufferUtils.fromHex(asm[++i]));
+        const hash = asm[++i];
         if (hash.length !== 64) throw error;
         ++i;
 
         // Check redeem address
         if (asm[++i] !== 'OP_DUP' || asm[++i] !== 'OP_HASH160') throw error;
-        const redeemAddressBytes = Nimiq.BufferUtils.toHex(Nimiq.BufferUtils.fromHex(asm[++i]));
+        const redeemAddressBytes = asm[++i];
 
         // End redeem branch, start refund branch
         if (asm[++i] !== 'OP_ELSE') {
@@ -83,7 +83,7 @@ class HtlcUtils { // eslint-disable-line no-unused-vars
 
         // Check refund address
         if (asm[++i] !== 'OP_DUP' || asm[++i] !== 'OP_HASH160') throw error;
-        const refundAddressBytes = Nimiq.BufferUtils.toHex(Nimiq.BufferUtils.fromHex(asm[++i]));
+        const refundAddressBytes = asm[++i];
 
         // End refund branch
         if (branchesVerifiedIndividually) {

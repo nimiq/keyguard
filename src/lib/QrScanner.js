@@ -208,7 +208,7 @@ class QrScanner {
                         engine.removeEventListener('message', onMessage);
                         engine.removeEventListener('error', onError);
                         window.clearTimeout(timeout);
-                        const errorMessage = !e // eslint-disable-line no-nested-ternary
+                        const errorMessage = !e
                             ? 'Unknown Error'
                             : (e instanceof Error ? e.message : e);
                         reject(`Scanner error: ${errorMessage}`);

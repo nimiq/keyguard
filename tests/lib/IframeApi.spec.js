@@ -100,7 +100,6 @@ describe('IframeApi', () => {
 
         // check that keys have been copied correctly
         const ids = (await KeyStore.instance.list()).map(record => record.id);
-        console.log(ids);
         for (let id of ids) {
             const keyRecord = await KeyStore.instance._get(id);
             const expectedKeyRecord = /** @type {KeyRecord} */(Dummy.keyRecords().find(record => record.id === id));

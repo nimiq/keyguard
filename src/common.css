@@ -340,6 +340,10 @@ body.loading .page:target .page-footer > .loading-spinner {
     content: "mBTC";
 }
 
+.eur-symbol::before {
+    content: "EUR";
+}
+
 .address {
     font-family: "Fira Mono", "Andale Mono", monospace;
     font-size: 1.625rem;

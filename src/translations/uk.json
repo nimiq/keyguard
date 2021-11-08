@@ -229,6 +229,8 @@
     "sign-swap-btc-fees-explainer": "Атомарний обмін потребує двох транзакцій BTC.",
     "sign-swap-oasis-fees": "Комісія OASIS",
     "sign-swap-oasis-fees-explainer": "суми обміну.",
+    "sign-swap-bank-fees": "комісія",
+    "sign-swap-bank-fees-explainer": "Banking network fee.",
     "sign-swap-nim-fees": "Комісія NIM",
     "sign-swap-exchange-fee": "Комісія обміну",
     "sign-swap-of-exchange-value": "суми обміну.",

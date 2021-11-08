@@ -48,7 +48,6 @@ class NumberFormatting { // eslint-disable-line no-unused-vars
         let relativeDeviation;
 
         do {
-            // formatted = value.toLocaleString([localeWithLatinNumbers, 'en-US'], formattingOptions)
             formatted = value.toLocaleString([
                 positioningLocale,
                 locale,
