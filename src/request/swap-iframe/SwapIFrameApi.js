@@ -327,6 +327,10 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
             // Add change output
             if (storedRequest.fund.changeOutput) {
                 // The address is set in SignSwap after password entry.
+                if (!storedRequest.fund.changeOutput.address) {
+                    throw new Errors.KeyguardError('Missing address in funding change output');
+                }
+
                 outputs.push(/** @type {{address: string, value: number}} */ (storedRequest.fund.changeOutput));
             }
 
@@ -495,6 +499,9 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
             }];
 
             // The address is set in SignSwap after password entry.
+            if (!storedRequest.redeem.output.address) {
+                throw new Errors.KeyguardError('Missing address in redeem output');
+            }
             const output = /** @type {{address: string, value: number}} */ (storedRequest.redeem.output);
 
             // Construct transaction

@@ -7,6 +7,7 @@ export type ObjectType = {
 
 // Returns B if T and B have same keys. Ignores modifiers (readonly, optional)
 export type Is<T, B> = keyof T extends keyof B ? keyof B extends keyof T ? B : never : never;
+export type Transform<T, K extends keyof T, E> = Omit<T, K> & E;
 
 // Base types for Requests
 export type BasicRequest = {
@@ -224,16 +225,13 @@ export type SignSwapRequestCommon = SimpleRequest & {
         & { senderLabel: string }
     ) | (
         {type: 'BTC'}
-        & Omit<BitcoinTransactionInfo,
-            | 'recipientOutput' // Replaced below
-        >
-        & {
+        & Transform<BitcoinTransactionInfo, 'recipientOutput', {
             recipientOutput: Omit<BitcoinTransactionOutput,
                 | 'address' // Only known in second step (in swap-iframe), derived from htlcScript
                 | 'label' // Not used
             >,
             refundKeyPath: string, // To validate that we own the HTLC script's refund address
-        }
+        }>
     ) | (
         {type: 'EUR'}
         & {
