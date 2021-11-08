@@ -1,7 +1,7 @@
 {
     "_language": "中文",
 
-    "language-changed": "显示语言已更改。您要重新加载页面以更新所有翻译吗？否则，某些翻译可能不会自动更新。",
+    "language-changed": "显示语言已更改。你要重新加载页面以更新所有翻译吗？否则，某些翻译可能不会自动更新。",
 
     "back-to-app": "返回{appName}",
     "back-to-accounts": "返回我的帐户",
@@ -16,33 +16,33 @@
     "funding-cashlink": "现金链接充值",
 
     "recovery-words-title": "请将这24个单词写在纸上",
-    "recovery-words-intro-text": "如果您丢失了登录文件或密码，助记词是恢复帐户的「唯一 」方法",
-    "recovery-words-intro-offline": "离线储存您的助记词，并且不要在strong]keyguard[/strong].nimiq.com以外的地方输入",
+    "recovery-words-intro-text": "如果你丢失了登录文件或密码，助记词是恢复帐户的＂唯一＂方法",
+    "recovery-words-intro-offline": "离线储存你的助记词，并且不要在strong]keyguard[/strong].nimiq.com以外的地方输入",
     "recovery-words-intro-copy": "建立一份副本，并存放在安全的地方，例如住家、银行的储物柜等",
-    "recovery-words-intro-safety": "当心水和火，请用密封盒来确保您助记词的安全",
+    "recovery-words-intro-safety": "当心水和火，请用密封盒来确保你助记词的安全",
     "recovery-words-text": "任何有这些助记词的人都可以存取你的账户！请务必确保助记词安全",
     "recovery-words-validate": "验证备份",
 
     "create-heading-choose-identicon": "选择头像",
     "create-confirm-address": "选择并继续",
     "create-heading-create-password": "设置密码",
-    "create-heading-repeat-password": "确认您的密码",
-    "create-heading-validate-backup": "验证您的备份",
-    "create-loginfile-keycard": "密码会保护您的登录文件，\n請將它視為您账户的钥匙卡",
-    "create-loginfile-any-device": "该文件允许您从任何设备登录",
+    "create-heading-repeat-password": "确认你的密码",
+    "create-heading-validate-backup": "验证你的备份",
+    "create-loginfile-keycard": "密码会保护你的登录文件，\n請將它視為你账户的钥匙卡",
+    "create-loginfile-any-device": "该文件允许你从任何设备登录",
     "create-heading-what-is-loginfile": "什么是登录文件？",
-    "create-login-file-explainer-intro": "结合您的密码的图像文件，将允许访问您的帐户。",
-    "create-login-file-paragraph-1": "Nimiq不会存储您的数据。 以登录文件取代电子邮件作为登录方式。",
-    "create-login-file-paragraph-2": "登录文件存储在浏览器中。 请用您的密码解锁。",
-    "create-login-file-paragraph-3": "你可能会不小心登出。请下载并安全地存储登录文件，以保持您对帐户的掌控权。",
+    "create-login-file-explainer-intro": "结合你的密码的图像文件，将允许访问你的帐户。",
+    "create-login-file-paragraph-1": "Nimiq不会存储你的数据。 以登录文件取代电子邮件作为登录方式。",
+    "create-login-file-paragraph-2": "登录文件存储在浏览器中。 请用你的密码解锁。",
+    "create-login-file-paragraph-3": "你可能会不小心登出。请下载并安全地存储登录文件，以保持你对帐户的掌控权。",
     "create-login-file-return": "完成",
 
     "import-heading-enter-recovery-words": "输入助记词",
-    "import-import-login-file": "导入您的登录文件",
+    "import-import-login-file": "导入你的登录文件",
     "import-login-to-continue": "请再次登录以继续",
-    "import-unlock-account": "解锁您的账户",
+    "import-unlock-account": "解锁你的账户",
     "import-create-account": "建立新帐户",
-    "import-qr-video-tooltip": "Scan your Login File with your device's camera.",
+    "import-qr-video-tooltip": "使用设备的相机扫描你的登录文件",
 
     "import-file-button-words": "使用助记词登录",
 
@@ -51,14 +51,14 @@
     "import-words-hint": "按Tab键跳到下一栏",
     "import-words-error": "这不是有效的帐户，是否有错别字？",
     "import-words-wrong-seed-phrase": "这些助记词属于另一个帐户",
-    "import-words-download-loginfile": "储存您的登录文件",
+    "import-words-download-loginfile": "储存你的登录文件",
 
     "file-import-prompt": "拖拽到此处或点击导入",
     "file-import-error-could-not-read": "无法读取登录文件",
     "file-import-error-invalid": "无效的登录文件",
 
     "qr-video-scanner-cancel": "取消",
-    "qr-video-scanner-no-camera": "您的设备没有可访问的相机",
+    "qr-video-scanner-no-camera": "你的设备没有可访问的相机",
     "qr-video-scanner-enable-camera": "打开此网站相机的使用权限以扫描QR码",
 
     "sign-tx-heading-tx": "确认交易",
@@ -76,8 +76,8 @@
 
     "copyable-copied": "已复制",
 
-    "passwordbox-enter-password": "输入您的密码",
-    "passwordbox-enter-pin": "输入您的PIN码",
+    "passwordbox-enter-password": "输入你的密码",
+    "passwordbox-enter-pin": "输入你的PIN码",
     "passwordbox-repeat-password": "再次输入密码",
     "passwordbox-repeat": "再次输入密码",
     "passwordbox-continue": "继续",
@@ -109,9 +109,9 @@
     "payment-info-line-free-service": "Nimiq免费提供这项服务。",
     "payment-info-line-total": "总额",
     "payment-info-line-network-fee": "网络费",
-    "payment-info-line-paying-more": "您需要比当前市场汇率(coingecko.com)多支付大约%RATE_DEVIATION%。",
-    "payment-info-line-paying-less": "您需要比当前市场汇率(coingecko.com)少支付大约%RATE_DEVIATION%。",
-    "payment-info-line-actual-discount": "与当前市场汇率(coingecko.com)相比，您的实际折扣约为%RATE_DEVIATION%。",
+    "payment-info-line-paying-more": "你需要比当前市场汇率(coingecko.com)多支付大约%RATE_DEVIATION%。",
+    "payment-info-line-paying-less": "你需要比当前市场汇率(coingecko.com)少支付大约%RATE_DEVIATION%。",
+    "payment-info-line-actual-discount": "与当前市场汇率(coingecko.com)相比，你的实际折扣约为%RATE_DEVIATION%。",
 
     "timer-expiry": "此报价在以下时间到期",
     "timer-second": "秒",
@@ -123,7 +123,7 @@
     "timer-day": "天",
     "timer-days": "天",
 
-    "identicon-selector-avatars-hint": "头像表現您的NIM地址。",
+    "identicon-selector-avatars-hint": "头像表現你的NIM地址。",
     "identicon-selector-avatars-hint-2": "請将它们视为银行帐号。",
     "identicon-selector-generate-new": "新的头像",
 
@@ -158,12 +158,12 @@
     "validate-words-23-hint": "第二十三个单词是什么？",
     "validate-words-24-hint": "第二十四个单词是什么？",
 
-    "export-file-heading": "获取您的登录文件",
-    "export-file-intro-heading": "储存您的账户",
-    "export-file-intro-blue-text": "您的登录文件将给予您对此帐户的访问权限，请下载并妥善保存",
-    "export-file-intro-browser": "您的帐户存储在浏览器中",
+    "export-file-heading": "获取你的登录文件",
+    "export-file-intro-heading": "储存你的账户",
+    "export-file-intro-blue-text": "你的登录文件将给予你对此帐户的访问权限，请下载并妥善保存",
+    "export-file-intro-browser": "你的帐户存储在浏览器中",
     "export-file-intro-accident": "它可能会被自动或意外删除",
-    "export-file-intro-download-file": "下载登录文件以安全访问您的帐户",
+    "export-file-intro-download-file": "下载登录文件以安全访问你的帐户",
     "export-file-intro-orange-text": "请安全保存并保密",
     "export-file-success-set-password": "设置密码",
     "export-file-success-save-file": "保存登录文件",
@@ -171,33 +171,33 @@
     "export-file-success-heading": "请花5分钟进行备份",
     "export-file-success-words-intro": "这里没有“忘记密码”的选项，请写下24个单词来创建安全备份",
     "export-words-intro-heading": "没有恢复密码这个选项！",
-    "export-words-unlock-heading": "解锁您的备份",
+    "export-words-unlock-heading": "解锁你的备份",
     "export-words-hint": "滚动以继续",
     "go-to-recovery-words": "建立备份",
     "export-continue-to-login-file": "继续登录文件",
     "export-show-recovery-words": "显示助记词",
 
-    "remove-key-heading": "不要遗失您的访问权限",
-    "remove-key-intro-text": "如果您在未保存帐户的情况下登出帐户，您将不可逆地失去对该帐户的访问权限！",
-    "remove-key-login-file-question": "您的登录文件是否已保存并可以进行访问？",
+    "remove-key-heading": "不要遗失你的访问权限",
+    "remove-key-intro-text": "如果你在未保存帐户的情况下登出帐户，你将不可逆地失去对该帐户的访问权限！",
+    "remove-key-login-file-question": "你的登录文件是否已保存并可以进行访问？",
     "remove-key-download-login-file": "下载登录文件",
-    "remove-key-recovery-words-question": "您知道您的助记词吗？",
+    "remove-key-recovery-words-question": "你知道你的助记词吗？",
     "remove-key-show-recovery-words": "建立备份",
     "remove-key-label-confirm-instructions": "输入\"{accountLabel}\"登出",
     "remove-key-final-confirm": "登出",
 
     "derive-address-heading-password": "解锁新地址",
-    "derive-address-password-text": "要添加新地址，请[br]首先解锁您的帐户",
+    "derive-address-password-text": "要添加新地址，请[br]首先解锁你的帐户",
 
     "change-password-heading": "确认旧密码",
     "change-password-paragraph": "更改密码后将会有个新的登录文件被创建，当前的登录文件将被取代",
     "change-password-paragraph-legacy": "更改密码仅对本设备有影响",
     "change-password-info-item-1": "所有旧的登录文件仍然可以搭配其旧密码使用",
-    "change-password-info-item-2": "如果您的登录文件被盗，请创建一个新帐户并转移所有资金",
+    "change-password-info-item-2": "如果你的登录文件被盗，请创建一个新帐户并转移所有资金",
     "change-password-download-login-file": "下载新的登录文件",
     "change-password-set-password-heading": "设置新密码",
-    "change-password-set-password-text": "安全储存您的新的登录文件",
-    "change-password-set-password-text-legacy": "确保您的账户安全",
+    "change-password-set-password-text": "安全储存你的新的登录文件",
+    "change-password-set-password-text-legacy": "确保你的账户安全",
 
     "error-no-request-heading": "出错了 :(",
     "error-no-request-message": "我们无法检测到有效的请求，请返回并再次尝试",
@@ -219,7 +219,7 @@
     "bitcoin": "比特币",
     "bitcoin-recipient-unlabelled": "未标签",
 
-    "derive-btc-xpub-heading": "添加比特币\n到您的帐户",
+    "derive-btc-xpub-heading": "添加比特币\n到你的帐户",
     "derive-btc-xpub-text": "在超级高性能的支付硬币：NIM，与加密的黄金标准：比特币之间轻松交换。",
 
     "sign-swap-heading": "确认交换",
@@ -235,5 +235,5 @@
     "sign-swap-exchange-fee": "交换费用",
     "sign-swap-of-exchange-value": "交换价值",
     "sign-swap-total-fees": "总费用",
-    "sign-swap-your-bank": "您的银行"
+    "sign-swap-your-bank": "你的银行"
 }
