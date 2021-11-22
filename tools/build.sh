@@ -1,5 +1,7 @@
 #!/bin/bash
 
+PUBLIC_PATH="\/keyguard\/"
+
 # Exit on first error
 set -e
 
@@ -62,7 +64,7 @@ output "🎩  Using config file src/config/config.$BUILD.js"
 # replace icon sprite URL in file $1
 replace_icon_sprite_url() {
     OLD_PATH="\.\.\/\.\.\/\.\.\/node_modules\/@nimiq\/style\/nimiq-style.icons.svg"
-    NEW_PATH="\/assets\/nimiq-style.icons.svg"
+    NEW_PATH="${PUBLIC_PATH}assets\/nimiq-style.icons.svg"
 
     inplace_sed "s/$OLD_PATH/$NEW_PATH/g" $1
 }
@@ -81,7 +83,7 @@ add_hash_to_file_name() {
 # replace font url in file $1
 replace_font_url() {
     OLD_PATH="(\.\.\/)*assets\/fonts"
-    NEW_PATH="\/assets\/fonts"
+    NEW_PATH="${PUBLIC_PATH}assets\/fonts"
 
     inplace_sed -E "s/$OLD_PATH/$NEW_PATH/g" $1
 }
@@ -256,12 +258,12 @@ for DIR in src/request/*/ ; do
         }
         /<script.*web-offline\.js/ {
             split($0, space, "<") # Preserve intendation.
-            print space[1] "<script defer src=\"/assets/nimiq/web-offline.js\" integrity=\"sha256-'${CORE_LIB_HASH}'\"></script>"
+            print space[1] "<script defer src=\"'${PUBLIC_PATH}'assets/nimiq/web-offline.js\" integrity=\"sha256-'${CORE_LIB_HASH}'\"></script>"
             next
         }
         /<script.*web\.js/ {
             split($0, space, "<") # Preserve intendation.
-            print space[1] "<script defer src=\"/assets/nimiq/web.js\" integrity=\"sha256-'${CORE_WEB_LIB_HASH}'\"></script>"
+            print space[1] "<script defer src=\"'${PUBLIC_PATH}'assets/nimiq/web.js\" integrity=\"sha256-'${CORE_WEB_LIB_HASH}'\"></script>"
             next
         }
         /<script/ {
@@ -269,14 +271,14 @@ for DIR in src/request/*/ ; do
             if (!skip_script) {
                 skip_script = 1
                 split($0, space, "<") # Preserve intendation.
-                print space[1] "<script defer src=\"/request/'${JS_COMMON_BUNDLE}'\" integrity=\"sha256-'${JS_COMMON_BUNDLE_HASH}'\"></script>"
+                print space[1] "<script defer src=\"'${PUBLIC_PATH}'request/'${JS_COMMON_BUNDLE}'\" integrity=\"sha256-'${JS_COMMON_BUNDLE_HASH}'\"></script>"
                 if("'$REQUEST'" != "iframe" && "'$REQUEST'" != "swap-iframe") {
-                    print space[1] "<script defer src=\"/request/'${JS_TOPLEVEL_BUNDLE}'\" integrity=\"sha256-'${JS_TOPLEVEL_BUNDLE_HASH}'\"></script>"
+                    print space[1] "<script defer src=\"'${PUBLIC_PATH}'request/'${JS_TOPLEVEL_BUNDLE}'\" integrity=\"sha256-'${JS_TOPLEVEL_BUNDLE_HASH}'\"></script>"
                 }
                 if("'$REQUEST'" == "create" || "'$REQUEST'" == "import" || "'$REQUEST'" == "derive-btc-xpub" || "'$REQUEST'" == "sign-btc-transaction" || "'$REQUEST'" == "sign-swap" || "'$REQUEST'" == "swap-iframe") {
-                    print space[1] "<script defer src=\"/request/'${JS_BITCOIN_BUNDLE}'\" integrity=\"sha256-'${JS_BITCOIN_BUNDLE_HASH}'\"></script>"
+                    print space[1] "<script defer src=\"'${PUBLIC_PATH}'request/'${JS_BITCOIN_BUNDLE}'\" integrity=\"sha256-'${JS_BITCOIN_BUNDLE_HASH}'\"></script>"
                 }
-                print space[1] "<script defer src=\"/request/'${REQUEST}'/'${JS_BUNDLE_NAME}'\" integrity=\"sha256-'${JS_BUNDLE_HASH}'\"></script>"
+                print space[1] "<script defer src=\"'${PUBLIC_PATH}'request/'${REQUEST}'/'${JS_BUNDLE_NAME}'\" integrity=\"sha256-'${JS_BUNDLE_HASH}'\"></script>"
             }
             next
         }
@@ -292,8 +294,8 @@ for DIR in src/request/*/ ; do
             if (!skip_link) {
                 skip_link = 1
                 split($0, space, "<") # Preserve intendation.
-                print space[1] "<link rel=\"stylesheet\" href=\"/request/'${CSS_TOPLEVEL_BUNDLE}'\" integrity=\"sha256-'${CSS_TOPLEVEL_BUNDLE_HASH}'\">"
-                print space[1] "<link rel=\"stylesheet\" href=\"/request/'${REQUEST}'/'${CSS_BUNDLE_NAME}'\" integrity=\"sha256-'${CSS_BUNDLE_HASH}'\">"
+                print space[1] "<link rel=\"stylesheet\" href=\"'${PUBLIC_PATH}'request/'${CSS_TOPLEVEL_BUNDLE}'\" integrity=\"sha256-'${CSS_TOPLEVEL_BUNDLE_HASH}'\">"
+                print space[1] "<link rel=\"stylesheet\" href=\"'${PUBLIC_PATH}'request/'${REQUEST}'/'${CSS_BUNDLE_NAME}'\" integrity=\"sha256-'${CSS_BUNDLE_HASH}'\">"
             }
             next
         }
@@ -319,8 +321,8 @@ awk '
             skip_script = 1
             # Preserve whitespace / intendation. Note: 1 is first array index in awk
             split($0, space, "<")
-            print space[1] "<script defer src=\"/request/'${JS_COMMON_BUNDLE}'\" integrity=\"sha256-'${JS_COMMON_BUNDLE_HASH}'\"></script>"
-            print space[1] "<script defer src=\"/redirect.js\" integrity=\"sha256-'${REDIRECT_HASH}'\"></script>"
+            print space[1] "<script defer src=\"'${PUBLIC_PATH}'request/'${JS_COMMON_BUNDLE}'\" integrity=\"sha256-'${JS_COMMON_BUNDLE_HASH}'\"></script>"
+            print space[1] "<script defer src=\"'${PUBLIC_PATH}'redirect.js\" integrity=\"sha256-'${REDIRECT_HASH}'\"></script>"
         }
         next
     }

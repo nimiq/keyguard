@@ -12,5 +12,5 @@ const CONFIG = { // eslint-disable-line no-unused-vars
     ALLOWED_ORIGIN: '*',
     NETWORK: Constants.NETWORK.TEST,
     BTC_NETWORK: /** @type {'MAIN' | 'TEST'} */ ('TEST'), // BitcoinConstants is not included in the common bundle
-    ROOT_REDIRECT: 'https://wallet.nimiq-testnet.com',
+    ROOT_REDIRECT: 'http://localhost:9000',
 };
