@@ -154,8 +154,6 @@ class SignStaking {
         const stakingTypesWithSignatureData = [
             SignStakingApi.IncomingStakingType.CREATE_STAKER,
             SignStakingApi.IncomingStakingType.UPDATE_STAKER,
-            SignStakingApi.IncomingStakingType.RETIRE_STAKER,
-            SignStakingApi.IncomingStakingType.REACTIVATE_STAKER,
         ];
 
         if (stakingTypesWithSignatureData.includes(request.type)) {
@@ -238,14 +236,6 @@ class SignStaking {
             case SignStakingApi.IncomingStakingType.STAKE: {
                 const staker = Nimiq.Address.unserialize(buf);
                 return `Add stake for ${staker.toUserFriendlyAddress()}`;
-            }
-            case SignStakingApi.IncomingStakingType.RETIRE_STAKER: {
-                const value = buf.readUint64();
-                return `Retire ${value / 1e5} NIM`;
-            }
-            case SignStakingApi.IncomingStakingType.REACTIVATE_STAKER: {
-                const value = buf.readUint64();
-                return `Reactivate ${value / 1e5} NIM`;
             }
             default: return Nimiq.BufferUtils.toHex(transaction.data);
         }

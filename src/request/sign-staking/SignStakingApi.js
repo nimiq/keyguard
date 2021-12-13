@@ -54,20 +54,6 @@ class SignStakingApi extends TopLevelApi {
                 request.data = data;
                 break;
             }
-            case SignStakingApi.IncomingStakingType.RETIRE_STAKER:
-            case SignStakingApi.IncomingStakingType.REACTIVATE_STAKER: {
-                const value = this.parsePositiveInteger(request.value, false, 'value');
-                const data = new Nimiq.SerialBuffer(
-                    1 // Data type
-                    + 8 // NIM value (uint64)
-                    + Nimiq.SignatureProof.SINGLE_SIG_SIZE, // Staker signature
-                );
-                data.writeUint8(type);
-                data.writeUint64(value);
-                request.data = data;
-                isSignalling = true;
-                break;
-            }
             case SignStakingApi.IncomingStakingType.UNSTAKE: {
                 // No special data format is required for unstaking
                 break;
@@ -114,6 +100,4 @@ SignStakingApi.IncomingStakingType = {
     CREATE_STAKER: 5,
     STAKE: 6,
     UPDATE_STAKER: 7,
-    RETIRE_STAKER: 8,
-    REACTIVATE_STAKER: 9,
 };
