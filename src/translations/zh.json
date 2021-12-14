@@ -24,6 +24,7 @@
     "recovery-words-validate": "验证备份",
 
     "create-heading-choose-identicon": "选择头像",
+    "create-address-label": "Your address:",
     "create-confirm-address": "选择并继续",
     "create-heading-create-password": "设置密码",
     "create-heading-repeat-password": "确认你的密码",

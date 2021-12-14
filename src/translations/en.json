@@ -24,6 +24,7 @@
     "recovery-words-validate": "Validate backup",
 
     "create-heading-choose-identicon": "Choose an Avatar",
+    "create-address-label": "Your address:",
     "create-confirm-address": "Select and continue",
     "create-heading-create-password": "Create a Password",
     "create-heading-repeat-password": "Confirm your Password",
