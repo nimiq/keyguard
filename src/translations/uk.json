@@ -43,7 +43,7 @@
     "import-login-to-continue": "Будь ласка, увійдіть ще раз, щоб продовжити.",
     "import-unlock-account": "Розблокувати рахунок",
     "import-create-account": "Створити новий рахунок",
-    "import-qr-video-tooltip": "Scan your Login File with your device's camera.",
+    "import-qr-video-tooltip": "Відскануйте свій файл-ключ за допомогою камери вашого пристрою",
 
     "import-file-button-words": "Увійти за допомогою секретних слів",
 
@@ -231,7 +231,7 @@
     "sign-swap-oasis-fees": "Комісія OASIS",
     "sign-swap-oasis-fees-explainer": "суми обміну.",
     "sign-swap-bank-fees": "комісія",
-    "sign-swap-bank-fees-explainer": "Banking network fee.",
+    "sign-swap-bank-fees-explainer": "Банківська комісія",
     "sign-swap-nim-fees": "Комісія NIM",
     "sign-swap-exchange-fee": "Комісія обміну",
     "sign-swap-of-exchange-value": "суми обміну.",

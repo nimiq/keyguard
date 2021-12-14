@@ -18,7 +18,7 @@
     "watchfix": "tsc-watch --pretty --onSuccess \"yarn lintfix\"",
     "postinstall": "cd client && yarn",
     "i18n:build-dictionary": "tools/i18n.sh",
-    "i18n:pull": "tx pull --all --parallel --no-interactive --force --mode sourceastranslation",
+    "i18n:pull": "tx pull --all --force --mode sourceastranslation",
     "i18n:push": "tx push --source",
     "i18n:sync": "yarn i18n:push && yarn i18n:pull"
   },

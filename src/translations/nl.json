@@ -43,7 +43,7 @@
     "import-login-to-continue": "Log opnieuw in om door te gaan.",
     "import-unlock-account": "Ontgrendel je account",
     "import-create-account": "Creëer nieuw account",
-    "import-qr-video-tooltip": "Scan your Login File with your device's camera.",
+    "import-qr-video-tooltip": "Scan je Login File met de camera.",
 
     "import-file-button-words": "Inloggen met herstelwoorden",
 
@@ -59,7 +59,7 @@
     "file-import-error-invalid": "Ongeldige Login File.",
 
     "qr-video-scanner-cancel": "Annuleer",
-    "qr-video-scanner-no-camera": "Uw apparaat heeft geen toegankelijke camera.",
+    "qr-video-scanner-no-camera": "Je apparaat heeft geen toegankelijke camera.",
     "qr-video-scanner-enable-camera": "Deblokkeer de camera zodat deze website QR-codes kan scannen.",
 
     "sign-tx-heading-tx": "Bevestig transactie",
@@ -231,7 +231,7 @@
     "sign-swap-oasis-fees": "OASIS servicekosten",
     "sign-swap-oasis-fees-explainer": "van ruilwaarde.",
     "sign-swap-bank-fees": "kosten",
-    "sign-swap-bank-fees-explainer": "Banking network fee.",
+    "sign-swap-bank-fees-explainer": "Bank kosten.",
     "sign-swap-nim-fees": "NIM netwerk fee",
     "sign-swap-exchange-fee": "Wisselkosten",
     "sign-swap-of-exchange-value": "van ruilwaarde.",
