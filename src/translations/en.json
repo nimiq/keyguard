@@ -236,5 +236,14 @@
     "sign-swap-exchange-fee": "Swap fee",
     "sign-swap-of-exchange-value": "of swap value.",
     "sign-swap-total-fees": "Total fees",
-    "sign-swap-your-bank": "Your bank"
+    "sign-swap-your-bank": "Your bank",
+
+    "sign-btc-tx-15m": "15m",
+    "sign-btc-tx-2-4h": "2-4h",
+    "sign-btc-tx-6h-plus": "6h+",
+    "sign-btc-tx-network-fee": "Network fee",
+    "sign-btc-tx-sat-byte": "sat/byte",
+    "sign-btc-tx-fee-description": "Increase the speed of your transaction by paying a higher network fee. The fees go directly to the miners.",
+    "sign-btc-tx-fee-values-estimations": "Duration and fees are estimates.",
+    "sign-btc-tx-fee": "fee"
 }

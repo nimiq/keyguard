@@ -35,6 +35,16 @@ class SignBtcTransactionApi extends BitcoinRequestParserMixin(TopLevelApi) {
                 + 'sequence number < 0xffffffff');
         }
         parsedRequest.layout = this.parseLayout(request.layout);
+
+        parsedRequest.fiatRate = this.parseNonNegativeFiniteNumber(request.fiatRate) || 0;
+        if (!parsedRequest.fiatRate) {
+            throw new Errors.InvalidRequestError('fiatRate must be defined and different to 0');
+        }
+        parsedRequest.fiatCurrency = this.parseFiatCurrency(request.fiatCurrency) || '';
+        if (!parsedRequest.fiatCurrency) {
+            throw new Errors.InvalidRequestError('fiatCurrency must be defined and different to empty string');
+        }
+
         if (request.layout === SignBtcTransactionApi.Layouts.CHECKOUT
             && parsedRequest.layout === SignBtcTransactionApi.Layouts.CHECKOUT) {
             parsedRequest.shopOrigin = this.parseShopOrigin(request.shopOrigin);
@@ -44,9 +54,8 @@ class SignBtcTransactionApi extends BitcoinRequestParserMixin(TopLevelApi) {
             }
 
             parsedRequest.fiatAmount = this.parseNonNegativeFiniteNumber(request.fiatAmount);
-            parsedRequest.fiatCurrency = this.parseFiatCurrency(request.fiatCurrency);
-            if ((parsedRequest.fiatAmount === undefined) !== (parsedRequest.fiatCurrency === undefined)) {
-                throw new Errors.InvalidRequestError('fiatAmount and fiatCurrency must be both defined or undefined.');
+            if (parsedRequest.fiatCurrency !== undefined) {
+                throw new Errors.InvalidRequestError('fiatAmount is deprecated. Use fiatRate instead.');
             }
 
             parsedRequest.vendorMarkup = this.parseVendorMarkup(request.vendorMarkup);
@@ -59,6 +68,17 @@ class SignBtcTransactionApi extends BitcoinRequestParserMixin(TopLevelApi) {
                 } else if (parsedRequest.time >= parsedRequest.expires) {
                     throw new Errors.InvalidRequestError('`expires` must be greater than `time`');
                 }
+            }
+        } else if (request.layout === SignBtcTransactionApi.Layouts.STANDARD
+            && parsedRequest.layout === SignBtcTransactionApi.Layouts.STANDARD) {
+            parsedRequest.delay = this.parseNonNegativeFiniteNumber(request.delay) || 0;
+            if (!parsedRequest.delay) {
+                throw new Errors.InvalidRequestError('delay must be defined.');
+            }
+
+            parsedRequest.feePerByte = this.parseNonNegativeFiniteNumber(request.feePerByte) || 0;
+            if (!parsedRequest.feePerByte) {
+                throw new Errors.InvalidRequestError('feePerByte must be defined.');
             }
         }
 

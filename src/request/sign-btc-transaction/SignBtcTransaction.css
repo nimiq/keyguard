@@ -95,7 +95,66 @@
     font-weight: bold;
 }
 
-#confirm-transaction .fee-section {
+#confirm-transaction .fee-section,
+#confirm-transaction .fiat-section,
+#confirm-transaction .estimation-section .speed-gauge,
+#confirm-transaction .estimation-section .values,
+#confirm-transaction .estimation-section .info-icon {
     opacity: 0.5;
-    margin-bottom: 0.25rem;
+    margin-top: 0;
 }
+
+#confirm-transaction .estimation-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+#confirm-transaction .needle,
+#confirm-transaction .needle-cover {
+    transform-origin: 50% 54.1666667%;
+    transition: transform 0.3s var(--nimiq-ease);
+}
+
+#confirm-transaction .needle-cover {
+    fill: white;
+}
+
+#confirm-transaction .estimation-section .info-icon {
+    margin-top: 6px;
+}
+
+#confirm-transaction .tooltip {
+    margin-top: -.25rem;
+    align-self: flex-start;
+}
+
+#confirm-transaction .tooltip-box {
+    --tooltip-width: 250px;
+    width: var(--tooltip-width);
+    right: calc(var(--tooltip-width) * -1 / 4);
+}
+
+#confirm-transaction .tx-info:hover .tooltip::after,
+#confirm-transaction .tx-info:hover .tooltip .tooltip-box {
+    visibility: visible;
+    opacity: 1;
+}
+
+#confirm-transaction .tooltip-box > p,
+#confirm-transaction .network-fee .network-fee__btc {
+    opacity: 0.6;
+}
+
+#confirm-transaction .tooltip-box p:first-child {
+    margin-top: 0.75rem;
+}
+
+
+#confirm-transaction .network-fee {
+    display: flex;
+    flex-direction: column;
+}
+
+

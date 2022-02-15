@@ -175,6 +175,12 @@ export type SignTransactionRequest
 
 export type SignBtcTransactionRequestStandard = SimpleRequest & BitcoinTransactionInfo & {
     layout?: 'standard',
+
+    // data needed for display
+    fiatCurrency?: string,
+    fiatRate?: number,
+    delay?: number,
+    feePerByte?: number,
 };
 
 export type SignBtcTransactionRequestCheckout = SimpleRequest & BitcoinTransactionInfo & {
@@ -183,9 +189,16 @@ export type SignBtcTransactionRequestCheckout = SimpleRequest & BitcoinTransacti
     shopLogoUrl?: string,
     time?: number,
     expires?: number,
-    fiatCurrency?: string,
-    fiatAmount?: number,
     vendorMarkup?: number,
+
+    // data needed for display
+    fiatCurrency: string,
+    fiatRate: number,
+
+    /**
+     * @deprecated use fiatRate and sum of inputs instead
+     */
+    fiatAmount?: number,
 };
 
 export type SignBtcTransactionRequest

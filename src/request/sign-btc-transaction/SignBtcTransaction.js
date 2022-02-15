@@ -3,6 +3,7 @@
 /* global SignBtcTransactionApi */
 /* global PasswordBox */
 /* global Errors */
+/* global TemplateTags */
 /* global Utf8Tools */
 /* global TopLevelApi */
 /* global PaymentInfoLine */
@@ -23,7 +24,7 @@
 
 class SignBtcTransaction {
     /**
-     * @param {Parsed<KeyguardRequest.SignBtcTransactionRequest>} request
+     * @param {Required<Parsed<KeyguardRequest.SignBtcTransactionRequest>>} request
      * @param {SignBtcTransaction.resolve} resolve
      * @param {reject} reject
      */
@@ -94,16 +95,104 @@ class SignBtcTransaction {
 
         /** @type {HTMLDivElement} */
         const $value = (this.$el.querySelector('#value'));
-        /** @type {HTMLDivElement} */
-        const $fee = (this.$el.querySelector('#fee'));
+        const amountBTC = BitcoinUtils.satoshisToCoins(recipientOutput.value);
+        $value.textContent = NumberFormatting.formatNumber(amountBTC, 8);
 
-        // Set value and fee.
-        $value.textContent = NumberFormatting.formatNumber(BitcoinUtils.satoshisToCoins(recipientOutput.value), 8);
-        if ($fee && fee > 0) {
-            $fee.textContent = NumberFormatting.formatNumber(BitcoinUtils.satoshisToCoins(fee), 8);
+        const feeBTC = NumberFormatting.formatNumber(BitcoinUtils.satoshisToCoins(fee), 8);
+
+        // Right now, we have two types of layouts. See #445
+        if (request.layout === SignBtcTransactionApi.Layouts.CHECKOUT) {
             /** @type {HTMLDivElement} */
-            const $feeSection = (this.$el.querySelector('.fee-section'));
-            $feeSection.classList.remove('display-none');
+            const $fee = (this.$el.querySelector('#fee'));
+
+            if ($fee && fee > 0) {
+                $fee.textContent = feeBTC;
+                /** @type {HTMLDivElement} */
+                const $feeSection = (this.$el.querySelector('.fee-section'));
+                $feeSection.classList.remove('display-none');
+            }
+        } else if (request.layout === SignBtcTransactionApi.Layouts.STANDARD) {
+            /** @type {HTMLSpanElement|null} */
+            const $fiat = (this.$el.querySelector('#fiat'));
+            if (!$fiat) return;
+
+            const {
+                fiatCurrency: currency, fiatRate, delay, feePerByte,
+            } = request;
+
+            const amountFiat = fiatRate * amountBTC;
+            $fiat.textContent = `~${NumberFormatting.formatCurrency(amountFiat, currency)}`;
+
+
+            /** @type {HTMLDivElement|null} */
+            const $fiatSection = (this.$el.querySelector('.fiat-section'));
+            if (!$fiatSection) return;
+            $fiatSection.classList.remove('display-none');
+
+            /** @type {HTMLDivElement|null} */
+            const $estimationSection = (this.$el.querySelector('.estimation-section'));
+            if (!$estimationSection) return;
+            $estimationSection.classList.remove('display-none');
+
+            let estimatedDuration = '';
+            let speed = 50;
+            if (delay === 1) { estimatedDuration = I18n.translatePhrase('sign-btc-tx-15m'); speed = 100; }
+            if (delay === 12) { estimatedDuration = I18n.translatePhrase('sign-btc-tx-2-4h'); speed = 50; }
+            if (delay === 36) { estimatedDuration = I18n.translatePhrase('sign-btc-tx-6h-plus'); speed = 0; }
+
+            const rotation = (Math.min(100, Math.max(0, speed)) / 100 - 1) * 180;
+            this.$el.querySelectorAll('#speed-gauge-icon g > path').forEach($path => {
+                // @ts-ignore
+                $path.style.transform = `rotate(${rotation}deg)`;
+            });
+
+            if (!request.changeOutput || !request.changeOutput.value) return;
+            const fiatAmount = NumberFormatting.formatCurrency(BitcoinUtils.satoshisToCoins(fee) * fiatRate, currency);
+
+            /** @type {HTMLDivElement|null} */
+            const $values = ($estimationSection.querySelector('#values'));
+            if (!$values) return;
+            $values.innerText = `${estimatedDuration} / ${fiatAmount}`;
+
+            /** @type {HTMLDivElement|null} */
+            const $tooltip = document.querySelector('#txInfo');
+            if (!$tooltip) return;
+            $tooltip.classList.add('tooltip', 'top');
+            $tooltip.tabIndex = 0; // make the tooltip focusable
+
+            /* eslint-disable indent */
+            $tooltip.innerHTML = TemplateTags.hasVars(2)`
+                <svg class="info-icon nq-icon">
+                    <use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-info-circle-small"/>
+                </svg>
+                <div class="tooltip-box">
+                    <div class="network-fee">
+                        <span>
+                            <label data-i18n="sign-btc-tx-network-fee">
+                                Network fee
+                            </label>
+                            : ${feePerByte} 
+                            <label data-i18n="sign-btc-tx-sat-byte">
+                                sat/byte
+                            </label>
+                        </span>
+                        <span class="network-fee__btc">
+                            ${feeBTC} 
+                            <span class="btc-symbol"></span>
+                        </span>
+                    </div>
+                    <p data-i18n="sign-btc-tx-fee-description">
+                        Increase the speed of your transaction by paying a higher network fee.
+                        The fees go directly to the miners.
+                    <p>
+                    <p data-i18n="sign-btc-tx-fee-values-estimations">
+                        Duration and fees are estimates.
+                    </p>
+                </div>
+            `;
+            /* eslint-enable indent */
+
+            I18n.translateDom($tooltip);
         }
 
         // Set up password box.
