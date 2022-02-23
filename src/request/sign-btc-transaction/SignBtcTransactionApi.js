@@ -53,11 +53,6 @@ class SignBtcTransactionApi extends BitcoinRequestParserMixin(TopLevelApi) {
                 throw new Errors.InvalidRequestError('origin of shopLogoUrl must be same as shopOrigin');
             }
 
-            parsedRequest.fiatAmount = this.parseNonNegativeFiniteNumber(request.fiatAmount);
-            if (parsedRequest.fiatCurrency !== undefined) {
-                throw new Errors.InvalidRequestError('fiatAmount is deprecated. Use fiatRate instead.');
-            }
-
             parsedRequest.vendorMarkup = this.parseVendorMarkup(request.vendorMarkup);
 
             parsedRequest.time = this.parseNonNegativeFiniteNumber(request.time);

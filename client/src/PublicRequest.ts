@@ -194,11 +194,6 @@ export type SignBtcTransactionRequestCheckout = SimpleRequest & BitcoinTransacti
     // data needed for display
     fiatCurrency: string,
     fiatRate: number,
-
-    /**
-     * @deprecated use fiatRate and sum of inputs instead
-     */
-    fiatAmount?: number,
 };
 
 export type SignBtcTransactionRequest
