@@ -163,8 +163,9 @@ export type SignTransactionRequestCheckout = SignTransactionRequestCommon & {
     vendorMarkup?: number,
 };
 
-export type SignTransactionRequestCashlink = SignTransactionRequestCommon & {
+export type SignTransactionRequestCashlink = Omit<SignTransactionRequestCommon, 'recipient'> & {
     layout: 'cashlink',
+    cashlinkKeyPath: string,
     cashlinkMessage?: string,
 };
 
@@ -412,6 +413,7 @@ export type KeyResult = SingleKeyResult[];
 export type ListResult = KeyInfoObject[];
 export type ListLegacyResult = LegacyKeyInfoObject[];
 export type SignTransactionResult = SignatureResult;
+export type SignTransactionCashlinkResult = SignatureResult & { cashlinkPrivateKey: Uint8Array };
 export type SimpleResult = { success: boolean };
 export type SignedBitcoinTransaction = {
     transactionHash: string,
@@ -438,6 +440,7 @@ export type RedirectResult
     | ExportResult
     | KeyResult
     | SignTransactionResult
+    | SignTransactionCashlinkResult
     | SignedBitcoinTransaction
     | SimpleResult
     | DeriveBtcXPubResult

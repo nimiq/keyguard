@@ -1,3 +1,4 @@
+/* global Nimiq */
 /* global I18n */
 /* global TopLevelApi */
 /* global SignTransaction */
@@ -21,7 +22,10 @@ class SignTransactionApi extends TopLevelApi {
         parsedRequest.keyLabel = this.parseLabel(request.keyLabel);
         parsedRequest.keyPath = this.parsePath(request.keyPath, 'keyPath');
         parsedRequest.senderLabel = this.parseLabel(request.senderLabel);
-        parsedRequest.transaction = this.parseTransaction(request);
+        parsedRequest.transaction = this.parseTransaction({
+            ...request,
+            ...(request.layout === SignTransactionApi.Layouts.CASHLINK ? { recipient: Nimiq.Address.NULL } : {}),
+        });
         parsedRequest.layout = this.parseLayout(request.layout);
         if ((!request.layout || request.layout === SignTransactionApi.Layouts.STANDARD)
             && parsedRequest.layout === SignTransactionApi.Layouts.STANDARD) {
@@ -51,10 +55,21 @@ class SignTransactionApi extends TopLevelApi {
                     throw new Errors.InvalidRequestError('`expires` must be greater than `time`');
                 }
             }
-        } else if (request.layout === SignTransactionApi.Layouts.CASHLINK
+        } else if (
+            request.layout === SignTransactionApi.Layouts.CASHLINK
             && parsedRequest.layout === SignTransactionApi.Layouts.CASHLINK
-            && request.cashlinkMessage) {
-            parsedRequest.cashlinkMessage = /** @type {string} */(this.parseMessage(request.cashlinkMessage));
+        ) {
+            if ('recipient' in request) {
+                throw new Errors.InvalidRequestError(
+                    'Specifying a `recipient` for cashlinks is forbidden, use `cashlinkKeyPath` instead.',
+                );
+            }
+
+            parsedRequest.cashlinkKeyPath = this.parsePath(request.cashlinkKeyPath, 'cashlinkKeyPath');
+
+            if (request.cashlinkMessage) {
+                parsedRequest.cashlinkMessage = /** @type {string} */(this.parseMessage(request.cashlinkMessage));
+            }
         }
 
         return parsedRequest;

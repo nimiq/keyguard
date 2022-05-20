@@ -15,7 +15,7 @@
 
 /**
  * @callback SignTransaction.resolve
- * @param {KeyguardRequest.SignTransactionResult} result
+ * @param {KeyguardRequest.SignTransactionResult | KeyguardRequest.SignTransactionCashlinkResult} result
  */
 
 class SignTransaction {
@@ -194,15 +194,38 @@ class SignTransaction {
             return;
         }
 
-        const publicKey = key.derivePublicKey(request.keyPath);
-        const signature = key.sign(request.keyPath, request.transaction.serializeContent());
+        if (request.layout === SignTransactionApi.Layouts.CASHLINK) {
+            // Derive cashlink private key
+            const cashlinkPrivateKey = key.derivePrivateKey(request.cashlinkKeyPath);
+            const cashlinkAddress = Nimiq.PublicKey.derive(cashlinkPrivateKey).toAddress();
 
-        /** @type {KeyguardRequest.SignTransactionResult} */
-        const result = {
-            publicKey: publicKey.serialize(),
-            signature: signature.serialize(),
-        };
-        resolve(result);
+            // Set cashlink address as transaction recipient
+            request.transaction = Nimiq.ExtendedTransaction.fromPlain({
+                ...request.transaction.toPlain(),
+                recipient: cashlinkAddress.toUserFriendlyAddress(),
+            });
+
+            const publicKey = key.derivePublicKey(request.keyPath);
+            const signature = key.sign(request.keyPath, request.transaction.serializeContent());
+
+            /** @type {KeyguardRequest.SignTransactionCashlinkResult} */
+            const result = {
+                publicKey: publicKey.serialize(),
+                signature: signature.serialize(),
+                cashlinkPrivateKey: cashlinkPrivateKey.serialize(),
+            };
+            resolve(result);
+        } else {
+            const publicKey = key.derivePublicKey(request.keyPath);
+            const signature = key.sign(request.keyPath, request.transaction.serializeContent());
+
+            /** @type {KeyguardRequest.SignTransactionResult} */
+            const result = {
+                publicKey: publicKey.serialize(),
+                signature: signature.serialize(),
+            };
+            resolve(result);
+        }
     }
 
     run() {

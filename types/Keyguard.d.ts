@@ -151,7 +151,7 @@ type Parsed<T extends KeyguardRequest.Request> =
             { shopLogoUrl?: URL }
         > :
     T extends Is<T, KeyguardRequest.SignTransactionRequestCashlink> ?
-        ConstructTransaction<KeyId2KeyInfo<KeyguardRequest.SignTransactionRequestCashlink>> :
+        ConstructTransaction<KeyId2KeyInfo<KeyguardRequest.SignTransactionRequestCashlink & { recipient: Uint8Array }>> :
     T extends Is<T, KeyguardRequest.SignMessageRequest> ?
         Transform<
             KeyId2KeyInfo<KeyguardRequest.SignMessageRequest>,
