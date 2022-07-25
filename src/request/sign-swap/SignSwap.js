@@ -353,6 +353,7 @@ class SignSwap {
             hideInput: !request.keyInfo.encrypted,
             buttonI18nTag: 'passwordbox-confirm-swap',
             minLength: request.keyInfo.hasPin ? Key.PIN_LENGTH : undefined,
+            showSwapAuthorization: !!request.kyc,
         });
 
         this._passwordBox.on(

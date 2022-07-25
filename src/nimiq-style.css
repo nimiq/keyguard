@@ -36,6 +36,11 @@
     animation: shake-background .4s ease;
 }
 
+@keyframes fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
 /**************
 ** layout.js **
 ***************/

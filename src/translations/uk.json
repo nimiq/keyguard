@@ -68,11 +68,6 @@
     "sign-tx-fee": "комісія",
     "sign-tx-cancel-payment": "Скасувати платіж",
 
-    "sign-multisig-tx-heading-tx": "Approve Multisig Transaction",
-    "sign-multisig-tx-approving-as": "Approving as",
-    "sign-multisig-tx-with": "with",
-    "sign-multisig-tx-approving-with": "Approving with",
-
     "sign-msg-heading": "Підписати повідомлення",
     "sign-msg-signer": "Підписант",
 
@@ -84,6 +79,7 @@
 
     "passwordbox-enter-password": "Введіть пароль",
     "passwordbox-enter-pin": "Уведіть PIN",
+    "passwordbox-swap-authorized": "Swap authorized",
     "passwordbox-repeat-password": "Повторіть пароль",
     "passwordbox-repeat": "Повторіть пароль",
     "passwordbox-continue": "Продовжити",
@@ -107,7 +103,6 @@
     "passwordbox-repeat-password-short": "Пароль занадто короткий",
     "passwordbox-password-skip": "Наразі пропустити",
     "passwordbox-reset-password": "Скинути за допомогою секретних слів",
-    "passwordbox-connect-account": "Connect your account",
 
     "payment-info-line-order-amount": "Сума замовлення",
     "payment-info-line-vendor-markup": "Націнка від постачальника",
@@ -242,7 +237,5 @@
     "sign-swap-exchange-fee": "Комісія обміну",
     "sign-swap-of-exchange-value": "суми обміну.",
     "sign-swap-total-fees": "Сумарна комісія",
-    "sign-swap-your-bank": "Ваш банк",
-
-    "connect-heading-prefix": "Log in to"
+    "sign-swap-your-bank": "Ваш банк"
 }

@@ -68,11 +68,6 @@
     "sign-tx-fee": "taxa",
     "sign-tx-cancel-payment": "Cancelar pagamento",
 
-    "sign-multisig-tx-heading-tx": "Aprovar transação Multisig",
-    "sign-multisig-tx-approving-as": "Aprovar como",
-    "sign-multisig-tx-with": "com",
-    "sign-multisig-tx-approving-with": "Aprovar com",
-
     "sign-msg-heading": "Assinar Mensagem",
     "sign-msg-signer": "Signatário",
 
@@ -84,6 +79,7 @@
 
     "passwordbox-enter-password": "Insira a sua palavra passe",
     "passwordbox-enter-pin": "Insira o seu PIN",
+    "passwordbox-swap-authorized": "Swap authorized",
     "passwordbox-repeat-password": "Repita a sua palavra passe",
     "passwordbox-repeat": "Repita a palavra passe",
     "passwordbox-continue": "Continuar",
@@ -107,7 +103,6 @@
     "passwordbox-repeat-password-short": "Palavra passe demasiado curta",
     "passwordbox-password-skip": "Passar por enquanto",
     "passwordbox-reset-password": "Redefinir com as Palavras de Backup",
-    "passwordbox-connect-account": "Conecte a sua conta",
 
     "payment-info-line-order-amount": "Valor do pedido",
     "payment-info-line-vendor-markup": "Margem de lucro do vendedor da criptomoeda",
@@ -242,7 +237,5 @@
     "sign-swap-exchange-fee": "taxa de troca",
     "sign-swap-of-exchange-value": "de troca de valor",
     "sign-swap-total-fees": "Taxas totais",
-    "sign-swap-your-bank": "O seu banco",
-
-    "connect-heading-prefix": "Login em"
+    "sign-swap-your-bank": "O seu banco"
 }

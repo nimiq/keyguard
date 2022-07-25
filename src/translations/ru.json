@@ -68,11 +68,6 @@
     "sign-tx-fee": "комиссия",
     "sign-tx-cancel-payment": "Отменить платёж",
 
-    "sign-multisig-tx-heading-tx": "Approve Multisig Transaction",
-    "sign-multisig-tx-approving-as": "Approving as",
-    "sign-multisig-tx-with": "with",
-    "sign-multisig-tx-approving-with": "Approving with",
-
     "sign-msg-heading": "Подписать сообщение",
     "sign-msg-signer": "Отправитель",
 
@@ -84,6 +79,7 @@
 
     "passwordbox-enter-password": "Введите ваш пароль",
     "passwordbox-enter-pin": "Введите ваш PIN-код",
+    "passwordbox-swap-authorized": "Swap authorized",
     "passwordbox-repeat-password": "Повторите ваш пароль",
     "passwordbox-repeat": "Повторите пароль",
     "passwordbox-continue": "Продолжить",
@@ -107,7 +103,6 @@
     "passwordbox-repeat-password-short": "Пароль слишком короткий",
     "passwordbox-password-skip": "Пока отложить",
     "passwordbox-reset-password": "Сбросить, используя Защитную Фразу",
-    "passwordbox-connect-account": "Connect your account",
 
     "payment-info-line-order-amount": "Сумма заказа",
     "payment-info-line-vendor-markup": "Маркап вендора криптовалюты",
@@ -242,7 +237,5 @@
     "sign-swap-exchange-fee": "Комиссия",
     "sign-swap-of-exchange-value": "от суммы обмена.",
     "sign-swap-total-fees": "Итого",
-    "sign-swap-your-bank": "Ваш банк",
-
-    "connect-heading-prefix": "Log in to"
+    "sign-swap-your-bank": "Ваш банк"
 }

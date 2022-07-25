@@ -68,11 +68,6 @@
     "sign-tx-fee": "kosten",
     "sign-tx-cancel-payment": "Annuleer betaling",
 
-    "sign-multisig-tx-heading-tx": "Approve Multisig Transaction",
-    "sign-multisig-tx-approving-as": "Approving as",
-    "sign-multisig-tx-with": "with",
-    "sign-multisig-tx-approving-with": "Approving with",
-
     "sign-msg-heading": "Bericht ondertekenen",
     "sign-msg-signer": "Ondertekenaar",
 
@@ -84,6 +79,7 @@
 
     "passwordbox-enter-password": "Vul wachtwoord in",
     "passwordbox-enter-pin": "Vul PIN in",
+    "passwordbox-swap-authorized": "Swap authorized",
     "passwordbox-repeat-password": "Herhaal je wachtwoord",
     "passwordbox-repeat": "Herhaal wachtwoord",
     "passwordbox-continue": "Doorgaan",
@@ -107,7 +103,6 @@
     "passwordbox-repeat-password-short": "Wachtwoord is te kort",
     "passwordbox-password-skip": "Voor nu overslaan",
     "passwordbox-reset-password": "Resetten met herstelwoorden",
-    "passwordbox-connect-account": "Connect your account",
 
     "payment-info-line-order-amount": "Orderbedrag",
     "payment-info-line-vendor-markup": "Crypto leverancier opmaak",
@@ -242,7 +237,5 @@
     "sign-swap-exchange-fee": "Wisselkosten",
     "sign-swap-of-exchange-value": "van ruilwaarde.",
     "sign-swap-total-fees": "Totale kosten",
-    "sign-swap-your-bank": "Jouw bank",
-
-    "connect-heading-prefix": "Log in to"
+    "sign-swap-your-bank": "Jouw bank"
 }
