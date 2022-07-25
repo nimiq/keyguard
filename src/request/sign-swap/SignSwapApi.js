@@ -189,6 +189,21 @@ class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) {
             }
         }
 
+        // Parse optional KYC data
+        if (request.kyc) {
+            if (request.kyc.provider !== 'TEN31 PASS') {
+                throw new Errors.InvalidRequestError(`Unsupported KYC provider: ${request.kyc.provider}`);
+            }
+            if (typeof request.kyc.s3GrantToken !== 'string' || !request.kyc.s3GrantToken) {
+                throw new Error('Invalid TEN31 PASS S3 service grant');
+            }
+            if (request.kyc.oasisGrantToken !== undefined
+                && (typeof request.kyc.oasisGrantToken !== 'string' || !request.kyc.oasisGrantToken)) {
+                throw new Error('Invalid TEN31 PASS OASIS service grant');
+            }
+            parsedRequest.kyc = request.kyc;
+        }
+
         return parsedRequest;
     }
 
