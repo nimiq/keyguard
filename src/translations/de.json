@@ -79,6 +79,7 @@
 
     "passwordbox-enter-password": "Gib dein Passwort ein",
     "passwordbox-enter-pin": "Gib deine PIN ein",
+    "passwordbox-swap-authorized": "Swap autorisiert",
     "passwordbox-repeat-password": "Wiederhole dein Passwort",
     "passwordbox-repeat": "Passwort wiederholen",
     "passwordbox-continue": "Weiter",
