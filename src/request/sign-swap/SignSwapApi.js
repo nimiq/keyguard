@@ -182,7 +182,7 @@ class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) {
 
         // Parse optional KYC data
         if (request.kyc) {
-            if (request.kyc.provider !== 'TEN31 PASS') {
+            if (request.kyc.provider !== 'TEN31 Pass') {
                 throw new Errors.InvalidRequestError(`Unsupported KYC provider: ${request.kyc.provider}`);
             }
             // TODO verify JWT tokens

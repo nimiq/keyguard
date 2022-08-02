@@ -213,7 +213,7 @@ export type SettlementInstruction = MockSettlementInstruction | SepaSettlementIn
 
 export type SignSwapRequestLayout = 'standard' | 'slider';
 
-export type KycProvider = 'TEN31 PASS';
+export type KycProvider = 'TEN31 Pass';
 
 export type SignSwapRequestCommon = SimpleRequest & {
     swapId: string,
