@@ -89,7 +89,7 @@
             encryptedKey.writeUint8(1); // Version
             encryptedKey.writeUint8(6); // KDF rounds log2
             encryptedKey.write(new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16])); // Salt
-            encryptedKey.writeUint32(242); // Purpose ID
+            encryptedKey.writeUint32(Nimiq.Entropy.PURPOSE_ID); // Purpose ID
             entropy.serialize(encryptedKey); // Secret (usually encrypted)
             encryptedKey.writeUint16(0); // Checksum
             if (label) {

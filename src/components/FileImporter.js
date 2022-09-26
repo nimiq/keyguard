@@ -18,7 +18,7 @@ class FileImporter extends Nimiq.Observable {
             // This throws an atob() exception if data is not in base64 format.
             // Skip prefix for PIN-encrypted Login Files.
             /** @type {Uint8Array} */
-            const data = Nimiq.BufferUtils.fromBase64(str.substr(0, 2) === '#2' ? str.substr(2) : str);
+            const data = Nimiq.BufferUtils.fromBase64(str.substring(0, 2) === '#2' ? str.substring(2) : str);
 
             // Make sure the data size is correct and that a potential label is correctly encoded.
             return data.byteLength === KeyStore.ENCRYPTED_SECRET_SIZE // a secret without label
