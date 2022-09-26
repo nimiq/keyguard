@@ -58,11 +58,14 @@ describe('Key', () => {
         const keypairB = Nimiq.KeyPair.fromHex('2da15ede9992fad834b73283dd1a24f5a7a52b067b09be132ddb5232df863125bb639b6bbf6db003a94a83ef9d12f12fcc5990f63954b7f6d88f5be58f8c411200');
         // const keypairC = Nimiq.KeyPair.fromHex('a3b3d799e7fca4baa3568d58e0c909af1f832926020163a1d48998621a15c9c6b81b12bcb1a6e9ba49a6dec268705c2cc2d70d1d7e22493a4128559eadacdbd400');
 
+        const keyA = new Key(keypairA.privateKey);
+        const keyB = new Key(keypairB.privateKey);
+        // const keyC = new Key(keypairC.privateKey);
+
         const signerPublicKeys = [
-            keypairA.publicKey,
-            keypairB.publicKey,
+            keyA.derivePublicKey('m'),
+            keyB.derivePublicKey('m'),
         ];
-        signerPublicKeys.sort((a, b) => a.compare(b));
 
         const secretA = Nimiq.RandomSecret.unserialize(Nimiq.BufferUtils.fromHex('79c97389d2670f76d2e55192bc7ed875d9941bbfaa7932f8f452d9a907f94903'));
 
@@ -70,13 +73,12 @@ describe('Key', () => {
 
         const transaction = Nimiq.Transaction.unserialize(Nimiq.BufferUtils.fromHex('010000f4e305f34ea1ccf00c0f7fcbc030d1347dc5eafe00000000000000000000000000000000000000000000000000000000000a00000000000000000000000001000000'));
 
-        const partialSignatureA = Nimiq.PartialSignature.create(
-            keypairA.privateKey,
-            keypairA.publicKey,
+        const partialSignatureA = keyA.signPartially(
+            'm',
+            transaction.serializeContent(),
             signerPublicKeys,
             secretA,
             aggregatedCommitment,
-            transaction.serializeContent(),
         );
 
         expect(partialSignatureA.toHex()).toEqual('b3584f24b073410d9c6f8c092068a2d1b66e67387fa3319e57609f2b2425be02');
@@ -84,13 +86,12 @@ describe('Key', () => {
 
         const secretB = Nimiq.RandomSecret.unserialize(Nimiq.BufferUtils.fromHex('0e400561be5711fc7d39d24774233419fb99b7421a86e0520b98d5399a6a5801'));
 
-        const partialSignatureB = Nimiq.PartialSignature.create(
-            keypairB.privateKey,
-            keypairB.publicKey,
+        const partialSignatureB = keyB.signPartially(
+            'm',
+            transaction.serializeContent(),
             signerPublicKeys,
             secretB,
             aggregatedCommitment,
-            transaction.serializeContent(),
         );
 
         expect(partialSignatureB.toHex()).toEqual('caa6353261d250e2f1f67499f526c47503015e08d2a69169322fecae83cdf607');
