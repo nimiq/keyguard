@@ -1,32 +1,32 @@
 /* global Nimiq */
 /* global Key */
 /* global KeyStore */
-/* global SignTransactionApi */
+// /* global SignMultisigTransactionApi */
 /* global PasswordBox */
 /* global Errors */
 /* global Utf8Tools */
 /* global TopLevelApi */
 /* global AddressInfo */
-/* global PaymentInfoLine */
+// /* global PaymentInfoLine */
 /* global Constants */
 /* global NumberFormatting */
 /* global I18n */
 
 /**
- * @callback SignTransaction.resolve
- * @param {KeyguardRequest.SignTransactionResult} result
+ * @callback SignMultisigTransaction.resolve
+ * @param {KeyguardRequest.SignMultisigTransactionResult} result
  */
 
-class SignTransaction {
+class SignMultisigTransaction {
     /**
-     * @param {Parsed<KeyguardRequest.SignTransactionRequest>} request
-     * @param {SignTransaction.resolve} resolve
+     * @param {Parsed<KeyguardRequest.SignMultisigTransactionRequest>} request
+     * @param {SignMultisigTransaction.resolve} resolve
      * @param {reject} reject
      */
     constructor(request, resolve, reject) {
         this._request = request;
         /** @type {HTMLElement} */
-        this.$el = (document.getElementById(SignTransaction.Pages.CONFIRM_TRANSACTION));
+        this.$el = (document.getElementById(SignMultisigTransaction.Pages.CONFIRM_TRANSACTION));
         this.$el.classList.add(request.layout);
 
         const transaction = request.transaction;
@@ -51,44 +51,47 @@ class SignTransaction {
         const $recipient = (this.$el.querySelector('.accounts .recipient'));
         const recipientAddress = transaction.recipient.toUserFriendlyAddress();
         /* eslint-disable no-nested-ternary */
-        const recipientLabel = 'shopOrigin' in request && !!request.shopOrigin
+        // eslint-disable-next-line operator-linebreak
+        const recipientLabel = /* 'shopOrigin' in request && !!request.shopOrigin
             ? request.shopOrigin.split('://')[1]
-            : 'recipientLabel' in request && !!request.recipientLabel
+            : */ 'recipientLabel' in request && !!request.recipientLabel
                 ? request.recipientLabel
                 : null;
+        /** @type {URL | null} */
         /* eslint-enable no-nested-ternary */
-        const recipientImage = 'shopLogoUrl' in request && !!request.shopLogoUrl
+        // eslint-disable-next-line operator-linebreak
+        const recipientImage = /* 'shopLogoUrl' in request && !!request.shopLogoUrl
             ? request.shopLogoUrl
-            : null;
+            : */ null;
         this._recipientAddressInfo = new AddressInfo({
             userFriendlyAddress: recipientAddress,
             label: recipientLabel,
             imageUrl: recipientImage,
             accountLabel: null,
-        }, request.layout === SignTransactionApi.Layouts.CASHLINK);
+        }/* , request.layout === SignMultisigTransactionApi.Layouts.CASHLINK */);
         this._recipientAddressInfo.renderTo($recipient);
-        if (request.layout !== SignTransactionApi.Layouts.CASHLINK) {
-            $recipient.addEventListener('click', () => {
-                this._openDetails(this._recipientAddressInfo);
-            });
-        }
+        // if (request.layout !== SignMultisigTransactionApi.Layouts.CASHLINK) {
+        $recipient.addEventListener('click', () => {
+            this._openDetails(this._recipientAddressInfo);
+        });
+        // }
 
-        /** @type {HTMLElement} */
-        const $paymentInfoLine = (this.$el.querySelector('.payment-info-line'));
-        if (request.layout === SignTransactionApi.Layouts.CHECKOUT) {
-            // eslint-disable-next-line no-new
-            new PaymentInfoLine(Object.assign({}, request, {
-                recipient: recipientAddress,
-                label: recipientLabel || recipientAddress,
-                imageUrl: request.shopLogoUrl,
-                amount: request.transaction.value,
-                currency: /** @type {'nim'} */ ('nim'),
-                unitsToCoins: Nimiq.Policy.lunasToCoins,
-                networkFee: request.transaction.fee,
-            }), $paymentInfoLine);
-        } else {
-            $paymentInfoLine.remove();
-        }
+        // /** @type {HTMLElement} */
+        // const $paymentInfoLine = (this.$el.querySelector('.payment-info-line'));
+        // if (request.layout === SignMultisigTransactionApi.Layouts.CHECKOUT) {
+        //     // eslint-disable-next-line no-new
+        //     new PaymentInfoLine(Object.assign({}, request, {
+        //         recipient: recipientAddress,
+        //         label: recipientLabel || recipientAddress,
+        //         imageUrl: request.shopLogoUrl,
+        //         amount: request.transaction.value,
+        //         currency: /** @type {'nim'} */ ('nim'),
+        //         unitsToCoins: Nimiq.Policy.lunasToCoins,
+        //         networkFee: request.transaction.fee,
+        //     }), $paymentInfoLine);
+        // } else {
+        //     $paymentInfoLine.remove();
+        // }
 
         /** @type {HTMLButtonElement} */
         const $closeDetails = (this.$accountDetails.querySelector('#close-details'));
@@ -110,15 +113,15 @@ class SignTransaction {
             $feeSection.classList.remove('display-none');
         }
 
-        if (request.layout === SignTransactionApi.Layouts.CASHLINK
-         && Nimiq.BufferUtils.equals(transaction.data, Constants.CASHLINK_FUNDING_DATA)) {
-            if (request.cashlinkMessage) {
-                $data.textContent = request.cashlinkMessage;
-                /** @type {HTMLDivElement} */
-                const $dataSection = (this.$el.querySelector('.data-section'));
-                $dataSection.classList.remove('display-none');
-            }
-        } else if ($data && transaction.data.byteLength > 0) {
+        // if (request.layout === SignMultisigTransactionApi.Layouts.CASHLINK
+        //  && Nimiq.BufferUtils.equals(transaction.data, Constants.CASHLINK_FUNDING_DATA)) {
+        //     if (request.cashlinkMessage) {
+        //         $data.textContent = request.cashlinkMessage;
+        //         /** @type {HTMLDivElement} */
+        //         const $dataSection = (this.$el.querySelector('.data-section'));
+        //         $dataSection.classList.remove('display-none');
+        //     }
+        /* } else */ if ($data && transaction.data.byteLength > 0) {
             // Set transaction extra data.
             $data.textContent = this._formatData(transaction);
             /** @type {HTMLDivElement} */
@@ -131,9 +134,9 @@ class SignTransaction {
         const $passwordBox = (document.querySelector('#password-box'));
         this._passwordBox = new PasswordBox($passwordBox, {
             hideInput: !request.keyInfo.encrypted,
-            buttonI18nTag: request.layout === SignTransactionApi.Layouts.CASHLINK
+            buttonI18nTag: /* request.layout === SignMultisigTransactionApi.Layouts.CASHLINK
                 ? 'passwordbox-create-cashlink'
-                : 'passwordbox-confirm-tx',
+                : */ 'passwordbox-confirm-tx',
             minLength: request.keyInfo.hasPin ? Key.PIN_LENGTH : undefined,
         });
 
@@ -144,9 +147,9 @@ class SignTransaction {
             },
         );
 
-        if ('expires' in request && request.expires) {
-            setTimeout(() => reject(new Errors.RequestExpired()), request.expires - Date.now());
-        }
+        // if ('expires' in request && request.expires) {
+        //     setTimeout(() => reject(new Errors.RequestExpired()), request.expires - Date.now());
+        // }
     }
 
     /**
@@ -165,8 +168,8 @@ class SignTransaction {
     }
 
     /**
-     * @param {Parsed<KeyguardRequest.SignTransactionRequest>} request
-     * @param {SignTransaction.resolve} resolve
+     * @param {Parsed<KeyguardRequest.SignMultisigTransactionRequest>} request
+     * @param {SignMultisigTransaction.resolve} resolve
      * @param {reject} reject
      * @param {string} [password]
      * @returns {Promise<void>}
@@ -194,9 +197,22 @@ class SignTransaction {
         }
 
         const publicKey = key.derivePublicKey(request.keyPath);
-        const signature = key.sign(request.keyPath, request.transaction.serializeContent());
 
-        /** @type {KeyguardRequest.SignTransactionResult} */
+        // Verify publicKey is part of the signing public keys
+        if (!request.multisig.signerPublicKeys.find(pubKey => pubKey.equals(publicKey))) {
+            reject(new Errors.InvalidRequestError('Selected key is not part of the multisig transaction signers'));
+            return;
+        }
+
+        const signature = key.signPartially(
+            request.keyPath,
+            request.transaction.serializeContent(),
+            request.multisig.signerPublicKeys,
+            request.multisig.secret,
+            request.multisig.aggregatedCommitment,
+        );
+
+        /** @type {KeyguardRequest.SignMultisigTransactionResult} */
         const result = {
             publicKey: publicKey.serialize(),
             signature: signature.serialize(),
@@ -206,7 +222,7 @@ class SignTransaction {
 
     run() {
         // Go to start page
-        window.location.hash = SignTransaction.Pages.CONFIRM_TRANSACTION;
+        window.location.hash = SignMultisigTransaction.Pages.CONFIRM_TRANSACTION;
     }
 
     /**
@@ -229,6 +245,6 @@ class SignTransaction {
     }
 }
 
-SignTransaction.Pages = {
+SignMultisigTransaction.Pages = {
     CONFIRM_TRANSACTION: 'confirm-transaction',
 };
