@@ -51,6 +51,30 @@ class Key {
     }
 
     /**
+     * Partially sign a multisig transaction
+     *
+     * @param {string} path
+     * @param {Uint8Array} data
+     * @param {Nimiq.PublicKey[]} signerPublicKeys
+     * @param {Nimiq.RandomSecret} secret
+     * @param {Nimiq.Commitment} aggregatedCommitment
+     * @returns {Nimiq.PartialSignature}
+     */
+    signPartially(path, data, signerPublicKeys, secret, aggregatedCommitment) {
+        const privateKey = this.derivePrivateKey(path);
+        const publicKey = Nimiq.PublicKey.derive(privateKey);
+        signerPublicKeys.sort((a, b) => a.compare(b));
+        return Nimiq.PartialSignature.create(
+            privateKey,
+            publicKey,
+            signerPublicKeys,
+            secret,
+            aggregatedCommitment,
+            data,
+        );
+    }
+
+    /**
      * @param {string} path
      * @param {Uint8Array} message - A byte array
      * @returns {Nimiq.Signature}
