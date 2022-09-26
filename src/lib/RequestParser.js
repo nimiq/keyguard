@@ -127,10 +127,11 @@ class RequestParser { // eslint-disable-line no-unused-vars
      * @returns {Nimiq.ExtendedTransaction}
      */
     parseTransaction(object) {
-        const accountTypes = new Set([Nimiq.Account.Type.BASIC, Nimiq.Account.Type.VESTING, Nimiq.Account.Type.HTLC]);
         if (!object || typeof object !== 'object' || object === null) {
             throw new Errors.InvalidRequestError('Request must be an object');
         }
+
+        const accountTypes = new Set([Nimiq.Account.Type.BASIC, Nimiq.Account.Type.VESTING, Nimiq.Account.Type.HTLC]);
 
         const sender = this.parseAddress(object.sender, 'sender');
         const senderType = object.senderType || Nimiq.Account.Type.BASIC;
