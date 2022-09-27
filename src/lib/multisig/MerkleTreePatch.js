@@ -7,6 +7,11 @@
 class MerkleTreePatch { // eslint-disable-line no-unused-vars
     static apply() {
         if (typeof Nimiq.MerkleTree !== 'undefined') {
+            // @ts-ignore
+            if (Nimiq.MerkleTree.__isMonkeyPatch) {
+                // Patch already applied
+                return;
+            }
             throw new Error('MerkleTree monkey patch not required anymore. Please remove it.');
         } else {
             class MerkleTree {
@@ -66,6 +71,8 @@ class MerkleTreePatch { // eslint-disable-line no-unused-vars
                     throw new Error('MerkleTree objects must be Uint8Array or have a .hash()/.serialize() method');
                 }
             }
+            // @ts-ignore
+            MerkleTree.__isMonkeyPatch = true;
             Nimiq.Class.register(MerkleTree);
         }
     }
