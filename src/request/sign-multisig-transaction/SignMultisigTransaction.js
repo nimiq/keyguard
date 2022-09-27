@@ -41,6 +41,10 @@ class SignMultisigTransaction {
             label: request.senderLabel || null,
             imageUrl: null,
             accountLabel: request.keyLabel || null,
+            multisig: {
+                signers: request.multisig.numberOfSigners,
+                participants: request.multisig.publicKeys.length,
+            },
         });
         this._senderAddressInfo.renderTo($sender);
         $sender.addEventListener('click', () => {
