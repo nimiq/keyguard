@@ -68,6 +68,11 @@
     "sign-tx-fee": "cuota",
     "sign-tx-cancel-payment": "Cancelar pago",
 
+    "sign-multisig-tx-heading-tx": "Approve Multisig Transaction",
+    "sign-multisig-tx-approving-as": "Approving as",
+    "sign-multisig-tx-with": "with",
+    "sign-multisig-tx-approving-with": "Approving with",
+
     "sign-msg-heading": "Firmar Mensaje",
     "sign-msg-signer": "Firmador",
 

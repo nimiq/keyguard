@@ -68,6 +68,7 @@
     "sign-tx-fee": "fee",
     "sign-tx-cancel-payment": "Cancel payment",
 
+    "sign-multisig-tx-heading-tx": "Approve Multisig Transaction",
     "sign-multisig-tx-approving-as": "Approving as",
     "sign-multisig-tx-with": "with",
     "sign-multisig-tx-approving-with": "Approving with",
