@@ -11,6 +11,8 @@
 /* global Constants */
 /* global NumberFormatting */
 /* global I18n */
+/* global LoginFileConfig */
+/* global IqonHash */
 
 /**
  * @callback SignMultisigTransaction.resolve
@@ -132,6 +134,30 @@ class SignMultisigTransaction {
             const $dataSection = (this.$el.querySelector('.data-section'));
             $dataSection.classList.remove('display-none');
         }
+
+        // Set up user and account names
+        /** @type {HTMLDivElement} */
+        const $nameSection = (this.$el.querySelector('.user-and-account-names'));
+        if (request.multisig.userName) {
+            $nameSection.classList.add('approving-as');
+            /** @type {HTMLDivElement} */
+            const $userName = ($nameSection.querySelector('.user-name'));
+            $userName.textContent = request.multisig.userName;
+        } else {
+            $nameSection.classList.add('approving-with');
+        }
+        /** @type {HTMLDivElement} */
+        const $accountName = ($nameSection.querySelector('.account-name'));
+        $accountName.textContent = request.keyLabel;
+
+        // Set up account icon
+        const bgColorClassName = LoginFileConfig[
+            IqonHash.getBackgroundColorIndex(request.keyInfo.defaultAddress.toUserFriendlyAddress())
+        ].className;
+        /** @type {HTMLDivElement} */
+        const $loginFileIcon = ($nameSection.querySelector('.login-file-icon'));
+        $loginFileIcon.classList.add(bgColorClassName);
+
 
         // Set up password box.
         /** @type {HTMLFormElement} */
