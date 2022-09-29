@@ -49,6 +49,7 @@ type MultisigConfig = {
     signerPublicKeys: Nimiq.PublicKey[]
     secret: Nimiq.RandomSecret
     aggregatedCommitment: Nimiq.Commitment
+    userName?: string
 }
 
 type ParsedBitcoinTransactionInput = {
