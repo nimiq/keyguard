@@ -19,7 +19,7 @@ class SignMultisigTransactionApi extends TopLevelApi {
         const parsedRequest = {};
         parsedRequest.appName = this.parseAppName(request.appName);
         parsedRequest.keyInfo = await this.parseKeyId(request.keyId);
-        parsedRequest.keyLabel = this.parseLabel(request.keyLabel);
+        parsedRequest.keyLabel = /** @type {string} */ (this.parseLabel(request.keyLabel, false, 'keyLabel'));
         parsedRequest.keyPath = this.parsePath(request.keyPath, 'keyPath');
         parsedRequest.senderLabel = this.parseLabel(request.senderLabel);
         parsedRequest.transaction = this.parseTransaction(request);
@@ -132,12 +132,15 @@ class SignMultisigTransactionApi extends TopLevelApi {
             );
         }
 
+        const userName = this.parseLabel(object.userName, true, 'userName');
+
         return {
             publicKeys,
             numberOfSigners,
             signerPublicKeys,
             secret,
             aggregatedCommitment,
+            userName,
         };
     }
 

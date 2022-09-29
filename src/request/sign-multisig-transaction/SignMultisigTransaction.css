@@ -14,6 +14,7 @@
 }
 
 #confirm-transaction .nq-card-body {
+    padding-top: 0;
     padding-bottom: 2rem;
 }
 
@@ -27,7 +28,6 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding-top: 2rem;
     flex-grow: 1;
 }
 
@@ -118,8 +118,6 @@
 #confirm-transaction .accounts {
     flex-direction: row;
     align-items: flex-start;
-    padding-bottom: 2rem;
-    border-bottom: 1px solid rgba(31, 35, 72, 0.1);
     flex-shrink: 0;
 }
 
@@ -153,4 +151,60 @@
     text-align: center;
     max-width: 100%;
     overflow-wrap: break-word;
+}
+
+#confirm-transaction .user-and-account-names {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    font-size: 2rem;
+    gap: 0.5rem;
+    margin: 0 -2rem;
+    margin-bottom: -0.5rem;
+}
+
+#confirm-transaction .user-and-account-names.approving-as .hide-as,
+#confirm-transaction .user-and-account-names.approving-with .hide-with {
+    display: none;
+}
+
+#confirm-transaction .user-and-account-names .approving-as,
+#confirm-transaction .user-and-account-names .with,
+#confirm-transaction .user-and-account-names .approving-with {
+    opacity: 0.6;
+    flex-shrink: 0;
+    /* white-space: nowrap; */
+}
+
+#confirm-transaction .user-and-account-names .login-file-icon {
+    flex-shrink: 0;
+    width: 2rem;
+    height: 3.5rem;
+    border-radius: 0.25rem;
+    margin: 0 0.25rem;
+}
+
+#confirm-transaction .user-and-account-names .login-file-icon img {
+    width: 100%;
+    height: 100%;
+}
+
+#confirm-transaction .user-and-account-names .user-name,
+#confirm-transaction .user-and-account-names .account-name {
+    flex-shrink: 0.5;
+    overflow: hidden;
+    /* white-space: nowrap; */
+    text-overflow: ellipsis;
+}
+
+#confirm-transaction .user-and-account-names .account-name {
+    flex-shrink: 1;
+    font-weight: 600;
+}
+
+@media (max-width: 450px) {
+    #confirm-transaction .user-and-account-names {
+        margin: 0 -1rem;
+    }
 }

@@ -195,9 +195,12 @@ export type MultisigInfo = {
     signerPublicKeys: Uint8Array[],
     secret: Uint8Array,
     aggregatedCommitment: Uint8Array,
+    userName?: string,
 };
 
-export type SignMultisigTransactionRequestCommon = SignTransactionRequestCommon & MultisigInfo;
+export type SignMultisigTransactionRequestCommon = Transform<SignTransactionRequestCommon, 'keyLabel', {
+    keyLabel: string,
+}> & MultisigInfo;
 
 export type SignMultisigTransactionRequestStandard = SignMultisigTransactionRequestCommon & {
     layout?: 'standard',
