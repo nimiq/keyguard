@@ -31,6 +31,10 @@
 			height: 400px;
 		}
 
+		textarea.key.same {
+			background: lightgreen;
+		}
+
 		iframe {
 			height: 40px;
 		}
@@ -53,14 +57,14 @@
 		<label>Key Size:</label>
 		<select id="key-size">
 			<option>1024 (unsafe)</option>
-			<option>2048 (fast)</option>
-			<option selected>4096 (safe)</option>
+			<option selected>2048 (fast)</option>
+			<option>4096 (safe)</option>
 		</select>
 	</p>
 
 	<p>
 		<label>Sandboxed Iframe:</label>
-		<iframe src="./RSAKeysIframe.html" sandbox="allow-scripts" id="iframe"></iframe>
+		<iframe src="./rsa-iframe/RSAKeysIframe.html" sandbox="allow-scripts" id="iframe"></iframe>
 	</p>
 
 	<p>
@@ -69,7 +73,7 @@
 
 	<p>
 		<textarea id="private-key" class="key" placeholder="-----BEGIN RSA PRIVATE KEY-----"></textarea>
-		<textarea id="public-key" class="key" placeholder="-----BEGIN RSA PUBLIC KEY-----"></textarea>
+		<textarea id="public-key" class="key" placeholder="-----BEGIN PUBLIC KEY-----"></textarea>
 	</p>
 
 	<script>
@@ -86,7 +90,14 @@
 		/** @type {HTMLTextAreaElement} */
 		const $publicKey = document.querySelector('#public-key');
 
+		let lastPrivatePEM = '';
+		let lastPublicPEM = '';
+
 		$button.addEventListener('click', () => {
+			$privateKey.value = '';
+			$publicKey.value = '';
+			$button.disabled = true;
+
 			const entropy = $entropy.value;
 			const keySize = parseInt($keysize.value);
 			const iframe = $iframe.contentWindow;
@@ -94,13 +105,24 @@
 			iframe.postMessage({ command: 'generateKey', entropy, keySize }, '*');
 		});
 
+		/**
+		 * @param {string} pem
+		 * @returns {ArrayBuffer}
+		 */
+		function pemToArrayBuffer(pem) {
+			const lines = pem.split('\r\n').filter(Boolean);
+			// Cut off header and footer
+			const data = lines.slice(1, lines.length - 1).join('');
+			return Nimiq.BufferUtils.fromBase64(data).subarray();
+		}
+
 		window.addEventListener('message', async (event) => {
 			if (event.source === event.target) {
 				// console.log("Ignored same-window event:", event);
 				return;
 			}
 
-			/** @type {{privateKey: Uint8Array, publicKey: Uint8Array}} */
+			/** @type {{privateKey: string, publicKey: string}} */
 			const data = event.data;
             if (!('privateKey' in data) || !('publicKey' in data)) return;
 			console.log("MSG:", data);
@@ -108,7 +130,7 @@
 			const keyPair = {
 				privateKey: await window.crypto.subtle.importKey(
 					'pkcs8',
-					data.privateKey,
+					pemToArrayBuffer(data.privateKey),
 					{
 						name: 'RSA-OAEP',
 						hash: 'SHA-256',
@@ -118,7 +140,7 @@
 				),
 				publicKey: await window.crypto.subtle.importKey(
 					'spki',
-					data.publicKey,
+					pemToArrayBuffer(data.publicKey),
 					{
 						name: 'RSA-OAEP',
 						hash: 'SHA-256',
@@ -128,17 +150,25 @@
 				),
 			};
 
-			const privateKey = await window.crypto.subtle.exportKey('pkcs8', keyPair.privateKey);
-			const publicKey = await window.crypto.subtle.exportKey('spki', keyPair.publicKey);
+			const privateKeyExport = await window.crypto.subtle.exportKey('pkcs8', keyPair.privateKey);
+			const publicKeyExport = await window.crypto.subtle.exportKey('spki', keyPair.publicKey);
 
-			const privateB64 = Nimiq.BufferUtils.toBase64(new Nimiq.SerialBuffer(privateKey));
-			const publicB64 = Nimiq.BufferUtils.toBase64(new Nimiq.SerialBuffer(publicKey));
+			const privateB64 = Nimiq.BufferUtils.toBase64(new Nimiq.SerialBuffer(privateKeyExport));
+			const publicB64 = Nimiq.BufferUtils.toBase64(new Nimiq.SerialBuffer(publicKeyExport));
 
 			const privatePEM = `-----BEGIN RSA PRIVATE KEY-----\n${privateB64}\n-----END RSA PRIVATE KEY-----`;
 			const publicPEM = `-----BEGIN RSA PUBLIC KEY-----\n${publicB64}\n-----END RSA PUBLIC KEY-----`;
 
 			$privateKey.value = privatePEM;
 			$publicKey.value = publicPEM;
+
+			$privateKey.classList.toggle('same', privatePEM === lastPrivatePEM);
+			$publicKey.classList.toggle('same', publicPEM === lastPublicPEM);
+
+			lastPrivatePEM = privatePEM;
+			lastPublicPEM = publicPEM;
+
+			$button.disabled = false;
 		});
 	</script>
 </body>
