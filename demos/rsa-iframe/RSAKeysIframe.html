@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>RSA Keys Iframe | Keyguard Demo</title>
+    <script src="../../node_modules/@nimiq/core-web/web-offline.js"></script>
+    <script src="../../src/lib/Constants.js"></script>
+    <!-- <script src="../../src/lib/Key.js"></script> -->
+    <script src="../../src/lib/KeyStore.js"></script>
+    <script src="../../src/lib/KeyInfo.js"></script>
+    <!-- <script src="../../node_modules/@nimiq/rpc/dist/rpc.umd.js"></script> -->
+    <script src="./node-forge/forge.min.js"></script>
+</head>
+<body>
+	RSA Keys Iframe
+
+    <script>
+        window.addEventListener('message', async (event) => {
+			if (event.source === event.target) {
+				// console.log("Ignored same-window event:", event);
+				return;
+			}
+
+            /** @type {{command: string, entropy: string, keySize: number}} */
+			const data = event.data;
+            if (!('command' in data) || data.command !== 'generateKey') return;
+			console.log("Iframe MSG:", data);
+
+            const entropy = data.entropy;
+
+            // PRNG-seeded RSA key generation
+            const prng = forge.random.createInstance();
+            prng.seedFileSync = () => entropy;
+
+
+            /**
+             * The async version of Forge's pki.rsa.generateKeyPair uses WebWorkers. Sadly, those cannot be
+             * created in sandboxed iframes without `allow-same-origin` (https://stackoverflow.com/a/30567964/4204380).
+             */
+            const keyPair = forge.pki.rsa.generateKeyPair({ bits: data.keySize, prng });
+            // const keyPair = await new Promise((resolve, reject) => forge.pki.rsa.generateKeyPair(
+            //     { bits: data.keySize, prng, workers: -1, workerScript: './node-forge/prime.worker.min.js' },
+            //     (error, keyPair) => {
+            //         if (error) {
+            //             reject(error);
+            //             return;
+            //         }
+
+            //         resolve(keyPair);
+            //     },
+            // ));
+
+            // console.log({ keyPair });
+
+
+            // Forge's only reasonable export format is PEM
+            const rsaPrivateKey = forge.pki.privateKeyToAsn1(keyPair.privateKey);
+            const privateKeyInfo = forge.pki.wrapRsaPrivateKey(rsaPrivateKey);
+            const privatePEM = forge.pki.privateKeyInfoToPem(privateKeyInfo);
+
+            const publicPEM = forge.pki.publicKeyToPem(keyPair.publicKey);
+
+            // console.log({privateKey, publicKey});
+
+            event.source.postMessage({
+                privateKey: privatePEM,
+                publicKey: publicPEM,
+            }, '*');
+		});
+    </script>
+</body>
+</html>
