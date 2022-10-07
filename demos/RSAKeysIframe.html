@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>RSA Keys Iframe | Keyguard Demo</title>
+    <script src="../node_modules/@nimiq/core-web/web-offline.js"></script>
+    <script src="../src/lib/Constants.js"></script>
+    <!-- <script src="../src/lib/Key.js"></script> -->
+    <script src="../src/lib/KeyStore.js"></script>
+    <script src="../src/lib/KeyInfo.js"></script>
+    <!-- <script src="../node_modules/@nimiq/rpc/dist/rpc.umd.js"></script> -->
+</head>
+<body>
+	RSA Keys Iframe
+
+    <script>
+        window.addEventListener('message', async (event) => {
+			if (event.source === event.target) {
+				// console.log("Ignored same-window event:", event);
+				return;
+			}
+
+            /** @type {{command: string, entropy: string, keySize: number}} */
+			const data = event.data;
+            if (!('command' in data) || data.command !== 'generateKey') return;
+			console.log("Iframe MSG:", data);
+
+            const entropy = data.entropy;
+
+            // TODO: Replace by PRNG-seeded RSA key generation
+            let keyPair = await window.crypto.subtle.generateKey(
+                {
+                    name: "RSA-OAEP",
+                    modulusLength: data.keySize,
+                    publicExponent: new Uint8Array([1, 0, 1]),
+                    hash: 'SHA-256',
+                },
+                true,
+                ['encrypt', 'decrypt'],
+            );
+            // console.log({ keyPair });
+
+            // Private keys require the 'pkcs8' format
+            const privateKey = await window.crypto.subtle.exportKey('pkcs8', keyPair.privateKey);
+            // Public keys require the 'spki' format
+            const publicKey = await window.crypto.subtle.exportKey('spki', keyPair.publicKey);
+
+            // console.log({privateKey, publicKey});
+
+            event.source.postMessage({
+                privateKey: new Uint8Array(privateKey),
+                publicKey: new Uint8Array(publicKey),
+            }, '*');
+		});
+    </script>
+</body>
+</html>
