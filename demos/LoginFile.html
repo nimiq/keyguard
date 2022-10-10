@@ -17,6 +17,7 @@
     <script src="../src/lib/QrEncoder.js"></script>
     <script src="../src/lib/LoginFileConfig.js"></script>
     <script src="../src/lib/LoginFile.js"></script>
+    <script src="../src/lib/Utf8Tools.js"></script>
 
     <link rel="stylesheet" href="../node_modules/@nimiq/style/nimiq-style.min.css">
     <link rel="stylesheet" href="../src/nimiq-style.css">
@@ -37,34 +38,95 @@
     </style>
 </head>
 <body>
+    <label>
+        Account Label (empty for default)
+        <input id="label-input" value="Urlaubskasse 🏖️😎💃">
+    </label>
+    <label>
+        Color
+        <select id="color-selector"></select>
+    </label>
     <div id="login-file">
         <p class="nq-label">Rendering...</p>
     </div>
+    <div>Filename: <span id="filename"></span></div>
     <script>
-        (async () => {
-            console.warn("This demo needs to be run from localhost.");
+        console.warn('This demo needs to be run from localhost.');
 
+        I18n = {
+            translatePhrase(phrase) {
+                switch (phrase) {
+                    case 'login-file-color-orange': return 'Orange';
+                    case 'login-file-color-red': return 'Red';
+                    case 'login-file-color-yellow': return 'Yellow';
+                    case 'login-file-color-indigo': return 'Indigo';
+                    case 'login-file-color-blue': return 'Blue';
+                    case 'login-file-color-purple': return 'Purple';
+                    case 'login-file-color-teal': return 'Teal';
+                    case 'login-file-color-pink': return 'Pink';
+                    case 'login-file-color-green': return 'Green';
+                    case 'login-file-color-brown': return 'Brown';
+                    case 'login-file-default-account-label': return '{color} Account';
+                    case 'login-file-filename': return 'Nimiq-Login-File-{accountLabel}.png';
+                }
+                return '! unhandled phrase !';
+            }
+        };
+
+        const labelInput = document.getElementById('label-input');
+        const colorSelector = document.getElementById('color-selector');
+        const loginFileContainer = document.getElementById('login-file');
+        const filename = document.getElementById('filename');
+
+        async function generateLoginFile() {
             self.NIMIQ_IQONS_SVG_PATH = '/src/assets/Iqons.min.svg';
 
+            const label = labelInput.value;
+            const labelBytes = Utf8Tools.stringToUtf8ByteArray(label);
+
             const entropy = Nimiq.Entropy.generate();
-            const encryptedKey = new Nimiq.SerialBuffer(56);
+            const encryptedKey = new Nimiq.SerialBuffer(56 + (label ? 1 + labelBytes.length : 0));
             encryptedKey.writeUint8(1); // Version
             encryptedKey.writeUint8(6); // KDF rounds log2
             encryptedKey.write(new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16])); // Salt
             encryptedKey.writeUint32(242); // Purpose ID
             entropy.serialize(encryptedKey); // Secret (usually encrypted)
             encryptedKey.writeUint16(0); // Checksum
+            if (label) {
+                encryptedKey.writeUint8(labelBytes.length)
+                encryptedKey.write(labelBytes)
+            }
             console.log('Encrypted Key:', encryptedKey);
             const encryptedString = Nimiq.BufferUtils.toBase64(encryptedKey);
             console.log('Encrypted String:', encryptedString);
-            const loginFile = new LoginFile(encryptedString, Math.floor(Math.random() * 10));
+
+            const color = colorSelector.value === 'random'
+                ? Math.floor(Math.random() * LoginFileConfig.length)
+                : Number.parseInt(colorSelector.value);
+            const loginFile = new LoginFile(encryptedString, color, label);
             const objectUrl = await loginFile.toObjectUrl();
 
             const img = new Image();
             img.src = objectUrl;
-            document.querySelector('#login-file').textContent = '';
-            document.querySelector('#login-file').appendChild(img);
-        })();
+            loginFileContainer.textContent = ''; // clear
+            loginFileContainer.appendChild(img);
+            filename.textContent = loginFile.filename();
+        }
+
+        const randomColorOption = document.createElement('option');
+        randomColorOption.text = 'Random';
+        randomColorOption.value = 'random';
+        colorSelector.add(randomColorOption);
+        LoginFileConfig.forEach(({ name }, i) => {
+            const option = document.createElement('option');
+            option.text = name;
+            option.value = i;
+            colorSelector.add(option);
+        });
+
+        labelInput.addEventListener('input', generateLoginFile);
+        colorSelector.addEventListener('change', generateLoginFile);
+        generateLoginFile();
     </script>
 </body>
 </html>

@@ -11,7 +11,7 @@
           child-src 'self' blob:;
           style-src 'self';
           font-src 'self';
-          connect-src 'self' https://api.coingecko.com">
+          connect-src 'self'">
     <title>Nimiq Keyguard</title>
 
     <script defer manual src="../../../node_modules/@nimiq/core-web/web.js"></script>
@@ -51,11 +51,14 @@
     <script defer src="../../lib/IqonHash.js"></script>
     <script defer src="../../lib/Iqons.js"></script>
     <script defer src="../../lib/LoginFileConfig.js"></script>
+    <script defer src="../../lib/CurrencyInfo.js"></script>
     <script defer src="../../lib/NumberFormatting.js"></script>
     <script defer src="../../lib/euro/EuroConstants.js"></script>
     <script defer src="../../lib/euro/EuroUtils.js"></script>
+    <script defer src="../../lib/euro/Iban.js"></script>
     <script defer src="../../components/Identicon.js"></script>
     <script defer src="../../components/SwapFeesTooltip.js"></script>
+    <script defer src="../../components/BalanceDistributionBar.js"></script>
     <script defer src="SignSwap.js"></script>
     <script defer src="SignSwapApi.js"></script>
     <script defer src="index.js"></script>
@@ -67,6 +70,8 @@
     <link rel="stylesheet" bundle-toplevel href="../../components/PasswordBox.css">
 
     <link rel="stylesheet" href="../../components/Tooltip.css">
+    <link rel="stylesheet" href="../../components/SwapFeesTooltip.css">
+    <link rel="stylesheet" href="../../components/BalanceDistributionBar.css">
     <link rel="stylesheet" href="SignSwap.css">
 </head>
 <body class="loading">
@@ -137,7 +142,7 @@
                     </div>
                 </div>
 
-                <div class="balance-bar"></div>
+                <div class="balance-distribution-bar"></div>
 
                 <div class="swap-values columns">
                     <div class="left-column">

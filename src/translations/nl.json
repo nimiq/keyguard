@@ -24,6 +24,7 @@
     "recovery-words-validate": "Valideer back-up",
 
     "create-heading-choose-identicon": "Kies een avatar",
+    "create-address-label": "Your address:",
     "create-confirm-address": "Selecteer en ga verder",
     "create-heading-create-password": "Maak een wachtwoord",
     "create-heading-repeat-password": "Bevestig je wachtwoord",
@@ -42,6 +43,7 @@
     "import-login-to-continue": "Log opnieuw in om door te gaan.",
     "import-unlock-account": "Ontgrendel je account",
     "import-create-account": "Creëer nieuw account",
+    "import-qr-video-tooltip": "Scan je Login File met de camera.",
 
     "import-file-button-words": "Inloggen met herstelwoorden",
 
@@ -56,10 +58,14 @@
     "file-import-error-could-not-read": "Kan Login File niet lezen.",
     "file-import-error-invalid": "Ongeldige Login File.",
 
+    "qr-video-scanner-cancel": "Annuleer",
+    "qr-video-scanner-no-camera": "Je apparaat heeft geen toegankelijke camera.",
+    "qr-video-scanner-enable-camera": "Deblokkeer de camera zodat deze website QR-codes kan scannen.",
+
     "sign-tx-heading-tx": "Bevestig transactie",
     "sign-tx-heading-checkout": "Verifieer betaling",
     "sign-tx-heading-cashlink": "Maak een Cashlink",
-    "sign-tx-fee": "transactiekosten",
+    "sign-tx-fee": "kosten",
     "sign-tx-cancel-payment": "Annuleer betaling",
 
     "sign-msg-heading": "Bericht ondertekenen",
@@ -122,11 +128,10 @@
     "identicon-selector-avatars-hint-2": "Beschouw ze als bankrekeningnummers.",
     "identicon-selector-generate-new": "Nieuwe avatar",
 
-    "download-loginfile-download": "Download Login File",
+    "download-loginfile-download": "Downloaden",
     "download-loginfile-successful": "Download succesvol?",
-    "download-loginfile-tap-and-hold": "Tik en houd de afbeelding vast om te downloaden",
+    "download-loginfile-tap-and-hold": "Tik en houd de afbeelding\nvast om te downloaden",
     "download-loginfile-continue": "Doorgaan",
-    "download-loginfile-download-again": "Opnieuw downloaden",
 
     "validate-words-text": "Selecteer het juiste woord uit je lijst met herstelwoorden.",
     "validate-words-1-hint": "Wat is het 1e woord?",
@@ -209,7 +214,8 @@
     "login-file-color-green": "Groen",
     "login-file-color-brown": "Bruin",
 
-    "login-file-filename": "Nimiq-Login-File-{color}-Account.png",
+    "login-file-filename": "Nimiq-Login-File-{accountLabel}.png",
+    "login-file-default-account-label": "{color} Account",
 
     "bitcoin": "Bitcoin",
     "bitcoin-recipient-unlabelled": "Ongelabeld",
@@ -224,6 +230,8 @@
     "sign-swap-btc-fees-explainer": "Atomic swaps vereisen twee BTC-transacties.",
     "sign-swap-oasis-fees": "OASIS servicekosten",
     "sign-swap-oasis-fees-explainer": "van ruilwaarde.",
+    "sign-swap-bank-fees": "kosten",
+    "sign-swap-bank-fees-explainer": "Bank kosten.",
     "sign-swap-nim-fees": "NIM netwerk fee",
     "sign-swap-exchange-fee": "Wisselkosten",
     "sign-swap-of-exchange-value": "van ruilwaarde.",

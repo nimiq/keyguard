@@ -33,6 +33,12 @@
     margin-bottom: -0.75rem;
 }
 
+.overlay .nq-label {
+    margin: 4rem 0 1rem;
+    font-weight: 900;
+    opacity: 0.5;
+}
+
 .overlay .address {
     width: 100%;
     max-width: 27.375rem;
@@ -41,7 +47,6 @@
     line-height: 1.75;
     opacity: 1;
     color: rgba(31, 35, 72, .5);
-    margin-top: 3rem;
     font-size: 3rem;
     white-space: pre-wrap;
     word-spacing: 0.75rem;

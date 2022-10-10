@@ -10,6 +10,7 @@
 /* global Utf8Tools */
 /* global KeyStore */
 /* global BitcoinKey */
+/* global QrVideoScanner */
 
 /**
  * @callback ImportFile.resolve
@@ -28,6 +29,8 @@ class ImportFile {
         this._reject = reject;
 
         this._encryptedKey = new Nimiq.SerialBuffer(0);
+        /** @type {string | undefined} */
+        this._label = undefined;
         this._flags = {
             hasPin: false,
         };
@@ -47,6 +50,13 @@ class ImportFile {
         /** @type {HTMLLabelElement} */
         const $fileImport = (this.$importFilePage.querySelector('.file-import'));
         const fileImport = new FileImporter($fileImport, false);
+
+        /** @type {HTMLButtonElement} */
+        this.$qrVideoButton = (this.$importFilePage.querySelector('.qr-video-button'));
+
+        /** @type {HTMLDivElement} */
+        this.$qrVideoScanner = (this.$importFilePage.querySelector('.qr-video-scanner'));
+        this.qrVideoScanner = new QrVideoScanner(this.$qrVideoScanner, FileImporter.isLoginFileData);
 
         /** @type {HTMLElement} */
         const $gotoWords = (this.$importFilePage.querySelector('#goto-words'));
@@ -69,6 +79,14 @@ class ImportFile {
         fileImport.on(FileImporter.Events.IMPORT, this._onFileImported.bind(this));
         this.passwordBox.on(PasswordBox.Events.SUBMIT, this._onPasswordEntered.bind(this));
 
+        this.qrVideoScanner.on(QrVideoScanner.Events.RESULT, result => {
+            this._onFileImported(result);
+            this._stopQrVideo();
+        });
+        this.qrVideoScanner.on(QrVideoScanner.Events.CANCEL, this._stopQrVideo.bind(this));
+
+        this.$qrVideoButton.addEventListener('click', this._startQrVideo.bind(this));
+
         if (request.enableBackArrow) {
             /** @type {HTMLElement} */
             (this.$importFilePage.querySelector('.page-header-back-button')).classList.remove('display-none');
@@ -81,7 +99,7 @@ class ImportFile {
 
     /**
      * @param {string} decoded
-     * @param {string} src
+     * @param {string} [src]
      */
     _onFileImported(decoded, src) {
         if (decoded.substr(0, 2) === '#2') {
@@ -90,10 +108,22 @@ class ImportFile {
             this._flags.hasPin = true;
         }
 
-        this._encryptedKey = Nimiq.BufferUtils.fromBase64(decoded);
+        const buffer = Nimiq.BufferUtils.fromBase64(decoded);
+        if (buffer.byteLength > KeyStore.ENCRYPTED_SECRET_SIZE) {
+            this._encryptedKey = new Nimiq.SerialBuffer(buffer.read(KeyStore.ENCRYPTED_SECRET_SIZE));
+            const labelLength = buffer.readUint8();
+            const labelBytes = buffer.read(labelLength);
+            if (Utf8Tools.isValidUtf8(labelBytes)) {
+                this._label = Utf8Tools.utf8ByteArrayToString(labelBytes);
+            }
+        } else {
+            this._encryptedKey = buffer;
+        }
 
         // Prepare next page
-        this.$loginFileImage.src = src;
+        if (src) {
+            this.$loginFileImage.src = src;
+        }
         const version = this._encryptedKey.readUint8();
         this.passwordBox.setMinLength(this._flags.hasPin ? Key.PIN_LENGTH : version < 3 ? 10 : undefined);
         this.passwordBox.reset();
@@ -104,6 +134,19 @@ class ImportFile {
         setTimeout(() => this.$unlockAccountPage.classList.add('animate'), 0);
 
         TopLevelApi.focusPasswordBox();
+    }
+
+    _startQrVideo() {
+        this.qrVideoScanner.start();
+        this.qrVideoScanner.repositionOverlay();
+        this.$qrVideoScanner.classList.add('active');
+        this.$qrVideoButton.classList.add('hide-tooltip');
+    }
+
+    _stopQrVideo() {
+        this.$qrVideoScanner.classList.remove('active');
+        this.$qrVideoButton.classList.remove('hide-tooltip');
+        window.setTimeout(() => this.qrVideoScanner.stop(), 1000);
     }
 
     /**
@@ -160,6 +203,7 @@ class ImportFile {
         const result = [{
             keyId: key.id,
             keyType: key.type,
+            ...(this._label ? { keyLabel: this._label } : {}),
             addresses,
 
             // Backup warnings should not be shown for imported accounts, only for newly created accounts.

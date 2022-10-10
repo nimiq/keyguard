@@ -7,6 +7,7 @@ export type ObjectType = {
 
 // Returns B if T and B have same keys. Ignores modifiers (readonly, optional)
 export type Is<T, B> = keyof T extends keyof B ? keyof B extends keyof T ? B : never : never;
+export type Transform<T, K extends keyof T, E> = Omit<T, K> & E;
 
 // Base types for Requests
 export type BasicRequest = {
@@ -16,6 +17,7 @@ export type BasicRequest = {
 export type SingleKeyResult = {
     keyId: string;
     keyType: Nimiq.Secret.Type;
+    keyLabel?: string;
     addresses: Array<{
         keyPath: string,
         address: Uint8Array,
@@ -32,7 +34,6 @@ export type TransactionInfo = {
     senderType: Nimiq.Account.Type,
     recipient: Uint8Array,
     recipientType?: Nimiq.Account.Type,
-    recipientLabel?: string,
     value: number,
     fee: number,
     validityStartHeight: number,
@@ -41,7 +42,7 @@ export type TransactionInfo = {
 };
 
 export enum BitcoinTransactionInputType {
-    DEFAULT = 'default',
+    STANDARD = 'standard',
     HTLC_REDEEM = 'htlc-redeem',
     HTLC_REFUND = 'htlc-refund',
 }
@@ -52,10 +53,13 @@ export type BitcoinTransactionInput = {
     outputIndex: number,
     outputScript: string,
     value: number,
-    witnessScript?: string,
+} & ({
+    type?: BitcoinTransactionInputType.STANDARD,
+} | {
+    type: BitcoinTransactionInputType.HTLC_REDEEM | BitcoinTransactionInputType.HTLC_REFUND,
+    witnessScript: string,
     sequence?: number,
-    type?: BitcoinTransactionInputType,
-};
+});
 
 export type BitcoinTransactionOutput = {
     address: string,
@@ -145,6 +149,7 @@ type SignTransactionRequestCommon = SimpleRequest & TransactionInfo;
 
 export type SignTransactionRequestStandard = SignTransactionRequestCommon & {
     layout?: 'standard',
+    recipientLabel?: string,
 };
 
 export type SignTransactionRequestCheckout = SignTransactionRequestCommon & {
@@ -187,6 +192,23 @@ export type SignBtcTransactionRequest
     = SignBtcTransactionRequestStandard
     | SignBtcTransactionRequestCheckout;
 
+export type MockSettlementInstruction = {
+    type: 'mock',
+    contractId: string,
+};
+
+export type SepaSettlementInstruction = {
+    type: 'sepa',
+    contractId: string,
+    recipient: {
+        name: string,
+        iban: string,
+        bic: string,
+    },
+};
+
+export type SettlementInstruction = MockSettlementInstruction | SepaSettlementInstruction;
+
 export type SignSwapRequestLayout = 'standard' | 'slider';
 
 export type SignSwapRequestCommon = SimpleRequest & {
@@ -203,16 +225,13 @@ export type SignSwapRequestCommon = SimpleRequest & {
         & { senderLabel: string }
     ) | (
         {type: 'BTC'}
-        & Omit<BitcoinTransactionInfo,
-            | 'recipientOutput' // Replaced below
-        >
-        & {
+        & Transform<BitcoinTransactionInfo, 'recipientOutput', {
             recipientOutput: Omit<BitcoinTransactionOutput,
                 | 'address' // Only known in second step (in swap-iframe), derived from htlcScript
                 | 'label' // Not used
             >,
             refundKeyPath: string, // To validate that we own the HTLC script's refund address
-        }
+        }>
     ) | (
         {type: 'EUR'}
         & {
@@ -245,14 +264,33 @@ export type SignSwapRequestCommon = SimpleRequest & {
             >,
             output: BitcoinTransactionChangeOutput,
         }
+    ) | (
+        {type: 'EUR'}
+        & {
+            keyPath: string,
+            // A SettlementInstruction contains a `type`, so cannot be in the
+            // root of the object (it conflicts with the 'EUR' type).
+            settlement: Omit<SettlementInstruction, 'contractId'>,
+            amount: number,
+            fee: number,
+            bankLabel?: string,
+            // bankLogoUrl?: string,
+            // bankColor?: string,
+        }
     ),
 
     // Data needed for display
     fiatCurrency: string,
     fundingFiatRate: number,
     redeemingFiatRate: number,
-    serviceFundingFee: number, // Luna, Sats or Cents, depending which one gets funded
-    serviceRedeemingFee: number, // Luna, Sats or Cents, depending which one gets redeemed
+    fundFees: { // In the currency that gets funded
+        processing: number,
+        redeeming: number,
+    },
+    redeemFees: { // In the currency that gets redeemed
+        funding: number,
+        processing: number,
+    },
     serviceSwapFee: number, // Luna, Sats or Cents, depending which one gets funded
 };
 
@@ -272,6 +310,10 @@ export type SignSwapRequestSlider = SignSwapRequestCommon & {
 };
 
 export type SignSwapRequest = SignSwapRequestStandard | SignSwapRequestSlider;
+
+export type SignSwapResult = SimpleResult & {
+    eurPubKey?: string,
+};
 
 // Used in swap-iframe
 export type SignSwapTransactionsRequest = {
@@ -297,6 +339,11 @@ export type SignSwapTransactionsRequest = {
         htlcScript: Uint8Array,
         transactionHash: string,
         outputIndex: number;
+    } | {
+        type: 'EUR',
+        hash: string,
+        timeout: number,
+        htlcId: string,
     },
 };
 
@@ -393,7 +440,8 @@ export type RedirectResult
     | SignTransactionResult
     | SignedBitcoinTransaction
     | SimpleResult
-    | DeriveBtcXPubResult;
+    | DeriveBtcXPubResult
+    | SignSwapResult;
 
 export type Result = RedirectResult | IFrameResult;
 
@@ -407,7 +455,7 @@ export type ResultType<T extends RedirectRequest> =
     T extends Is<T, RemoveKeyRequest> | Is<T, SimpleRequest> ? SimpleResult :
     T extends Is<T, SignBtcTransactionRequest> ? SignedBitcoinTransaction :
     T extends Is<T, DeriveBtcXPubRequest> ? DeriveBtcXPubResult :
-    T extends Is<T, SignSwapRequest> ? SimpleResult :
+    T extends Is<T, SignSwapRequest> ? SignSwapResult :
     never;
 
 export type ResultByCommand<T extends KeyguardCommand> =
@@ -418,7 +466,7 @@ export type ResultByCommand<T extends KeyguardCommand> =
     T extends KeyguardCommand.REMOVE ? SimpleResult :
     T extends KeyguardCommand.SIGN_BTC_TRANSACTION ? SignedBitcoinTransaction :
     T extends KeyguardCommand.DERIVE_BTC_XPUB ? DeriveBtcXPubResult :
-    T extends KeyguardCommand.SIGN_SWAP ? SimpleResult :
+    T extends KeyguardCommand.SIGN_SWAP ? SignSwapResult :
     never;
 
 // Error constants

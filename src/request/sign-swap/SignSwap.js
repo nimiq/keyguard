@@ -12,16 +12,16 @@
 /* global EuroConstants */
 /* global EuroUtils */
 /* global Identicon */
-/* global IqonHash */
-/* global LoginFileConfig */
 /* global TemplateTags */
 /* global I18n */
 /* global SignSwapApi */
 /* global SwapFeesTooltip */
+/* global BalanceDistributionBar */
+/* global Constants */
 
 /**
  * @callback SignSwap.resolve
- * @param {KeyguardRequest.SimpleResult} result
+ * @param {KeyguardRequest.SignSwapResult} result
  */
 
 class SignSwap {
@@ -84,7 +84,7 @@ class SignSwap {
         switch (redeemTx.type) {
             case 'NIM': swapToValue = redeemTx.transaction.value; break;
             case 'BTC': swapToValue = redeemTx.output.value; break;
-            // case 'EUR': swapToValue = redeemTx.amount - redeemTx.fee; break;
+            case 'EUR': swapToValue = redeemTx.amount - redeemTx.fee; break;
             default: throw new Errors.KeyguardError('Invalid asset');
         }
 
@@ -103,7 +103,7 @@ class SignSwap {
         $swapRightValue.textContent = NumberFormatting.formatNumber(
             this._unitsToCoins(rightAsset, rightAmount),
             this._assetDecimals(rightAsset),
-            // rightAsset === 'EUR'? this._assetDecimals(rightAsset) : 0,
+            rightAsset === 'EUR' ? this._assetDecimals(rightAsset) : 0,
         );
 
         $swapValues.classList.add(`${fundTx.type.toLowerCase()}-to-${redeemTx.type.toLowerCase()}`);
@@ -112,7 +112,7 @@ class SignSwap {
         let exchangeBaseAsset;
         // If EUR is part of the swap, the other currency is the base asset
         if (fundTx.type === 'EUR') exchangeBaseAsset = redeemTx.type;
-        // else if (redeemTx.type === 'EUR') exchangeRateBaseAsset = fundTx.type; // TODO: Enable when swapping to EUR
+        else if (redeemTx.type === 'EUR') exchangeBaseAsset = fundTx.type;
         // If NIM is part of the swap, it is the base asset
         else if (fundTx.type === 'NIM' || redeemTx.type === 'NIM') exchangeBaseAsset = 'NIM';
         else exchangeBaseAsset = fundTx.type;
@@ -126,27 +126,31 @@ class SignSwap {
             case 'NIM':
                 exchangeBaseValue = fundTx.type === 'NIM'
                     // When the user funds NIM, the service receives the HTLC balance - their network fee.
-                    ? fundTx.transaction.value - request.serviceFundingFee
+                    ? fundTx.transaction.value - request.fundFees.redeeming
                     : redeemTx.type === 'NIM'
                         // When the user redeems NIM, the service lost the HTLC balance + their network fee.
                         // The transaction value is "HTLC balance - tx fee", therefore the "HTLC balance"
                         // is the transaction value + tx fee.
-                        ? redeemTx.transaction.value + redeemTx.transaction.fee + request.serviceRedeemingFee
+                        ? redeemTx.transaction.value + redeemTx.transaction.fee + request.redeemFees.funding
                         : 0; // Should never happen, if parsing works correctly
                 break;
             case 'BTC':
                 exchangeBaseValue = fundTx.type === 'BTC'
                     // When the user funds BTC, the service receives the HTLC balance - their network fee.
-                    ? fundTx.recipientOutput.value - request.serviceFundingFee
+                    ? fundTx.recipientOutput.value - request.fundFees.redeeming
                     : redeemTx.type === 'BTC'
                         // When the user redeems BTC, the service lost the HTLC balance + their network fee.
                         // The HTLC balance is represented by the redeeming tx input value.
-                        ? redeemTx.input.witnessUtxo.value + request.serviceRedeemingFee
+                        ? redeemTx.input.witnessUtxo.value + request.redeemFees.funding
                         : 0; // Should never happen, if parsing works correctly
                 break;
-            // case 'EUR':
-            //      exchangeBaseValue = ...
-            //      break;
+            case 'EUR':
+                exchangeBaseValue = fundTx.type === 'EUR'
+                    ? fundTx.amount - request.fundFees.redeeming
+                    : redeemTx.type === 'EUR'
+                        ? redeemTx.amount + request.redeemFees.processing + request.redeemFees.funding
+                        : 0; // Should never happen, if parsing works correctly
+                break;
             default:
                 throw new Errors.KeyguardError('UNEXPECTED: Unsupported exchange rate base asset');
         }
@@ -157,30 +161,30 @@ class SignSwap {
             case 'NIM':
                 exchangeOtherValue = fundTx.type === 'NIM'
                     // When the user funds NIM, the service receives the HTLC balance - their network fee.
-                    ? fundTx.transaction.value - request.serviceFundingFee
+                    ? fundTx.transaction.value - request.fundFees.redeeming
                     : redeemTx.type === 'NIM'
                         // When the user redeems NIM, the service lost the HTLC balance + their network fee.
                         // The transaction value is "HTLC balance - tx fee", therefore the "HTLC balance"
                         // is the transaction value + tx fee.
-                        ? redeemTx.transaction.value + redeemTx.transaction.fee + request.serviceRedeemingFee
+                        ? redeemTx.transaction.value + redeemTx.transaction.fee + request.redeemFees.funding
                         : 0; // Should never happen, if parsing works correctly
                 break;
             case 'BTC':
                 exchangeOtherValue = fundTx.type === 'BTC'
                     // When the user funds BTC, the service receives the HTLC balance - their network fee.
-                    ? fundTx.recipientOutput.value - request.serviceFundingFee
+                    ? fundTx.recipientOutput.value - request.fundFees.redeeming
                     : redeemTx.type === 'BTC'
                         // When the user redeems BTC, the service lost the HTLC balance + their network fee.
                         // The HTLC balance is represented by the redeeming tx input value.
-                        ? redeemTx.input.witnessUtxo.value + request.serviceRedeemingFee
+                        ? redeemTx.input.witnessUtxo.value + request.redeemFees.funding
                         : 0; // Should never happen, if parsing works correctly
                 break;
             case 'EUR':
                 exchangeOtherValue = fundTx.type === 'EUR'
-                    ? fundTx.amount - request.serviceFundingFee
-                    // : redeemTx.type === 'EUR'
-                    //     ? redeemTx.amount + request.serviceRedeemingFee
-                    : 0; // Should never happen, if parsing works correctly
+                    ? fundTx.amount - request.fundFees.redeeming
+                    : redeemTx.type === 'EUR'
+                        ? redeemTx.amount + request.redeemFees.processing + request.redeemFees.funding
+                        : 0; // Should never happen, if parsing works correctly
                 break;
             default:
                 throw new Errors.KeyguardError('UNEXPECTED: Unsupported exchange rate other asset');
@@ -199,6 +203,7 @@ class SignSwap {
         $exchangeRate.textContent = `1 ${exchangeBaseAsset} = ${NumberFormatting.formatCurrency(
             exchangeRate,
             exchangeOtherAsset.toLocaleLowerCase(),
+            0.01,
         )}`;
 
         /** @type {HTMLDivElement} */
@@ -207,6 +212,7 @@ class SignSwap {
             new SwapFeesTooltip(
                 request,
                 fundTx.type === exchangeBaseAsset ? exchangeBaseValue : exchangeOtherValue,
+                fundTx.type === exchangeBaseAsset ? exchangeOtherValue : exchangeBaseValue,
             ).$el,
         );
 
@@ -247,15 +253,23 @@ class SignSwap {
             } else if (request.redeem.type === 'BTC') {
                 $rightIdenticon.innerHTML = TemplateTags.hasVars(0)`<img src="../../assets/icons/bitcoin.svg"></img>`;
                 $rightLabel.textContent = I18n.translatePhrase('bitcoin');
-            // } else if (request.redeem.type === 'EUR') {
-            //     $rightIdenticon.innerHTML = TemplateTags.hasVars(0)`<img src="../../assets/icons/bank.svg"></img>`;
-            //     $rightLabel.textContent = request.redeem.bankLabel || I18n.translatePhrase('sign-swap-your-bank');
+            } else if (request.redeem.type === 'EUR') {
+                $rightIdenticon.innerHTML = TemplateTags.hasVars(0)`<img src="../../assets/icons/bank.svg"></img>`;
+
+                let label = request.redeem.bankLabel || I18n.translatePhrase('sign-swap-your-bank');
+
+                // Display IBAN as recipient label if available
+                if (request.redeem.settlement.type === 'sepa') {
+                    label = request.redeem.settlement.recipient.iban;
+                }
+
+                $rightLabel.textContent = label;
             }
         }
 
         if (request.layout === SignSwapApi.Layouts.SLIDER) {
             /** @type {HTMLDivElement} */
-            const $balanceBar = (this.$el.querySelector('.balance-bar'));
+            const $balanceDistributionBar = (this.$el.querySelector('.balance-distribution-bar'));
             /** @type {HTMLSpanElement} */
             const $newNimBalance = (this.$el.querySelector('#new-nim-balance'));
             /** @type {HTMLSpanElement} */
@@ -275,8 +289,7 @@ class SignSwap {
                     ? redeemTx.transaction.recipient.toUserFriendlyAddress()
                     : ''; // Should never happen, if parsing works correctly
 
-            // eslint-disable-next-line no-new
-            new Identicon(swapNimAddress, $leftIdenticon);
+            new Identicon(swapNimAddress, $leftIdenticon); // eslint-disable-line no-new
             $leftLabel.textContent = fundTx.type === 'NIM'
                 ? fundTx.senderLabel
                 : redeemTx.type === 'NIM'
@@ -321,62 +334,15 @@ class SignSwap {
             const newBtcBalanceFiat = BitcoinUtils.satoshisToCoins(newBtcBalance) * rightFiatRate;
             $newBtcBalanceFiat.textContent = NumberFormatting.formatCurrency(newBtcBalanceFiat, request.fiatCurrency);
 
-            // Draw distribution graph
-            const nimDistributionData = request.nimiqAddresses.map(addressInfo => {
-                const active = swapNimAddress === addressInfo.address;
-                const backgroundClass = LoginFileConfig[IqonHash.getBackgroundColorIndex(addressInfo.address)]
-                    .className;
-                const oldBalance = Nimiq.Policy.lunasToCoins(addressInfo.balance) * leftFiatRate;
-                const newBalance = active
-                    ? Nimiq.Policy.lunasToCoins(newNimBalance) * leftFiatRate
-                    : oldBalance;
-
-                return {
-                    oldBalance,
-                    newBalance,
-                    backgroundClass,
-                    active,
-                };
-            });
-
-            const btcDistributionData = {
-                oldBalance: BitcoinUtils.satoshisToCoins(request.bitcoinAccount.balance) * rightFiatRate,
-                newBalance: newBtcBalanceFiat,
-                backgroundClass: 'bitcoin',
-                active: true,
-            };
-
-            const totalBalance = nimDistributionData.reduce((sum, data) => sum + data.newBalance, 0)
-                + btcDistributionData.newBalance;
-
-            /**
-             * @param {{oldBalance: number, newBalance: number, backgroundClass: string, active: boolean}} data
-             * @returns {HTMLDivElement}
-             */
-            function createBar(data) { // eslint-disable-line no-inner-declarations
-                const $bar = document.createElement('div');
-                $bar.classList.add('bar', data.backgroundClass);
-                $bar.classList.toggle('active', data.active);
-                $bar.style.width = `${data.newBalance / totalBalance * 100}%`;
-                if (data.active && data.newBalance > data.oldBalance) {
-                    const $change = document.createElement('div');
-                    $change.classList.add('change');
-                    $change.style.width = `${(data.newBalance - data.oldBalance) / data.newBalance * 100}%`;
-                    $bar.appendChild($change);
-                }
-                return $bar;
-            }
-
-            const $bars = document.createDocumentFragment();
-            for (const data of nimDistributionData) {
-                $bars.appendChild(createBar(data));
-            }
-            const $separator = document.createElement('div');
-            $separator.classList.add('separator');
-            $bars.appendChild($separator);
-            $bars.appendChild(createBar(btcDistributionData));
-
-            $balanceBar.appendChild($bars);
+            new BalanceDistributionBar({ // eslint-disable-line no-new
+                nimiqAddresses: request.nimiqAddresses,
+                bitcoinAccount: request.bitcoinAccount,
+                swapNimAddress,
+                nimFiatRate: leftFiatRate,
+                btcFiatRate: rightFiatRate,
+                newNimBalance,
+                newBtcBalanceFiat,
+            }, $balanceDistributionBar);
         }
 
         // Set up password box.
@@ -454,7 +420,7 @@ class SignSwap {
 
         const btcKey = new BitcoinKey(key);
 
-        /** @type {{nim: string, btc: string[], btc_refund?: string}} */
+        /** @type {{nim: string, btc: string[], eur: string, btc_refund?: string}} */
         const privateKeys = {};
 
         if (request.fund.type === 'NIM') {
@@ -463,10 +429,12 @@ class SignSwap {
         }
 
         if (request.fund.type === 'BTC') {
-            const keyPairs = request.fund.inputs.map(input => btcKey.deriveKeyPair(input.keyPath));
-            const privKeys = keyPairs.map(keyPair => Nimiq.BufferUtils.toHex(
-                /** @type {Buffer} */ (keyPair.privateKey),
-            ));
+            const keyPaths = request.fund.inputs.map(input => input.keyPath);
+            const dedupedKeyPaths = keyPaths.filter(
+                (path, index) => keyPaths.indexOf(path) === index,
+            );
+            const keyPairs = dedupedKeyPaths.map(path => btcKey.deriveKeyPair(path));
+            const privKeys = keyPairs.map(keyPair => /** @type {Buffer} */ (keyPair.privateKey).toString('hex'));
             privateKeys.btc = privKeys;
 
             if (request.fund.changeOutput) {
@@ -492,7 +460,7 @@ class SignSwap {
         }
 
         if (request.fund.type === 'EUR') {
-            // No action required
+            // No signature required
         }
 
         if (request.redeem.type === 'NIM') {
@@ -502,9 +470,7 @@ class SignSwap {
 
         if (request.redeem.type === 'BTC') {
             const keyPairs = [btcKey.deriveKeyPair(request.redeem.input.keyPath)];
-            const privKeys = keyPairs.map(keyPair => Nimiq.BufferUtils.toHex(
-                /** @type {Buffer} */ (keyPair.privateKey),
-            ));
+            const privKeys = keyPairs.map(keyPair => /** @type {Buffer} */ (keyPair.privateKey).toString('hex'));
             privateKeys.btc = privKeys;
 
             // Calculate, validate and store output address
@@ -517,36 +483,33 @@ class SignSwap {
             request.redeem.output.address = address;
         }
 
-        // if (request.redeem.type === 'EUR') {
-        //     // Derive private key to sign settlement instructions and return its public key to Hub
-        // }
+        /** @type {string | undefined} */
+        let eurPubKey;
+
+        if (request.redeem.type === 'EUR') {
+            const privateKey = key.derivePrivateKey(request.redeem.keyPath);
+            privateKeys.eur = privateKey.toHex();
+
+            // Public key of EUR signing key is required as the contract recipient
+            // when confirming a swap to Fastspot from the Hub.
+            eurPubKey = Nimiq.PublicKey.derive(privateKey).toHex();
+        }
 
         try {
-            // Serialize request to store in SessionStorage
-            /** @type {any} */
-            const plainRequest = request;
-            if (request.fund.type === 'NIM') {
-                // Plainify Nimiq.Transaction
-                plainRequest.fund.transaction = request.fund.transaction.toPlain();
-            }
-            if (request.fund.type === 'BTC') {
-                // Plainify BTC input script buffers
-                for (let i = 0; i < request.fund.inputs.length; i++) {
-                    plainRequest.fund.inputs[i].witnessUtxo.script = Nimiq.BufferUtils.toHex(
-                        request.fund.inputs[i].witnessUtxo.script,
-                    );
-                }
-            }
-            if (request.redeem.type === 'NIM') {
-                // Plainify Nimiq.Transaction
-                plainRequest.redeem.transaction = request.redeem.transaction.toPlain();
-            }
-
             sessionStorage.setItem(
-                SignSwapApi.SESSION_STORAGE_KEY_PREFIX + request.swapId,
+                Constants.SWAP_IFRAME_SESSION_STORAGE_KEY_PREFIX + request.swapId,
                 JSON.stringify({
                     keys: privateKeys,
-                    request: plainRequest,
+                    // Serialize request to store in SessionStorage
+                    request,
+                }, (_, value) => {
+                    if (value instanceof Nimiq.Transaction) {
+                        return value.toPlain();
+                    }
+                    if (value instanceof Uint8Array) {
+                        return Nimiq.BufferUtils.toHex(value);
+                    }
+                    return value;
                 }),
             );
         } catch (error) {
@@ -554,7 +517,10 @@ class SignSwap {
             return;
         }
 
-        resolve({ success: true });
+        resolve({
+            success: true,
+            eurPubKey,
+        });
     }
 
     run() {

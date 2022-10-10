@@ -3,6 +3,7 @@
 /* global Nimiq */
 /* global SignSwap */
 /* global Errors */
+/* global Iban */
 
 class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) {
     /**
@@ -58,7 +59,11 @@ class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) {
                 type: 'BTC',
                 inputs: this.parseInputs(request.fund.inputs),
                 recipientOutput: {
-                    value: this.parsePositiveInteger(request.fund.recipientOutput.value),
+                    value: this.parsePositiveInteger(
+                        request.fund.recipientOutput.value,
+                        false,
+                        'fund.recipientOutput.value',
+                    ),
                 },
                 changeOutput: this.parseChangeOutput(request.fund.changeOutput, true, 'fund.changeOutput'),
                 locktime: request.fund.locktime !== undefined
@@ -110,6 +115,15 @@ class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) {
                 /** @type {KeyguardRequest.BitcoinTransactionChangeOutput} */
                 output: (this.parseChangeOutput(request.redeem.output, false, 'redeem.output')),
             };
+        } else if (request.redeem.type === 'EUR') {
+            parsedRequest.redeem = {
+                type: 'EUR',
+                keyPath: this.parsePath(request.redeem.keyPath, 'redeem.keyPath'),
+                settlement: this.parseOasisSettlementInstruction(request.redeem.settlement, 'redeem.settlement'),
+                amount: this.parsePositiveInteger(request.redeem.amount, false, 'redeem.amount'),
+                fee: this.parsePositiveInteger(request.redeem.fee, true, 'redeem.fee'),
+                bankLabel: this.parseLabel(request.redeem.bankLabel, true, 'redeem.bankLabel'),
+            };
         } else {
             throw new Errors.InvalidRequestError('Invalid redeeming type');
         }
@@ -120,10 +134,18 @@ class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) {
             this.parseNonNegativeFiniteNumber(request.fundingFiatRate, false, 'fundingFiatRate'));
         parsedRequest.redeemingFiatRate = /** @type {number} */ (
             this.parseNonNegativeFiniteNumber(request.redeemingFiatRate, false, 'redeemingFiatRate'));
-        parsedRequest.serviceFundingFee = /** @type {number} */ (
-            this.parsePositiveInteger(request.serviceFundingFee, true, 'serviceFundingFee'));
-        parsedRequest.serviceRedeemingFee = /** @type {number} */ (
-            this.parsePositiveInteger(request.serviceRedeemingFee, true, 'serviceRedeemingFee'));
+        parsedRequest.fundFees = {
+            processing: /** @type {number} */ (
+                this.parsePositiveInteger(request.fundFees.processing, true, 'fundFees.processing')),
+            redeeming: /** @type {number} */ (
+                this.parsePositiveInteger(request.fundFees.redeeming, true, 'fundFees.redeeming')),
+        };
+        parsedRequest.redeemFees = {
+            funding: /** @type {number} */ (
+                this.parsePositiveInteger(request.redeemFees.funding, true, 'redeemFees.funding')),
+            processing: /** @type {number} */ (
+                this.parsePositiveInteger(request.redeemFees.processing, true, 'redeemFees.processing')),
+        };
         parsedRequest.serviceSwapFee = /** @type {number} */ (
             this.parsePositiveInteger(request.serviceSwapFee, true, 'serviceSwapFee'));
 
@@ -151,10 +173,19 @@ class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) {
                 : parsedRequest.redeem.type === 'NIM'
                     ? parsedRequest.redeem.transaction.recipient.toUserFriendlyAddress()
                     : ''; // Should never happen, if parsing works correctly
-            if (!parsedRequest.nimiqAddresses.some(addressInfo => addressInfo.address === nimAddress)) {
+            const activeNimiqAddress = parsedRequest.nimiqAddresses
+                .find(addressInfo => addressInfo.address === nimAddress);
+            if (!activeNimiqAddress) {
                 throw new Errors.InvalidRequestError(
                     'The address details of the NIM address doing the swap must be provided',
                 );
+            } else if (
+                parsedRequest.fund.type === 'NIM'
+                && activeNimiqAddress.balance < (
+                    parsedRequest.fund.transaction.value + parsedRequest.fund.transaction.fee
+                )
+            ) {
+                throw new Errors.InvalidRequestError('The sending NIM address does not have enough balance');
             }
         }
 
@@ -177,8 +208,89 @@ class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) {
         return /** @type KeyguardRequest.SignSwapRequestLayout */ (layout);
     }
 
+    /**
+     * Checks that the given instruction is a valid OASIS SettlementInstruction
+     * @param {unknown} obj
+     * @param {string} parameterName
+     * @returns {Omit<KeyguardRequest.MockSettlementInstruction, 'contractId'> |
+     *           Omit<KeyguardRequest.SepaSettlementInstruction, 'contractId'>}
+     */
+    parseOasisSettlementInstruction(obj, parameterName) {
+        if (typeof obj !== 'object' || obj === null) {
+            throw new Errors.InvalidRequestError('Invalid settlement');
+        }
+
+        switch (/** @type {{type: unknown}} */ (obj).type) {
+            case 'mock': {
+                /** @type {Omit<KeyguardRequest.MockSettlementInstruction, 'contractId'>} */
+                const settlement = {
+                    type: 'mock',
+                };
+                return settlement;
+            }
+            case 'sepa': {
+                const recipient = /** @type {{recipient: unknown}} */ (obj).recipient;
+                if (typeof recipient !== 'object' || recipient === null) {
+                    throw new Errors.InvalidRequestError('Invalid settlement recipient');
+                }
+
+                /** @type {Omit<KeyguardRequest.SepaSettlementInstruction, 'contractId'>} */
+                const settlement = {
+                    type: 'sepa',
+                    recipient: {
+                        name: /** @type {string} */ (
+                            this.parseLabel(
+                                /** @type {{name: unknown}} */ (recipient).name,
+                                false,
+                                `${parameterName}.recipient.name`,
+                            )
+                        ),
+                        iban: this.parseIban(
+                            /** @type {{iban: unknown}} */ (recipient).iban,
+                            `${parameterName}.recipient.iban`,
+                        ),
+                        bic: this.parseBic(
+                            /** @type {{bic: unknown}} */ (recipient).bic,
+                            `${parameterName}.recipient.bic`,
+                        ),
+                    },
+                };
+                return settlement;
+            }
+            default: throw new Errors.InvalidRequestError('Invalid settlement type');
+        }
+    }
+
+    /**
+     * @param {unknown} iban
+     * @param {string} parameterName
+     * @returns {string}
+     */
+    parseIban(iban, parameterName) {
+        if (!Iban.isValid(iban)) {
+            throw new Errors.InvalidRequestError(`${parameterName} is not a valid IBAN`);
+        }
+        return Iban.printFormat(/** @type {string} */ (iban), ' ');
+    }
+
     get Handler() {
         return SignSwap;
+    }
+
+    /**
+     * @param {unknown} bic
+     * @param {string} parameterName
+     * @returns {string}
+     */
+    parseBic(bic, parameterName) {
+        if (typeof bic !== 'string') {
+            throw new Errors.InvalidRequestError(`${parameterName} must be a string`);
+        }
+        // Regex from https://github.com/jquery-validation/jquery-validation/blob/master/src/additional/bic.js
+        if (!/^([A-Z]{6}[A-Z2-9][A-NP-Z1-9])(X{3}|[A-WY-Z0-9][A-Z0-9]{2})?$/.test(bic)) {
+            throw new Errors.InvalidRequestError(`${parameterName} is not a valid BIC`);
+        }
+        return bic;
     }
 }
 
@@ -190,5 +302,3 @@ SignSwapApi.Layouts = {
     STANDARD: /** @type {'standard'} */ ('standard'),
     SLIDER: /** @type {'slider'} */ ('slider'),
 };
-
-SignSwapApi.SESSION_STORAGE_KEY_PREFIX = 'swap_id_';

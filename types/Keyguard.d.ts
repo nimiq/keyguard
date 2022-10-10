@@ -53,7 +53,7 @@ type ParsedBitcoinTransactionInput = {
     redeemScript?: Uint8Array,
     witnessScript?: Uint8Array,
     sequence?: number,
-    type: 'default' | 'htlc-redeem' | 'htlc-refund',
+    type: 'standard' | 'htlc-redeem' | 'htlc-refund',
     keyPath: string,
     address: string,
 };
@@ -124,6 +124,17 @@ type ConstructSwap<T extends KeyguardRequest.SignSwapRequestCommon> = Transform<
                 keyPath: string,
             },
             output: KeyguardRequest.BitcoinTransactionChangeOutput,
+        } | {
+            type: 'EUR',
+            keyPath: string,
+            // A SettlementInstruction contains a `type`, so cannot be in the
+            // root of the object (it conflicts with the 'EUR' type).
+            settlement: Omit<KeyguardRequest.MockSettlementInstruction, 'contractId'> | Omit<KeyguardRequest.SepaSettlementInstruction, 'contractId'>,
+            amount: number,
+            fee: number,
+            bankLabel?: string,
+            // bankLogoUrl?: string,
+            // bankColor?: string,
         },
     }>
 
@@ -220,6 +231,10 @@ type Parsed<T extends KeyguardRequest.Request> =
                     transactionHash: string,
                     outputIndex: number,
                     outputScript: Buffer,
+                } | {
+                    type: 'EUR',
+                    htlcDetails: EurHtlcContents,
+                    htlcId: string,
                 },
             }
         > :

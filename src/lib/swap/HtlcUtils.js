@@ -23,10 +23,6 @@ class HtlcUtils { // eslint-disable-line no-unused-vars
         const hashCount = buf.readUint8();
         const timeout = buf.readUint32();
 
-        if (!sender || !recipient || !hashRoot || !timeout) {
-            throw error;
-        }
-
         if (hashAlgorithm !== Nimiq.Hash.Algorithm.SHA256) throw error;
         if (hashCount !== 1) throw error;
 
@@ -65,6 +61,7 @@ class HtlcUtils { // eslint-disable-line no-unused-vars
         // Check hash
         if (asm[++i] !== 'OP_SHA256' || asm[i + 2] !== 'OP_EQUALVERIFY') throw error;
         const hash = asm[++i];
+        if (hash.length !== 64) throw error;
         ++i;
 
         // Check redeem address

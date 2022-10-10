@@ -24,6 +24,7 @@
     "recovery-words-validate": "Wörter überprüfen",
 
     "create-heading-choose-identicon": "Wähle einen Avatar",
+    "create-address-label": "Deine Adresse:",
     "create-confirm-address": "Auswählen und weiter",
     "create-heading-create-password": "Erstelle ein Passwort",
     "create-heading-repeat-password": "Bestätige dein Passwort",
@@ -33,7 +34,7 @@
     "create-heading-what-is-loginfile": "Was ist eine Login-Datei?",
     "create-login-file-explainer-intro": "Eine Bilddatei, die dir in Kombination mit deinem Passwort den Zugang zu deinem Account gewährt.",
     "create-login-file-paragraph-1": "Nimiq speichert deine Daten nicht. Die Login-Datei ersetzt die E-Mail als Möglichkeit, sich einzuloggen.",
-    "create-login-file-paragraph-2": "Die Login-Datei ist in deinem Browser gespeichert. Entsprerre sie mit deinem Passwort.",
+    "create-login-file-paragraph-2": "Die Login-Datei ist in deinem Browser gespeichert. Entsperre sie mit deinem Passwort.",
     "create-login-file-paragraph-3": "Du könntest versehentlich ausgeloggt werden. Lade die Login-Datei herunter und speichere sie sicher, um die Kontrolle zu behalten.",
     "create-login-file-return": "Verstanden",
 
@@ -42,6 +43,7 @@
     "import-login-to-continue": "Bitte logge dich neu ein, um fortzufahren.",
     "import-unlock-account": "Entsperre dein Konto",
     "import-create-account": "Erstelle ein neues Konto",
+    "import-qr-video-tooltip": "Scanne deine Login‑Datei mit der Kamera deines Geräts.",
 
     "import-file-button-words": "Mit Wiederherstellungswörtern einloggen",
 
@@ -55,6 +57,10 @@
     "file-import-prompt": "Zum Hochladen hierher ziehen oder klicken",
     "file-import-error-could-not-read": "Login-Datei nicht erkannt.",
     "file-import-error-invalid": "Ungültige Login‑Datei.",
+
+    "qr-video-scanner-cancel": "Abbrechen",
+    "qr-video-scanner-no-camera": "Dein Endgerät verfügt über keine verwendbare Kamera.",
+    "qr-video-scanner-enable-camera": "Erlaube den Zugriff auf deine Kamera, um QR-Codes zu scannen.",
 
     "sign-tx-heading-tx": "Transaktion bestätigen",
     "sign-tx-heading-checkout": "Zahlung bestätigen",
@@ -124,9 +130,8 @@
 
     "download-loginfile-download": "Herunterladen",
     "download-loginfile-successful": "Download erfolgreich?",
-    "download-loginfile-tap-and-hold": "Zum Herunterladen Bild gedrückt halten",
+    "download-loginfile-tap-and-hold": "Zum Herunterladen\nBild gedrückt halten",
     "download-loginfile-continue": "Weiter",
-    "download-loginfile-download-again": "Erneut herunterladen",
 
     "validate-words-text": "Bitte wähle das richtige Wort aus deiner Liste von Wiederherstellungswörtern aus.",
     "validate-words-1-hint": "Was ist das 1. Wort?",
@@ -209,7 +214,8 @@
     "login-file-color-green": "Grünes",
     "login-file-color-brown": "Braunes",
 
-    "login-file-filename": "Nimiq-Login-Datei-{color}-Konto.png",
+    "login-file-filename": "Nimiq-Login-Datei-{accountLabel}.png",
+    "login-file-default-account-label": "{color} Konto",
 
     "bitcoin": "Bitcoin",
     "bitcoin-recipient-unlabelled": "Unbeschriftet",
@@ -224,6 +230,8 @@
     "sign-swap-btc-fees-explainer": "Ein sicherer Tausch benötigt zwei BTC Transaktionen.",
     "sign-swap-oasis-fees": "OASIS Servicegebühr",
     "sign-swap-oasis-fees-explainer": "des Tauschwerts.",
+    "sign-swap-bank-fees": "Gebühr",
+    "sign-swap-bank-fees-explainer": "Bankennetzwerk-Gebühr.",
     "sign-swap-nim-fees": "NIM Netzwerkgebühr",
     "sign-swap-exchange-fee": "Tauschgebühr",
     "sign-swap-of-exchange-value": "des Tauschwerts.",

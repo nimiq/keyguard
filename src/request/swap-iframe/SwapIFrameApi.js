@@ -6,22 +6,25 @@
 /* global BitcoinUtils */
 /* global HtlcUtils */
 /* global Errors */
+/* global Constants */
+/* global Key */
+/* global OasisSettlementInstructionUtils */
 
-class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) {
+class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint-disable-line no-unused-vars
     /**
      * @param {RpcState?} state
      * @param {KeyguardRequest.SignSwapTransactionsRequest} request
      * @returns {Promise<KeyguardRequest.SignSwapTransactionsResult>}
      */
     async signSwapTransactions(state, request) {
-        const storageKey = SwapIFrameApi.SESSION_STORAGE_KEY_PREFIX + request.swapId;
+        const storageKey = Constants.SWAP_IFRAME_SESSION_STORAGE_KEY_PREFIX + request.swapId;
 
         const storedData = sessionStorage.getItem(storageKey);
         sessionStorage.removeItem(storageKey); // Delete storage
 
         if (!storedData) throw new Error('No swap stored in SessionStorage');
 
-        /** @type {{keys: {nim: string, btc: string[], btc_refund?: string}, request: any}} */
+        /** @type {{keys: {nim: string, btc: string[], eur: string, btc_refund?: string}, request: any}} */
         const { keys: privateKeys, request: storedRawRequest } = (JSON.parse(storedData));
 
         if (request.fund.type === 'NIM' || request.redeem.type === 'NIM') {
@@ -36,6 +39,11 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) {
             if (privateKeys.btc.some(key => key.length !== 64)) {
                 throw new Error('Invalid BTC key stored in SessionStorage');
             }
+        }
+
+        if (request.redeem.type === 'EUR') {
+            if (!privateKeys.eur) throw new Error('No EUR key stored in SessionStorage');
+            if (privateKeys.eur.length !== 64) throw new Error('Invalid EUR key stored in SessionStorage');
         }
 
         // Deserialize stored request
@@ -58,13 +66,42 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) {
         /** @type {Parsed<KeyguardRequest.SignSwapRequest>} */
         const storedRequest = storedRawRequest;
 
-        // Parse request
-        /** @type {Parsed<KeyguardRequest.SignSwapTransactionsRequest>} */
-        // @ts-ignore Missing the following properties: fund, redeem
-        const parsedRequest = {
-            swapId: request.swapId,
-        };
+        /** @type {{
+            type: 'NIM',
+            htlcDetails: NimHtlcContents,
+            htlcData: Uint8Array,
+        } | {
+            type: 'BTC',
+            htlcDetails: BtcHtlcContents,
+            htlcScript: Uint8Array,
+            htlcAddress: string,
+        } | {
+            type: 'EUR',
+            htlcDetails: EurHtlcContents,
+            htlcId: string,
+        } | undefined } */
+        let fund;
 
+        /** @type {{
+            type: 'NIM',
+            htlcDetails: NimHtlcContents,
+            htlcData: Uint8Array,
+            htlcAddress: string,
+        } | {
+            type: 'BTC',
+            htlcDetails: BtcHtlcContents,
+            htlcScript: Uint8Array,
+            transactionHash: string,
+            outputIndex: number,
+            outputScript: Buffer,
+        } | {
+            type: 'EUR',
+            htlcDetails: EurHtlcContents,
+            htlcId: string,
+        } | undefined } */
+        let redeem;
+
+        // Parse request
         if (storedRequest.fund.type !== request.fund.type || storedRequest.redeem.type !== request.redeem.type) {
             throw new Errors.InvalidRequestError('Different swap assets in iframe request than in top-level request');
         }
@@ -83,7 +120,7 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) {
                 );
             }
 
-            parsedRequest.fund = {
+            fund = {
                 type: 'NIM',
                 htlcDetails,
                 htlcData: request.fund.htlcData,
@@ -104,7 +141,7 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) {
                 );
             }
 
-            parsedRequest.redeem = {
+            redeem = {
                 type: 'NIM',
                 htlcDetails,
                 htlcData: request.redeem.htlcData,
@@ -132,7 +169,7 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) {
                 throw new Errors.InvalidRequestError('Cannot derive HTLC address from BTC HTLC script');
             }
 
-            parsedRequest.fund = {
+            fund = {
                 type: 'BTC',
                 htlcDetails,
                 htlcScript: request.fund.htlcScript,
@@ -157,7 +194,7 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) {
                 throw new Errors.InvalidRequestError('Cannot derive HTLC output script from BTC HTLC script');
             }
 
-            parsedRequest.redeem = {
+            redeem = {
                 type: 'BTC',
                 htlcDetails,
                 htlcScript: request.redeem.htlcScript,
@@ -168,7 +205,7 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) {
         }
 
         if (request.fund.type === 'EUR' && storedRequest.fund.type === 'EUR') {
-            parsedRequest.fund = {
+            fund = {
                 type: 'EUR',
                 htlcDetails: {
                     hash: Nimiq.BufferUtils.toHex(Nimiq.BufferUtils.fromAny(request.fund.hash)),
@@ -178,23 +215,45 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) {
             };
         }
 
-        // if (request.redeem.type === 'EUR' && storedRequest.redeem.type === 'EUR') {
-        //     parsedRequest.redeem = {
-        //         type: 'EUR',
-        //     };
-        // }
+        if (request.redeem.type === 'EUR' && storedRequest.redeem.type === 'EUR') {
+            redeem = {
+                type: 'EUR',
+                htlcDetails: {
+                    hash: Nimiq.BufferUtils.toHex(Nimiq.BufferUtils.fromAny(request.redeem.hash)),
+                    timeoutTimestamp: this.parsePositiveInteger(request.redeem.timeout, false, 'redeem.timeout'),
+                },
+                htlcId: /** @type {string} */ (this.parseLabel(request.redeem.htlcId, false, 'redeem.htlcId')),
+            };
+        }
+
+        if (!fund || !redeem) {
+            throw new Errors.InvalidRequestError('No funding or redeeming data');
+        }
+
+        /** @type {Parsed<KeyguardRequest.SignSwapTransactionsRequest>} */
+        const parsedRequest = {
+            swapId: request.swapId,
+            fund,
+            redeem,
+        };
 
         // Verify hash is the same across HTLCs
         if (parsedRequest.fund.htlcDetails.hash !== parsedRequest.redeem.htlcDetails.hash) {
             throw new Errors.InvalidRequestError('HTLC hashes do not match');
         }
 
-        // TODO: Validate timeouts of the two contracts
-        // Currently not possible because the NIM timeout is a block height, while the BTC timeout is a timestamp.
-        // And since we cannot trust the local device time to be accurate, and we don't have a reference for NIM blocks
-        // and their timestamps, we cannot compare the two.
-        // When it becomes possible to compare (with Nimiq 2.0 Albatross), the redeem HTLC must have a later timeout
-        // than the funding HTLC.
+        // Validate timeouts of the two contracts
+        // The redeem HTLC must have a later timeout than the funding HTLC.
+        if ('timeoutTimestamp' in fund.htlcDetails && 'timeoutTimestamp' in redeem.htlcDetails) {
+            const diff = redeem.htlcDetails.timeoutTimestamp - fund.htlcDetails.timeoutTimestamp;
+
+            // Validate that the difference is at least 15 minutes
+            if (diff < 15 * 60) {
+                throw new Errors.InvalidRequestError(
+                    'HTLC redeem timeout must be 15 min or more after the funding timeout',
+                );
+            }
+        }
 
         /** @type {KeyguardRequest.SignSwapTransactionsResult} */
         const result = {};
@@ -242,8 +301,7 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) {
                 const refundSignatureProof = Nimiq.SignatureProof.singleSig(publicKey, refundSignature);
 
                 const proof = new Nimiq.SerialBuffer(1 + Nimiq.SignatureProof.SINGLE_SIG_SIZE);
-                // FIXME: Use constant when HTLC is part of CoreJS web-offline build
-                proof.writeUint8(3 /* Nimiq.HashedTimeLockedContract.ProofType.TIMEOUT_RESOLVE */);
+                proof.writeUint8(Nimiq.HashedTimeLockedContract.ProofType.TIMEOUT_RESOLVE);
                 refundSignatureProof.serialize(proof);
                 refundTransaction.proof = proof;
 
@@ -269,6 +327,10 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) {
             // Add change output
             if (storedRequest.fund.changeOutput) {
                 // The address is set in SignSwap after password entry.
+                if (!storedRequest.fund.changeOutput.address) {
+                    throw new Errors.KeyguardError('Missing address in funding change output');
+                }
+
                 outputs.push(/** @type {{address: string, value: number}} */ (storedRequest.fund.changeOutput));
             }
 
@@ -437,6 +499,9 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) {
             }];
 
             // The address is set in SignSwap after password entry.
+            if (!storedRequest.redeem.output.address) {
+                throw new Errors.KeyguardError('Missing address in redeem output');
+            }
             const output = /** @type {{address: string, value: number}} */ (storedRequest.redeem.output);
 
             // Construct transaction
@@ -497,15 +562,27 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) {
             };
         }
 
-        // if (parsedRequest.redeem.type === 'EUR' && storedRequest.redeem.type === 'EUR') {
-        //     // TODO: Create and sign a JWS of the settlement instructions
-        //     const jws = ...
-        //
-        //     result.eur = jws;
-        // }
+        if (parsedRequest.redeem.type === 'EUR' && storedRequest.redeem.type === 'EUR') {
+            await loadNimiq();
+
+            // Create and sign a JWS of the settlement instructions
+            const privateKey = new Nimiq.PrivateKey(Nimiq.BufferUtils.fromHex(privateKeys.eur));
+            const key = new Key(privateKey);
+
+            /** @type {KeyguardRequest.SettlementInstruction} */
+            const settlement = {
+                ...storedRequest.redeem.settlement,
+                contractId: parsedRequest.redeem.htlcId,
+            };
+
+            if (settlement.type === 'sepa') {
+                // Remove spaces from IBAN
+                settlement.recipient.iban = settlement.recipient.iban.replace(/\s/g, '');
+            }
+
+            result.eur = OasisSettlementInstructionUtils.signSettlementInstruction(key, 'm', settlement);
+        }
 
         return result;
     }
 }
-
-SwapIFrameApi.SESSION_STORAGE_KEY_PREFIX = 'swap_id_';

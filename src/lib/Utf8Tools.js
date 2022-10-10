@@ -100,6 +100,7 @@ class Utf8Tools { // eslint-disable-line no-unused-vars
         let i = 0;
 
         while (i < bytes.length) {
+            const bytesLeft = bytes.length - i;
             const first = bytes[i]; // The byte
 
             const controlCharsWhitelist = [
@@ -114,14 +115,14 @@ class Utf8Tools { // eslint-disable-line no-unused-vars
                 else break;
             }
 
-            else if (first >= 0xC2 && first <= 0xDF) { // Possible two-byte
+            else if (first >= 0xC2 && first <= 0xDF && bytesLeft >= 2) { // Possible two-byte
                 const second = bytes[++i];
 
                 if (second >= 0x80 && second <= 0xBF) ++i; // Is valid two-byte
                 else break;
             }
 
-            else if (first === 0xE0) { // Possible three-byte
+            else if (first === 0xE0 && bytesLeft >= 3) { // Possible three-byte
                 const second = bytes[++i];
                 const third = bytes[++i];
 
@@ -130,7 +131,7 @@ class Utf8Tools { // eslint-disable-line no-unused-vars
                 else break;
             }
 
-            else if (first >= 0xE1 && first <= 0xEC) { // Possible three-byte
+            else if (first >= 0xE1 && first <= 0xEC && bytesLeft >= 3) { // Possible three-byte
                 const second = bytes[++i];
                 const third = bytes[++i];
 
@@ -139,7 +140,7 @@ class Utf8Tools { // eslint-disable-line no-unused-vars
                 else break;
             }
 
-            else if (first === 0xED) { // Possible three-byte
+            else if (first === 0xED && bytesLeft >= 3) { // Possible three-byte
                 const second = bytes[++i];
                 const third = bytes[++i];
 
@@ -148,7 +149,7 @@ class Utf8Tools { // eslint-disable-line no-unused-vars
                 else break;
             }
 
-            else if (first >= 0xEE && first <= 0xEF) { // Possible three-byte
+            else if (first >= 0xEE && first <= 0xEF && bytesLeft >= 3) { // Possible three-byte
                 const second = bytes[++i];
                 const third = bytes[++i];
 
@@ -157,7 +158,7 @@ class Utf8Tools { // eslint-disable-line no-unused-vars
                 else break;
             }
 
-            else if (first === 0xF0) { // Possible four-byte
+            else if (first === 0xF0 && bytesLeft >= 4) { // Possible four-byte
                 const second = bytes[++i];
                 const third = bytes[++i];
                 const fourth = bytes[++i];
@@ -168,7 +169,7 @@ class Utf8Tools { // eslint-disable-line no-unused-vars
                 else break;
             }
 
-            else if (first >= 0xF1 && first <= 0xF3) { // Possible four-byte
+            else if (first >= 0xF1 && first <= 0xF3 && bytesLeft >= 4) { // Possible four-byte
                 const second = bytes[++i];
                 const third = bytes[++i];
                 const fourth = bytes[++i];
@@ -179,7 +180,7 @@ class Utf8Tools { // eslint-disable-line no-unused-vars
                 else break;
             }
 
-            else if (first === 0xF4) { // Possible four-byte
+            else if (first === 0xF4 && bytesLeft >= 4) { // Possible four-byte
                 const second = bytes[++i];
                 const third = bytes[++i];
                 const fourth = bytes[++i];

@@ -24,6 +24,7 @@
     "recovery-words-validate": "Valider la sauvegarde",
 
     "create-heading-choose-identicon": "Choisissez un Avatar",
+    "create-address-label": "Your address:",
     "create-confirm-address": "Sélectionner et continuer",
     "create-heading-create-password": "Créez un Mot de Passe",
     "create-heading-repeat-password": "Confirmez le Mot de Passe",
@@ -42,6 +43,7 @@
     "import-login-to-continue": "Veuillez vous reconnecter pour continuer.",
     "import-unlock-account": "Déverrouiller votre Compte",
     "import-create-account": "Créer un nouveau compte",
+    "import-qr-video-tooltip": "Scannez votre Fichier de Connexion avec la caméra de votre appareil.",
 
     "import-file-button-words": "Se connecter avec les Mots de Récupération",
 
@@ -55,6 +57,10 @@
     "file-import-prompt": "Glissez-déposez ici ou cliquez pour importer",
     "file-import-error-could-not-read": "Impossible de lire le fichier de connexion.",
     "file-import-error-invalid": "Fichier de connexion invalide.",
+
+    "qr-video-scanner-cancel": "Annuler",
+    "qr-video-scanner-no-camera": "Votre appareil n'a pas de caméra accessible.",
+    "qr-video-scanner-enable-camera": "Débloquez la caméra pour ce site de façon à scanner les QR codes.",
 
     "sign-tx-heading-tx": "Confirmer la Transaction",
     "sign-tx-heading-checkout": "Vérifier le Paiement",
@@ -124,9 +130,8 @@
 
     "download-loginfile-download": "Télécharger",
     "download-loginfile-successful": "Téléchargement réussi ?",
-    "download-loginfile-tap-and-hold": "Appuyez et maintenez l'image pour la télécharger",
-    "download-loginfile-continue": "Continuez lorsque vous êtes prêt",
-    "download-loginfile-download-again": "Télécharger à nouveau",
+    "download-loginfile-tap-and-hold": "Appuyez et maintenez l'image\npour la télécharger",
+    "download-loginfile-continue": "Continuer",
 
     "validate-words-text": "Veuillez sélectionner le mot correct dans votre liste de mots de récupération.",
     "validate-words-1-hint": "Quel est le 1er mot ?",
@@ -165,7 +170,7 @@
     "export-file-success-save-file": "Enregistrer le Fichier de Connexion",
     "export-file-success-create-backup": "Créer sauvegarde",
     "export-file-success-heading": "Prenez 5 Minutes pour une Sauvegarde",
-    "export-file-success-words-intro": "Il n'y a pas d'option 'mot de passe oublié'. Notez 24 mots pour créer une sauvegarde sécurisée.",
+    "export-file-success-words-intro": "Il n'y a pas d'option 'mot de passe oublié'. Notez les 24 mots pour créer une sauvegarde sécurisée.",
     "export-words-intro-heading": "Il n'y a pas de Récupéra­tion de Mot de Passe !",
     "export-words-unlock-heading": "Déverrouillez votre Sauvegarde",
     "export-words-hint": "Faites défiler pour continuer",
@@ -209,7 +214,8 @@
     "login-file-color-green": "Vert",
     "login-file-color-brown": "Marron",
 
-    "login-file-filename": "Fichier-de-Connexion-Nimiq-Compte-{color}.png",
+    "login-file-filename": "Fichier-de-Connexion-Nimiq-{accountLabel}.png",
+    "login-file-default-account-label": "Compte {color}",
 
     "bitcoin": "Bitcoin",
     "bitcoin-recipient-unlabelled": "Non-libellé",
@@ -224,6 +230,8 @@
     "sign-swap-btc-fees-explainer": "Un swap atomique nécessite 2 transactions BTC.",
     "sign-swap-oasis-fees": "frais de service OASIS",
     "sign-swap-oasis-fees-explainer": "de la valeur du swap.",
+    "sign-swap-bank-fees": "frais",
+    "sign-swap-bank-fees-explainer": "Frais du réseau bancaire.",
     "sign-swap-nim-fees": "frais de réseau NIM",
     "sign-swap-exchange-fee": "Frais de swap",
     "sign-swap-of-exchange-value": "de la valeur du swap.",

@@ -24,6 +24,7 @@
     "recovery-words-validate": "Перевірити ключові слова",
 
     "create-heading-choose-identicon": "Виберіть адресу",
+    "create-address-label": "Your address:",
     "create-confirm-address": "Оберіть щоб продовжити",
     "create-heading-create-password": "Задайте пароль",
     "create-heading-repeat-password": "Підтвердьте пароль",
@@ -42,6 +43,7 @@
     "import-login-to-continue": "Будь ласка, увійдіть ще раз, щоб продовжити.",
     "import-unlock-account": "Розблокувати рахунок",
     "import-create-account": "Створити новий рахунок",
+    "import-qr-video-tooltip": "Відскануйте свій файл-ключ за допомогою камери вашого пристрою",
 
     "import-file-button-words": "Увійти за допомогою секретних слів",
 
@@ -55,6 +57,10 @@
     "file-import-prompt": "Перетягніть сюди або клацніть щоб завантажити",
     "file-import-error-could-not-read": "Неможливо прочитати файл-ключ.",
     "file-import-error-invalid": "Невірний файл-ключ.",
+
+    "qr-video-scanner-cancel": "Скасувати",
+    "qr-video-scanner-no-camera": "Ваш пристрій не має доступної камери.",
+    "qr-video-scanner-enable-camera": "Розблокуйте камеру для цього веб-сайту, щоб сканувати QR-коди.",
 
     "sign-tx-heading-tx": "Підтвердіть переказ",
     "sign-tx-heading-checkout": "Підтвердіть платіж",
@@ -122,11 +128,10 @@
     "identicon-selector-avatars-hint-2": "Адреси це наче реквізити в банку.",
     "identicon-selector-generate-new": "Нові адреси",
 
-    "download-loginfile-download": "Завантажити файл-ключ",
+    "download-loginfile-download": "Завантажити",
     "download-loginfile-successful": "Завантажено успішно?",
-    "download-loginfile-tap-and-hold": "Натисніть і утримуйте на малюнку щоб завантажити",
-    "download-loginfile-continue": "Продовжити коли готово",
-    "download-loginfile-download-again": "Завантажити знову",
+    "download-loginfile-tap-and-hold": "Натисніть і утримуйте на\nмалюнку щоб завантажити",
+    "download-loginfile-continue": "Продовжити",
 
     "validate-words-text": "Будь ласка, вкажіть слово з ваших секретних слів для доступу до рахунку.",
     "validate-words-1-hint": "Вкажіть слово №1",
@@ -209,7 +214,8 @@
     "login-file-color-green": "Зелений",
     "login-file-color-brown": "Коричневий",
 
-    "login-file-filename": "Файл-Ключ-Німік-{color}-Рахунок.png",
+    "login-file-filename": "Файл-Ключ-Німік-{accountLabel}.png",
+    "login-file-default-account-label": "{color} Рахунок",
 
     "bitcoin": "Біткоїн",
     "bitcoin-recipient-unlabelled": "Без назви",
@@ -224,6 +230,8 @@
     "sign-swap-btc-fees-explainer": "Атомарний обмін потребує двох транзакцій BTC.",
     "sign-swap-oasis-fees": "Комісія OASIS",
     "sign-swap-oasis-fees-explainer": "суми обміну.",
+    "sign-swap-bank-fees": "комісія",
+    "sign-swap-bank-fees-explainer": "Банківська комісія",
     "sign-swap-nim-fees": "Комісія NIM",
     "sign-swap-exchange-fee": "Комісія обміну",
     "sign-swap-of-exchange-value": "суми обміну.",

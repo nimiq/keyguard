@@ -5,8 +5,38 @@
 /* global LoginFile */
 /* global TemplateTags */
 /* global KeyStore */
+/* global Utf8Tools */
 
 class FileImporter extends Nimiq.Observable {
+    /**
+     * @param {string} str
+     * @returns {boolean}
+     */
+    static isLoginFileData(str) {
+        try {
+            // Make sure it is base64.
+            // This throws an atob() exception if data is not in base64 format.
+            // Skip prefix for PIN-encrypted Login Files.
+            /** @type {Uint8Array} */
+            const data = Nimiq.BufferUtils.fromBase64(str.substr(0, 2) === '#2' ? str.substr(2) : str);
+
+            // Make sure the data size is correct and that a potential label is correctly encoded.
+            return data.byteLength === KeyStore.ENCRYPTED_SECRET_SIZE // a secret without label
+                // or a secret with label
+                || (
+                    data.byteLength >= KeyStore.ENCRYPTED_SECRET_SIZE + /* label length field */ 1
+                    && data.byteLength === KeyStore.ENCRYPTED_SECRET_SIZE
+                        + /* label length field */ 1
+                        + /* label length */ data[KeyStore.ENCRYPTED_SECRET_SIZE]
+                    && Utf8Tools.isValidUtf8(data.subarray(KeyStore.ENCRYPTED_SECRET_SIZE + /* label length field */ 1))
+                )
+                // or a legacy secret
+                || data.byteLength === KeyStore.ENCRYPTED_SECRET_SIZE_V2;
+        } catch (e) {
+            return false;
+        }
+    }
+
     /**
      * @param {HTMLLabelElement} [$el]
      * @param {boolean} [displayFile = true]
@@ -96,18 +126,7 @@ class FileImporter extends Nimiq.Observable {
         }
 
         // Check that the found QR code encodes a Nimiq secret
-        try {
-            // Make sure it is base64
-            // This throws an atob() exception if decoded is not in base64 format
-            const bytes = Nimiq.BufferUtils.fromBase64(decoded.substr(0, 2) === '#2' ? decoded.substr(2) : decoded);
-
-            // Make sure the data size is correct
-            if (bytes.byteLength !== KeyStore.ENCRYPTED_SECRET_SIZE
-                && bytes.byteLength !== KeyStore.ENCRYPTED_SECRET_SIZE_V2) {
-                throw new Error('Invalid encrypted secret size');
-            }
-        } catch (error) {
-            console.error(error);
+        if (!FileImporter.isLoginFileData(decoded)) {
             AnimationUtils.animate('shake', this.$el);
             this.$errorMessage.textContent = I18n.translatePhrase('file-import-error-invalid');
             this.$errorMessage.dataset.i18n = 'file-import-error-invalid';
@@ -133,7 +152,7 @@ class FileImporter extends Nimiq.Observable {
     async _readQrCode(image) {
         try {
             const qrPosition = LoginFile.calculateQrPosition();
-            return await QrScanner.scanImage(image, qrPosition, null, null, true);
+            return await QrScanner.scanImage(image, qrPosition, undefined, undefined, true);
         } catch (e) {
             return null;
         }
