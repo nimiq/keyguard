@@ -24,7 +24,7 @@
     "recovery-words-validate": "Перевірити ключові слова",
 
     "create-heading-choose-identicon": "Виберіть адресу",
-    "create-address-label": "Your address:",
+    "create-address-label": "Ваша адреса:",
     "create-confirm-address": "Оберіть щоб продовжити",
     "create-heading-create-password": "Задайте пароль",
     "create-heading-repeat-password": "Підтвердьте пароль",
@@ -68,6 +68,11 @@
     "sign-tx-fee": "комісія",
     "sign-tx-cancel-payment": "Скасувати платіж",
 
+    "sign-multisig-tx-heading-tx": "Approve Multisig Transaction",
+    "sign-multisig-tx-approving-as": "Approving as",
+    "sign-multisig-tx-with": "with",
+    "sign-multisig-tx-approving-with": "Approving with",
+
     "sign-msg-heading": "Підписати повідомлення",
     "sign-msg-signer": "Підписант",
 
@@ -102,6 +107,7 @@
     "passwordbox-repeat-password-short": "Пароль занадто короткий",
     "passwordbox-password-skip": "Наразі пропустити",
     "passwordbox-reset-password": "Скинути за допомогою секретних слів",
+    "passwordbox-connect-account": "Connect your account",
 
     "payment-info-line-order-amount": "Сума замовлення",
     "payment-info-line-vendor-markup": "Націнка від постачальника",
@@ -236,5 +242,7 @@
     "sign-swap-exchange-fee": "Комісія обміну",
     "sign-swap-of-exchange-value": "суми обміну.",
     "sign-swap-total-fees": "Сумарна комісія",
-    "sign-swap-your-bank": "Ваш банк"
+    "sign-swap-your-bank": "Ваш банк",
+
+    "connect-heading-prefix": "Log in to"
 }

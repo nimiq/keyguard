@@ -24,7 +24,7 @@
     "recovery-words-validate": "Validar respaldo",
 
     "create-heading-choose-identicon": "Elija un Avatar",
-    "create-address-label": "Your address:",
+    "create-address-label": "Su dirección:",
     "create-confirm-address": "Seleccione y continue",
     "create-heading-create-password": "Cree una Contraseña",
     "create-heading-repeat-password": "Confirme su Contraseña",
@@ -68,6 +68,11 @@
     "sign-tx-fee": "cuota",
     "sign-tx-cancel-payment": "Cancelar pago",
 
+    "sign-multisig-tx-heading-tx": "Approve Multisig Transaction",
+    "sign-multisig-tx-approving-as": "Approving as",
+    "sign-multisig-tx-with": "with",
+    "sign-multisig-tx-approving-with": "Approving with",
+
     "sign-msg-heading": "Firmar Mensaje",
     "sign-msg-signer": "Firmador",
 
@@ -102,6 +107,7 @@
     "passwordbox-repeat-password-short": "La contraseña es muy corta",
     "passwordbox-password-skip": "Salar por ahora",
     "passwordbox-reset-password": "Reiniciar con Palabras de Recuperación",
+    "passwordbox-connect-account": "Connect your account",
 
     "payment-info-line-order-amount": "Monto de orden",
     "payment-info-line-vendor-markup": "Margen del vendedor en cripto",
@@ -236,5 +242,7 @@
     "sign-swap-exchange-fee": "Cuotas de intercambio",
     "sign-swap-of-exchange-value": "del valor del intercambio.",
     "sign-swap-total-fees": "Cuotas totales",
-    "sign-swap-your-bank": "Su banco"
+    "sign-swap-your-bank": "Su banco",
+
+    "connect-heading-prefix": "Log in to"
 }
