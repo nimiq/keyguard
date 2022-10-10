@@ -1,5 +1,5 @@
 {
-    "_language": "中文",
+    "_language": "英文",
 
     "language-changed": "显示语言已更改。你要重新加载页面以更新所有翻译吗？否则，某些翻译可能不会自动更新。",
 
@@ -24,7 +24,7 @@
     "recovery-words-validate": "验证备份",
 
     "create-heading-choose-identicon": "选择头像",
-    "create-address-label": "Your address:",
+    "create-address-label": "你的地址：",
     "create-confirm-address": "选择并继续",
     "create-heading-create-password": "设置密码",
     "create-heading-repeat-password": "确认你的密码",
