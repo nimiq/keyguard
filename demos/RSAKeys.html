@@ -49,7 +49,7 @@
 	<h1>RSA Keys</h1>
 
 	<p>
-		<label>Entropy:</label>
+		<label>Entropy: <button id="new-entropy">New</button></label>
 		<textarea id="entropy">cd52908f241166411ca945ea4254daea7cc63dd7f3044ea2f04d7685e31bd397</textarea>
 	</p>
 
@@ -68,7 +68,7 @@
 	</p>
 
 	<p>
-		<button id="button">Generate RSA Key</button>
+		<button id="generate">Generate RSA Key</button>
 	</p>
 
 	<p>
@@ -77,6 +77,8 @@
 	</p>
 
 	<script>
+		/** @type {HTMLButtonElement} */
+		const $newEntropy = document.querySelector('#new-entropy');
 		/** @type {HTMLTextAreaElement} */
 		const $entropy = document.querySelector('#entropy');
 		/** @type {HTMLSelectElement} */
@@ -84,7 +86,7 @@
 		/** @type {HTMLIFrameElement} */
 		const $iframe = document.querySelector('#iframe');
 		/** @type {HTMLButtonElement} */
-		const $button = document.querySelector('#button');
+		const $generate = document.querySelector('#generate');
 		/** @type {HTMLTextAreaElement} */
 		const $privateKey = document.querySelector('#private-key');
 		/** @type {HTMLTextAreaElement} */
@@ -93,28 +95,35 @@
 		let lastPrivatePEM = '';
 		let lastPublicPEM = '';
 
-		$button.addEventListener('click', () => {
-			$privateKey.value = '';
-			$publicKey.value = '';
-			$button.disabled = true;
-
-			const entropy = $entropy.value;
-			const keySize = parseInt($keysize.value);
-			const iframe = $iframe.contentWindow;
-
-			iframe.postMessage({ command: 'generateKey', entropy, keySize }, '*');
+		$newEntropy.addEventListener('click', () => {
+			$entropy.value = Nimiq.Entropy.generate().toHex();
 		});
 
-		/**
-		 * @param {string} pem
-		 * @returns {ArrayBuffer}
-		 */
-		function pemToArrayBuffer(pem) {
-			const lines = pem.split('\r\n').filter(Boolean);
-			// Cut off header and footer
-			const data = lines.slice(1, lines.length - 1).join('');
-			return Nimiq.BufferUtils.fromBase64(data).subarray();
-		}
+		$generate.addEventListener('click', async () => {
+			$privateKey.value = '';
+			$publicKey.value = '';
+			$generate.disabled = true;
+
+			try {
+				await Nimiq.WasmHelper.doImport();
+
+				// Extend 32-byte entropy into 1024-byte seed
+				const entropyBuffer = Nimiq.BufferUtils.fromHex($entropy.value);
+				const seed = Nimiq.BufferUtils.toAscii(Nimiq.CryptoUtils.computePBKDF2sha512(
+					entropyBuffer,
+					Nimiq.PublicKey.derive(Nimiq.PrivateKey.unserialize(entropyBuffer)).toAddress().serialize(),
+					1024, // Iterations
+					1024, // Output size
+				));
+				const keySize = parseInt($keysize.value);
+				const iframe = $iframe.contentWindow;
+
+				iframe.postMessage({ command: 'generateKey', seed, keySize }, '*');
+			} catch (error) {
+				alert(error.message);
+				$generate.disabled = false;
+			}
+		});
 
 		window.addEventListener('message', async (event) => {
 			if (event.source === event.target) {
@@ -168,7 +177,7 @@
 			lastPrivatePEM = privatePEM;
 			lastPublicPEM = publicPEM;
 
-			$button.disabled = false;
+			$generate.disabled = false;
 		});
 	</script>
 </body>
