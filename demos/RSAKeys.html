@@ -122,7 +122,7 @@
 				return;
 			}
 
-			/** @type {{privateKey: string, publicKey: string}} */
+			/** @type {{privateKey: ArrayBuffer, publicKey: ArrayBuffer}} */
 			const data = event.data;
             if (!('privateKey' in data) || !('publicKey' in data)) return;
 			console.log("MSG:", data);
@@ -130,7 +130,7 @@
 			const keyPair = {
 				privateKey: await window.crypto.subtle.importKey(
 					'pkcs8',
-					pemToArrayBuffer(data.privateKey),
+					data.privateKey,
 					{
 						name: 'RSA-OAEP',
 						hash: 'SHA-256',
@@ -140,7 +140,7 @@
 				),
 				publicKey: await window.crypto.subtle.importKey(
 					'spki',
-					pemToArrayBuffer(data.publicKey),
+					data.publicKey,
 					{
 						name: 'RSA-OAEP',
 						hash: 'SHA-256',
@@ -157,7 +157,7 @@
 			const publicB64 = Nimiq.BufferUtils.toBase64(new Nimiq.SerialBuffer(publicKeyExport));
 
 			const privatePEM = `-----BEGIN RSA PRIVATE KEY-----\n${privateB64}\n-----END RSA PRIVATE KEY-----`;
-			const publicPEM = `-----BEGIN RSA PUBLIC KEY-----\n${publicB64}\n-----END RSA PUBLIC KEY-----`;
+			const publicPEM = `-----BEGIN PUBLIC KEY-----\n${publicB64}\n-----END PUBLIC KEY-----`;
 
 			$privateKey.value = privatePEM;
 			$publicKey.value = publicPEM;
