@@ -31,4 +31,6 @@ const CONFIG = { // eslint-disable-line no-unused-vars
     BRIDGED_USDT_CONTRACT_ADDRESS: '0x1616d425Cd540B256475cBfb604586C8598eC0FB',
     BRIDGED_USDT_TRANSFER_CONTRACT_ADDRESS: '',
     BRIDGED_USDT_HTLC_CONTRACT_ADDRESS: '',
+
+    RSA_KEY_BITS: 2048, // Possible values are 1024 (fast, but unsafe), 2048 (good compromise), 4096 (slow, but safe)
 };
