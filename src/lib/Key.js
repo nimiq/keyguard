@@ -1,6 +1,12 @@
 /* global Constants */
 /* global Nimiq */
 /* global SignMessageConstants */
+/* global KeyStore */
+/* global CONFIG */
+
+/**
+ * @typedef {{hasPin?: boolean, rsaKeyPair?: RsaKeyPairExport}} KeyConfig
+ */
 
 class Key {
     /**
@@ -13,14 +19,16 @@ class Key {
 
     /**
      * @param {Nimiq.Entropy|Nimiq.PrivateKey} secret
-     * @param {boolean} [hasPin]
+     * @param {KeyConfig} [config]
      */
-    constructor(secret, hasPin = false) {
+    constructor(secret, config = {}) {
         this._secret = secret;
-        this._hasPin = hasPin;
+        this._hasPin = Boolean(config.hasPin);
         /** @type {string?} */
         this._id = null;
         this._defaultAddress = this.deriveAddress(Constants.DEFAULT_DERIVATION_PATH);
+
+        this.rsaKeyPair = config.rsaKeyPair;
     }
 
     /**

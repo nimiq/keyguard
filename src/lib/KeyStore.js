@@ -90,7 +90,10 @@ class KeyStore {
                 ? new Nimiq.PrivateKey(keyRecord.secret.subarray(4)) // The first 4 bytes are the purposeId
                 : new Nimiq.Entropy(keyRecord.secret.subarray(4));
 
-            return new Key(secret, keyRecord.hasPin);
+            return new Key(secret, {
+                hasPin: keyRecord.hasPin,
+                rsaKeyPair: keyRecord.rsaKeyPair,
+            });
         }
 
         if (!password) {
@@ -98,7 +101,10 @@ class KeyStore {
         }
 
         const secret = await Nimiq.Secret.fromEncrypted(new Nimiq.SerialBuffer(keyRecord.secret), password);
-        return new Key(secret, keyRecord.hasPin);
+        return new Key(secret, {
+            hasPin: keyRecord.hasPin,
+            rsaKeyPair: keyRecord.rsaKeyPair,
+        });
     }
 
     /**
@@ -147,12 +153,14 @@ class KeyStore {
             key.secret.serialize(buffer);
         }
 
-        const keyRecord = /** @type {KeyRecord} */ {
+        /** @type {KeyRecord} */
+        const keyRecord = {
             id: key.id,
             type: key.type,
             hasPin: key.hasPin,
             secret: buffer.subarray(0, buffer.byteLength),
             defaultAddress: key.defaultAddress.serialize(),
+            rsaKeyPair: key.rsaKeyPair,
         };
 
         return this.putPlain(keyRecord);
