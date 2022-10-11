@@ -124,6 +124,108 @@ class Key {
     }
 
     /**
+     * @returns {Promise<CryptoKey>}
+     */
+    async getRsaPrivateKey() {
+        if (!this.rsaKeyPair) {
+            this.rsaKeyPair = await this._computeRsaKeyPair();
+            await KeyStore.instance.addRsaKeypair(this.id, this.rsaKeyPair);
+        }
+
+        return window.crypto.subtle.importKey(
+            'pkcs8',
+            this.rsaKeyPair.privateKey,
+            { name: 'RSA-OAEP', hash: 'SHA-256' },
+            false, // Prevent extraction
+            ['decrypt'],
+        );
+    }
+
+    // /**
+    //  * @returns {Promise<CryptoKey>}
+    //  */
+    // async getRsaPublicKey() {
+    //     if (!this.rsaKeyPair) {
+    //         this.rsaKeyPair = await this._computeRsaKeyPair();
+    //         await KeyStore.instance.addRsaKeypair(this.id, this.rsaKeyPair);
+    //     }
+
+    //     return window.crypto.subtle.importKey(
+    //         'spki',
+    //         this.rsaKeyPair.publicKey,
+    //         { name: 'RSA-OAEP', hash: 'SHA-256' },
+    //         true, // Allow extraction
+    //         ['encrypt'],
+    //     );
+    // }
+
+    /**
+     * @returns {Promise<RsaKeyPairExport>}
+     */
+    async _computeRsaKeyPair() {
+        const iframe = document.createElement('iframe');
+        iframe.classList.add('rsa-sandboxed-iframe'); // Styles in common.css hide this class
+        iframe.setAttribute('sandbox', 'allow-scripts');
+        iframe.src = '../../lib/rsa/sandboxed/RSAKeysIframe.html'; // Relative path from a request URL
+        /** @type {Promise<void>} */
+        const loadPromise = new Promise(resolve => iframe.addEventListener('load', () => resolve()));
+        document.body.appendChild(iframe);
+        await loadPromise;
+
+        if (!iframe.contentWindow) {
+            throw new Error('Could not load sandboxed RSA iframe');
+        }
+
+        // Extend 32-byte secret into 1024-byte seed as bytestring
+        const seed = Nimiq.CryptoUtils.computePBKDF2sha512(
+            this.secret.serialize(),
+            this._defaultAddress.serialize(),
+            1024, // Iterations
+            1024, // Output size (required)
+        );
+
+        // Send computation command to iframe
+        iframe.contentWindow.postMessage({
+            command: 'generateKey',
+            seed: Nimiq.BufferUtils.toAscii(seed), // seed is a bytestring
+            keySize: CONFIG.RSA_KEY_BITS,
+        }, '*');
+
+        /** @type {(keyPair: RsaKeyPairExport) => void} */
+        let resolver;
+        /** @type {Promise<RsaKeyPairExport>} */
+        const resultPromise = new Promise(resolve => {
+            resolver = resolve;
+        });
+
+        /**
+         * @param {MessageEvent} event
+         */
+        function onMessage(event) {
+            if (event.source === event.target) {
+                // console.log("Ignored same-window event:", event);
+                return;
+            }
+
+            /** @type {{privateKey: ArrayBuffer, publicKey: ArrayBuffer}} */
+            const data = event.data;
+            if (!('privateKey' in data) || !('publicKey' in data)) return;
+
+            window.removeEventListener('message', onMessage);
+
+            resolver({
+                privateKey: new Uint8Array(data.privateKey),
+                publicKey: new Uint8Array(data.publicKey),
+            });
+        }
+
+        // Listen for result from iframe
+        window.addEventListener('message', onMessage);
+
+        return resultPromise;
+    }
+
+    /**
      * @type {string}
      */
     get id() {

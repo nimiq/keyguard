@@ -3,13 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>RSA Keys Iframe | Keyguard Demo</title>
-    <!-- <script src="../../node_modules/@nimiq/core-web/web-offline.js"></script> -->
-    <script src="../../src/lib/Constants.js"></script>
-    <!-- <script src="../../src/lib/Key.js"></script> -->
-    <script src="../../src/lib/KeyStore.js"></script>
-    <script src="../../src/lib/KeyInfo.js"></script>
-    <!-- <script src="../../node_modules/@nimiq/rpc/dist/rpc.umd.js"></script> -->
-    <script src="./node-forge/forge.min.js"></script>
+    <script src="./forge.min.js"></script>
 
     <style>
         .hidden {
@@ -40,7 +34,7 @@
             /** @type {Command} */
 			const data = event.data;
             if (!('command' in data) || data.command !== 'generateKey') return;
-			console.log("Iframe MSG:", data);
+			console.debug("Iframe MSG:", data);
 
             $loading.classList.remove('hidden', false);
             await new Promise((res) => window.setTimeout(res, 20)); // Give DOM time to update
@@ -48,7 +42,7 @@
             // PRNG-seeded RSA key generation
             const prng = forge.random.createInstance();
             prng.seedFileSync = (needed) => {
-                console.log('Need', needed, 'bytes of randomness, have', data.seed.length);
+                // console.log('Need', needed, 'bytes of randomness, have', data.seed.length);
                 let seed = '';
                 while (seed.length < needed) {
                     seed += data.seed;
