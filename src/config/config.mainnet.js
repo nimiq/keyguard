@@ -11,4 +11,6 @@ const CONFIG = { // eslint-disable-line no-unused-vars
     USDC_CONTRACT_ADDRESS: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
     USDC_TRANSFER_CONTRACT_ADDRESS: '0x98E69a6927747339d5E543586FC0262112eBe4BD',
     USDC_HTLC_CONTRACT_ADDRESS: '0xF615bD7EA00C4Cc7F39Faad0895dB5f40891359f',
+
+    RSA_KEY_BITS: 2048, // Possible values are 1024 (fast, but unsafe), 2048 (good compromise), 4096 (slow, but safe)
 };
