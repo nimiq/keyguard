@@ -3,6 +3,7 @@
 /* global SignMultisigTransaction */
 /* global MultisigUtils */
 /* global Errors */
+/* global CONFIG */
 
 /** @extends {TopLevelApi<KeyguardRequest.SignMultisigTransactionRequest>} */
 class SignMultisigTransactionApi extends TopLevelApi {
@@ -114,12 +115,48 @@ class SignMultisigTransactionApi extends TopLevelApi {
             throw new Errors.InvalidRequestError(`Invalid signer public keys: ${error.message}`);
         }
 
-        /** @type {Nimiq.RandomSecret} */
+        /** @type {MultisigConfig['secret']} */
         let secret;
-        try {
-            secret = new Nimiq.RandomSecret(object.secret);
-        } catch (error) {
-            throw new Errors.InvalidRequestError(`Invalid secret: ${error.message}`);
+        if (typeof object.secret !== 'object') {
+            throw new Errors.InvalidRequestError('Invalid secret: must be an object');
+        }
+        if ('aggregatedSecret' in object.secret) {
+            try {
+                secret = {
+                    aggregatedSecret: new Nimiq.RandomSecret(object.secret.aggregatedSecret),
+                };
+            } catch (error) {
+                throw new Errors.InvalidRequestError(`Invalid secret: ${error.message}`);
+            }
+        } else if ('encryptedSecrets' in object.secret && 'bScalar' in object.secret) {
+            // Not checking fixed length here, to stay flexible for future increases of the number of commitments
+            if (!Array.isArray(object.secret.encryptedSecrets) || object.secret.encryptedSecrets.length < 2) {
+                throw new Errors.InvalidRequestError(
+                    'Invalid secret.encryptedSecrets: must be an array with at least 2 elements',
+                );
+            }
+            const rsaCipherLength = CONFIG.RSA_KEY_BITS / 8;
+            if (object.secret.encryptedSecrets.some(
+                /**
+                 * @param {unknown} array
+                 * @returns {boolean}
+                 */
+                array => !(array instanceof Uint8Array)
+                || array.length !== rsaCipherLength,
+            )) {
+                throw new Errors.InvalidRequestError(
+                    `Invalid secret.encryptedSecrets: must be an array of Uint8Array(${rsaCipherLength})`,
+                );
+            }
+            if (!(object.secret.bScalar instanceof Uint8Array) || object.secret.bScalar.length !== 32) {
+                throw new Errors.InvalidRequestError('Invalid secret.bScalar: must be an Uint8Array(32)');
+            }
+            secret = {
+                encryptedSecrets: object.secret.encryptedSecrets,
+                bScalar: object.secret.bScalar,
+            };
+        } else {
+            throw new Errors.InvalidRequestError('Invalid secret format');
         }
 
         /** @type {Nimiq.RandomSecret} */

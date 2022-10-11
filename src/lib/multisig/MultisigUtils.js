@@ -22,4 +22,13 @@ class MultisigUtils { // eslint-disable-line no-unused-vars
         const merkleRoot = Nimiq.MerkleTree.computeRoot(multiSigKeys);
         return Nimiq.Address.fromHash(merkleRoot);
     }
+
+    /**
+     * @param {Uint8Array[]} secrets
+     * @param {Uint8Array} bScalar
+     * @returns {Promise<Nimiq.RandomSecret>}
+     */
+    static async aggregateSecrets(secrets, bScalar) { // eslint-disable-line no-unused-vars
+        throw new Error('NOT IMPLEMENTED!');
+    }
 }

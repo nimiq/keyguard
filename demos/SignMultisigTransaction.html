@@ -184,7 +184,9 @@
             publicKeys: publicKeys.map(key => key.serialize()),
             numberOfSigners,
             signerPublicKeys: publicKeys.slice(0, numberOfSigners).map(key => key.serialize()),
-            secret: Nimiq.PrivateKey.generate().serialize(), // Using random data
+            secret: {
+                aggregatedSecret: Nimiq.PrivateKey.generate().serialize(), // Using random data
+            },
             aggregatedCommitment: Nimiq.PrivateKey.generate().serialize(), // Using random data
             userName,
         };

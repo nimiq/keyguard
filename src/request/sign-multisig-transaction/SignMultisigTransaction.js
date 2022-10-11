@@ -13,6 +13,7 @@
 /* global I18n */
 /* global LoginFileConfig */
 /* global IqonHash */
+/* global MultisigUtils */
 
 /**
  * @callback SignMultisigTransaction.resolve
@@ -234,11 +235,27 @@ class SignMultisigTransaction {
             return;
         }
 
+        /** @type {Nimiq.RandomSecret} */
+        let aggregatedSecret;
+        if ('aggregatedSecret' in request.multisig.secret) {
+            aggregatedSecret = request.multisig.secret.aggregatedSecret;
+        } else {
+            // If we only have encrypted secrets, decrypt them and aggregate them with the bScalar
+            const rsaKey = await key.getRsaPrivateKey();
+            const secrets = await Promise.all(request.multisig.secret.encryptedSecrets.map(
+                async encrypted => new Uint8Array(
+                    await window.crypto.subtle.decrypt({ name: 'RSA-OAEP' }, rsaKey, encrypted),
+                ),
+            ));
+
+            aggregatedSecret = await MultisigUtils.aggregateSecrets(secrets, request.multisig.secret.bScalar);
+        }
+
         const signature = key.signPartially(
             request.keyPath,
             request.transaction.serializeContent(),
             request.multisig.signerPublicKeys,
-            request.multisig.secret,
+            aggregatedSecret,
             request.multisig.aggregatedCommitment,
         );
 
