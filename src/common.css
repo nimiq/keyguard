@@ -466,6 +466,13 @@ body.loading .page:target .page-footer > .loading-spinner {
     margin-bottom: 1rem;
 }
 
+.rsa-sandboxed-iframe {
+    width: 0;
+    height: 0;
+    opacity: 0;
+    border: none;
+}
+
 /* Mobile Layout */
 
 @media (max-width: 450px) {
