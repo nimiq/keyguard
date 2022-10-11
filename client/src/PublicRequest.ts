@@ -194,7 +194,12 @@ export type MultisigInfo = {
     publicKeys: Uint8Array[],
     numberOfSigners: number,
     signerPublicKeys: Uint8Array[],
-    secret: Uint8Array,
+    secret: {
+        aggregatedSecret: Uint8Array,
+    } | {
+        encryptedSecrets: Uint8Array[],
+        bScalar: Uint8Array,
+    },
     aggregatedCommitment: Uint8Array,
     userName?: string,
 };
