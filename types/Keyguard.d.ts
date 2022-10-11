@@ -35,12 +35,18 @@ type AccountRecord = AccountInfo & {
     encryptedKeyPair: Uint8Array
 }
 
+type RsaKeyPairExport = {
+    privateKey: Uint8Array
+    publicKey: Uint8Array
+}
+
 type KeyRecord = {
     id: string
     type: Nimiq.Secret.Type
     hasPin: boolean
     secret: Uint8Array
     defaultAddress: Uint8Array
+    rsaKeyPair?: RsaKeyPairExport
 }
 
 type MultisigConfig = {

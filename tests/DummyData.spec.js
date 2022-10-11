@@ -143,7 +143,7 @@ const deprecatedAccount2KeyInfos = () => {
 };
 
 const deprecatedAccount2Keys = () => [
-    new Key(secrets[1], false)
+    new Key(secrets[1], { hasPin: false })
 ];
 
 const keyInfoCookieEncoded = '2071U/NKd5KzeimvyflGLYku6JfI9Mms2wGxWoCLmx9+0=,10LsYVUikGJA5z8p37+LqkH3EZ5opDz2zQRT1r8cGJ8dE=';
