@@ -53,7 +53,12 @@ type MultisigConfig = {
     publicKeys: Nimiq.PublicKey[]
     numberOfSigners: number
     signerPublicKeys: Nimiq.PublicKey[]
-    secret: Nimiq.RandomSecret
+    secret: {
+        aggregatedSecret: Nimiq.RandomSecret
+    } | {
+        encryptedSecrets: Uint8Array[]
+        bScalar: Uint8Array
+    }
     aggregatedCommitment: Nimiq.Commitment
     userName?: string
 }
