@@ -182,7 +182,12 @@
     width: 2rem;
     height: 3.5rem;
     border-radius: 0.25rem;
-    margin: 0 0.25rem;
+    margin: 0 0.5rem;
+}
+
+#confirm-transaction .user-and-account-names .login-file-icon.identicon {
+    width: 3rem;
+    margin: 0;
 }
 
 #confirm-transaction .user-and-account-names .login-file-icon img {

@@ -155,7 +155,11 @@
         const id = await KeyStore.instance.put(key, password);
 
         const path = "m/0'/0'";
-        const myPublicKey = Nimiq.PublicKey.derive(secret.toExtendedPrivateKey().derivePath(path).privateKey);
+        const myPublicKey = Nimiq.PublicKey.derive(
+            secret instanceof Nimiq.Entropy
+                ? secret.toExtendedPrivateKey().derivePath(path).privateKey
+                : secret,
+        );
 
         const publicKeys = new Array(numberOfKeys - 1).fill(0).map(() => Nimiq.PublicKey.derive(Nimiq.PrivateKey.generate()));
         publicKeys.push(myPublicKey);
