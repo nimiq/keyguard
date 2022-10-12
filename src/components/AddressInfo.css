@@ -48,12 +48,16 @@
     padding: 0.375rem 0.75rem;
     line-height: 1;
     border: 0.5rem solid white;
-    letter-spacing: 0.07em; // 1px / 14px
+    word-spacing: -0.071428571em; // 1/14
 }
 
 .address-info.detailed-view .identicon .multisig-badge {
     transform: scale(1.5);
     transform-origin: 100% 100%;
+}
+
+.address-info .identicon .multisig-badge .of {
+    opacity: 0.6;
 }
 
 .address-info:not(.detailed-view) .label {
