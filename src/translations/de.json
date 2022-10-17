@@ -107,6 +107,7 @@
     "passwordbox-repeat-password-short": "Das Passwort ist zu kurz",
     "passwordbox-password-skip": "Erstmal überspringen",
     "passwordbox-reset-password": "Mit Wiederherstellungswörtern zurücksetzen",
+    "passwordbox-connect-account": "Connect your account",
 
     "payment-info-line-order-amount": "Kaufbetrag",
     "payment-info-line-vendor-markup": "Krypto-Aufschlag des Verkäufers",
@@ -241,5 +242,7 @@
     "sign-swap-exchange-fee": "Tauschgebühr",
     "sign-swap-of-exchange-value": "des Tauschwerts.",
     "sign-swap-total-fees": "Gebühren gesamt",
-    "sign-swap-your-bank": "Deine Bank"
+    "sign-swap-your-bank": "Deine Bank",
+
+    "connect-heading-prefix": "Log in to"
 }

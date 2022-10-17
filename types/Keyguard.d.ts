@@ -187,6 +187,12 @@ type Parsed<T extends KeyguardRequest.Request> =
             'signer' | 'message',
             { signer: Nimiq.Address, message: Uint8Array | string }
         > :
+    T extends Is<T, KeyguardRequest.ConnectRequest> ?
+        Transform<
+            KeyId2KeyInfo<KeyguardRequest.ConnectRequest>,
+            'appLogoUrl',
+            { appLogoUrl: URL }
+        > :
     T extends Is<T, KeyguardRequest.SimpleRequest>
         | Is<T, KeyguardRequest.DeriveAddressRequest>
         | Is<T, KeyguardRequest.DeriveBtcXPubRequest>

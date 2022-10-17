@@ -107,6 +107,7 @@
     "passwordbox-repeat-password-short": "Пароль слишком короткий",
     "passwordbox-password-skip": "Пока отложить",
     "passwordbox-reset-password": "Сбросить, используя Защитную Фразу",
+    "passwordbox-connect-account": "Connect your account",
 
     "payment-info-line-order-amount": "Сумма заказа",
     "payment-info-line-vendor-markup": "Маркап вендора криптовалюты",
@@ -241,5 +242,7 @@
     "sign-swap-exchange-fee": "Комиссия",
     "sign-swap-of-exchange-value": "от суммы обмена.",
     "sign-swap-total-fees": "Итого",
-    "sign-swap-your-bank": "Ваш банк"
+    "sign-swap-your-bank": "Ваш банк",
+
+    "connect-heading-prefix": "Log in to"
 }
