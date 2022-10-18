@@ -1,8 +1,7 @@
 /* global Nimiq */
 /* global Key */
 /* global KeyStore */
-/* global IqonHash */
-/* global LoginFileConfig */
+/* global LoginFileAccountIcon */
 /* global Identicon */
 /* global PasswordBox */
 /* global Utf8Tools */
@@ -35,15 +34,12 @@ class Connect {
         $appIcon.alt = `${request.appName} logo`;
 
         /** @type {HTMLDivElement} */
-        const $loginFileIcon = ($page.querySelector('.login-file-icon'));
+        const $loginFileIcon = ($page.querySelector('.login-file-account-icon'));
         if (request.keyInfo.type === Nimiq.Secret.Type.ENTROPY) {
-            const bgColorClassName = LoginFileConfig[
-                IqonHash.getBackgroundColorIndex(request.keyInfo.defaultAddress.toUserFriendlyAddress())
-            ].className;
-            $loginFileIcon.classList.add(bgColorClassName);
+            // eslint-disable-next-line no-new
+            new LoginFileAccountIcon(request.keyInfo.defaultAddress.toUserFriendlyAddress(), $loginFileIcon);
         } else {
             // Show identicon for legacy accounts (which must be supported to support Team Nimiq Multisig)
-            $loginFileIcon.innerHTML = ''; // Remove LoginFile icon
             // eslint-disable-next-line no-new
             new Identicon(request.keyInfo.defaultAddress.toUserFriendlyAddress(), $loginFileIcon);
         }
