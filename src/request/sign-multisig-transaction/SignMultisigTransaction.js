@@ -11,9 +11,8 @@
 /* global Constants */
 /* global NumberFormatting */
 /* global I18n */
-/* global LoginFileConfig */
-/* global IqonHash */
 /* global MultisigUtils */
+/* global LoginFileAccountIcon */
 /* global Identicon */
 
 /**
@@ -154,12 +153,10 @@ class SignMultisigTransaction {
 
         // Set up account icon
         /** @type {HTMLDivElement} */
-        const $loginFileIcon = ($nameSection.querySelector('.login-file-icon'));
+        const $loginFileIcon = ($nameSection.querySelector('.login-file-account-icon'));
         if (request.keyInfo.type === Nimiq.Secret.Type.ENTROPY) {
-            const bgColorClassName = LoginFileConfig[
-                IqonHash.getBackgroundColorIndex(request.keyInfo.defaultAddress.toUserFriendlyAddress())
-            ].className;
-            $loginFileIcon.classList.add(bgColorClassName);
+            // eslint-disable-next-line no-new
+            new LoginFileAccountIcon(request.keyInfo.defaultAddress.toUserFriendlyAddress(), $loginFileIcon);
         } else {
             // Show identicon for legacy accounts (which must be supported to support Team Nimiq Multisig)
             $loginFileIcon.innerHTML = ''; // Remove LoginFile icon

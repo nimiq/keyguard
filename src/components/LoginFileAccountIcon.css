@@ -1,0 +1,10 @@
+.login-file-account-icon {
+    width: 6.25rem;
+    height: 10rem;
+    border-radius: 0.625rem;
+}
+
+.login-file-account-icon img {
+    width: 100%;
+    height: 100%;
+}
