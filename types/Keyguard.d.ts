@@ -226,11 +226,9 @@ type ConstructTransaction<T extends KeyguardRequest.TransactionInfo> = Transform
     'value' | 'fee' | 'validityStartHeight' | 'flags',
     { transaction: Nimiq.Transaction }>
 
-type ConstructMultisigTransaction<T extends KeyguardRequest.TransactionInfo & KeyguardRequest.MultisigInfo>
-    = ConstructTransaction<Transform<T,
-        'publicKeys' | 'numberOfSigners' | 'signerPublicKeys' | 'secret' | 'aggregatedCommitment',
-        { multisig: MultisigConfig }>
-    >;
+type ConstructMultisigTransaction<T extends KeyguardRequest.TransactionInfo & {
+    multisigConfig: KeyguardRequest.MultisigConfig,
+}> = ConstructTransaction<Transform<T, 'multisigConfig', { multisigConfig: MultisigConfig }>>;
 
 type ConstructSwap<T extends KeyguardRequest.SignSwapRequestCommon> = Transform<T,
     'fund' | 'redeem', {
