@@ -176,7 +176,7 @@ export type SignTransactionRequest
     | SignTransactionRequestCheckout
     | SignTransactionRequestCashlink;
 
-export type MultisigInfo = {
+export type MultisigConfig = {
     publicKeys: Uint8Array[],
     numberOfSigners: number,
     signerPublicKeys: Uint8Array[],
@@ -190,9 +190,12 @@ export type MultisigInfo = {
     userName?: string,
 };
 
-export type SignMultisigTransactionRequestCommon = Transform<SignTransactionRequestCommon, 'keyLabel', {
-    keyLabel: string,
-}> & MultisigInfo;
+export type SignMultisigTransactionRequestCommon = Transform<SignTransactionRequestCommon, 'keyLabel' | 'senderLabel', {
+    keyLabel: string, // Not optional
+    senderLabel: string, // Not optional
+}> & {
+    multisigConfig: MultisigConfig,
+};
 
 export type SignMultisigTransactionRequestStandard = SignMultisigTransactionRequestCommon & {
     layout?: 'standard',

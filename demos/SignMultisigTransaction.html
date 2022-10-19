@@ -62,7 +62,7 @@
 
     <div class="row">
         <label>Multisig Config</label>
-        <input id="signers" value="2" min="1" step="1" type="number" style="width: 75px">
+        <input id="signers" value="2" min="1" step="1" type="number" style="width: 75px"> of
         <input id="participants" value="3" min="2" step="1" type="number" style="width: 75px">
     </div>
 
@@ -176,7 +176,7 @@
 
             // Transaction information
             sender: MultisigUtils.calculateAddress(publicKeys, numberOfSigners).serialize(),
-            senderLabel: 'Multisig Account',
+            senderLabel: 'Our Multisig Wallet',
             recipient: Nimiq.Address.fromUserFriendlyAddress('NQ82 HP54 C9D4 2FAG 69QD 6Q71 LURR 5187 0V3X').serialize(),
             recipientLabel: 'Best Friend',
             value: txAmount,
@@ -184,15 +184,16 @@
             data: Nimiq.BufferUtils.fromUtf8(txData),
             validityStartHeight: 0,
 
-            // Multisig Config
-            publicKeys: publicKeys.map(key => key.serialize()),
-            numberOfSigners,
-            signerPublicKeys: publicKeys.slice(0, numberOfSigners).map(key => key.serialize()),
-            secret: {
-                aggregatedSecret: Nimiq.PrivateKey.generate().serialize(), // Using random data
-            },
-            aggregatedCommitment: Nimiq.PrivateKey.generate().serialize(), // Using random data
-            userName,
+            multisigConfig: {
+                publicKeys: publicKeys.map(key => key.serialize()),
+                numberOfSigners,
+                signerPublicKeys: publicKeys.slice(0, numberOfSigners).map(key => key.serialize()),
+                secret: {
+                    aggregatedSecret: Nimiq.PrivateKey.generate().serialize(), // Using random data
+                },
+                aggregatedCommitment: Nimiq.PrivateKey.generate().serialize(), // Using random data
+                userName,
+            }
         };
 
         // if (layout === 'checkout') {
