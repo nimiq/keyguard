@@ -41,12 +41,12 @@ class SignMultisigTransaction {
         const $sender = (this.$el.querySelector('.accounts .sender'));
         this._senderAddressInfo = new AddressInfo({
             userFriendlyAddress: transaction.sender.toUserFriendlyAddress(),
-            label: request.senderLabel || null,
+            label: request.senderLabel,
             imageUrl: null,
-            accountLabel: request.keyLabel || null,
+            accountLabel: null,
             multisig: {
-                signers: request.multisig.numberOfSigners,
-                participants: request.multisig.publicKeys.length,
+                signers: request.multisigConfig.numberOfSigners,
+                participants: request.multisigConfig.publicKeys.length,
             },
         });
         this._senderAddressInfo.renderTo($sender);
@@ -139,11 +139,11 @@ class SignMultisigTransaction {
         // Set up user and account names
         /** @type {HTMLDivElement} */
         const $nameSection = (this.$el.querySelector('.user-and-account-names'));
-        if (request.multisig.userName) {
+        if (request.multisigConfig.userName) {
             $nameSection.classList.add('approving-as');
             /** @type {HTMLDivElement} */
             const $userName = ($nameSection.querySelector('.user-name'));
-            $userName.textContent = request.multisig.userName;
+            $userName.textContent = request.multisigConfig.userName;
         } else {
             $nameSection.classList.add('approving-with');
         }
@@ -235,33 +235,33 @@ class SignMultisigTransaction {
         const publicKey = key.derivePublicKey(request.keyPath);
 
         // Verify publicKey is part of the signing public keys
-        if (!request.multisig.signerPublicKeys.find(pubKey => pubKey.equals(publicKey))) {
+        if (!request.multisigConfig.signerPublicKeys.find(pubKey => pubKey.equals(publicKey))) {
             reject(new Errors.InvalidRequestError('Selected key is not part of the multisig transaction signers'));
             return;
         }
 
         /** @type {Nimiq.RandomSecret} */
         let aggregatedSecret;
-        if ('aggregatedSecret' in request.multisig.secret) {
-            aggregatedSecret = request.multisig.secret.aggregatedSecret;
+        if ('aggregatedSecret' in request.multisigConfig.secret) {
+            aggregatedSecret = request.multisigConfig.secret.aggregatedSecret;
         } else {
             // If we only have encrypted secrets, decrypt them and aggregate them with the bScalar
             const rsaKey = await key.getRsaPrivateKey();
-            const secrets = await Promise.all(request.multisig.secret.encryptedSecrets.map(
+            const secrets = await Promise.all(request.multisigConfig.secret.encryptedSecrets.map(
                 async encrypted => new Uint8Array(
                     await window.crypto.subtle.decrypt({ name: 'RSA-OAEP' }, rsaKey, encrypted),
                 ),
             ));
 
-            aggregatedSecret = await MultisigUtils.aggregateSecrets(secrets, request.multisig.secret.bScalar);
+            aggregatedSecret = await MultisigUtils.aggregateSecrets(secrets, request.multisigConfig.secret.bScalar);
         }
 
         const signature = key.signPartially(
             request.keyPath,
             request.transaction.serializeContent(),
-            request.multisig.signerPublicKeys,
+            request.multisigConfig.signerPublicKeys,
             aggregatedSecret,
-            request.multisig.aggregatedCommitment,
+            request.multisigConfig.aggregatedCommitment,
         );
 
         /** @type {KeyguardRequest.SignMultisigTransactionResult} */
