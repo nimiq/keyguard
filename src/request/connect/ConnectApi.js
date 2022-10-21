@@ -40,6 +40,8 @@ class ConnectApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         parsedRequest.challenge = /** @type {string} */ (this.parseMessage(request.challenge, true));
 
         // Temporary limitation of permissions until UI can represent other permissions
+        // When adding new permissioned request types here, the Connect UI must be updated to be able
+        // to display these permissions to the user.
         if (parsedRequest.permissions.length !== 1 || parsedRequest.permissions[0] !== 'sign-multisig-transaction') {
             throw new Errors.InvalidRequestError(
                 'Only the sign-multisig-transaction permission is supported currently',
