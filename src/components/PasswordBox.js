@@ -96,16 +96,11 @@ class PasswordBox extends Nimiq.Observable {
                     </svg>
                 <a>`
             : '';
-
-        /** @type {{[i18nTag: string]: string}} */
-        const promptVersions = {
-            'passwordbox-enter-password': '<div class="prompt nq-text-s" data-i18n="passwordbox-enter-password">Enter your password</div>',
-            'passwordbox-enter-pin': '<div class="prompt nq-text-s" data-i18n="passwordbox-enter-pin">Enter your PIN</div>',
-            'passwordbox-swap-authorized': '<div class="prompt nq-text-s" data-i18n="passwordbox-swap-authorized">Swap authorized</div>',
-        };
-        const promptHtml = promptVersions[options.showSwapAuthorization && !options.hideInput ? 'passwordbox-swap-authorized'
-            : options.minLength === Key.PIN_LENGTH ? 'passwordbox-enter-pin' : 'passwordbox-enter-password'];
         /* eslint-enable max-len */
+
+        const promptHtml = options.minLength === Key.PIN_LENGTH
+            ? '<div class="prompt nq-text-s" data-i18n="passwordbox-enter-pin">Enter your PIN</div>'
+            : '<div class="prompt nq-text-s" data-i18n="passwordbox-enter-password">Enter your password</div>';
 
         /* eslint-disable max-len */
         $el.innerHTML = TemplateTags.hasVars(3)`
@@ -127,19 +122,10 @@ class PasswordBox extends Nimiq.Observable {
         submitButton.classList.toggle('inverse', !options.hideInput);
 
         if (options.showSwapAuthorization && !options.hideInput) {
-            /** @type {HTMLDivElement} */
-            const $prompt = ($el.querySelector('.prompt'));
+            $el.dataset.i18nSwapAuthorizationCaption = I18n.translatePhrase('passwordbox-swap-authorized');
             AnimationUtils.animate('show-swap-authorization', $el, undefined, () => {
                 options.showSwapAuthorization = false;
-                // Apply the translation via translatePhrase such that the translationValidator finds it and also
-                // apply the data-i18n attribute such that the translation can be updated on language switch.
-                if (options.minLength === Key.PIN_LENGTH) {
-                    $prompt.textContent = I18n.translatePhrase('passwordbox-enter-pin');
-                    $prompt.dataset.i18n = 'passwordbox-enter-pin';
-                } else {
-                    $prompt.textContent = I18n.translatePhrase('passwordbox-enter-password');
-                    $prompt.dataset.i18n = 'passwordbox-enter-password';
-                }
+                delete (/** @type {HTMLFormElement} */ ($el)).dataset.i18nSwapAuthorizationCaption;
             });
         }
 
