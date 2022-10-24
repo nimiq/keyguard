@@ -63,6 +63,7 @@
     "types/BarcodeScanner.d.ts",
     "types/BitcoinJS.d.ts",
     "types/wasm_bindgen.d.ts",
+    "types/node-forge.d.ts",
     "src/**/*.js",
     "tests/**/*.js"
   ],
