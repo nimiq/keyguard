@@ -1,10 +1,21 @@
 /* global I18n */
 /* global Copyable */
 /* global Identicon */
+/* global TemplateTags */
 
 class AddressInfo { // eslint-disable-line no-unused-vars
+    // eslint-disable-next-line valid-jsdoc
     /**
-     * @param {{ userFriendlyAddress: string, label: string?, imageUrl: URL?, accountLabel: string?}} addressInfo
+     * @param {{
+     *     userFriendlyAddress: string,
+     *     label: string?,
+     *     imageUrl: URL?,
+     *     accountLabel: string?,
+     *     multisig?: {
+     *         signers: number,
+     *         participants: number,
+     *     },
+     * }} addressInfo
      * @param {boolean} [displayAsCashlink = false]
      */
     constructor(addressInfo, displayAsCashlink = false) {
@@ -57,6 +68,18 @@ class AddressInfo { // eslint-disable-line no-unused-vars
             // eslint-disable-next-line no-new
             new Identicon(this._addressInfo.userFriendlyAddress, $identicon);
         }
+
+        if (this._addressInfo.multisig) {
+            const $badge = document.createElement('div');
+            $badge.classList.add('multisig-badge', 'nq-blue-bg');
+            $badge.innerHTML = TemplateTags.hasVars(2)`
+                ${this._addressInfo.multisig.signers}
+                <span class="of">of</span>
+                ${this._addressInfo.multisig.participants}
+            `;
+            $identicon.appendChild($badge);
+        }
+
         $el.appendChild($identicon);
 
         // label

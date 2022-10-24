@@ -143,7 +143,7 @@ const deprecatedAccount2KeyInfos = () => {
 };
 
 const deprecatedAccount2Keys = () => [
-    new Key(secrets[1], false)
+    new Key(secrets[1], { hasPin: false })
 ];
 
 const keyInfoCookieEncoded = '2071U/NKd5KzeimvyflGLYku6JfI9Mms2wGxWoCLmx9+0=,10LsYVUikGJA5z8p37+LqkH3EZ5opDz2zQRT1r8cGJ8dE=';
@@ -161,7 +161,7 @@ const Utils = {
      * @param {IDBDatabase} db
      * @param {string} objectStoreName
      * @param {object} entry
-     * @returns {Promise<any>}
+     * @returns {Promise<void>}
      */
     addEntryToDatabase: (db, objectStoreName, entry) => new Promise((resolve, reject) => {
         const request = db.transaction([objectStoreName], 'readwrite')

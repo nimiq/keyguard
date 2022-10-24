@@ -62,6 +62,7 @@
     "types/MessagePrefix.d.ts",
     "types/BarcodeScanner.d.ts",
     "types/BitcoinJS.d.ts",
+    "types/wasm_bindgen.d.ts",
     "src/**/*.js",
     "tests/**/*.js"
   ],
@@ -74,5 +75,6 @@
     "src/lib/QrScannerWorker.js",
     "src/translations/index.js",
     "src/lib/bitcoin/BitcoinJS.js",
+    "src/lib/multisig/wasm/pkg",
   ]
 }

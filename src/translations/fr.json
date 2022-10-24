@@ -68,6 +68,11 @@
     "sign-tx-fee": "frais",
     "sign-tx-cancel-payment": "Annuler le paiement",
 
+    "sign-multisig-tx-heading-tx": "Approve Multisig Transaction",
+    "sign-multisig-tx-approving-as": "Approving as",
+    "sign-multisig-tx-with": "with",
+    "sign-multisig-tx-approving-with": "Approving with",
+
     "sign-msg-heading": "Signer le Message",
     "sign-msg-signer": "Signataire",
 
@@ -103,6 +108,7 @@
     "passwordbox-repeat-password-short": "Le mot de passe est trop court",
     "passwordbox-password-skip": "Ignorer pour l'instant",
     "passwordbox-reset-password": "Réinitialiser avec les mots de récupération",
+    "passwordbox-connect-account": "Connect your account",
 
     "payment-info-line-order-amount": "Montant de la commande",
     "payment-info-line-vendor-markup": "Crypto-premium",
@@ -237,5 +243,7 @@
     "sign-swap-exchange-fee": "Frais de swap",
     "sign-swap-of-exchange-value": "de la valeur du swap.",
     "sign-swap-total-fees": "Total des frais",
-    "sign-swap-your-bank": "Votre banque"
+    "sign-swap-your-bank": "Votre banque",
+
+    "connect-heading-prefix": "Log in to"
 }

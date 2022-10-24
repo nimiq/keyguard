@@ -68,6 +68,11 @@
     "sign-tx-fee": "fee",
     "sign-tx-cancel-payment": "Cancel payment",
 
+    "sign-multisig-tx-heading-tx": "Approve Multisig Transaction",
+    "sign-multisig-tx-approving-as": "Approving as",
+    "sign-multisig-tx-with": "with",
+    "sign-multisig-tx-approving-with": "Approving with",
+
     "sign-msg-heading": "Sign Message",
     "sign-msg-signer": "Signer",
 
@@ -103,6 +108,7 @@
     "passwordbox-repeat-password-short": "Password is too short",
     "passwordbox-password-skip": "Skip for now",
     "passwordbox-reset-password": "Reset with Recovery Words",
+    "passwordbox-connect-account": "Connect your account",
 
     "payment-info-line-order-amount": "Order amount",
     "payment-info-line-vendor-markup": "Vendor crypto markup",
@@ -237,5 +243,7 @@
     "sign-swap-exchange-fee": "Swap fee",
     "sign-swap-of-exchange-value": "of swap value.",
     "sign-swap-total-fees": "Total fees",
-    "sign-swap-your-bank": "Your bank"
+    "sign-swap-your-bank": "Your bank",
+
+    "connect-heading-prefix": "Log in to"
 }
