@@ -79,6 +79,7 @@
 
     "passwordbox-enter-password": "输入你的密码",
     "passwordbox-enter-pin": "输入你的PIN码",
+    "passwordbox-swap-authorized": "Swap authorized",
     "passwordbox-repeat-password": "再次输入密码",
     "passwordbox-repeat": "再次输入密码",
     "passwordbox-continue": "继续",

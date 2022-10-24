@@ -12,6 +12,7 @@
  *      buttonI18nTag: string,
  *      minLength: number,
  *      showResetPassword: boolean,
+ *      showSwapAuthorization: boolean,
  *  }} PasswordBoxOptions
  */
 
@@ -28,6 +29,7 @@ class PasswordBox extends Nimiq.Observable {
             buttonI18nTag: 'passwordbox-confirm-tx',
             minLength: PasswordInput.DEFAULT_MIN_LENGTH,
             showResetPassword: false,
+            showSwapAuthorization: false,
         };
 
         super();
@@ -83,6 +85,7 @@ class PasswordBox extends Nimiq.Observable {
             'passwordbox-sign-msg': '<button class="submit" data-i18n="passwordbox-sign-msg">Sign message</button>',
             'passwordbox-confirm-swap': '<button class="submit" data-i18n="passwordbox-confirm-swap">Confirm swap</button>',
         };
+        if (!buttonVersions[options.buttonI18nTag]) throw new Error('PasswordBox button i18n tag not defined');
 
         const resetPasswordHtml = options.showResetPassword
             ? TemplateTags.noVars`
@@ -98,14 +101,15 @@ class PasswordBox extends Nimiq.Observable {
         const promptVersions = {
             'passwordbox-enter-password': '<div class="prompt nq-text-s" data-i18n="passwordbox-enter-password">Enter your password</div>',
             'passwordbox-enter-pin': '<div class="prompt nq-text-s" data-i18n="passwordbox-enter-pin">Enter your PIN</div>',
+            'passwordbox-swap-authorized': '<div class="prompt nq-text-s" data-i18n="passwordbox-swap-authorized">Swap authorized</div>',
         };
+        const promptHtml = promptVersions[options.showSwapAuthorization && !options.hideInput ? 'passwordbox-swap-authorized'
+            : options.minLength === Key.PIN_LENGTH ? 'passwordbox-enter-pin' : 'passwordbox-enter-password'];
         /* eslint-enable max-len */
-
-        if (!buttonVersions[options.buttonI18nTag]) throw new Error('PasswordBox button i18n tag not defined');
 
         /* eslint-disable max-len */
         $el.innerHTML = TemplateTags.hasVars(3)`
-            ${promptVersions[options.minLength === Key.PIN_LENGTH ? 'passwordbox-enter-pin' : 'passwordbox-enter-password']}
+            ${promptHtml}
             <div password-input></div>
             ${buttonVersions[options.buttonI18nTag]}
             <!-- Loading spinner SVG -->
@@ -118,10 +122,25 @@ class PasswordBox extends Nimiq.Observable {
         /* eslint-enable max-len */
 
         /** @type {HTMLButtonElement} */
-        ($el.querySelector('button.submit')).classList.add('nq-button', options.bgColor);
-        if (!options.hideInput) {
-            /** @type {HTMLButtonElement} */
-            ($el.querySelector('button.submit')).classList.add('inverse');
+        const submitButton = ($el.querySelector('button.submit'));
+        submitButton.classList.add('nq-button', options.bgColor);
+        submitButton.classList.toggle('inverse', !options.hideInput);
+
+        if (options.showSwapAuthorization && !options.hideInput) {
+            /** @type {HTMLDivElement} */
+            const $prompt = ($el.querySelector('.prompt'));
+            AnimationUtils.animate('show-swap-authorization', $el, undefined, () => {
+                options.showSwapAuthorization = false;
+                // Apply the translation via translatePhrase such that the translationValidator finds it and also
+                // apply the data-i18n attribute such that the translation can be updated on language switch.
+                if (options.minLength === Key.PIN_LENGTH) {
+                    $prompt.textContent = I18n.translatePhrase('passwordbox-enter-pin');
+                    $prompt.dataset.i18n = 'passwordbox-enter-pin';
+                } else {
+                    $prompt.textContent = I18n.translatePhrase('passwordbox-enter-password');
+                    $prompt.dataset.i18n = 'passwordbox-enter-password';
+                }
+            });
         }
 
         I18n.translateDom($el);

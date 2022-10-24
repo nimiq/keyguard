@@ -211,6 +211,8 @@ export type SettlementInstruction = MockSettlementInstruction | SepaSettlementIn
 
 export type SignSwapRequestLayout = 'standard' | 'slider';
 
+export type KycProvider = 'TEN31 Pass';
+
 export type SignSwapRequestCommon = SimpleRequest & {
     swapId: string,
     fund: (
@@ -292,6 +294,13 @@ export type SignSwapRequestCommon = SimpleRequest & {
         processing: number,
     },
     serviceSwapFee: number, // Luna, Sats or Cents, depending which one gets funded
+
+    // Optional KYC info for swapping at higher limits
+    kyc?: {
+        provider: KycProvider,
+        s3GrantToken: string,
+        oasisGrantToken?: string,
+    };
 };
 
 export type SignSwapRequestStandard = SignSwapRequestCommon & {
