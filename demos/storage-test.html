@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>KG storage test (KG window)</title>
+</head>
+<body>
+<h1>KG storage test (KG window)</h1>
+<ol>
+    <li>Open kg's /demos/storage-test.html first as top level window and interact with it to set top level storages.</li>
+    <li>Then open hub's /storage-test.html which embeds this page as iframe.</li>
+    <li>Interact with the iframe to request storage access.</li>
+</ol>
+<button onclick="setUpStorage()">Set up storage</button>
+<button onclick="requestStorage()">Request storage access</button>
+<br><br>
+<a id="hub-link">Open hub's /storage-test.html</a>
+
+<script lang="text/javascript">
+    (async () => {
+        const hubOrigin = location.origin.replace('8000', '8080').replace('keyguard', 'hub');
+        document.getElementById('hub-link').setAttribute('href', `${hubOrigin}/storage-test.html`);
+
+        if (!('hasStorageAccess' in document)) {
+            console.log('Storage access api not supported');
+            return;
+        }
+        console.log('Storage access initially granted', await /** @type {any} */ (document).hasStorageAccess());
+    })();
+
+    async function setUpStorage() {
+        const storageKey = window === window.top ? 'topLevel' : 'child';
+
+        console.log(`Setting ${storageKey} cookie and storages`);
+        document.cookie = `${storageKey}=1`;
+        sessionStorage[storageKey] = 1;
+        localStorage[storageKey] = 1;
+        if (!window.caches) {
+            console.log('Cache Storage not available. Note that they are only available on https.');
+            return;
+        }
+        const cache = await window.caches.open('myCache');
+        await cache.put(
+            `${window.location.origin}/${storageKey}`,
+            new Response('1'),
+        );
+    }
+
+    async function requestStorage() {
+        if (!('hasStorageAccess' in document)) {
+            console.log('Storage access api not supported');
+            return;
+        }
+        // if (!await /** @type {any} */ (document).hasStorageAccess()) {
+        console.log('Requesting storage access');
+        await /** @type {any} */ (document).requestStorageAccess();
+        console.log('Storage access given?', await /** @type {any} */ (document).hasStorageAccess());
+        // } else {
+        //     console.log('Storage access already already granted.');
+        // }
+        console.log('Storage: Session storage', sessionStorage.length, sessionStorage);
+    }
+</script>
+
+</body>
+</html>
