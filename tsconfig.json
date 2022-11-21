@@ -62,6 +62,7 @@
     "types/MessagePrefix.d.ts",
     "types/BarcodeScanner.d.ts",
     "types/BitcoinJS.d.ts",
+    "types/UserAgentClientHints.d.ts",
     "src/**/*.js",
     "tests/**/*.js"
   ],
