@@ -90,11 +90,11 @@ class TopLevelApi extends RequestParser {
              */
             if (TopLevelApi._hasRemoveKey()) {
                 // eat
-                const match = document.cookie.match(new RegExp('removeKey=([^;]+)'));
-                if (match && match[1]) {
+                const removeKeyCookie = CookieJar.readCookie('removeKey');
+                if (removeKeyCookie) {
                     try {
                         /** @type {string[]} */
-                        const removeKeyArray = JSON.parse(match[1]);
+                        const removeKeyArray = JSON.parse(removeKeyCookie);
                         await Promise.all(removeKeyArray.map(keyId => KeyStore.instance.remove(keyId)));
                     } catch (e) {
                         this._reject(e);
@@ -213,7 +213,7 @@ class TopLevelApi extends RequestParser {
         // Keys might have changed, so update cookie for iOS and Safari users
         if (BrowserDetection.isIOS() || BrowserDetection.isSafari()) {
             const keys = await KeyStore.instance.list();
-            CookieJar.fill(keys);
+            CookieJar.fillKeys(keys);
         }
 
         this._resolve(result);
@@ -328,8 +328,7 @@ class TopLevelApi extends RequestParser {
      * @private
      */
     static _hasMigrateFlag() {
-        const match = document.cookie.match(new RegExp('migrate=([^;]+)'));
-        return !!match && match[1] === '1';
+        return CookieJar.readCookie('migrate') === '1';
     }
 
     /**
@@ -337,8 +336,7 @@ class TopLevelApi extends RequestParser {
      * @private
      */
     static _hasRemoveKey() {
-        const match = document.cookie.match(new RegExp('removeKey=([^;]+)'));
-        return !!match && match[1] !== '';
+        return !!CookieJar.readCookie('removeKey');
     }
 
     /**

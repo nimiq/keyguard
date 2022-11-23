@@ -9,8 +9,8 @@ describe('IframeApi', () => {
     const iframeApi = new IFrameApi();
 
     beforeEach(() => {
-        spyOn(CookieJar, 'eat').and.callThrough();
-        spyOn(CookieJar, 'eatDeprecated').and.callThrough();
+        spyOn(CookieJar, 'eatKeys').and.callThrough();
+        spyOn(CookieJar, 'eatDeprecatedAccounts').and.callThrough();
         spyOn(AccountStore.prototype, 'list').and.callThrough();
         spyOn(KeyStore.prototype, 'list').and.callThrough();
         spyOn(KeyStore.prototype, 'migrateAccountsToKeys').and.callThrough();
@@ -22,7 +22,7 @@ describe('IframeApi', () => {
 
         const listedAccounts = await iframeApi.listLegacyAccounts(null);
 
-        expect(CookieJar.eatDeprecated).toHaveBeenCalled();
+        expect(CookieJar.eatDeprecatedAccounts).toHaveBeenCalled();
         expect(AccountStore.instance.list).not.toHaveBeenCalled();
         expect(KeyStore.instance.list).not.toHaveBeenCalled();
         expect(listedAccounts).toEqual(Dummy.deprecatedAccount2KeyInfoObjects());
@@ -33,7 +33,7 @@ describe('IframeApi', () => {
 
         const listedKeys = await iframeApi.list(null);
 
-        expect(CookieJar.eat).toHaveBeenCalled();
+        expect(CookieJar.eatKeys).toHaveBeenCalled();
         expect(AccountStore.instance.list).not.toHaveBeenCalled();
         expect(KeyStore.instance.list).not.toHaveBeenCalled();
         expect(listedKeys).toEqual(Dummy.keyInfoObjects());
@@ -45,7 +45,7 @@ describe('IframeApi', () => {
 
         const listedAccounts = await iframeApi.listLegacyAccounts(null);
 
-        expect(CookieJar.eat).not.toHaveBeenCalled();
+        expect(CookieJar.eatKeys).not.toHaveBeenCalled();
         expect(AccountStore.instance.list).toHaveBeenCalled();
         expect(KeyStore.instance.list).not.toHaveBeenCalled();
         expect(listedAccounts).toEqual(Dummy.deprecatedAccount2KeyInfoObjects());
@@ -59,7 +59,7 @@ describe('IframeApi', () => {
 
         const listedKeyObjects = await iframeApi.list(null);
 
-        expect(CookieJar.eat).not.toHaveBeenCalled();
+        expect(CookieJar.eatKeys).not.toHaveBeenCalled();
         expect(AccountStore.instance.list).not.toHaveBeenCalled();
         expect(KeyStore.instance.list).toHaveBeenCalled();
         expect(listedKeyObjects).toEqual(Dummy.keyInfoObjects());

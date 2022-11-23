@@ -1,5 +1,6 @@
 /* global TRANSLATIONS */ // eslint-disable-line no-unused-vars
 /* global Nimiq */
+/* global CookieJar */
 
 /**
  * @typedef {{[language: string]: {[id: string]: string}}} dict
@@ -28,10 +29,8 @@ class I18n { // eslint-disable-line no-unused-vars
      * @returns {string} The detected language set in the 'lang' cookie. Fallback to the browser language.
      */
     static detectLanguage() {
-        const cookieMatch = document.cookie.match(new RegExp('(^| )lang=([^;]+)'));
-        const cookieLang = cookieMatch && decodeURIComponent(cookieMatch[2]);
-
-        const lang = cookieLang || navigator.language.split('-')[0];
+        const langCookie = CookieJar.readCookie('lang');
+        const lang = langCookie ? decodeURIComponent(langCookie) : navigator.language.split('-')[0];
         return I18n.getClosestSupportedLanguage(lang);
     }
 

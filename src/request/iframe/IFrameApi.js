@@ -55,14 +55,8 @@ class IFrameApi {
     async releaseKey(state, request) {
         if (request.shouldBeRemoved && sessionStorage.getItem(IFrameApi.SESSION_STORAGE_KEY_PREFIX + request.keyId)) {
             if (BrowserDetection.isIOS() || BrowserDetection.isSafari()) {
-                const match = document.cookie.match(new RegExp('removeKey=([^;]+)'));
-                /** @type {string[]} */
-                let removeKeyArray;
-                if (match && match[1]) {
-                    removeKeyArray = JSON.parse(match[1]);
-                } else {
-                    removeKeyArray = [];
-                }
+                const removeKeyCookie = CookieJar.readCookie('removeKey');
+                const removeKeyArray = removeKeyCookie ? JSON.parse(removeKeyCookie) : [];
                 removeKeyArray.push(request.keyId);
                 CookieJar.writeCookie('removeKey', JSON.stringify(removeKeyArray));
             } else {
@@ -128,7 +122,7 @@ class IFrameApi {
      */
     async _getAccounts() {
         if (BrowserDetection.isIOS() || BrowserDetection.isSafari()) {
-            return CookieJar.eatDeprecated();
+            return CookieJar.eatDeprecatedAccounts();
         }
 
         return AccountStore.instance.list();
@@ -139,7 +133,7 @@ class IFrameApi {
      */
     async _getKeys() {
         if (BrowserDetection.isIOS() || BrowserDetection.isSafari()) {
-            return CookieJar.eat();
+            return CookieJar.eatKeys();
         }
 
         return KeyStore.instance.list();

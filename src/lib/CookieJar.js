@@ -2,32 +2,54 @@
 
 class CookieJar { // eslint-disable-line no-unused-vars
     /**
+     * @param {string} name
+     * @param {string} value
+     * @param {number} [maxAge]
+     */
+    static writeCookie(name, value, maxAge = 31536000 /* 1 year */) {
+        const secure = window.location.protocol === 'https:' ? 'Secure;' : '';
+        document.cookie = `${name}=${value};max-age=${maxAge.toString()};${secure}SameSite=strict;Path=/`;
+    }
+
+    /**
+     * @param {string} name
+     * @returns {string | null}
+     */
+    static readCookie(name) {
+        const cookieMatch = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
+        return cookieMatch ? cookieMatch[1] : null;
+    }
+
+    /**
+     * @param {string} name
+     */
+    static deleteCookie(name) {
+        this.writeCookie(name, '', 0);
+    }
+
+    /**
      * @param {KeyInfo[]} keys
      */
-    static fill(keys) {
-        this.writeCookie('k', this._encodeCookie(keys));
+    static fillKeys(keys) {
+        this.writeCookie('k', this._encodeKeysCookie(keys));
     }
 
     /**
      * @returns {KeyInfo[]}
      */
-    static eat() {
-        const match = document.cookie.match(new RegExp('k=([^;]+)'));
-        if (match && match[1]) {
-            return this._decodeCookie(match[1]);
-        }
-
-        return [];
+    static eatKeys() {
+        const keysCookie = this.readCookie('k');
+        return keysCookie ? this._decodeKeysCookie(keysCookie) : [];
     }
 
     /**
      * @deprecated Only for database migration
      * @returns {AccountInfo[]}
      */
-    static eatDeprecated() {
-        const match = document.cookie.match(new RegExp('accounts=([^;]+)'));
-        if (match && match[1]) {
-            const decoded = decodeURIComponent(match[1]);
+    static eatDeprecatedAccounts() {
+        const accountsCookie = this.readCookie('accounts');
+        if (accountsCookie) {
+            const decoded = decodeURIComponent(accountsCookie);
             const cookieAccounts = JSON.parse(decoded);
 
             // Map from cookie format to AccountInfo format
@@ -47,27 +69,10 @@ class CookieJar { // eslint-disable-line no-unused-vars
     }
 
     /**
-     * @param {string} name
-     * @param {string} value
-     * @param {number} [maxAge]
-     */
-    static writeCookie(name, value, maxAge = 31536000 /* 1 year */) {
-        const secure = window.location.protocol === 'https:' ? 'Secure;' : '';
-        document.cookie = `${name}=${value};max-age=${maxAge.toString()};${secure}SameSite=strict;Path=/`;
-    }
-
-    /**
-     * @param {string} name
-     */
-    static deleteCookie(name) {
-        this.writeCookie(name, '', 0);
-    }
-
-    /**
      * @param {KeyInfo[]} keys
      * @returns {string}
      */
-    static _encodeCookie(keys) {
+    static _encodeKeysCookie(keys) {
         return keys.map(
             keyInfo => `${keyInfo.type}`
                      + `${keyInfo.hasPin ? 1 : 0}`
@@ -79,7 +84,7 @@ class CookieJar { // eslint-disable-line no-unused-vars
      * @param {string} str
      * @returns {KeyInfo[]}
      */
-    static _decodeCookie(str) {
+    static _decodeKeysCookie(str) {
         if (!str) return [];
 
         const keys = str.split(',');
