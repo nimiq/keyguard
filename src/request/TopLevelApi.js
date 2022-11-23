@@ -90,7 +90,7 @@ class TopLevelApi extends RequestParser {
              */
             if (TopLevelApi._hasRemoveKey()) {
                 // eat
-                const removeKeyCookie = CookieJar.readCookie('removeKey');
+                const removeKeyCookie = CookieJar.readCookie(CookieJar.Cookie.REMOVE_KEY);
                 if (removeKeyCookie) {
                     try {
                         /** @type {string[]} */
@@ -328,7 +328,7 @@ class TopLevelApi extends RequestParser {
      * @private
      */
     static _hasMigrateFlag() {
-        return CookieJar.readCookie('migrate') === '1';
+        return CookieJar.readCookie(CookieJar.Cookie.DEPRECATED_MIGRATION_FLAG) === '1';
     }
 
     /**
@@ -336,7 +336,7 @@ class TopLevelApi extends RequestParser {
      * @private
      */
     static _hasRemoveKey() {
-        return !!CookieJar.readCookie('removeKey');
+        return !!CookieJar.readCookie(CookieJar.Cookie.REMOVE_KEY);
     }
 
     /**

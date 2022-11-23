@@ -31,14 +31,14 @@ class CookieJar { // eslint-disable-line no-unused-vars
      * @param {KeyInfo[]} keys
      */
     static fillKeys(keys) {
-        this.writeCookie('k', this._encodeKeysCookie(keys));
+        this.writeCookie(CookieJar.Cookie.KEYS, this._encodeKeysCookie(keys));
     }
 
     /**
      * @returns {KeyInfo[]}
      */
     static eatKeys() {
-        const keysCookie = this.readCookie('k');
+        const keysCookie = this.readCookie(CookieJar.Cookie.KEYS);
         return keysCookie ? this._decodeKeysCookie(keysCookie) : [];
     }
 
@@ -47,7 +47,7 @@ class CookieJar { // eslint-disable-line no-unused-vars
      * @returns {AccountInfo[]}
      */
     static eatDeprecatedAccounts() {
-        const accountsCookie = this.readCookie('accounts');
+        const accountsCookie = this.readCookie(CookieJar.Cookie.DEPRECATED_ACCOUNTS);
         if (accountsCookie) {
             const decoded = decodeURIComponent(accountsCookie);
             const cookieAccounts = JSON.parse(decoded);
@@ -100,3 +100,23 @@ class CookieJar { // eslint-disable-line no-unused-vars
         });
     }
 }
+
+/**
+ * @readonly
+ * @enum { 'lang' | 'k' | 'removeKey' | 'accounts' | 'migrate' }
+ */
+CookieJar.Cookie = {
+    LANGUAGE: /** @type {'lang'} */ ('lang'),
+    KEYS: /** @type {'k'} */ ('k'),
+    REMOVE_KEY: /** @type {'removeKey'} */ ('removeKey'),
+    /**
+     * @deprecated
+     * @type {'accounts'}
+     */
+    DEPRECATED_ACCOUNTS: ('accounts'),
+    /**
+     * @deprecated
+     * @type {'migrate'}
+     */
+    DEPRECATED_MIGRATION_FLAG: ('migrate'),
+};

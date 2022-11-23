@@ -29,7 +29,7 @@ class I18n { // eslint-disable-line no-unused-vars
      * @returns {string} The detected language set in the 'lang' cookie. Fallback to the browser language.
      */
     static detectLanguage() {
-        const langCookie = CookieJar.readCookie('lang');
+        const langCookie = CookieJar.readCookie(CookieJar.Cookie.LANGUAGE);
         const lang = langCookie ? decodeURIComponent(langCookie) : navigator.language.split('-')[0];
         return I18n.getClosestSupportedLanguage(lang);
     }
