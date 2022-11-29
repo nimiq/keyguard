@@ -146,7 +146,7 @@ const deprecatedAccount2Keys = () => [
     new Key(secrets[1], false)
 ];
 
-const keyInfoCookieEncoded = '2071U/NKd5KzeimvyflGLYku6JfI9Mms2wGxWoCLmx9+0=,10LsYVUikGJA5z8p37+LqkH3EZ5opDz2zQRT1r8cGJ8dE=';
+const keyInfoCookieEncoded = '2071U/NKd5KzeimvyflGLYku6JfI9Mms2wGxWoCLmx9+0=#10LsYVUikGJA5z8p37+LqkH3EZ5opDz2zQRT1r8cGJ8dE=';
 
 /** @type {string} */
 const cookie = `k=${keyInfoCookieEncoded}; accounts=${JSON.stringify(deprecatedAccountCookies)}; some=thing`;

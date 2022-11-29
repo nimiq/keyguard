@@ -9,6 +9,13 @@ class CookieJar { // eslint-disable-line no-unused-vars
      * @returns {string | null} Potential leftover data that did not fit the cookie.
      */
     static writeCookie(name, value, maxAge = CookieJar.DEFAULT_MAX_AGE) {
+        if (!name || CookieJar.INVALID_NAME_CHARS_REGEX.test(name)) {
+            throw new Errors.KeyguardError(`Invalid cookie name ${name}.`);
+        }
+        if (CookieJar.INVALID_VALUE_CHARS_REGEX.test(value)) {
+            throw new Errors.KeyguardError(`Invalid cookie value ${value}.`);
+        }
+
         const initialRawCookies = document.cookie;
         const maxPayloadSize = CookieJar.MAX_COOKIE_SIZE - name.length;
         const payload = value.substring(0, maxPayloadSize);
@@ -135,7 +142,7 @@ class CookieJar { // eslint-disable-line no-unused-vars
             keyInfo => `${keyInfo.type}`
                      + `${keyInfo.hasPin ? 1 : 0}`
                      + `${keyInfo.id}`,
-        ).join(',');
+        ).join('#');
     }
 
     /**
@@ -145,7 +152,8 @@ class CookieJar { // eslint-disable-line no-unused-vars
     static _decodeKeysCookie(str) {
         if (!str) return [];
 
-        const keys = str.split(',');
+        // previous versions used "," as separator which is strictly speaking not allowed in cookie values
+        const keys = str.split(/[#,]/g);
 
         return keys.map(key => {
             const type = /** @type {Nimiq.Secret.Type} */ (parseInt(key[0], 10));
@@ -189,3 +197,6 @@ CookieJar.DEFAULT_MAX_AGE = 31536000; // 1 year; in seconds
 // Chrome deletes 31 of the old cookies at once as soon as the limit is reached. Deleted cookies are detected by
 // writeCookie, rather than checking for a browser-specific max count.
 CookieJar.MAX_COOKIE_SIZE = 4096;
+// See https://stackoverflow.com/a/1969339, especially the description of RFC 6265.
+CookieJar.INVALID_NAME_CHARS_REGEX = /[^\w!#$%&'*+\-.^`|~]/g;
+CookieJar.INVALID_VALUE_CHARS_REGEX = /[^\w!#$%&'()*+\-./:<=>?@[\]^`{|}~]/g;
