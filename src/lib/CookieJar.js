@@ -83,6 +83,19 @@ class CookieJar { // eslint-disable-line no-unused-vars
     }
 
     /**
+     * @param {string} name
+     * @param {boolean} [encodeInvalidChars = true]
+     * @returns {string}
+     */
+    static sanitizeCookieName(name, encodeInvalidChars = true) {
+        if (encodeInvalidChars) return name.replace(CookieJar.INVALID_NAME_CHARS_REGEX, c => encodeURIComponent(c));
+        // truncate invalid chars
+        const truncatedName = name.replace(CookieJar.INVALID_NAME_CHARS_REGEX, '');
+        if (!truncatedName) return this.sanitizeCookieName(name, true);
+        return truncatedName;
+    }
+
+    /**
      * @param {KeyInfo[]} keys
      */
     static fillKeys(keys) {
@@ -169,12 +182,13 @@ class CookieJar { // eslint-disable-line no-unused-vars
 
 /**
  * @readonly
- * @enum { 'lang' | 'k' | 'removeKey' | 'accounts' | 'migrate' }
+ * @enum { 'lang' | 'k' | 'removeKey' | 'cs.' | 'accounts' | 'migrate' }
  */
 CookieJar.Cookie = {
     LANGUAGE: /** @type {'lang'} */ ('lang'),
     KEYS: /** @type {'k'} */ ('k'),
     REMOVE_KEY: /** @type {'removeKey'} */ ('removeKey'),
+    NAMESPACE_COOKIE_STORAGE: /** @type {'cs.'} */ ('cs.'), // no other cookies should start with 'cs.'
     /**
      * @deprecated
      * @type {'accounts'}
