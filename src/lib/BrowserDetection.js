@@ -15,6 +15,15 @@ class BrowserDetection { // eslint-disable-line no-unused-vars
     }
 
     /**
+     * @returns {number[]}
+     */
+    static safariVersion() {
+        const versionMatch = navigator.userAgent.match(/Version\/(\d+)(?:\.(\d+))?(?:\.(\d+))?.*Safari/);
+        if (!versionMatch) throw new Error('No Safari version detected.');
+        return versionMatch.slice(1).map(part => Number.parseInt(part || '0', 10));
+    }
+
+    /**
      * @returns {boolean}
      */
     static isIOS() {
@@ -27,9 +36,9 @@ class BrowserDetection { // eslint-disable-line no-unused-vars
      */
     static iOSVersion() {
         if (BrowserDetection.isIOS()) {
-            const v = (navigator.appVersion).match(/OS (\d+)_(\d+)_?(\d+)?/);
-            if (v) {
-                return [parseInt(v[1], 10), parseInt(v[2], 10), parseInt(v[3] || '0', 10)];
+            const versionMatch = (navigator.appVersion).match(/OS (\d+)_(\d+)_?(\d+)?/);
+            if (versionMatch) {
+                return versionMatch.slice(1).map(part => Number.parseInt(part || '0', 10));
             }
         }
 
