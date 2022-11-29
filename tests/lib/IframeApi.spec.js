@@ -7,14 +7,17 @@
 
 describe('IframeApi', () => {
     const iframeApi = new IFrameApi();
+    /** @type {string} */
+    let cookies = '';
 
     beforeEach(() => {
+        cookies = Dummy.cookie;
         spyOn(CookieJar, 'eatKeys').and.callThrough();
         spyOn(CookieJar, 'eatDeprecatedAccounts').and.callThrough();
         spyOn(AccountStore.prototype, 'list').and.callThrough();
         spyOn(KeyStore.prototype, 'list').and.callThrough();
         spyOn(KeyStore.prototype, 'migrateAccountsToKeys').and.callThrough();
-        spyOnProperty(document, 'cookie', 'get').and.returnValue(Dummy.cookie);
+        spyOnProperty(document, 'cookie', 'get').and.callFake(() => cookies);
     });
 
     it('can list deprecated accounts from cookies on iOS.', async () => {
@@ -75,6 +78,7 @@ describe('IframeApi', () => {
         spyOnProperty(document, 'cookie', 'set').and.callFake((/** @type {string} */ cookie) => {
             expect(cookie.startsWith('migrate=1;')).toBe(true);
             cookieSet = true;
+            cookies = `${cookies ? `${cookies}; ` : ''}${cookie.split(';')[0]}`;
         });
 
         await iframeApi.migrateAccountsToKeys(null);

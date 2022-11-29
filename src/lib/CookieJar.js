@@ -1,14 +1,45 @@
 /* global KeyInfo */
+/* global Errors */
 
 class CookieJar { // eslint-disable-line no-unused-vars
     /**
      * @param {string} name
      * @param {string} value
-     * @param {number} [maxAge]
+     * @param {number} [maxAge] Time in seconds after which the cookie gets automatically deleted.
+     * @returns {string | null} Potential leftover data that did not fit the cookie.
      */
-    static writeCookie(name, value, maxAge = 31536000 /* 1 year */) {
-        const secure = window.location.protocol === 'https:' ? 'Secure;' : '';
-        document.cookie = `${name}=${value};max-age=${maxAge.toString()};${secure}SameSite=strict;Path=/`;
+    static writeCookie(name, value, maxAge = CookieJar.DEFAULT_MAX_AGE) {
+        const initialRawCookies = document.cookie;
+        const maxPayloadSize = CookieJar.MAX_COOKIE_SIZE - name.length;
+        const payload = value.substring(0, maxPayloadSize);
+        const cookieOptions = this._generateCookieOptions(maxAge); // do not count towards max size
+        document.cookie = `${name}=${payload}${cookieOptions}`;
+
+        // Check storage quota limits, in case we're not deleting a cookie.
+        if (maxAge > 0) {
+            if (this.readCookie(name) !== payload) {
+                throw new Errors.KeyguardError('Failed to write cookie. Quota exceeded?');
+            }
+            const initialCookies = this.readCookies(initialRawCookies);
+            const currentCookies = this.readCookies();
+            let isMissingCookies = false;
+            for (const [initialCookieName, initialCookieValue] of initialCookies) {
+                if (currentCookies.has(initialCookieName)) continue;
+                // The browser deleted this initial cookie, and potentially others, as for example done by Chrome, in
+                // order to write the new one.
+                if (!isMissingCookies) {
+                    // Delete the new cookie, the first time we encounter a missing cookie.
+                    isMissingCookies = true;
+                    this.deleteCookie(name);
+                }
+                // Restore the initial cookie.
+                // Write document.cookie directly to avoid unnecessary size and quota checks in recursion.
+                document.cookie = `${initialCookieName}=${initialCookieValue}${this._generateCookieOptions()}`;
+            }
+            if (isMissingCookies) throw new Errors.KeyguardError('Cookie quota exceeded.');
+        }
+
+        return payload !== value ? value.substring(payload.length) : null;
     }
 
     /**
@@ -18,6 +49,23 @@ class CookieJar { // eslint-disable-line no-unused-vars
     static readCookie(name) {
         const cookieMatch = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
         return cookieMatch ? cookieMatch[1] : null;
+    }
+
+    /**
+     * @param {string} [cookies]
+     * @returns {Map<string, string>}
+     */
+    static readCookies(cookies) {
+        cookies = cookies || document.cookie;
+        /** @type {Map<string, string>} */
+        const parsedCookies = new Map();
+        const cookieRegex = /(?:^|; )([^=]+)=([^;]*)/g;
+        /** @type {RegExpExecArray | null} */
+        let cookieMatch = null;
+        while (cookieMatch = cookieRegex.exec(cookies)) { // eslint-disable-line no-cond-assign
+            parsedCookies.set(cookieMatch[1], cookieMatch[2]);
+        }
+        return parsedCookies;
     }
 
     /**
@@ -66,6 +114,16 @@ class CookieJar { // eslint-disable-line no-unused-vars
             );
         }
         return [];
+    }
+
+    /**
+     * @param {number} [maxAge]
+     * @returns {string}
+     * @private
+     */
+    static _generateCookieOptions(maxAge = CookieJar.DEFAULT_MAX_AGE) {
+        const secure = window.location.protocol === 'https:' ? 'Secure;' : '';
+        return `;max-age=${maxAge};${secure}SameSite=strict;Path=/`;
     }
 
     /**
@@ -120,3 +178,14 @@ CookieJar.Cookie = {
      */
     DEPRECATED_MIGRATION_FLAG: ('migrate'),
 };
+CookieJar.DEFAULT_MAX_AGE = 31536000; // 1 year; in seconds
+// Maximum size per cookie which should be safe for all browsers, measured as the sum of the cookie name and value,
+// but excluding the equal sign and cookie options. The maximum size for different browsers can be tested with
+// http://browsercookielimits.iain.guru/, but note that the tool counts the equal sign, for which 1 should be
+// subtracted. This size limit is used for example by Chrome, Firefox and Safari. Cookies above this size are silently
+// dropped when being set.
+// Regarding the maximum number of Cookies, Chrome allows up to 180 cookies, regardless of size, others at least 1000
+// (the iain tool stops checking at 1000). If the limit is reached, the oldest cookies are typically deleted first.
+// Chrome deletes 31 of the old cookies at once as soon as the limit is reached. Deleted cookies are detected by
+// writeCookie, rather than checking for a browser-specific max count.
+CookieJar.MAX_COOKIE_SIZE = 4096;
