@@ -17,10 +17,17 @@ class NonPartitionedSessionStorage {
 
         if (isSessionStoragePartitioned) {
             // Use CookieStorage. We currently only support encrypted CookieStorage entries, to encourage encryption.
-            return CookieStorage.set(name, data, encryptionKey, NonPartitionedSessionStorage.COOKIE_MAX_AGE);
+            return CookieStorage.set(name, data, {
+                encryptionKey,
+                maxAge: NonPartitionedSessionStorage.COOKIE_MAX_AGE,
+                namespace: CookieJar.Cookie.NAMESPACE_NON_PARTITIONED_SESSION_STORAGE,
+            });
         }
 
-        sessionStorage.setItem(name, Nimiq.BufferUtils.toBase64(data));
+        sessionStorage.setItem(
+            CookieJar.Cookie.NAMESPACE_NON_PARTITIONED_SESSION_STORAGE + name,
+            Nimiq.BufferUtils.toBase64(data),
+        );
         return null;
     }
 
@@ -31,11 +38,15 @@ class NonPartitionedSessionStorage {
      */
     static async get(name, encryptionKey) {
         /** @type {Uint8Array | null} */
-        const cookieStorageData = CookieStorage.has(name)
+        const cookieStorageData = CookieStorage.has(name, CookieJar.Cookie.NAMESPACE_NON_PARTITIONED_SESSION_STORAGE)
             // We currently only support encrypted CookieStorage entries, to encourage encryption. Throws for wrong key.
-            ? await CookieStorage.get(name, encryptionKey)
+            ? await CookieStorage.get(name, {
+                encryptionKey,
+                namespace: CookieJar.Cookie.NAMESPACE_NON_PARTITIONED_SESSION_STORAGE,
+            })
             : null;
-        const sessionStorageDataBase64 = sessionStorage.getItem(name);
+        const namespacedSessionStorageName = CookieJar.Cookie.NAMESPACE_NON_PARTITIONED_SESSION_STORAGE + name;
+        const sessionStorageDataBase64 = sessionStorage.getItem(namespacedSessionStorageName);
         const sessionStorageData = sessionStorageDataBase64
             ? Nimiq.BufferUtils.fromBase64(sessionStorageDataBase64)
             : null;
@@ -51,13 +62,12 @@ class NonPartitionedSessionStorage {
                 // that if sessionStorage is partitioned, this will effectively only migrate data written in the same
                 // context, i.e. in top-level contexts only the sessionStore data previously written in top-level
                 // windows can be migrated and in iframes only the data written in iframes.
-                const newEncryptionKey = await CookieStorage.set(
-                    name,
-                    sessionStorageData,
+                const newEncryptionKey = await CookieStorage.set(name, sessionStorageData, {
                     encryptionKey,
-                    NonPartitionedSessionStorage.COOKIE_MAX_AGE,
-                );
-                sessionStorage.removeItem(name);
+                    maxAge: NonPartitionedSessionStorage.COOKIE_MAX_AGE,
+                    namespace: CookieJar.Cookie.NAMESPACE_NON_PARTITIONED_SESSION_STORAGE,
+                });
+                sessionStorage.removeItem(namespacedSessionStorageName);
                 return newEncryptionKey
                     ? { data: sessionStorageData, newEncryptionKey }
                     : sessionStorageData;
@@ -66,8 +76,8 @@ class NonPartitionedSessionStorage {
         } else { // eslint-disable-line no-else-return
             if (!sessionStorageData && cookieStorageData) {
                 // sessionStorage is not detected/assumed to be partitioned now but was previously. Migrate data.
-                sessionStorage.setItem(name, Nimiq.BufferUtils.toBase64(cookieStorageData));
-                CookieStorage.delete(name);
+                sessionStorage.setItem(namespacedSessionStorageName, Nimiq.BufferUtils.toBase64(cookieStorageData));
+                CookieStorage.delete(name, CookieJar.Cookie.NAMESPACE_NON_PARTITIONED_SESSION_STORAGE);
                 return cookieStorageData;
             }
             return sessionStorageData;
@@ -78,8 +88,8 @@ class NonPartitionedSessionStorage {
      * @param {string} name
      */
     static delete(name) {
-        sessionStorage.removeItem(name);
-        CookieStorage.delete(name);
+        sessionStorage.removeItem(CookieJar.Cookie.NAMESPACE_NON_PARTITIONED_SESSION_STORAGE + name);
+        CookieStorage.delete(name, CookieJar.Cookie.NAMESPACE_NON_PARTITIONED_SESSION_STORAGE);
     }
 
     /**
@@ -87,7 +97,8 @@ class NonPartitionedSessionStorage {
      * @returns {boolean}
      */
     static has(name) {
-        return !!sessionStorage.getItem(name) || CookieStorage.has(name);
+        return !!sessionStorage.getItem(CookieJar.Cookie.NAMESPACE_NON_PARTITIONED_SESSION_STORAGE + name)
+            || CookieStorage.has(name, CookieJar.Cookie.NAMESPACE_NON_PARTITIONED_SESSION_STORAGE);
     }
 
     /**

@@ -24,11 +24,15 @@ class CookieStorage {
     /**
      * @param {string} name
      * @param {Uint8Array} data
-     * @param {Uint8Array} [encryptionKey] The encryption key to use. If none is provided, a new one will be created.
-     * @param {number} [maxAge] Time in seconds after which the data gets automatically deleted.
+     * @param {Object} [options]
+     * @param {Uint8Array=} [options.encryptionKey] Encryption key to use. If not provided, a new one will be created.
+     * @param {number=} [options.maxAge] Time in seconds after which the data gets automatically deleted.
+     * @param {string=} [options.namespace]
      * @returns {Promise<Uint8Array | null>} New encryption key, if one was created.
      */
-    static async set(name, data, encryptionKey, maxAge) {
+    static async set(name, data, options = {}) {
+        const { maxAge, namespace } = options;
+        let { encryptionKey } = options;
         let createdNewKey = false;
         if (!encryptionKey) {
             encryptionKey = crypto.getRandomValues(new Uint8Array(CookieStorage.ENCRYPTION_KEY_SIZE));
@@ -45,7 +49,7 @@ class CookieStorage {
             data,
         ));
 
-        this._writeCookies(name, encryptedData, { encryptionInitVector, maxAge });
+        this._writeCookies(name, encryptedData, { encryptionInitVector, maxAge, namespace });
 
         return createdNewKey ? encryptionKey : null;
     }
@@ -56,19 +60,24 @@ class CookieStorage {
      * data or data concerning the user's privacy.
      * @param {string} name
      * @param {Uint8Array} data
-     * @param {number} [maxAge] Time in seconds after which the data gets automatically deleted.
+     * @param {Object} [options]
+     * @param {number=} [options.maxAge] Time in seconds after which the data gets automatically deleted.
+     * @param {string=} [options.namespace]
      */
-    static setPublicUnencrypted(name, data, maxAge) {
-        this._writeCookies(name, data, { maxAge });
+    static setPublicUnencrypted(name, data, options) {
+        this._writeCookies(name, data, options);
     }
 
     /**
      * @param {string} name
-     * @param {Uint8Array} [encryptionKey] Must be passed for encrypted entries.
+     * @param {Object} [options]
+     * @param {Uint8Array=} [options.encryptionKey] Must be passed for encrypted entries.
+     * @param {string=} [options.namespace]
      * @returns {Promise<Uint8Array | null>}
      */
-    static async get(name, encryptionKey) {
-        const dataAndMetadata = this._readCookies(name);
+    static async get(name, options = {}) {
+        const { encryptionKey, namespace } = options;
+        const dataAndMetadata = this._readCookies(name, namespace);
         if (!dataAndMetadata) return null;
         const { data, metadata } = dataAndMetadata;
         if (!metadata.isEncrypted) return data;
@@ -85,33 +94,35 @@ class CookieStorage {
 
     /**
      * @param {string} name
+     * @param {string} [namespace]
      */
-    static delete(name) {
-        const metadata = this._getMetaData(name);
+    static delete(name, namespace) {
+        const metadata = this._getMetaData(name, namespace);
         if (!metadata) return; // Data entry does not exist.
         for (let chunk = 0; chunk < metadata.chunkCount; ++chunk) {
-            CookieJar.deleteCookie(this._getChunkCookieName(name, chunk));
+            CookieJar.deleteCookie(this._getChunkCookieName(name, chunk, namespace));
         }
     }
 
     /**
      * @param {string} name
+     * @param {string} [namespace]
      * @returns {boolean}
      */
-    static has(name) {
-        return !!CookieJar.readCookie(this._getChunkCookieName(name, 0));
+    static has(name, namespace) {
+        return !!CookieJar.readCookie(this._getChunkCookieName(name, 0, namespace));
     }
 
     // eslint-disable-next-line valid-jsdoc
     /**
      * @param {string} name
      * @param {Uint8Array} data
-     * @param {{encryptionInitVector?: Uint8Array, maxAge?: number}} [options]
+     * @param {{encryptionInitVector?: Uint8Array, maxAge?: number, namespace?: string}} [options]
      * @private
      */
     static _writeCookies(name, data, options = {}) {
-        const { encryptionInitVector, maxAge } = options;
-        const previousMetadata = this._getMetaData(name);
+        const { encryptionInitVector, maxAge, namespace } = options;
+        const previousMetadata = this._getMetaData(name, namespace);
         const previousChunkCount = previousMetadata ? previousMetadata.chunkCount : 0;
 
         const metadata = {
@@ -130,7 +141,7 @@ class CookieStorage {
         /** @type {string | null} */
         let remainingDataToWrite = this._toBase64UrlWithoutPadding(completeData);
         do {
-            const chunkCookieName = this._getChunkCookieName(name, chunkCount);
+            const chunkCookieName = this._getChunkCookieName(name, chunkCount, namespace);
             remainingDataToWrite = CookieJar.writeCookie(chunkCookieName, remainingDataToWrite, maxAge);
             chunkCount += 1;
         } while (remainingDataToWrite);
@@ -141,28 +152,29 @@ class CookieStorage {
             metadata.chunkCount = chunkCount;
             encodedMetadata = this._encodeMetadata(metadata);
             completeData.set(encodedMetadata);
-            const firstChunkCookieName = this._getChunkCookieName(name, 0);
+            const firstChunkCookieName = this._getChunkCookieName(name, 0, namespace);
             CookieJar.writeCookie(firstChunkCookieName, this._toBase64UrlWithoutPadding(completeData), maxAge);
         }
 
         // Delete old excess cookies.
         for (let chunkToDelete = chunkCount; chunkToDelete < previousChunkCount; ++chunkToDelete) {
-            CookieJar.deleteCookie(this._getChunkCookieName(name, chunkToDelete));
+            CookieJar.deleteCookie(this._getChunkCookieName(name, chunkToDelete, namespace));
         }
     }
 
     /**
      * @param {string} name
+     * @param {string} [namespace]
      * @returns {{metadata: CookieMetadata, data: Uint8Array} | null}
      * @private
      */
-    static _readCookies(name) {
-        const metadata = this._getMetaData(name);
+    static _readCookies(name, namespace) {
+        const metadata = this._getMetaData(name, namespace);
         if (!metadata) return null;
 
         let cookieDataBase64Url = '';
         for (let chunk = 0; chunk < metadata.chunkCount; ++chunk) {
-            const chunkData = CookieJar.readCookie(this._getChunkCookieName(name, chunk));
+            const chunkData = CookieJar.readCookie(this._getChunkCookieName(name, chunk, namespace));
             if (!chunkData) return null;
             cookieDataBase64Url += chunkData;
         }
@@ -174,11 +186,12 @@ class CookieStorage {
 
     /**
      * @param {string} name
+     * @param {string} [namespace]
      * @returns {CookieMetadata | null}
      * @private
      */
-    static _getMetaData(name) {
-        const firstChunk = CookieJar.readCookie(this._getChunkCookieName(name, 0));
+    static _getMetaData(name, namespace) {
+        const firstChunk = CookieJar.readCookie(this._getChunkCookieName(name, 0, namespace));
         if (!firstChunk) return null;
         // Read enough base64 data to include the longest possible metadata, if the cookie is long enough.
         return this._decodeMetadata(Nimiq.BufferUtils.fromBase64Url(firstChunk.substring(
@@ -258,12 +271,14 @@ class CookieStorage {
     /**
      * @param {string} name
      * @param {number} chunk
+     * @param {string} [namespace = CookieJar.Cookie.NAMESPACE_COOKIE_STORAGE]
      * @returns {string}
      * @private
      */
-    static _getChunkCookieName(name, chunk) {
+    static _getChunkCookieName(name, chunk, namespace = CookieJar.Cookie.NAMESPACE_COOKIE_STORAGE) {
         name = CookieJar.sanitizeCookieName(name, /* encodeInvalidChars */ false);
-        return `${CookieJar.Cookie.NAMESPACE_COOKIE_STORAGE}${name}${chunk !== 0 ? `${chunk.toString(36)}` : ''}`;
+        namespace = CookieJar.sanitizeCookieName(namespace, /* encodeInvalidChars */ false);
+        return `${namespace}${name}${chunk !== 0 ? `${chunk.toString(36)}` : ''}`;
     }
 
     /**
