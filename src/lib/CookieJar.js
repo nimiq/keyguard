@@ -182,12 +182,13 @@ class CookieJar { // eslint-disable-line no-unused-vars
 
 /**
  * @readonly
- * @enum { 'lang' | 'k' | 'removeKey' | 'cs.' | 'accounts' | 'migrate' }
+ * @enum { 'lang' | 'k' | 'removeKey' | 'ssnp' | 'cs.' | 'accounts' | 'migrate' }
  */
 CookieJar.Cookie = {
     LANGUAGE: /** @type {'lang'} */ ('lang'),
     KEYS: /** @type {'k'} */ ('k'),
     REMOVE_KEY: /** @type {'removeKey'} */ ('removeKey'),
+    FLAG_SESSION_STORAGE_NOT_PARTITIONED: /** @type {'ssnp'} */ ('ssnp'),
     NAMESPACE_COOKIE_STORAGE: /** @type {'cs.'} */ ('cs.'), // no other cookies should start with 'cs.'
     /**
      * @deprecated
