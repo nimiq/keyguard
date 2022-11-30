@@ -247,7 +247,7 @@ class RpcServer { // eslint-disable-line no-unused-vars
             return this._receive(urlRequest);
         }
 
-        // Check for a stored request referenced by a URL 'id' parameter
+        // Check for a stored request referenced by a URL 'rpcId' parameter
         const searchParams = new URLSearchParams(window.location.search);
         if (searchParams.has(UrlRpcEncoder.URL_SEARCHPARAM_NAME)) {
             const storedRequest = window.sessionStorage.getItem(
@@ -292,6 +292,9 @@ class RpcServer { // eslint-disable-line no-unused-vars
             console.debug('RpcServer ACCEPT', state.data);
 
             if (persistMessage) {
+                // We don't have to take storage partitioning between top-level, first-party contexts and iframe,
+                // third-party contexts into account here because the request doesn't have to be shared between
+                // top-level windows and iframes.
                 sessionStorage.setItem(`request-${state.data.id}`, JsonUtils.stringify(state.toRequestObject()));
             }
 

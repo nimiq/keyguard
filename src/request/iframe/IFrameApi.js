@@ -2,6 +2,7 @@
 
 /* global BrowserDetection */
 /* global CookieJar */
+/* global NonPartitionedSessionStorage */
 /* global AccountStore */
 /* global KeyStore */
 /* global Nimiq */
@@ -33,12 +34,20 @@ class IFrameApi {
      * @returns {Promise<KeyguardRequest.DerivedAddress[]>}
      */
     async deriveAddresses(state, request) {
-        const storedEntropy = sessionStorage.getItem(IFrameApi.SESSION_STORAGE_KEY_PREFIX + request.keyId);
+        const storedEntropy = await NonPartitionedSessionStorage.get(
+            IFrameApi.SESSION_STORAGE_KEY_PREFIX + request.keyId,
+            request.tmpCookieEncryptionKey,
+        );
         if (!storedEntropy) throw new Errors.KeyNotFoundError();
+        if ('newEncryptionKey' in storedEntropy) {
+            // Top-level sessionStorage shouldn't ever have to be migrated over to CookieStorage in iframes, see
+            // NonPartitionedSessionStorage.get, therefore we don't handle this case here.
+            throw new Errors.KeyguardError('Unexpected: top-level sessionStorage got migrated in iframe.');
+        }
 
         await loadNimiq();
 
-        const entropy = new Nimiq.Entropy(Nimiq.BufferUtils.fromBase64(storedEntropy));
+        const entropy = new Nimiq.Entropy(storedEntropy);
         const master = entropy.toExtendedPrivateKey();
 
         return request.paths.map(path => ({
@@ -53,8 +62,11 @@ class IFrameApi {
      * @returns {Promise<KeyguardRequest.SimpleResult>}
      */
     async releaseKey(state, request) {
-        if (request.shouldBeRemoved && sessionStorage.getItem(IFrameApi.SESSION_STORAGE_KEY_PREFIX + request.keyId)) {
+        if (request.shouldBeRemoved
+            && NonPartitionedSessionStorage.has(IFrameApi.SESSION_STORAGE_KEY_PREFIX + request.keyId)) {
             if (BrowserDetection.isIOS() || BrowserDetection.isSafari()) {
+                // In Safari, the KeyStore's indexeddb is not accessible in iframes. Instead, set a cookie as marker to
+                // delete the key in TopLevelApi the next time the Keyguard is opened in a top-level window.
                 const removeKeyCookie = CookieJar.readCookie(CookieJar.Cookie.REMOVE_KEY);
                 const removeKeyArray = removeKeyCookie ? JSON.parse(removeKeyCookie) : [];
                 removeKeyArray.push(request.keyId);
@@ -63,7 +75,7 @@ class IFrameApi {
                 await KeyStore.instance.remove(request.keyId);
             }
         }
-        sessionStorage.removeItem(IFrameApi.SESSION_STORAGE_KEY_PREFIX + request.keyId);
+        NonPartitionedSessionStorage.delete(IFrameApi.SESSION_STORAGE_KEY_PREFIX + request.keyId);
         return { success: true };
     }
 

@@ -11,6 +11,7 @@
 /* global KeyStore */
 /* global BitcoinKey */
 /* global QrVideoScanner */
+/* global NonPartitionedSessionStorage */
 
 /**
  * @callback ImportFile.resolve
@@ -175,27 +176,36 @@ class ImportFile {
         /** @type {string | undefined} */
         let bitcoinXPub;
 
-        if (key.secret instanceof Nimiq.PrivateKey) {
-            addresses.push({
-                keyPath: Constants.LEGACY_DERIVATION_PATH,
-                address: key.deriveAddress('').serialize(),
-            });
-        } else if (key.secret instanceof Nimiq.Entropy) {
-            /** @type {KeyguardRequest.ImportRequest} */
-            (this._request).requestedKeyPaths.forEach(keyPath => {
+        /** @type {Uint8Array | undefined} */
+        let tmpCookieEncryptionKey;
+
+        try {
+            if (key.secret instanceof Nimiq.PrivateKey) {
                 addresses.push({
-                    keyPath,
-                    address: /** @type {Key} */(key).deriveAddress(keyPath).serialize(),
+                    keyPath: Constants.LEGACY_DERIVATION_PATH,
+                    address: key.deriveAddress('').serialize(),
                 });
-            });
+            } else if (key.secret instanceof Nimiq.Entropy) {
+                /** @type {KeyguardRequest.ImportRequest} */
+                (this._request).requestedKeyPaths.forEach(keyPath => {
+                    addresses.push({
+                        keyPath,
+                        address: /** @type {Key} */(key).deriveAddress(keyPath).serialize(),
+                    });
+                });
 
-            bitcoinXPub = new BitcoinKey(key).deriveExtendedPublicKey(this._request.bitcoinXPubPath);
+                bitcoinXPub = new BitcoinKey(key).deriveExtendedPublicKey(this._request.bitcoinXPubPath);
 
-            // Store entropy in SessionStorage so addresses can be derived in the KeyguardIframe
-            const secretString = Nimiq.BufferUtils.toBase64(key.secret.serialize());
-            sessionStorage.setItem(ImportApi.SESSION_STORAGE_KEY_PREFIX + key.id, secretString);
-        } else {
-            this._reject(new Errors.KeyguardError(`Unkown key type ${key.type}`));
+                // Store entropy in NonPartitionedSessionStorage so addresses can be derived in the KeyguardIframe
+                tmpCookieEncryptionKey = await NonPartitionedSessionStorage.set(
+                    ImportApi.SESSION_STORAGE_KEY_PREFIX + key.id,
+                    key.secret.serialize(),
+                ) || undefined;
+            } else {
+                throw new Error(`Unknown key type ${key.type}`);
+            }
+        } catch (error) {
+            this._reject(new Errors.KeyguardError(error.message || error));
             return;
         }
 
@@ -211,6 +221,12 @@ class ImportFile {
             fileExported: true,
             wordsExported: true,
             bitcoinXPub,
+
+            // The Hub will get access to the encryption key, but not the encrypted cookie. The server can potentially
+            // get access to the encrypted cookie, but not the encryption key (the result including the encryption key
+            // will be set as url fragment and thus not be sent to the server), as long as the Hub is not compromised.
+            // An attacker would need to get access to the Keyguard and Hub servers.
+            tmpCookieEncryptionKey,
         }];
 
         this._resolve(result);

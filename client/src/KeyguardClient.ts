@@ -148,9 +148,13 @@ export class KeyguardClient {
         return this._iframeRequest<EmptyRequest, SimpleResult>(KeyguardCommand.HAS_KEYS);
     }
 
-    public async deriveAddresses(keyId: string, paths: string[]): Promise<DerivedAddress[]> {
+    public async deriveAddresses(
+        keyId: string,
+        paths: string[],
+        tmpCookieEncryptionKey?: Uint8Array,
+    ): Promise<DerivedAddress[]> {
         return this._iframeRequest<DeriveAddressesRequest, DerivedAddress[]>
-            (KeyguardCommand.DERIVE_ADDRESSES, { keyId, paths });
+            (KeyguardCommand.DERIVE_ADDRESSES, { keyId, paths, tmpCookieEncryptionKey });
     }
 
     public async releaseKey(keyId: string, shouldBeRemoved = false): Promise<SimpleResult> {

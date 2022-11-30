@@ -25,6 +25,7 @@ export type SingleKeyResult = {
     fileExported: boolean;
     wordsExported: boolean;
     bitcoinXPub?: string;
+    tmpCookieEncryptionKey?: Uint8Array;
 };
 
 export type TransactionInfo = {
@@ -99,6 +100,7 @@ export type DeriveAddressRequest = SimpleRequest & {
 export type DeriveAddressesRequest = {
     keyId: string,
     paths: string[],
+    tmpCookieEncryptionKey?: Uint8Array,
 };
 
 export type EmptyRequest = null;

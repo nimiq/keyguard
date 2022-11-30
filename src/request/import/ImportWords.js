@@ -15,6 +15,7 @@
 /* global TopLevelApi */
 /* global Utf8Tools */
 /* global BitcoinKey */
+/* global NonPartitionedSessionStorage */
 
 /**
  * @callback ImportWords.resolve
@@ -180,9 +181,17 @@ class ImportWords {
 
                 const bitcoinXPub = new BitcoinKey(key).deriveExtendedPublicKey(this._request.bitcoinXPubPath);
 
+                // Store entropy in NonPartitionedSessionStorage so addresses can be derived in the KeyguardIframe
+                const tmpCookieEncryptionKey = await NonPartitionedSessionStorage.set(
+                    ImportApi.SESSION_STORAGE_KEY_PREFIX + key.id,
+                    key.secret.serialize(),
+                ) || undefined;
+
+                await KeyStore.instance.put(key, encryptionKey || undefined);
+
                 /** @type {KeyguardRequest.SingleKeyResult} */
                 const result = {
-                    keyId: await KeyStore.instance.put(key, encryptionKey || undefined),
+                    keyId: key.id,
                     keyType: Nimiq.Secret.Type.ENTROPY,
                     addresses,
 
@@ -191,11 +200,14 @@ class ImportWords {
                     fileExported: true,
                     wordsExported: true,
                     bitcoinXPub,
+
+                    // The Hub will get access to the encryption key, but not the encrypted cookie. The server can
+                    // potentially get access to the encrypted cookie, but not the encryption key (the result including
+                    // the encryption key will be set as url fragment and thus not be sent to the server), as long as
+                    // the Hub is not compromised. An attacker would need to get access to the Keyguard and Hub servers.
+                    tmpCookieEncryptionKey,
                 };
                 this._keyResults.push(result);
-
-                const secretString = Nimiq.BufferUtils.toBase64(key.secret.serialize());
-                sessionStorage.setItem(ImportApi.SESSION_STORAGE_KEY_PREFIX + result.keyId, secretString);
 
                 if (encryptionKey) {
                     // Make the encrypted secret available for the Login File
@@ -223,8 +235,6 @@ class ImportWords {
                     wordsExported: true,
                 };
                 this._keyResults.push(result);
-
-                sessionStorage.setItem(ImportApi.SESSION_STORAGE_KEY_PREFIX + result.keyId, 'Private key');
             } else {
                 TopLevelApi.setLoading(false);
             }
