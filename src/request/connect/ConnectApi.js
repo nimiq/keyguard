@@ -3,18 +3,18 @@
 /* global Errors */
 
 const PermissionKeyguardCommands = [
-    /** @type {KeyguardRequest.KeyguardCommand} */ ('remove-key'),
-    /** @type {KeyguardRequest.KeyguardCommand} */ ('export'),
-    /** @type {KeyguardRequest.KeyguardCommand} */ ('change-password'),
-    // /** @type {KeyguardRequest.KeyguardCommand} */ ('sign-transaction'), // Already third-party whitelisted in Hub
-    /** @type {KeyguardRequest.KeyguardCommand} */ ('sign-multisig-transaction'),
-    // /** @type {KeyguardRequest.KeyguardCommand} */ ('sign-message'), // Already third-party whitelisted in Hub
-    /** @type {KeyguardRequest.KeyguardCommand} */ ('derive-address'),
+    /** @type {KeyguardCommand.KeyguardCommand} */ ('remove-key'),
+    /** @type {KeyguardCommand.KeyguardCommand} */ ('export'),
+    /** @type {KeyguardCommand.KeyguardCommand} */ ('change-password'),
+    // /** @type {KeyguardCommand.KeyguardCommand} */ ('sign-transaction'), // Already third-party whitelisted in Hub
+    /** @type {KeyguardCommand.KeyguardCommand} */ ('sign-multisig-transaction'),
+    // /** @type {KeyguardCommand.KeyguardCommand} */ ('sign-message'), // Already third-party whitelisted in Hub
+    /** @type {KeyguardCommand.KeyguardCommand} */ ('derive-address'),
     // Bitcoin
-    /** @type {KeyguardRequest.KeyguardCommand} */ ('sign-btc-transaction'),
-    /** @type {KeyguardRequest.KeyguardCommand} */ ('derive-btc-xpub'),
+    /** @type {KeyguardCommand.KeyguardCommand} */ ('sign-btc-transaction'),
+    /** @type {KeyguardCommand.KeyguardCommand} */ ('derive-btc-xpub'),
     // Swap
-    /** @type {KeyguardRequest.KeyguardCommand} */ ('sign-swap'),
+    /** @type {KeyguardCommand.KeyguardCommand} */ ('sign-swap'),
 ];
 
 /** @extends {TopLevelApi<KeyguardRequest.ConnectRequest>} */
@@ -53,7 +53,7 @@ class ConnectApi extends TopLevelApi { // eslint-disable-line no-unused-vars
 
     /**
      * @param {unknown} permissions
-     * @returns {KeyguardRequest.KeyguardCommand[]}
+     * @returns {KeyguardCommand.KeyguardCommand[]}
      */
     parsePermissions(permissions) {
         if (!Array.isArray(permissions)) {
