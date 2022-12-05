@@ -246,7 +246,7 @@ class SignMultisigTransaction {
             aggregatedSecret = request.multisigConfig.secret.aggregatedSecret;
         } else {
             // If we only have encrypted secrets, decrypt them and aggregate them with the bScalar
-            const rsaKey = await key.getRsaPrivateKey();
+            const rsaKey = await key.getRsaPrivateKey(request.multisigConfig.secret.keyParams);
 
             /** @type {Uint8Array[]} */
             let secrets;

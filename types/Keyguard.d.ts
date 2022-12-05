@@ -32,9 +32,16 @@ type AccountRecord = AccountInfo & {
     encryptedKeyPair: Uint8Array
 }
 
+type EncryptionKeyParams = {
+    kdf: string
+    iterations: number
+    keySize: number
+}
+
 type RsaKeyPairExport = {
     privateKey: Uint8Array
     publicKey: Uint8Array
+    keyParams: EncryptionKeyParams
 }
 
 type KeyRecord = {
@@ -55,6 +62,7 @@ type MultisigConfig = {
     } | {
         encryptedSecrets: Uint8Array[]
         bScalar: Uint8Array
+        keyParams: EncryptionKeyParams
     }
     aggregatedCommitment: Nimiq.Commitment
     userName?: string
