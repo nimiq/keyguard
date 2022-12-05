@@ -9,6 +9,8 @@
 /* global Constants */
 /* global Key */
 /* global OasisSettlementInstructionUtils */
+/* global NonPartitionedSessionStorage */
+/* global Utf8Tools */
 
 class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint-disable-line no-unused-vars
     /**
@@ -19,13 +21,22 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
     async signSwapTransactions(state, request) {
         const storageKey = Constants.SWAP_IFRAME_SESSION_STORAGE_KEY_PREFIX + request.swapId;
 
-        const storedData = sessionStorage.getItem(storageKey);
-        sessionStorage.removeItem(storageKey); // Delete storage
+        const storedData = await NonPartitionedSessionStorage.get(
+            storageKey,
+            request.tmpCookieEncryptionKey,
+        );
+        NonPartitionedSessionStorage.delete(storageKey);
 
         if (!storedData) throw new Error('No swap stored in SessionStorage');
+        if ('newEncryptionKey' in storedData) {
+            // Top-level sessionStorage shouldn't ever have to be migrated over to CookieStorage in iframes, see
+            // NonPartitionedSessionStorage.get, therefore we don't handle this case here.
+            throw new Error('Unexpected: top-level sessionStorage got migrated in iframe.');
+        }
 
+        const storedDataJson = Utf8Tools.utf8ByteArrayToString(storedData);
         /** @type {{keys: {nim: string, btc: string[], eur: string, btc_refund?: string}, request: any}} */
-        const { keys: privateKeys, request: storedRawRequest } = (JSON.parse(storedData));
+        const { keys: privateKeys, request: storedRawRequest } = (JSON.parse(storedDataJson));
 
         if (request.fund.type === 'NIM' || request.redeem.type === 'NIM') {
             if (!privateKeys.nim) throw new Error('No NIM key stored in SessionStorage');

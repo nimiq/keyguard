@@ -15,15 +15,6 @@ class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) {
             throw new Errors.InvalidRequestError('request is required');
         }
 
-        try {
-            sessionStorage.setItem('_test', 'write-access');
-            const stored = sessionStorage.getItem('_test');
-            if (stored !== 'write-access') throw new Error();
-            sessionStorage.removeItem('_test');
-        } catch (e) {
-            throw new Error('Cannot access browser storage because of privacy settings');
-        }
-
         /** @type {Parsed<KeyguardRequest.SignSwapRequest>} */
         const parsedRequest = {};
         parsedRequest.appName = this.parseAppName(request.appName);

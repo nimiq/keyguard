@@ -315,6 +315,7 @@ export type SignSwapRequest = SignSwapRequestStandard | SignSwapRequestSlider;
 
 export type SignSwapResult = SimpleResult & {
     eurPubKey?: string,
+    tmpCookieEncryptionKey?: Uint8Array;
 };
 
 // Used in swap-iframe
@@ -347,6 +348,7 @@ export type SignSwapTransactionsRequest = {
         timeout: number,
         htlcId: string,
     },
+    tmpCookieEncryptionKey?: Uint8Array;
 };
 
 export type SignMessageRequest = SimpleRequest & {

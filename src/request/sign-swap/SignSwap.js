@@ -18,6 +18,7 @@
 /* global SwapFeesTooltip */
 /* global BalanceDistributionBar */
 /* global Constants */
+/* global NonPartitionedSessionStorage */
 
 /**
  * @callback SignSwap.resolve
@@ -496,31 +497,40 @@ class SignSwap {
         }
 
         try {
-            sessionStorage.setItem(
+            // Make private keys and parsed swap request available to swap-iframe.
+            // Note that this data can be arbitrarily long, for example due to long labels or many Bitcoin inputs, but
+            // NonPartitionedSessionStorage and CookieStorage can handle big data chunks.
+            const data = JSON.stringify({
+                keys: privateKeys,
+                // Serialize request to store in NonPartitionedSessionStorage
+                request,
+            }, (_, value) => {
+                if (value instanceof Nimiq.Transaction) {
+                    return value.toPlain();
+                }
+                if (value instanceof Uint8Array) {
+                    return Nimiq.BufferUtils.toHex(value);
+                }
+                return value;
+            });
+            const tmpCookieEncryptionKey = await NonPartitionedSessionStorage.set(
                 Constants.SWAP_IFRAME_SESSION_STORAGE_KEY_PREFIX + request.swapId,
-                JSON.stringify({
-                    keys: privateKeys,
-                    // Serialize request to store in SessionStorage
-                    request,
-                }, (_, value) => {
-                    if (value instanceof Nimiq.Transaction) {
-                        return value.toPlain();
-                    }
-                    if (value instanceof Uint8Array) {
-                        return Nimiq.BufferUtils.toHex(value);
-                    }
-                    return value;
-                }),
-            );
+                Utf8Tools.stringToUtf8ByteArray(data),
+            ) || undefined;
+
+            resolve({
+                success: true,
+                eurPubKey,
+
+                // The Hub will get access to the encryption key, but not the encrypted cookie. The server can
+                // potentially get access to the encrypted cookie, but not the encryption key (the result including
+                // the encryption key will be set as url fragment and thus not be sent to the server), as long as
+                // the Hub is not compromised. An attacker would need to get access to the Keyguard and Hub servers.
+                tmpCookieEncryptionKey,
+            });
         } catch (error) {
             reject(error);
-            return;
         }
-
-        resolve({
-            success: true,
-            eurPubKey,
-        });
     }
 
     run() {
