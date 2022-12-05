@@ -194,7 +194,7 @@ class KeyStore {
      * @param {RsaKeyPairExport} rsaKeyPair
      * @returns {Promise<string>}
      */
-    async addRsaKeypair(id, rsaKeyPair) {
+    async setRsaKeypair(id, rsaKeyPair) {
         const record = await this._get(id);
         if (!record) throw new Error('Key does not exist');
         record.rsaKeyPair = rsaKeyPair;

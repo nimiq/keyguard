@@ -115,14 +115,18 @@ class Connect {
             });
         }
 
+        const rsaPublicCryptoKey = await key.getRsaPublicKey(Key.defaultEncryptionKeyParams);
+        const keyParams = /** @type {RsaKeyPairExport} */ (key.rsaKeyPair).keyParams;
+
         /** @type {KeyguardRequest.ConnectResult} */
         const result = {
             signatures,
             encryptionKey: {
                 format: 'spki',
-                keyData: new Uint8Array(await window.crypto.subtle.exportKey('spki', await key.getRsaPublicKey())),
+                keyData: new Uint8Array(await window.crypto.subtle.exportKey('spki', rsaPublicCryptoKey)),
                 algorithm: { name: 'RSA-OAEP', hash: 'SHA-256' },
                 keyUsages: ['encrypt'],
+                keyParams,
             },
         };
 
