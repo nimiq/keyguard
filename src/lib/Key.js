@@ -18,6 +18,37 @@ class Key {
     }
 
     /**
+     * @returns {EncryptionKeyParams}
+     */
+    static get defaultEncryptionKeyParams() {
+        return {
+            kdf: CONFIG.RSA_KDF_FUNCTION,
+            iterations: CONFIG.RSA_KDF_ITERATIONS,
+            keySize: CONFIG.RSA_KEY_BITS,
+        };
+    }
+
+    /**
+     * @param {EncryptionKeyParams} paramsA
+     * @param {EncryptionKeyParams} paramsB
+     * @returns {boolean}
+     */
+    static _isEncryptionKeyParamsEqual(paramsA, paramsB) {
+        return typeof paramsA === 'object' && typeof paramsB === 'object'
+            && paramsA.kdf === paramsB.kdf
+            && paramsA.iterations === paramsB.iterations
+            && paramsA.keySize === paramsB.keySize;
+    }
+
+    /**
+     * @param {EncryptionKeyParams} params
+     * @returns {boolean}
+     */
+    static _isDefaultEncryptionKeyParams(params) {
+        return Key._isEncryptionKeyParamsEqual(params, Key.defaultEncryptionKeyParams);
+    }
+
+    /**
      * @param {Nimiq.Entropy|Nimiq.PrivateKey} secret
      * @param {KeyConfig} [config]
      */
@@ -124,12 +155,15 @@ class Key {
     }
 
     /**
+     * @param {EncryptionKeyParams} keyParams
      * @returns {Promise<CryptoKey>}
      */
-    async getRsaPrivateKey() {
-        if (!this.rsaKeyPair) {
-            this.rsaKeyPair = await this._computeRsaKeyPair();
-            await KeyStore.instance.addRsaKeypair(this.id, this.rsaKeyPair);
+    async getRsaPrivateKey(keyParams) {
+        if (!this.rsaKeyPair || !Key._isEncryptionKeyParamsEqual(keyParams, this.rsaKeyPair.keyParams)) {
+            this.rsaKeyPair = await this._computeRsaKeyPair(keyParams);
+            if (Key._isDefaultEncryptionKeyParams(keyParams)) {
+                await KeyStore.instance.setRsaKeypair(this.id, this.rsaKeyPair);
+            }
         }
 
         return window.crypto.subtle.importKey(
@@ -142,12 +176,15 @@ class Key {
     }
 
     /**
+     * @param {EncryptionKeyParams} keyParams
      * @returns {Promise<CryptoKey>}
      */
-    async getRsaPublicKey() {
-        if (!this.rsaKeyPair) {
-            this.rsaKeyPair = await this._computeRsaKeyPair();
-            await KeyStore.instance.addRsaKeypair(this.id, this.rsaKeyPair);
+    async getRsaPublicKey(keyParams) {
+        if (!this.rsaKeyPair || !Key._isEncryptionKeyParamsEqual(keyParams, this.rsaKeyPair.keyParams)) {
+            this.rsaKeyPair = await this._computeRsaKeyPair(keyParams);
+            if (Key._isDefaultEncryptionKeyParams(keyParams)) {
+                await KeyStore.instance.setRsaKeypair(this.id, this.rsaKeyPair);
+            }
         }
 
         return window.crypto.subtle.importKey(
@@ -160,9 +197,10 @@ class Key {
     }
 
     /**
+     * @param {EncryptionKeyParams} keyParams
      * @returns {Promise<RsaKeyPairExport>}
      */
-    async _computeRsaKeyPair() {
+    async _computeRsaKeyPair(keyParams) {
         const iframe = document.createElement('iframe');
         iframe.classList.add('rsa-sandboxed-iframe'); // Styles in common.css hide this class
         iframe.setAttribute('sandbox', 'allow-scripts');
@@ -177,18 +215,26 @@ class Key {
         }
 
         // Extend 32-byte secret into 1024-byte seed as bytestring
-        const seed = Nimiq.CryptoUtils.computePBKDF2sha512(
-            this.secret.serialize(),
-            this._defaultAddress.serialize(),
-            1024, // Iterations
-            1024, // Output size (required)
-        );
+        /** @type {Nimiq.SerialBuffer} */
+        let seed;
+        switch (keyParams.kdf) {
+            case 'PBKDF2-SHA512':
+                seed = Nimiq.CryptoUtils.computePBKDF2sha512(
+                    this.secret.serialize(),
+                    this._defaultAddress.serialize(),
+                    keyParams.iterations,
+                    1024, // Output size (required)
+                );
+                break;
+            default:
+                throw new Error(`Unsupported KDF function: ${keyParams.kdf}`);
+        }
 
         // Send computation command to iframe
         iframe.contentWindow.postMessage({
             command: 'generateKey',
             seed: Nimiq.BufferUtils.toAscii(seed), // seed is a bytestring
-            keySize: CONFIG.RSA_KEY_BITS,
+            keySize: keyParams.keySize,
         }, '*');
 
         /** @type {(keyPair: RsaKeyPairExport) => void} */
@@ -216,6 +262,7 @@ class Key {
             resolver({
                 privateKey: new Uint8Array(data.privateKey),
                 publicKey: new Uint8Array(data.publicKey),
+                keyParams,
             });
         }
 

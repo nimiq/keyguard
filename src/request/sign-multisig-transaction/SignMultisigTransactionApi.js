@@ -135,25 +135,60 @@ class SignMultisigTransactionApi extends TopLevelApi {
                     'Invalid secret.encryptedSecrets: must be an array with at least 2 elements',
                 );
             }
-            const rsaCipherLength = CONFIG.RSA_KEY_BITS / 8;
+            // Validate encryptedSecrets are Uint8Arrays
             if (object.secret.encryptedSecrets.some(
                 /**
                  * @param {unknown} array
                  * @returns {boolean}
                  */
-                array => !(array instanceof Uint8Array)
-                || array.length !== rsaCipherLength,
+                array => !(array instanceof Uint8Array),
             )) {
                 throw new Errors.InvalidRequestError(
-                    `Invalid secret.encryptedSecrets: must be an array of Uint8Array(${rsaCipherLength})`,
+                    'Invalid secret.encryptedSecrets: must be an array of Uint8Arrays',
                 );
             }
+            // Validate the RSA key used to encrypt the secrets is a supported size
+            const rsaKeySize = object.secret.encryptedSecrets[0].length * 8;
+            if (!CONFIG.RSA_SUPPORTED_KEY_BITS.includes(rsaKeySize)) {
+                throw new Errors.InvalidRequestError('Invalid secret.encryptedSecrets: invalid RSA key size');
+            }
+            // Validate all encryptedSecrets are the same length
+            if (object.secret.encryptedSecrets.some(
+                /**
+                 * @param {Uint8Array} array
+                 * @returns {boolean}
+                 */
+                array => array.length * 8 !== rsaKeySize,
+            )) {
+                throw new Errors.InvalidRequestError(
+                    'Invalid secret.encryptedSecrets: encrypted strings must be the same length',
+                );
+            }
+            // Validate bScalar
             if (!(object.secret.bScalar instanceof Uint8Array) || object.secret.bScalar.length !== 32) {
                 throw new Errors.InvalidRequestError('Invalid secret.bScalar: must be an Uint8Array(32)');
+            }
+            // Validate keyParams
+            if (!object.secret.keyParams) {
+                throw new Errors.InvalidRequestError('Missing secret.keyParams');
+            }
+            const keyParams = object.secret.keyParams;
+            if (!('kdf' in keyParams) || !('iterations' in keyParams) || !('keySize' in keyParams)) {
+                throw new Errors.InvalidRequestError('Invalid secret.keyParams: missing properties');
+            }
+            if (!CONFIG.RSA_SUPPORTED_KDF_FUNCTIONS.includes(keyParams.kdf)) {
+                throw new Errors.InvalidRequestError(`Unsupported keyParams KDF function: ${keyParams.kdf}`);
+            }
+            if (!CONFIG.RSA_SUPPORTED_KDF_ITERATIONS[keyParams.kdf].includes(keyParams.iterations)) {
+                throw new Errors.InvalidRequestError(`Unsupported keyParams KDF iterations: ${keyParams.iterations}`);
+            }
+            if (keyParams.keySize !== rsaKeySize) {
+                throw new Errors.InvalidRequestError(`Wrong keyParams key size: ${keyParams.keySize}`);
             }
             secret = {
                 encryptedSecrets: object.secret.encryptedSecrets,
                 bScalar: object.secret.bScalar,
+                keyParams,
             };
         } else {
             throw new Errors.InvalidRequestError('Invalid secret format');
