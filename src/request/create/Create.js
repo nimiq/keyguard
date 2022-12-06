@@ -7,6 +7,7 @@
 /* global TopLevelApi */
 /* global Identicon */
 /* global BitcoinKey */
+/* global PolygonKey */
 /* global IqonHash */
 /* global LoginFileAnimation */
 /* global DownloadLoginFile */
@@ -21,7 +22,7 @@
 
 class Create {
     /**
-     * @param {KeyguardRequest.CreateRequest} request
+     * @param {Parsed<KeyguardRequest.CreateRequest>} request
      * @param {Create.resolve} resolve
      * @param {reject} reject
      */
@@ -171,7 +172,7 @@ class Create {
     }
 
     /**
-     * @param {KeyguardRequest.CreateRequest} request
+     * @param {Parsed<KeyguardRequest.CreateRequest>} request
      */
     async finish(request) {
         TopLevelApi.setLoading(true);
@@ -180,6 +181,7 @@ class Create {
         await KeyStore.instance.put(key, password);
 
         const keyPath = request.defaultKeyPath;
+        const polygonKeypath = `${request.polygonAccountPath}/0/0`;
 
         /** @type {KeyguardRequest.KeyResult} */
         const result = [{
@@ -192,6 +194,10 @@ class Create {
             fileExported: true,
             wordsExported: false,
             bitcoinXPub: new BitcoinKey(key).deriveExtendedPublicKey(request.bitcoinXPubPath),
+            polygonAddresses: [{
+                address: new PolygonKey(key).deriveAddress(polygonKeypath),
+                keyPath: polygonKeypath,
+            }],
         }];
 
         this._resolve(result);

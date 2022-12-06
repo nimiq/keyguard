@@ -6,7 +6,7 @@
 class CreateApi extends BitcoinRequestParserMixin(TopLevelApi) { // eslint-disable-line no-unused-vars
     /**
      * @param {KeyguardRequest.CreateRequest} request
-     * @returns {Promise<KeyguardRequest.CreateRequest>}
+     * @returns {Promise<Parsed<KeyguardRequest.CreateRequest>>}
      */
     async parseRequest(request) {
         if (!request) {
@@ -18,6 +18,7 @@ class CreateApi extends BitcoinRequestParserMixin(TopLevelApi) { // eslint-disab
         parsedRequest.defaultKeyPath = this.parsePath(request.defaultKeyPath, 'defaultKeyPath');
         parsedRequest.enableBackArrow = this.parseBoolean(request.enableBackArrow);
         parsedRequest.bitcoinXPubPath = this.parseBitcoinPath(request.bitcoinXPubPath, 'bitcoinXPubPath');
+        parsedRequest.polygonAccountPath = this.parsePath(request.polygonAccountPath, 'polygonAccountPath');
 
         return parsedRequest;
     }

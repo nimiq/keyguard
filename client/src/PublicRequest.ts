@@ -25,6 +25,10 @@ export type SingleKeyResult = {
     fileExported: boolean;
     wordsExported: boolean;
     bitcoinXPub?: string;
+    polygonAddresses?: Array<{
+        address: string, // Could be a Uint8Array by decoding the address as HEX?
+        keyPath: string,
+    }>;
     tmpCookieEncryptionKey?: Uint8Array;
 };
 
@@ -90,6 +94,7 @@ export type CreateRequest = BasicRequest & {
     defaultKeyPath: string,
     enableBackArrow?: boolean,
     bitcoinXPubPath: string,
+    polygonAccountPath: string,
 };
 
 export type DeriveAddressRequest = SimpleRequest & {
