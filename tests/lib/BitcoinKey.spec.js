@@ -39,7 +39,7 @@ describe('BitcoinKey', () => {
         expect(btcKey.deriveExtendedPublicKey(BitcoinConstants.ACCOUNT_DERIVATION_PATH.BIP84.TEST)).toEqual(bip84xpub);
     });
 
-    it ('can sign a transaction with multiple inputs', () => {
+    it('can sign a transaction with multiple inputs', () => {
         const mnemonic = 'rib dream attitude script click hope aisle orphan flat early athlete twelve toy sell cigar ugly drink flavor power common devote love relax capable';
         const entropy = Nimiq.MnemonicUtils.mnemonicToEntropy(mnemonic);
         const key = new Key(entropy);

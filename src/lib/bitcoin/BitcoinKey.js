@@ -5,7 +5,7 @@
 /* global BitcoinUtils */
 /* global CONFIG */
 
-class BitcoinKey {
+class BitcoinKey { // eslint-disable-line no-unused-vars
     /**
      * @param {Key} key
      */
@@ -132,10 +132,10 @@ class BitcoinKey {
         return this._key.hasPin;
     }
 
+    /**
+     * @param {boolean} hasPin
+     */
     set hasPin(hasPin) {
-        /** @type {boolean} */ // Annotation required for Typescript
-        this._hasPin = hasPin;
+        this._key.hasPin = hasPin;
     }
 }
-
-BitcoinKey.PIN_LENGTH = 6;
