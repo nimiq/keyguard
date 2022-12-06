@@ -116,6 +116,7 @@ export type ImportRequest = BasicRequest & {
     enableBackArrow?: boolean,
     wordsOnly?: boolean,
     bitcoinXPubPath: string,
+    polygonAccountPath: string,
 };
 
 export type ResetPasswordRequest = ImportRequest & {

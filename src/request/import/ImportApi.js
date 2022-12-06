@@ -24,6 +24,7 @@ class ImportApi extends BitcoinRequestParserMixin(TopLevelApi) {
             parsedRequest.expectedKeyId = (await this.parseKeyId(request.expectedKeyId)).id;
         }
         parsedRequest.bitcoinXPubPath = this.parseBitcoinPath(request.bitcoinXPubPath, 'bitcoinXPubPath');
+        parsedRequest.polygonAccountPath = this.parsePath(request.polygonAccountPath, 'polygonAccountPath');
 
         this._handler = parsedRequest.wordsOnly ? ImportWords : ImportFile;
 
