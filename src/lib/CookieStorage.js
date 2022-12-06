@@ -9,8 +9,10 @@
 /**
  * A library for using cookies for storing arbitrary data. The lib automatically takes care of encoding the data into
  * cookies, taking size and character restrictions of cookies into account. Additionally, data is encrypted by default,
- * because cookies are sent to the server unless intercepted. The encryption keys should only be handled and passed on
- * the client side, and not be leaked to the server.
+ * because cookies are sent to the server unless intercepted, which the Keyguard does via a cookie stripping service
+ * worker. However, there might still be situations in which the cookies are sent to the server, for example if the user
+ * turns Javascript off or the service worker is not activated yet. The encryption keys should only be handled and
+ * passed on the client side, and not be leaked to the server.
  *
  * The CookieStorage can be a viable alternative for cases where other storage types like sessionStorage, localStorage
  * or indexedDB are partitioned between the Keyguard running in a top-level context and as an iframe, in which case
@@ -55,9 +57,10 @@ class CookieStorage {
     }
 
     /**
-     * Set a data entry without encrypting it. Because cookies are sent to the server, unless intercepted, unencrypted
-     * cookie data should be considered public. Whenever possible, set encrypted data instead, especially for secret
-     * data or data concerning the user's privacy.
+     * Set a data entry without encrypting it. Although the Keyguard takes measures on a best-effort basis to avoid that
+     * cookies are sent to the server via a cookie-stripping service worker, any unencrypted cookie data should still be
+     * considered public. Whenever possible, set encrypted data instead, especially for secret data or data concerning
+     * the user's privacy.
      * @param {string} name
      * @param {Uint8Array} data
      * @param {Object} [options]
