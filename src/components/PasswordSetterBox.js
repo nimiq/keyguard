@@ -28,7 +28,10 @@ class PasswordSetterBox extends Nimiq.Observable {
 
         this._passwordInput = new PasswordInput(
             this.$el.querySelector('[password-input]'),
-            PasswordSetterBox.PASSWORD_MAX_LENGTH,
+            {
+                maxLength: PasswordSetterBox.PASSWORD_MAX_LENGTH,
+                autocomplete: 'new-password',
+            },
         );
         this._passwordInput.on(PasswordInput.Events.VALID, isValid => this._onInputChangeValidity(isValid));
         this._passwordInput.on(

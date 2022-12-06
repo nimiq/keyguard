@@ -6,19 +6,22 @@
 class PasswordInput extends Nimiq.Observable {
     /**
      * @param {?HTMLElement} $el
-     * @param {number} [maxLength]
-     * @param {string} [placeholder]
+     * @param {object} [options]
+     * @param {number} [options.maxLength]
+     * @param {string} [options.placeholder]
+     * @param {'current-password' | 'new-password'} [options.autocomplete]
      */
-    constructor($el, maxLength, placeholder = '••••••••') {
+    constructor($el, options = {}) {
         super();
         this._minLength = PasswordInput.DEFAULT_MIN_LENGTH;
-        this._maxLength = maxLength || Infinity;
+        this._maxLength = options.maxLength || Infinity;
         this.$el = PasswordInput._createElement($el);
 
         this.$input = /** @type {HTMLInputElement} */ (this.$el.querySelector('input.password'));
         this.$eyeButton = /** @type {HTMLElement} */ (this.$el.querySelector('.eye-button'));
 
-        this.$input.placeholder = placeholder;
+        this.$input.placeholder = options.placeholder || '••••••••';
+        this.$input.autocomplete = options.autocomplete || 'current-password';
 
         this.$eyeButton.addEventListener('click', () => {
             this._changeVisibility();
