@@ -54,7 +54,8 @@ class CookieJar { // eslint-disable-line no-unused-vars
      * @returns {string | null}
      */
     static readCookie(name) {
-        const cookieMatch = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
+        const escapedName = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // Escape regex special chars.
+        const cookieMatch = document.cookie.match(new RegExp(`(?:^|; )${escapedName}=([^;]*)`));
         return cookieMatch ? cookieMatch[1] : null;
     }
 
