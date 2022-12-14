@@ -113,35 +113,55 @@ class NonPartitionedSessionStorage {
         }
 
         // Create a hash of the user agent to consume less space in the flag cookie than the complete user agent.
+        // We store a hash of the user agent string, to re-run the check on browser update because the partitioning
+        // behavior can change over time.
         const userAgentHash = new Uint8Array(await crypto.subtle.digest(
             'SHA-256',
             Nimiq.BufferUtils.fromAscii(navigator.userAgent), // Don't use Utf8Utils as they're not bundled in iframe.
         ));
         const userAgentHashString = Nimiq.BufferUtils.toBase64Url(userAgentHash).substring(0, 6);
 
-        const otherContextEntryName = NonPartitionedSessionStorage.isIframe()
+        const otherContextEntry = sessionStorage.getItem(NonPartitionedSessionStorage.isIframe()
             ? NonPartitionedSessionStorage.TOP_LEVEL_SESSION_STORAGE_ENTRY
-            : NonPartitionedSessionStorage.IFRAME_SESSION_STORAGE_ENTRY;
-        if (sessionStorage.getItem(otherContextEntryName)) {
+            : NonPartitionedSessionStorage.IFRAME_SESSION_STORAGE_ENTRY);
+        if (otherContextEntry) {
             // The sessionStorage was proven to not be partitioned. Persist this info, such that we also know it in
             // other windows and without having the conditions for successfully running the check, namely Keyguard being
             // opened as top-level and then as iframe, or vice-versa, in the same tab, because sessionStorage always
             // exists per tab only. Note that this check would be inaccurate if the iframe would be embedded into a
             // Keyguard top level window, because no partitioning occurs if the top-level window and the iframe are on
             // the same origin. As the Keyguard is only ever embedded as iframe into the Hub, this check is accurate.
-            // Also note, that in the opposite case, where an entry is not readable in the other context, nothing is
-            // proven because the Keyguard might not have been opened in the other context before in the same tab.
-            // We store a hash of the user agent string, to re-run the check on browser update because the partitioning
-            // behavior can change over time.
-            CookieJar.writeCookie(CookieJar.Cookie.FLAG_SESSION_STORAGE_NOT_PARTITIONED, userAgentHashString);
+            CookieJar.writeCookie(
+                CookieJar.Cookie.FLAG_SESSION_STORAGE_PARTITIONED,
+                `${NonPartitionedSessionStorage.PREFIX_FLAG_SESSION_STORAGE_PARTITIONED.FALSE}${userAgentHashString}`,
+            );
             return false;
+            // eslint-disable-next-line no-else-return
+        } else if (/deriveAddresses.*\/iframe\/|signSwapTransactions.*\/swap-iframe\//.test(`${new Error().stack}`)) {
+            // We are in an iframe request for which we know that the Keyguard was previously open as top-level window
+            // in the same tab (address derivation after account login/creation or swap transaction signing after swap
+            // setup), but the top level context sessionStorage entry is not readable. In this case, the sessionStorage
+            // was proven to be partitioned. The iframe request will fail due to the missing sessionStorage data, but
+            // the next time the user restarts the flow, the CookieStorage fallback will be used.
+            // The error stack check is compatible with Chromium based browsers, but not Firefox, because it only
+            // creates complete stack traces if the dev tools are open, and Safari, because Safari's stack does not
+            // include method names and does not span async calls.
+            // Checking for folder names iframe/ and swap-iframe/ instead of files IFrameApi.js and SwapIFrameApi.js
+            // because the files will be bundled.
+            CookieJar.writeCookie(
+                CookieJar.Cookie.FLAG_SESSION_STORAGE_PARTITIONED,
+                `${NonPartitionedSessionStorage.PREFIX_FLAG_SESSION_STORAGE_PARTITIONED.TRUE}${userAgentHashString}`,
+            );
+            return true;
         }
 
-        const flagNonPartitioned = CookieJar.readCookie(CookieJar.Cookie.FLAG_SESSION_STORAGE_NOT_PARTITIONED);
-        if (flagNonPartitioned) {
-            if (flagNonPartitioned === userAgentHashString) return false;
+        const flagPartitioned = CookieJar.readCookie(CookieJar.Cookie.FLAG_SESSION_STORAGE_PARTITIONED);
+        if (flagPartitioned) {
+            if (flagPartitioned.substring(1) === userAgentHashString) {
+                return flagPartitioned[0] === NonPartitionedSessionStorage.PREFIX_FLAG_SESSION_STORAGE_PARTITIONED.TRUE;
+            }
             // remove flag of previous browser version
-            CookieJar.deleteCookie(CookieJar.Cookie.FLAG_SESSION_STORAGE_NOT_PARTITIONED);
+            CookieJar.deleteCookie(CookieJar.Cookie.FLAG_SESSION_STORAGE_PARTITIONED);
         }
 
         // We have to rely on browser detection here. Embedding an iframe within the Keyguard for testing purposes
@@ -196,6 +216,15 @@ class NonPartitionedSessionStorage {
 NonPartitionedSessionStorage.COOKIE_MAX_AGE = 7 * 60; // 7 minutes; in seconds
 NonPartitionedSessionStorage.TOP_LEVEL_SESSION_STORAGE_ENTRY = '_topLevelEntry';
 NonPartitionedSessionStorage.IFRAME_SESSION_STORAGE_ENTRY = '_iframeEntry';
+/**
+ * Prefix for the FLAG_SESSION_STORAGE_PARTITIONED cookie.
+ * @readonly
+ * @enum { '1' | '0' }
+ */
+NonPartitionedSessionStorage.PREFIX_FLAG_SESSION_STORAGE_PARTITIONED = {
+    TRUE: /** @type {'1'} */ ('1'),
+    FALSE: /** @type {'0'} */ ('0'),
+};
 /** @type {boolean | undefined} */
 NonPartitionedSessionStorage._hasSessionStorageAccess = undefined;
 
