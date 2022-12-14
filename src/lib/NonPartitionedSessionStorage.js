@@ -151,9 +151,23 @@ class NonPartitionedSessionStorage {
         // instead of hub.nimiq.com). If this change happens, the Keyguard's sessionStorage would not be partitioned
         // anymore between the Keyguard top-level and Keyguard iframe within the Hub, because the Keyguard and Hub live
         // on the same eTLD+1. This issue is tracked here: https://bugs.webkit.org/show_bug.cgi?id=247565
-        if (!BrowserDetection.isSafari()) return false;
-        const safariVersion = BrowserDetection.safariVersion();
-        return safariVersion[0] >= 16 && safariVersion[1] >= 1;
+        // On iOS, we have to include all browsers, because they all use Safari's WebKit engine, the version of which is
+        // determined by the iOS version.
+        /**
+         * @param {number[]} version
+         * @param {number[]} referenceVersion
+         * @returns {boolean}
+         */
+        const isVersionAtLeast = (version, referenceVersion) => {
+            for (let i = 0; i < Math.min(version.length, referenceVersion.length); ++i) {
+                if (version[i] > referenceVersion[i]) return true;
+                if (version[i] < referenceVersion[i]) return false;
+            }
+            return version.length >= referenceVersion.length;
+        };
+        const firstBadSafari = [16, 1];
+        return (BrowserDetection.isSafari() && isVersionAtLeast(BrowserDetection.safariVersion(), firstBadSafari))
+            || (BrowserDetection.isIOS() && isVersionAtLeast(BrowserDetection.iOSVersion(), firstBadSafari));
     }
 
     static hasSessionStorageAccess() {
