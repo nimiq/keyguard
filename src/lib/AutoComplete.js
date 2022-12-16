@@ -20,7 +20,7 @@ class AutoComplete { // eslint-disable-line no-unused-vars
          * @param {Node} context
          */
         function live(elClass, event, cb, context = document) {
-            context.addEventListener(event, e => {
+            context.addEventListener(event, /** @param {Event} e */ e => {
                 let el = /** @type {HTMLElement | null} */ (e.target || e.srcElement);
                 let found = false;
                 do {

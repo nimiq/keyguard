@@ -1,16 +1,8 @@
-/*
- Based on code under the following license:
- Copyright 2016 Google Inc. All Rights Reserved.
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-     http://www.apache.org/licenses/LICENSE-2.0
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
-*/
+// eslint-disable-next-line spaced-comment
+/// <reference lib='webworker' />
+
+// eslint-disable-next-line no-restricted-globals
+const sw = /** @type {ServiceWorkerGlobalScope} */ (/** @type {unknown} */ (self));
 
 /* eslint-disable no-restricted-globals */
 // const PRECACHE = 'v1';
@@ -21,45 +13,80 @@
 
 // The install handler takes care of precaching the resources we always need.
 /*
-self.addEventListener('install', event => {
-    // @ts-ignore Property 'waitUntil' does not exist on type 'Event'.ts
+sw.addEventListener('install', event => {
     event.waitUntil((async () => {
-        const cache = await caches.open(PRECACHE);
+        const cache = await sw.caches.open(PRECACHE);
         await cache.addAll(PRECACHE_URLS);
-        // @ts-ignore Property 'skipWaiting' does not exist on type 'Window'.ts
-        return self.skipWaiting();
+        return sw.skipWaiting();
     })());
 });
 */
 
 /*
 // The activate handler takes care of cleaning up old caches.
-self.addEventListener('activate', event => {
+sw.addEventListener('activate', event => {
     const currentCaches = [PRECACHE, RUNTIME];
-    // @ts-ignore Property 'waitUntil' does not exist on type 'Event'.ts(2339)
     event.waitUntil((async () => {
-        const cacheNames = await caches.keys();
+        const cacheNames = await sw.caches.keys();
         const cachesToDelete = cacheNames.filter(cacheName => currentCaches.indexOf(cacheName) === -1);
-        await Promise.all(cachesToDelete.map(cacheToDelete => caches.delete(cacheToDelete)));
-        // @ts-ignore Property 'clients' does not exist on type 'Window'.ts
-        return self.clients.claim();
+        await Promise.all(cachesToDelete.map(cacheToDelete => sw.caches.delete(cacheToDelete)));
+        return sw.clients.claim();
     })());
 });
 */
 
+/** @type {Map<string, string>} */
+const clientReferrers = new Map();
+let clientReferrersCleanupInterval = -1;
+
 // Intercept fetch
-self.addEventListener('fetch', event => {
-    // Respond to all requests with matching host, as those are the ones potentially leaking cookie data to the server.
-    // See: https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy#Cross-origin_data_storage_access
-    // @ts-ignore Property 'request' does not exist on type 'Event'.ts
+sw.addEventListener('fetch', event => {
     const requestHost = new URL(event.request.url).host;
-    if (requestHost === location.host) {
-        // forward request
-        // @ts-ignore Property 'respondWith' does not exist on type 'Event'.ts,
-        // Property 'request' does not exist on type 'Event'.ts
-        event.respondWith(fetch(event.request, {
-            // omit cookie transmission
-            credentials: 'omit',
-        }));
+    if (requestHost !== sw.location.host) return;
+
+    if (event.resultingClientId) {
+        // This is a page navigation request or page reload.
+        // Store the original request referrer, because Firefox has a bug causing it to not forward this referrer to
+        // document.referrer if a service worker handles the request, regardless of the previous page's, the Keyguard's
+        // and this request's referrerPolicy. Possibly related bug tracking:
+        // https://bugzilla.mozilla.org/show_bug.cgi?id=1626616, https://bugzilla.mozilla.org/show_bug.cgi?id=1626192.
+        clientReferrers.set(event.resultingClientId, event.request.referrer);
+        if (clientReferrersCleanupInterval === -1) {
+            clientReferrersCleanupInterval = sw.setInterval(async () => {
+                for (const clientId of clientReferrers.keys()) {
+                    if (await sw.clients.get(clientId)) continue; // eslint-disable-line no-await-in-loop
+                    // The client window has been closed.
+                    clientReferrers.delete(clientId);
+                }
+                if (!clientReferrers.size) {
+                    sw.clearInterval(clientReferrersCleanupInterval);
+                    clientReferrersCleanupInterval = -1;
+                }
+            }, 5 * 60 * 1000);
+        }
+    }
+
+    // Strip cookies from all requests with matching host, as those are the ones potentially leaking cookie data.
+    // See: https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy#Cross-origin_data_storage_access
+    event.respondWith(fetch(event.request, {
+        // omit cookie transmission
+        credentials: 'omit',
+    }));
+});
+
+sw.addEventListener('message', async ({ origin, source: client, data: eventData }) => {
+    if (origin !== sw.location.origin
+        || !(client instanceof Client) // eslint-disable-line no-undef
+        || !eventData || typeof eventData !== 'object' || eventData.requestId === undefined || !eventData.type) return;
+    const { requestId, type /* , data */ } = eventData;
+    switch (type) {
+        case 'getReferrer':
+            client.postMessage({
+                requestId,
+                data: clientReferrers.get(client.id),
+            });
+            break;
+        default:
+            throw new Error(`Unsupported service worker message type ${type}`);
     }
 });

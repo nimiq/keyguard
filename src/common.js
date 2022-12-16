@@ -12,7 +12,7 @@
 /** @type {Promise<void>?} */
 let __nimiqLoaded = null;
 
-if ('serviceWorker' in navigator) {
+if (navigator.serviceWorker) {
     // Register service worker to strip cookie from requests.
     // This is on a best-effort basis. Cookies might still be sent to the server, if the service worker is not activated
     // yet or the user disables Javascript.
@@ -97,10 +97,32 @@ async function runKeyguard(RequestApiClass, opts) { // eslint-disable-line no-un
     /** @type {TopLevelApi<T> | IFrameApi} */
     const api = new RequestApiClass();
 
-    /** @type {string} */
-    const allowedOrigin = CONFIG.ALLOWED_ORIGIN;
+    const serviceWorker = navigator.serviceWorker && navigator.serviceWorker.controller;
+    if (!document.referrer && serviceWorker) {
+        // Firefox does not correctly forward the referrer if a service worker was involved in loading the page, see
+        // ServiceWorker.js
+        const fallbackReferrer = await new Promise(resolve => {
+            const requestId = Date.now();
+            /** @param {MessageEvent} event */
+            const onMessage = ({ origin, data: eventData }) => {
+                if (origin !== window.location.origin
+                    || !eventData || typeof eventData !== 'object' || eventData.requestId !== requestId) return;
+                navigator.serviceWorker.removeEventListener('message', onMessage);
+                resolve(eventData.data);
+            };
+            navigator.serviceWorker.addEventListener('message', onMessage);
+            serviceWorker.postMessage({
+                requestId,
+                type: 'getReferrer',
+            });
+        });
+        if (fallbackReferrer) {
+            // Use Object.defineProperty because document.referrer can not be overwritten directly.
+            Object.defineProperty(document, 'referrer', { value: fallbackReferrer });
+        }
+    }
 
-    window.rpcServer = new RpcServer(allowedOrigin);
+    window.rpcServer = new RpcServer(CONFIG.ALLOWED_ORIGIN);
 
     options.whitelist.forEach(/** @param {string} method */ method => {
         // @ts-ignore (Element implicitly has an 'any' type because type 'TopLevelApi' has no index signature.)
