@@ -23,6 +23,13 @@ class SignPolygonTransactionApi extends TopLevelApi {
         parsedRequest.keyPath = this.parsePolygonPath(request.keyPath, 'keyPath');
         parsedRequest.transaction = this.parsePolygonTransaction(request);
         parsedRequest.recipientLabel = this.parseLabel(request.recipientLabel);
+        if (request.tokenApprovalNonce !== undefined) {
+            parsedRequest.tokenApprovalNonce = this.parsePositiveInteger(
+                request.tokenApprovalNonce,
+                true,
+                'tokenApprovalNonce',
+            );
+        }
 
         return parsedRequest;
     }
@@ -83,8 +90,8 @@ class SignPolygonTransactionApi extends TopLevelApi {
             data = ethers.utils.hexlify(request.data);
         }
 
-        if (request.to.toLowerCase() !== CONFIG.USDC_CONTRACT_ADDRESS.toLowerCase()) {
-            throw new Errors.InvalidRequestError('Transaction must interact with the USDC contract');
+        if (request.to.toLowerCase() !== CONFIG.OPENGSN_CONTRACT_ADDRESS.toLowerCase()) {
+            throw new Errors.InvalidRequestError('Transaction must interact with Nimiq\'s OpenGSN contract');
         }
 
         if (!data.substring(2).length) {
@@ -95,11 +102,18 @@ class SignPolygonTransactionApi extends TopLevelApi {
             throw new Errors.InvalidRequestError('Transaction must have 0 value');
         }
 
-        const contract = new ethers.Contract(CONFIG.USDC_CONTRACT_ADDRESS, SignPolygonTransactionApi.USDC_CONTRACT_ABI);
+        const contract = new ethers.Contract(
+            CONFIG.OPENGSN_CONTRACT_ADDRESS,
+            SignPolygonTransactionApi.OPENGSN_CONTRACT_ABI,
+        );
         try {
             const description = contract.interface.parseTransaction({ data, value: request.value });
             if (!description) {
-                throw new Error('Requested contract method not found');
+                throw new Error('Called contract function not found');
+            }
+
+            if (description.name === 'executeWithApproval' && request.tokenApprovalNonce === undefined) {
+                throw new Error('tokenApprovalNonce required for calling function executeWithApproval');
             }
         } catch (error) {
             throw new Errors.InvalidRequestError(`Cannot decode data: ${error.message}`);
@@ -128,6 +142,7 @@ class SignPolygonTransactionApi extends TopLevelApi {
     }
 }
 
+/* eslint-disable max-len */
 SignPolygonTransactionApi.USDC_CONTRACT_ABI = [
     // 'constructor()',
     // 'event Approval(address indexed owner, address indexed spender, uint256 value)',
@@ -144,7 +159,7 @@ SignPolygonTransactionApi.USDC_CONTRACT_ABI = [
     // 'function ROOT_CHAIN_ID() view returns (uint256)',
     // 'function ROOT_CHAIN_ID_BYTES() view returns (bytes)',
     // 'function allowance(address owner, address spender) view returns (uint256)',
-    // 'function approve(address spender, uint256 amount) returns (bool)',
+    'function approve(address spender, uint256 amount) returns (bool)',
     // 'function balanceOf(address account) view returns (uint256)',
     // 'function decimals() view returns (uint8)',
     // 'function decreaseAllowance(address spender, uint256 subtractedValue) returns (bool)',
@@ -166,9 +181,53 @@ SignPolygonTransactionApi.USDC_CONTRACT_ABI = [
     // 'function revokeRole(bytes32 role, address account)',
     // 'function symbol() view returns (string)',
     // 'function totalSupply() view returns (uint256)',
-    'function transfer(address recipient, uint256 amount) returns (bool)',
+    // 'function transfer(address recipient, uint256 amount) returns (bool)',
     // 'function transferFrom(address sender, address recipient, uint256 amount) returns (bool)',
     // 'function withdraw(uint256 amount)',
 ];
 
-// SignPolygonTransactionApi.OPENGSN_CONTRACT_ABI = [];
+SignPolygonTransactionApi.OPENGSN_CONTRACT_ABI = [
+    // 'constructor()',
+    // 'event DomainRegistered(bytes32 indexed domainSeparator, bytes domainValue)',
+    // 'event OwnershipTransferred(address indexed previousOwner, address indexed newOwner)',
+    // 'event RequestTypeRegistered(bytes32 indexed typeHash, string typeStr)',
+    // 'function CALLDATA_SIZE_LIMIT() view returns (uint256)',
+    // 'function EIP712_DOMAIN_TYPE() view returns (string)',
+    // 'function domains(bytes32) view returns (bool)',
+    // 'function execute(address token, address userAddress, uint256 amount, address target, uint256 fee, uint256 chainTokenFee)',
+    // 'function execute(tuple(address from, address to, uint256 value, uint256 gas, uint256 nonce, bytes data, uint256 validUntil) request, bytes32 domainSeparator, bytes32 requestTypeHash, bytes suffixData, bytes signature) payable returns (bool success, bytes ret)',
+    'function executeWithApproval(address token, address userAddress, uint256 amount, address target, uint256 fee, uint256 chainTokenFee, uint256 approval, bytes32 sigR, bytes32 sigS, uint8 sigV)',
+    // 'function getGasAndDataLimits() view returns (tuple(uint256 acceptanceBudget, uint256 preRelayedCallGasLimit, uint256 postRelayedCallGasLimit, uint256 calldataSizeLimit) limits)',
+    // 'function getHubAddr() view returns (address)',
+    // 'function getMinimumRelayFee(tuple(uint256 gasPrice, uint256 pctRelayFee, uint256 baseRelayFee, address relayWorker, address paymaster, address forwarder, bytes paymasterData, uint256 clientId) relayData) view returns (uint256 amount)',
+    // 'function getNonce(address from) view returns (uint256)',
+    // 'function getRelayHubDeposit() view returns (uint256)',
+    // 'function isRegisteredToken(address token) view returns (bool)',
+    // 'function isTrustedForwarder(address forwarder) view returns (bool)',
+    // 'function owner() view returns (address)',
+    // 'function postRelayedCall(bytes context, bool success, uint256 gasUseWithoutPost, tuple(uint256 gasPrice, uint256 pctRelayFee, uint256 baseRelayFee, address relayWorker, address paymaster, address forwarder, bytes paymasterData, uint256 clientId) relayData)',
+    // 'function preApprovedGasDiscount() view returns (uint256)',
+    // 'function preRelayedCall(tuple(tuple(address from, address to, uint256 value, uint256 gas, uint256 nonce, bytes data, uint256 validUntil) request, tuple(uint256 gasPrice, uint256 pctRelayFee, uint256 baseRelayFee, address relayWorker, address paymaster, address forwarder, bytes paymasterData, uint256 clientId) relayData) relayRequest, bytes signature, bytes approvalData, uint256 maxPossibleGas) returns (bytes context, bool revertOnRecipientRevert)',
+    // 'function registerDomainSeparator(string name, string version)',
+    // 'function registerRequestType(string typeName, string typeSuffix)',
+    // 'function registerToken(address token, uint24 poolFee)',
+    // 'function renounceOwnership()',
+    // 'function requiredRelayGas() view returns (uint256 amount)',
+    // 'function setRelayHub(address hub)',
+    // 'function setSwapRouter(address _swapRouter)',
+    // 'function setWrappedChainToken(address _wrappedChainToken)',
+    // 'function swapRouter() view returns (address)',
+    // 'function transferOwnership(address newOwner)',
+    // 'function trustedForwarder() view returns (address forwarder)',
+    // 'function typeHashes(bytes32) view returns (bool)',
+    // 'function unregisterToken(address token)',
+    // 'function updatePreApprovedGasDiscount(uint256 _preApprovedGasDiscount)',
+    // 'function updateRelayGas(uint256 preRelayedCallGasLimit, uint256 postRelayedCallGasLimit, uint256 executeCallGasLimit, uint256 relayOverhead)',
+    // 'function verify(tuple(address from, address to, uint256 value, uint256 gas, uint256 nonce, bytes data, uint256 validUntil) forwardRequest, bytes32 domainSeparator, bytes32 requestTypeHash, bytes suffixData, bytes signature) view',
+    // 'function versionPaymaster() view returns (string)',
+    // 'function versionRecipient() view returns (string)',
+    // 'function withdraw(uint256 amount, address target)',
+    // 'function withdrawRelayHubDeposit(uint256 amount, address target)',
+    // 'function wrappedChainToken() view returns (address)',
+];
+/* eslint-enable max-len */

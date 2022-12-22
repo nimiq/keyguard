@@ -33,6 +33,19 @@ class PolygonKey { // eslint-disable-line no-unused-vars
     }
 
     /**
+     *
+     * @param {string} path
+     * @param {ethers.TypedDataDomain} domain
+     * @param {Record<string, Array<ethers.TypedDataField>>} types
+     * @param {Record<string, any>} value
+     * @returns {Promise<string>}
+     */
+    async signTypedData(path, domain, types, value) {
+        const wallet = this.deriveKeyPair(path);
+        return wallet._signTypedData(domain, types, value);
+    }
+
+    /**
      * @param {string} path
      * @param {Uint8Array} message - A byte array
      * @throws

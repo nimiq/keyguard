@@ -221,6 +221,12 @@ export type SignPolygonTransactionRequest = Omit<SimpleRequest, 'keyLabel'> & {
     gasLimit: number,
     maxFeePerGas: number,
     maxPriorityFeePerGas: number,
+
+    /**
+     * The sender's nonce in the token contract, required when calling the
+     * contract function `executeWithApproval`.
+     */
+    tokenApprovalNonce?: number,
 };
 
 export type MockSettlementInstruction = {
