@@ -90,8 +90,8 @@ class SignPolygonTransactionApi extends TopLevelApi {
             data = ethers.utils.hexlify(request.data);
         }
 
-        if (request.to.toLowerCase() !== CONFIG.OPENGSN_CONTRACT_ADDRESS.toLowerCase()) {
-            throw new Errors.InvalidRequestError('Transaction must interact with Nimiq\'s OpenGSN contract');
+        if (request.to.toLowerCase() !== CONFIG.NIMIQ_USDC_CONTRACT_ADDRESS.toLowerCase()) {
+            throw new Errors.InvalidRequestError('Transaction must interact with Nimiq\'s USDC contract');
         }
 
         if (!data.substring(2).length) {
@@ -103,8 +103,8 @@ class SignPolygonTransactionApi extends TopLevelApi {
         }
 
         const contract = new ethers.Contract(
-            CONFIG.OPENGSN_CONTRACT_ADDRESS,
-            SignPolygonTransactionApi.OPENGSN_CONTRACT_ABI,
+            CONFIG.NIMIQ_USDC_CONTRACT_ADDRESS,
+            SignPolygonTransactionApi.NIMIQ_USDC_CONTRACT_ABI,
         );
         try {
             const description = contract.interface.parseTransaction({ data, value: request.value });
@@ -186,7 +186,7 @@ SignPolygonTransactionApi.USDC_CONTRACT_ABI = [
     // 'function withdraw(uint256 amount)',
 ];
 
-SignPolygonTransactionApi.OPENGSN_CONTRACT_ABI = [
+SignPolygonTransactionApi.NIMIQ_USDC_CONTRACT_ABI = [
     // 'constructor()',
     // 'event DomainRegistered(bytes32 indexed domainSeparator, bytes domainValue)',
     // 'event OwnershipTransferred(address indexed previousOwner, address indexed newOwner)',

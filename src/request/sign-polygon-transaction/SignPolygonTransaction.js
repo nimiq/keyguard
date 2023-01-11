@@ -35,8 +35,8 @@ class SignPolygonTransaction {
 
         /** @type {ethers.Contract} */
         this._openGsn = new ethers.Contract(
-            CONFIG.OPENGSN_CONTRACT_ADDRESS,
-            SignPolygonTransactionApi.OPENGSN_CONTRACT_ABI,
+            CONFIG.NIMIQ_USDC_CONTRACT_ADDRESS,
+            SignPolygonTransactionApi.NIMIQ_USDC_CONTRACT_ABI,
         );
 
         /** @type {ethers.utils.TransactionDescription} */
@@ -62,7 +62,7 @@ class SignPolygonTransaction {
 
         // Set value and fee.
         $value.textContent = NumberFormatting.formatNumber(
-            /** @type {ethers.BigNumber} */ (this._description.args.amount).div(1e6).toNumber(),
+            /** @type {ethers.BigNumber} */(this._description.args.amount).div(1e6).toNumber(),
             6,
             2,
         );
@@ -138,7 +138,7 @@ class SignPolygonTransaction {
 
             const functionSignature = usdc.interface.encodeFunctionData(
                 'approve',
-                [CONFIG.OPENGSN_CONTRACT_ADDRESS, this._description.args.approval],
+                [CONFIG.NIMIQ_USDC_CONTRACT_ADDRESS, this._description.args.approval],
             );
 
             // TODO: Make the domain parameters configurable in the request?
