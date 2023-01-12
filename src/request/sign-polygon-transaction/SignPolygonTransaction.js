@@ -55,8 +55,8 @@ class SignPolygonTransaction {
 
         /** @type {HTMLDivElement} */
         const $value = (this.$el.querySelector('#value'));
-        // /** @type {HTMLDivElement} */
-        // const $fee = (this.$el.querySelector('#fee'));
+        /** @type {HTMLDivElement} */
+        const $fee = (this.$el.querySelector('#fee'));
         // /** @type {HTMLDivElement} */
         // const $data = (this.$el.querySelector('#data'));
 
@@ -64,14 +64,16 @@ class SignPolygonTransaction {
         $value.textContent = NumberFormatting.formatNumber(
             /** @type {ethers.BigNumber} */(this._description.args.amount).toNumber() / 1e6,
             6,
-            2,
+            2, // Always display at least 2 decimals, as is common for USD
         );
-        // if ($fee && transaction.fee > 0) {
-        //     $fee.textContent = NumberFormatting.formatNumber(Nimiq.Policy.lunasToCoins(transaction.fee));
-        //     /** @type {HTMLDivElement} */
-        //     const $feeSection = (this.$el.querySelector('.fee-section'));
-        //     $feeSection.classList.remove('display-none');
-        // }
+        const feeUnits = /** @type {ethers.BigNumber} */(this._description.args.fee).toNumber();
+        if (feeUnits > 0) {
+            // For the fee, we do not display more than two decimals, as it would not add any value for the user
+            $fee.textContent = NumberFormatting.formatNumber(feeUnits / 1e6, 2, 2);
+            /** @type {HTMLDivElement} */
+            const $feeSection = (this.$el.querySelector('.fee-section'));
+            $feeSection.classList.remove('display-none');
+        }
 
         // if ($data && transaction.data) {
         //     // Set transaction extra data.
