@@ -87,7 +87,3 @@ body {
     display: flex;
     align-items: center;
 }
-
-.display-none {
-    display: none !important;
-}
