@@ -62,7 +62,7 @@ class SignPolygonTransaction {
 
         // Set value and fee.
         $value.textContent = NumberFormatting.formatNumber(
-            /** @type {ethers.BigNumber} */(this._description.args.amount).div(1e6).toNumber(),
+            /** @type {ethers.BigNumber} */(this._description.args.amount).toNumber() / 1e6,
             6,
             2,
         );
