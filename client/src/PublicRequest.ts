@@ -481,8 +481,8 @@ export type SignedBitcoinTransaction = {
     raw: string,
 };
 export type SignedPolygonTransaction = {
-    transactionHash: string,
-    raw: string,
+    message: Record<string, any>,
+    signature: string,
 };
 export type SignSwapTransactionsResult = {
     nim?: SignatureResult,

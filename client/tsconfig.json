@@ -13,6 +13,7 @@
     "baseUrl": ".",
     "declaration": true,
     "declarationDir": "./dist/src/",
+    "skipLibCheck": true,
     "lib": [
       "es2017",
       "dom",

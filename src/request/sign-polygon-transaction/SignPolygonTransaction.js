@@ -10,6 +10,7 @@
 /* global NumberFormatting */
 /* global CONFIG */
 /* global PolygonKey */
+/* global OpenGSN */
 
 /**
  * @callback SignPolygonTransaction.resolve
@@ -198,12 +199,42 @@ class SignPolygonTransaction {
             ]);
         }
 
-        const raw = await polygonKey.sign(request.keyPath, request.transaction);
+        // const raw = await polygonKey.sign(request.keyPath, request.transaction);
+        const typedData = new OpenGSN.TypedRequestData(CONFIG.POLYGON_CHAIN_ID, CONFIG.NIMIQ_USDC_CONTRACT_ADDRESS, {
+            request: {
+                from: request.transaction.from,
+                to: request.transaction.to,
+                data: request.transaction.data,
+                value: request.transaction.value.toString(),
+                nonce: ethers.utils.hexlify(request.transaction.nonce),
+                gas: request.transaction.gasLimit.toString(),
+                validUntil: '9999999999',
+            },
+            relayData: {
+                gasPrice: request.transaction.maxFeePerGas.toString(),
+                pctRelayFee: '0', // TODO
+                baseRelayFee: '0', // TODO
+                relayWorker: CONFIG.NIMIQ_USDC_CONTRACT_ADDRESS,
+                paymaster: CONFIG.NIMIQ_USDC_CONTRACT_ADDRESS,
+                forwarder: CONFIG.NIMIQ_USDC_CONTRACT_ADDRESS,
+                paymasterData: '0x',
+                clientId: '0',
+            },
+        });
+
+        const { EIP712Domain, ...cleanedTypes } = typedData.types;
+
+        const signature = await polygonKey.signTypedData(
+            request.keyPath,
+            typedData.domain,
+            /** @type {Record<string, ethers.ethers.TypedDataField[]>} */ (/** @type {unknown} */ (cleanedTypes)),
+            typedData.message,
+        );
 
         /** @type {KeyguardRequest.SignedPolygonTransaction} */
         const result = {
-            transactionHash: ethers.utils.keccak256(raw),
-            raw,
+            message: typedData.message,
+            signature,
         };
         resolve(result);
     }

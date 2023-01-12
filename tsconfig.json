@@ -74,5 +74,6 @@
     "src/lib/QrScannerWorker.js",
     "src/translations/index.js",
     "src/lib/bitcoin/BitcoinJS.js",
+    "src/lib/polygon/OpenGSN.js",
   ]
 }

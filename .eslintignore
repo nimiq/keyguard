@@ -1,2 +1,3 @@
 *.min.*
 src/lib/bitcoin/BitcoinJS.js
+src/lib/polygon/OpenGSN.js
