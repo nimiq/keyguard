@@ -28,22 +28,22 @@ class SignPolygonTransaction {
         /** @type {HTMLElement} */
         this.$el = (document.getElementById(SignPolygonTransaction.Pages.CONFIRM_TRANSACTION));
 
-        const transaction = request.transaction;
+        const relayRequest = request.request;
 
         /** @type {HTMLLinkElement} */
         const $sender = (this.$el.querySelector('.accounts .sender'));
-        new PolygonAddressInfo(transaction.from, request.keyLabel, 'usdc').render($sender);
+        new PolygonAddressInfo(relayRequest.from, request.keyLabel, 'usdc').render($sender);
 
         /** @type {ethers.Contract} */
-        this._openGsn = new ethers.Contract(
+        this._nimiqUsdc = new ethers.Contract(
             CONFIG.NIMIQ_USDC_CONTRACT_ADDRESS,
             SignPolygonTransactionApi.NIMIQ_USDC_CONTRACT_ABI,
         );
 
         /** @type {ethers.utils.TransactionDescription} */
-        this._description = this._openGsn.interface.parseTransaction({
-            data: request.transaction.data,
-            value: request.transaction.value,
+        this._description = this._nimiqUsdc.interface.parseTransaction({
+            data: relayRequest.data,
+            value: relayRequest.value,
         });
 
         /** @type {HTMLLinkElement} */
@@ -163,7 +163,7 @@ class SignPolygonTransaction {
             const message = {
                 // Has been validated to be defined when function called is `executeWithApproval`
                 nonce: request.tokenApprovalNonce,
-                from: request.transaction.from,
+                from: request.request.from,
                 functionSignature,
             };
 
@@ -175,17 +175,16 @@ class SignPolygonTransaction {
             );
 
             const signerAddress = ethers.utils.verifyTypedData(domain, types, message, signature);
-            if (signerAddress !== request.transaction.from) {
+            if (signerAddress !== request.request.from) {
                 reject(new Errors.CoreError('Failed to sign approval'));
                 return;
             }
 
-            const r = signature.slice(0, 66); // 0x prefix plus 32 bytes = 66 characters
-            const s = `0x${signature.slice(66, 130)}`; // 32 bytes = 64 characters
-            let v = parseInt(signature.slice(130, 132), 16); // last byte = 2 characters
-            if (![27, 28].includes(v)) v += 27;
+            const sigR = signature.slice(0, 66); // 0x prefix plus 32 bytes = 66 characters
+            const sigS = `0x${signature.slice(66, 130)}`; // 32 bytes = 64 characters
+            const sigV = parseInt(signature.slice(130, 132), 16); // last byte = 2 characters
 
-            request.transaction.data = this._openGsn.interface.encodeFunctionData('executeWithApproval', [
+            request.request.data = this._nimiqUsdc.interface.encodeFunctionData('executeWithApproval', [
                 /* address token */ this._description.args.token,
                 /* address userAddress */ this._description.args.userAddress,
                 /* uint256 amount */ this._description.args.amount,
@@ -193,33 +192,16 @@ class SignPolygonTransaction {
                 /* uint256 fee */ this._description.args.fee,
                 /* uint256 chainTokenFee */ this._description.args.chainTokenFee,
                 /* uint256 approval */ this._description.args.approval,
-                /* bytes32 sigR */ r,
-                /* bytes32 sigS */ s,
-                /* uint8 sigV */ v,
+                /* bytes32 sigR */ sigR,
+                /* bytes32 sigS */ sigS,
+                /* uint8 sigV */ sigV,
             ]);
         }
 
         // const raw = await polygonKey.sign(request.keyPath, request.transaction);
         const typedData = new OpenGSN.TypedRequestData(CONFIG.POLYGON_CHAIN_ID, CONFIG.NIMIQ_USDC_CONTRACT_ADDRESS, {
-            request: {
-                from: request.transaction.from,
-                to: request.transaction.to,
-                data: request.transaction.data,
-                value: request.transaction.value.toString(),
-                nonce: ethers.utils.hexlify(request.transaction.nonce),
-                gas: request.transaction.gasLimit.toString(),
-                validUntil: '9999999999',
-            },
-            relayData: {
-                gasPrice: request.transaction.maxFeePerGas.toString(),
-                pctRelayFee: '0', // TODO
-                baseRelayFee: '0', // TODO
-                relayWorker: CONFIG.NIMIQ_USDC_CONTRACT_ADDRESS,
-                paymaster: CONFIG.NIMIQ_USDC_CONTRACT_ADDRESS,
-                forwarder: CONFIG.NIMIQ_USDC_CONTRACT_ADDRESS,
-                paymasterData: '0x',
-                clientId: '0',
-            },
+            request: request.request,
+            relayData: request.relayData,
         });
 
         const { EIP712Domain, ...cleanedTypes } = typedData.types;

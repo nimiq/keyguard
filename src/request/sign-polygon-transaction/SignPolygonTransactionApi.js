@@ -1,8 +1,8 @@
-/* global ethers */
+// /* global ethers */
 /* global TopLevelApi */
 /* global SignPolygonTransaction */
 /* global Errors */
-/* global CONFIG */
+// /* global CONFIG */
 
 /** @extends {TopLevelApi<KeyguardRequest.SignPolygonTransactionRequest>} */
 class SignPolygonTransactionApi extends TopLevelApi {
@@ -21,7 +21,8 @@ class SignPolygonTransactionApi extends TopLevelApi {
         parsedRequest.keyInfo = await this.parseKeyId(request.keyId);
         parsedRequest.keyLabel = /** @type {string} */ (this.parseLabel(request.keyLabel, false, 'keyLabel'));
         parsedRequest.keyPath = this.parsePolygonPath(request.keyPath, 'keyPath');
-        parsedRequest.transaction = this.parsePolygonTransaction(request);
+        parsedRequest.request = this.parseOpenGsnForwardRequest(request);
+        parsedRequest.relayData = this.parseOpenGsnRelayData(request);
         parsedRequest.recipientLabel = this.parseLabel(request.recipientLabel);
         if (request.tokenApprovalNonce !== undefined) {
             parsedRequest.tokenApprovalNonce = this.parsePositiveInteger(
@@ -66,75 +67,89 @@ class SignPolygonTransactionApi extends TopLevelApi {
     /**
      *
      * @param {KeyguardRequest.SignPolygonTransactionRequest} request
-     * @returns {ParsedPolygonTransaction}
+     * @returns {KeyguardRequest.ForwardRequest}
      */
-    parsePolygonTransaction(request) {
-        if (request.chainId !== CONFIG.POLYGON_CHAIN_ID) {
-            throw new Errors.InvalidRequestError(`Unsupported chain ID, only ${CONFIG.POLYGON_CHAIN_ID} is supported`);
-        }
+    parseOpenGsnForwardRequest(request) {
+        // TODO: Parse it
+        return request.request;
+        // if (request.chainId !== CONFIG.POLYGON_CHAIN_ID) {
+        //     throw new Errors.InvalidRequestError(
+        //         `Unsupported chain ID, only ${CONFIG.POLYGON_CHAIN_ID} is supported`,
+        //     );
+        // }
 
-        if (request.type !== 2) {
-            throw new Errors.InvalidRequestError('Transaction type must be 2');
-        }
+        // if (request.type !== 2) {
+        //     throw new Errors.InvalidRequestError('Transaction type must be 2');
+        // }
 
-        /** @type {string} */
-        let data;
-        if (typeof request.data === 'string') {
-            if (!ethers.utils.isHexString(request.data)) {
-                throw new Errors.InvalidRequestError('When a string, data must be HEX starting with 0x');
-            }
-            data = request.data.toLowerCase();
-        } else if (!(request.data instanceof Uint8Array)) {
-            throw new Errors.InvalidRequestError('data must be a string or Uint8Array');
-        } else {
-            data = ethers.utils.hexlify(request.data);
-        }
+        // /** @type {string} */
+        // let data;
+        // if (typeof request.data === 'string') {
+        //     if (!ethers.utils.isHexString(request.data)) {
+        //         throw new Errors.InvalidRequestError('When a string, data must be HEX starting with 0x');
+        //     }
+        //     data = request.data.toLowerCase();
+        // } else if (!(request.data instanceof Uint8Array)) {
+        //     throw new Errors.InvalidRequestError('data must be a string or Uint8Array');
+        // } else {
+        //     data = ethers.utils.hexlify(request.data);
+        // }
 
-        if (request.to.toLowerCase() !== CONFIG.NIMIQ_USDC_CONTRACT_ADDRESS.toLowerCase()) {
-            throw new Errors.InvalidRequestError('Transaction must interact with Nimiq\'s USDC contract');
-        }
+        // if (request.to.toLowerCase() !== CONFIG.NIMIQ_USDC_CONTRACT_ADDRESS.toLowerCase()) {
+        //     throw new Errors.InvalidRequestError('Transaction must interact with Nimiq\'s USDC contract');
+        // }
 
-        if (!data.substring(2).length) {
-            throw new Errors.InvalidRequestError('Transaction must have data');
-        }
+        // if (!data.substring(2).length) {
+        //     throw new Errors.InvalidRequestError('Transaction must have data');
+        // }
 
-        if (request.value !== 0) {
-            throw new Errors.InvalidRequestError('Transaction must have 0 value');
-        }
+        // if (request.value !== 0) {
+        //     throw new Errors.InvalidRequestError('Transaction must have 0 value');
+        // }
 
-        const contract = new ethers.Contract(
-            CONFIG.NIMIQ_USDC_CONTRACT_ADDRESS,
-            SignPolygonTransactionApi.NIMIQ_USDC_CONTRACT_ABI,
-        );
-        try {
-            const description = contract.interface.parseTransaction({ data, value: request.value });
-            if (!description) {
-                throw new Error('Called contract function not found');
-            }
+        // const contract = new ethers.Contract(
+        //     CONFIG.NIMIQ_USDC_CONTRACT_ADDRESS,
+        //     SignPolygonTransactionApi.NIMIQ_USDC_CONTRACT_ABI,
+        // );
+        // try {
+        //     const description = contract.interface.parseTransaction({ data, value: request.value });
+        //     if (!description) {
+        //         throw new Error('Called contract function not found');
+        //     }
 
-            if (description.name === 'executeWithApproval' && request.tokenApprovalNonce === undefined) {
-                throw new Error('tokenApprovalNonce required for calling function executeWithApproval');
-            }
-        } catch (error) {
-            throw new Errors.InvalidRequestError(`Cannot decode data: ${error.message}`);
-        }
+        //     if (description.name === 'executeWithApproval' && request.tokenApprovalNonce === undefined) {
+        //         throw new Error('tokenApprovalNonce required for calling function executeWithApproval');
+        //     }
+        // } catch (error) {
+        //     throw new Errors.InvalidRequestError(`Cannot decode data: ${error.message}`);
+        // }
 
-        return {
-            from: ethers.utils.getAddress(request.from),
-            to: ethers.utils.getAddress(request.to),
-            nonce: this.parsePositiveInteger(request.nonce, true, 'nonce'),
-            data,
-            value: ethers.BigNumber.from(request.value),
-            chainId: request.chainId,
-            type: request.type,
-            accessList: request.accessList || [],
-            gasLimit: ethers.BigNumber.from(request.gasLimit),
-            maxFeePerGas: ethers.BigNumber.from(request.maxFeePerGas),
-            maxPriorityFeePerGas: ethers.BigNumber.from(request.maxPriorityFeePerGas),
+        // return {
+        //     from: ethers.utils.getAddress(request.from),
+        //     to: ethers.utils.getAddress(request.to),
+        //     nonce: this.parsePositiveInteger(request.nonce, true, 'nonce'),
+        //     data,
+        //     value: ethers.BigNumber.from(request.value),
+        //     chainId: request.chainId,
+        //     type: request.type,
+        //     accessList: request.accessList || [],
+        //     gasLimit: ethers.BigNumber.from(request.gasLimit),
+        //     maxFeePerGas: ethers.BigNumber.from(request.maxFeePerGas),
+        //     maxPriorityFeePerGas: ethers.BigNumber.from(request.maxPriorityFeePerGas),
 
-            customData: {},
-            ccipReadEnabled: false,
-        };
+        //     customData: {},
+        //     ccipReadEnabled: false,
+        // };
+    }
+
+    /**
+     *
+     * @param {KeyguardRequest.SignPolygonTransactionRequest} request
+     * @returns {KeyguardRequest.RelayData}
+     */
+    parseOpenGsnRelayData(request) {
+        // TODO: Parse it
+        return request.relayData;
     }
 
     get Handler() {

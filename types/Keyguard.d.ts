@@ -55,11 +55,6 @@ type ParsedBitcoinTransactionInput = {
     address: string,
 };
 
-type ParsedPolygonTransaction = Required<Omit<ethers.PopulatedTransaction, 'gasPrice' | 'type'>> & {
-    from: string,
-    type: 2,
-};
-
 type NimHtlcContents = {
     refundAddress: string,
     redeemAddress: string,
@@ -86,11 +81,6 @@ type ConstructTransaction<T extends KeyguardRequest.TransactionInfo> = Transform
     'sender' | 'senderType' | 'recipient' | 'recipientType' | 'value' | 'fee' |
     'validityStartHeight' | 'data' | 'flags',
     { transaction: Nimiq.ExtendedTransaction }>
-
-type ConstructPolygonTransaction<T extends KeyguardRequest.SignPolygonTransactionRequest> = Transform<T,
-    'from' | 'to' | 'nonce' | 'data' | 'value' | 'chainId' | 'type' | 'accessList' |
-    'gasLimit' | 'maxFeePerGas' | 'maxPriorityFeePerGas',
-    { transaction: ParsedPolygonTransaction }>
 
 type ConstructSwap<T extends KeyguardRequest.SignSwapRequestCommon> = Transform<T,
     'fund' | 'redeem', {
@@ -196,7 +186,7 @@ type Parsed<T extends KeyguardRequest.Request> =
             >, 'shopLogoUrl', { shopLogoUrl?: URL }
         > :
     T extends Is<T, KeyguardRequest.SignPolygonTransactionRequest> ?
-        ConstructPolygonTransaction<KeyId2KeyInfo<KeyguardRequest.SignPolygonTransactionRequest>> :
+        KeyId2KeyInfo<KeyguardRequest.SignPolygonTransactionRequest> :
     T extends Is<T, KeyguardRequest.SignSwapRequestStandard> ?
         KeyId2KeyInfo<ConstructSwap<KeyguardRequest.SignSwapRequestStandard>>
         & { layout: KeyguardRequest.SignSwapRequestLayout } :

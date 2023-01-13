@@ -1,5 +1,12 @@
 import * as Nimiq from '@nimiq/core-web';
+import { ForwardRequest } from '@opengsn/common/dist/EIP712/ForwardRequest';
+import { RelayData } from '@opengsn/common/dist/EIP712/RelayData';
 import { KeyguardCommand } from './KeyguardCommand';
+
+export {
+    ForwardRequest,
+    RelayData,
+};
 
 export type ObjectType = {
     [key: string]: any;
@@ -205,22 +212,8 @@ export type SignPolygonTransactionRequest = Omit<SimpleRequest, 'keyLabel'> & {
     keyPath: string,
     recipientLabel?: string,
 
-    from: string,
-    to: string,
-    nonce: number,
-    data: Uint8Array | string,
-    value: number,
-    chainId: number,
-    type: 2,
-
-    accessList?: Array<{
-        address: string,
-        storageKeys: string[],
-    }>,
-
-    gasLimit: number,
-    maxFeePerGas: number,
-    maxPriorityFeePerGas: number,
+    request: ForwardRequest,
+    relayData: RelayData,
 
     /**
      * The sender's nonce in the token contract, required when calling the
