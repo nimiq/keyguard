@@ -95,7 +95,7 @@ class SignPolygonTransactionApi extends TopLevelApi {
         //     data = ethers.utils.hexlify(request.data);
         // }
 
-        // if (request.to.toLowerCase() !== CONFIG.NIMIQ_USDC_CONTRACT_ADDRESS.toLowerCase()) {
+        // if (request.to.toLowerCase() !== CONFIG.USDC_TRANSFER_CONTRACT_ADDRESS.toLowerCase()) {
         //     throw new Errors.InvalidRequestError('Transaction must interact with Nimiq\'s USDC contract');
         // }
 
@@ -108,7 +108,7 @@ class SignPolygonTransactionApi extends TopLevelApi {
         // }
 
         // const contract = new ethers.Contract(
-        //     CONFIG.NIMIQ_USDC_CONTRACT_ADDRESS,
+        //     CONFIG.USDC_TRANSFER_CONTRACT_ADDRESS,
         //     SignPolygonTransactionApi.NIMIQ_USDC_CONTRACT_ABI,
         // );
         // try {
@@ -117,8 +117,8 @@ class SignPolygonTransactionApi extends TopLevelApi {
         //         throw new Error('Called contract function not found');
         //     }
 
-        //     if (description.name === 'executeWithApproval' && request.tokenApprovalNonce === undefined) {
-        //         throw new Error('tokenApprovalNonce required for calling function executeWithApproval');
+        //     if (description.name === 'transferWithApproval' && request.tokenApprovalNonce === undefined) {
+        //         throw new Error('tokenApprovalNonce required for calling function transferWithApproval');
         //     }
         // } catch (error) {
         //     throw new Errors.InvalidRequestError(`Cannot decode data: ${error.message}`);
@@ -201,7 +201,7 @@ SignPolygonTransactionApi.USDC_CONTRACT_ABI = [
     // 'function withdraw(uint256 amount)',
 ];
 
-SignPolygonTransactionApi.NIMIQ_USDC_CONTRACT_ABI = [
+SignPolygonTransactionApi.USDC_TRANSFER_CONTRACT_ABI = [
     // 'constructor()',
     // 'event DomainRegistered(bytes32 indexed domainSeparator, bytes domainValue)',
     // 'event OwnershipTransferred(address indexed previousOwner, address indexed newOwner)',
@@ -209,15 +209,12 @@ SignPolygonTransactionApi.NIMIQ_USDC_CONTRACT_ABI = [
     // 'function CALLDATA_SIZE_LIMIT() view returns (uint256)',
     // 'function EIP712_DOMAIN_TYPE() view returns (string)',
     // 'function domains(bytes32) view returns (bool)',
-    // 'function execute(address token, address userAddress, uint256 amount, address target, uint256 fee, uint256 chainTokenFee)',
     // 'function execute(tuple(address from, address to, uint256 value, uint256 gas, uint256 nonce, bytes data, uint256 validUntil) request, bytes32 domainSeparator, bytes32 requestTypeHash, bytes suffixData, bytes signature) payable returns (bool success, bytes ret)',
-    'function executeWithApproval(address token, address userAddress, uint256 amount, address target, uint256 fee, uint256 chainTokenFee, uint256 approval, bytes32 sigR, bytes32 sigS, uint8 sigV)',
     // 'function getGasAndDataLimits() view returns (tuple(uint256 acceptanceBudget, uint256 preRelayedCallGasLimit, uint256 postRelayedCallGasLimit, uint256 calldataSizeLimit) limits)',
     // 'function getHubAddr() view returns (address)',
     // 'function getMinimumRelayFee(tuple(uint256 gasPrice, uint256 pctRelayFee, uint256 baseRelayFee, address relayWorker, address paymaster, address forwarder, bytes paymasterData, uint256 clientId) relayData) view returns (uint256 amount)',
     // 'function getNonce(address from) view returns (uint256)',
     // 'function getRelayHubDeposit() view returns (uint256)',
-    // 'function isRegisteredToken(address token) view returns (bool)',
     // 'function isTrustedForwarder(address forwarder) view returns (bool)',
     // 'function owner() view returns (address)',
     // 'function postRelayedCall(bytes context, bool success, uint256 gasUseWithoutPost, tuple(uint256 gasPrice, uint256 pctRelayFee, uint256 baseRelayFee, address relayWorker, address paymaster, address forwarder, bytes paymasterData, uint256 clientId) relayData)',
@@ -226,13 +223,16 @@ SignPolygonTransactionApi.NIMIQ_USDC_CONTRACT_ABI = [
     // 'function registerDomainSeparator(string name, string version)',
     // 'function registerRequestType(string typeName, string typeSuffix)',
     // 'function registerToken(address token, uint24 poolFee)',
+    // 'function registeredTokenPoolFee(address) view returns (uint24)',
     // 'function renounceOwnership()',
     // 'function requiredRelayGas() view returns (uint256 amount)',
     // 'function setRelayHub(address hub)',
     // 'function setSwapRouter(address _swapRouter)',
     // 'function setWrappedChainToken(address _wrappedChainToken)',
     // 'function swapRouter() view returns (address)',
+    // 'function transfer(address token, uint256 amount, address target, uint256 fee, uint256 chainTokenFee)',
     // 'function transferOwnership(address newOwner)',
+    'function transferWithApproval(address token, uint256 amount, address target, uint256 fee, uint256 chainTokenFee, uint256 approval, bytes32 sigR, bytes32 sigS, uint8 sigV)',
     // 'function trustedForwarder() view returns (address forwarder)',
     // 'function typeHashes(bytes32) view returns (bool)',
     // 'function unregisterToken(address token)',

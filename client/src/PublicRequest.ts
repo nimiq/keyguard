@@ -217,7 +217,7 @@ export type SignPolygonTransactionRequest = Omit<SimpleRequest, 'keyLabel'> & {
 
     /**
      * The sender's nonce in the token contract, required when calling the
-     * contract function `executeWithApproval`.
+     * contract function `transferWithApproval`.
      */
     tokenApprovalNonce?: number,
 };

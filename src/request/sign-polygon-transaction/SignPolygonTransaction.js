@@ -36,8 +36,8 @@ class SignPolygonTransaction {
 
         /** @type {ethers.Contract} */
         this._nimiqUsdc = new ethers.Contract(
-            CONFIG.NIMIQ_USDC_CONTRACT_ADDRESS,
-            SignPolygonTransactionApi.NIMIQ_USDC_CONTRACT_ABI,
+            CONFIG.USDC_TRANSFER_CONTRACT_ADDRESS,
+            SignPolygonTransactionApi.USDC_TRANSFER_CONTRACT_ABI,
         );
 
         /** @type {ethers.utils.TransactionDescription} */
@@ -132,7 +132,7 @@ class SignPolygonTransaction {
 
         const polygonKey = new PolygonKey(key);
 
-        if (this._description.name === 'executeWithApproval') {
+        if (this._description.name === 'transferWithApproval') {
             // Sign approval
             const usdc = new ethers.Contract(
                 CONFIG.USDC_CONTRACT_ADDRESS,
@@ -141,7 +141,7 @@ class SignPolygonTransaction {
 
             const functionSignature = usdc.interface.encodeFunctionData(
                 'approve',
-                [CONFIG.NIMIQ_USDC_CONTRACT_ADDRESS, this._description.args.approval],
+                [CONFIG.USDC_TRANSFER_CONTRACT_ADDRESS, this._description.args.approval],
             );
 
             // TODO: Make the domain parameters configurable in the request?
@@ -161,7 +161,7 @@ class SignPolygonTransaction {
             };
 
             const message = {
-                // Has been validated to be defined when function called is `executeWithApproval`
+                // Has been validated to be defined when function called is `transferWithApproval`
                 nonce: request.tokenApprovalNonce,
                 from: request.request.from,
                 functionSignature,
@@ -184,9 +184,8 @@ class SignPolygonTransaction {
             const sigS = `0x${signature.slice(66, 130)}`; // 32 bytes = 64 characters
             const sigV = parseInt(signature.slice(130, 132), 16); // last byte = 2 characters
 
-            request.request.data = this._nimiqUsdc.interface.encodeFunctionData('executeWithApproval', [
+            request.request.data = this._nimiqUsdc.interface.encodeFunctionData('transferWithApproval', [
                 /* address token */ this._description.args.token,
-                /* address userAddress */ this._description.args.userAddress,
                 /* uint256 amount */ this._description.args.amount,
                 /* address target */ this._description.args.target,
                 /* uint256 fee */ this._description.args.fee,
@@ -199,7 +198,7 @@ class SignPolygonTransaction {
         }
 
         // const raw = await polygonKey.sign(request.keyPath, request.transaction);
-        const typedData = new OpenGSN.TypedRequestData(CONFIG.POLYGON_CHAIN_ID, CONFIG.NIMIQ_USDC_CONTRACT_ADDRESS, {
+        const typedData = new OpenGSN.TypedRequestData(CONFIG.POLYGON_CHAIN_ID, CONFIG.USDC_TRANSFER_CONTRACT_ADDRESS, {
             request: request.request,
             relayData: request.relayData,
         });
