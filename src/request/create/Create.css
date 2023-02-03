@@ -1,8 +1,59 @@
-.page#choose-identicon .page-body {
-    padding-bottom: 3rem;
+.page#login-file-selection .page-body {
+    padding-bottom: 2rem;
 }
 
-.page#choose-identicon .page-body,
+.page#login-file-selection .login-file-fan {
+    flex-grow: 1;
+    align-self: stretch;
+    position: relative;
+}
+
+.page#login-file-selection .login-file-fan img {
+    position: absolute;
+    height: 23rem;
+    left: 50%;
+    top: 50%;
+    margin-left: -9rem;
+    margin-top: -11.5rem;
+
+    transform-origin: 100% 125%;
+
+    animation: fan-out 1s cubic-bezier(0.83, 0, 0.17, 1) forwards reverse;
+}
+
+.page#login-file-selection .login-file-fan img:nth-child(5) {
+    transform: rotate(-4.47deg);
+}
+
+.page#login-file-selection .login-file-fan img:nth-child(4) {
+    transform: rotate(1.53deg);
+}
+
+.page#login-file-selection .login-file-fan img:nth-child(3) {
+    transform: rotate(7.53deg);
+}
+
+.page#login-file-selection .login-file-fan img:nth-child(2) {
+    transform: rotate(13.53deg);
+}
+
+.page#login-file-selection .login-file-fan img:nth-child(1) {
+    transform: rotate(19.53deg);
+}
+
+@keyframes fan-out {
+    to { transform: rotate(0deg); }
+}
+
+.page#login-file-selection .page-body p {
+    text-align: center;
+    margin: 2rem auto 0;
+    font-size: 2rem;
+    font-weight: 600;
+    max-width: 35rem;
+}
+
+.page#login-file-selection .page-body,
 .page#set-password .page-body {
     position: relative;
     display:flex;
@@ -20,41 +71,6 @@
 .page#set-password.repeat-password .hide-on-repetition,
 .page#set-password:not(.repeat-password) .show-on-repetition {
     display: none;
-}
-
-.overlay {
-    align-items: center;
-}
-
-.overlay .identicon {
-    width: 18rem;
-    height: 18rem;
-    margin-top: 5rem;
-    margin-bottom: -0.75rem;
-}
-
-.overlay .nq-label {
-    margin: 4rem 0 1rem;
-    font-weight: 900;
-    opacity: 0.5;
-}
-
-.overlay .address {
-    width: 100%;
-    max-width: 27.375rem;
-    box-sizing: content-box;
-    text-transform: uppercase;
-    line-height: 1.75;
-    opacity: 1;
-    color: rgba(31, 35, 72, .5);
-    font-size: 3rem;
-    white-space: pre-wrap;
-    word-spacing: 0.75rem;
-    padding-left: 0.75rem;
-}
-
-.overlay .nq-button {
-    margin-bottom: 4rem;
 }
 
 .page#login-file-download .page-body {

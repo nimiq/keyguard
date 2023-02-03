@@ -101,7 +101,6 @@ make_file_hash() {
 # Before writing any files, verify integrity of Nimiq lib
 output "🧐  Validating Nimiq Core files integrity"
 
-# For Nimiq Core v1.5.3
 nimiq_core_hashsums=\
 "fa043fd1c06ba904e3e55510eca0865425695a42294e230a07d07efd68cd7dae  node_modules/@nimiq/core-web/web.js
  8837e6cc19880e8a233581f72004691c91f51a6fb8853ce60694d30b095a8f45  node_modules/@nimiq/core-web/web-offline.js
@@ -117,12 +116,23 @@ if [ ! $? -eq 0 ]; then
     exit 1;
 fi
 
-# Before writing any files, verify integrity of Nimiq lib
+# Before writing any files, verify integrity of Bitcoin lib
 output "🧐  Validating BitcoinJS file integrity"
 
 # For bitcoinjs-lib v5.2.0 and Buffer v5.6.0
 bitcoinjs_hashsum="5a02ae59046a7ee4f386f5828097aa21bdf52657acca4ae472d5e89e8332ba43  src/lib/bitcoin/BitcoinJS.js"
 echo "$bitcoinjs_hashsum" | ${SHA256SUM} --check
+
+if [ ! $? -eq 0 ]; then
+    output "💥  BitcoinJS file integrity check failed!"
+    exit 1;
+fi
+
+# Before writing any files, verify integrity of Ethers lib
+output "🧐  Validating EthersJS file integrity"
+
+ethersjs_hashsum="943c82a542394951457cd34743ba694b199b841fe02870c199a0aca411ed14d0  node_modules/ethers/dist/ethers.umd.js"
+echo "$ethersjs_hashsum" | ${SHA256SUM} --check
 
 if [ ! $? -eq 0 ]; then
     output "💥  BitcoinJS file integrity check failed!"
@@ -146,6 +156,7 @@ CSS_BUNDLE="index.HASH.css"
 JS_COMMON_BUNDLE="common.HASH.js"
 JS_TOPLEVEL_BUNDLE="toplevel.HASH.js"
 JS_BITCOIN_BUNDLE="bitcoin.HASH.js"
+JS_POLYGON_BUNDLE="polygon.HASH.js"
 CSS_TOPLEVEL_BUNDLE="toplevel.HASH.css"
 
 # bundle files for each request
@@ -183,12 +194,14 @@ for DIR in src/request/*/ ; do
     LIST_JS_COMMON="$LIST_JS_COMMON$(grep '<script' $DIR/index.html | grep 'bundle-common' | cut -d\" -f2) "
     LIST_JS_TOPLEVEL="$LIST_JS_TOPLEVEL$(grep '<script' $DIR/index.html | grep 'bundle-toplevel' | cut -d\" -f2) "
     LIST_JS_BITCOIN="$LIST_JS_BITCOIN$(grep '<script' $DIR/index.html | grep 'bundle-bitcoin' | cut -d\" -f2) "
+    LIST_JS_POLYGON="$LIST_JS_POLYGON$(grep '<script' $DIR/index.html | grep 'bundle-polygon' | cut -d\" -f2) "
 done
 
 # prepare bundle lists
 LIST_JS_COMMON=$(echo $LIST_JS_COMMON | tr " " "\n" | sort -ur) # sort common bundle reverse for nicer order
 LIST_JS_TOPLEVEL=$(echo $LIST_JS_TOPLEVEL | tr " " "\n" | sort -u)
 LIST_JS_BITCOIN=$(echo $LIST_JS_BITCOIN | tr " " "\n" | sort -u)
+LIST_JS_POLYGON=$(echo $LIST_JS_POLYGON | tr " " "\n" | sort -u)
 # for CSS the order is very important, so sorting is not possible, thus we have to put the list here manually
 LIST_CSS_TOPLEVEL="../../../node_modules/@nimiq/style/nimiq-style.min.css ../../nimiq-style.css ../../common.css ../../components/PasswordInput.css ../../components/PasswordBox.css"
 
@@ -214,6 +227,10 @@ for url in $LIST_JS_BITCOIN; do
     cat src/request/create/$url >> dist/request/$JS_BITCOIN_BUNDLE
 done
 
+for url in $LIST_JS_POLYGON; do
+    cat src/request/create/$url >> dist/request/$JS_POLYGON_BUNDLE
+done
+
 for url in $LIST_CSS_TOPLEVEL; do
     cat src/request/create/$url >> dist/request/$CSS_TOPLEVEL_BUNDLE
 done
@@ -224,12 +241,14 @@ replace_font_url dist/request/$CSS_TOPLEVEL_BUNDLE
 JS_COMMON_BUNDLE_HASH=$(make_file_hash dist/request/$JS_COMMON_BUNDLE)
 JS_TOPLEVEL_BUNDLE_HASH=$(make_file_hash dist/request/$JS_TOPLEVEL_BUNDLE)
 JS_BITCOIN_BUNDLE_HASH=$(make_file_hash dist/request/$JS_BITCOIN_BUNDLE)
+JS_POLYGON_BUNDLE_HASH=$(make_file_hash dist/request/$JS_POLYGON_BUNDLE)
 CSS_TOPLEVEL_BUNDLE_HASH=$(make_file_hash dist/request/$CSS_TOPLEVEL_BUNDLE)
 
 # add file hash to bundle file names and overwrite bundle variables with the new file names
 JS_COMMON_BUNDLE=$(add_hash_to_file_name dist/request/$JS_COMMON_BUNDLE)
 JS_TOPLEVEL_BUNDLE=$(add_hash_to_file_name dist/request/$JS_TOPLEVEL_BUNDLE)
 JS_BITCOIN_BUNDLE=$(add_hash_to_file_name dist/request/$JS_BITCOIN_BUNDLE)
+JS_POLYGON_BUNDLE=$(add_hash_to_file_name dist/request/$JS_POLYGON_BUNDLE)
 CSS_TOPLEVEL_BUNDLE=$(add_hash_to_file_name dist/request/$CSS_TOPLEVEL_BUNDLE)
 
 CORE_LIB_HASH=$(make_file_hash node_modules/@nimiq/core-web/web-offline.js)
@@ -275,6 +294,9 @@ for DIR in src/request/*/ ; do
                 }
                 if("'$REQUEST'" == "create" || "'$REQUEST'" == "import" || "'$REQUEST'" == "derive-btc-xpub" || "'$REQUEST'" == "sign-btc-transaction" || "'$REQUEST'" == "sign-swap" || "'$REQUEST'" == "swap-iframe") {
                     print space[1] "<script defer src=\"/request/'${JS_BITCOIN_BUNDLE}'\" integrity=\"sha256-'${JS_BITCOIN_BUNDLE_HASH}'\"></script>"
+                }
+                if("'$REQUEST'" == "create" || "'$REQUEST'" == "import" || "'$REQUEST'" == "derive-polygon-address" || "'$REQUEST'" == "sign-polygon-transaction" || "'$REQUEST'" == "sign-swap" || "'$REQUEST'" == "swap-iframe") {
+                    print space[1] "<script defer src=\"/request/'${JS_POLYGON_BUNDLE}'\" integrity=\"sha256-'${JS_POLYGON_BUNDLE_HASH}'\"></script>"
                 }
                 print space[1] "<script defer src=\"/request/'${REQUEST}'/'${JS_BUNDLE_NAME}'\" integrity=\"sha256-'${JS_BUNDLE_HASH}'\"></script>"
             }
