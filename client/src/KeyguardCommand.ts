@@ -12,6 +12,10 @@ export enum KeyguardCommand {
     SIGN_BTC_TRANSACTION = 'sign-btc-transaction',
     DERIVE_BTC_XPUB = 'derive-btc-xpub',
 
+    // Polygon
+    SIGN_POLYGON_TRANSACTION = 'sign-polygon-transaction',
+    DERIVE_POLYGON_ADDRESS = 'derive-polygon-address',
+
     // Swap
     SIGN_SWAP = 'sign-swap',
 

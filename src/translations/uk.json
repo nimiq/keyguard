@@ -224,6 +224,9 @@
     "derive-btc-xpub-heading": "Додати Біткоїн\nдо вашого рахунку",
     "derive-btc-xpub-text": "З легкістю обмінюйте NIM - ефективну платіжну монету та BTC - золотий стандарт криптовалюти.",
 
+    "derive-polygon-address-heading": "Add USDC on Polygon\nto your account",
+    "derive-polygon-address-text": "Easily swap between NIM, the super performant payment coin and USDC, the USD-pegged stable coin.",
+
     "sign-swap-heading": "Підтвердити обмін",
     "sign-swap-exchange-rate-tooltip": "Курс включає комісію за обмін.",
     "sign-swap-fees": "комісія",

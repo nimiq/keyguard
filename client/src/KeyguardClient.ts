@@ -34,6 +34,7 @@ import {
     ResultByCommand,
     SignBtcTransactionRequest,
     DeriveBtcXPubRequest,
+    DerivePolygonAddressRequest,
     SignSwapRequest,
     SignSwapTransactionsRequest,
     SignSwapTransactionsResult,
@@ -132,6 +133,10 @@ export class KeyguardClient {
 
     public deriveBtcXPub(request: DeriveBtcXPubRequest) {
         this._redirectRequest<DeriveBtcXPubRequest>(KeyguardCommand.DERIVE_BTC_XPUB, request);
+    }
+
+    public derivePolygonAddress(request: DerivePolygonAddressRequest) {
+        this._redirectRequest<DerivePolygonAddressRequest>(KeyguardCommand.DERIVE_POLYGON_ADDRESS, request);
     }
 
     public signSwap(request: SignSwapRequest) {

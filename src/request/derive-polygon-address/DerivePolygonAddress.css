@@ -6,9 +6,27 @@
     text-align: center;
 }
 
-.page#unlock .page-body img {
+.page#unlock .page-body .img {
     width: 12rem;
     height: 12rem;
+    position: relative;
+}
+
+.page#unlock .page-body .img .img-inner {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 4rem;
+    height: 4rem;
+    background: #8247e5;
+    border-radius: 10rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.page#unlock .page-body .img .img-inner .polygon-logo {
+    width: 2.5rem;
 }
 
 .page#unlock .nq-h1 {

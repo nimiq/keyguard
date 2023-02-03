@@ -224,6 +224,9 @@
     "derive-btc-xpub-heading": "Adicione Bitcoin\nna sua conta",
     "derive-btc-xpub-text": "Faça uma troca fácil entre NIM, a moeda de pagamento de alto desempenho e BTC, o ouro das criptomoedas.",
 
+    "derive-polygon-address-heading": "Add USDC on Polygon\nto your account",
+    "derive-polygon-address-text": "Easily swap between NIM, the super performant payment coin and USDC, the USD-pegged stable coin.",
+
     "sign-swap-heading": "Confirmar Troca",
     "sign-swap-exchange-rate-tooltip": "Esta taxa incluí a taxa de troca.",
     "sign-swap-fees": "taxas",

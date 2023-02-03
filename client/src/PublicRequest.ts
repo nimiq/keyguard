@@ -385,6 +385,17 @@ export type DeriveBtcXPubResult = {
     bitcoinXPub: string,
 };
 
+export type DerivePolygonAddressRequest = SimpleRequest & {
+    polygonAccountPath: string,
+};
+
+export type DerivePolygonAddressResult = {
+    polygonAddresses: Array<{
+        address: string,
+        keyPath: string,
+    }>,
+};
+
 // Request unions
 
 export type RedirectRequest
@@ -398,6 +409,7 @@ export type RedirectRequest
     | SignBtcTransactionRequest
     | SimpleRequest
     | DeriveBtcXPubRequest
+    | DerivePolygonAddressRequest
     | SignSwapRequest;
 
 export type IFrameRequest
@@ -462,6 +474,7 @@ export type RedirectResult
     | SignedBitcoinTransaction
     | SimpleResult
     | DeriveBtcXPubResult
+    | DerivePolygonAddressResult
     | SignSwapResult;
 
 export type Result = RedirectResult | IFrameResult;
@@ -476,6 +489,7 @@ export type ResultType<T extends RedirectRequest> =
     T extends Is<T, RemoveKeyRequest> | Is<T, SimpleRequest> ? SimpleResult :
     T extends Is<T, SignBtcTransactionRequest> ? SignedBitcoinTransaction :
     T extends Is<T, DeriveBtcXPubRequest> ? DeriveBtcXPubResult :
+    T extends Is<T, DerivePolygonAddressRequest> ? DerivePolygonAddressResult :
     T extends Is<T, SignSwapRequest> ? SignSwapResult :
     never;
 
@@ -487,6 +501,7 @@ export type ResultByCommand<T extends KeyguardCommand> =
     T extends KeyguardCommand.REMOVE ? SimpleResult :
     T extends KeyguardCommand.SIGN_BTC_TRANSACTION ? SignedBitcoinTransaction :
     T extends KeyguardCommand.DERIVE_BTC_XPUB ? DeriveBtcXPubResult :
+    T extends KeyguardCommand.DERIVE_POLYGON_ADDRESS ? DerivePolygonAddressResult :
     T extends KeyguardCommand.SIGN_SWAP ? SignSwapResult :
     never;
 

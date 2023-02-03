@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Derive Polygon Address | Keyguard Demo</title>
+    <link href="../src/nimiq-style.css" rel="stylesheet">
+    <script src="../node_modules/@nimiq/core-web/web-offline.js"></script>
+    <script src="../src/lib/Constants.js"></script>
+    <script src="../src/lib/Key.js"></script>
+    <script src="../src/lib/KeyStore.js"></script>
+    <script src="../node_modules/@nimiq/rpc/dist/rpc.umd.js"></script>
+</head>
+<body>
+
+<div>
+    <button>Derive Polygon Address</button>
+</div>
+
+<script>
+    (async () => {
+        await Nimiq.WasmHelper.doImportBrowser();
+        // Nimiq.GenesisConfig.test();
+    })();
+
+    document.querySelector('button').addEventListener('click', async () => {
+        const keyguard = window.open('../src/request/derive-polygon-address/', 'Polygon Demo',
+            `left=${window.innerWidth / 2 - 350},top=75,width=700,height=850,location=yes,dependent=yes`);
+        const rpc = new Rpc.PostMessageRpcClient(keyguard, '*');
+        await rpc.init();
+
+        const secret = Nimiq.Entropy.generate();
+        const key = new Key(secret);
+        const password = Nimiq.BufferUtils.fromAscii('1234567890');
+        const id = await KeyStore.instance.put(key, password);
+
+        const request = {
+            appName: 'Keyguard Demo',
+            keyId: id,
+            keyLabel: 'My Demo Account',
+            polygonAccountPath: `m/44'/699'/0'`,
+        };
+
+        try {
+            const result = await rpc.call('request', request);
+            document.body.appendChild(document.createTextNode(`Result: ${JSON.stringify(result)}; `));
+        } catch (e) {
+            document.body.appendChild(document.createTextNode(`Error: ${e.message || e}; `));
+        }
+
+        keyguard.close();
+        await KeyStore.instance.remove(request.keyId);
+    });
+</script>
+
+</body>
+</html>
