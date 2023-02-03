@@ -6,4 +6,8 @@ const CONFIG = { // eslint-disable-line no-unused-vars
     NETWORK: Constants.NETWORK.MAIN,
     BTC_NETWORK: 'MAIN', // BitcoinConstants is not included in the common bundle
     ROOT_REDIRECT: 'https://wallet.nimiq.com',
+
+    POLYGON_CHAIN_ID: 137,
+    USDC_CONTRACT_ADDRESS: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
+    OPENGSN_CONTRACT_ADDRESS: '',
 };

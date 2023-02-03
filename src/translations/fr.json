@@ -14,6 +14,7 @@
     "back-to-cpl": "Retour à CryptoPayment.link",
 
     "funding-cashlink": "Financement du cashlink",
+    "label-unknown": "Unknown",
 
     "recovery-words-title": "Écrivez ces 24 Mots sur du papier",
     "recovery-words-intro-text": "Les Mots de Récupération sont le SEUL moyen de restaurer votre compte dans le cas où vous perdriez votre Ficher de Connexion ou votre mot de passe.",

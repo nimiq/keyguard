@@ -14,6 +14,7 @@
     "back-to-cpl": "Back to CryptoPayment.link",
 
     "funding-cashlink": "Funding cashlink",
+    "label-unknown": "Unknown",
 
     "recovery-words-title": "Write these 24 Words on Paper",
     "recovery-words-intro-text": "The Recovery Words are the ONLY way to restore your account in case you lose your Login File or password.",

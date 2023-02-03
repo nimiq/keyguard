@@ -14,6 +14,7 @@
     "back-to-cpl": "Voltar para CryptoPayment.link",
 
     "funding-cashlink": "Financiar cashlink",
+    "label-unknown": "Unknown",
 
     "recovery-words-title": "Escreva estas 24 Palavras em Papel",
     "recovery-words-intro-text": "As Palavras de Backup são a ÚNICA forma de restaurar a sua conta no caso de perder o seu Ficheiro de Login ou palavra passe.",

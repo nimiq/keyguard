@@ -3,7 +3,6 @@
 /* global KeyStore */
 /* global SignTransactionApi */
 /* global PasswordBox */
-/* global SignTransactionApi */
 /* global Errors */
 /* global Utf8Tools */
 /* global TopLevelApi */

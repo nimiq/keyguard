@@ -200,6 +200,29 @@ export type SignBtcTransactionRequest
     = SignBtcTransactionRequestStandard
     | SignBtcTransactionRequestCheckout;
 
+export type SignPolygonTransactionRequest = Omit<SimpleRequest, 'keyLabel'> & {
+    keyLabel: string,
+    keyPath: string,
+    recipientLabel?: string,
+
+    from: string,
+    to: string,
+    nonce: number,
+    data: Uint8Array | string,
+    value: number,
+    chainId: number,
+    type: 2,
+
+    accessList?: Array<{
+        address: string,
+        storageKeys: string[],
+    }>,
+
+    gasLimit: number,
+    maxFeePerGas: number,
+    maxPriorityFeePerGas: number,
+};
+
 export type MockSettlementInstruction = {
     type: 'mock',
     contractId: string,
@@ -407,6 +430,7 @@ export type RedirectRequest
     | SignMessageRequest
     | SignTransactionRequest
     | SignBtcTransactionRequest
+    | SignPolygonTransactionRequest
     | SimpleRequest
     | DeriveBtcXPubRequest
     | DerivePolygonAddressRequest
@@ -450,6 +474,10 @@ export type SignedBitcoinTransaction = {
     transactionHash: string,
     raw: string,
 };
+export type SignedPolygonTransaction = {
+    transactionHash: string,
+    raw: string,
+};
 export type SignSwapTransactionsResult = {
     nim?: SignatureResult,
     btc?: SignedBitcoinTransaction,
@@ -472,6 +500,7 @@ export type RedirectResult
     | KeyResult
     | SignTransactionResult
     | SignedBitcoinTransaction
+    | SignedPolygonTransaction
     | SimpleResult
     | DeriveBtcXPubResult
     | DerivePolygonAddressResult
@@ -490,6 +519,7 @@ export type ResultType<T extends RedirectRequest> =
     T extends Is<T, SignBtcTransactionRequest> ? SignedBitcoinTransaction :
     T extends Is<T, DeriveBtcXPubRequest> ? DeriveBtcXPubResult :
     T extends Is<T, DerivePolygonAddressRequest> ? DerivePolygonAddressResult :
+    T extends Is<T, SignPolygonTransactionRequest> ? SignedPolygonTransaction :
     T extends Is<T, SignSwapRequest> ? SignSwapResult :
     never;
 
@@ -502,6 +532,7 @@ export type ResultByCommand<T extends KeyguardCommand> =
     T extends KeyguardCommand.SIGN_BTC_TRANSACTION ? SignedBitcoinTransaction :
     T extends KeyguardCommand.DERIVE_BTC_XPUB ? DeriveBtcXPubResult :
     T extends KeyguardCommand.DERIVE_POLYGON_ADDRESS ? DerivePolygonAddressResult :
+    T extends KeyguardCommand.SIGN_POLYGON_TRANSACTION ? SignedPolygonTransaction :
     T extends KeyguardCommand.SIGN_SWAP ? SignSwapResult :
     never;
 

@@ -14,6 +14,7 @@
     "back-to-cpl": "Повернутися до CryptoPayment.link",
 
     "funding-cashlink": "Чек поповнюється",
+    "label-unknown": "Unknown",
 
     "recovery-words-title": "Напишіть ці 24 слова на папері",
     "recovery-words-intro-text": "Секретні слова це ЄДИНИЙ спосіб відновити ваш рахунок у випадку якщо ви втратили файл-ключ.",

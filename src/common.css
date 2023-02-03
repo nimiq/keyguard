@@ -81,18 +81,18 @@
 }
 
 /*
- * Reduced Fira Mono font only including 0123456789ABCDEFGHJKLMNPQRSTUVXY and space for nimiq addresses.
- * Style copied from https://fonts.googleapis.com/css?family=Fira+Mono&text=0123456789ABCDEFGHJKLMNPQRSTUVXY%20
- * but with urls pointing to packaged files.
- * The files have been copied at version v8 from fonts.gstatic.com. As derivative work of
+ * Reduced Fira Mono Regular font only including alphanumeric characters and space.
+ * Style copied from https://fonts.googleapis.com/css?family=Fira+Mono&text=0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz%20
+ * but with the URL pointing to a packaged file.
+ * The file has been copied at version v14 from fonts.gstatic.com. As derivative work of
  * the Fira source files (see https://github.com/googlefonts/Fira and
- * https://github.com/google/fonts/tree/master/ofl/firamono) they are licensed under OFL.
+ * https://github.com/google/fonts/tree/master/ofl/firamono) it is licensed under OFL.
  */
 @font-face {
     font-family: 'Fira Mono';
     font-style: normal;
     font-weight: 400;
-    src: local('Fira Mono Regular'), local('FiraMono-Regular'), url(assets/fonts/fira-mono/fira-mono-address.woff2) format('woff2');
+    src: local('Fira Mono Regular'), local('FiraMono-Regular'), url(assets/fonts/fira-mono/fira-mono-regular.woff2) format('woff2');
 }
 
 
@@ -210,6 +210,7 @@
     font-size: 2rem;
     display: flex;
     flex-direction: column;
+    padding: 0.75rem;
 }
 
 .page-footer .nq-button {
@@ -338,6 +339,10 @@ body.loading .page:target .page-footer > .loading-spinner {
 
 .mbtc-symbol::before {
     content: "mBTC";
+}
+
+.usdc-symbol::before {
+    content: "USDC";
 }
 
 .eur-symbol::before {

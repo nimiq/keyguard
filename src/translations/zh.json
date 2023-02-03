@@ -14,6 +14,7 @@
     "back-to-cpl": "返回CryptoPayment.link",
 
     "funding-cashlink": "现金链接充值",
+    "label-unknown": "Unknown",
 
     "recovery-words-title": "请将这24个单词写在纸上",
     "recovery-words-intro-text": "如果你丢失了登录文件或密码，助记词是恢复帐户的＂唯一＂方法",

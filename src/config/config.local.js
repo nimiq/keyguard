@@ -15,4 +15,8 @@ const CONFIG = { // eslint-disable-line no-unused-vars
     NETWORK: Constants.NETWORK.TEST,
     BTC_NETWORK: /** @type {'MAIN' | 'TEST'} */ ('TEST'), // BitcoinConstants is not included in the common bundle
     ROOT_REDIRECT: 'https://wallet.nimiq-testnet.com',
+
+    POLYGON_CHAIN_ID: 80001,
+    USDC_CONTRACT_ADDRESS: '0x0FA8781a83E46826621b3BC094Ea2A0212e71B23',
+    OPENGSN_CONTRACT_ADDRESS: '',
 };
