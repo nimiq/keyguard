@@ -197,7 +197,6 @@ class SignPolygonTransaction {
             ]);
         }
 
-        // const raw = await polygonKey.sign(request.keyPath, request.transaction);
         const typedData = new OpenGSN.TypedRequestData(CONFIG.POLYGON_CHAIN_ID, CONFIG.USDC_TRANSFER_CONTRACT_ADDRESS, {
             request: request.request,
             relayData: request.relayData,
