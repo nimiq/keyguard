@@ -4,6 +4,7 @@
 /* global TemplateTags */
 /* global NumberFormatting */
 /* global BitcoinUtils */
+/* global PolygonUtils */
 /* global EuroUtils */
 
 class SwapFeesTooltip { // eslint-disable-line no-unused-vars
@@ -57,7 +58,26 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
             totalFiatFees += fiatFee;
         }
 
-        // Show OASIS fees second
+        // Show USDC fees next
+        if (fundTx.type === 'USDC' || redeemTx.type === 'USDC') {
+            const myFee = fundTx.type === 'USDC'
+                ? fundTx.description.args.fee.toNumber()
+                : redeemTx.type === 'USDC'
+                    ? redeemTx.fee
+                    : 0;
+
+            const theirFee = fundTx.type === 'USDC' ? fundFees.redeeming : redeemFees.funding;
+
+            const fiatRate = fundTx.type === 'USDC' ? fundingFiatRate : redeemingFiatRate;
+            const fiatFee = this._unitsToCoins('USDC', myFee + theirFee) * fiatRate;
+
+            const rows = this._createUsdcLine(fiatFee, fiatCurrency);
+            this.$tooltip.appendChild(rows[0]);
+
+            totalFiatFees += fiatFee;
+        }
+
+        // Show OASIS fees next
         if (fundTx.type === 'EUR' || redeemTx.type === 'EUR') {
             const myFee = fundTx.type === 'EUR'
                 ? fundTx.fee
@@ -140,7 +160,7 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
     }
 
     /**
-     * @param {'NIM' | 'BTC' | 'EUR'} asset
+     * @param {'NIM' | 'BTC' | 'USDC' | 'EUR'} asset
      * @param {number} units
      * @returns {number}
      */
@@ -148,6 +168,7 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
         switch (asset) {
             case 'NIM': return Nimiq.Policy.lunasToCoins(units);
             case 'BTC': return BitcoinUtils.satoshisToCoins(units);
+            case 'USDC': return PolygonUtils.centsToCoins(units);
             case 'EUR': return EuroUtils.centsToCoins(units);
             default: throw new Errors.KeyguardError(`Invalid asset ${asset}`);
         }
@@ -254,6 +275,24 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
 
         $div.innerHTML = TemplateTags.hasVars(1)`
             <label data-i18n="sign-swap-nim-fees">NIM network fee</label>
+            <div>${NumberFormatting.formatCurrency(fiatFee, fiatCurrency)}</div>
+        `;
+        I18n.translateDom($div);
+
+        return [$div];
+    }
+
+    /**
+     * @param {number} fiatFee
+     * @param {string} fiatCurrency
+     * @returns {[HTMLDivElement]}
+     */
+    _createUsdcLine(fiatFee, fiatCurrency) {
+        const $div = document.createElement('div');
+        $div.classList.add('price-breakdown');
+
+        $div.innerHTML = TemplateTags.hasVars(1)`
+            <label data-i18n="sign-swap-usdc-fees">USDC network fee</label>
             <div>${NumberFormatting.formatCurrency(fiatFee, fiatCurrency)}</div>
         `;
         I18n.translateDom($div);

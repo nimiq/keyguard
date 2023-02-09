@@ -223,6 +223,8 @@
     "bitcoin": "比特币",
     "bitcoin-recipient-unlabelled": "未标签",
 
+    "usd-coin": "USD Coin",
+
     "derive-btc-xpub-heading": "添加比特币\n到你的帐户",
     "derive-btc-xpub-text": "在超级高性能的支付硬币：NIM，与加密的黄金标准：比特币之间轻松交换。",
 
@@ -238,6 +240,7 @@
     "sign-swap-oasis-fees-explainer": "交换价值",
     "sign-swap-bank-fees": "手续费",
     "sign-swap-bank-fees-explainer": "银行网络费用",
+    "sign-swap-usdc-fees": "USDC network fee",
     "sign-swap-nim-fees": "NIM网络费",
     "sign-swap-exchange-fee": "交换费用",
     "sign-swap-of-exchange-value": "交换价值",

@@ -4,6 +4,9 @@
 /* global SignSwap */
 /* global Errors */
 /* global Iban */
+/* global ethers */
+/* global CONFIG */
+/* global PolygonContractABIs */
 
 class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) {
     /**
@@ -69,6 +72,17 @@ class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) {
                 throw new Errors.InvalidRequestError('For locktime to be effective, at least one input must have a '
                     + 'sequence number < 0xffffffff');
             }
+        } else if (request.fund.type === 'USDC') {
+            parsedRequest.fund = {
+                type: 'USDC',
+                keyPath: this.parsePath(request.fund.keyPath, 'fund.keyPath'),
+                description: /**
+                    @type {PolygonOpenDescription | PolygonOpenWithApprovalDescription}
+                */ (this.parseOpenGsnForwardRequest(request.fund, ['open', 'openWithApproval'])),
+                request: request.fund.request,
+                relayData: this.parseOpenGsnRelayData(request.fund),
+                approval: request.fund.approval,
+            };
         } else if (request.fund.type === 'EUR') {
             parsedRequest.fund = {
                 type: 'EUR',
@@ -109,6 +123,18 @@ class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) {
                     request.redeem.output, false, 'redeem.output',
                 )),
             };
+        } else if (request.redeem.type === 'USDC') {
+            parsedRequest.redeem = {
+                type: 'USDC',
+                keyPath: this.parsePath(request.redeem.keyPath, 'fund.keyPath'),
+                description: /**
+                    @type {PolygonRedeemDescription | PolygonRedeemWithSecretInDataDescription}
+                */ (this.parseOpenGsnForwardRequest(request.redeem, ['redeem', 'redeemWithSecretInData'])),
+                request: request.redeem.request,
+                relayData: this.parseOpenGsnRelayData(request.redeem),
+                amount: this.parsePositiveInteger(request.redeem.amount, false, 'redeem.amount'),
+                fee: this.parsePositiveInteger(request.redeem.amount, true, 'redeem.fee'),
+            };
         } else if (request.redeem.type === 'EUR') {
             parsedRequest.redeem = {
                 type: 'EUR',
@@ -147,10 +173,10 @@ class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) {
 
         if (request.layout === SignSwapApi.Layouts.SLIDER && parsedRequest.layout === SignSwapApi.Layouts.SLIDER) {
             // SLIDER layout is only allowed for NIM-BTC swaps
-            const assets = ['NIM', 'BTC'];
+            const assets = ['NIM', 'BTC', 'USDC'];
             if (!assets.includes(parsedRequest.fund.type) || !assets.includes(parsedRequest.redeem.type)) {
                 throw new Errors.InvalidRequestError(
-                    'The \'slider\' layout is only allowed for swaps between NIM and BTC',
+                    'The \'slider\' layout is only allowed for swaps between NIM, BTC and USDC',
                 );
             }
 
@@ -163,6 +189,10 @@ class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) {
             parsedRequest.bitcoinAccount = {
                 balance: this.parsePositiveInteger(request.bitcoinAccount.balance, true, 'bitcoinAccount.balance'),
             };
+            parsedRequest.polygonAddresses = request.polygonAddresses.map((address, index) => ({
+                address: this.parsePolygonAddress(address.address, `polygonAddresses[${index}].address`),
+                balance: this.parsePositiveInteger(address.balance, true, `polygonAddresses[${index}].balance`),
+            }));
 
             const nimAddress = parsedRequest.fund.type === 'NIM'
                 ? parsedRequest.fund.transaction.sender.toUserFriendlyAddress()
@@ -233,6 +263,84 @@ class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) {
             throw new Error('Invalid direction');
         }
         return direction;
+    }
+
+    /**
+     *
+     * @param {KeyguardRequest.PolygonTransactionInfo} request
+     * @param {string[]} allowedMethods
+     * @returns {PolygonOpenDescription
+     *     | PolygonOpenWithApprovalDescription
+     *     | PolygonRedeemDescription
+     *     | PolygonRedeemWithSecretInDataDescription}
+     */
+    parseOpenGsnForwardRequest(request, allowedMethods) {
+        const usdcHtlcContract = new ethers.Contract(
+            CONFIG.USDC_HTLC_CONTRACT_ADDRESS,
+            PolygonContractABIs.USDC_HTLC_CONTRACT_ABI,
+        );
+
+        // eslint-disable-next-line operator-linebreak
+        const description =
+            /** @type {PolygonOpenDescription
+             *     | PolygonOpenWithApprovalDescription
+             *     | PolygonRedeemDescription
+             *     | PolygonRedeemWithSecretInDataDescription}
+             */ (usdcHtlcContract.interface.parseTransaction({
+                data: request.request.data,
+                value: request.request.value,
+            }));
+
+        if (!allowedMethods.includes(description.name)) {
+            throw new Errors.InvalidRequestError('Requested Polygon contract method is invalid');
+        }
+
+        if (description.args.token !== CONFIG.USDC_CONTRACT_ADDRESS) {
+            throw new Errors.InvalidRequestError('Invalid USDC token contract in request data');
+        }
+
+        if (description.name === 'open' || description.name === 'openWithApproval') {
+            if (description.args.refundAddress !== request.request.from) {
+                throw new Errors.InvalidRequestError('USDC HTLC refund address must be same as sender');
+            }
+        }
+
+        if (description.name === 'redeem' || description.name === 'redeemWithSecretInData') {
+            if (description.args.target !== request.request.from) {
+                throw new Errors.InvalidRequestError('USDC HTLC target address must be same as sender');
+            }
+        }
+
+        // Also check that approval object exists when method is openWithApproval
+        if (description.name === 'openWithApproval') {
+            if (!request.approval) {
+                throw new Errors.InvalidRequestError('`approval` object required for openWithApproval method');
+            }
+        }
+
+        return description;
+    }
+
+    /**
+     *
+     * @param {KeyguardRequest.PolygonTransactionInfo} request
+     * @returns {KeyguardRequest.RelayData}
+     */
+    parseOpenGsnRelayData(request) {
+        // TODO: Parse it
+        return request.relayData;
+    }
+
+    /**
+     * @param {unknown} address
+     * @param {string} name
+     * @returns {string}
+     */
+    parsePolygonAddress(address, name) {
+        if (typeof address !== 'string' || address.substring(0, 2) !== '0x' || address.substring(2).length !== 40) {
+            throw new Errors.InvalidRequestError(`${name} must be a valid Polygon address`);
+        }
+        return address;
     }
 
     /**

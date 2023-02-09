@@ -223,6 +223,8 @@
     "bitcoin": "Bitcoin",
     "bitcoin-recipient-unlabelled": "Sem marcador",
 
+    "usd-coin": "USD Coin",
+
     "derive-btc-xpub-heading": "Adicione Bitcoin\nna sua conta",
     "derive-btc-xpub-text": "Faça uma troca fácil entre NIM, a moeda de pagamento de alto desempenho e BTC, o ouro das criptomoedas.",
 
@@ -238,6 +240,7 @@
     "sign-swap-oasis-fees-explainer": "de troca de valor",
     "sign-swap-bank-fees": "taxa",
     "sign-swap-bank-fees-explainer": "taxa de rede bancária",
+    "sign-swap-usdc-fees": "USDC network fee",
     "sign-swap-nim-fees": "taxa de rede NIM",
     "sign-swap-exchange-fee": "taxa de troca",
     "sign-swap-of-exchange-value": "de troca de valor",

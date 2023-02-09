@@ -222,6 +222,8 @@
     "bitcoin": "Bitcoin",
     "bitcoin-recipient-unlabelled": "Unlabelled",
 
+    "usd-coin": "USD Coin",
+
     "derive-btc-xpub-heading": "Add Bitcoin\nto your account",
     "derive-btc-xpub-text": "Easily swap between NIM, the super performant payment coin and BTC, the gold standard of crypto.",
 
@@ -237,6 +239,7 @@
     "sign-swap-oasis-fees-explainer": "of swap value.",
     "sign-swap-bank-fees": "fee",
     "sign-swap-bank-fees-explainer": "Banking network fee.",
+    "sign-swap-usdc-fees": "USDC network fee",
     "sign-swap-nim-fees": "NIM network fee",
     "sign-swap-exchange-fee": "Swap fee",
     "sign-swap-of-exchange-value": "of swap value.",

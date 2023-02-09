@@ -2,10 +2,11 @@
 /* global LoginFileConfig */
 /* global IqonHash */
 /* global BitcoinUtils */
+/* global PolygonUtils */
 /* global EuroUtils */
 
 /** @typedef {{address: string, balance: number, active: boolean, newBalance: number}} Segment */
-/** @typedef {'NIM' | 'BTC' | 'EUR'} Asset */
+/** @typedef {'NIM' | 'BTC' | 'USDC' | 'EUR'} Asset */
 
 class BalanceDistributionBar { // eslint-disable-line no-unused-vars
     /**
@@ -112,6 +113,7 @@ class BalanceDistributionBar { // eslint-disable-line no-unused-vars
         switch (currency) {
             case 'NIM': return Nimiq.Policy.lunasToCoins(units) * rate;
             case 'BTC': return BitcoinUtils.satoshisToCoins(units) * rate;
+            case 'USDC': return PolygonUtils.centsToCoins(units) * rate;
             case 'EUR': return EuroUtils.centsToCoins(units) * rate;
             default: throw new Error('Invalid asset for unit to fiat conversion');
         }
