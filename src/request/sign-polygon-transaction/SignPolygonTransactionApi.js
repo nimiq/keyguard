@@ -45,24 +45,8 @@ class SignPolygonTransactionApi extends TopLevelApi { // eslint-disable-line no-
      * @returns {string}
      */
     parsePolygonPath(path, name) {
-        if (path.match(/^m(\/[0-9]+'?)*$/) === null) {
+        if (!PolygonUtils.isValidPath(path)) {
             throw new Errors.InvalidRequestError(`${name}: Invalid path`);
-        }
-
-        let stillHardened = true;
-
-        // Overflow check.
-        const segments = path.split('/');
-        for (let i = 1; i < segments.length; i++) {
-            if (parseInt(segments[i], 10) >= 0x80000000) {
-                throw new Errors.InvalidRequestError(`${name}: Invalid segment ${segments[i]}`);
-            }
-
-            const isHardened = segments[i][segments[i].length - 1] === '\'';
-            if (isHardened && !stillHardened) {
-                throw new Errors.InvalidRequestError(`${name}: Invalid hardened segment after non-hardened segment`);
-            }
-            stillHardened = isHardened;
         }
 
         return path;

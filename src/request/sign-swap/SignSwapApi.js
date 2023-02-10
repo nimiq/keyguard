@@ -75,7 +75,7 @@ class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) {
         } else if (request.fund.type === 'USDC') {
             parsedRequest.fund = {
                 type: 'USDC',
-                keyPath: this.parsePath(request.fund.keyPath, 'fund.keyPath'),
+                keyPath: this.parsePolygonPath(request.fund.keyPath, 'fund.keyPath'),
                 description: /**
                     @type {PolygonOpenDescription | PolygonOpenWithApprovalDescription}
                 */ (this.parseOpenGsnForwardRequest(request.fund, ['open', 'openWithApproval'])),
@@ -126,7 +126,7 @@ class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) {
         } else if (request.redeem.type === 'USDC') {
             parsedRequest.redeem = {
                 type: 'USDC',
-                keyPath: this.parsePath(request.redeem.keyPath, 'fund.keyPath'),
+                keyPath: this.parsePolygonPath(request.redeem.keyPath, 'fund.keyPath'),
                 description: /**
                     @type {PolygonRedeemDescription | PolygonRedeemWithSecretInDataDescription}
                 */ (this.parseOpenGsnForwardRequest(request.redeem, ['redeem', 'redeemWithSecretInData'])),
@@ -198,21 +198,25 @@ class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) {
                 ? parsedRequest.fund.transaction.sender.toUserFriendlyAddress()
                 : parsedRequest.redeem.type === 'NIM'
                     ? parsedRequest.redeem.transaction.recipient.toUserFriendlyAddress()
-                    : ''; // Should never happen, if parsing works correctly
-            const activeNimiqAddress = parsedRequest.nimiqAddresses
-                .find(addressInfo => addressInfo.address === nimAddress);
-            if (!activeNimiqAddress) {
-                throw new Errors.InvalidRequestError(
-                    'The address details of the NIM address doing the swap must be provided',
-                );
-            } else if (
-                parsedRequest.fund.type === 'NIM'
-                && activeNimiqAddress.balance < (
-                    parsedRequest.fund.transaction.value + parsedRequest.fund.transaction.fee
-                )
-            ) {
-                throw new Errors.InvalidRequestError('The sending NIM address does not have enough balance');
+                    : undefined;
+            if (nimAddress) {
+                const activeNimiqAddress = parsedRequest.nimiqAddresses
+                    .find(addressInfo => addressInfo.address === nimAddress);
+                if (!activeNimiqAddress) {
+                    throw new Errors.InvalidRequestError(
+                        'The address details of the NIM address doing the swap must be provided',
+                    );
+                } else if (
+                    parsedRequest.fund.type === 'NIM'
+                    && activeNimiqAddress.balance < (
+                        parsedRequest.fund.transaction.value + parsedRequest.fund.transaction.fee
+                    )
+                ) {
+                    throw new Errors.InvalidRequestError('The sending NIM address does not have enough balance');
+                }
             }
+
+            // TODO Verify that used Polygonaddress is the one in polygonAddresses[]
         }
 
         // Parse optional KYC data
@@ -295,11 +299,11 @@ class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) {
             throw new Errors.InvalidRequestError('Requested Polygon contract method is invalid');
         }
 
-        if (description.args.token !== CONFIG.USDC_CONTRACT_ADDRESS) {
-            throw new Errors.InvalidRequestError('Invalid USDC token contract in request data');
-        }
-
         if (description.name === 'open' || description.name === 'openWithApproval') {
+            if (description.args.token !== CONFIG.USDC_CONTRACT_ADDRESS) {
+                throw new Errors.InvalidRequestError('Invalid USDC token contract in request data');
+            }
+
             if (description.args.refundAddress !== request.request.from) {
                 throw new Errors.InvalidRequestError('USDC HTLC refund address must be same as sender');
             }
@@ -341,6 +345,19 @@ class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) {
             throw new Errors.InvalidRequestError(`${name} must be a valid Polygon address`);
         }
         return address;
+    }
+
+    /**
+     * @param {string} path
+     * @param {string} name
+     * @returns {string}
+     */
+    parsePolygonPath(path, name) {
+        if (!PolygonUtils.isValidPath(path)) {
+            throw new Errors.InvalidRequestError(`${name}: Invalid path`);
+        }
+
+        return path;
     }
 
     /**
