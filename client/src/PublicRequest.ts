@@ -341,6 +341,7 @@ export type SignSwapRequestStandard = SignSwapRequestCommon & {
 
 export type SignSwapRequestSlider = SignSwapRequestCommon & {
     layout: 'slider',
+    direction: 'left-to-right' | 'right-to-left',
     nimiqAddresses: Array<{
         address: string,
         balance: number, // Luna

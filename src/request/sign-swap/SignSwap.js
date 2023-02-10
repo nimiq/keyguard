@@ -66,9 +66,9 @@ class SignSwap {
         /** @type {HTMLDivElement} */
         const $swapValues = (this.$el.querySelector('.swap-values'));
         /** @type {HTMLSpanElement} */
-        const $swapLeftValue = (this.$el.querySelector('#swap-nim-value'));
+        const $swapLeftValue = (this.$el.querySelector('#swap-left-value'));
         /** @type {HTMLSpanElement} */
-        const $swapRightValue = (this.$el.querySelector('#swap-btc-value'));
+        const $swapRightValue = (this.$el.querySelector('#swap-right-value'));
 
         // The total amount the user loses
         let swapFromValue = 0;
@@ -89,8 +89,12 @@ class SignSwap {
             default: throw new Errors.KeyguardError('Invalid asset');
         }
 
-        const leftAsset = request.layout === SignSwapApi.Layouts.SLIDER ? 'NIM' : fundTx.type;
-        const rightAsset = request.layout === SignSwapApi.Layouts.SLIDER ? 'BTC' : redeemTx.type;
+        const leftAsset = request.layout === SignSwapApi.Layouts.SLIDER
+            ? request.direction === 'left-to-right' ? request.fund.type : request.redeem.type
+            : fundTx.type;
+        const rightAsset = request.layout === SignSwapApi.Layouts.SLIDER
+            ? request.direction === 'right-to-left' ? request.fund.type : request.redeem.type
+            : redeemTx.type;
 
         const leftAmount = fundTx.type === leftAsset ? swapFromValue : swapToValue;
         const rightAmount = redeemTx.type === rightAsset ? swapToValue : swapFromValue;
@@ -114,8 +118,8 @@ class SignSwap {
         // If EUR is part of the swap, the other currency is the base asset
         if (fundTx.type === 'EUR') exchangeBaseAsset = redeemTx.type;
         else if (redeemTx.type === 'EUR') exchangeBaseAsset = fundTx.type;
-        // If NIM is part of the swap, it is the base asset
-        else if (fundTx.type === 'NIM' || redeemTx.type === 'NIM') exchangeBaseAsset = 'NIM';
+        // If the layout is 'slider', the left asset is the base asset
+        else if (request.layout === SignSwapApi.Layouts.SLIDER) exchangeBaseAsset = leftAsset;
         else exchangeBaseAsset = fundTx.type;
 
         const exchangeOtherAsset = exchangeBaseAsset === fundTx.type ? redeemTx.type : fundTx.type;
@@ -201,11 +205,22 @@ class SignSwap {
 
         const exchangeRate = this._unitsToCoins(exchangeOtherAsset, exchangeOtherValue)
             / this._unitsToCoins(exchangeBaseAsset, exchangeBaseValue);
-        $exchangeRate.textContent = `1 ${exchangeBaseAsset} = ${NumberFormatting.formatCurrency(
+
+        // Make sure to show enough decimals
+        const exchangeRateDigitsLength = exchangeRate
+            .toFixed(this._assetDecimals(exchangeOtherAsset) + 1)
+            .split('.')[0]
+            .replace('0', '')
+            .length;
+        const exchangeRateDecimals = Math.max(
+            0,
+            this._assetDecimals(exchangeOtherAsset) - exchangeRateDigitsLength,
+        );
+        $exchangeRate.textContent = `1 ${exchangeBaseAsset} = ${NumberFormatting.formatNumber(
             exchangeRate,
-            exchangeOtherAsset.toLocaleLowerCase(),
-            0.01,
-        )}`;
+            exchangeRateDecimals,
+            exchangeOtherAsset === 'EUR' ? this._assetDecimals(exchangeOtherAsset) : 0,
+        )} ${exchangeOtherAsset}`;
 
         /** @type {HTMLDivElement} */
         const $topRow = (this.$el.querySelector('.nq-notice'));
@@ -269,36 +284,43 @@ class SignSwap {
         }
 
         if (request.layout === SignSwapApi.Layouts.SLIDER) {
+            $swapValues.classList.add(request.direction);
+
             /** @type {HTMLDivElement} */
             const $balanceDistributionBar = (this.$el.querySelector('.balance-distribution-bar'));
             /** @type {HTMLSpanElement} */
-            const $newNimBalance = (this.$el.querySelector('#new-nim-balance'));
+            const $swapLeftValueFiat = (this.$el.querySelector('#swap-left-value-fiat'));
             /** @type {HTMLSpanElement} */
-            const $newBtcBalance = (this.$el.querySelector('#new-btc-balance'));
+            const $swapRightValueFiat = (this.$el.querySelector('#swap-right-value-fiat'));
             /** @type {HTMLSpanElement} */
-            const $newNimBalanceFiat = (this.$el.querySelector('#new-nim-balance-fiat'));
+            const $swapLeftSymbol = (this.$el.querySelector('#swap-left-symbol'));
             /** @type {HTMLSpanElement} */
-            const $newBtcBalanceFiat = (this.$el.querySelector('#new-btc-balance-fiat'));
-            /** @type {HTMLSpanElement} */
-            const $swapLeftValueFiat = (this.$el.querySelector('#swap-nim-value-fiat'));
-            /** @type {HTMLSpanElement} */
-            const $swapRightValueFiat = (this.$el.querySelector('#swap-btc-value-fiat'));
+            const $swapRightSymbol = (this.$el.querySelector('#swap-right-symbol'));
 
-            const swapNimAddress = fundTx.type === 'NIM'
-                ? fundTx.transaction.sender.toUserFriendlyAddress()
-                : redeemTx.type === 'NIM'
-                    ? redeemTx.transaction.recipient.toUserFriendlyAddress()
-                    : ''; // Should never happen, if parsing works correctly
+            $swapLeftSymbol.classList.add(`${leftAsset.toLowerCase()}-symbol`);
+            $swapRightSymbol.classList.add(`${rightAsset.toLowerCase()}-symbol`);
 
-            new Identicon(swapNimAddress, $leftIdenticon); // eslint-disable-line no-new
-            $leftLabel.textContent = fundTx.type === 'NIM'
-                ? fundTx.senderLabel
-                : redeemTx.type === 'NIM'
-                    ? redeemTx.recipientLabel
-                    : ''; // Should never happen, if parsing works correctly
+            if (leftAsset === 'NIM' || rightAsset === 'NIM') {
+                const swapNimAddress = fundTx.type === 'NIM'
+                    ? fundTx.transaction.sender.toUserFriendlyAddress()
+                    : redeemTx.type === 'NIM'
+                        ? redeemTx.transaction.recipient.toUserFriendlyAddress()
+                        : ''; // Should never happen, if parsing works correctly
 
-            $rightIdenticon.innerHTML = TemplateTags.hasVars(0)`<img src="../../assets/icons/bitcoin.svg"></img>`;
-            $rightLabel.textContent = I18n.translatePhrase('bitcoin');
+                // eslint-disable-next-line no-new
+                new Identicon(swapNimAddress, leftAsset === 'NIM' ? $leftIdenticon : $rightIdenticon);
+                (leftAsset === 'NIM' ? $leftLabel : $rightLabel).textContent = fundTx.type === 'NIM'
+                    ? fundTx.senderLabel
+                    : redeemTx.type === 'NIM'
+                        ? redeemTx.recipientLabel
+                        : ''; // Should never happen, if parsing works correctly
+            }
+
+            if (leftAsset === 'BTC' || rightAsset === 'BTC') {
+                (leftAsset === 'BTC' ? $leftIdenticon : $rightIdenticon)
+                    .innerHTML = TemplateTags.hasVars(0)`<img src="../../assets/icons/bitcoin.svg"></img>`;
+                (leftAsset === 'BTC' ? $leftLabel : $rightLabel).textContent = I18n.translatePhrase('bitcoin');
+            }
 
             // Add signs in front of swap amounts
             $swapLeftValue.textContent = `${fundTx.type === leftAsset ? '-' : '+'}\u2009`
@@ -318,31 +340,71 @@ class SignSwap {
                 request.fiatCurrency,
             );
 
-            const nimAddressInfo = request.nimiqAddresses.find(address => address.address === swapNimAddress);
-            if (!nimAddressInfo) {
-                throw new Errors.KeyguardError('UNEXPECTED: Address info of swap NIM address not found');
+            /** @typedef {{address: string, balance: number, active: boolean, newBalance: number}} Segment */
+
+            /** @type {Segment[] | undefined} */
+            let leftSegments;
+            /** @type {Segment[] | undefined} */
+            let rightSegments;
+
+            if (leftAsset === 'NIM' || rightAsset === 'NIM') {
+                const activeAddress = fundTx.type === 'NIM'
+                    ? fundTx.transaction.sender.toUserFriendlyAddress()
+                    : redeemTx.type === 'NIM'
+                        ? redeemTx.transaction.recipient.toUserFriendlyAddress()
+                        : ''; // Should never happen, if parsing works correctly
+
+                const activeAddressInfo = request.nimiqAddresses.find(ai => ai.address === activeAddress);
+                if (!activeAddressInfo) {
+                    throw new Errors.KeyguardError('UNEXPECTED: Address info of swap NIM address not found');
+                }
+
+                const amount = leftAsset === 'NIM' ? leftAmount : rightAmount;
+
+                const newBalance = activeAddressInfo.balance + (amount * (fundTx.type === 'NIM' ? -1 : 1));
+
+                /** @type {Segment[]} */
+                const segements = request.nimiqAddresses.map(address => ({
+                    address: address.address,
+                    balance: address.balance,
+                    active: address.address === activeAddress,
+                    newBalance: address.address === activeAddress
+                        ? newBalance
+                        : address.balance,
+                }));
+
+                if (leftAsset === 'NIM') leftSegments = segements;
+                else rightSegments = segements;
             }
 
-            const newNimBalance = nimAddressInfo.balance + (leftAmount * (fundTx.type === 'NIM' ? -1 : 1));
-            const newBtcBalance = request.bitcoinAccount.balance + (rightAmount * (fundTx.type === 'BTC' ? -1 : 1));
+            if (leftAsset === 'BTC' || rightAsset === 'BTC') {
+                const amount = leftAsset === 'BTC' ? leftAmount : rightAmount;
 
-            $newNimBalance.textContent = NumberFormatting.formatNumber(Nimiq.Policy.lunasToCoins(newNimBalance));
-            $newNimBalanceFiat.textContent = NumberFormatting.formatCurrency(
-                Nimiq.Policy.lunasToCoins(newNimBalance) * leftFiatRate,
-                request.fiatCurrency,
-            );
-            $newBtcBalance.textContent = NumberFormatting.formatNumber(BitcoinUtils.satoshisToCoins(newBtcBalance), 8);
-            const newBtcBalanceFiat = BitcoinUtils.satoshisToCoins(newBtcBalance) * rightFiatRate;
-            $newBtcBalanceFiat.textContent = NumberFormatting.formatCurrency(newBtcBalanceFiat, request.fiatCurrency);
+                const newBalance = request.bitcoinAccount.balance + (amount * (fundTx.type === 'BTC' ? -1 : 1));
+
+                /** @type {Segment[]} */
+                const segements = [{
+                    address: 'bitcoin',
+                    balance: request.bitcoinAccount.balance,
+                    active: true,
+                    newBalance,
+                }];
+
+                if (leftAsset === 'BTC') leftSegments = segements;
+                else rightSegments = segements;
+            }
+
+            if (!leftSegments || !rightSegments) {
+                throw new Errors.KeyguardError('Missing segments for balance distribution bar');
+            }
 
             new BalanceDistributionBar({ // eslint-disable-line no-new
-                nimiqAddresses: request.nimiqAddresses,
-                bitcoinAccount: request.bitcoinAccount,
-                swapNimAddress,
-                nimFiatRate: leftFiatRate,
-                btcFiatRate: rightFiatRate,
-                newNimBalance,
-                newBtcBalanceFiat,
+                leftAsset,
+                rightAsset,
+                leftSegments,
+                rightSegments,
+                leftFiatRate,
+                rightFiatRate,
             }, $balanceDistributionBar);
         }
 

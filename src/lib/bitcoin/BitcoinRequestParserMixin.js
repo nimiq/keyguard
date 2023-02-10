@@ -14,7 +14,6 @@
  *
  * @template {Constructor<RequestParser>} TBase
  * @param {TBase} clazz
- * @returns {typeof Clazz}
  */
 function BitcoinRequestParserMixin(clazz) {
     const BitcoinHTLCInputTypes = [

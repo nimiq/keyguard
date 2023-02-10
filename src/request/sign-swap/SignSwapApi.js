@@ -42,8 +42,9 @@ class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) {
                     recipientType: Nimiq.Account.Type.HTLC,
                     flags: Nimiq.Transaction.Flag.CONTRACT_CREATION,
                 }),
-                /** @type {string} */
-                senderLabel: (this.parseLabel(request.fund.senderLabel, false, 'fund.senderLabel')),
+                senderLabel: /** @type {string} */ (this.parseLabel(
+                    request.fund.senderLabel, false, 'fund.senderLabel',
+                )),
             };
         } else if (request.fund.type === 'BTC') {
             parsedRequest.fund = {
@@ -91,8 +92,9 @@ class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) {
                     recipientType: Nimiq.Account.Type.BASIC,
                     flags: Nimiq.Transaction.Flag.NONE,
                 }),
-                /** @type {string} */
-                recipientLabel: (this.parseLabel(request.redeem.recipientLabel, false, 'recipientLabel')),
+                recipientLabel: /** @type {string} */ (this.parseLabel(
+                    request.redeem.recipientLabel, false, 'recipientLabel',
+                )),
             };
         } else if (request.redeem.type === 'BTC') {
             parsedRequest.redeem = {
@@ -103,8 +105,9 @@ class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) {
                     },
                     keyPath: this.parseBitcoinPath(request.redeem.input.keyPath, 'redeem.input.keyPath'),
                 },
-                /** @type {KeyguardRequest.BitcoinTransactionChangeOutput} */
-                output: (this.parseChangeOutput(request.redeem.output, false, 'redeem.output')),
+                output: /** @type {KeyguardRequest.BitcoinTransactionChangeOutput} */ (this.parseChangeOutput(
+                    request.redeem.output, false, 'redeem.output',
+                )),
             };
         } else if (request.redeem.type === 'EUR') {
             parsedRequest.redeem = {
@@ -150,6 +153,8 @@ class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) {
                     'The \'slider\' layout is only allowed for swaps between NIM and BTC',
                 );
             }
+
+            parsedRequest.direction = this.parseDirection(request.direction);
 
             parsedRequest.nimiqAddresses = request.nimiqAddresses.map((address, index) => ({
                 address: this.parseAddress(address.address, `nimiqAddresses[${index}].address`).toUserFriendlyAddress(),
@@ -216,6 +221,18 @@ class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) {
             throw new Errors.InvalidRequestError('Invalid selected layout');
         }
         return /** @type KeyguardRequest.SignSwapRequestLayout */ (layout);
+    }
+
+    /**
+     *
+     * @param {unknown} direction
+     * @returns {'left-to-right' | 'right-to-left'}
+     */
+    parseDirection(direction) {
+        if (typeof direction !== 'string' || (direction !== 'left-to-right' && direction !== 'right-to-left')) {
+            throw new Error('Invalid direction');
+        }
+        return direction;
     }
 
     /**
