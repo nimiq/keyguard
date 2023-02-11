@@ -645,9 +645,13 @@ class SignSwap {
                 );
 
                 request.fund.request.data = htlcContract.interface.encodeFunctionData(request.fund.description.name, [
+                    /* bytes32 id */ request.fund.description.args.id,
                     /* address token */ request.fund.description.args.token,
                     /* uint256 amount */ request.fund.description.args.amount,
-                    /* address target */ request.fund.description.args.target,
+                    /* address refundAddress */ request.fund.description.args.refundAddress,
+                    /* address recipientAddress */ request.fund.description.args.recipientAddress,
+                    /* bytes32 hash */ request.fund.description.args.hash,
+                    /* uint256 timeout */ request.fund.description.args.timeout,
                     /* uint256 fee */ request.fund.description.args.fee,
                     /* uint256 chainTokenFee */ request.fund.description.args.chainTokenFee,
                     /* uint256 approval */ request.fund.description.args.approval,
