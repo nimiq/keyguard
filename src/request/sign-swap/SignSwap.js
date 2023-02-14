@@ -596,7 +596,7 @@ class SignSwap {
 
                 const functionSignature = usdcContract.interface.encodeFunctionData(
                     'approve',
-                    [CONFIG.USDC_TRANSFER_CONTRACT_ADDRESS, request.fund.description.args.approval],
+                    [CONFIG.USDC_HTLC_CONTRACT_ADDRESS, request.fund.description.args.approval],
                 );
 
                 // TODO: Make the domain parameters configurable in the request?
@@ -616,7 +616,7 @@ class SignSwap {
                 };
 
                 const message = {
-                    // Has been validated to be defined when function called is `transferWithApproval`
+                    // Has been validated to be defined when function called is `openWithApproval`
                     nonce: /** @type {{ tokenNonce: number }} */ (request.fund.approval).tokenNonce,
                     from: request.fund.request.from,
                     functionSignature,
