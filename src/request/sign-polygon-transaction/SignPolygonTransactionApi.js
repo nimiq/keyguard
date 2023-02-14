@@ -1,6 +1,7 @@
 /* global ethers */
 /* global TopLevelApi */
 /* global SignPolygonTransaction */
+/* global PolygonUtils */
 /* global PolygonContractABIs */
 /* global Errors */
 /* global CONFIG */

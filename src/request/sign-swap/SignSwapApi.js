@@ -6,6 +6,7 @@
 /* global Iban */
 /* global ethers */
 /* global CONFIG */
+/* global PolygonUtils */
 /* global PolygonContractABIs */
 
 class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) {
