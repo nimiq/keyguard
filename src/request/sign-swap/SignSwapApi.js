@@ -133,7 +133,7 @@ class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) {
                 request: request.redeem.request,
                 relayData: this.parseOpenGsnRelayData(request.redeem),
                 amount: this.parsePositiveInteger(request.redeem.amount, false, 'redeem.amount'),
-                fee: this.parsePositiveInteger(request.redeem.amount, true, 'redeem.fee'),
+                fee: this.parsePositiveInteger(request.redeem.fee, true, 'redeem.fee'),
             };
         } else if (request.redeem.type === 'EUR') {
             parsedRequest.redeem = {
