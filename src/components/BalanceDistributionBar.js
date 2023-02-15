@@ -2,17 +2,21 @@
 /* global LoginFileConfig */
 /* global IqonHash */
 /* global BitcoinUtils */
+/* global PolygonUtils */
+/* global EuroUtils */
+
+/** @typedef {{address: string, balance: number, active: boolean, newBalance: number}} Segment */
+/** @typedef {'NIM' | 'BTC' | 'USDC' | 'EUR'} Asset */
 
 class BalanceDistributionBar { // eslint-disable-line no-unused-vars
     /**
      * @param {{
-     *  nimiqAddresses: { address: string, balance: number }[],
-     *  bitcoinAccount: { balance: number },
-     *  swapNimAddress: string,
-     *  nimFiatRate: number,
-     *  btcFiatRate: number,
-     *  newNimBalance: number,
-     *  newBtcBalanceFiat: number,
+     *  leftAsset: Asset,
+     *  rightAsset: Asset,
+     *  leftSegments: Segment[],
+     *  rightSegments: Segment[],
+     *  leftFiatRate: number,
+     *  rightFiatRate: number,
      * }} settings
      * @param {HTMLDivElement} [$el]
      */
@@ -20,50 +24,45 @@ class BalanceDistributionBar { // eslint-disable-line no-unused-vars
         this.$el = BalanceDistributionBar._createElement($el);
 
         const {
-            nimiqAddresses,
-            bitcoinAccount,
-            swapNimAddress,
-            nimFiatRate,
-            btcFiatRate,
-            newNimBalance,
-            newBtcBalanceFiat,
+            leftAsset,
+            rightAsset,
+            leftSegments,
+            rightSegments,
+            leftFiatRate,
+            rightFiatRate,
         } = settings;
 
-        const nimDistributionData = nimiqAddresses.map(addressInfo => {
-            const active = swapNimAddress === addressInfo.address;
-            const backgroundClass = LoginFileConfig[IqonHash.getBackgroundColorIndex(addressInfo.address)]
-                .className;
-            const oldBalance = Nimiq.Policy.lunasToCoins(addressInfo.balance) * nimFiatRate;
-            const newBalance = active
-                ? Nimiq.Policy.lunasToCoins(newNimBalance) * nimFiatRate
-                : oldBalance;
+        const leftDistributionData = leftSegments.map(segment => ({
+            oldBalance: this._unitsToFiat(segment.balance, leftAsset, leftFiatRate),
+            newBalance: this._unitsToFiat(segment.newBalance, leftAsset, leftFiatRate),
+            backgroundClass: leftAsset === 'NIM'
+                ? LoginFileConfig[IqonHash.getBackgroundColorIndex(segment.address)].className
+                : segment.address,
+            active: segment.active,
+        }));
 
-            return {
-                oldBalance,
-                newBalance,
-                backgroundClass,
-                active,
-            };
-        });
+        const rightDistributionData = rightSegments.map(segment => ({
+            oldBalance: this._unitsToFiat(segment.balance, rightAsset, rightFiatRate),
+            newBalance: this._unitsToFiat(segment.newBalance, rightAsset, rightFiatRate),
+            backgroundClass: rightAsset === 'NIM'
+                ? LoginFileConfig[IqonHash.getBackgroundColorIndex(segment.address)].className
+                : segment.address,
+            active: segment.active,
+        }));
 
-        const btcDistributionData = {
-            oldBalance: BitcoinUtils.satoshisToCoins(bitcoinAccount.balance) * btcFiatRate,
-            newBalance: newBtcBalanceFiat,
-            backgroundClass: 'bitcoin',
-            active: true,
-        };
-
-        const totalBalance = nimDistributionData.reduce((sum, data) => sum + data.newBalance, 0)
-            + btcDistributionData.newBalance;
+        const totalBalance = leftDistributionData.reduce((sum, data) => sum + data.newBalance, 0)
+            + rightDistributionData.reduce((sum, data) => sum + data.newBalance, 0);
 
         const $bars = document.createDocumentFragment();
-        for (const data of nimDistributionData) {
+        for (const data of leftDistributionData) {
             $bars.appendChild(this._createBar(data, totalBalance));
         }
         const $separator = document.createElement('div');
         $separator.classList.add('separator');
         $bars.appendChild($separator);
-        $bars.appendChild(this._createBar(btcDistributionData, totalBalance));
+        for (const data of rightDistributionData) {
+            $bars.appendChild(this._createBar(data, totalBalance));
+        }
 
         this.$el.appendChild($bars);
     }
@@ -102,5 +101,21 @@ class BalanceDistributionBar { // eslint-disable-line no-unused-vars
             $bar.appendChild($change);
         }
         return $bar;
+    }
+
+    /**
+     * @param {number} units
+     * @param {Asset} currency
+     * @param {number} rate
+     * @returns {number}
+     */
+    _unitsToFiat(units, currency, rate) {
+        switch (currency) {
+            case 'NIM': return Nimiq.Policy.lunasToCoins(units) * rate;
+            case 'BTC': return BitcoinUtils.satoshisToCoins(units) * rate;
+            case 'USDC': return PolygonUtils.centsToCoins(units) * rate;
+            case 'EUR': return EuroUtils.centsToCoins(units) * rate;
+            default: throw new Error('Invalid asset for unit to fiat conversion');
+        }
     }
 }

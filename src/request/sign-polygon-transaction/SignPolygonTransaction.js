@@ -1,7 +1,7 @@
 /* global ethers */
 /* global Key */
 /* global KeyStore */
-/* global SignPolygonTransactionApi */
+/* global PolygonContractABIs */
 /* global PasswordBox */
 /* global Errors */
 /* global Utf8Tools */
@@ -34,21 +34,9 @@ class SignPolygonTransaction {
         const $sender = (this.$el.querySelector('.accounts .sender'));
         new PolygonAddressInfo(relayRequest.from, request.keyLabel, 'usdc').render($sender);
 
-        /** @type {ethers.Contract} */
-        this._nimiqUsdc = new ethers.Contract(
-            CONFIG.USDC_TRANSFER_CONTRACT_ADDRESS,
-            SignPolygonTransactionApi.USDC_TRANSFER_CONTRACT_ABI,
-        );
-
-        /** @type {ethers.utils.TransactionDescription} */
-        this._description = this._nimiqUsdc.interface.parseTransaction({
-            data: relayRequest.data,
-            value: relayRequest.value,
-        });
-
         /** @type {HTMLLinkElement} */
         const $recipient = (this.$el.querySelector('.accounts .recipient'));
-        const recipientAddress = /** @type {string} */ (this._description.args.target);
+        const recipientAddress = /** @type {string} */ (request.description.args.target);
         new PolygonAddressInfo(
             recipientAddress,
             request.recipientLabel,
@@ -63,11 +51,11 @@ class SignPolygonTransaction {
 
         // Set value and fee.
         $value.textContent = NumberFormatting.formatNumber(
-            /** @type {ethers.BigNumber} */(this._description.args.amount).toNumber() / 1e6,
+            /** @type {ethers.BigNumber} */(request.description.args.amount).toNumber() / 1e6,
             6,
             2, // Always display at least 2 decimals, as is common for USD
         );
-        const feeUnits = /** @type {ethers.BigNumber} */(this._description.args.fee).toNumber();
+        const feeUnits = /** @type {ethers.BigNumber} */(request.description.args.fee).toNumber();
         if (feeUnits > 0) {
             // For the fee, we do not display more than two decimals, as it would not add any value for the user
             $fee.textContent = NumberFormatting.formatNumber(feeUnits / 1e6, 2, 2);
@@ -132,16 +120,16 @@ class SignPolygonTransaction {
 
         const polygonKey = new PolygonKey(key);
 
-        if (this._description.name === 'transferWithApproval') {
+        if (this._request.description.name === 'transferWithApproval') {
             // Sign approval
-            const usdc = new ethers.Contract(
+            const usdcContract = new ethers.Contract(
                 CONFIG.USDC_CONTRACT_ADDRESS,
-                SignPolygonTransactionApi.USDC_CONTRACT_ABI,
+                PolygonContractABIs.USDC_CONTRACT_ABI,
             );
 
-            const functionSignature = usdc.interface.encodeFunctionData(
+            const functionSignature = usdcContract.interface.encodeFunctionData(
                 'approve',
-                [CONFIG.USDC_TRANSFER_CONTRACT_ADDRESS, this._description.args.approval],
+                [CONFIG.USDC_TRANSFER_CONTRACT_ADDRESS, this._request.description.args.approval],
             );
 
             // TODO: Make the domain parameters configurable in the request?
@@ -162,7 +150,7 @@ class SignPolygonTransaction {
 
             const message = {
                 // Has been validated to be defined when function called is `transferWithApproval`
-                nonce: request.tokenApprovalNonce,
+                nonce: /** @type {{ tokenNonce: number }} */ (request.approval).tokenNonce,
                 from: request.request.from,
                 functionSignature,
             };
@@ -184,13 +172,18 @@ class SignPolygonTransaction {
             const sigS = `0x${signature.slice(66, 130)}`; // 32 bytes = 64 characters
             const sigV = parseInt(signature.slice(130, 132), 16); // last byte = 2 characters
 
-            request.request.data = this._nimiqUsdc.interface.encodeFunctionData('transferWithApproval', [
-                /* address token */ this._description.args.token,
-                /* uint256 amount */ this._description.args.amount,
-                /* address target */ this._description.args.target,
-                /* uint256 fee */ this._description.args.fee,
-                /* uint256 chainTokenFee */ this._description.args.chainTokenFee,
-                /* uint256 approval */ this._description.args.approval,
+            const usdcTransfer = new ethers.Contract(
+                CONFIG.USDC_TRANSFER_CONTRACT_ADDRESS,
+                PolygonContractABIs.USDC_TRANSFER_CONTRACT_ABI,
+            );
+
+            request.request.data = usdcTransfer.interface.encodeFunctionData(this._request.description.name, [
+                /* address token */ this._request.description.args.token,
+                /* uint256 amount */ this._request.description.args.amount,
+                /* address target */ this._request.description.args.target,
+                /* uint256 fee */ this._request.description.args.fee,
+                /* uint256 chainTokenFee */ this._request.description.args.chainTokenFee,
+                /* uint256 approval */ this._request.description.args.approval,
                 /* bytes32 sigR */ sigR,
                 /* bytes32 sigS */ sigS,
                 /* uint8 sigV */ sigV,

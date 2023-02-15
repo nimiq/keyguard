@@ -223,6 +223,8 @@
     "bitcoin": "Bitcoin",
     "bitcoin-recipient-unlabelled": "Unbeschriftet",
 
+    "usd-coin": "USD Coin",
+
     "derive-btc-xpub-heading": "Füge deinem Account\nBitcoin hinzu",
     "derive-btc-xpub-text": "Einfach zwischen NIM, dem superperformanten Zahlungscoin und BTC, dem Goldstandard der Krytowährungen tauschen.",
 
@@ -238,6 +240,7 @@
     "sign-swap-oasis-fees-explainer": "des Tauschwerts.",
     "sign-swap-bank-fees": "Gebühr",
     "sign-swap-bank-fees-explainer": "Bankennetzwerk-Gebühr.",
+    "sign-swap-usdc-fees": "USDC network fee",
     "sign-swap-nim-fees": "NIM Netzwerkgebühr",
     "sign-swap-exchange-fee": "Tauschgebühr",
     "sign-swap-of-exchange-value": "des Tauschwerts.",

@@ -50,11 +50,17 @@
     <script defer bundle-bitcoin src="../../lib/bitcoin/BitcoinKey.js"></script>
     <script defer bundle-bitcoin src="../../lib/bitcoin/BitcoinRequestParserMixin.js"></script>
 
+    <script defer bundle-polygon src="../../../node_modules/ethers/dist/ethers.umd.js"></script>
+    <script defer bundle-polygon src="../../lib/polygon/PolygonKey.js"></script>
+
     <script defer src="../../lib/IqonHash.js"></script>
     <script defer src="../../lib/Iqons.js"></script>
     <script defer src="../../lib/LoginFileConfig.js"></script>
     <script defer src="../../lib/CurrencyInfo.js"></script>
     <script defer src="../../lib/NumberFormatting.js"></script>
+    <script defer src="../../lib/polygon/PolygonContractABIs.js"></script>
+    <script defer src="../../lib/polygon/PolygonConstants.js"></script>
+    <script defer src="../../lib/polygon/PolygonUtils.js"></script>
     <script defer src="../../lib/euro/EuroConstants.js"></script>
     <script defer src="../../lib/euro/EuroUtils.js"></script>
     <script defer src="../../lib/euro/Iban.js"></script>
@@ -117,7 +123,7 @@
 
                 <div class="swap-values center">
                     <div class="from-value nq-light-blue">
-                        <span id="swap-nim-value"></span><span class="from-symbol"></span>
+                        <span id="swap-left-value"></span><span class="from-symbol"></span>
                     </div>
 
                     <div class="to-value nq-gray">
@@ -127,7 +133,7 @@
                                 <path d="M20.75 9.25l5.5 5.5-5.5 5.5" stroke-linejoin="round"/>
                             </g>
                         </svg>
-                        <span id="swap-btc-value"></span><span class="to-symbol"></span>
+                        <span id="swap-right-value"></span><span class="to-symbol"></span>
                     </div>
                 </div>
             </div>
@@ -148,23 +154,12 @@
 
                 <div class="swap-values columns">
                     <div class="left-column">
-                        <span id="swap-nim-value"></span><span class="nim-symbol"></span><br>
-                        <span id="swap-nim-value-fiat" class="fiat"></span>
+                        <span id="swap-left-value"></span><span id="swap-left-symbol"></span><br>
+                        <span id="swap-left-value-fiat" class="fiat"></span>
                     </div>
                     <div class="right-column">
-                        <span id="swap-btc-value"></span><span class="btc-symbol"></span><br>
-                        <span id="swap-btc-value-fiat" class="fiat"></span>
-                    </div>
-                </div>
-
-                <div class="new-balances columns">
-                    <div class="left-column">
-                        <span id="new-nim-balance"></span><span class="nim-symbol"></span><br>
-                        <span id="new-nim-balance-fiat" class="fiat"></span>
-                    </div>
-                    <div class="right-column">
-                        <span id="new-btc-balance"></span><span class="btc-symbol"></span><br>
-                        <span id="new-btc-balance-fiat" class="fiat"></span>
+                        <span id="swap-right-value"></span><span id="swap-right-symbol"></span><br>
+                        <span id="swap-right-value-fiat" class="fiat"></span>
                     </div>
                 </div>
             </div>

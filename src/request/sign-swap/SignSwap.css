@@ -4,6 +4,7 @@
 
 .nim-symbol,
 .btc-symbol,
+.usdc-symbol,
 .eur-symbol {
     margin-left: 0.25em;
 }
@@ -202,7 +203,7 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    max-width: 50%;
+    max-width: 65%;
 }
 
 .layout-slider .identicon {
@@ -217,8 +218,7 @@
     margin: -0.25rem 0 -0.25rem 2rem;
 }
 
-.layout-slider .swap-values,
-.layout-slider .new-balances {
+.layout-slider .swap-values {
     font-size: 2.5rem;
     font-weight: bold;
     margin-bottom: 2rem;
@@ -230,25 +230,17 @@
     font-weight: 600;
 }
 
-.layout-slider .new-balances .fiat {
-    opacity: 0.4;
-}
-
-.layout-slider .new-balances {
-    margin-bottom: 1rem;
-}
-
-.layout-slider .swap-values.nim-to-btc .right-column,
-.layout-slider .swap-values.btc-to-nim .left-column {
+.layout-slider .swap-values.left-to-right .right-column,
+.layout-slider .swap-values.right-to-left .left-column {
     color: var(--nimiq-green);
 }
 
-.layout-slider .swap-values.nim-to-btc .right-column .fiat,
-.layout-slider .swap-values.btc-to-nim .left-column .fiat {
+.layout-slider .swap-values.left-to-right .right-column .fiat,
+.layout-slider .swap-values.right-to-left .left-column .fiat {
     opacity: 0.7;
 }
 
-.layout-slider .swap-values.nim-to-btc .left-column .fiat,
-.layout-slider .swap-values.btc-to-nim .right-column .fiat {
+.layout-slider .swap-values.left-to-right .left-column .fiat,
+.layout-slider .swap-values.right-to-left .right-column .fiat {
     opacity: 0.4;
 }

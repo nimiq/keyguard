@@ -223,6 +223,8 @@
     "bitcoin": "Біткоїн",
     "bitcoin-recipient-unlabelled": "Без назви",
 
+    "usd-coin": "USD Coin",
+
     "derive-btc-xpub-heading": "Додати Біткоїн\nдо вашого рахунку",
     "derive-btc-xpub-text": "З легкістю обмінюйте NIM - ефективну платіжну монету та BTC - золотий стандарт криптовалюти.",
 
@@ -238,6 +240,7 @@
     "sign-swap-oasis-fees-explainer": "суми обміну.",
     "sign-swap-bank-fees": "комісія",
     "sign-swap-bank-fees-explainer": "Банківська комісія",
+    "sign-swap-usdc-fees": "USDC network fee",
     "sign-swap-nim-fees": "Комісія NIM",
     "sign-swap-exchange-fee": "Комісія обміну",
     "sign-swap-of-exchange-value": "суми обміну.",

@@ -33,6 +33,10 @@
     background-color: #F7931A; /* Bitcoin orange */
 }
 
+.balance-distribution-bar .bar.usdc {
+    background-color: #2775CA; /* USDC blue */
+}
+
 .balance-distribution-bar .bar:last-child {
     margin-right: 0;
     justify-content: flex-start;

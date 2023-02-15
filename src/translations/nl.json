@@ -223,6 +223,8 @@
     "bitcoin": "Bitcoin",
     "bitcoin-recipient-unlabelled": "Ongelabeld",
 
+    "usd-coin": "USD Coin",
+
     "derive-btc-xpub-heading": "Voeg Bitcoin\ntoe aan je account",
     "derive-btc-xpub-text": "Wissel eenvoudig tussen NIM, de superpresterende betaalmunt en BTC, de gouden standaard van crypto.",
 
@@ -238,6 +240,7 @@
     "sign-swap-oasis-fees-explainer": "van ruilwaarde.",
     "sign-swap-bank-fees": "kosten",
     "sign-swap-bank-fees-explainer": "Bank kosten.",
+    "sign-swap-usdc-fees": "USDC network fee",
     "sign-swap-nim-fees": "NIM netwerk fee",
     "sign-swap-exchange-fee": "Wisselkosten",
     "sign-swap-of-exchange-value": "van ruilwaarde.",

@@ -207,10 +207,8 @@ export type SignBtcTransactionRequest
     = SignBtcTransactionRequestStandard
     | SignBtcTransactionRequestCheckout;
 
-export type SignPolygonTransactionRequest = Omit<SimpleRequest, 'keyLabel'> & {
-    keyLabel: string,
+export type PolygonTransactionInfo = {
     keyPath: string,
-    recipientLabel?: string,
 
     request: ForwardRequest,
     relayData: RelayData,
@@ -219,7 +217,14 @@ export type SignPolygonTransactionRequest = Omit<SimpleRequest, 'keyLabel'> & {
      * The sender's nonce in the token contract, required when calling the
      * contract function `transferWithApproval`.
      */
-    tokenApprovalNonce?: number,
+    approval?: {
+        tokenNonce: number,
+    },
+};
+
+export type SignPolygonTransactionRequest = Omit<SimpleRequest, 'keyLabel'> & PolygonTransactionInfo & {
+    keyLabel: string,
+    recipientLabel?: string,
 };
 
 export type MockSettlementInstruction = {
@@ -265,6 +270,9 @@ export type SignSwapRequestCommon = SimpleRequest & {
             refundKeyPath: string, // To validate that we own the HTLC script's refund address
         }>
     ) | (
+        {type: 'USDC'}
+        & PolygonTransactionInfo
+    ) | (
         {type: 'EUR'}
         & {
             amount: number,
@@ -295,6 +303,13 @@ export type SignSwapRequestCommon = SimpleRequest & {
                 | 'type' // Must be 'htlc-redeem'
             >,
             output: BitcoinTransactionChangeOutput,
+        }
+    ) | (
+        {type: 'USDC'}
+        & Omit<PolygonTransactionInfo, 'approval'>
+        & {
+            amount: number,
+            fee: number,
         }
     ) | (
         {type: 'EUR'}
@@ -341,6 +356,7 @@ export type SignSwapRequestStandard = SignSwapRequestCommon & {
 
 export type SignSwapRequestSlider = SignSwapRequestCommon & {
     layout: 'slider',
+    direction: 'left-to-right' | 'right-to-left',
     nimiqAddresses: Array<{
         address: string,
         balance: number, // Luna
@@ -348,6 +364,10 @@ export type SignSwapRequestSlider = SignSwapRequestCommon & {
     bitcoinAccount: {
         balance: number, // Sats
     },
+    polygonAddresses: Array<{
+        address: string,
+        balance: number, // cents
+    }>,
 };
 
 export type SignSwapRequest = SignSwapRequestStandard | SignSwapRequestSlider;
@@ -367,6 +387,9 @@ export type SignSwapTransactionsRequest = {
         type: 'BTC',
         htlcScript: Uint8Array,
     } | {
+        type: 'USDC',
+        htlcData: string,
+    } | {
         type: 'EUR',
         hash: string,
         timeout: number,
@@ -381,7 +404,12 @@ export type SignSwapTransactionsRequest = {
         htlcScript: Uint8Array,
         transactionHash: string,
         outputIndex: number;
-    } | {
+    }  | {
+        type: 'USDC',
+        hash: string,
+        timeout: number,
+        htlcId: string,
+    }| {
         type: 'EUR',
         hash: string,
         timeout: number,
@@ -480,6 +508,7 @@ export type SignedPolygonTransaction = {
 export type SignSwapTransactionsResult = {
     nim?: SignatureResult,
     btc?: SignedBitcoinTransaction,
+    usdc?: SignedPolygonTransaction,
     eur?: string, // When funding EUR: empty string, when redeeming EUR: JWS of the settlement instructions
     refundTx?: string,
 };
