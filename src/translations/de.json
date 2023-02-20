@@ -14,7 +14,7 @@
     "back-to-cpl": "Zurück zu CryptoPayment.link",
 
     "funding-cashlink": "Cashlink aufladen",
-    "label-unknown": "Unknown",
+    "label-unknown": "Unbekannt",
 
     "recovery-words-title": "Schreibe diese 24 Wörter auf Papier",
     "recovery-words-intro-text": "Die Wiederherstellungswörter sind der EINZIGE Weg, auf dein Konto zuzugreifen, wenn du deine Login‑Datei oder dein Passwort verlierst.",
@@ -27,11 +27,10 @@
     "create-heading-select-login-file": "No need for your email",
     "create-use-login-file-instead": "Use a ‘Login File’ instead.",
     "create-only-you-have-access": "This way only you have access, not even Team Nimiq or governments.",
-    "create-set-password": "Set password",
-    "create-heading-set-password": "Set a password",
-    "create-heading-repeat-password": "Bestätige dein Passwort",
+    "create-button-set-password": "Setze ein Passwort",
+    "create-heading-add-password": "Setze ein Passwort",
+    "create-heading-repeat-password": "Wiederhole dein Passwort",
     "create-loginfile-keycard": "The password protects your Login File.\nThe ‘keycard’ to your account.",
-    "create-loginfile-any-device": "Mit dieser Datei kannst du dich von jedem Gerät aus einloggen.",
     "create-heading-what-is-loginfile": "Was ist eine Login-Datei?",
     "create-login-file-explainer-intro": "Eine Bilddatei, die dir in Kombination mit deinem Passwort den Zugang zu deinem Account gewährt.",
     "create-login-file-paragraph-1": "Nimiq speichert deine Daten nicht. Die Login-Datei ersetzt die E-Mail als Möglichkeit, sich einzuloggen.",
@@ -228,8 +227,8 @@
     "derive-btc-xpub-heading": "Füge deinem Account\nBitcoin hinzu",
     "derive-btc-xpub-text": "Einfach zwischen NIM, dem superperformanten Zahlungscoin und BTC, dem Goldstandard der Krytowährungen tauschen.",
 
-    "derive-polygon-address-heading": "Add USDC on Polygon\nto your account",
-    "derive-polygon-address-text": "Easily swap between NIM, the super performant payment coin and USDC, the USD-pegged stable coin.",
+    "derive-polygon-address-heading": "Aktiviere USDC",
+    "derive-polygon-address-text": "USDC is a stablecoin pegged to USD and now available in the wallet.",
 
     "sign-swap-heading": "Tausch Bestätigen",
     "sign-swap-exchange-rate-tooltip": "Dieser Kurs beinhaltet die Tauschgebühren.",
@@ -240,7 +239,7 @@
     "sign-swap-oasis-fees-explainer": "des Tauschwerts.",
     "sign-swap-bank-fees": "Gebühr",
     "sign-swap-bank-fees-explainer": "Bankennetzwerk-Gebühr.",
-    "sign-swap-usdc-fees": "USDC network fee",
+    "sign-swap-usdc-fees": "USDC Netwerkgebühr",
     "sign-swap-nim-fees": "NIM Netzwerkgebühr",
     "sign-swap-exchange-fee": "Tauschgebühr",
     "sign-swap-of-exchange-value": "des Tauschwerts.",

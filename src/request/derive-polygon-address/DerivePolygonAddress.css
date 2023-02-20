@@ -9,34 +9,15 @@
 .page#unlock .page-body .img {
     width: 12rem;
     height: 12rem;
-    position: relative;
-}
-
-.page#unlock .page-body .img .img-inner {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    width: 4rem;
-    height: 4rem;
-    background: #8247e5;
-    border-radius: 10rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.page#unlock .page-body .img .img-inner .polygon-logo {
-    width: 2.5rem;
 }
 
 .page#unlock .nq-h1 {
-    margin-top: 4rem;
-    margin-bottom: 2.25rem;
+    margin: 1rem 0 0;
     white-space: pre-line;
 }
 
 .page#unlock .nq-text {
     color: var(--nimiq-blue);
-    margin: 0 0 2rem;
+    margin: 2rem 0 0;
     max-width: 34.5rem;
 }

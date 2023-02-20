@@ -27,9 +27,9 @@
     "create-heading-select-login-file": "No need for your email",
     "create-use-login-file-instead": "Use a ‘Login File’ instead.",
     "create-only-you-have-access": "This way only you have access, not even Team Nimiq or governments.",
-    "create-set-password": "Set password",
-    "create-heading-set-password": "Set a password",
-    "create-heading-repeat-password": "Confirm your password",
+    "create-button-set-password": "Set password",
+    "create-heading-add-password": "Add a password",
+    "create-heading-repeat-password": "Repeat your password",
     "create-loginfile-keycard": "The password protects your Login File.\nThe ‘keycard’ to your account.",
     "create-heading-what-is-loginfile": "What is a Login File?",
     "create-login-file-explainer-intro": "An image file that, in combination with your password, grants access to your account.",
@@ -227,8 +227,8 @@
     "derive-btc-xpub-heading": "Add Bitcoin\nto your account",
     "derive-btc-xpub-text": "Easily swap between NIM, the super performant payment coin and BTC, the gold standard of crypto.",
 
-    "derive-polygon-address-heading": "Add USDC on Polygon\nto your account",
-    "derive-polygon-address-text": "Easily swap between NIM, the super performant payment coin and USDC, the USD-pegged stable coin.",
+    "derive-polygon-address-heading": "Activate USDC",
+    "derive-polygon-address-text": "USDC is a stablecoin pegged to USD and now available in the wallet.",
 
     "sign-swap-heading": "Confirm Swap",
     "sign-swap-exchange-rate-tooltip": "This rate includes the swap fee.",
