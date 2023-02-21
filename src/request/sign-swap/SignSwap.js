@@ -62,14 +62,21 @@ class SignSwap {
         /** @type {HTMLDivElement} */
         const $exchangeRate = (this.$el.querySelector('#exchange-rate'));
         /** @type {HTMLDivElement} */
+        const $rightAccount = (this.$el.querySelector('.right-account'));
+        /** @type {HTMLDivElement} */
+        const $leftAccount = (this.$el.querySelector('.left-account'));
+        /** @type {HTMLDivElement} */
         const $leftIdenticon = (this.$el.querySelector('.left-account .identicon'));
         /** @type {HTMLDivElement} */
         const $rightIdenticon = (this.$el.querySelector('.right-account .identicon'));
+        /** @type {HTMLLabelElement} */
+        const $leftLabel = (this.$el.querySelector('.left-account label'));
         /** @type {HTMLSpanElement} */
-        const $leftLabel = (this.$el.querySelector('.left-account .label'));
-        /** @type {HTMLSpanElement} */
-        const $rightLabel = (this.$el.querySelector('.right-account .label'));
+        const $leftNewBalance = (this.$el.querySelector('.left-account .new-balance'));
+        /** @type {HTMLLabelElement} */
+        const $rightLabel = (this.$el.querySelector('.right-account label'));
         /** @type {HTMLDivElement} */
+        const $rightNewBalance = (this.$el.querySelector('.right-account .new-balance'));
         const $swapValues = (this.$el.querySelector('.swap-values'));
         /** @type {HTMLSpanElement} */
         const $swapLeftValue = (this.$el.querySelector('#swap-left-value'));
@@ -405,9 +412,22 @@ class SignSwap {
                 const amount = leftAsset === 'NIM' ? leftAmount : rightAmount;
 
                 const newBalance = activeAddressInfo.balance + (amount * (fundTx.type === 'NIM' ? -1 : 1));
+                const newBalanceFormatted = NumberFormatting.formatNumber(
+                    this._unitsToCoins('NIM', newBalance),
+                    this._assetDecimals('NIM'),
+                    0,
+                );
+
+                if (leftAsset === 'NIM') {
+                    $leftNewBalance.textContent = `${newBalanceFormatted} NIM`;
+                    $leftAccount.classList.add('nim');
+                } else if (rightAsset === 'NIM') {
+                    $rightNewBalance.textContent = `${newBalanceFormatted} NIM`;
+                    $rightAccount.classList.add('nim');
+                }
 
                 /** @type {Segment[]} */
-                const segements = request.nimiqAddresses.map(address => ({
+                const segments = request.nimiqAddresses.map(address => ({
                     address: address.address,
                     balance: address.balance,
                     active: address.address === activeAddress,
@@ -416,42 +436,64 @@ class SignSwap {
                         : address.balance,
                 }));
 
-                if (leftAsset === 'NIM') leftSegments = segements;
-                else rightSegments = segements;
+                if (leftAsset === 'NIM') leftSegments = segments;
+                else rightSegments = segments;
             }
 
             if (leftAsset === 'BTC' || rightAsset === 'BTC') {
                 const amount = leftAsset === 'BTC' ? leftAmount : rightAmount;
 
                 const newBalance = request.bitcoinAccount.balance + (amount * (fundTx.type === 'BTC' ? -1 : 1));
+                const newBalanceFormatted = NumberFormatting.formatNumber(
+                    this._unitsToCoins('BTC', newBalance),
+                    this._assetDecimals('BTC'),
+                    0,
+                );
+
+                if (leftAsset === 'BTC') {
+                    $leftNewBalance.textContent = `${newBalanceFormatted} BTC`;
+                    $leftAccount.classList.add('btc');
+                } else if (rightAsset === 'BTC') {
+                    $rightNewBalance.textContent = `${newBalanceFormatted} BTC`;
+                    $rightAccount.classList.add('btc');
+                }
 
                 /** @type {Segment[]} */
-                const segements = [{
+                const segments = [{
                     address: 'bitcoin',
                     balance: request.bitcoinAccount.balance,
                     active: true,
                     newBalance,
                 }];
 
-                if (leftAsset === 'BTC') leftSegments = segements;
-                else rightSegments = segements;
+                if (leftAsset === 'BTC') leftSegments = segments;
+                else rightSegments = segments;
             }
 
             if (leftAsset === 'USDC' || rightAsset === 'USDC') {
                 const amount = leftAsset === 'USDC' ? leftAmount : rightAmount;
 
                 const newBalance = request.polygonAddresses[0].balance + (amount * (fundTx.type === 'USDC' ? -1 : 1));
+                const newBalanceFormatted = NumberFormatting.formatNumber(this._unitsToCoins('USDC', newBalance), 2, 0);
+
+                if (leftAsset === 'USDC') {
+                    $leftNewBalance.textContent = `${newBalanceFormatted} USDC`;
+                    $leftAccount.classList.add('usdc');
+                } else if (rightAsset === 'USDC') {
+                    $rightNewBalance.textContent = `${newBalanceFormatted} USDC`;
+                    $rightAccount.classList.add('usdc');
+                }
 
                 /** @type {Segment[]} */
-                const segements = [{
+                const segments = [{
                     address: 'usdc',
                     balance: request.polygonAddresses[0].balance,
                     active: true,
                     newBalance,
                 }];
 
-                if (leftAsset === 'USDC') leftSegments = segements;
-                else rightSegments = segements;
+                if (leftAsset === 'USDC') leftSegments = segments;
+                else rightSegments = segments;
             }
 
             if (!leftSegments || !rightSegments) {

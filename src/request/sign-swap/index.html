@@ -98,11 +98,10 @@
                 <h1 data-i18n="sign-swap-heading" class="nq-h1">Confirm Swap</h1>
                 <div class="nq-notice">
                     <div class="tooltip exchange-rate" tabindex="0">
-                        <div class="pill">
-                            <span id="exchange-rate"></span>
-                        </div>
+                        <span id="exchange-rate"></span>
                         <div class="tooltip-box" data-i18n="sign-swap-exchange-rate-tooltip">This rate includes the swap fee.</div>
                     </div>
+                    <strong class="dot">&middot;</strong>
                 </div>
             </div>
 
@@ -116,6 +115,7 @@
                     <div class="account right-account">
                         <div class="identicon"></div>
                         <span class="label"></span>
+                        <span class="amount"></span>
                     </div>
                 </div>
 
@@ -140,12 +140,14 @@
 
             <div class="page-body nq-card-body layout-slider">
                 <div class="address-infos columns">
-                    <div class="left-account nim left-column">
+                    <div class="left-account left-column">
                         <div class="identicon"></div>
-                        <span class="label"></span>
+                        <label></label>
+                        <span class="new-balance"></span>
                     </div>
-                    <div class="right-account btc right-column">
-                        <span class="label"></span>
+                    <div class="right-account right-column">
+                        <label></label>
+                        <span class="new-balance"></span>
                         <div class="identicon"></div>
                     </div>
                 </div>
