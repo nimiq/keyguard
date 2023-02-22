@@ -69,14 +69,15 @@ class SignSwap {
         const $leftIdenticon = (this.$el.querySelector('.left-account .identicon'));
         /** @type {HTMLDivElement} */
         const $rightIdenticon = (this.$el.querySelector('.right-account .identicon'));
-        /** @type {HTMLLabelElement} */
-        const $leftLabel = (this.$el.querySelector('.left-account label'));
+        /** @type {HTMLSpanElement} */
+        const $leftLabel = (this.$el.querySelector('.left-account .label'));
         /** @type {HTMLSpanElement} */
         const $leftNewBalance = (this.$el.querySelector('.left-account .new-balance'));
-        /** @type {HTMLLabelElement} */
-        const $rightLabel = (this.$el.querySelector('.right-account label'));
+        /** @type {HTMLSpanElement} */
+        const $rightLabel = (this.$el.querySelector('.right-account .label'));
         /** @type {HTMLDivElement} */
         const $rightNewBalance = (this.$el.querySelector('.right-account .new-balance'));
+        /** @type {HTMLDivElement} */
         const $swapValues = (this.$el.querySelector('.swap-values'));
         /** @type {HTMLSpanElement} */
         const $swapLeftValue = (this.$el.querySelector('#swap-left-value'));
@@ -117,14 +118,14 @@ class SignSwap {
 
         $swapLeftValue.textContent = NumberFormatting.formatNumber(
             this._unitsToCoins(leftAsset, leftAmount),
-            this._assetDecimals(leftAsset),
-            leftAsset === 'EUR' ? this._assetDecimals(leftAsset) : 0,
+            leftAsset === 'USDC' ? 2 : this._assetDecimals(leftAsset),
+            leftAsset === 'EUR' || leftAsset === 'USDC' ? 2 : 0,
         );
 
         $swapRightValue.textContent = NumberFormatting.formatNumber(
             this._unitsToCoins(rightAsset, rightAmount),
-            this._assetDecimals(rightAsset),
-            rightAsset === 'EUR' ? this._assetDecimals(rightAsset) : 0,
+            rightAsset === 'USDC' ? 2 : this._assetDecimals(rightAsset),
+            rightAsset === 'EUR' || rightAsset === 'USDC' ? 2 : 0,
         );
 
         $swapValues.classList.add(`${fundTx.type.toLowerCase()}-to-${redeemTx.type.toLowerCase()}`);
@@ -271,11 +272,6 @@ class SignSwap {
         );
 
         if (request.layout === SignSwapApi.Layouts.STANDARD) {
-            /** @type {HTMLDivElement} */
-            const $leftAccount = (this.$el.querySelector('.left-account'));
-            /** @type {HTMLDivElement} */
-            const $rightAccount = (this.$el.querySelector('.right-account'));
-
             $leftAccount.classList.add(request.fund.type.toLocaleLowerCase());
             $rightAccount.classList.add(request.redeem.type.toLocaleLowerCase());
 
@@ -412,11 +408,7 @@ class SignSwap {
                 const amount = leftAsset === 'NIM' ? leftAmount : rightAmount;
 
                 const newBalance = activeAddressInfo.balance + (amount * (fundTx.type === 'NIM' ? -1 : 1));
-                const newBalanceFormatted = NumberFormatting.formatNumber(
-                    this._unitsToCoins('NIM', newBalance),
-                    this._assetDecimals('NIM'),
-                    0,
-                );
+                const newBalanceFormatted = NumberFormatting.formatNumber(this._unitsToCoins('NIM', newBalance), 0, 0);
 
                 if (leftAsset === 'NIM') {
                     $leftNewBalance.textContent = `${newBalanceFormatted} NIM`;
@@ -444,11 +436,7 @@ class SignSwap {
                 const amount = leftAsset === 'BTC' ? leftAmount : rightAmount;
 
                 const newBalance = request.bitcoinAccount.balance + (amount * (fundTx.type === 'BTC' ? -1 : 1));
-                const newBalanceFormatted = NumberFormatting.formatNumber(
-                    this._unitsToCoins('BTC', newBalance),
-                    this._assetDecimals('BTC'),
-                    0,
-                );
+                const newBalanceFormatted = NumberFormatting.formatNumber(this._unitsToCoins('BTC', newBalance), 8, 0);
 
                 if (leftAsset === 'BTC') {
                     $leftNewBalance.textContent = `${newBalanceFormatted} BTC`;
@@ -474,7 +462,7 @@ class SignSwap {
                 const amount = leftAsset === 'USDC' ? leftAmount : rightAmount;
 
                 const newBalance = request.polygonAddresses[0].balance + (amount * (fundTx.type === 'USDC' ? -1 : 1));
-                const newBalanceFormatted = NumberFormatting.formatNumber(this._unitsToCoins('USDC', newBalance), 2, 0);
+                const newBalanceFormatted = NumberFormatting.formatNumber(this._unitsToCoins('USDC', newBalance), 2, 2);
 
                 if (leftAsset === 'USDC') {
                     $leftNewBalance.textContent = `${newBalanceFormatted} USDC`;
