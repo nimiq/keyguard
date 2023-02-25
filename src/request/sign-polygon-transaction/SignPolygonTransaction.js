@@ -182,7 +182,6 @@ class SignPolygonTransaction {
                 /* uint256 amount */ this._request.description.args.amount,
                 /* address target */ this._request.description.args.target,
                 /* uint256 fee */ this._request.description.args.fee,
-                /* uint256 chainTokenFee */ this._request.description.args.chainTokenFee,
                 /* uint256 approval */ this._request.description.args.approval,
                 /* bytes32 sigR */ sigR,
                 /* bytes32 sigS */ sigS,
