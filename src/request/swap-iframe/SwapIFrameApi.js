@@ -558,7 +558,6 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
                     /* uint256 timeout */ parsedRequest.fund.description.args.timeout,
 
                     /* uint256 fee */ storedRequest.fund.description.args.fee,
-                    /* uint256 chainTokenFee */ storedRequest.fund.description.args.chainTokenFee,
                     ...(storedRequest.fund.description.name === 'openWithApproval' ? [
                         /* uint256 approval */ storedRequest.fund.description.args.approval,
                         /* bytes32 sigR */ storedRequest.fund.description.args.sigR,
@@ -705,7 +704,6 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
                         /* uint256 approval */ storedRequest.redeem.description.args.secret,
                     ] : []),
                     /* uint256 fee */ storedRequest.redeem.description.args.fee,
-                    /* uint256 chainTokenFee */ storedRequest.redeem.description.args.chainTokenFee,
                 ],
             );
 

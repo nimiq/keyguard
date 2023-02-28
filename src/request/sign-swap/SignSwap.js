@@ -683,7 +683,6 @@ class SignSwap {
                     /* bytes32 hash */ request.fund.description.args.hash,
                     /* uint256 timeout */ request.fund.description.args.timeout,
                     /* uint256 fee */ request.fund.description.args.fee,
-                    /* uint256 chainTokenFee */ request.fund.description.args.chainTokenFee,
                     /* uint256 approval */ request.fund.description.args.approval,
                     /* bytes32 sigR */ sigR,
                     /* bytes32 sigS */ sigS,
