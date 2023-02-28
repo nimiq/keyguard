@@ -214,6 +214,11 @@ export type PolygonTransactionInfo = {
     relayData: RelayData,
 
     /**
+     * For refund transactions from HTLCs the amount is not part of the relay request.
+     */
+    amount?: number,
+
+    /**
      * The sender's nonce in the token contract, required when calling the
      * contract function `transferWithApproval`.
      */
@@ -224,6 +229,7 @@ export type PolygonTransactionInfo = {
 
 export type SignPolygonTransactionRequest = Omit<SimpleRequest, 'keyLabel'> & PolygonTransactionInfo & {
     keyLabel: string,
+    senderLabel?: string,
     recipientLabel?: string,
 };
 
