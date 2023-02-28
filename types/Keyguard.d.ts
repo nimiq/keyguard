@@ -146,6 +146,18 @@ type PolygonRedeemWithSecretInDataDescription = ethers.utils.TransactionDescript
     readonly args: PolygonRedeemWithSecretInDataArgs,
 };
 
+interface PolygonRefundArgs extends ReadonlyArray<any> {
+    readonly id: string,
+    readonly target: string,
+    readonly fee: ethers.BigNumber,
+    readonly chainTokenFee: ethers.BigNumber,
+}
+
+type PolygonRefundDescription = ethers.utils.TransactionDescription & {
+    readonly name: 'refund',
+    readonly args: PolygonRefundArgs,
+};
+
 type NimHtlcContents = {
     refundAddress: string,
     redeemAddress: string,
@@ -287,7 +299,9 @@ type Parsed<T extends KeyguardRequest.Request> =
         > :
     T extends Is<T, KeyguardRequest.SignPolygonTransactionRequest> ?
         KeyId2KeyInfo<KeyguardRequest.SignPolygonTransactionRequest>
-        & { description: PolygonTransferDescription | PolygonTransferWithApprovalDescription } :
+        & { description: PolygonTransferDescription
+            | PolygonTransferWithApprovalDescription
+            | PolygonRefundDescription } :
     T extends Is<T, KeyguardRequest.SignSwapRequestStandard> ?
         KeyId2KeyInfo<ConstructSwap<KeyguardRequest.SignSwapRequestStandard>>
         & { layout: KeyguardRequest.SignSwapRequestLayout } :

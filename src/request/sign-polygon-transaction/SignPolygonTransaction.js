@@ -32,14 +32,19 @@ class SignPolygonTransaction {
 
         /** @type {HTMLLinkElement} */
         const $sender = (this.$el.querySelector('.accounts .sender'));
-        new PolygonAddressInfo(relayRequest.from, request.keyLabel, 'usdc').render($sender);
+        if (request.description.name === 'refund') {
+            new PolygonAddressInfo(relayRequest.to, request.senderLabel, 'unknown').render($sender);
+        } else {
+            new PolygonAddressInfo(relayRequest.from, request.keyLabel, 'usdc').render($sender);
+        }
 
         /** @type {HTMLLinkElement} */
         const $recipient = (this.$el.querySelector('.accounts .recipient'));
         const recipientAddress = /** @type {string} */ (request.description.args.target);
         new PolygonAddressInfo(
             recipientAddress,
-            request.recipientLabel,
+            request.description.name === 'refund' ? request.keyLabel : request.recipientLabel,
+            request.description.name === 'refund' ? 'usdc' : 'none',
         ).render($recipient);
 
         /** @type {HTMLDivElement} */
@@ -51,11 +56,13 @@ class SignPolygonTransaction {
 
         // Set value and fee.
         $value.textContent = NumberFormatting.formatNumber(
-            /** @type {ethers.BigNumber} */(request.description.args.amount).toNumber() / 1e6,
+            request.description.name === 'refund'
+                ? /** @type {number} */ (request.amount) / 1e6
+                : request.description.args.amount.toNumber() / 1e6,
             6,
             2, // Always display at least 2 decimals, as is common for USD
         );
-        const feeUnits = /** @type {ethers.BigNumber} */(request.description.args.fee).toNumber();
+        const feeUnits = request.description.args.fee.toNumber();
         if (feeUnits > 0) {
             // For the fee, we do not display more than two decimals, as it would not add any value for the user
             $fee.textContent = NumberFormatting.formatNumber(feeUnits / 1e6, 2, 2);
@@ -189,10 +196,16 @@ class SignPolygonTransaction {
             ]);
         }
 
-        const typedData = new OpenGSN.TypedRequestData(CONFIG.POLYGON_CHAIN_ID, CONFIG.USDC_TRANSFER_CONTRACT_ADDRESS, {
-            request: request.request,
-            relayData: request.relayData,
-        });
+        const typedData = new OpenGSN.TypedRequestData(
+            CONFIG.POLYGON_CHAIN_ID,
+            request.description.name === 'refund'
+                ? CONFIG.USDC_HTLC_CONTRACT_ADDRESS
+                : CONFIG.USDC_TRANSFER_CONTRACT_ADDRESS,
+            {
+                request: request.request,
+                relayData: request.relayData,
+            },
+        );
 
         const { EIP712Domain, ...cleanedTypes } = typedData.types;
 
