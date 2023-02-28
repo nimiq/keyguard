@@ -60,7 +60,6 @@ interface PolygonTransferArgs extends ReadonlyArray<any> {
     readonly amount: ethers.BigNumber,
     readonly target: string,
     readonly fee: ethers.BigNumber,
-    readonly chainTokenFee: ethers.BigNumber,
 }
 
 type PolygonTransferDescription = ethers.utils.TransactionDescription & {
@@ -73,7 +72,6 @@ interface PolygonTransferWithApprovalArgs extends ReadonlyArray<any> {
     readonly amount: ethers.BigNumber,
     readonly target: string,
     readonly fee: ethers.BigNumber,
-    readonly chainTokenFee: ethers.BigNumber,
     readonly approval: ethers.BigNumber,
     readonly sigR: string,
     readonly sigS: string,
