@@ -189,6 +189,12 @@
  *              SLIDER LAYOUT               *
  ********************************************/
 
+.layout-slider {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
 .layout-slider .address-infos {
     margin-bottom: 2.75rem;
 }
