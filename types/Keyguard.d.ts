@@ -220,7 +220,6 @@ type ConstructSwap<T extends KeyguardRequest.SignSwapRequestCommon> = Transform<
             { type: 'USDC' } & Omit<KeyguardRequest.PolygonTransactionInfo, 'approval'> & {
                 description: PolygonRedeemDescription | PolygonRedeemWithSecretInDataDescription,
                 amount: number,
-                fee: number,
             }
         ) | {
             type: 'EUR',

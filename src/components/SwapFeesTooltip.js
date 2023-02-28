@@ -63,7 +63,7 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
             const myFee = fundTx.type === 'USDC'
                 ? fundTx.description.args.fee.toNumber()
                 : redeemTx.type === 'USDC'
-                    ? redeemTx.fee
+                    ? redeemTx.description.args.fee.toNumber()
                     : 0;
 
             const theirFee = fundTx.type === 'USDC' ? fundFees.redeeming : redeemFees.funding;

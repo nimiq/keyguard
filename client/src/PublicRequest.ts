@@ -309,7 +309,6 @@ export type SignSwapRequestCommon = SimpleRequest & {
         & Omit<PolygonTransactionInfo, 'approval'>
         & {
             amount: number,
-            fee: number,
         }
     ) | (
         {type: 'EUR'}
