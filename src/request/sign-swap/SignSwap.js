@@ -174,7 +174,7 @@ class SignSwap {
                         // When the user redeems USDC, the service lost the HTLC balance + their network fee.
                         // The transaction value is "HTLC balance - tx fee", therefore the "HTLC balance"
                         // is the transaction value + tx fee.
-                        ? redeemTx.amount + redeemTx.fee + request.redeemFees.funding
+                        ? redeemTx.amount + redeemTx.description.args.fee.toNumber() + request.redeemFees.funding
                         : 0; // Should never happen, if parsing works correctly
                 break;
             case 'EUR':
@@ -220,7 +220,7 @@ class SignSwap {
                         // When the user redeems USDC, the service lost the HTLC balance + their network fee.
                         // The transaction value is "HTLC balance - tx fee", therefore the "HTLC balance"
                         // is the transaction value + tx fee.
-                        ? redeemTx.amount + redeemTx.fee + request.redeemFees.funding
+                        ? redeemTx.amount + redeemTx.description.args.fee.toNumber() + request.redeemFees.funding
                         : 0; // Should never happen, if parsing works correctly
                 break;
             case 'EUR':
