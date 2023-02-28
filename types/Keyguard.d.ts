@@ -92,7 +92,6 @@ interface PolygonOpenArgs extends ReadonlyArray<any> {
     readonly hash: string,
     readonly timeout: ethers.BigNumber,
     readonly fee: ethers.BigNumber,
-    readonly chainTokenFee: ethers.BigNumber,
 }
 
 type PolygonOpenDescription = ethers.utils.TransactionDescription & {
@@ -109,7 +108,6 @@ interface PolygonOpenWithApprovalArgs extends ReadonlyArray<any> {
     readonly hash: string,
     readonly timeout: ethers.BigNumber,
     readonly fee: ethers.BigNumber,
-    readonly chainTokenFee: ethers.BigNumber,
     readonly approval: ethers.BigNumber,
     readonly sigR: string,
     readonly sigS: string,
@@ -126,7 +124,6 @@ interface PolygonRedeemArgs extends ReadonlyArray<any> {
     readonly target: string,
     readonly secret: string,
     readonly fee: ethers.BigNumber,
-    readonly chainTokenFee: ethers.BigNumber,
 }
 
 type PolygonRedeemDescription = ethers.utils.TransactionDescription & {
@@ -138,7 +135,6 @@ interface PolygonRedeemWithSecretInDataArgs extends ReadonlyArray<any> {
     readonly id: string,
     readonly target: string,
     readonly fee: ethers.BigNumber,
-    readonly chainTokenFee: ethers.BigNumber,
 }
 
 type PolygonRedeemWithSecretInDataDescription = ethers.utils.TransactionDescription & {
@@ -150,7 +146,6 @@ interface PolygonRefundArgs extends ReadonlyArray<any> {
     readonly id: string,
     readonly target: string,
     readonly fee: ethers.BigNumber,
-    readonly chainTokenFee: ethers.BigNumber,
 }
 
 type PolygonRefundDescription = ethers.utils.TransactionDescription & {
