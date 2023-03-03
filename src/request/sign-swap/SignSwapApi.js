@@ -81,7 +81,7 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
                     @type {PolygonOpenDescription | PolygonOpenWithApprovalDescription}
                 */ (this.parseOpenGsnForwardRequest(request.fund, ['open', 'openWithApproval'])),
                 request: request.fund.request,
-                relayData: this.parseOpenGsnRelayData(request.fund),
+                relayData: this.parseOpenGsnRelayData(request.fund.relayData),
                 approval: request.fund.approval,
             };
         } else if (request.fund.type === 'EUR') {
@@ -132,7 +132,7 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
                     @type {PolygonRedeemDescription | PolygonRedeemWithSecretInDataDescription}
                 */ (this.parseOpenGsnForwardRequest(request.redeem, ['redeem', 'redeemWithSecretInData'])),
                 request: request.redeem.request,
-                relayData: this.parseOpenGsnRelayData(request.redeem),
+                relayData: this.parseOpenGsnRelayData(request.redeem.relayData),
                 amount: this.parsePositiveInteger(request.redeem.amount, false, 'redeem.amount'),
             };
         } else if (request.redeem.type === 'EUR') {
@@ -279,6 +279,12 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
      *     | PolygonRedeemWithSecretInDataDescription}
      */
     parseOpenGsnForwardRequest(request, allowedMethods) {
+        request.request = this.parseOpenGsnForwardRequestRoot(request.request);
+
+        if (request.request.to !== CONFIG.USDC_HTLC_CONTRACT_ADDRESS) {
+            throw new Errors.InvalidRequestError('request.to address is not allowed');
+        }
+
         const usdcHtlcContract = new ethers.Contract(
             CONFIG.USDC_HTLC_CONTRACT_ADDRESS,
             PolygonContractABIs.USDC_HTLC_CONTRACT_ABI,
