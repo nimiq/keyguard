@@ -1,13 +1,12 @@
 /* global ethers */
 /* global TopLevelApi */
+/* global PolygonRequestParserMixin */
 /* global SignPolygonTransaction */
-/* global PolygonUtils */
 /* global PolygonContractABIs */
 /* global Errors */
 /* global CONFIG */
 
-/** @extends {TopLevelApi<KeyguardRequest.SignPolygonTransactionRequest>} */
-class SignPolygonTransactionApi extends TopLevelApi { // eslint-disable-line no-unused-vars
+class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) { // eslint-disable-line no-unused-vars
     /**
      * @param {KeyguardRequest.SignPolygonTransactionRequest} request
      * @returns {Promise<Parsed<KeyguardRequest.SignPolygonTransactionRequest>>}
@@ -45,19 +44,6 @@ class SignPolygonTransactionApi extends TopLevelApi { // eslint-disable-line no-
         }
 
         return parsedRequest;
-    }
-
-    /**
-     * @param {string} path
-     * @param {string} name
-     * @returns {string}
-     */
-    parsePolygonPath(path, name) {
-        if (!PolygonUtils.isValidPath(path)) {
-            throw new Errors.InvalidRequestError(`${name}: Invalid path`);
-        }
-
-        return path;
     }
 
     /**
@@ -119,16 +105,6 @@ class SignPolygonTransactionApi extends TopLevelApi { // eslint-disable-line no-
         }
 
         return description;
-    }
-
-    /**
-     *
-     * @param {KeyguardRequest.PolygonTransactionInfo} request
-     * @returns {KeyguardRequest.RelayData}
-     */
-    parseOpenGsnRelayData(request) {
-        // TODO: Parse it
-        return request.relayData;
     }
 
     get Handler() {

@@ -1,4 +1,5 @@
 /* global BitcoinRequestParserMixin */
+/* global PolygonRequestParserMixin */
 /* global TopLevelApi */
 /* global Nimiq */
 /* global SignSwap */
@@ -6,10 +7,9 @@
 /* global Iban */
 /* global ethers */
 /* global CONFIG */
-/* global PolygonUtils */
 /* global PolygonContractABIs */
 
-class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) {
+class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(TopLevelApi)) {
     /**
      * @param {KeyguardRequest.SignSwapRequest} request
      * @returns {Promise<Parsed<KeyguardRequest.SignSwapRequest>>}
@@ -323,41 +323,6 @@ class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) {
         }
 
         return description;
-    }
-
-    /**
-     *
-     * @param {KeyguardRequest.PolygonTransactionInfo} request
-     * @returns {KeyguardRequest.RelayData}
-     */
-    parseOpenGsnRelayData(request) {
-        // TODO: Parse it
-        return request.relayData;
-    }
-
-    /**
-     * @param {unknown} address
-     * @param {string} name
-     * @returns {string}
-     */
-    parsePolygonAddress(address, name) {
-        if (typeof address !== 'string' || address.substring(0, 2) !== '0x' || address.substring(2).length !== 40) {
-            throw new Errors.InvalidRequestError(`${name} must be a valid Polygon address`);
-        }
-        return address;
-    }
-
-    /**
-     * @param {string} path
-     * @param {string} name
-     * @returns {string}
-     */
-    parsePolygonPath(path, name) {
-        if (!PolygonUtils.isValidPath(path)) {
-            throw new Errors.InvalidRequestError(`${name}: Invalid path`);
-        }
-
-        return path;
     }
 
     /**
