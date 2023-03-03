@@ -27,7 +27,7 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
             ['transfer', 'transferWithApproval', 'refund'],
         );
         parsedRequest.request = request.request;
-        parsedRequest.relayData = this.parseOpenGsnRelayData(request);
+        parsedRequest.relayData = this.parseOpenGsnRelayData(request.relayData);
         parsedRequest.senderLabel = this.parseLabel(request.senderLabel); // Used for HTLC refunds
         parsedRequest.recipientLabel = this.parseLabel(request.recipientLabel);
         if (request.amount !== undefined) {
@@ -53,10 +53,12 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
      * @returns {PolygonTransferDescription | PolygonTransferWithApprovalDescription | PolygonRefundDescription}
      */
     parseOpenGsnForwardRequest(request, allowedMethods) {
+        request.request = this.parseOpenGsnForwardRequestRoot(request.request);
+
         /** @type {PolygonTransferDescription | PolygonTransferWithApprovalDescription | PolygonRefundDescription} */
         let description;
 
-        try {
+        if (request.request.to === CONFIG.USDC_TRANSFER_CONTRACT_ADDRESS) {
             const usdcTransferContract = new ethers.Contract(
                 CONFIG.USDC_TRANSFER_CONTRACT_ADDRESS,
                 PolygonContractABIs.USDC_TRANSFER_CONTRACT_ABI,
@@ -67,7 +69,7 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
                 data: request.request.data,
                 value: request.request.value,
             }));
-        } catch (error) {
+        } else if (request.request.to === CONFIG.USDC_HTLC_CONTRACT_ADDRESS) {
             const usdcHtlcContract = new ethers.Contract(
                 CONFIG.USDC_HTLC_CONTRACT_ADDRESS,
                 PolygonContractABIs.USDC_HTLC_CONTRACT_ABI,
@@ -78,6 +80,8 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
                 data: request.request.data,
                 value: request.request.value,
             }));
+        } else {
+            throw new Errors.InvalidRequestError('request.to address is not allowed');
         }
 
         if (!allowedMethods.includes(description.name)) {

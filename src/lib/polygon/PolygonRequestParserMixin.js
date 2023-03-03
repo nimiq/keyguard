@@ -41,13 +41,75 @@ function PolygonRequestParserMixin(clazz) { // eslint-disable-line no-unused-var
         }
 
         /**
+         * @param {KeyguardRequest.ForwardRequest} request
+         * @returns {KeyguardRequest.ForwardRequest}
+         */
+        parseOpenGsnForwardRequestRoot(request) {
+            if (typeof request !== 'object' || request === null) {
+                throw new Errors.InvalidRequestError('request must be an object');
+            }
+
+            this.parsePolygonAddress(request.from, 'request.from');
+            this.parsePolygonAddress(request.to, 'request.to');
+
+            if (request.value !== '0') {
+                throw new Errors.InvalidRequestError('Request `value` must be zero');
+            }
+
+            const digitsOnlyRegex = /^[0-9]+$/;
+
+            if (!digitsOnlyRegex.test(request.gas)) {
+                throw new Errors.InvalidRequestError('Invalid request.gas');
+            }
+
+            if (!digitsOnlyRegex.test(request.nonce)) {
+                throw new Errors.InvalidRequestError('Invalid request.nonce');
+            }
+
+            if (!digitsOnlyRegex.test(request.validUntil)) {
+                throw new Errors.InvalidRequestError('Invalid request.validUntil');
+            }
+
+            return request;
+        }
+
+        /**
          *
-         * @param {KeyguardRequest.PolygonTransactionInfo} request
+         * @param {KeyguardRequest.RelayData} relayData
          * @returns {KeyguardRequest.RelayData}
          */
-        parseOpenGsnRelayData(request) {
-            // TODO: Parse it
-            return request.relayData;
+        parseOpenGsnRelayData(relayData) {
+            if (typeof relayData !== 'object' || relayData === null) {
+                throw new Errors.InvalidRequestError('relayData must be an object');
+            }
+
+            this.parsePolygonAddress(relayData.forwarder, 'relayData.forwarder');
+            this.parsePolygonAddress(relayData.paymaster, 'relayData.paymaster');
+            this.parsePolygonAddress(relayData.relayWorker, 'relayData.relayWorker');
+
+            const digitsOnlyRegex = /^[0-9]+$/;
+
+            if (!digitsOnlyRegex.test(relayData.baseRelayFee)) {
+                throw new Errors.InvalidRequestError('Invalid relayData.baseRelayFee');
+            }
+
+            if (!digitsOnlyRegex.test(relayData.clientId)) {
+                throw new Errors.InvalidRequestError('Invalid relayData.clientId');
+            }
+
+            if (!digitsOnlyRegex.test(relayData.gasPrice)) {
+                throw new Errors.InvalidRequestError('Invalid relayData.gasPrice');
+            }
+
+            if (!digitsOnlyRegex.test(relayData.pctRelayFee)) {
+                throw new Errors.InvalidRequestError('Invalid relayData.pctRelayFee');
+            }
+
+            if (relayData.paymasterData !== '0x') {
+                throw new Errors.InvalidRequestError('Invalid relayData.paymasterData, must be empty ("0x")');
+            }
+
+            return relayData;
         }
     }
 
