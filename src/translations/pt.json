@@ -14,7 +14,7 @@
     "back-to-cpl": "Voltar para CryptoPayment.link",
 
     "funding-cashlink": "Financiar cashlink",
-    "label-unknown": "Unknown",
+    "label-unknown": "Desconhecido",
 
     "recovery-words-title": "Escreva estas 24 Palavras em Papel",
     "recovery-words-intro-text": "As Palavras de Backup são a ÚNICA forma de restaurar a sua conta no caso de perder o seu Ficheiro de Login ou palavra passe.",
@@ -24,13 +24,13 @@
     "recovery-words-text": "Qualquer pessoa com estas palavras consegue aceder à sua conta! Mantenha-as seguras.",
     "recovery-words-validate": "Valide o backup",
 
-    "create-heading-select-login-file": "No need for your email",
-    "create-use-login-file-instead": "Use a ‘Login File’ instead.",
-    "create-only-you-have-access": "This way only you have access, not even Team Nimiq or governments.",
+    "create-heading-select-login-file": "O seu email não é necessário",
+    "create-use-login-file-instead": "Em alternativa use um \"Ficheiro de Login\".",
+    "create-only-you-have-access": "Desta forma só você tem acesso, nem mesmo a equipa da Nimiq ou governos.",
     "create-button-set-password": "Defina palavra passe",
-    "create-heading-add-password": "Add a password",
+    "create-heading-add-password": "Adicione uma palavra passe",
     "create-heading-repeat-password": "Repita a sua palavra passe",
-    "create-loginfile-keycard": "The password protects your Login File.\nThe ‘keycard’ to your account.",
+    "create-loginfile-keycard": "A palavra passe protege o seu Ficheiro de Login.\nO 'keyguard' para a sua conta.",
     "create-heading-what-is-loginfile": "Qual é o Ficheiro de Login?",
     "create-login-file-explainer-intro": "Um ficheiro de imagem que, em combinação com a sua palavra passe, lhe garante acesso à sua conta.",
     "create-login-file-paragraph-1": "A Nimiq não guarda os seus dados. O Ficheiro de Login substitui o e-mail como forma de login.",
@@ -79,7 +79,7 @@
 
     "passwordbox-enter-password": "Insira a sua palavra passe",
     "passwordbox-enter-pin": "Insira o seu PIN",
-    "passwordbox-swap-authorized": "Swap authorized",
+    "passwordbox-swap-authorized": "Troca autorizada",
     "passwordbox-repeat-password": "Repita a sua palavra passe",
     "passwordbox-repeat": "Repita a palavra passe",
     "passwordbox-continue": "Continuar",
@@ -222,13 +222,13 @@
     "bitcoin": "Bitcoin",
     "bitcoin-recipient-unlabelled": "Sem marcador",
 
-    "usd-coin": "USD Coin",
+    "usd-coin": "Moeda USD",
 
     "derive-btc-xpub-heading": "Adicione Bitcoin\nna sua conta",
     "derive-btc-xpub-text": "Faça uma troca fácil entre NIM, a moeda de pagamento de alto desempenho e BTC, o ouro das criptomoedas.",
 
-    "derive-polygon-address-heading": "Activate USDC",
-    "derive-polygon-address-text": "USDC is a stablecoin pegged to USD and now available in the wallet.",
+    "derive-polygon-address-heading": "Ativar USDC",
+    "derive-polygon-address-text": "A USDC é uma moeda estável ligada ao USD e agora disponível na carteira.",
 
     "sign-swap-heading": "Confirmar Troca",
     "sign-swap-exchange-rate-tooltip": "Esta taxa incluí a taxa de troca.",
@@ -239,7 +239,7 @@
     "sign-swap-oasis-fees-explainer": "de troca de valor",
     "sign-swap-bank-fees": "taxa",
     "sign-swap-bank-fees-explainer": "taxa de rede bancária",
-    "sign-swap-usdc-fees": "USDC network fee",
+    "sign-swap-usdc-fees": "taxa de rede USDC",
     "sign-swap-nim-fees": "taxa de rede NIM",
     "sign-swap-exchange-fee": "taxa de troca",
     "sign-swap-of-exchange-value": "de troca de valor",

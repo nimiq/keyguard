@@ -14,7 +14,7 @@
     "back-to-cpl": "Retour à CryptoPayment.link",
 
     "funding-cashlink": "Financement du cashlink",
-    "label-unknown": "Unknown",
+    "label-unknown": "Inconnu",
 
     "recovery-words-title": "Écrivez ces 24 Mots sur du papier",
     "recovery-words-intro-text": "Les Mots de Récupération sont le SEUL moyen de restaurer votre compte dans le cas où vous perdriez votre Ficher de Connexion ou votre mot de passe.",
@@ -24,13 +24,13 @@
     "recovery-words-text": "N'importe qui avec ces mots peut accéder à votre compte ! Gardez-les en lieu sûr.",
     "recovery-words-validate": "Valider la sauvegarde",
 
-    "create-heading-select-login-file": "No need for your email",
-    "create-use-login-file-instead": "Use a ‘Login File’ instead.",
-    "create-only-you-have-access": "This way only you have access, not even Team Nimiq or governments.",
+    "create-heading-select-login-file": "Pas besoin de votre adresse e-mail",
+    "create-use-login-file-instead": "Utilisez plutôt un \"fichier de connexion\".",
+    "create-only-you-have-access": "De cette façon, vous êtes le seul à y avoir accès, pas même l'équipe Nimiq ou les gouvernements.",
     "create-button-set-password": "Définir le mot de passe",
     "create-heading-add-password": "Définir le mot de passe",
     "create-heading-repeat-password": "Répétez votre mot de passe",
-    "create-loginfile-keycard": "The password protects your Login File.\nThe ‘keycard’ to your account.",
+    "create-loginfile-keycard": "Le mot de passe protège votre fichier de connexion.\nLa carte d'accès de votre compte.",
     "create-heading-what-is-loginfile": "Qu'est-ce qu'un fichier de connexion ?",
     "create-login-file-explainer-intro": "Un fichier image, combiné avec votre mot de passe, vous garanti l'accès à votre compte.",
     "create-login-file-paragraph-1": "Nimiq ne conserve pas vos données. Le fichier de connexion remplace une adresse mail pour vous connecter.",
@@ -227,8 +227,8 @@
     "derive-btc-xpub-heading": "Ajouter Bitcoin\nà votre compte",
     "derive-btc-xpub-text": "Swappez facilement entre NIM, la monnaie de paiement super performante et BTC, l'étalon-or de la crypto.",
 
-    "derive-polygon-address-heading": "Activate USDC",
-    "derive-polygon-address-text": "USDC is a stablecoin pegged to USD and now available in the wallet.",
+    "derive-polygon-address-heading": "Activer l'USDC",
+    "derive-polygon-address-text": "L'USDC est un stablecoin rattaché au Dollar et est maintenant disponible dans le portefeuille.",
 
     "sign-swap-heading": "Confirmer le swap",
     "sign-swap-exchange-rate-tooltip": "Ce taux inclut les frais de swap.",
