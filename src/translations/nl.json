@@ -14,7 +14,7 @@
     "back-to-cpl": "Terug naar CryptoPayment.link",
 
     "funding-cashlink": "Financiering cashlink",
-    "label-unknown": "Unknown",
+    "label-unknown": "Onbekend",
 
     "recovery-words-title": "Schrijf deze 24 woorden op papier",
     "recovery-words-intro-text": "De herstelwoorden is de ENIGSTE manier om je account te herstellen in het geval dat je je Login File of wachtwoord verliest.",
@@ -24,13 +24,13 @@
     "recovery-words-text": "Iedereen met deze woorden heeft toegang tot uw account! Houd ze veilig.",
     "recovery-words-validate": "Valideer back-up",
 
-    "create-heading-select-login-file": "No need for your email",
-    "create-use-login-file-instead": "Use a ‘Login File’ instead.",
-    "create-only-you-have-access": "This way only you have access, not even Team Nimiq or governments.",
+    "create-heading-select-login-file": "Een e-mail is niet nodig",
+    "create-use-login-file-instead": "Maak gebruik van een 'Login File'.",
+    "create-only-you-have-access": "Zo heb alleen jij toegang, zelfs niet Team Nimiq of de overheid.",
     "create-button-set-password": "Stel een wachtwoord in",
-    "create-heading-add-password": "Add a password",
+    "create-heading-add-password": "Voeg een wachtwoord toe",
     "create-heading-repeat-password": "Herhaal je wachtwoord",
-    "create-loginfile-keycard": "The password protects your Login File.\nThe ‘keycard’ to your account.",
+    "create-loginfile-keycard": "Het wachtwoord beveiligt uw Login File.\nDe ‘toegangscode’ voor je account.",
     "create-heading-what-is-loginfile": "Wat is een Login File?",
     "create-login-file-explainer-intro": "Een Login File, in combinatie met je wachtwoord, toegang geeft tot je account.",
     "create-login-file-paragraph-1": "Nimiq bewaart je gegevens niet. De Login File vervangt je e-mail als manier om in te loggen.",
@@ -79,7 +79,7 @@
 
     "passwordbox-enter-password": "Vul wachtwoord in",
     "passwordbox-enter-pin": "Vul PIN in",
-    "passwordbox-swap-authorized": "Swap authorized",
+    "passwordbox-swap-authorized": "Swap geautoriseerd",
     "passwordbox-repeat-password": "Herhaal je wachtwoord",
     "passwordbox-repeat": "Herhaal wachtwoord",
     "passwordbox-continue": "Doorgaan",
@@ -222,13 +222,13 @@
     "bitcoin": "Bitcoin",
     "bitcoin-recipient-unlabelled": "Ongelabeld",
 
-    "usd-coin": "USD Coin",
+    "usd-coin": "USD Munt",
 
     "derive-btc-xpub-heading": "Voeg Bitcoin\ntoe aan je account",
     "derive-btc-xpub-text": "Wissel eenvoudig tussen NIM, de superpresterende betaalmunt en BTC, de gouden standaard van crypto.",
 
-    "derive-polygon-address-heading": "Activate USDC",
-    "derive-polygon-address-text": "USDC is a stablecoin pegged to USD and now available in the wallet.",
+    "derive-polygon-address-heading": "Activeer USDC",
+    "derive-polygon-address-text": "USDC is een stablecoin gekoppeld aan USD en nu beschikbaar in de wallet.",
 
     "sign-swap-heading": "Swap bevestigen",
     "sign-swap-exchange-rate-tooltip": "Dit tarief is inclusief de wisselkosten.",
