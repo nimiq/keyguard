@@ -14,6 +14,7 @@
 
 <div>
     <button>Derive Polygon Address</button>
+    <pre id="output"></pre>
 </div>
 
 <script>
@@ -21,6 +22,8 @@
         await Nimiq.WasmHelper.doImportBrowser();
         // Nimiq.GenesisConfig.test();
     })();
+
+    const output = document.getElementById('output');
 
     document.querySelector('button').addEventListener('click', async () => {
         const keyguard = window.open('../src/request/derive-polygon-address/', 'Polygon Demo',
@@ -42,9 +45,11 @@
 
         try {
             const result = await rpc.call('request', request);
-            document.body.appendChild(document.createTextNode(`Result: ${JSON.stringify(result)}; `));
+            output.innerHTML = '';
+            output.appendChild(document.createTextNode(`Result: ${JSON.stringify(result, null, 2)}; `));
         } catch (e) {
-            document.body.appendChild(document.createTextNode(`Error: ${e.message || e}; `));
+            output.innerHTML = '';
+            output.appendChild(document.createTextNode(`Error: ${e.message || e}; `));
         }
 
         keyguard.close();
