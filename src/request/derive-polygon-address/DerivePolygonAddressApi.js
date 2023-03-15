@@ -1,10 +1,10 @@
 /* global TopLevelApi */
+/* global PolygonRequestParserMixin */
 /* global Nimiq */
 /* global DerivePolygonAddress */
 /* global Errors */
 
-/** @extends {TopLevelApi<KeyguardRequest.DerivePolygonAddressRequest>} */
-class DerivePolygonAddressApi extends TopLevelApi { // eslint-disable-line no-unused-vars
+class DerivePolygonAddressApi extends PolygonRequestParserMixin(TopLevelApi) { // eslint-disable-line no-unused-vars
     /**
      * @param {KeyguardRequest.DerivePolygonAddressRequest} request
      * @returns {Promise<Parsed<KeyguardRequest.DerivePolygonAddressRequest>>}
@@ -21,7 +21,7 @@ class DerivePolygonAddressApi extends TopLevelApi { // eslint-disable-line no-un
             throw new Errors.InvalidRequestError('Cannot derive a Polygon address for single-address accounts');
         }
         parsedRequest.keyLabel = this.parseLabel(request.keyLabel);
-        parsedRequest.polygonAccountPath = this.parsePath(request.polygonAccountPath, 'polygonAccountPath');
+        parsedRequest.polygonAccountPath = this.parsePolygonPath(request.polygonAccountPath, 'polygonAccountPath');
 
         return parsedRequest;
     }
