@@ -94,18 +94,15 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
             }
         }
 
-        // Check that amount exists when method is 'refund'
-        if (description.name === 'refund') {
-            if (!request.amount) {
-                throw new Errors.InvalidRequestError('`amount` required for refund method');
-            }
+        // Check that amount exists when method is 'refund', and unset for other methods.
+        if ((description.name === 'refund') !== !!request.amount) {
+            throw new Errors.InvalidRequestError('`amount` required for refund method and ignored for other methods');
         }
 
-        // Check that approval object exists when method is 'transferWithApproval'
-        if (description.name === 'transferWithApproval') {
-            if (!request.approval) {
-                throw new Errors.InvalidRequestError('`approval` object required for transferWithApproval method');
-            }
+        // Check that approval object exists when method is 'transferWithApproval', and unset for other methods.
+        if ((description.name === 'transferWithApproval') !== !!request.approval) {
+            throw new Errors.InvalidRequestError('`approval` object required for transferWithApproval method and '
+                + 'ignored for other methods');
         }
 
         return description;
