@@ -8,6 +8,7 @@
 /* global TopLevelApi */
 /* global PolygonAddressInfo */
 /* global NumberFormatting */
+/* global PolygonUtils */
 /* global CONFIG */
 /* global PolygonKey */
 /* global OpenGSN */
@@ -24,7 +25,6 @@ class SignPolygonTransaction {
      * @param {reject} reject
      */
     constructor(request, resolve, reject) {
-        this._request = request;
         /** @type {HTMLElement} */
         this.$el = (document.getElementById(SignPolygonTransaction.Pages.CONFIRM_TRANSACTION));
 
@@ -33,9 +33,9 @@ class SignPolygonTransaction {
         /** @type {HTMLLinkElement} */
         const $sender = (this.$el.querySelector('.accounts .sender'));
         if (request.description.name === 'refund') {
-            new PolygonAddressInfo(relayRequest.to, request.senderLabel, 'unknown').render($sender);
+            new PolygonAddressInfo(relayRequest.to, request.senderLabel, 'unknown').renderTo($sender);
         } else {
-            new PolygonAddressInfo(relayRequest.from, request.keyLabel, 'usdc').render($sender);
+            new PolygonAddressInfo(relayRequest.from, request.keyLabel, 'usdc').renderTo($sender);
         }
 
         /** @type {HTMLLinkElement} */
@@ -45,39 +45,29 @@ class SignPolygonTransaction {
             recipientAddress,
             request.description.name === 'refund' ? request.keyLabel : request.recipientLabel,
             request.description.name === 'refund' ? 'usdc' : 'none',
-        ).render($recipient);
+        ).renderTo($recipient);
 
         /** @type {HTMLDivElement} */
         const $value = (this.$el.querySelector('#value'));
         /** @type {HTMLDivElement} */
         const $fee = (this.$el.querySelector('#fee'));
-        // /** @type {HTMLDivElement} */
-        // const $data = (this.$el.querySelector('#data'));
 
         // Set value and fee.
         $value.textContent = NumberFormatting.formatNumber(
-            request.description.name === 'refund'
-                ? /** @type {number} */ (request.amount) / 1e6
-                : request.description.args.amount.toNumber() / 1e6,
+            PolygonUtils.centsToCoins(request.description.name === 'refund'
+                ? /** @type {number} */ (request.amount)
+                : request.description.args.amount.toNumber()),
             6,
             2, // Always display at least 2 decimals, as is common for USD
         );
         const feeUnits = request.description.args.fee.toNumber();
         if (feeUnits > 0) {
             // For the fee, we do not display more than two decimals, as it would not add any value for the user
-            $fee.textContent = NumberFormatting.formatNumber(feeUnits / 1e6, 2, 2);
+            $fee.textContent = NumberFormatting.formatNumber(PolygonUtils.centsToCoins(feeUnits), 2, 2);
             /** @type {HTMLDivElement} */
             const $feeSection = (this.$el.querySelector('.fee-section'));
             $feeSection.classList.remove('display-none');
         }
-
-        // if ($data && transaction.data) {
-        //     // Set transaction extra data.
-        //     $data.textContent = transaction.data;
-        //     /** @type {HTMLDivElement} */
-        //     const $dataSection = (this.$el.querySelector('.data-section'));
-        //     $dataSection.classList.remove('display-none');
-        // }
 
         // Set up password box.
         /** @type {HTMLFormElement} */
@@ -127,7 +117,7 @@ class SignPolygonTransaction {
 
         const polygonKey = new PolygonKey(key);
 
-        if (this._request.description.name === 'transferWithApproval') {
+        if (request.description.name === 'transferWithApproval') {
             // Sign approval
             const usdcContract = new ethers.Contract(
                 CONFIG.USDC_CONTRACT_ADDRESS,
@@ -136,7 +126,7 @@ class SignPolygonTransaction {
 
             const functionSignature = usdcContract.interface.encodeFunctionData(
                 'approve',
-                [CONFIG.USDC_TRANSFER_CONTRACT_ADDRESS, this._request.description.args.approval],
+                [CONFIG.USDC_TRANSFER_CONTRACT_ADDRESS, request.description.args.approval],
             );
 
             // TODO: Make the domain parameters configurable in the request?
@@ -184,12 +174,12 @@ class SignPolygonTransaction {
                 PolygonContractABIs.USDC_TRANSFER_CONTRACT_ABI,
             );
 
-            request.request.data = usdcTransfer.interface.encodeFunctionData(this._request.description.name, [
-                /* address token */ this._request.description.args.token,
-                /* uint256 amount */ this._request.description.args.amount,
-                /* address target */ this._request.description.args.target,
-                /* uint256 fee */ this._request.description.args.fee,
-                /* uint256 approval */ this._request.description.args.approval,
+            request.request.data = usdcTransfer.interface.encodeFunctionData(request.description.name, [
+                /* address token */ request.description.args.token,
+                /* uint256 amount */ request.description.args.amount,
+                /* address target */ request.description.args.target,
+                /* uint256 fee */ request.description.args.fee,
+                /* uint256 approval */ request.description.args.approval,
                 /* bytes32 sigR */ sigR,
                 /* bytes32 sigS */ sigS,
                 /* uint8 sigV */ sigV,

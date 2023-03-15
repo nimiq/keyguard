@@ -50,10 +50,10 @@
         } catch (e) {
             output.innerHTML = '';
             output.appendChild(document.createTextNode(`Error: ${e.message || e}; `));
+        } finally {
+            keyguard.close();
+            await KeyStore.instance.remove(request.keyId);
         }
-
-        keyguard.close();
-        await KeyStore.instance.remove(request.keyId);
     });
 </script>
 

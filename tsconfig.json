@@ -6,8 +6,9 @@
     "lib": ["DOM"],                           /* Specify library files to be included in the compilation. */
     "skipLibCheck": true,                     /* Skip checking .d.ts files. We need this currently, because types in */
                                               /* lib.webworker.d.ts referenced in ServiceWorker.js clash with types */
-                                              /* in lib.dom.d.ts */
-                                              /* TODO once typescript has been updated, this can be reset to false. */
+                                              /* in lib.dom.d.ts, and also because our typescript version is too old */
+                                              /* to handle the types of ethers. */
+                                              /* TODO once typescript has been updated, this can be removed. */
     "allowJs": true,                          /* Allow javascript files to be compiled. */
     "checkJs": true,                          /* Report errors in .js files. */
     // "jsx": "preserve",                     /* Specify JSX code generation: 'preserve', 'react-native', or 'react'. */

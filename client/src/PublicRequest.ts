@@ -214,7 +214,8 @@ export type PolygonTransactionInfo = {
     relayData: RelayData,
 
     /**
-     * For refund transactions from HTLCs the amount is not part of the relay request.
+     * For refund and redeem transactions from HTLCs the amount is not part of the forward request / relay request and
+     * needs to be specified separately.
      */
     amount?: number,
 
@@ -277,7 +278,7 @@ export type SignSwapRequestCommon = SimpleRequest & {
         }>
     ) | (
         {type: 'USDC'}
-        & PolygonTransactionInfo
+        & Omit<PolygonTransactionInfo, 'amount'>
     ) | (
         {type: 'EUR'}
         & {
@@ -312,7 +313,7 @@ export type SignSwapRequestCommon = SimpleRequest & {
         }
     ) | (
         {type: 'USDC'}
-        & Omit<PolygonTransactionInfo, 'approval'>
+        & Omit<PolygonTransactionInfo, 'approval' | 'amount'>
         & {
             amount: number,
         }
@@ -409,12 +410,12 @@ export type SignSwapTransactionsRequest = {
         htlcScript: Uint8Array,
         transactionHash: string,
         outputIndex: number;
-    }  | {
+    } | {
         type: 'USDC',
         hash: string,
         timeout: number,
         htlcId: string,
-    }| {
+    } | {
         type: 'EUR',
         hash: string,
         timeout: number,

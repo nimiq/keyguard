@@ -49,9 +49,9 @@
     <script defer bundle-polygon src="../../lib/polygon/PolygonContractABIs.js"></script>
     <script defer bundle-polygon src="../../lib/polygon/PolygonRequestParserMixin.js"></script>
 
-    <script defer src="../../lib/IqonHash.js"></script>
-    <script defer src="../../lib/LoginFileConfig.js"></script>
-    <script defer src="../../lib/CurrencyInfo.js"></script>
+<!--    <script defer src="../../lib/IqonHash.js"></script>-->
+<!--    <script defer src="../../lib/LoginFileConfig.js"></script>-->
+<!--    <script defer src="../../lib/CurrencyInfo.js"></script>-->
     <script defer src="../../lib/NumberFormatting.js"></script>
     <script defer src="../../lib/polygon/OpenGSN.js"></script>
     <script defer src="../../components/PolygonAddressInfo.js"></script>
@@ -67,8 +67,6 @@
 
     <link rel="stylesheet" href="../../components/Tooltip.css">
     <link rel="stylesheet" href="../../components/PolygonAddressInfo.css">
-    <!-- <link rel="stylesheet" href="../../components/Timer.css">
-    <link rel="stylesheet" href="../../components/PaymentInfoLine.css"> -->
     <link rel="stylesheet" href="SignPolygonTransaction.css">
 </head>
 <body class="loading">
@@ -80,14 +78,8 @@
 
     <div id="app">
         <div id="confirm-transaction" class="page nq-card">
-            <!-- <div class="payment-info-line"></div> -->
             <div class="page-header nq-card-header">
-                <!-- <a tabindex="0" class="page-header-back-button hide-standard">
-                    <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
-                </a> -->
-                <!-- <h1 data-i18n="sign-tx-heading-checkout" class="nq-h1 hide-standard hide-cashlink">Verify Payment</h1> -->
-                <h1 data-i18n="sign-tx-heading-tx" class="nq-h1 hide-checkout hide-cashlink">Confirm Transaction</h1>
-                <!-- <h1 data-i18n="sign-tx-heading-cashlink" class="nq-h1 hide-checkout hide-standard ">Create a Cashlink</h1> -->
+                <h1 data-i18n="sign-tx-heading-tx" class="nq-h1">Confirm Transaction</h1>
             </div>
 
             <div class="page-body nq-card-body transaction">
@@ -97,7 +89,7 @@
                     <div class="recipient"></div>
                 </div>
 
-                <div class="value-fee-data">
+                <div class="value-fee">
                     <div class="total nq-light-blue">
                         <span id="value"></span><span class="usdc-symbol"></span>
                     </div>
@@ -105,8 +97,6 @@
                     <div class="fee-section nq-text-s display-none">
                         + <span id="fee"></span> <span class="usdc-symbol"></span> <span data-i18n="sign-tx-fee">fee</span>
                     </div>
-
-                    <div class="data-section display-none nq-text nq-blue" id="data"></div>
                 </div>
             </div>
 
@@ -120,7 +110,6 @@
             <span id="global-close-text"></span>
         </button>
 
-        <!-- Default and loading screen -->
         <div id="loading" class="page">
             <!-- Loading spinner SVG -->
             <svg height="48" width="54" color="inherit" class="loading-spinner"><g>

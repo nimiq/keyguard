@@ -90,18 +90,4 @@ class PolygonKey { // eslint-disable-line no-unused-vars
     get type() {
         return this._key.secret.type;
     }
-
-    /**
-     * @type {boolean}
-     */
-    get hasPin() {
-        return this._key.hasPin;
-    }
-
-    /**
-     * @param {boolean} hasPin
-     */
-    set hasPin(hasPin) {
-        this._key.hasPin = hasPin;
-    }
 }

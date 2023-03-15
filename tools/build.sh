@@ -135,7 +135,7 @@ ethersjs_hashsum="943c82a542394951457cd34743ba694b199b841fe02870c199a0aca411ed14
 echo "$ethersjs_hashsum" | ${SHA256SUM} --check
 
 if [ ! $? -eq 0 ]; then
-    output "💥  BitcoinJS file integrity check failed!"
+    output "💥  EthersJS file integrity check failed!"
     exit 1;
 fi
 

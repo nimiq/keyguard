@@ -62,21 +62,21 @@ class SignSwap {
         /** @type {HTMLDivElement} */
         const $exchangeRate = (this.$el.querySelector('#exchange-rate'));
         /** @type {HTMLDivElement} */
-        const $rightAccount = (this.$el.querySelector('.right-account'));
-        /** @type {HTMLDivElement} */
         const $leftAccount = (this.$el.querySelector('.left-account'));
         /** @type {HTMLDivElement} */
-        const $leftIdenticon = (this.$el.querySelector('.left-account .identicon'));
+        const $rightAccount = (this.$el.querySelector('.right-account'));
         /** @type {HTMLDivElement} */
-        const $rightIdenticon = (this.$el.querySelector('.right-account .identicon'));
-        /** @type {HTMLSpanElement} */
-        const $leftLabel = (this.$el.querySelector('.left-account .label'));
-        /** @type {HTMLSpanElement} */
-        const $leftNewBalance = (this.$el.querySelector('.left-account .new-balance'));
-        /** @type {HTMLSpanElement} */
-        const $rightLabel = (this.$el.querySelector('.right-account .label'));
+        const $leftIdenticon = ($leftAccount.querySelector('.identicon'));
         /** @type {HTMLDivElement} */
-        const $rightNewBalance = (this.$el.querySelector('.right-account .new-balance'));
+        const $rightIdenticon = ($rightAccount.querySelector('.identicon'));
+        /** @type {HTMLSpanElement} */
+        const $leftLabel = ($leftAccount.querySelector('.label'));
+        /** @type {HTMLSpanElement} */
+        const $rightLabel = ($rightAccount.querySelector('.label'));
+        /** @type {HTMLSpanElement} */
+        const $leftNewBalance = ($leftAccount.querySelector('.new-balance'));
+        /** @type {HTMLDivElement} */
+        const $rightNewBalance = ($rightAccount.querySelector('.new-balance'));
         /** @type {HTMLDivElement} */
         const $swapValues = (this.$el.querySelector('.swap-values'));
         /** @type {HTMLSpanElement} */
@@ -419,13 +419,11 @@ class SignSwap {
                 }
 
                 /** @type {Segment[]} */
-                const segments = request.nimiqAddresses.map(address => ({
-                    address: address.address,
-                    balance: address.balance,
-                    active: address.address === activeAddress,
-                    newBalance: address.address === activeAddress
-                        ? newBalance
-                        : address.balance,
+                const segments = request.nimiqAddresses.map(({ address, balance }) => ({
+                    address,
+                    balance,
+                    active: address === activeAddress,
+                    newBalance: address === activeAddress ? newBalance : balance,
                 }));
 
                 if (leftAsset === 'NIM') leftSegments = segments;

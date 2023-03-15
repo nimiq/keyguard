@@ -44,9 +44,7 @@ class DerivePolygonAddress {
      */
     async _onPasswordEntered(password) {
         TopLevelApi.setLoading(true);
-        const passwordBuffer = password && password.length > 0
-            ? Utf8Tools.stringToUtf8ByteArray(password)
-            : undefined;
+        const passwordBuffer = password ? Utf8Tools.stringToUtf8ByteArray(password) : undefined;
 
         /** @type {Key|null} */
         let key = null;
