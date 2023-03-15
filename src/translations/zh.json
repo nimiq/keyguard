@@ -14,7 +14,7 @@
     "back-to-cpl": "返回CryptoPayment.link",
 
     "funding-cashlink": "现金链接充值",
-    "label-unknown": "Unknown",
+    "label-unknown": "未知",
 
     "recovery-words-title": "请将这24个单词写在纸上",
     "recovery-words-intro-text": "如果你丢失了登录文件或密码，助记词是恢复帐户的＂唯一＂方法",
@@ -24,13 +24,13 @@
     "recovery-words-text": "任何有这些助记词的人都可以存取你的账户！请务必确保助记词安全",
     "recovery-words-validate": "验证备份",
 
-    "create-heading-select-login-file": "No need for your email",
-    "create-use-login-file-instead": "Use a ‘Login File’ instead.",
-    "create-only-you-have-access": "This way only you have access, not even Team Nimiq or governments.",
+    "create-heading-select-login-file": "不需要您的电子邮件。",
+    "create-use-login-file-instead": "请使用“登录文件”代替。",
+    "create-only-you-have-access": "这种方式只有您自己能够访问，团队Nimiq或政府也无法访问。",
     "create-button-set-password": "设置密码",
-    "create-heading-add-password": "Add a password",
+    "create-heading-add-password": "请添加密码",
     "create-heading-repeat-password": "再次输入密码",
-    "create-loginfile-keycard": "The password protects your Login File.\nThe ‘keycard’ to your account.",
+    "create-loginfile-keycard": "这个密码会保护您的登录文件。\n相当于您账户的“钥匙卡”。",
     "create-heading-what-is-loginfile": "什么是登录文件？",
     "create-login-file-explainer-intro": "结合你的密码的图像文件，将允许访问你的帐户。",
     "create-login-file-paragraph-1": "Nimiq不会存储你的数据。 以登录文件取代电子邮件作为登录方式。",
@@ -79,7 +79,7 @@
 
     "passwordbox-enter-password": "输入你的密码",
     "passwordbox-enter-pin": "输入你的PIN码",
-    "passwordbox-swap-authorized": "Swap authorized",
+    "passwordbox-swap-authorized": "授权交换。",
     "passwordbox-repeat-password": "再次输入密码",
     "passwordbox-repeat": "再次输入密码",
     "passwordbox-continue": "继续",
@@ -222,13 +222,13 @@
     "bitcoin": "比特币",
     "bitcoin-recipient-unlabelled": "未标签",
 
-    "usd-coin": "USD Coin",
+    "usd-coin": "USD 币",
 
     "derive-btc-xpub-heading": "添加比特币\n到你的帐户",
     "derive-btc-xpub-text": "在超级高性能的支付硬币：NIM，与加密的黄金标准：比特币之间轻松交换。",
 
-    "derive-polygon-address-heading": "Activate USDC",
-    "derive-polygon-address-text": "USDC is a stablecoin pegged to USD and now available in the wallet.",
+    "derive-polygon-address-heading": "激活 USDC",
+    "derive-polygon-address-text": "USDC是一种与美元挂钩的稳定币，现在可在钱包中使用。",
 
     "sign-swap-heading": "确认交换",
     "sign-swap-exchange-rate-tooltip": "此价格包括交换费用",
@@ -239,7 +239,7 @@
     "sign-swap-oasis-fees-explainer": "交换价值",
     "sign-swap-bank-fees": "手续费",
     "sign-swap-bank-fees-explainer": "银行网络费用",
-    "sign-swap-usdc-fees": "USDC network fee",
+    "sign-swap-usdc-fees": "USDC 网络费用",
     "sign-swap-nim-fees": "NIM网络费",
     "sign-swap-exchange-fee": "交换费用",
     "sign-swap-of-exchange-value": "交换价值",
