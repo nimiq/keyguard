@@ -63,6 +63,8 @@ function PolygonRequestParserMixin(clazz) { // eslint-disable-line no-unused-var
             this.parseNonNegativeIntegerString(forwardRequest.nonce, 'request.nonce');
             this.parseNonNegativeIntegerString(forwardRequest.validUntil, 'request.validUntil');
 
+            this.parseHexString(forwardRequest.data, 'request.data');
+
             return forwardRequest;
         }
 
@@ -101,6 +103,18 @@ function PolygonRequestParserMixin(clazz) { // eslint-disable-line no-unused-var
         parseNonNegativeIntegerString(value, name) {
             if (typeof value !== 'string' || !/^\d+$/.test(value)) {
                 throw new Errors.InvalidRequestError(`${name} must be a non-negative integer string`);
+            }
+            return value;
+        }
+
+        /**
+         * @param {unknown} value
+         * @param {string} name - name of the property, used in error case only
+         * @returns {string}
+         */
+        parseHexString(value, name) {
+            if (typeof value !== 'string' || !/^0x(?:[\da-f]{2})*$/i.test(value)) {
+                throw new Errors.InvalidRequestError(`${name} must be a hex string`);
             }
             return value;
         }
