@@ -37,7 +37,7 @@ class BalanceDistributionBar { // eslint-disable-line no-unused-vars
             newBalance: this._unitsToFiat(segment.newBalance, leftAsset, leftFiatRate),
             backgroundClass: leftAsset === 'NIM'
                 ? LoginFileConfig[IqonHash.getBackgroundColorIndex(segment.address)].className
-                : segment.address,
+                : leftAsset.toLowerCase(),
             active: segment.active,
         }));
 
@@ -46,12 +46,14 @@ class BalanceDistributionBar { // eslint-disable-line no-unused-vars
             newBalance: this._unitsToFiat(segment.newBalance, rightAsset, rightFiatRate),
             backgroundClass: rightAsset === 'NIM'
                 ? LoginFileConfig[IqonHash.getBackgroundColorIndex(segment.address)].className
-                : segment.address,
+                : rightAsset.toLowerCase(),
             active: segment.active,
         }));
 
-        const totalBalance = leftDistributionData.reduce((sum, data) => sum + data.newBalance, 0)
-            + rightDistributionData.reduce((sum, data) => sum + data.newBalance, 0);
+        const totalBalance = [...leftDistributionData, ...rightDistributionData].reduce(
+            (sum, data) => sum + data.newBalance,
+            0,
+        );
 
         const $bars = document.createDocumentFragment();
         for (const data of leftDistributionData) {

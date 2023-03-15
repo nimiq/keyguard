@@ -20,7 +20,7 @@ class PolygonAddressInfo { // eslint-disable-line no-unused-vars
      * @param {HTMLElement} [$el]
      * @returns {HTMLElement}
      */
-    render($el) {
+    renderTo($el) {
         $el = $el || document.createElement('div');
         $el.textContent = '';
         $el.classList.add('polygon-address-info');
@@ -30,22 +30,17 @@ class PolygonAddressInfo { // eslint-disable-line no-unused-vars
             const $avatar = document.createElement('div');
             $avatar.classList.add('avatar');
             if (this._label) {
-                $avatar.textContent = this._label.substring(0, 1).toUpperCase();
+                $avatar.textContent = this._label[0].toUpperCase();
                 const color = IqonHash.getBackgroundColorIndex(this._label);
                 $avatar.classList.add(LoginFileConfig[color].className, 'initial');
             } else {
                 $avatar.classList.add('unlabelled');
             }
             $el.appendChild($avatar);
-        } else if (this._logo === 'usdc') {
+        } else if (this._logo === 'usdc' || this._logo === 'unknown') {
             const $img = document.createElement('img');
             $img.classList.add('logo');
-            $img.src = '../../assets/icons/usdc.svg';
-            $el.appendChild($img);
-        } else if (this._logo === 'unknown') {
-            const $img = document.createElement('img');
-            $img.classList.add('logo');
-            $img.src = '../../assets/icons/unknown.svg';
+            $img.src = `../../assets/icons/${this._logo}.svg`;
             $el.appendChild($img);
         }
 
@@ -56,6 +51,7 @@ class PolygonAddressInfo { // eslint-disable-line no-unused-vars
             $label.textContent = this._label;
         } else {
             $label.textContent = I18n.translatePhrase('label-unknown');
+            $label.dataset.i18n = 'label-unknown';
             $label.classList.add('unknown');
         }
         $el.appendChild($label);

@@ -22,7 +22,7 @@ class PolygonUtils { // eslint-disable-line no-unused-vars
      * @returns {boolean}
      */
     static isValidPath(path) {
-        if (path.match(/^m(\/[0-9]+'?)*$/) === null) return false;
+        if (!/^m(\/[0-9]+'?)*$/.test(path)) return false;
 
         let stillHardened = true;
 

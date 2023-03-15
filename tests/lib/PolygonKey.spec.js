@@ -3,7 +3,7 @@
 /* global PolygonConstants */
 /* global Dummy */
 
-describe('BitcoinKey', () => {
+describe('PolygonKey', () => {
     it('can derive an address', () => {
         const key = new Key(Dummy.secrets[0]);
         const polyKey = new PolygonKey(key);

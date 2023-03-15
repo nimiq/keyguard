@@ -10,12 +10,11 @@
 class DownloadLoginFile extends Nimiq.Observable {
     /**
      * @param {HTMLDivElement} [$el]
-     * @param {string} [description]
      */
-    constructor($el, description) {
+    constructor($el) {
         super();
 
-        this.$el = DownloadLoginFile._createElement($el, description);
+        this.$el = DownloadLoginFile._createElement($el);
 
         /** @type {LoginFile | null} */
         this._file = null;
@@ -47,10 +46,9 @@ class DownloadLoginFile extends Nimiq.Observable {
 
     /**
      * @param {?HTMLDivElement} [$el]
-     * @param {?string} [description]
      * @returns {HTMLDivElement}
      */
-    static _createElement($el, description) {
+    static _createElement($el) {
         $el = $el || document.createElement('div');
         $el.classList.add('download-loginfile');
 
@@ -70,8 +68,6 @@ class DownloadLoginFile extends Nimiq.Observable {
                 </g>
             </svg>
 
-            <p class="loginfile-description"></p>
-
             <div class="actions">
                 <span class="nq-label tap-and-hold" data-i18n="download-loginfile-tap-and-hold">
                     Tap and hold image
@@ -88,13 +84,6 @@ class DownloadLoginFile extends Nimiq.Observable {
             </div>
         `;
         /* eslint-enable max-len */
-
-        if (description) {
-            /** @type {HTMLParagraphElement} */
-            const $description = ($el.querySelector('.loginfile-description'));
-            $description.textContent = description;
-            $description.classList.add('visible');
-        }
 
         I18n.translateDom($el);
         return $el;

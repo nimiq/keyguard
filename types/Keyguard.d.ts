@@ -55,6 +55,13 @@ type ParsedBitcoinTransactionInput = {
     address: string,
 };
 
+interface PolygonUsdcApproval {
+    readonly approval: ethers.BigNumber, // amount to be approved
+    readonly sigR: string,
+    readonly sigS: string,
+    readonly sigV: ethers.BigNumber,
+}
+
 interface PolygonTransferArgs extends ReadonlyArray<any> {
     readonly token: string,
     readonly amount: ethers.BigNumber,
@@ -67,16 +74,7 @@ type PolygonTransferDescription = ethers.utils.TransactionDescription & {
     readonly args: PolygonTransferArgs,
 };
 
-interface PolygonTransferWithApprovalArgs extends ReadonlyArray<any> {
-    readonly token: string,
-    readonly amount: ethers.BigNumber,
-    readonly target: string,
-    readonly fee: ethers.BigNumber,
-    readonly approval: ethers.BigNumber,
-    readonly sigR: string,
-    readonly sigS: string,
-    readonly sigV: ethers.BigNumber,
-}
+interface PolygonTransferWithApprovalArgs extends PolygonTransferArgs, PolygonUsdcApproval {}
 
 type PolygonTransferWithApprovalDescription = ethers.utils.TransactionDescription & {
     readonly name: 'transferWithApproval',
@@ -99,20 +97,7 @@ type PolygonOpenDescription = ethers.utils.TransactionDescription & {
     readonly args: PolygonOpenArgs,
 };
 
-interface PolygonOpenWithApprovalArgs extends ReadonlyArray<any> {
-    readonly id: string,
-    readonly token: string,
-    readonly amount: ethers.BigNumber,
-    readonly refundAddress: string,
-    readonly recipientAddress: string,
-    readonly hash: string,
-    readonly timeout: ethers.BigNumber,
-    readonly fee: ethers.BigNumber,
-    readonly approval: ethers.BigNumber,
-    readonly sigR: string,
-    readonly sigS: string,
-    readonly sigV: ethers.BigNumber,
-}
+interface PolygonOpenWithApprovalArgs extends PolygonOpenArgs, PolygonUsdcApproval {}
 
 type PolygonOpenWithApprovalDescription = ethers.utils.TransactionDescription & {
     readonly name: 'openWithApproval',
@@ -197,11 +182,10 @@ type ConstructSwap<T extends KeyguardRequest.SignSwapRequestCommon> = Transform<
             locktime?: number;
             refundKeyPath: string,
             refundAddress: string,
-        } | (
-            { type: 'USDC' } & KeyguardRequest.PolygonTransactionInfo & {
-                description: PolygonOpenDescription | PolygonOpenWithApprovalDescription,
-            }
-        ) | {
+        } | Transform<KeyguardRequest.PolygonTransactionInfo, 'amount', {
+            type: 'USDC',
+            description: PolygonOpenDescription | PolygonOpenWithApprovalDescription,
+        }> | {
             type: 'EUR',
             amount: number,
             fee: number,
@@ -223,12 +207,11 @@ type ConstructSwap<T extends KeyguardRequest.SignSwapRequestCommon> = Transform<
                 keyPath: string,
             },
             output: KeyguardRequest.BitcoinTransactionChangeOutput,
-        } | (
-            { type: 'USDC' } & Omit<KeyguardRequest.PolygonTransactionInfo, 'approval'> & {
-                description: PolygonRedeemDescription | PolygonRedeemWithSecretInDataDescription,
-                amount: number,
-            }
-        ) | {
+        } | Transform<KeyguardRequest.PolygonTransactionInfo, 'amount' | 'approval', {
+            type: 'USDC',
+            description: PolygonRedeemDescription | PolygonRedeemWithSecretInDataDescription,
+            amount: number,
+        }> | {
             type: 'EUR',
             keyPath: string,
             // A SettlementInstruction contains a `type`, so cannot be in the

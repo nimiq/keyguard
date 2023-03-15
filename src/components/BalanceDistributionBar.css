@@ -29,7 +29,7 @@
     border-radius: 0.125rem;
 }
 
-.balance-distribution-bar .bar.bitcoin {
+.balance-distribution-bar .bar.btc {
     background-color: #F7931A; /* Bitcoin orange */
 }
 
