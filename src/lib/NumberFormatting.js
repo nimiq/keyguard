@@ -12,17 +12,11 @@ class NumberFormatting { // eslint-disable-line no-unused-vars
         const roundingFactor = 10 ** maxDecimals;
         value = Math.round(value * roundingFactor) / roundingFactor;
 
-        let result = parseFloat(value.toFixed(minDecimals)) === value
-            ? value.toFixed(minDecimals)
-            : value.toFixed(maxDecimals);
+        let result = value.toFixed(maxDecimals);
 
         // Remove trailing zeros until minDecimals has been reached
-        while (result.split('.')[1] && result.split('.')[1].length > minDecimals) {
-            if (result[result.length - 1] === '0') {
-                result = result.substring(0, result.length - 1);
-            } else {
-                break;
-            }
+        while (result.split('.')[1] && result.split('.')[1].length > minDecimals && result[result.length - 1] === '0') {
+            result = result.replace(/\.?0$/, '');
         }
 
         if (Math.abs(value) < 10000) return result;
