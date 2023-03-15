@@ -172,7 +172,7 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
         parsedRequest.layout = this.parseLayout(request.layout);
 
         if (request.layout === SignSwapApi.Layouts.SLIDER && parsedRequest.layout === SignSwapApi.Layouts.SLIDER) {
-            // SLIDER layout is only allowed for NIM-BTC swaps
+            // SLIDER layout is only allowed for crypto-to-crypto swaps
             const assets = ['NIM', 'BTC', 'USDC'];
             if (!assets.includes(parsedRequest.fund.type) || !assets.includes(parsedRequest.redeem.type)) {
                 throw new Errors.InvalidRequestError(
@@ -189,9 +189,9 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
             parsedRequest.bitcoinAccount = {
                 balance: this.parsePositiveInteger(request.bitcoinAccount.balance, true, 'bitcoinAccount.balance'),
             };
-            parsedRequest.polygonAddresses = request.polygonAddresses.map((address, index) => ({
-                address: this.parsePolygonAddress(address.address, `polygonAddresses[${index}].address`),
-                balance: this.parsePositiveInteger(address.balance, true, `polygonAddresses[${index}].balance`),
+            parsedRequest.polygonAddresses = request.polygonAddresses.map(({ address, balance }, index) => ({
+                address: this.parsePolygonAddress(address, `polygonAddresses[${index}].address`),
+                balance: this.parsePositiveInteger(balance, true, `polygonAddresses[${index}].balance`),
             }));
 
             const nimAddress = parsedRequest.fund.type === 'NIM'
@@ -272,7 +272,7 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
     /**
      *
      * @param {KeyguardRequest.PolygonTransactionInfo} request
-     * @param {string[]} allowedMethods
+     * @param {Array<'open' | 'openWithApproval' | 'redeem' | 'redeemWithSecretInData'>} allowedMethods
      * @returns {PolygonOpenDescription
      *     | PolygonOpenWithApprovalDescription
      *     | PolygonRedeemDescription

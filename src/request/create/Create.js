@@ -85,12 +85,12 @@ class Create {
         this._downloadLoginFile = new DownloadLoginFile($downloadLoginFile);
 
         // Generate key
-        this._selectedEntropy = Nimiq.Entropy.generate();
-        const masterKey = this._selectedEntropy.toExtendedPrivateKey();
+        this._entropy = Nimiq.Entropy.generate();
+        const masterKey = this._entropy.toExtendedPrivateKey();
         const extPrivKey = masterKey.derivePath(request.defaultKeyPath);
-        this._selectedAddress = extPrivKey.toAddress().toUserFriendlyAddress();
+        const address = extPrivKey.toAddress().toUserFriendlyAddress();
 
-        const colorIndex = IqonHash.getBackgroundColorIndex(this._selectedAddress);
+        const colorIndex = IqonHash.getBackgroundColorIndex(address);
         $loginFilePreviewImage.classList.add(LoginFileConfig[colorIndex].className);
 
         // Wire up logic
@@ -117,7 +117,7 @@ class Create {
             this._password = password;
 
             // Set up LoginFile
-            const key = new Key(this._selectedEntropy);
+            const key = new Key(this._entropy);
             const passwordBuffer = Utf8Tools.stringToUtf8ByteArray(password);
             const encryptedSecret = await key.secret.exportEncrypted(passwordBuffer);
 
@@ -158,7 +158,7 @@ class Create {
      */
     async finish(request) {
         TopLevelApi.setLoading(true);
-        const key = new Key(this._selectedEntropy);
+        const key = new Key(this._entropy);
         const password = this._password.length > 0 ? Utf8Tools.stringToUtf8ByteArray(this._password) : undefined;
         await KeyStore.instance.put(key, password);
 

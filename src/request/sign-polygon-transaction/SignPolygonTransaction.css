@@ -3,16 +3,6 @@
     overflow: hidden;
 }
 
-#confirm-transaction.standard .hide-standard,
-#confirm-transaction.checkout .hide-checkout,
-#confirm-transaction.cashlink .hide-cashlink {
-    display: none;
-}
-
-#confirm-transaction .payment-info-line + .nq-card-header {
-    padding-top: 2rem;
-}
-
 #confirm-transaction .nq-card-body {
     padding-bottom: 2rem;
 }
@@ -22,26 +12,13 @@
     flex-direction: column;
 }
 
-#confirm-transaction .value-fee-data {
+#confirm-transaction .value-fee {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     flex-grow: 1;
 }
-
-/* #confirm-transaction #effect-container {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    border-radius: 1rem;
-    flex-grow: 1;
-}
-
-#confirm-transaction > #effect-container > * {
-    transition: filter .4s, opacity .4s;
-    opacity: 1;
-} */
 
 #confirm-transaction .accounts {
     flex-direction: row;
@@ -80,11 +57,4 @@
 #confirm-transaction .fee-section {
     opacity: 0.5;
     margin-bottom: 0.25rem;
-}
-
-#confirm-transaction .data-section {
-    margin: 1rem 3rem;
-    text-align: center;
-    max-width: 100%;
-    overflow-wrap: break-word;
 }

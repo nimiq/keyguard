@@ -49,7 +49,7 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
     /**
      *
      * @param {KeyguardRequest.PolygonTransactionInfo} request
-     * @param {string[]} allowedMethods
+     * @param {Array<'transfer' | 'transferWithApproval' | 'refund'>} allowedMethods
      * @returns {PolygonTransferDescription | PolygonTransferWithApprovalDescription | PolygonRefundDescription}
      */
     parseOpenGsnForwardRequest(request, allowedMethods) {
