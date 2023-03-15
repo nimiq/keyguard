@@ -1,10 +1,11 @@
 /* global BitcoinRequestParserMixin */
+/* global PolygonRequestParserMixin */
 /* global TopLevelApi */
 /* global ImportFile */
 /* global ImportWords */
 /* global Errors */
 
-class ImportApi extends BitcoinRequestParserMixin(TopLevelApi) {
+class ImportApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(TopLevelApi)) {
     /**
      * @param {KeyguardRequest.ImportRequest | KeyguardRequest.ResetPasswordRequest} request
      * @returns {Promise<Parsed<KeyguardRequest.ImportRequest | KeyguardRequest.ResetPasswordRequest>>}
@@ -24,7 +25,7 @@ class ImportApi extends BitcoinRequestParserMixin(TopLevelApi) {
             parsedRequest.expectedKeyId = (await this.parseKeyId(request.expectedKeyId)).id;
         }
         parsedRequest.bitcoinXPubPath = this.parseBitcoinPath(request.bitcoinXPubPath, 'bitcoinXPubPath');
-        parsedRequest.polygonAccountPath = this.parsePath(request.polygonAccountPath, 'polygonAccountPath');
+        parsedRequest.polygonAccountPath = this.parsePolygonPath(request.polygonAccountPath, 'polygonAccountPath');
 
         this._handler = parsedRequest.wordsOnly ? ImportWords : ImportFile;
 
