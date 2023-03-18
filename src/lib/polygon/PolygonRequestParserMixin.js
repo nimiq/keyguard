@@ -113,7 +113,7 @@ function PolygonRequestParserMixin(clazz) { // eslint-disable-line no-unused-var
          * @returns {string}
          */
         parseHexString(value, name) {
-            if (typeof value !== 'string' || !/^0x(?:[\da-f]{2})*$/i.test(value)) {
+            if (typeof value !== 'string' || !ethers.utils.isHexString(value)) {
                 throw new Errors.InvalidRequestError(`${name} must be a hex string`);
             }
             return value;
