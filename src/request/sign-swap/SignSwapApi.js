@@ -323,8 +323,8 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
 
         // Check that approval object exists when method is 'openWithApproval', and unset for other methods.
         if ((description.name === 'openWithApproval') !== !!request.approval) {
-            throw new Errors.InvalidRequestError('`approval` object required for openWithApproval method and ignored '
-                + 'for other methods');
+            throw new Errors.InvalidRequestError('`approval` object is only allowed for contract method '
+                + '"openWithApproval"');
         }
 
         return description;
