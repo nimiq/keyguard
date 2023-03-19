@@ -42,36 +42,33 @@ class FiatApi {
 }
 
 /**
- * @readonly
  * @enum { 'CoinGecko' }
  * Supported API providers.
  */
-FiatApi.SupportedProvider = {
+FiatApi.SupportedProvider = Object.freeze({
     CoinGecko: /** @type {'CoinGecko'} */ ('CoinGecko'),
-};
+});
 
 /**
- * @readonly
  * @type {FiatApi.SupportedProvider}
  * The effective provider used by the FiatApi. As this is not meant to be changeable at runtime, all code for other
  * providers can be commented out, to avoid type confusion.
  */
 FiatApi.Provider = FiatApi.SupportedProvider.CoinGecko;
 
-switch (FiatApi.Provider) { // eslint-disable-line default-case, -- no default to let ts warn us on missing providers
-    case FiatApi.SupportedProvider.CoinGecko: {
+// switch (FiatApi.Provider) { // eslint-disable-line default-case, -- no default to let ts warn us on missing providers
+//     case FiatApi.SupportedProvider.CoinGecko: {
+/* eslint-disable indent */
         /**
-         * @readonly
          * @enum { 'nim' | 'btc' }
          * Crypto currencies supported by the coingecko api that are currently of interest to us.
          */
-        FiatApi.SupportedCryptoCurrency = {
+        FiatApi.SupportedCryptoCurrency = Object.freeze({
             NIM: /** @type {'nim'} */ ('nim'),
             BTC: /** @type {'btc'} */ ('btc'),
-        };
+        });
 
         /**
-         * @readonly
          * @enum {'aed' | 'ars' | 'aud' | 'bdt' | 'bhd' | 'bmd' | 'brl' | 'cad' | 'chf' | 'clp' | 'cny' | 'czk' | 'dkk'
          *     | 'eur' | 'gbp' | 'gel' | 'hkd' | 'huf' | 'idr' | 'ils' | 'inr' | 'jpy' | 'krw' | 'kwd' | 'lkr' | 'mmk'
          *     | 'mxn' | 'myr' | 'ngn' | 'nok' | 'nzd' | 'php' | 'pkr' | 'pln' | 'rub' | 'sar' | 'sek' | 'sgd' | 'thb'
@@ -81,7 +78,7 @@ switch (FiatApi.Provider) { // eslint-disable-line default-case, -- no default t
          * ounces of gold amongst others that are not fiat currencies. See FiatApi in @nimiq/utils for how this list was
          * assembled.
          */
-        FiatApi.SupportedFiatCurrency = {
+        FiatApi.SupportedFiatCurrency = Object.freeze({
             AED: /** @type {'aed'} */ ('aed'), // Arab Emirates Dirham
             ARS: /** @type {'ars'} */ ('ars'), // Argentine Peso
             AUD: /** @type {'aud'} */ ('aud'), // Australian Dollar
@@ -128,23 +125,22 @@ switch (FiatApi.Provider) { // eslint-disable-line default-case, -- no default t
             // VEF: /** @type {'vef'} */ ('vef'), // Retired Venezuelan Bolívar Fuerte replaced by VES. Rates are off.
             VND: /** @type {'vnd'} */ ('vnd'), // Vietnamese Đồng
             ZAR: /** @type {'zar'} */ ('zar'), // South African Rand
-        };
+        });
 
         /**
-         * @readonly
          * Coingecko api url. Note that the origin must be whitelisted in the csp.
          */
         FiatApi.API_URL = 'https://api.coingecko.com/api/v3';
 
         /**
-         * @readonly
          * Crypto currency tickers mapped to coingecko coin ids.
          */
-        FiatApi.COINGECKO_COIN_IDS = {
+        FiatApi.COINGECKO_COIN_IDS = Object.freeze({
             [FiatApi.SupportedCryptoCurrency.NIM]: 'nimiq-2',
             [FiatApi.SupportedCryptoCurrency.BTC]: 'bitcoin',
-        };
+        });
 
-        break;
-    }
-}
+/* eslint-enable indent */
+//         break;
+//     }
+// }

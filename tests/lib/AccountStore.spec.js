@@ -12,7 +12,7 @@ describe('AccountStore', () => {
     });
 
     it('can open and close a connection', async () => {
-        const db = /** @type {IDBDatabase} */ (await AccountStore.instance.connect());
+        const db = /** @type {IDBDatabase} */ (await AccountStore.instance['connect']());
         expect(db.constructor).toBe(IDBDatabase);
         expect(AccountStore.instance._dbPromise).toBeTruthy();
         expect(db.name).toBe(Dummy.DUMMY_ACCOUNT_DATABASE_NAME);
@@ -43,7 +43,7 @@ describe('AccountStore', () => {
     it('can be dropped', async function () {
         await AccountStore.instance.drop();
         // database should not exist anymore
-        const db = await AccountStore.instance.connect();
+        const db = await AccountStore.instance['connect']();
         expect(db).toBeNull();
     });
 

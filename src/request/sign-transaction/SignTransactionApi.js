@@ -92,10 +92,9 @@ class SignTransactionApi extends TopLevelApi {
 
 /**
  * @enum {KeyguardRequest.SignTransactionRequestLayout}
- * @readonly
  */
-SignTransactionApi.Layouts = {
+SignTransactionApi.Layouts = Object.freeze({
     STANDARD: /** @type {'standard'} */ ('standard'),
     CHECKOUT: /** @type {'checkout'} */ ('checkout'),
     CASHLINK: /** @type {'cashlink'} */ ('cashlink'),
-};
+});

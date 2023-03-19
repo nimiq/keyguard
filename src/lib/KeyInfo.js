@@ -23,7 +23,6 @@ class KeyInfo {
         /**
          * @description Used for distinguishing pre-migration accountInfo from regular keyInfo
          * @type {boolean}
-         * @private
          */
         this.useLegacyStore = false;
     }

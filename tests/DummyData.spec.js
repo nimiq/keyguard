@@ -193,7 +193,7 @@ const Utils = {
     /** @returns {Promise<void>} */
     createDummyKeyStore: async () => {
         // The key store can be created and filled by its api
-        await KeyStore.instance.connect();
+        await KeyStore.instance['connect']();
         await Promise.all([
             KeyStore.instance.putPlain(keyRecords()[0]),
             KeyStore.instance.putPlain(keyRecords()[1]),
@@ -228,7 +228,7 @@ const Utils = {
     deleteDummyKeyStore: async () => {
         await KeyStore.instance.close();
         await Utils.deleteDatabase(DUMMY_KEY_DATABASE_NAME);
-        delete KeyStore._instance;
+        KeyStore._instance = null;
     },
 };
 

@@ -14,7 +14,7 @@ describe('KeyStore', () => {
     });
 
     it('can open and close a connection', async () => {
-        const db = await KeyStore.instance.connect();
+        const db = await KeyStore.instance['connect']();
         expect(db.constructor).toBe(IDBDatabase);
         expect(KeyStore.instance._dbPromise).toBeTruthy();
         expect(db.name).toBe(Dummy.DUMMY_KEY_DATABASE_NAME);
@@ -24,8 +24,8 @@ describe('KeyStore', () => {
 
     it('can get plain keys', async () => {
         const [key1, key2] = await Promise.all([
-            KeyStore.instance._get(Dummy.keyInfos()[0].id),
-            KeyStore.instance._get(Dummy.keyInfos()[1].id),
+            KeyStore.instance['_get'](Dummy.keyInfos()[0].id),
+            KeyStore.instance['_get'](Dummy.keyInfos()[1].id),
         ]);
         expect(key1).toEqual(Dummy.keyRecords()[0]);
         expect(key2).toEqual(Dummy.keyRecords()[1]);
@@ -66,8 +66,8 @@ describe('KeyStore', () => {
 
         // check that we can't get a removed key by address
         const removedKeys = await Promise.all([
-            KeyStore.instance._get(Dummy.keyInfos()[0].id),
-            KeyStore.instance._get(Dummy.keyInfos()[1].id),
+            KeyStore.instance['_get'](Dummy.keyInfos()[0].id),
+            KeyStore.instance['_get'](Dummy.keyInfos()[1].id),
         ]);
         expect(removedKeys[0]).toBeUndefined();
         expect(removedKeys[1]).toBeUndefined();
@@ -114,7 +114,7 @@ describe('KeyStore', () => {
             Dummy.Utils.createDummyAccountStore(),
         ]);
 
-        const accountsDbBefore = await AccountStore.instance.connect();
+        const accountsDbBefore = await AccountStore.instance['connect']();
         expect(accountsDbBefore).not.toBe(null);
 
         spyOn(BrowserDetection, 'isIOS').and.returnValue(false);
@@ -127,10 +127,10 @@ describe('KeyStore', () => {
         await KeyStore.instance.migrateAccountsToKeys();
 
         expect(cookieSet).toBe(false);
-        const key1 = await KeyStore.instance._get(Dummy.keyInfos()[1].id);
+        const key1 = await KeyStore.instance['_get'](Dummy.keyInfos()[1].id);
         expect(key1).toEqual(Dummy.keyRecords()[1]);
 
-        const accountsDbAfter = await AccountStore.instance.connect();
+        const accountsDbAfter = await AccountStore.instance['connect']();
         expect(accountsDbAfter).toBe(null);
 
         await Dummy.Utils.deleteDummyAccountStore();
@@ -143,7 +143,7 @@ describe('KeyStore', () => {
             Dummy.Utils.createDummyAccountStore(),
         ]);
 
-        const accountsDbBefore = await AccountStore.instance.connect();
+        const accountsDbBefore = await AccountStore.instance['connect']();
         expect(accountsDbBefore).not.toBe(null);
 
         spyOn(BrowserDetection, 'isIOS').and.returnValue(true);
@@ -163,10 +163,10 @@ describe('KeyStore', () => {
         await KeyStore.instance.migrateAccountsToKeys();
 
         expect(migrationCookieDeleted && accountsCookieDeleted).toBe(true);
-        const key1 = await KeyStore.instance._get(Dummy.keyInfos()[1].id);
+        const key1 = await KeyStore.instance['_get'](Dummy.keyInfos()[1].id);
         expect(key1).toEqual(Dummy.keyRecords()[1]);
 
-        const accountsDb = await AccountStore.instance.connect();
+        const accountsDb = await AccountStore.instance['connect']();
         expect(accountsDb).toBe(null);
 
         await Dummy.Utils.deleteDummyAccountStore();
