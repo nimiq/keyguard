@@ -189,7 +189,7 @@ class RequestParser { // eslint-disable-line no-unused-vars
                 flags,
                 data,
                 undefined,
-                6,
+                5,
             );
         } catch (error) {
             throw new Errors.InvalidRequestError(error instanceof Error ? error : String(error));
