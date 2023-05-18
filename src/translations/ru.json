@@ -231,7 +231,6 @@
     "derive-polygon-address-text": "USDC is a stablecoin pegged to USD and now available in the wallet.",
 
     "sign-swap-heading": "Подтвердить обмен",
-    "sign-swap-exchange-rate-tooltip": "Эта ставка включает в \nсебя комиссию за обмен.",
     "sign-swap-fees": "комиссии",
     "sign-swap-btc-fees": "Комиссия сети BTC",
     "sign-swap-btc-fees-explainer": " Обмен выполняется в 2 транзакции BTC.",
@@ -244,5 +243,6 @@
     "sign-swap-exchange-fee": "Комиссия",
     "sign-swap-of-exchange-value": "от суммы обмена.",
     "sign-swap-total-fees": "Итого",
+    "sign-swap-exchange-rate": "Exchange rate",
     "sign-swap-your-bank": "Ваш банк"
 }

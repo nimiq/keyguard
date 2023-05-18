@@ -231,7 +231,6 @@
     "derive-polygon-address-text": "L'USDC est un stablecoin rattaché au Dollar et est maintenant disponible dans le portefeuille.",
 
     "sign-swap-heading": "Confirmer le swap",
-    "sign-swap-exchange-rate-tooltip": "Ce taux inclut les frais de swap.",
     "sign-swap-fees": "frais",
     "sign-swap-btc-fees": "Frais de réseau BTC",
     "sign-swap-btc-fees-explainer": "Un swap atomique nécessite 2 transactions BTC.",
@@ -244,5 +243,6 @@
     "sign-swap-exchange-fee": "Frais de swap",
     "sign-swap-of-exchange-value": "de la valeur du swap.",
     "sign-swap-total-fees": "Total des frais",
+    "sign-swap-exchange-rate": "Exchange rate",
     "sign-swap-your-bank": "Votre banque"
 }

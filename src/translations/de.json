@@ -231,7 +231,6 @@
     "derive-polygon-address-text": "USDC ist ein Stablecoin, der an den USD gekoppelt ist und jetzt in deiner Wallet verfügbar ist.",
 
     "sign-swap-heading": "Tausch Bestätigen",
-    "sign-swap-exchange-rate-tooltip": "Dieser Kurs beinhaltet die Tauschgebühren.",
     "sign-swap-fees": "Gebühren",
     "sign-swap-btc-fees": "BTC Netzwerkgebühr",
     "sign-swap-btc-fees-explainer": "Ein sicherer Tausch benötigt zwei BTC Transaktionen.",
@@ -244,5 +243,6 @@
     "sign-swap-exchange-fee": "Tauschgebühr",
     "sign-swap-of-exchange-value": "des Tauschwerts.",
     "sign-swap-total-fees": "Gebühren gesamt",
+    "sign-swap-exchange-rate": "Tauschgebühr",
     "sign-swap-your-bank": "Deine Bank"
 }

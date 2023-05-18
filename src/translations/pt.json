@@ -231,7 +231,6 @@
     "derive-polygon-address-text": "A USDC é uma moeda estável ligada ao USD e agora disponível na carteira.",
 
     "sign-swap-heading": "Confirmar Troca",
-    "sign-swap-exchange-rate-tooltip": "Esta taxa incluí a taxa de troca.",
     "sign-swap-fees": "taxas",
     "sign-swap-btc-fees": "taxa de rede BTC",
     "sign-swap-btc-fees-explainer": "As trocas atómicas exigem duas transações de BTC.",
@@ -244,5 +243,6 @@
     "sign-swap-exchange-fee": "taxa de troca",
     "sign-swap-of-exchange-value": "de troca de valor",
     "sign-swap-total-fees": "Taxas totais",
+    "sign-swap-exchange-rate": "Exchange rate",
     "sign-swap-your-bank": "O seu banco"
 }

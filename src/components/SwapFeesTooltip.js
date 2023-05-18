@@ -12,8 +12,9 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
      * @param {Parsed<KeyguardRequest.SignSwapRequest>} request
      * @param {number} exchangeFromAmount - In Luna or Satoshi, depending on which currency is funded
      * @param {number} exchangeToAmount - In Luna or Satoshi, depending on which currency is funded
+     * @param {string} exchangeRateString - The exchange rate between the two currencies
      */
-    constructor(request, exchangeFromAmount, exchangeToAmount) {
+    constructor(request, exchangeFromAmount, exchangeToAmount, exchangeRateString) {
         const {
             fund: fundTx,
             redeem: redeemTx,
@@ -154,6 +155,9 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
 
         // Add total line
         this.$tooltip.appendChild(this._createTotalLine(totalFiatFees, fiatCurrency)[0]);
+
+        // Add exchange rate
+        this.$tooltip.appendChild(this._createExchangeRateLine(exchangeRateString)[0]);
 
         // Write total into the pill box
         this.$fees.textContent = NumberFormatting.formatCurrency(totalFiatFees, fiatCurrency);
@@ -336,6 +340,23 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
         $div.innerHTML = TemplateTags.hasVars(1)`
             <label data-i18n="sign-swap-total-fees">Total fees</label>
             <div class="total-fees">${NumberFormatting.formatCurrency(totalFiatFees, fiatCurrency)}</div>
+        `;
+        I18n.translateDom($div);
+
+        return [$div];
+    }
+
+    /**
+     * @param {string} exchangeRateString
+     * @returns {[HTMLDivElement]}
+     */
+    _createExchangeRateLine(exchangeRateString) {
+        const $div = document.createElement('div');
+        $div.classList.add('full-width');
+
+        $div.innerHTML = TemplateTags.hasVars(1)`
+        <div class="exchange-rate">${exchangeRateString}</div>
+        <p class="explainer" data-i18n="sign-swap-exchange-rate">Exchange rate</p>
         `;
         I18n.translateDom($div);
 

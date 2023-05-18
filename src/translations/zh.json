@@ -231,7 +231,6 @@
     "derive-polygon-address-text": "USDC是一种与美元挂钩的稳定币，现在可在钱包中使用。",
 
     "sign-swap-heading": "确认交换",
-    "sign-swap-exchange-rate-tooltip": "此价格包括交换费用",
     "sign-swap-fees": "费用",
     "sign-swap-btc-fees": "BTC网络费",
     "sign-swap-btc-fees-explainer": "原子交换需要进行两次比特币交易",
@@ -244,5 +243,6 @@
     "sign-swap-exchange-fee": "交换费用",
     "sign-swap-of-exchange-value": "交换价值",
     "sign-swap-total-fees": "总费用",
+    "sign-swap-exchange-rate": "Exchange rate",
     "sign-swap-your-bank": "你的银行"
 }

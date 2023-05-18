@@ -231,7 +231,6 @@
     "derive-polygon-address-text": "USDC is a stablecoin pegged to USD and now available in the wallet.",
 
     "sign-swap-heading": "Confirm Swap",
-    "sign-swap-exchange-rate-tooltip": "This rate includes the swap fee.",
     "sign-swap-fees": "fees",
     "sign-swap-btc-fees": "BTC network fee",
     "sign-swap-btc-fees-explainer": "Atomic swaps require two BTC transactions.",
@@ -244,5 +243,6 @@
     "sign-swap-exchange-fee": "Swap fee",
     "sign-swap-of-exchange-value": "of swap value.",
     "sign-swap-total-fees": "Total fees",
+    "sign-swap-exchange-rate": "Exchange rate",
     "sign-swap-your-bank": "Your bank"
 }

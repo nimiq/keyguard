@@ -60,8 +60,6 @@ class SignSwap {
         this.$el.classList.add(`layout-${request.layout}`);
 
         /** @type {HTMLDivElement} */
-        const $exchangeRate = (this.$el.querySelector('#exchange-rate'));
-        /** @type {HTMLDivElement} */
         const $leftAccount = (this.$el.querySelector('.left-account'));
         /** @type {HTMLDivElement} */
         const $rightAccount = (this.$el.querySelector('.right-account'));
@@ -255,7 +253,7 @@ class SignSwap {
             0,
             this._assetDecimals(exchangeOtherAsset) - exchangeRateDigitsLength,
         );
-        $exchangeRate.textContent = `1 ${exchangeBaseAsset} = ${NumberFormatting.formatNumber(
+        const exchangeRateString = `1 ${exchangeBaseAsset} = ${NumberFormatting.formatNumber(
             exchangeRate,
             exchangeRateDecimals,
             exchangeOtherAsset === 'EUR' ? this._assetDecimals(exchangeOtherAsset) : 0,
@@ -268,6 +266,7 @@ class SignSwap {
                 request,
                 fundTx.type === exchangeBaseAsset ? exchangeBaseValue : exchangeOtherValue,
                 fundTx.type === exchangeBaseAsset ? exchangeOtherValue : exchangeBaseValue,
+                exchangeRateString,
             ).$el,
         );
 

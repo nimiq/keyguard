@@ -231,7 +231,6 @@
     "derive-polygon-address-text": "USDC es una moneda estable fijada al precio del USD y ahora esta disponible en la billetera.",
 
     "sign-swap-heading": "Confirmar Intercambio",
-    "sign-swap-exchange-rate-tooltip": "La taza de cambio incluye cuotas de intercambio.",
     "sign-swap-fees": "cuotas",
     "sign-swap-btc-fees": "Cuota de red de BTC",
     "sign-swap-btc-fees-explainer": "Los intercambios atómicos requieren dos transacciones BTC.",
@@ -244,5 +243,6 @@
     "sign-swap-exchange-fee": "Cuotas de intercambio",
     "sign-swap-of-exchange-value": "del valor del intercambio.",
     "sign-swap-total-fees": "Cuotas totales",
+    "sign-swap-exchange-rate": "Exchange rate",
     "sign-swap-your-bank": "Su banco"
 }
