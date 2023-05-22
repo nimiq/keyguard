@@ -56,6 +56,7 @@
     <link rel="stylesheet" bundle-toplevel href="../../components/PasswordInput.css">
     <link rel="stylesheet" bundle-toplevel href="../../components/PasswordBox.css">
 
+    <link rel="stylesheet" href="../../components/Tooltip.css">
     <link rel="stylesheet" href="../../components/LoginFileAccountIcon.css">
     <link rel="stylesheet" href="Connect.css">
 </head>
@@ -87,10 +88,24 @@
 
                 <div class="flex-grow"></div>
 
-                <p class="bottom-explainer">
+                <div class="bottom-explainer">
                     The connection is for approving only.<br>
                     Your funds remain unaffected.
-                </p>
+                    <div class="tooltip top" tabindex="0">
+                        <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-info-circle-small"/></svg>
+                        <div class="tooltip-box">
+                            <p data-i18n="connect-tooltip-multisig-1">
+                                Your account will be used to verify your identity only.
+                            </p>
+                            <p data-i18n="connect-tooltip-multisig-2">
+                                The shared wallet has its own address. It can receive transactions from anywhere just like a regular wallet.
+                            </p>
+                            <p data-i18n="connect-tooltip-multisig-3">
+                                The first address of your account will be visible to all participants in your shared wallet.
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="page-footer nq-card-footer">
