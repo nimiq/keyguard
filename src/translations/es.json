@@ -255,5 +255,8 @@
     "sign-swap-exchange-rate": "Tasa de cambio",
     "sign-swap-your-bank": "Su banco",
 
-    "connect-heading-prefix": "Log in to"
+    "connect-heading-prefix": "Log in to",
+    "connect-tooltip-multisig-1": "Your account will be used to verify your identity only.",
+    "connect-tooltip-multisig-2": "The shared wallet has its own address. It can receive transactions from anywhere just like a regular wallet.",
+    "connect-tooltip-multisig-3": "The first address of your account will be visible to all participants in your shared wallet."
 }
