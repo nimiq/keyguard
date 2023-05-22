@@ -48,6 +48,32 @@
     line-height: 1.375;
 }
 
+.tooltip {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.tooltip .nq-icon {
+    display: block;
+    opacity: 0.3;
+}
+
+.tooltip-box {
+    width: 28rem;
+    text-align: left;
+    right: -2.5rem;
+}
+
+.tooltip-box p {
+    margin: 0;
+    font-size: 2rem;
+    line-height: 1.3;
+}
+
+.tooltip-box p + p {
+    margin-top: 1rem;
+}
+
 .password-box {
     margin-top: 1rem;
 }
