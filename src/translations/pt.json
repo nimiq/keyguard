@@ -68,6 +68,11 @@
     "sign-tx-fee": "taxa",
     "sign-tx-cancel-payment": "Cancelar pagamento",
 
+    "sign-multisig-tx-heading-tx": "Approve Multisig Transaction",
+    "sign-multisig-tx-approving-as": "Approving as",
+    "sign-multisig-tx-with": "with",
+    "sign-multisig-tx-approving-with": "Approving with",
+
     "sign-msg-heading": "Assinar Mensagem",
     "sign-msg-signer": "Signatário",
 
