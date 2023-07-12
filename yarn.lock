@@ -392,6 +392,13 @@
     "@ethersproject/properties" "^5.7.0"
     "@ethersproject/strings" "^5.7.0"
 
+"@nimiq/albatross-wasm@npm:@nimiq/core-web@next":
+  version "2.0.0-alpha.12"
+  resolved "https://registry.yarnpkg.com/@nimiq/core-web/-/core-web-2.0.0-alpha.12.tgz#a44d128b3f57202b0ca4007bb8312dc85e00fa31"
+  integrity sha512-i8HY4QC7q5qKLzhsRD04CCC2QCjs7TZyj0LGqA1r5dEuAgocmYi0BYYgmsmmZaJ4zMWJxU69EyqfRF3BCkgCjw==
+  dependencies:
+    comlink "^4.4.1"
+
 "@nimiq/core-web@1.5.8":
   version "1.5.8"
   resolved "https://registry.yarnpkg.com/@nimiq/core-web/-/core-web-1.5.8.tgz#da8abef84c6d293cbb9ca495a77f08daa08886b9"
@@ -1416,6 +1423,11 @@ combined-stream@^1.0.6, combined-stream@~1.0.6:
   integrity sha512-FQN4MRfuJeHf7cBbBMJFXhKSDq+2kAArBlmRBvcvFE5BB1HZKXtSFASDhdlz9zOYwxh8lDdnvmMOe/+5cdoEdg==
   dependencies:
     delayed-stream "~1.0.0"
+
+comlink@^4.4.1:
+  version "4.4.1"
+  resolved "https://registry.yarnpkg.com/comlink/-/comlink-4.4.1.tgz#e568b8e86410b809e8600eb2cf40c189371ef981"
+  integrity sha512-+1dlx0aY5Jo1vHy/tSsIGpSkN4tS9rZSW8FIhG0JH/crs9wwweswIo/POr451r7bZww3hFbPAKnTpimzL/mm4Q==
 
 commander@^2.20.0:
   version "2.20.3"
