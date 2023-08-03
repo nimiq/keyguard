@@ -43,7 +43,7 @@ class SignStakingApi extends TopLevelApi {
                 isSignalling = type === SignStakingApi.IncomingStakingType.UPDATE_STAKER;
                 break;
             }
-            case SignStakingApi.IncomingStakingType.STAKE: {
+            case SignStakingApi.IncomingStakingType.ADD_STAKE: {
                 const sender = this.parseAddress(request.sender, 'sender');
                 const data = new Nimiq.SerialBuffer(
                     1 // Data type
@@ -52,6 +52,23 @@ class SignStakingApi extends TopLevelApi {
                 data.writeUint8(type);
                 data.write(sender.serialize());
                 request.data = data;
+                break;
+            }
+            case SignStakingApi.IncomingStakingType.SET_INACTIVE_STAKE: {
+                parsedRequest.newInactiveBalance = this.parseNonNegativeFiniteNumber(
+                    request.newInactiveBalance,
+                    false,
+                    'newInactiveBalance',
+                );
+                const data = new Nimiq.SerialBuffer(
+                    1 // Data type
+                    + 8 // u64 size
+                    + Nimiq.SignatureProof.SINGLE_SIG_SIZE, // Staker signature
+                );
+                data.writeUint8(type);
+                data.writeUint64(/** @type {number} */ (parsedRequest.newInactiveBalance));
+                request.data = data;
+                isSignalling = true;
                 break;
             }
             case SignStakingApi.IncomingStakingType.UNSTAKE: {
@@ -83,7 +100,7 @@ class SignStakingApi extends TopLevelApi {
         if (!type || typeof type !== 'number') {
             throw new Errors.InvalidRequestError('Staking type must be a number');
         }
-        if (Object.values(SignStakingApi.IncomingStakingType).indexOf(type) === -1) {
+        if (!Object.values(SignStakingApi.IncomingStakingType).includes(type)) {
             throw new Errors.InvalidRequestError('Invalid staking type');
         }
         return type;
@@ -98,6 +115,7 @@ SignStakingApi.IncomingStakingType = {
     UNSTAKE: 1,
 
     CREATE_STAKER: 5,
-    STAKE: 6,
+    ADD_STAKE: 6,
     UPDATE_STAKER: 7,
+    SET_INACTIVE_STAKE: 8,
 };
