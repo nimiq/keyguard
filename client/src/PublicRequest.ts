@@ -192,6 +192,7 @@ export type SignStakingRequest = SignTransactionRequestCommon & {
     type: number, // See SignStakingApi for types
     recipientLabel?: string,
     delegation?: string,
+    newInactiveBalance?: number,
 };
 
 export type SignBtcTransactionRequestStandard = SimpleRequest & BitcoinTransactionInfo & {

@@ -169,7 +169,7 @@ class SignStaking {
                     request.transaction.networkId,
                 );
                 break;
-            case SignStakingApi.IncomingStakingType.STAKE:
+            case SignStakingApi.IncomingStakingType.ADD_STAKE:
                 tx = Albatross.TransactionBuilder.newStake(
                     keyPair.toAddress(),
                     keyPair.toAddress(),
@@ -183,6 +183,15 @@ class SignStaking {
                 tx = Albatross.TransactionBuilder.newUpdateStaker(
                     keyPair.toAddress(),
                     Albatross.Address.fromString(/** @type {Nimiq.Address} */ (request.delegation).toHex()),
+                    BigInt(request.transaction.fee),
+                    request.transaction.validityStartHeight,
+                    request.transaction.networkId,
+                );
+                break;
+            case SignStakingApi.IncomingStakingType.SET_INACTIVE_STAKE:
+                tx = Albatross.TransactionBuilder.newSetInactiveStake(
+                    keyPair.toAddress(),
+                    BigInt(request.newInactiveBalance),
                     BigInt(request.transaction.fee),
                     request.transaction.validityStartHeight,
                     request.transaction.networkId,
@@ -248,9 +257,13 @@ class SignStaking {
                 }
                 return text;
             }
-            case SignStakingApi.IncomingStakingType.STAKE: {
+            case SignStakingApi.IncomingStakingType.ADD_STAKE: {
                 const staker = Nimiq.Address.unserialize(buf);
                 return `Add stake for ${staker.toUserFriendlyAddress()}`;
+            }
+            case SignStakingApi.IncomingStakingType.SET_INACTIVE_STAKE: {
+                const inactiveBalance = buf.readUint64();
+                return `Set inactive stake to ${inactiveBalance / 1e5} NIM`;
             }
             default: return Nimiq.BufferUtils.toHex(transaction.data);
         }
