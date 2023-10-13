@@ -54,7 +54,7 @@ class SignPolygonTransaction {
 
         // Set value and fee.
         $value.textContent = NumberFormatting.formatNumber(
-            PolygonUtils.centsToCoins(request.description.name === 'refund'
+            PolygonUtils.unitsToCoins(request.description.name === 'refund'
                 ? /** @type {number} */ (request.amount)
                 : request.description.args.amount.toNumber()),
             6,
@@ -63,7 +63,7 @@ class SignPolygonTransaction {
         const feeUnits = request.description.args.fee.toNumber();
         if (feeUnits > 0) {
             // For the fee, we do not display more than two decimals, as it would not add any value for the user
-            $fee.textContent = NumberFormatting.formatNumber(PolygonUtils.centsToCoins(feeUnits), 2, 2);
+            $fee.textContent = NumberFormatting.formatNumber(PolygonUtils.unitsToCoins(feeUnits), 2, 2);
             /** @type {HTMLDivElement} */
             const $feeSection = (this.$el.querySelector('.fee-section'));
             $feeSection.classList.remove('display-none');

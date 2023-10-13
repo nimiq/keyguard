@@ -3,18 +3,18 @@
 class PolygonUtils { // eslint-disable-line no-unused-vars
     /**
      * @param {number} coins USDC coins in decimal
-     * @returns {number} Number of Cents
+     * @returns {number} Number of USDC units
      */
-    static coinsToCents(coins) {
-        return Math.round(coins * PolygonConstants.CENTS_PER_COINS);
+    static coinsToUnits(coins) {
+        return Math.floor(coins * PolygonConstants.UNITS_PER_COIN);
     }
 
     /**
-     * @param {number} cents Number of Cents.
+     * @param {number} units Number of USDC units.
      * @returns {number} USDC coins in decimal.
      */
-    static centsToCoins(cents) {
-        return cents / PolygonConstants.CENTS_PER_COINS;
+    static unitsToCoins(units) {
+        return units / PolygonConstants.UNITS_PER_COIN;
     }
 
     /**

@@ -172,7 +172,7 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
         switch (asset) {
             case 'NIM': return Nimiq.Policy.lunasToCoins(units);
             case 'BTC': return BitcoinUtils.satoshisToCoins(units);
-            case 'USDC': return PolygonUtils.centsToCoins(units);
+            case 'USDC': return PolygonUtils.unitsToCoins(units);
             case 'EUR': return EuroUtils.centsToCoins(units);
             default: throw new Errors.KeyguardError(`Invalid asset ${asset}`);
         }

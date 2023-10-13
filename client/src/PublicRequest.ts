@@ -344,7 +344,7 @@ export type SignSwapRequestCommon = SimpleRequest & {
         funding: number,
         processing: number,
     },
-    serviceSwapFee: number, // Luna, Sats or Cents, depending which one gets funded
+    serviceSwapFee: number, // Luna, Sats or USDC-units, depending which one gets funded
 
     // Optional KYC info for swapping at higher limits.
     // KYC-enabled swaps facilitated by S3/Fastspot require an s3GrantToken and swaps from or to Euro via OASIS
@@ -372,7 +372,7 @@ export type SignSwapRequestSlider = SignSwapRequestCommon & {
     },
     polygonAddresses: Array<{
         address: string,
-        balance: number, // cents
+        balance: number, // smallest unit of USDC (= 0.000001 USDC)
     }>,
 };
 

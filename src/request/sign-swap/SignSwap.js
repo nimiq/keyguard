@@ -522,7 +522,7 @@ class SignSwap {
         switch (asset) {
             case 'NIM': return Nimiq.Policy.lunasToCoins(units);
             case 'BTC': return BitcoinUtils.satoshisToCoins(units);
-            case 'USDC': return PolygonUtils.centsToCoins(units);
+            case 'USDC': return PolygonUtils.unitsToCoins(units);
             case 'EUR': return EuroUtils.centsToCoins(units);
             default: throw new Error(`Invalid asset ${asset}`);
         }
@@ -536,7 +536,7 @@ class SignSwap {
         switch (asset) {
             case 'NIM': return Math.log10(Nimiq.Policy.LUNAS_PER_COIN);
             case 'BTC': return Math.log10(BitcoinConstants.SATOSHIS_PER_COIN);
-            case 'USDC': return Math.log10(PolygonConstants.CENTS_PER_COINS);
+            case 'USDC': return Math.log10(PolygonConstants.UNITS_PER_COIN);
             case 'EUR': return Math.log10(EuroConstants.CENTS_PER_COIN);
             default: throw new Error(`Invalid asset ${asset}`);
         }

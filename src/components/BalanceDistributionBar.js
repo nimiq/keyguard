@@ -115,7 +115,7 @@ class BalanceDistributionBar { // eslint-disable-line no-unused-vars
         switch (currency) {
             case 'NIM': return Nimiq.Policy.lunasToCoins(units) * rate;
             case 'BTC': return BitcoinUtils.satoshisToCoins(units) * rate;
-            case 'USDC': return PolygonUtils.centsToCoins(units) * rate;
+            case 'USDC': return PolygonUtils.unitsToCoins(units) * rate;
             case 'EUR': return EuroUtils.centsToCoins(units) * rate;
             default: throw new Error('Invalid asset for unit to fiat conversion');
         }
