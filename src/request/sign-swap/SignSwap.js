@@ -135,97 +135,8 @@ class SignSwap {
         const exchangeOtherAsset = exchangeBaseAsset === fundTx.type ? redeemTx.type : fundTx.type;
 
         // Exchange rate
-        /** @type {number} */
-        let exchangeBaseValue;
-        switch (exchangeBaseAsset) {
-            case 'NIM':
-                exchangeBaseValue = fundTx.type === 'NIM'
-                    // When the user funds NIM, the service receives the HTLC balance - their network fee.
-                    ? fundTx.transaction.value - request.fundFees.redeeming
-                    : redeemTx.type === 'NIM'
-                        // When the user redeems NIM, the service lost the HTLC balance + their network fee.
-                        // The transaction value is "HTLC balance - tx fee", therefore the "HTLC balance"
-                        // is the transaction value + tx fee.
-                        ? redeemTx.transaction.value + redeemTx.transaction.fee + request.redeemFees.funding
-                        : 0; // Should never happen, if parsing works correctly
-                break;
-            case 'BTC':
-                exchangeBaseValue = fundTx.type === 'BTC'
-                    // When the user funds BTC, the service receives the HTLC balance - their network fee.
-                    ? fundTx.recipientOutput.value - request.fundFees.redeeming
-                    : redeemTx.type === 'BTC'
-                        // When the user redeems BTC, the service lost the HTLC balance + their network fee.
-                        // The HTLC balance is represented by the redeeming tx input value.
-                        ? redeemTx.input.witnessUtxo.value + request.redeemFees.funding
-                        : 0; // Should never happen, if parsing works correctly
-                break;
-            case 'USDC':
-                exchangeBaseValue = fundTx.type === 'USDC'
-                    // When the user funds USDC, the service receives the HTLC balance - their network fee.
-                    ? fundTx.description.args.amount.toNumber() - request.fundFees.redeeming
-                    : redeemTx.type === 'USDC'
-                        // When the user redeems USDC, the service lost the HTLC balance + their network fee.
-                        // The transaction value is "HTLC balance - tx fee", therefore the "HTLC balance"
-                        // is the transaction value + tx fee.
-                        ? redeemTx.amount + redeemTx.description.args.fee.toNumber() + request.redeemFees.funding
-                        : 0; // Should never happen, if parsing works correctly
-                break;
-            case 'EUR':
-                exchangeBaseValue = fundTx.type === 'EUR'
-                    ? fundTx.amount - request.fundFees.redeeming
-                    : redeemTx.type === 'EUR'
-                        ? redeemTx.amount + request.redeemFees.processing + request.redeemFees.funding
-                        : 0; // Should never happen, if parsing works correctly
-                break;
-            default:
-                throw new Errors.KeyguardError('UNEXPECTED: Unsupported exchange rate base asset');
-        }
-
-        /** @type {number} */
-        let exchangeOtherValue;
-        switch (exchangeOtherAsset) {
-            case 'NIM':
-                exchangeOtherValue = fundTx.type === 'NIM'
-                    // When the user funds NIM, the service receives the HTLC balance - their network fee.
-                    ? fundTx.transaction.value - request.fundFees.redeeming
-                    : redeemTx.type === 'NIM'
-                        // When the user redeems NIM, the service lost the HTLC balance + their network fee.
-                        // The transaction value is "HTLC balance - tx fee", therefore the "HTLC balance"
-                        // is the transaction value + tx fee.
-                        ? redeemTx.transaction.value + redeemTx.transaction.fee + request.redeemFees.funding
-                        : 0; // Should never happen, if parsing works correctly
-                break;
-            case 'BTC':
-                exchangeOtherValue = fundTx.type === 'BTC'
-                    // When the user funds BTC, the service receives the HTLC balance - their network fee.
-                    ? fundTx.recipientOutput.value - request.fundFees.redeeming
-                    : redeemTx.type === 'BTC'
-                        // When the user redeems BTC, the service lost the HTLC balance + their network fee.
-                        // The HTLC balance is represented by the redeeming tx input value.
-                        ? redeemTx.input.witnessUtxo.value + request.redeemFees.funding
-                        : 0; // Should never happen, if parsing works correctly
-                break;
-            case 'USDC':
-                exchangeOtherValue = fundTx.type === 'USDC'
-                    // When the user funds USDC, the service receives the HTLC balance - their network fee.
-                    ? fundTx.description.args.amount.toNumber() - request.fundFees.redeeming
-                    : redeemTx.type === 'USDC'
-                        // When the user redeems USDC, the service lost the HTLC balance + their network fee.
-                        // The transaction value is "HTLC balance - tx fee", therefore the "HTLC balance"
-                        // is the transaction value + tx fee.
-                        ? redeemTx.amount + redeemTx.description.args.fee.toNumber() + request.redeemFees.funding
-                        : 0; // Should never happen, if parsing works correctly
-                break;
-            case 'EUR':
-                exchangeOtherValue = fundTx.type === 'EUR'
-                    ? fundTx.amount - request.fundFees.redeeming
-                    : redeemTx.type === 'EUR'
-                        ? redeemTx.amount + request.redeemFees.processing + request.redeemFees.funding
-                        : 0; // Should never happen, if parsing works correctly
-                break;
-            default:
-                throw new Errors.KeyguardError('UNEXPECTED: Unsupported exchange rate other asset');
-        }
+        const exchangeBaseValue = this._getExchangeValue(exchangeBaseAsset, request);
+        const exchangeOtherValue = this._getExchangeValue(exchangeOtherAsset, request);
 
         if (!exchangeBaseValue || !exchangeOtherValue) {
             throw new Errors.KeyguardError(
@@ -513,6 +424,55 @@ class SignSwap {
                 this._onConfirm(request, resolve, reject, password);
             },
         );
+    }
+
+    /**
+     * @param {'NIM' | 'BTC' | 'USDC' | 'EUR'} asset
+     * @param {Parsed<KeyguardRequest.SignSwapRequest>} request
+     * @returns {number}
+     */
+    _getExchangeValue(asset, request) {
+        const fundTx = request.fund;
+        const redeemTx = request.redeem;
+        switch (asset) {
+            case 'NIM':
+                return fundTx.type === 'NIM'
+                    // When the user funds NIM, the service receives the HTLC balance - their network fee.
+                    ? fundTx.transaction.value - request.fundFees.redeeming
+                    : redeemTx.type === 'NIM'
+                        // When the user redeems NIM, the service lost the HTLC balance + their network fee.
+                        // The transaction value is "HTLC balance - tx fee", therefore the "HTLC balance"
+                        // is the transaction value + tx fee.
+                        ? redeemTx.transaction.value + redeemTx.transaction.fee + request.redeemFees.funding
+                        : 0; // Should never happen, if parsing works correctly
+            case 'BTC':
+                return fundTx.type === 'BTC'
+                    // When the user funds BTC, the service receives the HTLC balance - their network fee.
+                    ? fundTx.recipientOutput.value - request.fundFees.redeeming
+                    : redeemTx.type === 'BTC'
+                        // When the user redeems BTC, the service lost the HTLC balance + their network fee.
+                        // The HTLC balance is represented by the redeeming tx input value.
+                        ? redeemTx.input.witnessUtxo.value + request.redeemFees.funding
+                        : 0; // Should never happen, if parsing works correctly
+            case 'USDC':
+                return fundTx.type === 'USDC'
+                    // When the user funds USDC, the service receives the HTLC balance - their network fee.
+                    ? fundTx.description.args.amount.toNumber() - request.fundFees.redeeming
+                    : redeemTx.type === 'USDC'
+                        // When the user redeems USDC, the service lost the HTLC balance + their network fee.
+                        // The transaction value is "HTLC balance - tx fee", therefore the "HTLC balance"
+                        // is the transaction value + tx fee.
+                        ? redeemTx.amount + redeemTx.description.args.fee.toNumber() + request.redeemFees.funding
+                        : 0; // Should never happen, if parsing works correctly
+            case 'EUR':
+                return fundTx.type === 'EUR'
+                    ? fundTx.amount - request.fundFees.redeeming
+                    : redeemTx.type === 'EUR'
+                        ? redeemTx.amount + request.redeemFees.processing + request.redeemFees.funding
+                        : 0; // Should never happen, if parsing works correctly
+            default:
+                throw new Errors.KeyguardError(`UNEXPECTED: Unsupported exchange rate asset ${asset}`);
+        }
     }
 
     /**
