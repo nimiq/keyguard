@@ -1,9 +1,6 @@
-/* global Nimiq */
 /* global LoginFileConfig */
 /* global IqonHash */
-/* global BitcoinUtils */
-/* global PolygonUtils */
-/* global EuroUtils */
+/* global CryptoUtils */
 
 /** @typedef {{address: string, balance: number, active: boolean, newBalance: number}} Segment */
 /** @typedef {'NIM' | 'BTC' | 'USDC' | 'EUR'} Asset */
@@ -33,8 +30,8 @@ class BalanceDistributionBar { // eslint-disable-line no-unused-vars
         } = settings;
 
         const leftDistributionData = leftSegments.map(segment => ({
-            oldBalance: this._unitsToFiat(segment.balance, leftAsset, leftFiatRate),
-            newBalance: this._unitsToFiat(segment.newBalance, leftAsset, leftFiatRate),
+            oldBalance: CryptoUtils.unitsToCoins(leftAsset, segment.balance) * leftFiatRate,
+            newBalance: CryptoUtils.unitsToCoins(leftAsset, segment.newBalance) * leftFiatRate,
             backgroundClass: leftAsset === 'NIM'
                 ? LoginFileConfig[IqonHash.getBackgroundColorIndex(segment.address)].className
                 : leftAsset.toLowerCase(),
@@ -42,8 +39,8 @@ class BalanceDistributionBar { // eslint-disable-line no-unused-vars
         }));
 
         const rightDistributionData = rightSegments.map(segment => ({
-            oldBalance: this._unitsToFiat(segment.balance, rightAsset, rightFiatRate),
-            newBalance: this._unitsToFiat(segment.newBalance, rightAsset, rightFiatRate),
+            oldBalance: CryptoUtils.unitsToCoins(rightAsset, segment.balance) * rightFiatRate,
+            newBalance: CryptoUtils.unitsToCoins(rightAsset, segment.newBalance) * rightFiatRate,
             backgroundClass: rightAsset === 'NIM'
                 ? LoginFileConfig[IqonHash.getBackgroundColorIndex(segment.address)].className
                 : rightAsset.toLowerCase(),
@@ -103,21 +100,5 @@ class BalanceDistributionBar { // eslint-disable-line no-unused-vars
             $bar.appendChild($change);
         }
         return $bar;
-    }
-
-    /**
-     * @param {number} units
-     * @param {Asset} currency
-     * @param {number} rate
-     * @returns {number}
-     */
-    _unitsToFiat(units, currency, rate) {
-        switch (currency) {
-            case 'NIM': return Nimiq.Policy.lunasToCoins(units) * rate;
-            case 'BTC': return BitcoinUtils.satoshisToCoins(units) * rate;
-            case 'USDC': return PolygonUtils.unitsToCoins(units) * rate;
-            case 'EUR': return EuroUtils.centsToCoins(units) * rate;
-            default: throw new Error('Invalid asset for unit to fiat conversion');
-        }
     }
 }

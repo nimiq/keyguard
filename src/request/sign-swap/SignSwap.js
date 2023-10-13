@@ -6,16 +6,10 @@
 /* global Utf8Tools */
 /* global TopLevelApi */
 /* global NumberFormatting */
-/* global BitcoinConstants */
-/* global BitcoinUtils */
 /* global BitcoinKey */
-/* global PolygonUtils */
-/* global PolygonConstants */
 /* global PolygonContractABIs */
 /* global PolygonKey */
 /* global ethers */
-/* global EuroConstants */
-/* global EuroUtils */
 /* global Identicon */
 /* global TemplateTags */
 /* global I18n */
@@ -25,6 +19,7 @@
 /* global Constants */
 /* global NonPartitionedSessionStorage */
 /* global CONFIG */
+/* global CryptoUtils */
 
 /**
  * @callback SignSwap.resolve
@@ -115,14 +110,14 @@ class SignSwap {
         const rightAmount = redeemTx.type === rightAsset ? swapToValue : swapFromValue;
 
         $swapLeftValue.textContent = NumberFormatting.formatNumber(
-            this._unitsToCoins(leftAsset, leftAmount),
-            leftAsset === 'USDC' ? 2 : this._assetDecimals(leftAsset),
+            CryptoUtils.unitsToCoins(leftAsset, leftAmount),
+            leftAsset === 'USDC' ? 2 : CryptoUtils.assetDecimals(leftAsset),
             leftAsset === 'EUR' || leftAsset === 'USDC' ? 2 : 0,
         );
 
         $swapRightValue.textContent = NumberFormatting.formatNumber(
-            this._unitsToCoins(rightAsset, rightAmount),
-            rightAsset === 'USDC' ? 2 : this._assetDecimals(rightAsset),
+            CryptoUtils.unitsToCoins(rightAsset, rightAmount),
+            rightAsset === 'USDC' ? 2 : CryptoUtils.assetDecimals(rightAsset),
             rightAsset === 'EUR' || rightAsset === 'USDC' ? 2 : 0,
         );
 
@@ -235,28 +230,28 @@ class SignSwap {
         if (!exchangeBaseValue || !exchangeOtherValue) {
             throw new Errors.KeyguardError(
                 'UNEXPECTED: Swap rate values are invalid -'
-                    + ` ${exchangeBaseAsset}: ${this._unitsToCoins(exchangeBaseAsset, exchangeBaseValue)}`
-                    + `, ${exchangeOtherAsset}: ${this._unitsToCoins(exchangeOtherAsset, exchangeOtherValue)}`,
+                    + ` ${exchangeBaseAsset}: ${CryptoUtils.unitsToCoins(exchangeBaseAsset, exchangeBaseValue)}`
+                    + `, ${exchangeOtherAsset}: ${CryptoUtils.unitsToCoins(exchangeOtherAsset, exchangeOtherValue)}`,
             );
         }
 
-        const exchangeRate = this._unitsToCoins(exchangeOtherAsset, exchangeOtherValue)
-            / this._unitsToCoins(exchangeBaseAsset, exchangeBaseValue);
+        const exchangeRate = CryptoUtils.unitsToCoins(exchangeOtherAsset, exchangeOtherValue)
+            / CryptoUtils.unitsToCoins(exchangeBaseAsset, exchangeBaseValue);
 
         // Make sure to show enough decimals
         const exchangeRateDigitsLength = exchangeRate
-            .toFixed(this._assetDecimals(exchangeOtherAsset) + 1)
+            .toFixed(CryptoUtils.assetDecimals(exchangeOtherAsset) + 1)
             .split('.')[0]
             .replace('0', '')
             .length;
         const exchangeRateDecimals = Math.max(
             0,
-            this._assetDecimals(exchangeOtherAsset) - exchangeRateDigitsLength,
+            CryptoUtils.assetDecimals(exchangeOtherAsset) - exchangeRateDigitsLength,
         );
         const exchangeRateString = `1 ${exchangeBaseAsset} = ${NumberFormatting.formatNumber(
             exchangeRate,
             exchangeRateDecimals,
-            exchangeOtherAsset === 'EUR' ? this._assetDecimals(exchangeOtherAsset) : 0,
+            exchangeOtherAsset === 'EUR' ? CryptoUtils.assetDecimals(exchangeOtherAsset) : 0,
         )} ${exchangeOtherAsset}`;
 
         /** @type {HTMLDivElement} */
@@ -377,11 +372,11 @@ class SignSwap {
             const leftFiatRate = fundTx.type === leftAsset ? request.fundingFiatRate : request.redeemingFiatRate;
             const rightFiatRate = redeemTx.type === rightAsset ? request.redeemingFiatRate : request.fundingFiatRate;
             $swapLeftValueFiat.textContent = NumberFormatting.formatCurrency(
-                this._unitsToCoins(leftAsset, leftAmount) * leftFiatRate,
+                CryptoUtils.unitsToCoins(leftAsset, leftAmount) * leftFiatRate,
                 request.fiatCurrency,
             );
             $swapRightValueFiat.textContent = NumberFormatting.formatCurrency(
-                this._unitsToCoins(rightAsset, rightAmount) * rightFiatRate,
+                CryptoUtils.unitsToCoins(rightAsset, rightAmount) * rightFiatRate,
                 request.fiatCurrency,
             );
 
@@ -407,7 +402,9 @@ class SignSwap {
                 const amount = leftAsset === 'NIM' ? leftAmount : rightAmount;
 
                 const newBalance = activeAddressInfo.balance + (amount * (fundTx.type === 'NIM' ? -1 : 1));
-                const newBalanceFormatted = NumberFormatting.formatNumber(this._unitsToCoins('NIM', newBalance), 0, 0);
+                const newBalanceFormatted = NumberFormatting.formatNumber(
+                    CryptoUtils.unitsToCoins('NIM', newBalance), 0, 0,
+                );
 
                 if (leftAsset === 'NIM') {
                     $leftNewBalance.textContent = `${newBalanceFormatted} NIM`;
@@ -433,7 +430,9 @@ class SignSwap {
                 const amount = leftAsset === 'BTC' ? leftAmount : rightAmount;
 
                 const newBalance = request.bitcoinAccount.balance + (amount * (fundTx.type === 'BTC' ? -1 : 1));
-                const newBalanceFormatted = NumberFormatting.formatNumber(this._unitsToCoins('BTC', newBalance), 8, 0);
+                const newBalanceFormatted = NumberFormatting.formatNumber(
+                    CryptoUtils.unitsToCoins('BTC', newBalance), 8, 0,
+                );
 
                 if (leftAsset === 'BTC') {
                     $leftNewBalance.textContent = `${newBalanceFormatted} BTC`;
@@ -460,7 +459,9 @@ class SignSwap {
 
                 const newBalance = request.polygonAddresses[0].usdcBalance
                     + (amount * (fundTx.type === 'USDC' ? -1 : 1));
-                const newBalanceFormatted = NumberFormatting.formatNumber(this._unitsToCoins('USDC', newBalance), 2, 2);
+                const newBalanceFormatted = NumberFormatting.formatNumber(
+                    CryptoUtils.unitsToCoins('USDC', newBalance), 2, 2,
+                );
 
                 if (leftAsset === 'USDC') {
                     $leftNewBalance.textContent = `${newBalanceFormatted} USDC`;
@@ -512,35 +513,6 @@ class SignSwap {
                 this._onConfirm(request, resolve, reject, password);
             },
         );
-    }
-
-    /**
-     * @param {'NIM' | 'BTC' | 'USDC' | 'EUR'} asset
-     * @param {number} units
-     * @returns {number}
-     */
-    _unitsToCoins(asset, units) {
-        switch (asset) {
-            case 'NIM': return Nimiq.Policy.lunasToCoins(units);
-            case 'BTC': return BitcoinUtils.satoshisToCoins(units);
-            case 'USDC': return PolygonUtils.unitsToCoins(units);
-            case 'EUR': return EuroUtils.centsToCoins(units);
-            default: throw new Error(`Invalid asset ${asset}`);
-        }
-    }
-
-    /**
-     * @param {'NIM' | 'BTC' | 'USDC' | 'EUR'} asset
-     * @returns {number}
-     */
-    _assetDecimals(asset) {
-        switch (asset) {
-            case 'NIM': return Math.log10(Nimiq.Policy.LUNAS_PER_COIN);
-            case 'BTC': return Math.log10(BitcoinConstants.SATOSHIS_PER_COIN);
-            case 'USDC': return Math.log10(PolygonConstants.UNITS_PER_COIN);
-            case 'EUR': return Math.log10(EuroConstants.CENTS_PER_COIN);
-            default: throw new Error(`Invalid asset ${asset}`);
-        }
     }
 
     /**

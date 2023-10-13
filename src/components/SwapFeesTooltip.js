@@ -1,11 +1,7 @@
-/* global Nimiq */
 /* global I18n */
-/* global Errors */
 /* global TemplateTags */
 /* global NumberFormatting */
-/* global BitcoinUtils */
-/* global PolygonUtils */
-/* global EuroUtils */
+/* global CryptoUtils */
 
 class SwapFeesTooltip { // eslint-disable-line no-unused-vars
     /**
@@ -50,7 +46,7 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
             const theirFee = fundTx.type === 'BTC' ? fundFees.redeeming : redeemFees.funding;
 
             const fiatRate = fundTx.type === 'BTC' ? fundingFiatRate : redeemingFiatRate;
-            const fiatFee = this._unitsToCoins('BTC', myFee + theirFee) * fiatRate;
+            const fiatFee = CryptoUtils.unitsToCoins('BTC', myFee + theirFee) * fiatRate;
 
             const rows = this._createBitcoinLine(fiatFee, fiatCurrency);
             this.$tooltip.appendChild(rows[0]);
@@ -70,7 +66,7 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
             const theirFee = fundTx.type === 'USDC' ? fundFees.redeeming : redeemFees.funding;
 
             const fiatRate = fundTx.type === 'USDC' ? fundingFiatRate : redeemingFiatRate;
-            const fiatFee = this._unitsToCoins('USDC', myFee + theirFee) * fiatRate;
+            const fiatFee = CryptoUtils.unitsToCoins('USDC', myFee + theirFee) * fiatRate;
 
             const rows = this._createUsdcLine(fiatFee, fiatCurrency);
             this.$tooltip.appendChild(rows[0]);
@@ -89,7 +85,7 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
             const theirFee = fundTx.type === 'EUR' ? fundFees.processing : redeemFees.processing;
 
             const fiatRate = fundTx.type === 'EUR' ? fundingFiatRate : redeemingFiatRate;
-            const fiatFee = this._unitsToCoins('EUR', myFee + theirFee) * fiatRate;
+            const fiatFee = CryptoUtils.unitsToCoins('EUR', myFee + theirFee) * fiatRate;
 
             const rows = this._createOasisLine(
                 fiatFee,
@@ -107,7 +103,7 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
             const theirFee = redeemFees.funding;
 
             const fiatRate = redeemingFiatRate;
-            const fiatFee = this._unitsToCoins('EUR', theirFee) * fiatRate;
+            const fiatFee = CryptoUtils.unitsToCoins('EUR', theirFee) * fiatRate;
 
             const rows = this._createBankNetworkLine(fiatFee, fiatCurrency, 'SEPA Instant');
             this.$tooltip.appendChild(rows[0]);
@@ -127,7 +123,7 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
             const theirFee = fundTx.type === 'NIM' ? fundFees.redeeming : redeemFees.funding;
 
             const fiatRate = fundTx.type === 'NIM' ? fundingFiatRate : redeemingFiatRate;
-            const fiatFee = this._unitsToCoins('NIM', myFee + theirFee) * fiatRate;
+            const fiatFee = CryptoUtils.unitsToCoins('NIM', myFee + theirFee) * fiatRate;
 
             const rows = this._createNimiqLine(fiatFee, fiatCurrency);
             this.$tooltip.appendChild(rows[0]);
@@ -137,7 +133,7 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
 
         // Show Swap fees
         if (serviceSwapFee) {
-            const fiatFee = this._unitsToCoins(fundTx.type, serviceSwapFee) * fundingFiatRate;
+            const fiatFee = CryptoUtils.unitsToCoins(fundTx.type, serviceSwapFee) * fundingFiatRate;
 
             const rows = this._createServiceFeeLine(
                 fiatFee,
@@ -161,21 +157,6 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
 
         // Write total into the pill box
         this.$fees.textContent = NumberFormatting.formatCurrency(totalFiatFees, fiatCurrency);
-    }
-
-    /**
-     * @param {'NIM' | 'BTC' | 'USDC' | 'EUR'} asset
-     * @param {number} units
-     * @returns {number}
-     */
-    _unitsToCoins(asset, units) {
-        switch (asset) {
-            case 'NIM': return Nimiq.Policy.lunasToCoins(units);
-            case 'BTC': return BitcoinUtils.satoshisToCoins(units);
-            case 'USDC': return PolygonUtils.unitsToCoins(units);
-            case 'EUR': return EuroUtils.centsToCoins(units);
-            default: throw new Errors.KeyguardError(`Invalid asset ${asset}`);
-        }
     }
 
     /**
