@@ -245,8 +245,10 @@ class SignSwap {
             $swapLeftSymbol.classList.add(`${leftAsset.toLowerCase()}-symbol`);
             $swapRightSymbol.classList.add(`${rightAsset.toLowerCase()}-symbol`);
 
+            /** @type {string | undefined} */
+            let swapNimAddress;
             if (leftAsset === 'NIM' || rightAsset === 'NIM') {
-                const swapNimAddress = fundTx.type === 'NIM'
+                swapNimAddress = fundTx.type === 'NIM'
                     ? fundTx.transaction.sender.toUserFriendlyAddress()
                     : redeemTx.type === 'NIM'
                         ? redeemTx.transaction.recipient.toUserFriendlyAddress()
@@ -299,11 +301,7 @@ class SignSwap {
             let rightSegments;
 
             if (leftAsset === 'NIM' || rightAsset === 'NIM') {
-                const activeAddress = fundTx.type === 'NIM'
-                    ? fundTx.transaction.sender.toUserFriendlyAddress()
-                    : redeemTx.type === 'NIM'
-                        ? redeemTx.transaction.recipient.toUserFriendlyAddress()
-                        : ''; // Should never happen, if parsing works correctly
+                const activeAddress = /** @type {string} */ (swapNimAddress);
 
                 const activeAddressInfo = request.nimiqAddresses.find(ai => ai.address === activeAddress);
                 if (!activeAddressInfo) {
