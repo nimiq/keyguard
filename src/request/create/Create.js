@@ -65,11 +65,16 @@ class Create {
             new LoginFile('hello world', 7).toObjectUrl(),
             new LoginFile('hello world', 8).toObjectUrl(),
             new LoginFile('hello world', 6).toObjectUrl(),
-        ]).then(objectUrls => {
+        ]).then(async objectUrls => {
             /** @type {HTMLImageElement=} */
             let prevImage;
+            /** @type {Promise<string>[]} */
+            const loadedPromises = [];
             for (const objectUrl of objectUrls) {
                 const image = new Image();
+                loadedPromises.push(new Promise(res => {
+                    image.addEventListener('load', () => res(objectUrl));
+                }));
                 image.src = objectUrl;
 
                 // Insert elements behind each other, to not create a flicker
@@ -78,6 +83,10 @@ class Create {
                 else $loginFileFan.appendChild(image);
                 prevImage = image;
             }
+
+            (await Promise.all(loadedPromises)).forEach(objectUrl => {
+                URL.revokeObjectURL(objectUrl);
+            });
         });
 
         this._loginFileAnimation = new LoginFileAnimation(this.$loginFileAnimation);
