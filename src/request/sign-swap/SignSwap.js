@@ -546,56 +546,18 @@ class SignSwap {
 
         if (request.fund.type === 'USDC') {
             if (request.fund.description.name === 'openWithApproval') {
-                // Sign approval
-                const usdcContract = new ethers.Contract(
-                    CONFIG.USDC_CONTRACT_ADDRESS,
-                    PolygonContractABIs.USDC_CONTRACT_ABI,
-                );
-
-                const functionSignature = usdcContract.interface.encodeFunctionData(
-                    'approve',
-                    [CONFIG.USDC_HTLC_CONTRACT_ADDRESS, request.fund.description.args.approval],
-                );
-
-                // TODO: Make the domain parameters configurable in the request?
-                const domain = {
-                    name: 'USD Coin (PoS)', // This is currently the same for testnet and mainnet
-                    version: '1', // This is currently the same for testnet and mainnet
-                    verifyingContract: CONFIG.USDC_CONTRACT_ADDRESS,
-                    salt: ethers.utils.hexZeroPad(ethers.utils.hexlify(CONFIG.POLYGON_CHAIN_ID), 32),
-                };
-
-                const types = {
-                    MetaTransaction: [
-                        { name: 'nonce', type: 'uint256' },
-                        { name: 'from', type: 'address' },
-                        { name: 'functionSignature', type: 'bytes' },
-                    ],
-                };
-
-                const message = {
-                    // Has been validated to be defined when function called is `openWithApproval`
-                    nonce: /** @type {{ tokenNonce: number }} */ (request.fund.approval).tokenNonce,
-                    from: request.fund.request.from,
-                    functionSignature,
-                };
-
-                const signature = await polygonKey.signTypedData(
+                const { sigR, sigS, sigV } = await polygonKey.signUsdcApproval(
                     request.fund.keyPath,
-                    domain,
-                    types,
-                    message,
+                    new ethers.Contract(
+                        CONFIG.USDC_CONTRACT_ADDRESS,
+                        PolygonContractABIs.USDC_CONTRACT_ABI,
+                    ),
+                    CONFIG.USDC_HTLC_CONTRACT_ADDRESS,
+                    request.fund.description.args.approval,
+                    // Has been validated to be defined when function called is `openWithApproval`
+                    /** @type {{ tokenNonce: number }} */ (request.fund.approval).tokenNonce,
+                    request.fund.request.from,
                 );
-
-                const signerAddress = ethers.utils.verifyTypedData(domain, types, message, signature);
-                if (signerAddress !== request.fund.request.from) {
-                    reject(new Errors.CoreError('Failed to sign approval'));
-                    return;
-                }
-
-                const sigR = signature.slice(0, 66); // 0x prefix plus 32 bytes = 66 characters
-                const sigS = `0x${signature.slice(66, 130)}`; // 32 bytes = 64 characters
-                const sigV = parseInt(signature.slice(130, 132), 16); // last byte = 2 characters
 
                 const htlcContract = new ethers.Contract(
                     CONFIG.USDC_HTLC_CONTRACT_ADDRESS,

@@ -1,6 +1,7 @@
 /* global Nimiq */
 /* global Errors */
 /* global ethers */
+/* global CONFIG */
 
 class PolygonKey { // eslint-disable-line no-unused-vars
     /**
@@ -43,6 +44,57 @@ class PolygonKey { // eslint-disable-line no-unused-vars
     async signTypedData(path, domain, types, value) {
         const wallet = this.deriveKeyPair(path);
         return wallet._signTypedData(domain, types, value);
+    }
+
+    /**
+     * @param {string} path
+     * @param {ethers.Contract} usdcContract
+     * @param {string} forwarderContractAddress
+     * @param {ethers.BigNumber} approvalAmount
+     * @param {number} tokenNonce
+     * @param {string} fromAddress
+     * @returns {Promise<{sigR: string, sigS: string, sigV: number}>}
+     */
+    async signUsdcApproval(path, usdcContract, forwarderContractAddress, approvalAmount, tokenNonce, fromAddress) {
+        const functionSignature = usdcContract.interface.encodeFunctionData(
+            'approve',
+            [forwarderContractAddress, approvalAmount],
+        );
+
+        // TODO: Make the domain parameters configurable in the request?
+        const domain = {
+            name: 'USD Coin (PoS)', // This is currently the same for testnet and mainnet
+            version: '1', // This is currently the same for testnet and mainnet
+            verifyingContract: CONFIG.USDC_CONTRACT_ADDRESS,
+            salt: ethers.utils.hexZeroPad(ethers.utils.hexlify(CONFIG.POLYGON_CHAIN_ID), 32),
+        };
+
+        const types = {
+            MetaTransaction: [
+                { name: 'nonce', type: 'uint256' },
+                { name: 'from', type: 'address' },
+                { name: 'functionSignature', type: 'bytes' },
+            ],
+        };
+
+        const message = {
+            nonce: tokenNonce,
+            from: fromAddress,
+            functionSignature,
+        };
+
+        const signature = await this.signTypedData(
+            path,
+            domain,
+            types,
+            message,
+        );
+
+        const sigR = signature.slice(0, 66); // 0x prefix plus 32 bytes = 66 characters
+        const sigS = `0x${signature.slice(66, 130)}`; // 32 bytes = 64 characters
+        const sigV = parseInt(signature.slice(130, 132), 16); // last byte = 2 characters
+
+        return { sigR, sigS, sigV };
     }
 
     /**
