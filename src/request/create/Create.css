@@ -1,14 +1,14 @@
-.page#login-file-selection .page-body {
+.page#intro .page-body {
     padding-bottom: 2rem;
 }
 
-.page#login-file-selection .login-file-fan {
+.page#intro .login-file-fan {
     flex-grow: 1;
     align-self: stretch;
     position: relative;
 }
 
-.page#login-file-selection .login-file-fan img {
+.page#intro .login-file-fan img {
     position: absolute;
     height: 23rem;
     left: 50%;
@@ -21,23 +21,23 @@
     animation: fan-out 1s cubic-bezier(0.83, 0, 0.17, 1) forwards reverse;
 }
 
-.page#login-file-selection .login-file-fan img:nth-child(5) {
+.page#intro .login-file-fan img:nth-child(5) {
     transform: rotate(-4.47deg);
 }
 
-.page#login-file-selection .login-file-fan img:nth-child(4) {
+.page#intro .login-file-fan img:nth-child(4) {
     transform: rotate(1.53deg);
 }
 
-.page#login-file-selection .login-file-fan img:nth-child(3) {
+.page#intro .login-file-fan img:nth-child(3) {
     transform: rotate(7.53deg);
 }
 
-.page#login-file-selection .login-file-fan img:nth-child(2) {
+.page#intro .login-file-fan img:nth-child(2) {
     transform: rotate(13.53deg);
 }
 
-.page#login-file-selection .login-file-fan img:nth-child(1) {
+.page#intro .login-file-fan img:nth-child(1) {
     transform: rotate(19.53deg);
 }
 
@@ -45,7 +45,7 @@
     to { transform: rotate(0deg); }
 }
 
-.page#login-file-selection .page-body p {
+.page#intro .page-body p {
     text-align: center;
     margin: 2rem auto 0;
     font-size: 2rem;
@@ -53,7 +53,7 @@
     max-width: 35rem;
 }
 
-.page#login-file-selection .page-body,
+.page#intro .page-body,
 .page#set-password .page-body {
     position: relative;
     display:flex;

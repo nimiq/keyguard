@@ -150,7 +150,7 @@ class Create {
 
         if (request.enableBackArrow) {
             /** @type {HTMLElement} */
-            (document.querySelector('#login-file-selection .page-header-back-button')).classList.remove('display-none');
+            (document.querySelector('#intro .page-header-back-button')).classList.remove('display-none');
         }
     } // constructor
 
@@ -196,12 +196,12 @@ class Create {
 
     run() {
         // go to start page
-        window.location.hash = Create.Pages.LOGIN_FILE_SELECTION;
+        window.location.hash = Create.Pages.INTRO;
     }
 }
 
 Create.Pages = {
-    LOGIN_FILE_SELECTION: 'login-file-selection',
+    INTRO: 'intro',
     SET_PASSWORD: 'set-password',
     LOGIN_FILE_DOWNLOAD: 'login-file-download',
     LOGIN_FILE_EXPLAINER: 'login-file-explainer',
