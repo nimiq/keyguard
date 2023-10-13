@@ -22,11 +22,10 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
         parsedRequest.keyInfo = await this.parseKeyId(request.keyId);
         parsedRequest.keyLabel = /** @type {string} */ (this.parseLabel(request.keyLabel, false, 'keyLabel'));
         parsedRequest.keyPath = this.parsePolygonPath(request.keyPath, 'keyPath');
-        parsedRequest.description = this.parseOpenGsnForwardRequest(
+        [parsedRequest.request, parsedRequest.description] = this.parseOpenGsnForwardRequest(
             request,
             ['transfer', 'transferWithApproval', 'refund'],
         );
-        parsedRequest.request = request.request;
         parsedRequest.relayData = this.parseOpenGsnRelayData(request.relayData);
         parsedRequest.senderLabel = this.parseLabel(request.senderLabel); // Used for HTLC refunds
         parsedRequest.recipientLabel = this.parseLabel(request.recipientLabel);
@@ -46,19 +45,23 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
         return parsedRequest;
     }
 
+    // eslint-disable-next-line valid-jsdoc
     /**
      *
      * @param {KeyguardRequest.PolygonTransactionInfo} request
      * @param {Array<'transfer' | 'transferWithApproval' | 'refund'>} allowedMethods
-     * @returns {PolygonTransferDescription | PolygonTransferWithApprovalDescription | PolygonRefundDescription}
+     * @returns {[
+     *     KeyguardRequest.OpenGsnForwardRequest,
+     *     PolygonTransferDescription | PolygonTransferWithApprovalDescription | PolygonRefundDescription,
+     * ]}
      */
     parseOpenGsnForwardRequest(request, allowedMethods) {
-        request.request = this.parseOpenGsnForwardRequestRoot(request.request);
+        const forwardRequest = this.parseOpenGsnForwardRequestRoot(request.request);
 
         /** @type {PolygonTransferDescription | PolygonTransferWithApprovalDescription | PolygonRefundDescription} */
         let description;
 
-        if (request.request.to === CONFIG.USDC_TRANSFER_CONTRACT_ADDRESS) {
+        if (forwardRequest.to === CONFIG.USDC_TRANSFER_CONTRACT_ADDRESS) {
             const usdcTransferContract = new ethers.Contract(
                 CONFIG.USDC_TRANSFER_CONTRACT_ADDRESS,
                 PolygonContractABIs.USDC_TRANSFER_CONTRACT_ABI,
@@ -66,10 +69,10 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
 
             /** @type {PolygonTransferDescription | PolygonTransferWithApprovalDescription} */
             description = (usdcTransferContract.interface.parseTransaction({
-                data: request.request.data,
-                value: request.request.value,
+                data: forwardRequest.data,
+                value: forwardRequest.value,
             }));
-        } else if (request.request.to === CONFIG.USDC_HTLC_CONTRACT_ADDRESS) {
+        } else if (forwardRequest.to === CONFIG.USDC_HTLC_CONTRACT_ADDRESS) {
             const usdcHtlcContract = new ethers.Contract(
                 CONFIG.USDC_HTLC_CONTRACT_ADDRESS,
                 PolygonContractABIs.USDC_HTLC_CONTRACT_ABI,
@@ -77,8 +80,8 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
 
             /** @type {PolygonRefundDescription} */
             description = (usdcHtlcContract.interface.parseTransaction({
-                data: request.request.data,
-                value: request.request.value,
+                data: forwardRequest.data,
+                value: forwardRequest.value,
             }));
         } else {
             throw new Errors.InvalidRequestError('request.to address is not allowed');
@@ -105,7 +108,7 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
                 + '"transferWithApproval"');
         }
 
-        return description;
+        return [forwardRequest, description];
     }
 
     get Handler() {
