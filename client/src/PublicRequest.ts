@@ -1,11 +1,11 @@
 import * as Nimiq from '@nimiq/core-web';
-import { ForwardRequest } from '@opengsn/common/dist/EIP712/ForwardRequest';
-import { RelayData } from '@opengsn/common/dist/EIP712/RelayData';
+import { ForwardRequest as OpenGsnForwardRequest } from '@opengsn/common/dist/EIP712/ForwardRequest';
+import { RelayData as OpenGsnRelayData } from '@opengsn/common/dist/EIP712/RelayData';
 import { KeyguardCommand } from './KeyguardCommand';
 
 export {
-    ForwardRequest,
-    RelayData,
+    OpenGsnForwardRequest,
+    OpenGsnRelayData,
 };
 
 export type ObjectType = {
@@ -210,8 +210,8 @@ export type SignBtcTransactionRequest
 export type PolygonTransactionInfo = {
     keyPath: string,
 
-    request: ForwardRequest,
-    relayData: RelayData,
+    request: OpenGsnForwardRequest,
+    relayData: OpenGsnRelayData,
 
     /**
      * For refund and redeem transactions from HTLCs the amount is not part of the forward request / relay request and

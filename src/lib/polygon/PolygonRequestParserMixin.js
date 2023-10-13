@@ -43,13 +43,13 @@ function PolygonRequestParserMixin(clazz) { // eslint-disable-line no-unused-var
 
         /**
          * @param {unknown} request
-         * @returns {KeyguardRequest.ForwardRequest}
+         * @returns {KeyguardRequest.OpenGsnForwardRequest}
          */
         parseOpenGsnForwardRequestRoot(request) {
             if (typeof request !== 'object' || request === null) {
                 throw new Errors.InvalidRequestError('request must be an object');
             }
-            /** @type {KeyguardRequest.ForwardRequest} */
+            /** @type {KeyguardRequest.OpenGsnForwardRequest} */
             const forwardRequest = (request);
 
             this.parsePolygonAddress(forwardRequest.from, 'request.from');
@@ -70,13 +70,13 @@ function PolygonRequestParserMixin(clazz) { // eslint-disable-line no-unused-var
 
         /**
          * @param {unknown} relayData
-         * @returns {KeyguardRequest.RelayData}
+         * @returns {KeyguardRequest.OpenGsnRelayData}
          */
         parseOpenGsnRelayData(relayData) {
             if (typeof relayData !== 'object' || relayData === null) {
                 throw new Errors.InvalidRequestError('relayData must be an object');
             }
-            /** @type {KeyguardRequest.RelayData} */
+            /** @type {KeyguardRequest.OpenGsnRelayData} */
             const parsedRelayData = (relayData);
 
             this.parsePolygonAddress(parsedRelayData.forwarder, 'relayData.forwarder');
