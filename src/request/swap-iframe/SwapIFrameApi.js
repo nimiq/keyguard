@@ -235,6 +235,9 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
                 value: 0,
             }));
 
+            // The htlcData given by Fastspot and forwarded here is always for the open() function, not for
+            // openWithApproval(). The approval, if requested, is added below, from the stored request where
+            // the user gave their authorization.
             if (description.name !== 'open') {
                 throw new Errors.InvalidRequestError('Invalid method in HTLC data');
             }
@@ -261,7 +264,9 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
         if (request.redeem.type === 'USDC' && storedRequest.redeem.type === 'USDC') {
             redeem = {
                 type: 'USDC',
-                htlcId: `0x${Nimiq.BufferUtils.toHex(Nimiq.BufferUtils.fromAny(request.redeem.htlcId.substring(2)))}`,
+                htlcId: `0x${Nimiq.BufferUtils.toHex(Nimiq.BufferUtils.fromAny(
+                    request.redeem.htlcId.replace(/^0x/i, ''),
+                ))}`,
                 htlcDetails: {
                     hash: Nimiq.BufferUtils.toHex(Nimiq.BufferUtils.fromAny(request.redeem.hash)),
                     timeoutTimestamp: this.parsePositiveInteger(request.redeem.timeout, false, 'redeem.timeout'),
@@ -701,7 +706,7 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
                     /* bytes32 id */ parsedRequest.redeem.htlcId,
                     /* address target */ storedRequest.redeem.description.args.target,
                     ...(storedRequest.redeem.description.name === 'redeem' ? [
-                        /* uint256 approval */ storedRequest.redeem.description.args.secret,
+                        /* uint256 secret */ storedRequest.redeem.description.args.secret,
                     ] : []),
                     /* uint256 fee */ storedRequest.redeem.description.args.fee,
                 ],
