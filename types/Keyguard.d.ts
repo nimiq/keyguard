@@ -295,7 +295,7 @@ type Parsed<T extends KeyguardRequest.Request> =
             },
             polygonAddresses: Array<{
                 address: string,
-                balance: number, // smallest unit of USDC (= 0.000001 USDC)
+                usdcBalance: number, // smallest unit of USDC (= 0.000001 USDC)
             }>
         } :
     T extends Is<T, KeyguardRequest.SignSwapTransactionsRequest> ?

@@ -189,9 +189,9 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
             parsedRequest.bitcoinAccount = {
                 balance: this.parsePositiveInteger(request.bitcoinAccount.balance, true, 'bitcoinAccount.balance'),
             };
-            parsedRequest.polygonAddresses = request.polygonAddresses.map(({ address, balance }, index) => ({
+            parsedRequest.polygonAddresses = request.polygonAddresses.map(({ address, usdcBalance }, index) => ({
                 address: this.parsePolygonAddress(address, `polygonAddresses[${index}].address`),
-                balance: this.parsePositiveInteger(balance, true, `polygonAddresses[${index}].balance`),
+                usdcBalance: this.parsePositiveInteger(usdcBalance, true, `polygonAddresses[${index}].balance`),
             }));
 
             const nimAddress = parsedRequest.fund.type === 'NIM'

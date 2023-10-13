@@ -33,7 +33,7 @@ export type SingleKeyResult = {
     wordsExported: boolean;
     bitcoinXPub?: string;
     polygonAddresses?: Array<{
-        address: string, // Could be a Uint8Array by decoding the address as HEX?
+        address: string,
         keyPath: string,
     }>;
     tmpCookieEncryptionKey?: Uint8Array;
@@ -372,7 +372,7 @@ export type SignSwapRequestSlider = SignSwapRequestCommon & {
     },
     polygonAddresses: Array<{
         address: string,
-        balance: number, // smallest unit of USDC (= 0.000001 USDC)
+        usdcBalance: number, // smallest unit of USDC (= 0.000001 USDC)
     }>,
 };
 

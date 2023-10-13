@@ -458,7 +458,8 @@ class SignSwap {
             if (leftAsset === 'USDC' || rightAsset === 'USDC') {
                 const amount = leftAsset === 'USDC' ? leftAmount : rightAmount;
 
-                const newBalance = request.polygonAddresses[0].balance + (amount * (fundTx.type === 'USDC' ? -1 : 1));
+                const newBalance = request.polygonAddresses[0].usdcBalance
+                    + (amount * (fundTx.type === 'USDC' ? -1 : 1));
                 const newBalanceFormatted = NumberFormatting.formatNumber(this._unitsToCoins('USDC', newBalance), 2, 2);
 
                 if (leftAsset === 'USDC') {
@@ -472,7 +473,7 @@ class SignSwap {
                 /** @type {Segment[]} */
                 const segments = [{
                     address: 'usdc',
-                    balance: request.polygonAddresses[0].balance,
+                    balance: request.polygonAddresses[0].usdcBalance,
                     active: true,
                     newBalance,
                 }];
