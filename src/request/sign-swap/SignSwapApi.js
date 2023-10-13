@@ -203,6 +203,7 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
                 usdcBalance: this.parsePositiveInteger(usdcBalance, true, `polygonAddresses[${index}].balance`),
             }));
 
+            // Verify that used Nimiq address is in nimiqAddresses[] and has enough balance
             const nimAddress = parsedRequest.fund.type === 'NIM'
                 ? parsedRequest.fund.transaction.sender.toUserFriendlyAddress()
                 : parsedRequest.redeem.type === 'NIM'
@@ -225,7 +226,27 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
                 }
             }
 
-            // TODO Verify that used Polygonaddress is the one in polygonAddresses[]
+            // Verify that used Polygon address is in polygonAddresses[] and has enough balance
+            const polygonAddress = parsedRequest.fund.type === 'USDC'
+                ? parsedRequest.fund.request.from
+                : parsedRequest.redeem.type === 'USDC'
+                    ? parsedRequest.redeem.request.from
+                    : undefined;
+            if (polygonAddress) {
+                const activePolygonAddress = parsedRequest.polygonAddresses
+                    .find(addressInfo => addressInfo.address === polygonAddress);
+                if (!activePolygonAddress) {
+                    throw new Errors.InvalidRequestError(
+                        'The address details of the Polygon address doing the swap must be provided',
+                    );
+                } else if (
+                    parsedRequest.fund.type === 'USDC'
+                    && activePolygonAddress.usdcBalance < parsedRequest.fund.description.args.amount
+                        .add(parsedRequest.fund.description.args.fee).toNumber()
+                ) {
+                    throw new Errors.InvalidRequestError('The sending USDC address does not have enough balance');
+                }
+            }
         }
 
         // Parse optional KYC data
