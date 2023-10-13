@@ -55,6 +55,8 @@
 }
 
 .polygon-address-info .short-address {
+    --transition-duration: 0.3s;
+
     font-family: "Fira Mono", monospace;
     font-size: 2rem;
     line-height: 1.25;
@@ -64,20 +66,20 @@
     white-space: nowrap;
     padding: 0.5rem 0.75rem;
     border-radius: 0.5rem;
-    transition: background 0.3s var(--nimiq-ease);
+    transition: background var(--transition-duration) var(--nimiq-ease);
     cursor: default;
 }
 
 .polygon-address-info .short-address span {
     opacity: 0.5;
-    transition: opacity 0.3s var(--nimiq-ease);
+    transition: opacity var(--transition-duration) var(--nimiq-ease);
 }
 
 .polygon-address-info .short-address .dots {
     display: flex;
     align-items: center;
     opacity: 0.3;
-    transition: opacity 0.3s var(--nimiq-ease);
+    transition: opacity var(--transition-duration) var(--nimiq-ease);
 }
 
 .polygon-address-info .short-address svg {
