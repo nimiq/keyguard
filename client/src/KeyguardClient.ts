@@ -41,6 +41,7 @@ import {
     SignSwapRequest,
     SignSwapTransactionsRequest,
     SignSwapTransactionsResult,
+    ConnectRequest,
 } from './PublicRequest';
 
 import Observable from './Observable';
@@ -156,6 +157,10 @@ export class KeyguardClient {
 
     public signSwap(request: SignSwapRequest) {
         this._redirectRequest<SignSwapRequest>(KeyguardCommand.SIGN_SWAP, request);
+    }
+
+    public connectAccount(request: ConnectRequest) {
+        this._redirectRequest<ConnectRequest>(KeyguardCommand.CONNECT_ACCOUNT, request);
     }
 
     /* IFRAME REQUESTS */

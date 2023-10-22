@@ -141,23 +141,23 @@ class Key {
         );
     }
 
-    // /**
-    //  * @returns {Promise<CryptoKey>}
-    //  */
-    // async getRsaPublicKey() {
-    //     if (!this.rsaKeyPair) {
-    //         this.rsaKeyPair = await this._computeRsaKeyPair();
-    //         await KeyStore.instance.addRsaKeypair(this.id, this.rsaKeyPair);
-    //     }
+    /**
+     * @returns {Promise<CryptoKey>}
+     */
+    async getRsaPublicKey() {
+        if (!this.rsaKeyPair) {
+            this.rsaKeyPair = await this._computeRsaKeyPair();
+            await KeyStore.instance.addRsaKeypair(this.id, this.rsaKeyPair);
+        }
 
-    //     return window.crypto.subtle.importKey(
-    //         'spki',
-    //         this.rsaKeyPair.publicKey,
-    //         { name: 'RSA-OAEP', hash: 'SHA-256' },
-    //         true, // Allow extraction
-    //         ['encrypt'],
-    //     );
-    // }
+        return window.crypto.subtle.importKey(
+            'spki',
+            this.rsaKeyPair.publicKey,
+            { name: 'RSA-OAEP', hash: 'SHA-256' },
+            true, // Allow extraction
+            ['encrypt'],
+        );
+    }
 
     /**
      * @returns {Promise<RsaKeyPairExport>}

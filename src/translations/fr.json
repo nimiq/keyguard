@@ -113,6 +113,7 @@
     "passwordbox-repeat-password-short": "Le mot de passe est trop court",
     "passwordbox-password-skip": "Ignorer pour l'instant",
     "passwordbox-reset-password": "Réinitialiser avec les mots de récupération",
+    "passwordbox-connect-account": "Connect your account",
 
     "payment-info-line-order-amount": "Montant de la commande",
     "payment-info-line-vendor-markup": "Crypto-premium",
@@ -252,5 +253,7 @@
     "sign-swap-of-exchange-value": "de la valeur du swap.",
     "sign-swap-total-fees": "Total des frais",
     "sign-swap-exchange-rate": "Taux de change",
-    "sign-swap-your-bank": "Votre banque"
+    "sign-swap-your-bank": "Votre banque",
+
+    "connect-heading-prefix": "Log in to"
 }
