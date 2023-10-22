@@ -109,6 +109,7 @@
     "passwordbox-repeat-password-short": "密码太短",
     "passwordbox-password-skip": "现在跳过",
     "passwordbox-reset-password": "使用助记词重置",
+    "passwordbox-connect-account": "Connect your account",
 
     "payment-info-line-order-amount": "订单数量",
     "payment-info-line-vendor-markup": "供应商加密货币加价",
@@ -250,5 +251,7 @@
     "sign-swap-of-exchange-value": "交换价值",
     "sign-swap-total-fees": "总费用",
     "sign-swap-exchange-rate": "Exchange rate",
-    "sign-swap-your-bank": "你的银行"
+    "sign-swap-your-bank": "你的银行",
+
+    "connect-heading-prefix": "Log in to"
 }

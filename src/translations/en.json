@@ -109,6 +109,7 @@
     "passwordbox-repeat-password-short": "Password is too short",
     "passwordbox-password-skip": "Skip for now",
     "passwordbox-reset-password": "Reset with Recovery Words",
+    "passwordbox-connect-account": "Connect your account",
 
     "payment-info-line-order-amount": "Order amount",
     "payment-info-line-vendor-markup": "Vendor crypto markup",
@@ -250,5 +251,7 @@
     "sign-swap-of-exchange-value": "of swap value.",
     "sign-swap-total-fees": "Total fees",
     "sign-swap-exchange-rate": "Exchange rate",
-    "sign-swap-your-bank": "Your bank"
+    "sign-swap-your-bank": "Your bank",
+
+    "connect-heading-prefix": "Log in to"
 }

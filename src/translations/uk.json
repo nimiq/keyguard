@@ -109,6 +109,7 @@
     "passwordbox-repeat-password-short": "Пароль занадто короткий",
     "passwordbox-password-skip": "Наразі пропустити",
     "passwordbox-reset-password": "Скинути за допомогою секретних слів",
+    "passwordbox-connect-account": "Connect your account",
 
     "payment-info-line-order-amount": "Сума замовлення",
     "payment-info-line-vendor-markup": "Націнка від постачальника",
@@ -250,5 +251,7 @@
     "sign-swap-of-exchange-value": "суми обміну.",
     "sign-swap-total-fees": "Сумарна комісія",
     "sign-swap-exchange-rate": "Exchange rate",
-    "sign-swap-your-bank": "Ваш банк"
+    "sign-swap-your-bank": "Ваш банк",
+
+    "connect-heading-prefix": "Log in to"
 }

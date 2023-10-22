@@ -6,6 +6,7 @@ import { KeyguardCommand } from './KeyguardCommand';
 export {
     OpenGsnForwardRequest,
     OpenGsnRelayData,
+    KeyguardCommand,
 };
 
 export type ObjectType = {
@@ -479,6 +480,23 @@ export type DerivePolygonAddressResult = {
     }>,
 };
 
+export type ConnectRequest = SimpleRequest & {
+    appLogoUrl: string,
+    permissions: KeyguardCommand[],
+    requestedKeyPaths: string[],
+    challenge: string,
+};
+
+export type ConnectResult = {
+    signatures: SignatureResult[],
+    encryptionKey: {
+        format: 'spki',
+        keyData: Uint8Array,
+        algorithm: RsaHashedImportParams,
+        keyUsages: ['encrypt'],
+    },
+};
+
 // Request unions
 
 export type RedirectRequest
@@ -488,6 +506,7 @@ export type RedirectRequest
     | ImportRequest
     | RemoveKeyRequest
     | SignMessageRequest
+    | ConnectRequest
     | SignTransactionRequest
     | SignBtcTransactionRequest
     | SignPolygonTransactionRequest
@@ -561,6 +580,7 @@ export type RedirectResult
     | ExportResult
     | KeyResult
     | SignatureResult
+    | ConnectResult
     | SignTransactionResult
     | SignMultisigTransactionResult
     | SignedBitcoinTransaction
@@ -578,6 +598,7 @@ export type ResultType<T extends RedirectRequest> =
     T extends Is<T, SignMessageRequest> ? SignatureResult :
     T extends Is<T, SignTransactionRequest> ? SignTransactionResult :
     T extends Is<T, SignMultisigTransactionRequest> ? SignMultisigTransactionResult :
+    T extends Is<T, ConnectRequest> ? ConnectResult :
     T extends Is<T, DeriveAddressRequest> ? DerivedAddress[] :
     T extends Is<T, CreateRequest> | Is<T, ImportRequest> | Is<T, ResetPasswordRequest> ? KeyResult :
     T extends Is<T, ExportRequest> ? ExportResult :
@@ -593,6 +614,7 @@ export type ResultByCommand<T extends KeyguardCommand> =
     T extends KeyguardCommand.SIGN_MESSAGE ? SignatureResult :
     T extends KeyguardCommand.SIGN_TRANSACTION ? SignTransactionResult :
     T extends KeyguardCommand.SIGN_MULTISIG_TRANSACTION ? SignMultisigTransactionResult :
+    T extends KeyguardCommand.CONNECT_ACCOUNT ? ConnectResult :
     T extends KeyguardCommand.DERIVE_ADDRESS ? DerivedAddress[] :
     T extends KeyguardCommand.CREATE | KeyguardCommand.IMPORT ? KeyResult :
     T extends KeyguardCommand.EXPORT ? ExportResult :
