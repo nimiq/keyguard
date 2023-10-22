@@ -109,6 +109,7 @@
     "passwordbox-repeat-password-short": "La contraseña es muy corta",
     "passwordbox-password-skip": "Salar por ahora",
     "passwordbox-reset-password": "Reiniciar con Palabras de Recuperación",
+    "passwordbox-connect-account": "Connect your account",
 
     "payment-info-line-order-amount": "Monto de orden",
     "payment-info-line-vendor-markup": "Margen del vendedor en cripto",
@@ -250,5 +251,7 @@
     "sign-swap-of-exchange-value": "del valor del intercambio.",
     "sign-swap-total-fees": "Cuotas totales",
     "sign-swap-exchange-rate": "Tasa de cambio",
-    "sign-swap-your-bank": "Su banco"
+    "sign-swap-your-bank": "Su banco",
+
+    "connect-heading-prefix": "Log in to"
 }
