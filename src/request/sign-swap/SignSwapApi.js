@@ -230,6 +230,11 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
             const polygonAddress = parsedRequest.fund.type === 'USDC'
                 ? parsedRequest.fund.request.from
                 : parsedRequest.redeem.type === 'USDC'
+                    // Even for redeeming, the user's address is the `from` address,
+                    // because in EVM, redeeming is still an interaction with a contract.
+                    // Triggering the payout means calling a function on the HTLC contract,
+                    // that's why the sender (`from`) is the user and the recipient (`to`)
+                    // is the contract.
                     ? parsedRequest.redeem.request.from
                     : undefined;
             if (polygonAddress) {
