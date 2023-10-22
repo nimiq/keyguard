@@ -7,6 +7,7 @@ export enum KeyguardCommand {
     SIGN_TRANSACTION = 'sign-transaction',
     SIGN_MULTISIG_TRANSACTION = 'sign-multisig-transaction',
     SIGN_MESSAGE = 'sign-message',
+    CONNECT_ACCOUNT = 'connect',
     DERIVE_ADDRESS = 'derive-address',
 
     // Bitcoin

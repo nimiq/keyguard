@@ -108,6 +108,7 @@
     "passwordbox-repeat-password-short": "Wachtwoord is te kort",
     "passwordbox-password-skip": "Voor nu overslaan",
     "passwordbox-reset-password": "Resetten met herstelwoorden",
+    "passwordbox-connect-account": "Connect your account",
 
     "payment-info-line-order-amount": "Orderbedrag",
     "payment-info-line-vendor-markup": "Crypto leverancier opmaak",
@@ -249,5 +250,7 @@
     "sign-swap-of-exchange-value": "van ruilwaarde.",
     "sign-swap-total-fees": "Totale kosten",
     "sign-swap-exchange-rate": "Exchange rate",
-    "sign-swap-your-bank": "Jouw bank"
+    "sign-swap-your-bank": "Jouw bank",
+
+    "connect-heading-prefix": "Log in to"
 }
