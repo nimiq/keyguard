@@ -40,6 +40,8 @@ class MultisigUtils { // eslint-disable-line no-unused-vars
             const loadPromise = new Promise(resolve => script.addEventListener('load', () => resolve()));
             document.head.appendChild(script);
             await loadPromise;
+
+            // `wasm_bindgen` is a global variable from the script above
             await wasm_bindgen('../../lib/multisig/wasm/pkg/multisig_bg.wasm'); // Relative path from a request URL
         }
 
