@@ -14,6 +14,7 @@
     "back-to-cpl": "Volver a CryptoPayment.link",
 
     "funding-cashlink": "Fundando cashlink",
+    "label-unknown": "Desconocido",
 
     "recovery-words-title": "Escriba estas 24 Palabras en Papel",
     "recovery-words-intro-text": "Las Palabras de Recuperación son la ÚNICA manera de restaurar su cuenta en caso de que pierda su archivo de acceso o contraseña.",
@@ -23,14 +24,13 @@
     "recovery-words-text": "¡Cualquiera con estas palabras puede acceder a su cuenta! Manténgalas a salvo.",
     "recovery-words-validate": "Validar respaldo",
 
-    "create-heading-choose-identicon": "Elija un Avatar",
-    "create-address-label": "Su dirección:",
-    "create-confirm-address": "Seleccione y continue",
-    "create-heading-create-password": "Cree una Contraseña",
-    "create-heading-repeat-password": "Confirme su Contraseña",
-    "create-heading-validate-backup": "Valide su Respaldo",
-    "create-loginfile-keycard": "La contraseña protege su Archivo Inicio de Sesión,\nconsidérelo una llave a su cuenta ",
-    "create-loginfile-any-device": "Este archivo le permite iniciar sesión desde cualquier dispositivo.",
+    "create-heading-select-login-file": "No se necesita su correo electrónico ",
+    "create-use-login-file-instead": "Use un 'Archivo de Sesión'",
+    "create-only-you-have-access": "De esta forma solo tú tienes acceso, ni siquiera el Equipo de Nimiq o el gobierno.",
+    "create-button-set-password": "Establecer contraseña",
+    "create-heading-add-password": "Y una contraseña",
+    "create-heading-repeat-password": "Repita su contraseña",
+    "create-loginfile-keycard": "La contraseña protege su Archivo de Sesión.\nLa ‘llave’ a su cuenta.",
     "create-heading-what-is-loginfile": "¿Que es un Archivo de Inicio de Sesión?",
     "create-login-file-explainer-intro": "Un archivo de imagen que, en combinación con su contraseña, le da acceso a su cuenta.",
     "create-login-file-paragraph-1": "Nimiq no almacena sus datos. El Archivo de Inicio de Sesión reemplaza al correo electrónico como la forma de iniciar sesión.",
@@ -79,7 +79,7 @@
 
     "passwordbox-enter-password": "Ingrese su contraseña",
     "passwordbox-enter-pin": "Ingrese su PIN",
-    "passwordbox-swap-authorized": "Swap authorized",
+    "passwordbox-swap-authorized": "Intercambio autorizado",
     "passwordbox-repeat-password": "Repita su contraseña",
     "passwordbox-repeat": "Repita contraseña",
     "passwordbox-continue": "Continue",
@@ -176,6 +176,7 @@
     "export-words-unlock-heading": "Desbloquear su Respaldo",
     "export-words-hint": "Desplácese hacia abajo para continuar",
     "go-to-recovery-words": "Crear respaldo",
+    "export-heading-validate-backup": "Valide su Respaldo",
     "export-continue-to-login-file": "Continuar",
     "export-show-recovery-words": "Muestre Palabras de Recuperación",
 
@@ -221,11 +222,15 @@
     "bitcoin": "Bitcoin",
     "bitcoin-recipient-unlabelled": "Sin etiqueta",
 
+    "usd-coin": "USD Coin",
+
     "derive-btc-xpub-heading": "Agregar Bitcoin\na su Cuenta",
     "derive-btc-xpub-text": "Fácilmente intecambie entre NIM, la moneda de pago con super rendimiento y BTC, el estándar de oro en cripto.",
 
+    "derive-polygon-address-heading": "Activar USDC",
+    "derive-polygon-address-text": "USDC es una moneda estable fijada al precio del USD y ahora esta disponible en la billetera.",
+
     "sign-swap-heading": "Confirmar Intercambio",
-    "sign-swap-exchange-rate-tooltip": "La taza de cambio incluye cuotas de intercambio.",
     "sign-swap-fees": "cuotas",
     "sign-swap-btc-fees": "Cuota de red de BTC",
     "sign-swap-btc-fees-explainer": "Los intercambios atómicos requieren dos transacciones BTC.",
@@ -233,9 +238,11 @@
     "sign-swap-oasis-fees-explainer": "del valor del intercambio.",
     "sign-swap-bank-fees": "cuota",
     "sign-swap-bank-fees-explainer": "Cuotas de la red bancarias.",
+    "sign-swap-usdc-fees": "Cuota de red de USDC",
     "sign-swap-nim-fees": "Cuota de red de NIM",
     "sign-swap-exchange-fee": "Cuotas de intercambio",
     "sign-swap-of-exchange-value": "del valor del intercambio.",
     "sign-swap-total-fees": "Cuotas totales",
+    "sign-swap-exchange-rate": "Exchange rate",
     "sign-swap-your-bank": "Su banco"
 }

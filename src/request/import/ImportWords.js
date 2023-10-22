@@ -15,6 +15,7 @@
 /* global TopLevelApi */
 /* global Utf8Tools */
 /* global BitcoinKey */
+/* global PolygonKey */
 /* global NonPartitionedSessionStorage */
 
 /**
@@ -181,6 +182,12 @@ class ImportWords {
 
                 const bitcoinXPub = new BitcoinKey(key).deriveExtendedPublicKey(this._request.bitcoinXPubPath);
 
+                const polygonKeypath = `${this._request.polygonAccountPath}/0/0`;
+                const polygonAddresses = [{
+                    address: new PolygonKey(key).deriveAddress(polygonKeypath),
+                    keyPath: polygonKeypath,
+                }];
+
                 // Store entropy in NonPartitionedSessionStorage so addresses can be derived in the KeyguardIframe
                 const tmpCookieEncryptionKey = await NonPartitionedSessionStorage.set(
                     ImportApi.SESSION_STORAGE_KEY_PREFIX + key.id,
@@ -200,6 +207,7 @@ class ImportWords {
                     fileExported: true,
                     wordsExported: true,
                     bitcoinXPub,
+                    polygonAddresses,
 
                     // The Hub will get access to the encryption key, but not the encrypted cookie. The server can
                     // potentially get access to the encrypted cookie, but not the encryption key (the result including

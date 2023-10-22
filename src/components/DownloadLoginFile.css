@@ -48,15 +48,6 @@
     }
 }
 
-.download-loginfile .loginfile-description {
-    font-size: 2rem;
-    margin: 3rem 0 0;
-}
-
-.download-loginfile .loginfile-description:not(.visible) {
-    display: none;
-}
-
 .download-loginfile .actions {
     display: flex;
     flex-direction: row;

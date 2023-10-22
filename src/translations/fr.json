@@ -14,6 +14,7 @@
     "back-to-cpl": "Retour à CryptoPayment.link",
 
     "funding-cashlink": "Financement du cashlink",
+    "label-unknown": "Inconnu",
 
     "recovery-words-title": "Écrivez ces 24 Mots sur du papier",
     "recovery-words-intro-text": "Les Mots de Récupération sont le SEUL moyen de restaurer votre compte dans le cas où vous perdriez votre Ficher de Connexion ou votre mot de passe.",
@@ -23,14 +24,13 @@
     "recovery-words-text": "N'importe qui avec ces mots peut accéder à votre compte ! Gardez-les en lieu sûr.",
     "recovery-words-validate": "Valider la sauvegarde",
 
-    "create-heading-choose-identicon": "Choisissez un Avatar",
-    "create-address-label": "Votre adresse :",
-    "create-confirm-address": "Sélectionner et continuer",
-    "create-heading-create-password": "Créez un Mot de Passe",
-    "create-heading-repeat-password": "Confirmez le Mot de Passe",
-    "create-heading-validate-backup": "Validez votre Sauvegarde",
-    "create-loginfile-keycard": "Le mot de passe protège votre fichier de connexion. Considérez-le comme un code d'accès pour votre compte.",
-    "create-loginfile-any-device": "Ce fichier vous permet de vous connecter à partir de n'importe quel appareil.",
+    "create-heading-select-login-file": "Pas besoin de votre adresse e-mail",
+    "create-use-login-file-instead": "Utilisez plutôt un \"fichier de connexion\".",
+    "create-only-you-have-access": "De cette façon, vous êtes le seul à y avoir accès, pas même l'équipe Nimiq ou les gouvernements.",
+    "create-button-set-password": "Définir le mot de passe",
+    "create-heading-add-password": "Définir le mot de passe",
+    "create-heading-repeat-password": "Répétez votre mot de passe",
+    "create-loginfile-keycard": "Le mot de passe protège votre fichier de connexion.\nLa carte d'accès de votre compte.",
     "create-heading-what-is-loginfile": "Qu'est-ce qu'un fichier de connexion ?",
     "create-login-file-explainer-intro": "Un fichier image, combiné avec votre mot de passe, vous garanti l'accès à votre compte.",
     "create-login-file-paragraph-1": "Nimiq ne conserve pas vos données. Le fichier de connexion remplace une adresse mail pour vous connecter.",
@@ -79,7 +79,7 @@
 
     "passwordbox-enter-password": "Entrez votre mot de passe",
     "passwordbox-enter-pin": "Entrez votre PIN",
-    "passwordbox-swap-authorized": "Swap authorized",
+    "passwordbox-swap-authorized": "Swap autorisé",
     "passwordbox-repeat-password": "Répétez votre mot de passe",
     "passwordbox-repeat": "Répéter le mot de passe",
     "passwordbox-continue": "Continuer",
@@ -176,6 +176,7 @@
     "export-words-unlock-heading": "Déverrouillez votre Sauvegarde",
     "export-words-hint": "Faites défiler pour continuer",
     "go-to-recovery-words": "Créer une sauvegarde",
+    "export-heading-validate-backup": "Validez votre Sauvegarde",
     "export-continue-to-login-file": "Continuer",
     "export-show-recovery-words": "Afficher les Mots",
 
@@ -221,21 +222,27 @@
     "bitcoin": "Bitcoin",
     "bitcoin-recipient-unlabelled": "Non-libellé",
 
+    "usd-coin": "USD Coin",
+
     "derive-btc-xpub-heading": "Ajouter Bitcoin\nà votre compte",
     "derive-btc-xpub-text": "Swappez facilement entre NIM, la monnaie de paiement super performante et BTC, l'étalon-or de la crypto.",
 
+    "derive-polygon-address-heading": "Activer l'USDC",
+    "derive-polygon-address-text": "L'USDC est un stablecoin rattaché au Dollar et est maintenant disponible dans le portefeuille.",
+
     "sign-swap-heading": "Confirmer le swap",
-    "sign-swap-exchange-rate-tooltip": "Ce taux inclut les frais de swap.",
     "sign-swap-fees": "frais",
-    "sign-swap-btc-fees": "frais de réseau BTC",
+    "sign-swap-btc-fees": "Frais de réseau BTC",
     "sign-swap-btc-fees-explainer": "Un swap atomique nécessite 2 transactions BTC.",
     "sign-swap-oasis-fees": "frais de service OASIS",
     "sign-swap-oasis-fees-explainer": "de la valeur du swap.",
     "sign-swap-bank-fees": "frais",
     "sign-swap-bank-fees-explainer": "Frais du réseau bancaire.",
-    "sign-swap-nim-fees": "frais de réseau NIM",
+    "sign-swap-usdc-fees": "Frais de réseau USDC",
+    "sign-swap-nim-fees": "Frais de réseau NIM",
     "sign-swap-exchange-fee": "Frais de swap",
     "sign-swap-of-exchange-value": "de la valeur du swap.",
     "sign-swap-total-fees": "Total des frais",
+    "sign-swap-exchange-rate": "Exchange rate",
     "sign-swap-your-bank": "Votre banque"
 }

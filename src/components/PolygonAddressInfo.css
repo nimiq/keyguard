@@ -1,0 +1,116 @@
+.polygon-address-info {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+}
+
+.polygon-address-info .avatar,
+.polygon-address-info .logo {
+    width: 8rem;
+    height: 8rem;
+    flex-shrink: 0;
+}
+
+.polygon-address-info .avatar.initial {
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 3.5rem;
+    font-weight: bold;
+    color: white;
+    letter-spacing: -0.05em;
+}
+
+.polygon-address-info .avatar.unlabelled {
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 63 63"><path opacity=".25" fill="%231F2348" fill-rule="evenodd" isolation="isolate" d="M17,47.9a20.59,20.59,0,0,0-2.86,3.49,1,1,0,0,1-1.51.22,27.49,27.49,0,1,1,37.74,0,1,1,0,0,1-1.51-.23A20.82,20.82,0,0,0,17,47.9ZM31.5,63A31.5,31.5,0,1,0,0,31.5,31.5,31.5,0,0,0,31.5,63Zm0-25.41a12,12,0,1,0-12-12A12,12,0,0,0,31.5,37.59Z"/></svg>');
+    background-size: 100%;
+    background-repeat: no-repeat;
+}
+
+.polygon-address-info .label {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-top: 2rem;
+    white-space: nowrap;
+    overflow: hidden;
+    position: relative;
+    width: 18.5rem; /* 148px, the width the automatic labels are designed for */
+}
+
+.polygon-address-info .label.unknown {
+    font-style: italic;
+    font-weight: normal;
+}
+
+.polygon-address-info .label::after {
+    content: '';
+    display: inline-block;
+    width: 2rem;
+    height: 100%;
+    position: absolute;
+    right: 0;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0), white);
+}
+
+.polygon-address-info .short-address {
+    --transition-duration: 0.3s;
+
+    font-family: "Fira Mono", monospace;
+    font-size: 2rem;
+    line-height: 1.25;
+    margin-top: 0.5rem;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    transition: background var(--transition-duration) var(--nimiq-ease);
+    cursor: default;
+}
+
+.polygon-address-info .short-address span {
+    opacity: 0.5;
+    transition: opacity var(--transition-duration) var(--nimiq-ease);
+}
+
+.polygon-address-info .short-address .dots {
+    display: flex;
+    align-items: center;
+    opacity: 0.3;
+    transition: opacity var(--transition-duration) var(--nimiq-ease);
+}
+
+.polygon-address-info .short-address svg {
+    margin-right: 0.5rem;
+    width: 0.375rem;
+    height: 0.375rem;
+}
+
+.polygon-address-info .short-address svg:first-of-type {
+    margin-left: 0.5rem;
+}
+
+.polygon-address-info .short-address.tooltip .tooltip-box {
+    padding: 0.75rem 1rem;
+    font-weight: normal;
+}
+
+.polygon-address-info .short-address:hover,
+.poylgon-address-info .short-address:focus,
+.poylgon-address-info .short-address:focus-within {
+    background: var(--nimiq-highlight-bg);
+}
+
+.polygon-address-info .short-address:hover span,
+.poylgon-address-info .short-address:focus span,
+.poylgon-address-info .short-address:focus-within span {
+    opacity: 0.6;
+}
+
+.polygon-address-info .short-address:hover .dots,
+.poylgon-address-info .short-address:focus .dots,
+.poylgon-address-info .short-address:focus-within .dots {
+    opacity: 0.35;
+}

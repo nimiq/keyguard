@@ -1,18 +1,19 @@
-/* global Nimiq */
 /* global LoginFileConfig */
 /* global IqonHash */
-/* global BitcoinUtils */
+/* global CryptoUtils */
+
+/** @typedef {{address: string, balance: number, active: boolean, newBalance: number}} Segment */
+/** @typedef {'NIM' | 'BTC' | 'USDC' | 'EUR'} Asset */
 
 class BalanceDistributionBar { // eslint-disable-line no-unused-vars
     /**
      * @param {{
-     *  nimiqAddresses: { address: string, balance: number }[],
-     *  bitcoinAccount: { balance: number },
-     *  swapNimAddress: string,
-     *  nimFiatRate: number,
-     *  btcFiatRate: number,
-     *  newNimBalance: number,
-     *  newBtcBalanceFiat: number,
+     *  leftAsset: Asset,
+     *  rightAsset: Asset,
+     *  leftSegments: Segment[],
+     *  rightSegments: Segment[],
+     *  leftFiatRate: number,
+     *  rightFiatRate: number,
      * }} settings
      * @param {HTMLDivElement} [$el]
      */
@@ -20,50 +21,47 @@ class BalanceDistributionBar { // eslint-disable-line no-unused-vars
         this.$el = BalanceDistributionBar._createElement($el);
 
         const {
-            nimiqAddresses,
-            bitcoinAccount,
-            swapNimAddress,
-            nimFiatRate,
-            btcFiatRate,
-            newNimBalance,
-            newBtcBalanceFiat,
+            leftAsset,
+            rightAsset,
+            leftSegments,
+            rightSegments,
+            leftFiatRate,
+            rightFiatRate,
         } = settings;
 
-        const nimDistributionData = nimiqAddresses.map(addressInfo => {
-            const active = swapNimAddress === addressInfo.address;
-            const backgroundClass = LoginFileConfig[IqonHash.getBackgroundColorIndex(addressInfo.address)]
-                .className;
-            const oldBalance = Nimiq.Policy.lunasToCoins(addressInfo.balance) * nimFiatRate;
-            const newBalance = active
-                ? Nimiq.Policy.lunasToCoins(newNimBalance) * nimFiatRate
-                : oldBalance;
+        const leftDistributionData = leftSegments.map(segment => ({
+            oldBalance: CryptoUtils.unitsToCoins(leftAsset, segment.balance) * leftFiatRate,
+            newBalance: CryptoUtils.unitsToCoins(leftAsset, segment.newBalance) * leftFiatRate,
+            backgroundClass: leftAsset === 'NIM'
+                ? LoginFileConfig[IqonHash.getBackgroundColorIndex(segment.address)].className
+                : leftAsset.toLowerCase(),
+            active: segment.active,
+        }));
 
-            return {
-                oldBalance,
-                newBalance,
-                backgroundClass,
-                active,
-            };
-        });
+        const rightDistributionData = rightSegments.map(segment => ({
+            oldBalance: CryptoUtils.unitsToCoins(rightAsset, segment.balance) * rightFiatRate,
+            newBalance: CryptoUtils.unitsToCoins(rightAsset, segment.newBalance) * rightFiatRate,
+            backgroundClass: rightAsset === 'NIM'
+                ? LoginFileConfig[IqonHash.getBackgroundColorIndex(segment.address)].className
+                : rightAsset.toLowerCase(),
+            active: segment.active,
+        }));
 
-        const btcDistributionData = {
-            oldBalance: BitcoinUtils.satoshisToCoins(bitcoinAccount.balance) * btcFiatRate,
-            newBalance: newBtcBalanceFiat,
-            backgroundClass: 'bitcoin',
-            active: true,
-        };
-
-        const totalBalance = nimDistributionData.reduce((sum, data) => sum + data.newBalance, 0)
-            + btcDistributionData.newBalance;
+        const totalBalance = [...leftDistributionData, ...rightDistributionData].reduce(
+            (sum, data) => sum + data.newBalance,
+            0,
+        );
 
         const $bars = document.createDocumentFragment();
-        for (const data of nimDistributionData) {
+        for (const data of leftDistributionData) {
             $bars.appendChild(this._createBar(data, totalBalance));
         }
         const $separator = document.createElement('div');
         $separator.classList.add('separator');
         $bars.appendChild($separator);
-        $bars.appendChild(this._createBar(btcDistributionData, totalBalance));
+        for (const data of rightDistributionData) {
+            $bars.appendChild(this._createBar(data, totalBalance));
+        }
 
         this.$el.appendChild($bars);
     }

@@ -5,16 +5,15 @@
 
 /**
  * @template {{}} T
- * @typedef {new (...args: any[]) => T} Constructor;
+ * @typedef {new (...args: any[]) => T} BitcoinRequestParserMixinConstructor;
  */
 
 // eslint-disable-next-line valid-jsdoc
 /**
  * A mixin to add Bitcoin-related request parsers to a RequestParser class.
  *
- * @template {Constructor<RequestParser>} TBase
+ * @template {BitcoinRequestParserMixinConstructor<RequestParser>} TBase
  * @param {TBase} clazz
- * @returns {typeof Clazz}
  */
 function BitcoinRequestParserMixin(clazz) {
     const BitcoinHTLCInputTypes = [

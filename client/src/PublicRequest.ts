@@ -1,5 +1,12 @@
 import * as Nimiq from '@nimiq/core-web';
+import { ForwardRequest as OpenGsnForwardRequest } from '@opengsn/common/dist/EIP712/ForwardRequest';
+import { RelayData as OpenGsnRelayData } from '@opengsn/common/dist/EIP712/RelayData';
 import { KeyguardCommand } from './KeyguardCommand';
+
+export {
+    OpenGsnForwardRequest,
+    OpenGsnRelayData,
+};
 
 export type ObjectType = {
     [key: string]: any;
@@ -25,6 +32,10 @@ export type SingleKeyResult = {
     fileExported: boolean;
     wordsExported: boolean;
     bitcoinXPub?: string;
+    polygonAddresses?: Array<{
+        address: string,
+        keyPath: string,
+    }>;
     tmpCookieEncryptionKey?: Uint8Array;
 };
 
@@ -90,6 +101,7 @@ export type CreateRequest = BasicRequest & {
     defaultKeyPath: string,
     enableBackArrow?: boolean,
     bitcoinXPubPath: string,
+    polygonAccountPath: string,
 };
 
 export type DeriveAddressRequest = SimpleRequest & {
@@ -111,6 +123,7 @@ export type ImportRequest = BasicRequest & {
     enableBackArrow?: boolean,
     wordsOnly?: boolean,
     bitcoinXPubPath: string,
+    polygonAccountPath: string,
 };
 
 export type ResetPasswordRequest = ImportRequest & {
@@ -194,6 +207,33 @@ export type SignBtcTransactionRequest
     = SignBtcTransactionRequestStandard
     | SignBtcTransactionRequestCheckout;
 
+export type PolygonTransactionInfo = {
+    keyPath: string,
+
+    request: OpenGsnForwardRequest,
+    relayData: OpenGsnRelayData,
+
+    /**
+     * For refund and redeem transactions from HTLCs the amount is not part of the forward request / relay request and
+     * needs to be specified separately.
+     */
+    amount?: number,
+
+    /**
+     * The sender's nonce in the token contract, required when calling the
+     * contract function `transferWithApproval`.
+     */
+    approval?: {
+        tokenNonce: number,
+    },
+};
+
+export type SignPolygonTransactionRequest = Omit<SimpleRequest, 'keyLabel'> & PolygonTransactionInfo & {
+    keyLabel: string,
+    senderLabel?: string,
+    recipientLabel?: string,
+};
+
 export type MockSettlementInstruction = {
     type: 'mock',
     contractId: string,
@@ -237,6 +277,9 @@ export type SignSwapRequestCommon = SimpleRequest & {
             refundKeyPath: string, // To validate that we own the HTLC script's refund address
         }>
     ) | (
+        {type: 'USDC'}
+        & Omit<PolygonTransactionInfo, 'amount'>
+    ) | (
         {type: 'EUR'}
         & {
             amount: number,
@@ -269,6 +312,12 @@ export type SignSwapRequestCommon = SimpleRequest & {
             output: BitcoinTransactionChangeOutput,
         }
     ) | (
+        {type: 'USDC'}
+        & Omit<PolygonTransactionInfo, 'approval' | 'amount'>
+        & {
+            amount: number,
+        }
+    ) | (
         {type: 'EUR'}
         & {
             keyPath: string,
@@ -295,7 +344,7 @@ export type SignSwapRequestCommon = SimpleRequest & {
         funding: number,
         processing: number,
     },
-    serviceSwapFee: number, // Luna, Sats or Cents, depending which one gets funded
+    serviceSwapFee: number, // Luna, Sats or USDC-units, depending which one gets funded
 
     // Optional KYC info for swapping at higher limits.
     // KYC-enabled swaps facilitated by S3/Fastspot require an s3GrantToken and swaps from or to Euro via OASIS
@@ -313,6 +362,7 @@ export type SignSwapRequestStandard = SignSwapRequestCommon & {
 
 export type SignSwapRequestSlider = SignSwapRequestCommon & {
     layout: 'slider',
+    direction: 'left-to-right' | 'right-to-left',
     nimiqAddresses: Array<{
         address: string,
         balance: number, // Luna
@@ -320,6 +370,10 @@ export type SignSwapRequestSlider = SignSwapRequestCommon & {
     bitcoinAccount: {
         balance: number, // Sats
     },
+    polygonAddresses: Array<{
+        address: string,
+        usdcBalance: number, // smallest unit of USDC (= 0.000001 USDC)
+    }>,
 };
 
 export type SignSwapRequest = SignSwapRequestStandard | SignSwapRequestSlider;
@@ -339,6 +393,9 @@ export type SignSwapTransactionsRequest = {
         type: 'BTC',
         htlcScript: Uint8Array,
     } | {
+        type: 'USDC',
+        htlcData: string,
+    } | {
         type: 'EUR',
         hash: string,
         timeout: number,
@@ -353,6 +410,11 @@ export type SignSwapTransactionsRequest = {
         htlcScript: Uint8Array,
         transactionHash: string,
         outputIndex: number;
+    } | {
+        type: 'USDC',
+        hash: string,
+        timeout: number,
+        htlcId: string,
     } | {
         type: 'EUR',
         hash: string,
@@ -379,6 +441,17 @@ export type DeriveBtcXPubResult = {
     bitcoinXPub: string,
 };
 
+export type DerivePolygonAddressRequest = SimpleRequest & {
+    polygonAccountPath: string,
+};
+
+export type DerivePolygonAddressResult = {
+    polygonAddresses: Array<{
+        address: string,
+        keyPath: string,
+    }>,
+};
+
 // Request unions
 
 export type RedirectRequest
@@ -390,8 +463,10 @@ export type RedirectRequest
     | SignMessageRequest
     | SignTransactionRequest
     | SignBtcTransactionRequest
+    | SignPolygonTransactionRequest
     | SimpleRequest
     | DeriveBtcXPubRequest
+    | DerivePolygonAddressRequest
     | SignSwapRequest;
 
 export type IFrameRequest
@@ -432,9 +507,14 @@ export type SignedBitcoinTransaction = {
     transactionHash: string,
     raw: string,
 };
+export type SignedPolygonTransaction = {
+    message: Record<string, any>,
+    signature: string,
+};
 export type SignSwapTransactionsResult = {
     nim?: SignatureResult,
     btc?: SignedBitcoinTransaction,
+    usdc?: SignedPolygonTransaction,
     eur?: string, // When funding EUR: empty string, when redeeming EUR: JWS of the settlement instructions
     refundTx?: string,
 };
@@ -454,8 +534,10 @@ export type RedirectResult
     | KeyResult
     | SignTransactionResult
     | SignedBitcoinTransaction
+    | SignedPolygonTransaction
     | SimpleResult
     | DeriveBtcXPubResult
+    | DerivePolygonAddressResult
     | SignSwapResult;
 
 export type Result = RedirectResult | IFrameResult;
@@ -470,6 +552,8 @@ export type ResultType<T extends RedirectRequest> =
     T extends Is<T, RemoveKeyRequest> | Is<T, SimpleRequest> ? SimpleResult :
     T extends Is<T, SignBtcTransactionRequest> ? SignedBitcoinTransaction :
     T extends Is<T, DeriveBtcXPubRequest> ? DeriveBtcXPubResult :
+    T extends Is<T, DerivePolygonAddressRequest> ? DerivePolygonAddressResult :
+    T extends Is<T, SignPolygonTransactionRequest> ? SignedPolygonTransaction :
     T extends Is<T, SignSwapRequest> ? SignSwapResult :
     never;
 
@@ -481,6 +565,8 @@ export type ResultByCommand<T extends KeyguardCommand> =
     T extends KeyguardCommand.REMOVE ? SimpleResult :
     T extends KeyguardCommand.SIGN_BTC_TRANSACTION ? SignedBitcoinTransaction :
     T extends KeyguardCommand.DERIVE_BTC_XPUB ? DeriveBtcXPubResult :
+    T extends KeyguardCommand.DERIVE_POLYGON_ADDRESS ? DerivePolygonAddressResult :
+    T extends KeyguardCommand.SIGN_POLYGON_TRANSACTION ? SignedPolygonTransaction :
     T extends KeyguardCommand.SIGN_SWAP ? SignSwapResult :
     never;
 

@@ -1,0 +1,60 @@
+#confirm-transaction {
+    position: relative;
+    overflow: hidden;
+}
+
+#confirm-transaction .nq-card-body {
+    padding-bottom: 2rem;
+}
+
+#confirm-transaction .transaction {
+    display: flex;
+    flex-direction: column;
+}
+
+#confirm-transaction .value-fee {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+}
+
+#confirm-transaction .accounts {
+    flex-direction: row;
+    align-items: flex-start;
+    flex-shrink: 0;
+}
+
+#confirm-transaction .accounts .polygon-address-info {
+    width: calc(50% - 1.5rem);
+}
+
+#confirm-transaction .accounts .polygon-address-info:first-child .short-address.tooltip .tooltip-box {
+    transform: translateX(-6rem);
+}
+
+#confirm-transaction .accounts .polygon-address-info:last-child .short-address.tooltip .tooltip-box {
+    transform: translateX(-27.5rem);
+}
+
+#confirm-transaction .arrow {
+    margin-top: 3rem;
+    height: 2.25rem;
+    width: 3rem;
+    color: var(--nimiq-light-blue);
+}
+
+#confirm-transaction .total #value {
+    font-size: 5rem;
+}
+
+#confirm-transaction .total .usdc-symbol {
+    margin-left: 1rem;
+    font-weight: 700;
+}
+
+#confirm-transaction .fee-section {
+    opacity: 0.5;
+    margin-bottom: 0.25rem;
+}

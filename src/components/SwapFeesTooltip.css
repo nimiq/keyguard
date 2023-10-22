@@ -23,6 +23,7 @@
 
 .tooltip.fee-breakdown .explainer {
     font-size: 1.75rem;
+    line-height: 1.3;
     opacity: 0.6;
     margin: -1rem 0 0;
 }
@@ -36,4 +37,12 @@
 
 .tooltip.fee-breakdown .total-fees {
     font-weight: bold;
+}
+
+.tooltip.fee-breakdown .full-width {
+    padding-top: 1rem;
+}
+
+.tooltip.fee-breakdown .full-width :first-child {
+    margin-bottom: 1rem;
 }

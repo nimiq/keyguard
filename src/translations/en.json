@@ -14,6 +14,7 @@
     "back-to-cpl": "Back to CryptoPayment.link",
 
     "funding-cashlink": "Funding cashlink",
+    "label-unknown": "Unknown",
 
     "recovery-words-title": "Write these 24 Words on Paper",
     "recovery-words-intro-text": "The Recovery Words are the ONLY way to restore your account in case you lose your Login File or password.",
@@ -23,14 +24,13 @@
     "recovery-words-text": "Anyone with these words can access your account! Keep them safe.",
     "recovery-words-validate": "Validate backup",
 
-    "create-heading-choose-identicon": "Choose an Avatar",
-    "create-address-label": "Your address:",
-    "create-confirm-address": "Select and continue",
-    "create-heading-create-password": "Create a Password",
-    "create-heading-repeat-password": "Confirm your Password",
-    "create-heading-validate-backup": "Validate your Backup",
-    "create-loginfile-keycard": "The password protects your Login File,\nconsider it a keycard to your account.",
-    "create-loginfile-any-device": "This file allows you to login from any device.",
+    "create-heading-select-login-file": "No need for your email",
+    "create-use-login-file-instead": "Use a ‘Login File’ instead.",
+    "create-only-you-have-access": "This way only you have access, not even Team Nimiq or governments.",
+    "create-button-set-password": "Set password",
+    "create-heading-add-password": "Add a password",
+    "create-heading-repeat-password": "Repeat your password",
+    "create-loginfile-keycard": "The password protects your Login File.\nThe ‘keycard’ to your account.",
     "create-heading-what-is-loginfile": "What is a Login File?",
     "create-login-file-explainer-intro": "An image file that, in combination with your password, grants access to your account.",
     "create-login-file-paragraph-1": "Nimiq does not store your data. The Login File replaces email as the way to log in.",
@@ -176,6 +176,7 @@
     "export-words-unlock-heading": "Unlock your Backup",
     "export-words-hint": "Scroll to continue",
     "go-to-recovery-words": "Create backup",
+    "export-heading-validate-backup": "Validate your Backup",
     "export-continue-to-login-file": "Continue to Login File",
     "export-show-recovery-words": "Show Recovery Words",
 
@@ -221,11 +222,15 @@
     "bitcoin": "Bitcoin",
     "bitcoin-recipient-unlabelled": "Unlabelled",
 
+    "usd-coin": "USD Coin",
+
     "derive-btc-xpub-heading": "Add Bitcoin\nto your account",
     "derive-btc-xpub-text": "Easily swap between NIM, the super performant payment coin and BTC, the gold standard of crypto.",
 
+    "derive-polygon-address-heading": "Activate USDC",
+    "derive-polygon-address-text": "USDC is a stablecoin pegged to USD and now available in the wallet.",
+
     "sign-swap-heading": "Confirm Swap",
-    "sign-swap-exchange-rate-tooltip": "This rate includes the swap fee.",
     "sign-swap-fees": "fees",
     "sign-swap-btc-fees": "BTC network fee",
     "sign-swap-btc-fees-explainer": "Atomic swaps require two BTC transactions.",
@@ -233,9 +238,11 @@
     "sign-swap-oasis-fees-explainer": "of swap value.",
     "sign-swap-bank-fees": "fee",
     "sign-swap-bank-fees-explainer": "Banking network fee.",
+    "sign-swap-usdc-fees": "USDC network fee",
     "sign-swap-nim-fees": "NIM network fee",
     "sign-swap-exchange-fee": "Swap fee",
     "sign-swap-of-exchange-value": "of swap value.",
     "sign-swap-total-fees": "Total fees",
+    "sign-swap-exchange-rate": "Exchange rate",
     "sign-swap-your-bank": "Your bank"
 }

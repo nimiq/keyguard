@@ -55,6 +55,89 @@ type ParsedBitcoinTransactionInput = {
     address: string,
 };
 
+interface PolygonUsdcApproval {
+    readonly approval: ethers.BigNumber, // amount to be approved
+    readonly sigR: string,
+    readonly sigS: string,
+    readonly sigV: ethers.BigNumber,
+}
+
+interface PolygonTransferArgs extends ReadonlyArray<any> {
+    readonly token: string,
+    readonly amount: ethers.BigNumber,
+    readonly target: string,
+    readonly fee: ethers.BigNumber,
+}
+
+type PolygonTransferDescription = ethers.utils.TransactionDescription & {
+    readonly name: 'transfer',
+    readonly args: PolygonTransferArgs,
+};
+
+interface PolygonTransferWithApprovalArgs extends PolygonTransferArgs, PolygonUsdcApproval {}
+
+type PolygonTransferWithApprovalDescription = ethers.utils.TransactionDescription & {
+    readonly name: 'transferWithApproval',
+    readonly args: PolygonTransferWithApprovalArgs,
+};
+
+interface PolygonOpenArgs extends ReadonlyArray<any> {
+    readonly id: string,
+    readonly token: string,
+    readonly amount: ethers.BigNumber,
+    readonly refundAddress: string,
+    readonly recipientAddress: string,
+    readonly hash: string,
+    readonly timeout: ethers.BigNumber,
+    readonly fee: ethers.BigNumber,
+}
+
+type PolygonOpenDescription = ethers.utils.TransactionDescription & {
+    readonly name: 'open',
+    readonly args: PolygonOpenArgs,
+};
+
+interface PolygonOpenWithApprovalArgs extends PolygonOpenArgs, PolygonUsdcApproval {}
+
+type PolygonOpenWithApprovalDescription = ethers.utils.TransactionDescription & {
+    readonly name: 'openWithApproval',
+    readonly args: PolygonOpenWithApprovalArgs,
+};
+
+interface PolygonRedeemArgs extends ReadonlyArray<any> {
+    readonly id: string,
+    readonly target: string,
+    readonly secret: string,
+    readonly fee: ethers.BigNumber,
+}
+
+type PolygonRedeemDescription = ethers.utils.TransactionDescription & {
+    readonly name: 'redeem',
+    readonly args: PolygonRedeemArgs,
+};
+
+interface PolygonRedeemWithSecretInDataArgs extends ReadonlyArray<any> {
+    readonly id: string,
+    readonly target: string,
+    readonly fee: ethers.BigNumber,
+}
+
+type PolygonRedeemWithSecretInDataDescription = ethers.utils.TransactionDescription & {
+    readonly name: 'redeemWithSecretInData',
+    readonly args: PolygonRedeemWithSecretInDataArgs,
+};
+
+interface PolygonRefundArgs extends ReadonlyArray<any> {
+    readonly id: string,
+    readonly target: string,
+    readonly fee: ethers.BigNumber,
+}
+
+type PolygonRefundDescription = ethers.utils.TransactionDescription & {
+    readonly name: 'refund',
+    readonly args: PolygonRefundArgs,
+};
+
 type NimHtlcContents = {
     refundAddress: string,
     redeemAddress: string,
@@ -99,7 +182,10 @@ type ConstructSwap<T extends KeyguardRequest.SignSwapRequestCommon> = Transform<
             locktime?: number;
             refundKeyPath: string,
             refundAddress: string,
-        } | {
+        } | Transform<KeyguardRequest.PolygonTransactionInfo, 'amount', {
+            type: 'USDC',
+            description: PolygonOpenDescription | PolygonOpenWithApprovalDescription,
+        }> | {
             type: 'EUR',
             amount: number,
             fee: number,
@@ -121,7 +207,11 @@ type ConstructSwap<T extends KeyguardRequest.SignSwapRequestCommon> = Transform<
                 keyPath: string,
             },
             output: KeyguardRequest.BitcoinTransactionChangeOutput,
-        } | {
+        } | Transform<KeyguardRequest.PolygonTransactionInfo, 'amount' | 'approval', {
+            type: 'USDC',
+            description: PolygonRedeemDescription | PolygonRedeemWithSecretInDataDescription,
+            amount: number,
+        }> | {
             type: 'EUR',
             keyPath: string,
             // A SettlementInstruction contains a `type`, so cannot be in the
@@ -158,6 +248,7 @@ type Parsed<T extends KeyguardRequest.Request> =
     T extends Is<T, KeyguardRequest.SimpleRequest>
         | Is<T, KeyguardRequest.DeriveAddressRequest>
         | Is<T, KeyguardRequest.DeriveBtcXPubRequest>
+        | Is<T, KeyguardRequest.DerivePolygonAddressRequest>
         | Is<T, KeyguardRequest.RemoveKeyRequest>
         | Is<T, KeyguardRequest.ExportRequest> ? KeyId2KeyInfo<T> :
     T extends Is<T, KeyguardRequest.ImportRequest> ?
@@ -184,6 +275,11 @@ type Parsed<T extends KeyguardRequest.Request> =
                 'inputs', { inputs: ParsedBitcoinTransactionInput[] }
             >, 'shopLogoUrl', { shopLogoUrl?: URL }
         > :
+    T extends Is<T, KeyguardRequest.SignPolygonTransactionRequest> ?
+        KeyId2KeyInfo<KeyguardRequest.SignPolygonTransactionRequest>
+        & { description: PolygonTransferDescription
+            | PolygonTransferWithApprovalDescription
+            | PolygonRefundDescription } :
     T extends Is<T, KeyguardRequest.SignSwapRequestStandard> ?
         KeyId2KeyInfo<ConstructSwap<KeyguardRequest.SignSwapRequestStandard>>
         & { layout: KeyguardRequest.SignSwapRequestLayout } :
@@ -197,6 +293,10 @@ type Parsed<T extends KeyguardRequest.Request> =
             bitcoinAccount: {
                 balance: number, // Sats
             },
+            polygonAddresses: Array<{
+                address: string,
+                usdcBalance: number, // smallest unit of USDC (= 0.000001 USDC)
+            }>
         } :
     T extends Is<T, KeyguardRequest.SignSwapTransactionsRequest> ?
         Transform<
@@ -211,6 +311,9 @@ type Parsed<T extends KeyguardRequest.Request> =
                     htlcDetails: BtcHtlcContents,
                     htlcScript: Uint8Array,
                     htlcAddress: string,
+                } | {
+                    type: 'USDC',
+                    description: PolygonOpenDescription,
                 } | {
                     type: 'EUR',
                     htlcDetails: EurHtlcContents,
@@ -228,6 +331,13 @@ type Parsed<T extends KeyguardRequest.Request> =
                     transactionHash: string,
                     outputIndex: number,
                     outputScript: Buffer,
+                } | {
+                    type: 'USDC',
+                    htlcId: string,
+                    htlcDetails: {
+                        hash: string,
+                        timeoutTimestamp: number,
+                    },
                 } | {
                     type: 'EUR',
                     htlcDetails: EurHtlcContents,

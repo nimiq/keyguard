@@ -1,9 +1,10 @@
 [main]
 host = https://www.transifex.com
 
-[nimiq-keyguard.en-json]
-file_filter = src/translations/<lang>.json
+[o:nimiq-foundation:p:nimiq-keyguard:r:en-json]
+file_filter  = src/translations/<lang>.json
+source_file  = src/translations/en.json
+source_lang  = en
+type         = KEYVALUEJSON
 minimum_perc = 50
-source_file = src/translations/en.json
-source_lang = en
-type = KEYVALUEJSON
+

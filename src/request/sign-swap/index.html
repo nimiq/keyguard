@@ -50,6 +50,13 @@
     <script defer bundle-bitcoin src="../../lib/bitcoin/BitcoinKey.js"></script>
     <script defer bundle-bitcoin src="../../lib/bitcoin/BitcoinRequestParserMixin.js"></script>
 
+    <script defer bundle-polygon src="../../../node_modules/ethers/dist/ethers.umd.js"></script>
+    <script defer bundle-polygon src="../../lib/polygon/PolygonConstants.js"></script>
+    <script defer bundle-polygon src="../../lib/polygon/PolygonUtils.js"></script>
+    <script defer bundle-polygon src="../../lib/polygon/PolygonKey.js"></script>
+    <script defer bundle-polygon src="../../lib/polygon/PolygonContractABIs.js"></script>
+    <script defer bundle-polygon src="../../lib/polygon/PolygonRequestParserMixin.js"></script>
+
     <script defer src="../../lib/IqonHash.js"></script>
     <script defer src="../../lib/Iqons.js"></script>
     <script defer src="../../lib/LoginFileConfig.js"></script>
@@ -58,6 +65,7 @@
     <script defer src="../../lib/euro/EuroConstants.js"></script>
     <script defer src="../../lib/euro/EuroUtils.js"></script>
     <script defer src="../../lib/euro/Iban.js"></script>
+    <script defer src="../../lib/swap/CryptoUtils.js"></script>
     <script defer src="../../components/Identicon.js"></script>
     <script defer src="../../components/SwapFeesTooltip.js"></script>
     <script defer src="../../components/BalanceDistributionBar.js"></script>
@@ -90,14 +98,7 @@
                     <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
                 </a>
                 <h1 data-i18n="sign-swap-heading" class="nq-h1">Confirm Swap</h1>
-                <div class="nq-notice">
-                    <div class="tooltip exchange-rate" tabindex="0">
-                        <div class="pill">
-                            <span id="exchange-rate"></span>
-                        </div>
-                        <div class="tooltip-box" data-i18n="sign-swap-exchange-rate-tooltip">This rate includes the swap fee.</div>
-                    </div>
-                </div>
+                <div class="nq-notice"></div>
             </div>
 
             <div class="page-body nq-card-body layout-standard">
@@ -117,7 +118,7 @@
 
                 <div class="swap-values center">
                     <div class="from-value nq-light-blue">
-                        <span id="swap-nim-value"></span><span class="from-symbol"></span>
+                        <span id="swap-left-value"></span><span class="from-symbol"></span>
                     </div>
 
                     <div class="to-value nq-gray">
@@ -127,19 +128,21 @@
                                 <path d="M20.75 9.25l5.5 5.5-5.5 5.5" stroke-linejoin="round"/>
                             </g>
                         </svg>
-                        <span id="swap-btc-value"></span><span class="to-symbol"></span>
+                        <span id="swap-right-value"></span><span class="to-symbol"></span>
                     </div>
                 </div>
             </div>
 
             <div class="page-body nq-card-body layout-slider">
                 <div class="address-infos columns">
-                    <div class="left-account nim left-column">
+                    <div class="left-account left-column">
                         <div class="identicon"></div>
                         <span class="label"></span>
+                        <span class="new-balance"></span>
                     </div>
-                    <div class="right-account btc right-column">
+                    <div class="right-account right-column">
                         <span class="label"></span>
+                        <span class="new-balance"></span>
                         <div class="identicon"></div>
                     </div>
                 </div>
@@ -148,23 +151,12 @@
 
                 <div class="swap-values columns">
                     <div class="left-column">
-                        <span id="swap-nim-value"></span><span class="nim-symbol"></span><br>
-                        <span id="swap-nim-value-fiat" class="fiat"></span>
+                        <span id="swap-left-value"></span><span id="swap-left-symbol"></span><br>
+                        <span id="swap-left-value-fiat" class="fiat"></span>
                     </div>
                     <div class="right-column">
-                        <span id="swap-btc-value"></span><span class="btc-symbol"></span><br>
-                        <span id="swap-btc-value-fiat" class="fiat"></span>
-                    </div>
-                </div>
-
-                <div class="new-balances columns">
-                    <div class="left-column">
-                        <span id="new-nim-balance"></span><span class="nim-symbol"></span><br>
-                        <span id="new-nim-balance-fiat" class="fiat"></span>
-                    </div>
-                    <div class="right-column">
-                        <span id="new-btc-balance"></span><span class="btc-symbol"></span><br>
-                        <span id="new-btc-balance-fiat" class="fiat"></span>
+                        <span id="swap-right-value"></span><span id="swap-right-symbol"></span><br>
+                        <span id="swap-right-value-fiat" class="fiat"></span>
                     </div>
                 </div>
             </div>
@@ -182,9 +174,9 @@
         <!-- Default and loading screen -->
         <div id="loading" class="page">
             <!-- Loading spinner SVG -->
-            <svg height="48" width="54" color="inherit" class="loading-spinner"><g>
-                <path class="big-hex" d="M51.9,21.9L41.3,3.6c-0.8-1.3-2.2-2.1-3.7-2.1H16.4c-1.5,0-2.9,0.8-3.7,2.1L2.1,21.9c-0.8,1.3-0.8,2.9,0,4.2 l10.6,18.3c0.8,1.3,2.2,2.1,3.7,2.1h21.3c1.5,0,2.9-0.8,3.7-2.1l10.6-18.3C52.7,24.8,52.7,23.2,51.9,21.9z" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.4" stroke-dasharray="92.5 60"/>
-                <path class="small-hex" d="M51.9,21.9L41.3,3.6c-0.8-1.3-2.2-2.1-3.7-2.1H16.4c-1.5,0-2.9,0.8-3.7,2.1L2.1,21.9c-0.8,1.3-0.8,2.9,0,4.2 l10.6,18.3c0.8,1.3,2.2,2.1,3.7,2.1h21.3c1.5,0,2.9-0.8,3.7-2.1l10.6-18.3C52.7,24.8,52.7,23.2,51.9,21.9z" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-dasharray="47.5 105"/>
+            <svg height="48" width="54" color="inherit" class="loading-spinner"><g stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round">
+                <path class="big-hex" d="M51.9,21.9L41.3,3.6c-0.8-1.3-2.2-2.1-3.7-2.1H16.4c-1.5,0-2.9,0.8-3.7,2.1L2.1,21.9c-0.8,1.3-0.8,2.9,0,4.2 l10.6,18.3c0.8,1.3,2.2,2.1,3.7,2.1h21.3c1.5,0,2.9-0.8,3.7-2.1l10.6-18.3C52.7,24.8,52.7,23.2,51.9,21.9z" opacity="0.4" stroke-dasharray="92.5 60"/>
+                <path class="small-hex" d="M51.9,21.9L41.3,3.6c-0.8-1.3-2.2-2.1-3.7-2.1H16.4c-1.5,0-2.9,0.8-3.7,2.1L2.1,21.9c-0.8,1.3-0.8,2.9,0,4.2 l10.6,18.3c0.8,1.3,2.2,2.1,3.7,2.1h21.3c1.5,0,2.9-0.8,3.7-2.1l10.6-18.3C52.7,24.8,52.7,23.2,51.9,21.9z" stroke-dasharray="47.5 105"/>
             </g></svg>
         </div>
     </div>

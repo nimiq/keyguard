@@ -1,18 +1,16 @@
-/* global Nimiq */
 /* global I18n */
-/* global Errors */
 /* global TemplateTags */
 /* global NumberFormatting */
-/* global BitcoinUtils */
-/* global EuroUtils */
+/* global CryptoUtils */
 
 class SwapFeesTooltip { // eslint-disable-line no-unused-vars
     /**
      * @param {Parsed<KeyguardRequest.SignSwapRequest>} request
      * @param {number} exchangeFromAmount - In Luna or Satoshi, depending on which currency is funded
      * @param {number} exchangeToAmount - In Luna or Satoshi, depending on which currency is funded
+     * @param {string} exchangeRateString - The exchange rate between the two currencies
      */
-    constructor(request, exchangeFromAmount, exchangeToAmount) {
+    constructor(request, exchangeFromAmount, exchangeToAmount, exchangeRateString) {
         const {
             fund: fundTx,
             redeem: redeemTx,
@@ -48,7 +46,7 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
             const theirFee = fundTx.type === 'BTC' ? fundFees.redeeming : redeemFees.funding;
 
             const fiatRate = fundTx.type === 'BTC' ? fundingFiatRate : redeemingFiatRate;
-            const fiatFee = this._unitsToCoins('BTC', myFee + theirFee) * fiatRate;
+            const fiatFee = CryptoUtils.unitsToCoins('BTC', myFee + theirFee) * fiatRate;
 
             const rows = this._createBitcoinLine(fiatFee, fiatCurrency);
             this.$tooltip.appendChild(rows[0]);
@@ -57,7 +55,26 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
             totalFiatFees += fiatFee;
         }
 
-        // Show OASIS fees second
+        // Show USDC fees next
+        if (fundTx.type === 'USDC' || redeemTx.type === 'USDC') {
+            const myFee = fundTx.type === 'USDC'
+                ? fundTx.description.args.fee.toNumber()
+                : redeemTx.type === 'USDC'
+                    ? redeemTx.description.args.fee.toNumber()
+                    : 0;
+
+            const theirFee = fundTx.type === 'USDC' ? fundFees.redeeming : redeemFees.funding;
+
+            const fiatRate = fundTx.type === 'USDC' ? fundingFiatRate : redeemingFiatRate;
+            const fiatFee = CryptoUtils.unitsToCoins('USDC', myFee + theirFee) * fiatRate;
+
+            const rows = this._createUsdcLine(fiatFee, fiatCurrency);
+            this.$tooltip.appendChild(rows[0]);
+
+            totalFiatFees += fiatFee;
+        }
+
+        // Show OASIS fees next
         if (fundTx.type === 'EUR' || redeemTx.type === 'EUR') {
             const myFee = fundTx.type === 'EUR'
                 ? fundTx.fee
@@ -68,7 +85,7 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
             const theirFee = fundTx.type === 'EUR' ? fundFees.processing : redeemFees.processing;
 
             const fiatRate = fundTx.type === 'EUR' ? fundingFiatRate : redeemingFiatRate;
-            const fiatFee = this._unitsToCoins('EUR', myFee + theirFee) * fiatRate;
+            const fiatFee = CryptoUtils.unitsToCoins('EUR', myFee + theirFee) * fiatRate;
 
             const rows = this._createOasisLine(
                 fiatFee,
@@ -86,7 +103,7 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
             const theirFee = redeemFees.funding;
 
             const fiatRate = redeemingFiatRate;
-            const fiatFee = this._unitsToCoins('EUR', theirFee) * fiatRate;
+            const fiatFee = CryptoUtils.unitsToCoins('EUR', theirFee) * fiatRate;
 
             const rows = this._createBankNetworkLine(fiatFee, fiatCurrency, 'SEPA Instant');
             this.$tooltip.appendChild(rows[0]);
@@ -106,7 +123,7 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
             const theirFee = fundTx.type === 'NIM' ? fundFees.redeeming : redeemFees.funding;
 
             const fiatRate = fundTx.type === 'NIM' ? fundingFiatRate : redeemingFiatRate;
-            const fiatFee = this._unitsToCoins('NIM', myFee + theirFee) * fiatRate;
+            const fiatFee = CryptoUtils.unitsToCoins('NIM', myFee + theirFee) * fiatRate;
 
             const rows = this._createNimiqLine(fiatFee, fiatCurrency);
             this.$tooltip.appendChild(rows[0]);
@@ -116,7 +133,7 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
 
         // Show Swap fees
         if (serviceSwapFee) {
-            const fiatFee = this._unitsToCoins(fundTx.type, serviceSwapFee) * fundingFiatRate;
+            const fiatFee = CryptoUtils.unitsToCoins(fundTx.type, serviceSwapFee) * fundingFiatRate;
 
             const rows = this._createServiceFeeLine(
                 fiatFee,
@@ -135,22 +152,11 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
         // Add total line
         this.$tooltip.appendChild(this._createTotalLine(totalFiatFees, fiatCurrency)[0]);
 
+        // Add exchange rate
+        this.$tooltip.appendChild(this._createExchangeRateLine(exchangeRateString)[0]);
+
         // Write total into the pill box
         this.$fees.textContent = NumberFormatting.formatCurrency(totalFiatFees, fiatCurrency);
-    }
-
-    /**
-     * @param {'NIM' | 'BTC' | 'EUR'} asset
-     * @param {number} units
-     * @returns {number}
-     */
-    _unitsToCoins(asset, units) {
-        switch (asset) {
-            case 'NIM': return Nimiq.Policy.lunasToCoins(units);
-            case 'BTC': return BitcoinUtils.satoshisToCoins(units);
-            case 'EUR': return EuroUtils.centsToCoins(units);
-            default: throw new Errors.KeyguardError(`Invalid asset ${asset}`);
-        }
     }
 
     /**
@@ -264,6 +270,24 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
     /**
      * @param {number} fiatFee
      * @param {string} fiatCurrency
+     * @returns {[HTMLDivElement]}
+     */
+    _createUsdcLine(fiatFee, fiatCurrency) {
+        const $div = document.createElement('div');
+        $div.classList.add('price-breakdown');
+
+        $div.innerHTML = TemplateTags.hasVars(1)`
+            <label data-i18n="sign-swap-usdc-fees">USDC network fee</label>
+            <div>${NumberFormatting.formatCurrency(fiatFee, fiatCurrency)}</div>
+        `;
+        I18n.translateDom($div);
+
+        return [$div];
+    }
+
+    /**
+     * @param {number} fiatFee
+     * @param {string} fiatCurrency
      * @param {number} percentage
      * @returns {[HTMLDivElement, HTMLParagraphElement]}
      */
@@ -297,6 +321,23 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
         $div.innerHTML = TemplateTags.hasVars(1)`
             <label data-i18n="sign-swap-total-fees">Total fees</label>
             <div class="total-fees">${NumberFormatting.formatCurrency(totalFiatFees, fiatCurrency)}</div>
+        `;
+        I18n.translateDom($div);
+
+        return [$div];
+    }
+
+    /**
+     * @param {string} exchangeRateString
+     * @returns {[HTMLDivElement]}
+     */
+    _createExchangeRateLine(exchangeRateString) {
+        const $div = document.createElement('div');
+        $div.classList.add('full-width');
+
+        $div.innerHTML = TemplateTags.hasVars(1)`
+        <div class="exchange-rate">${exchangeRateString}</div>
+        <p class="explainer" data-i18n="sign-swap-exchange-rate">Exchange rate</p>
         `;
         I18n.translateDom($div);
 

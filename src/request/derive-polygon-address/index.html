@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="icon" href="/favicon.ico">
+    <meta http-equiv="Content-Security-Policy"
+          content="default-src 'self' 'unsafe-eval';
+          img-src http: https: blob: data:;
+          child-src 'self' blob:;
+          style-src 'self';
+          font-src 'self';">
+    <title>Nimiq Keyguard</title>
+
+    <script defer manual src="../../../node_modules/@nimiq/core-web/web-offline.js"></script>
+    <script defer manual src="../../lib/Constants.js"></script>
+    <script defer manual src="../../config/config.local.js"></script>
+
+    <script defer bundle-common src="../../lib/JsonUtils.js"></script>
+    <script defer bundle-common src="../../lib/RpcServer.es.js"></script>
+    <script defer bundle-common src="../../lib/KeyStore.js"></script>
+    <script defer bundle-common src="../../lib/Key.js"></script>
+    <script defer bundle-common src="../../lib/KeyInfo.js"></script>
+    <script defer bundle-common src="../../lib/Errors.js"></script>
+    <script defer bundle-common src="../../lib/ErrorConstants.js"></script>
+    <script defer bundle-common src="../../lib/SignMessageConstants.js"></script>
+    <script defer bundle-common src="../../lib/CookieJar.js"></script>
+    <script defer bundle-common src="../../lib/BrowserDetection.js"></script>
+    <script defer bundle-common src="../../lib/AccountStore.js"></script>
+    <script defer bundle-common src="../../common.js"></script>
+
+    <script defer bundle-toplevel src="../../components/NoRequestErrorPage.js"></script>
+    <script defer bundle-toplevel src="../../components/PasswordBox.js"></script>
+    <script defer bundle-toplevel src="../../components/PasswordInput.js"></script>
+    <script defer bundle-toplevel src="../../lib/AnimationUtils.js"></script>
+    <script defer bundle-toplevel src="../../lib/I18n.js"></script>
+    <script defer bundle-toplevel src="../../lib/RequestParser.js"></script>
+    <script defer bundle-toplevel src="../../lib/TemplateTags.js"></script>
+    <script defer bundle-toplevel src="../../lib/Utf8Tools.js"></script>
+    <script defer bundle-toplevel src="../TopLevelApi.js"></script>
+    <script defer bundle-toplevel src="../../translations/index.js"></script>
+
+    <script defer bundle-polygon src="../../../node_modules/ethers/dist/ethers.umd.js"></script>
+    <script defer bundle-polygon src="../../lib/polygon/PolygonKey.js"></script>
+    <script defer bundle-polygon src="../../lib/polygon/PolygonConstants.js"></script>
+    <script defer bundle-polygon src="../../lib/polygon/PolygonUtils.js"></script>
+    <script defer bundle-polygon src="../../lib/polygon/PolygonRequestParserMixin.js"></script>
+
+    <script defer src="DerivePolygonAddress.js"></script>
+    <script defer src="DerivePolygonAddressApi.js"></script>
+    <script defer src="index.js"></script>
+
+    <link rel="stylesheet" bundle-toplevel href="../../../node_modules/@nimiq/style/nimiq-style.min.css">
+    <link rel="stylesheet" bundle-toplevel href="../../nimiq-style.css">
+    <link rel="stylesheet" bundle-toplevel href="../../common.css">
+    <link rel="stylesheet" bundle-toplevel href="../../components/PasswordInput.css">
+    <link rel="stylesheet" bundle-toplevel href="../../components/PasswordBox.css">
+
+    <link rel="stylesheet" href="./DerivePolygonAddress.css">
+</head>
+<body class="loading">
+    <div class="header-top">
+        <div class="nimiq-app-name">
+            <span class="nimiq-logo"></span>
+        </div>
+    </div>
+
+    <div id="app">
+        <div id="unlock" class="page nq-card">
+            <div class="page-body nq-card-body">
+                <div class="img">
+                    <img src="../../assets/icons/usdc-activation.svg" class="usdc-activation-logo">
+                </div>
+
+                <div class="flex-grow"></div>
+
+                <h1 class="nq-h1" data-i18n="derive-polygon-address-heading">Activate USDC</h1>
+                <p class="nq-text" data-i18n="derive-polygon-address-text">
+                    USDC is a stablecoin pegged to USD and now available in the wallet.
+                </p>
+
+                <div class="flex-grow"></div>
+            </div>
+
+            <div class="page-footer nq-card-footer">
+                <form class="password-box"></form>
+            </div>
+        </div>
+
+        <button class="global-close nq-button-s display-none">
+            <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left-small"/></svg>
+            <span id="global-close-text"></span>
+        </button>
+
+        <div id="loading" class="page">
+            <!-- Loading spinner SVG -->
+            <svg height="48" width="54" color="inherit" class="loading-spinner"><g stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round">
+                <path class="big-hex" d="M51.9,21.9L41.3,3.6c-0.8-1.3-2.2-2.1-3.7-2.1H16.4c-1.5,0-2.9,0.8-3.7,2.1L2.1,21.9c-0.8,1.3-0.8,2.9,0,4.2 l10.6,18.3c0.8,1.3,2.2,2.1,3.7,2.1h21.3c1.5,0,2.9-0.8,3.7-2.1l10.6-18.3C52.7,24.8,52.7,23.2,51.9,21.9z" opacity="0.4" stroke-dasharray="92.5 60"/>
+                <path class="small-hex" d="M51.9,21.9L41.3,3.6c-0.8-1.3-2.2-2.1-3.7-2.1H16.4c-1.5,0-2.9,0.8-3.7,2.1L2.1,21.9c-0.8,1.3-0.8,2.9,0,4.2 l10.6,18.3c0.8,1.3,2.2,2.1,3.7,2.1h21.3c1.5,0,2.9-0.8,3.7-2.1l10.6-18.3C52.7,24.8,52.7,23.2,51.9,21.9z" stroke-dasharray="47.5 105"/>
+            </g></svg>
+        </div>
+    </div>
+</body>
+</html>

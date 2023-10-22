@@ -14,6 +14,7 @@
     "back-to-cpl": "Назад к CryptoPayment.link",
 
     "funding-cashlink": "Финансирование Cashlink",
+    "label-unknown": "Unknown",
 
     "recovery-words-title": "Запишите эти 24 слова на бумаге",
     "recovery-words-intro-text": "При потере Файла и/или пароля аккайнт можно восстановить ТОЛЬКО Защитной Фразой из 24 слов.",
@@ -23,14 +24,13 @@
     "recovery-words-text": "Тот, у кого есть доступ к вашей Защитной Фразе, может получить доступ и к вашему аккаунту! Надёжно храните свои защитные слова!",
     "recovery-words-validate": "Проверить резервную копию",
 
-    "create-heading-choose-identicon": "Выберите Аватар",
-    "create-address-label": "Your address:",
-    "create-confirm-address": "Выбрать и продолжить",
-    "create-heading-create-password": "Создать пароль",
-    "create-heading-repeat-password": "Подтвердите пароль",
-    "create-heading-validate-backup": "Проверить вашу резервную копию",
-    "create-loginfile-keycard": "Пароль защищает ваш Файл Авторизации",
-    "create-loginfile-any-device": "С этим файлом вы можете войти в систему с любого устройства.",
+    "create-heading-select-login-file": "No need for your email",
+    "create-use-login-file-instead": "Use a ‘Login File’ instead.",
+    "create-only-you-have-access": "This way only you have access, not even Team Nimiq or governments.",
+    "create-button-set-password": "Установите пароль",
+    "create-heading-add-password": "Add a password",
+    "create-heading-repeat-password": "Повторите ваш пароль",
+    "create-loginfile-keycard": "The password protects your Login File.\nThe ‘keycard’ to your account.",
     "create-heading-what-is-loginfile": "Что такое Файл Авторизации?",
     "create-login-file-explainer-intro": "Это файл-картинка, который вместе с вашим паролем предоставляет доступ к вашему аккаунту.",
     "create-login-file-paragraph-1": "Nimiq не хранит ваши данные. Файл Авторизации используется вместо вашей почты для входа в систему.",
@@ -176,6 +176,7 @@
     "export-words-unlock-heading": "Разблокировать резервную копию",
     "export-words-hint": "Прокрутите, чтобы продолжить",
     "go-to-recovery-words": "Создать резервную копию",
+    "export-heading-validate-backup": "Проверить вашу резервную копию",
     "export-continue-to-login-file": "Далее к Файлу Авторизации",
     "export-show-recovery-words": "Показать Защитную Фразу",
 
@@ -221,11 +222,15 @@
     "bitcoin": "Bitcoin",
     "bitcoin-recipient-unlabelled": "Немаркированный",
 
+    "usd-coin": "USD Coin",
+
     "derive-btc-xpub-heading": "Добавьте Биткоин\nна свой аккаунт",
     "derive-btc-xpub-text": "NIM - супербыстрая платёжная монета. BTC - золотой криптовалютный стандарт. Меняйте NIM на BTC - и обратно. Это легко и просто!",
 
+    "derive-polygon-address-heading": "Activate USDC",
+    "derive-polygon-address-text": "USDC is a stablecoin pegged to USD and now available in the wallet.",
+
     "sign-swap-heading": "Подтвердить обмен",
-    "sign-swap-exchange-rate-tooltip": "Эта ставка включает в \nсебя комиссию за обмен.",
     "sign-swap-fees": "комиссии",
     "sign-swap-btc-fees": "Комиссия сети BTC",
     "sign-swap-btc-fees-explainer": " Обмен выполняется в 2 транзакции BTC.",
@@ -233,9 +238,11 @@
     "sign-swap-oasis-fees-explainer": "от суммы обмена.",
     "sign-swap-bank-fees": "комиссия",
     "sign-swap-bank-fees-explainer": "Комиссия банка.",
+    "sign-swap-usdc-fees": "USDC network fee",
     "sign-swap-nim-fees": "Комиссия сети NIM",
     "sign-swap-exchange-fee": "Комиссия",
     "sign-swap-of-exchange-value": "от суммы обмена.",
     "sign-swap-total-fees": "Итого",
+    "sign-swap-exchange-rate": "Exchange rate",
     "sign-swap-your-bank": "Ваш банк"
 }

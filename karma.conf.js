@@ -21,6 +21,7 @@ module.exports = function (/** @type {any} */ config) {
             'src/lib/*.js', // Force load of lib files before components and common.js
             'src/request/TopLevelApi.js', // Force load of TopLevelApi before BitcoinEnabledTopLevelApi
             'src/lib/bitcoin/*.js',
+            'node_modules/ethers/dist/ethers.umd.js',
             'src/**/*js',
             'tests/**/*.spec.js',
         ],
