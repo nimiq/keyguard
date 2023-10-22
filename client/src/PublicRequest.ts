@@ -6,7 +6,6 @@ import { KeyguardCommand } from './KeyguardCommand';
 export {
     OpenGsnForwardRequest,
     OpenGsnRelayData,
-    KeyguardCommand,
 };
 
 export type ObjectType = {
@@ -528,6 +527,7 @@ export type RedirectRequest
     | SignTransactionRequest
     | SignBtcTransactionRequest
     | SignPolygonTransactionRequest
+    | SignMultisigTransactionRequest
     | SimpleRequest
     | DeriveBtcXPubRequest
     | DerivePolygonAddressRequest

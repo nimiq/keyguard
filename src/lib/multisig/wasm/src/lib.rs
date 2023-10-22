@@ -9,6 +9,10 @@ pub fn aggregate_secrets(concatenated_secrets: &[u8], b: &[u8]) -> Vec<u8> {
 
     let secrets = concatenated_secrets.chunks_exact(32);
 
+    if secrets.len() != number_commitments {
+        panic!("Invalid number of secrects: is {}, must be {}", secrets.len(), number_commitments);
+    }
+
     if secrets.remainder().len() != 0 {
         panic!("Invalid length of concatenated secrets");
     }
