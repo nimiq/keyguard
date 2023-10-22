@@ -247,13 +247,26 @@ class SignMultisigTransaction {
         } else {
             // If we only have encrypted secrets, decrypt them and aggregate them with the bScalar
             const rsaKey = await key.getRsaPrivateKey();
-            const secrets = await Promise.all(request.multisigConfig.secret.encryptedSecrets.map(
-                async encrypted => new Uint8Array(
-                    await window.crypto.subtle.decrypt({ name: 'RSA-OAEP' }, rsaKey, encrypted),
-                ),
-            ));
 
-            aggregatedSecret = await MultisigUtils.aggregateSecrets(secrets, request.multisigConfig.secret.bScalar);
+            /** @type {Uint8Array[]} */
+            let secrets;
+            try {
+                secrets = await Promise.all(request.multisigConfig.secret.encryptedSecrets.map(
+                    async encrypted => new Uint8Array(
+                        await window.crypto.subtle.decrypt({ name: 'RSA-OAEP' }, rsaKey, encrypted),
+                    ),
+                ));
+            } catch (e) {
+                reject(new Errors.InvalidRequestError(`Cannot decrypt secrets: ${e.message}`));
+                return;
+            }
+
+            try {
+                aggregatedSecret = await MultisigUtils.aggregateSecrets(secrets, request.multisigConfig.secret.bScalar);
+            } catch (e) {
+                reject(new Errors.InvalidRequestError(`Cannot aggregate secrets: ${e.message}`));
+                return;
+            }
         }
 
         const signature = key.signPartially(
