@@ -177,7 +177,7 @@
     "export-words-hint": "Deslizar para continuar",
     "go-to-recovery-words": "Criar backup",
     "export-heading-validate-backup": "Valide o seu Backup",
-    "export-continue-to-login-file": "Continuar",
+    "export-continue-to-login-file": "Para o Ficheiro de Login",
     "export-show-recovery-words": "Mostrar Palavras de Backup",
 
     "remove-key-heading": "Não perca o Acesso",
@@ -211,13 +211,13 @@
     "login-file-color-indigo": "Indigo",
     "login-file-color-blue": "Azul",
     "login-file-color-purple": "Roxo",
-    "login-file-color-teal": "Turquesa",
+    "login-file-color-teal": "Verde-azulado",
     "login-file-color-pink": "Cor-de-rosa",
     "login-file-color-green": "Verde",
     "login-file-color-brown": "Castanho",
 
     "login-file-filename": "Nimiq-Ficheiro-Login-{accountLabel}.png",
-    "login-file-default-account-label": "{color} Conta",
+    "login-file-default-account-label": "Conta {color}",
 
     "bitcoin": "Bitcoin",
     "bitcoin-recipient-unlabelled": "Sem marcador",

@@ -30,7 +30,7 @@
     "create-button-set-password": "Définir le mot de passe",
     "create-heading-add-password": "Définir le mot de passe",
     "create-heading-repeat-password": "Répétez votre mot de passe",
-    "create-loginfile-keycard": "Le mot de passe protège votre fichier de connexion.\nLa carte d'accès de votre compte.",
+    "create-loginfile-keycard": "Le mot de passe protège votre fichier de connexion.\nC'est la carte d'accès de votre compte.",
     "create-heading-what-is-loginfile": "Qu'est-ce qu'un fichier de connexion ?",
     "create-login-file-explainer-intro": "Un fichier image, combiné avec votre mot de passe, vous garanti l'accès à votre compte.",
     "create-login-file-paragraph-1": "Nimiq ne conserve pas vos données. Le fichier de connexion remplace une adresse mail pour vous connecter.",
@@ -185,7 +185,7 @@
     "remove-key-login-file-question": "Votre Fichier de Connexion est-il stocké et accessible en toute sécurité ?",
     "remove-key-download-login-file": "Télécharger",
     "remove-key-recovery-words-question": "Savez-vous où sont vos Mots de Récupération ?",
-    "remove-key-show-recovery-words": "Créer sauvegarde",
+    "remove-key-show-recovery-words": "Créer une sauvegarde",
     "remove-key-label-confirm-instructions": "Écrivez \"{accountLabel}\" pour vous déconnecter.",
     "remove-key-final-confirm": "Se déconnecter",
 
