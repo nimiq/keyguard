@@ -9,8 +9,7 @@ class LoginFileAnimation {
         this._color = 0;
         this.$el = LoginFileAnimation._createElement($el);
 
-        /** @type {HTMLDivElement} */
-        this.$background = (this.$el.querySelector('.background'));
+        this.$background = /** @type {HTMLDivElement} */ (this.$el.querySelector('.background'));
     }
 
     /**

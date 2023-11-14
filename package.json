@@ -60,6 +60,6 @@
     "karma-jasmine": "^1.1.2",
     "terser": "^5.14.2",
     "tsc-watch": "^1.0.22",
-    "typescript": "3"
+    "typescript": "4"
   }
 }

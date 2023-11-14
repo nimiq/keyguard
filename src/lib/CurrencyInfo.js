@@ -1,12 +1,17 @@
 // Adapted and simplified from @nimiq/utils.
 // See there for extended documentation on how the data was generated.
 // This file should also be updated whenever CurrencyInfo in @nimiq/utils is updated.
+
+/**
+ * @typedef {Intl.NumberFormatOptions & { currencyDisplay: string }} NumberFormatOptions
+ */
+
 class CurrencyInfo {
     /**
      * @private
      * @param {number} value
      * @param {string | string[]} [locales]
-     * @param {Intl.NumberFormatOptions} [options]
+     * @param {NumberFormatOptions} [options]
      * @returns {string | null}
      */
     static _failsafeNumberToLocaleString(value, locales, options) {

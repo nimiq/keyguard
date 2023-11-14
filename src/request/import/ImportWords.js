@@ -45,26 +45,24 @@ class ImportWords {
         this._encryptedSecret = null;
 
         // Pages
-        /** @type {HTMLFormElement} */
-        this.$words = (document.getElementById(ImportWords.Pages.ENTER_WORDS));
-        /** @type {HTMLFormElement} */
-        this.$setPassword = (document.getElementById(ImportWords.Pages.SET_PASSWORD));
-        /** @type {HTMLFormElement} */
-        const $downloadFile = (document.getElementById(ImportWords.Pages.DOWNLOAD_LOGINFILE));
+        this.$words = /** @type {HTMLFormElement} */ (document.getElementById(ImportWords.Pages.ENTER_WORDS));
+        this.$setPassword = /** @type {HTMLFormElement} */ (document.getElementById(ImportWords.Pages.SET_PASSWORD));
+        const $downloadFile = /** @type {HTMLFormElement} */ (
+            document.getElementById(ImportWords.Pages.DOWNLOAD_LOGINFILE));
 
         // Elements
-        /** @type {HTMLFormElement} */
-        const $recoveryWords = (this.$words.querySelector('.recovery-words'));
-        /** @type {HTMLLinkElement} */
-        this.$setPasswordBackButton = (this.$setPassword.querySelector('a.page-header-back-button'));
-        /** @type {HTMLFormElement} */
-        const $passwordSetter = (this.$setPassword.querySelector('.password-setter-box'));
-        /** @type {HTMLDivElement} */
-        const $loginFileIcon = (this.$setPassword.querySelector('.login-file-icon'));
-        /** @type {HTMLDivElement} */
-        const $downloadLoginFile = ($downloadFile.querySelector('.download-loginfile'));
-        /** @type {HTMLLinkElement} */
-        const $skipDownloadButton = ($downloadFile.querySelector('.skip'));
+        const $recoveryWords = /** @type {HTMLFormElement} */ (
+            this.$words.querySelector('.recovery-words'));
+        this.$setPasswordBackButton = /** @type {HTMLLinkElement} */ (
+            this.$setPassword.querySelector('a.page-header-back-button'));
+        const $passwordSetter = /** @type {HTMLFormElement} */ (
+            this.$setPassword.querySelector('.password-setter-box'));
+        const $loginFileIcon = /** @type {HTMLDivElement} */ (
+            this.$setPassword.querySelector('.login-file-icon'));
+        const $downloadLoginFile = /** @type {HTMLDivElement} */ (
+            $downloadFile.querySelector('.download-loginfile'));
+        const $skipDownloadButton = /** @type {HTMLLinkElement} */ (
+            $downloadFile.querySelector('.skip'));
 
         // Components
         this._recoveryWords = new RecoveryWords($recoveryWords, true);
@@ -246,7 +244,8 @@ class ImportWords {
             } else {
                 TopLevelApi.setLoading(false);
             }
-        } catch (e) { // Keystore.instance.put throws Errors.KeyguardError
+        } catch (err) { // Keystore.instance.put throws Errors.KeyguardError
+            const e = /** @type {Error} */ (err);
             console.log(e);
             TopLevelApi.setLoading(false);
             this._reject(e);

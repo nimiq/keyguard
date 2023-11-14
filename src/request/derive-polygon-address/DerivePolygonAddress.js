@@ -21,8 +21,7 @@ class DerivePolygonAddress {
         this._resolve = resolve;
         this._reject = reject;
 
-        /** @type {HTMLFormElement} */
-        const $passwordBox = (document.querySelector('.password-box'));
+        const $passwordBox = /** @type {HTMLFormElement} */ (document.querySelector('.password-box'));
 
         // Create components
 
@@ -50,7 +49,8 @@ class DerivePolygonAddress {
         let key = null;
         try {
             key = await KeyStore.instance.get(this._request.keyInfo.id, passwordBuffer);
-        } catch (e) {
+        } catch (err) {
+            const e = /** @type {Error} */ (err);
             if (e.message === 'Invalid key') {
                 TopLevelApi.setLoading(false);
                 this._passwordBox.onPasswordIncorrect();

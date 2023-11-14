@@ -52,7 +52,7 @@ class PasswordSetterBox extends Nimiq.Observable {
     }
 
     /**
-     * @param {?HTMLFormElement} [$el]
+     * @param {?HTMLFormElement} $el
      * @param {{bgColor: string, buttonI18nTag: string}} options
      * @returns {HTMLFormElement}
      */

@@ -32,26 +32,26 @@ class ChangePassword {
         this._key = null;
 
         // Pages
-        /** @type {HTMLFormElement} */
-        const $enterPassword = (document.getElementById(ChangePassword.Pages.ENTER_PASSWORD));
-        /** @type {HTMLFormElement} */
-        const $setPassword = (document.getElementById(ChangePassword.Pages.SET_PASSWORD));
-        /** @type {HTMLFormElement} */
-        const $downloadFile = (document.getElementById(ChangePassword.Pages.DOWNLOAD_FILE));
+        const $enterPassword = /** @type {HTMLFormElement} */ (
+            document.getElementById(ChangePassword.Pages.ENTER_PASSWORD));
+        const $setPassword = /** @type {HTMLFormElement} */ (
+            document.getElementById(ChangePassword.Pages.SET_PASSWORD));
+        const $downloadFile = /** @type {HTMLFormElement} */ (
+            document.getElementById(ChangePassword.Pages.DOWNLOAD_FILE));
 
         // Elements
-        /** @type {HTMLFormElement} */
-        const $passwordGetter = ($enterPassword.querySelector('.password-box'));
-        /** @type {HTMLFormElement} */
-        const $passwordSetter = ($setPassword.querySelector('.password-setter-box'));
-        /** @type {HTMLDivElement} */
-        const $loginFileIcon = ($setPassword.querySelector('.login-file-icon'));
-        /** @type {HTMLLinkElement} */
-        this.$setPasswordBackButton = ($setPassword.querySelector('a.page-header-back-button'));
-        /** @type {HTMLDivElement} */
-        const $downloadLoginFile = ($downloadFile.querySelector('.download-login-file'));
-        /** @type {HTMLLinkElement} */
-        this.$skipDownloadButton = ($downloadFile.querySelector('.skip'));
+        const $passwordGetter = /** @type {HTMLFormElement} */ (
+            $enterPassword.querySelector('.password-box'));
+        const $passwordSetter = /** @type {HTMLFormElement} */ (
+            $setPassword.querySelector('.password-setter-box'));
+        const $loginFileIcon = /** @type {HTMLDivElement} */ (
+            $setPassword.querySelector('.login-file-icon'));
+        this.$setPasswordBackButton = /** @type {HTMLLinkElement} */ (
+            $setPassword.querySelector('a.page-header-back-button'));
+        const $downloadLoginFile = /** @type {HTMLDivElement} */ (
+            $downloadFile.querySelector('.download-login-file'));
+        this.$skipDownloadButton = /** @type {HTMLLinkElement} */ (
+            $downloadFile.querySelector('.skip'));
 
         // Components
         this._passwordSetter = new PasswordSetterBox($passwordSetter);
@@ -136,7 +136,8 @@ class ChangePassword {
         let key = null;
         try {
             key = await KeyStore.instance.get(this._request.keyInfo.id, oldPasswordBytes);
-        } catch (e) {
+        } catch (err) {
+            const e = /** @type {Error} */ (err);
             if (e.message === 'Invalid key') {
                 TopLevelApi.setLoading(false);
                 this._passwordGetter.onPasswordIncorrect();

@@ -342,14 +342,15 @@ class QrScanner {
                     this._qrEnginePromise,
                     this.$canvas,
                 );
-            } catch (error) {
+            } catch (err) {
                 if (!this._active) return;
-                const errorMessage = error.message || error;
+                const error = /** @type {Error | string} */ (err);
+                const errorMessage = typeof error === 'string' ? error : error.message;
                 if (errorMessage.includes('service unavailable')) {
                     // When the native BarcodeDetector crashed, create a new one
                     this._qrEnginePromise = QrScanner.createQrEngine();
                 }
-                this._onDecodeError(error);
+                this._onDecodeError(errorMessage);
             }
 
             if (result) {

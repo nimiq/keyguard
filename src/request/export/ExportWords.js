@@ -35,26 +35,26 @@ class ExportWords extends Nimiq.Observable {
         this._key = null;
 
         // pages
-        /** @type {HTMLElement} */
-        this._$noRecoveryPage = (document.getElementById(ExportWords.Pages.RECOVERY_WORDS_INTRO));
-        /** @type {HTMLElement} */
-        this._$recoveryWordsUnlockPage = (document.getElementById(ExportWords.Pages.RECOVERY_WORDS_UNLOCK));
-        /** @type {HTMLElement} */
-        this._$recoveryWordsPage = (document.getElementById(ExportWords.Pages.SHOW_WORDS));
-        /** @type {HTMLElement} */
-        this._$validateWordsPage = (document.getElementById(ExportWords.Pages.VALIDATE_WORDS));
+        this._$noRecoveryPage = /** @type {HTMLElement} */ (
+            document.getElementById(ExportWords.Pages.RECOVERY_WORDS_INTRO));
+        this._$recoveryWordsUnlockPage = /** @type {HTMLElement} */ (
+            document.getElementById(ExportWords.Pages.RECOVERY_WORDS_UNLOCK));
+        this._$recoveryWordsPage = /** @type {HTMLElement} */ (
+            document.getElementById(ExportWords.Pages.SHOW_WORDS));
+        this._$validateWordsPage = /** @type {HTMLElement} */ (
+            document.getElementById(ExportWords.Pages.VALIDATE_WORDS));
 
         // elements
-        /** @type {HTMLButtonElement} */
-        const $recoveryWordsIntroButton = (this._$noRecoveryPage.querySelector('.page-footer > button'));
-        /** @type {HTMLFormElement} */
-        const $wordsPasswordBox = (this._$recoveryWordsUnlockPage.querySelector('.password-box'));
-        /** @type {HTMLElement} */
-        this.$recoveryWords = (this._$recoveryWordsPage.querySelector('.recovery-words'));
-        /** @type {HTMLButtonElement} */
-        this.$recoveryWordsContinue = (this._$recoveryWordsPage.querySelector('button'));
-        /** @type {HTMLElement} */
-        const $validateWords = (this._$validateWordsPage.querySelector('.validate-words'));
+        const $recoveryWordsIntroButton = /** @type {HTMLButtonElement} */ (
+            this._$noRecoveryPage.querySelector('.page-footer > button'));
+        const $wordsPasswordBox = /** @type {HTMLFormElement} */ (
+            this._$recoveryWordsUnlockPage.querySelector('.password-box'));
+        this.$recoveryWords = /** @type {HTMLElement} */ (
+            this._$recoveryWordsPage.querySelector('.recovery-words'));
+        this.$recoveryWordsContinue = /** @type {HTMLButtonElement} */ (
+            this._$recoveryWordsPage.querySelector('button'));
+        const $validateWords = /** @type {HTMLElement} */ (
+            this._$validateWordsPage.querySelector('.validate-words'));
 
         // components
         this._wordsPasswordBox = new PasswordBox($wordsPasswordBox, {
@@ -112,7 +112,8 @@ class ExportWords extends Nimiq.Observable {
                     /** @type {Uint8Array} */ (passwordBuffer),
                 )
                 : await KeyStore.instance.get(this._request.keyInfo.id, passwordBuffer);
-        } catch (e) {
+        } catch (err) {
+            const e = /** @type {Error} */ (err);
             if (e.message === 'Invalid key') {
                 this._wordsPasswordBox.onPasswordIncorrect();
                 TopLevelApi.setLoading(false);

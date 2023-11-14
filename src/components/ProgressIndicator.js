@@ -14,7 +14,7 @@ class ProgressIndicator extends Nimiq.Observable { // eslint-disable-line no-unu
     }
 
     /**
-     * @param {?HTMLElement} [$el]
+     * @param {?HTMLElement} $el
      * @param {number} numberOfSteps
      * @returns {HTMLElement}
      */

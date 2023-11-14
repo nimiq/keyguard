@@ -38,8 +38,7 @@ class PaymentInfoLine { // eslint-disable-line no-unused-vars
         this.paymentInfo = paymentInfo;
         this.$el = PaymentInfoLine._createElement($el);
 
-        /** @type HTMLElement */
-        const $amount = (this.$el.querySelector('.amount'));
+        const $amount = /** @type {HTMLElement} */ (this.$el.querySelector('.amount'));
         const amount = NumberFormatting.formatNumber(
             paymentInfo.unitsToCoins(paymentInfo.amount),
             paymentInfo.currency === 'nim' ? 4 : 7,
@@ -56,8 +55,7 @@ class PaymentInfoLine { // eslint-disable-line no-unused-vars
         });
         recipientInfo.renderTo(/** @type HTMLElement */ (this.$el.querySelector('.recipient')));
 
-        /** @type HTMLElement */
-        const $timer = (this.$el.querySelector('.timer'));
+        const $timer = /** @type {HTMLElement} */ (this.$el.querySelector('.timer'));
         if (paymentInfo.time && paymentInfo.expires) {
             new Timer(paymentInfo.time, paymentInfo.expires, $timer); // eslint-disable-line no-new
         } else {
@@ -149,16 +147,15 @@ class PaymentInfoLine { // eslint-disable-line no-unused-vars
             $fiatAmount.textContent = formattedFiatAmount;
         });
 
-        /** @type {HTMLTemplateElement} */
-        const $vendorMarkupTemplate = ($tooltip.querySelector('.vendor-markup-template'));
+        const $vendorMarkupTemplate = /** @type {HTMLTemplateElement} */ (
+            $tooltip.querySelector('.vendor-markup-template'));
         if (vendorMarkup !== undefined) {
             // Convert to percent and round to two decimals. Always ceil to avoid displaying a lower fee than charged or
             // larger discount than applied. Subtract small epsilon to avoid that numbers get rounded up as a result of
             // floating point imprecision after multiplication. Otherwise formatting for example .07 results in 7.01%.
             const vendorMarkupPercent = Math.ceil(vendorMarkup * 100 * 100 - 1e-10) / 100;
             $vendorMarkupTemplate.replaceWith($vendorMarkupTemplate.content);
-            /** @type {HTMLElement} */
-            const $vendorMarkup = ($tooltip.querySelector('.vendor-markup'));
+            const $vendorMarkup = /** @type {HTMLElement} */ ($tooltip.querySelector('.vendor-markup'));
             $vendorMarkup.textContent = `${vendorMarkup >= 0 ? '+' : ''}${vendorMarkupPercent}%`;
         } else {
             $vendorMarkupTemplate.remove();
@@ -166,8 +163,7 @@ class PaymentInfoLine { // eslint-disable-line no-unused-vars
 
         const ticker = this.paymentInfo.currency.toUpperCase();
 
-        /** @type {HTMLElement} */
-        const $effectiveRate = ($tooltip.querySelector('.effective-rate'));
+        const $effectiveRate = /** @type {HTMLElement} */ ($tooltip.querySelector('.effective-rate'));
         // Fiat/crypto rate. Higher fiat/crypto rate means user is paying less crypto for the requested fiat amount
         // and is therefore better for the user. Note: precision loss should be acceptable here.
         const effectiveRate = fiatAmount / this.paymentInfo.unitsToCoins(amount);
@@ -177,25 +173,21 @@ class PaymentInfoLine { // eslint-disable-line no-unused-vars
             0.0001,
         )} / ${ticker}`;
 
-        /** @type {HTMLElement} */
-        const $total = ($tooltip.querySelector('.total'));
+        const $total = /** @type {HTMLElement} */ ($tooltip.querySelector('.total'));
         $total.textContent = `${NumberFormatting.formatNumber(this.paymentInfo.unitsToCoins(amount))} ${ticker}`;
 
         // Note that in the Keyguard the fee is never undefined.
         if (networkFee !== 0) {
-            /** @type {HTMLElement} */
-            const $networkFee = ($tooltip.querySelector('.network-fee'));
+            const $networkFee = /** @type {HTMLElement} */ ($tooltip.querySelector('.network-fee'));
             $networkFee.textContent = `${NumberFormatting.formatNumber(
                 this.paymentInfo.unitsToCoins(networkFee),
             )} ${ticker}`;
         } else {
-            /** @type {HTMLElement} */
-            const $networkFeeInfo = ($tooltip.querySelector('.network-fee-info'));
+            const $networkFeeInfo = /** @type {HTMLElement} */ ($tooltip.querySelector('.network-fee-info'));
             $networkFeeInfo.remove();
         }
 
-        /** @type {HTMLElement} */
-        const $rateInfo = ($tooltip.querySelector('.rate-info'));
+        const $rateInfo = /** @type {HTMLElement} */ ($tooltip.querySelector('.rate-info'));
         const updateRateComparison = this._updateRateComparison.bind(this, effectiveRate, $tooltip, $rateInfo);
         updateRateComparison();
         window.setInterval(updateRateComparison, PaymentInfoLine.REFERENCE_RATE_UPDATE_INTERVAL);
@@ -212,8 +204,7 @@ class PaymentInfoLine { // eslint-disable-line no-unused-vars
      */
     async _updateRateComparison(effectiveRate, $tooltip, $rateInfo) {
         if (!this.paymentInfo.fiatCurrency) return;
-        /** @type {FiatApi.SupportedFiatCurrency} */
-        const fiatCurrency = (this.paymentInfo.fiatCurrency.toLowerCase());
+        const fiatCurrency = /** @type {FiatApi.SupportedFiatCurrency} */ (this.paymentInfo.fiatCurrency.toLowerCase());
         if (!Object.values(FiatApi.SupportedFiatCurrency).includes(fiatCurrency)) return;
 
         let referenceRate;

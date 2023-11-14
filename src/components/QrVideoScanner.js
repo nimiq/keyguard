@@ -24,14 +24,9 @@ class QrVideoScanner extends Nimiq.Observable {
 
         this.$el = QrVideoScanner._createElement($el);
 
-        /** @type {HTMLVideoElement} */
-        const $video = (this.$el.querySelector('video'));
-
-        /** @type {HTMLDivElement} */
-        this.$overlay = (this.$el.querySelector('.overlay'));
-
-        /** @type {HTMLButtonElement} */
-        const $cancelButton = (this.$el.querySelector('.cancel-button'));
+        const $video = /** @type {HTMLVideoElement} */ (this.$el.querySelector('video'));
+        this.$overlay = /** @type {HTMLDivElement} */ (this.$el.querySelector('.overlay'));
+        const $cancelButton = /** @type {HTMLButtonElement} */ (this.$el.querySelector('.cancel-button'));
 
         this._scanner = new QrScanner($video, result => this._onResult(result));
 

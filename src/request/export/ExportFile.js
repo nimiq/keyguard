@@ -33,27 +33,27 @@ class ExportFile extends Nimiq.Observable {
         /** @type {Key?} */
         this._key = null;
 
-        /** @type {HTMLElement} */
-        this.$exportFileIntroPage = (document.getElementById(ExportFile.Pages.LOGIN_FILE_INTRO));
-        /** @type {HTMLElement} */
-        const $unlockFilePage = (document.getElementById(ExportFile.Pages.LOGIN_FILE_UNLOCK));
-        /** @type {HTMLElement} */
-        const $setPasswordPage = (document.getElementById(ExportFile.Pages.LOGIN_FILE_SET_PASSWORD));
-        /** @type {HTMLElement} */
-        this.$downloadFilePage = (document.getElementById(ExportFile.Pages.LOGIN_FILE_DOWNLOAD));
+        this.$exportFileIntroPage = /** @type {HTMLElement} */ (
+            document.getElementById(ExportFile.Pages.LOGIN_FILE_INTRO));
+        const $unlockFilePage = /** @type {HTMLElement} */ (
+            document.getElementById(ExportFile.Pages.LOGIN_FILE_UNLOCK));
+        const $setPasswordPage = /** @type {HTMLElement} */ (
+            document.getElementById(ExportFile.Pages.LOGIN_FILE_SET_PASSWORD));
+        this.$downloadFilePage = /** @type {HTMLElement} */ (
+            document.getElementById(ExportFile.Pages.LOGIN_FILE_DOWNLOAD));
 
-        /** @type {HTMLButtonElement} */
-        const $fileButton = (this.$exportFileIntroPage.querySelector('.login-file'));
-        /** @type {HTMLDivElement} */
-        const $loginFileIcon = ($setPasswordPage.querySelector('.login-file-icon'));
-        /** @type {HTMLFormElement} */
-        const $passwordBox = ($unlockFilePage.querySelector('.password-box'));
-        /** @type {HTMLLinkElement} */
-        this.$setPasswordBackButton = ($setPasswordPage.querySelector('a.page-header-back-button'));
-        /** @type {HTMLFormElement} */
-        const $passwordSetterBox = ($setPasswordPage.querySelector('.password-setter-box'));
-        /** @type {HTMLDivElement} */
-        const $downloadLoginFile = (this.$downloadFilePage.querySelector('.download-loginfile'));
+        const $fileButton = /** @type {HTMLButtonElement} */ (
+            this.$exportFileIntroPage.querySelector('.login-file'));
+        const $loginFileIcon = /** @type {HTMLDivElement} */ (
+            $setPasswordPage.querySelector('.login-file-icon'));
+        const $passwordBox = /** @type {HTMLFormElement} */ (
+            $unlockFilePage.querySelector('.password-box'));
+        this.$setPasswordBackButton = /** @type {HTMLLinkElement} */ (
+            $setPasswordPage.querySelector('a.page-header-back-button'));
+        const $passwordSetterBox = /** @type {HTMLFormElement} */ (
+            $setPasswordPage.querySelector('.password-setter-box'));
+        const $downloadLoginFile = /** @type {HTMLDivElement} */ (
+            this.$downloadFilePage.querySelector('.download-loginfile'));
 
         this._passwordBox = new PasswordBox(
             $passwordBox, {
@@ -161,7 +161,8 @@ class ExportFile extends Nimiq.Observable {
         let key = this._key;
         try {
             key = await KeyStore.instance.get(this._request.keyInfo.id, passwordBuffer);
-        } catch (e) {
+        } catch (err) {
+            const e = /** @type {Error} */ (err);
             if (e.message === 'Invalid key') {
                 TopLevelApi.setLoading(false);
                 this._passwordBox.onPasswordIncorrect();
@@ -193,7 +194,8 @@ class ExportFile extends Nimiq.Observable {
         if (!key || !key.id) {
             try {
                 key = await KeyStore.instance.get(this._request.keyInfo.id);
-            } catch (e) {
+            } catch (err) {
+                const e = /** @type {Error} */ (err);
                 if (e.message === 'Invalid key') {
                     TopLevelApi.setLoading(false);
                     this._passwordBox.onPasswordIncorrect();

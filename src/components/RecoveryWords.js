@@ -8,7 +8,7 @@ class RecoveryWords extends Nimiq.Observable {
     /**
      *
      * @param {HTMLElement} [$el]
-     * @param {boolean} providesInput
+     * @param {boolean} [providesInput]
      */
     constructor($el, providesInput) {
         super();
@@ -141,7 +141,8 @@ class RecoveryWords extends Nimiq.Observable {
             this._mnemonic = { words: mnemonic, type };
             this.fire(RecoveryWords.Events.COMPLETE, mnemonic, type);
         } catch (e) {
-            if (e.message !== 'Invalid checksum') {
+            const err = /** @type {Error} */ (e);
+            if (err.message !== 'Invalid checksum') {
                 console.error(e); // eslint-disable-line no-console
             } else {
                 // wrong words

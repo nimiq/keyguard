@@ -10,8 +10,7 @@ class Identicon { // eslint-disable-line no-unused-vars
 
         this.$el = Identicon._createElement($el);
 
-        /** @type {HTMLImageElement} */
-        this.$imgEl = (this.$el.firstChild);
+        this.$imgEl = /** @type {HTMLImageElement} */ (this.$el.firstChild);
 
         this._updateIqon();
     }
