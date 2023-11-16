@@ -30,15 +30,20 @@ class SignStakingApi extends TopLevelApi {
             case SignStakingApi.IncomingStakingType.CREATE_STAKER:
             case SignStakingApi.IncomingStakingType.UPDATE_STAKER: {
                 parsedRequest.delegation = this.parseAddress(request.delegation, 'delegation');
+                parsedRequest.reactivateAllStake = this.parseBoolean(request.reactivateAllStake);
                 const data = new Nimiq.SerialBuffer(
                     1 // Data type
                     + 1 // Option<> indicator
                     + Nimiq.Address.SERIALIZED_SIZE // Validator address (delegation)
+                    + (type === SignStakingApi.IncomingStakingType.UPDATE_STAKER ? 1 : 0) // Stake reactivation boolean
                     + Nimiq.SignatureProof.SINGLE_SIG_SIZE, // Staker signature
                 );
                 data.writeUint8(type);
                 data.writeUint8(1); // Delegation is optional, this signals that we are including it.
                 data.write(parsedRequest.delegation.serialize());
+                if (type === SignStakingApi.IncomingStakingType.UPDATE_STAKER) {
+                    data.writeUint8(parsedRequest.reactivateAllStake ? 1 : 0);
+                }
                 request.data = data;
                 isSignalling = type === SignStakingApi.IncomingStakingType.UPDATE_STAKER;
                 break;

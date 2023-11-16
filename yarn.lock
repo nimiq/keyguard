@@ -433,11 +433,12 @@
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
 "@nimiq/albatross-wasm@npm:@nimiq/core-web@next":
-  version "2.0.0-alpha.13"
-  resolved "https://registry.yarnpkg.com/@nimiq/core-web/-/core-web-2.0.0-alpha.13.tgz#6fe7ae67aeaadbfff880061c75728928de75d863"
-  integrity sha512-lSOhtgDy7jl74naVuwik54eCFD/oDiAhe1JV0uQVbm3O5tJKCTLqik+wSO9FvdjpZwLj/XwzA06NcJWM/PyFcA==
+  version "2.0.0-alpha.17"
+  resolved "https://registry.yarnpkg.com/@nimiq/core-web/-/core-web-2.0.0-alpha.17.tgz#4cdfeb896ed98879566b4a87846d6c6c17796121"
+  integrity sha512-mPKhhrLXE/sRdBMxiEWtokTy889tkPILHg14wBzVuCwarjuH6CGxLWY64G2Mr6+kRXJpL95s7/zvaaMeCE1b3A==
   dependencies:
     comlink "^4.4.1"
+    websocket "^1.0.34"
 
 "@nimiq/core-web@1.6.3":
   version "1.6.3"
@@ -5789,7 +5790,7 @@ webidl-conversions@^3.0.0:
   resolved "https://registry.yarnpkg.com/webidl-conversions/-/webidl-conversions-3.0.1.tgz#24534275e2a7bc6be7bc86611cc16ae0a5654871"
   integrity sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==
 
-websocket@^1.0.32:
+websocket@^1.0.32, websocket@^1.0.34:
   version "1.0.34"
   resolved "https://registry.yarnpkg.com/websocket/-/websocket-1.0.34.tgz#2bdc2602c08bf2c82253b730655c0ef7dcab3111"
   integrity sha512-PRDso2sGwF6kM75QykIesBijKSVceR6jL2G8NGYyq2XrItNC2P5/qL5XeR056GhA+Ly7JMFvJb9I312mJfmqnQ==
