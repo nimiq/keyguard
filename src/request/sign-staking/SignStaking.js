@@ -183,6 +183,7 @@ class SignStaking {
                 tx = Albatross.TransactionBuilder.newUpdateStaker(
                     keyPair.toAddress(),
                     Albatross.Address.fromString(/** @type {Nimiq.Address} */ (request.delegation).toHex()),
+                    Boolean(request.reactivateAllStake),
                     BigInt(request.transaction.fee),
                     request.transaction.validityStartHeight,
                     request.transaction.networkId,
@@ -210,7 +211,7 @@ class SignStaking {
                 throw new Errors.KeyguardError('Unreachable');
         }
 
-        tx = tx.sign(keyPair);
+        tx.sign(keyPair);
 
         /** @type {KeyguardRequest.SignStakingResult} */
         const result = {
@@ -254,6 +255,9 @@ class SignStaking {
                     text += ` to validator ${delegation.toUserFriendlyAddress()}`;
                 } else {
                     text += ' to no validator';
+                }
+                if (buf.readUint8() === 1) {
+                    text += ' and reactivate all stake';
                 }
                 return text;
             }

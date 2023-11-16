@@ -223,7 +223,7 @@ class SignTransaction {
             );
         }
 
-        tx = tx.sign(keyPair);
+        tx.sign(keyPair);
 
         /** @type {KeyguardRequest.SignTransactionResult} */
         const result = {
