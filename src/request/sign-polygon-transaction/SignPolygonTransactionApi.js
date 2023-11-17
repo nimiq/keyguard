@@ -72,6 +72,10 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
                 data: forwardRequest.data,
                 value: forwardRequest.value,
             }));
+
+            if (description.args.token !== CONFIG.USDC_CONTRACT_ADDRESS) {
+                throw new Errors.InvalidRequestError('Invalid USDC token contract in request data');
+            }
         } else if (forwardRequest.to === CONFIG.USDC_HTLC_CONTRACT_ADDRESS) {
             const usdcHtlcContract = new ethers.Contract(
                 CONFIG.USDC_HTLC_CONTRACT_ADDRESS,
@@ -89,12 +93,6 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
 
         if (!allowedMethods.includes(description.name)) {
             throw new Errors.InvalidRequestError('Requested Polygon contract method is invalid');
-        }
-
-        if (description.name === 'transfer' || description.name === 'transferWithApproval') {
-            if (description.args.token !== CONFIG.USDC_CONTRACT_ADDRESS) {
-                throw new Errors.InvalidRequestError('Invalid USDC token contract in request data');
-            }
         }
 
         // Check that amount exists when method is 'refund', and unset for other methods.
