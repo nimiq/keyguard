@@ -24,13 +24,14 @@
     "recovery-words-text": "¡Cualquiera con estas palabras puede acceder a su cuenta! Manténgalas a salvo.",
     "recovery-words-validate": "Validar respaldo",
 
-    "create-heading-select-login-file": "No se necesita su correo electrónico ",
-    "create-use-login-file-instead": "Use un 'Archivo de Sesión'",
-    "create-only-you-have-access": "De esta forma solo tú tienes acceso, ni siquiera el Equipo de Nimiq o el gobierno.",
+    "create-heading-select-login-file": "Your key to logging in",
+    "create-no-personal-data": "No need for personal data.",
+    "create-password-and-download": "Create a password and download your Login File to access your wallet.",
     "create-button-set-password": "Establecer contraseña",
-    "create-heading-add-password": "Y una contraseña",
+    "create-heading-create-password": "Create a password",
     "create-heading-repeat-password": "Repita su contraseña",
-    "create-loginfile-keycard": "La contraseña protege su Archivo de Sesión.\nLa ‘llave’ a su cuenta.",
+    "create-loginfile-password-hint": "Choose a strong, memorable password.\nThere is no “Forgot password” option.",
+    "create-log-in-any-device": "Use your password and Login File to log in on any device.",
     "create-heading-what-is-loginfile": "¿Que es un Archivo de Inicio de Sesión?",
     "create-login-file-explainer-intro": "Un archivo de imagen que, en combinación con su contraseña, le da acceso a su cuenta.",
     "create-login-file-paragraph-1": "Nimiq no almacena sus datos. El Archivo de Inicio de Sesión reemplaza al correo electrónico como la forma de iniciar sesión.",
@@ -52,7 +53,7 @@
     "import-words-hint": "Presione Tab para Saltar a la próxima casilla.",
     "import-words-error": "Esta no es una cuenta válida. Revise que escribió todos los caracteres.",
     "import-words-wrong-seed-phrase": "Estas Palabras de Recuperación le pertenecen a una cuenta diferente.",
-    "import-words-download-loginfile": "Guarde su Archivo de Sesión",
+    "import-words-download-loginfile": "Download your Login File",
 
     "file-import-prompt": "Arrastre aquí o haga click para importar",
     "file-import-error-could-not-read": "No se pudo leer el Archivo de Sesión.",
@@ -243,6 +244,6 @@
     "sign-swap-exchange-fee": "Cuotas de intercambio",
     "sign-swap-of-exchange-value": "del valor del intercambio.",
     "sign-swap-total-fees": "Cuotas totales",
-    "sign-swap-exchange-rate": "Exchange rate",
+    "sign-swap-exchange-rate": "Tasa de cambio",
     "sign-swap-your-bank": "Su banco"
 }

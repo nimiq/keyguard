@@ -24,13 +24,14 @@
     "recovery-words-text": "N'importe qui avec ces mots peut accéder à votre compte ! Gardez-les en lieu sûr.",
     "recovery-words-validate": "Valider la sauvegarde",
 
-    "create-heading-select-login-file": "Pas besoin de votre adresse e-mail",
-    "create-use-login-file-instead": "Utilisez plutôt un \"fichier de connexion\".",
-    "create-only-you-have-access": "De cette façon, vous êtes le seul à y avoir accès, pas même l'équipe Nimiq ou les gouvernements.",
+    "create-heading-select-login-file": "Your key to logging in",
+    "create-no-personal-data": "No need for personal data.",
+    "create-password-and-download": "Create a password and download your Login File to access your wallet.",
     "create-button-set-password": "Définir le mot de passe",
-    "create-heading-add-password": "Définir le mot de passe",
+    "create-heading-create-password": "Créez un mot de passe",
     "create-heading-repeat-password": "Répétez votre mot de passe",
-    "create-loginfile-keycard": "Le mot de passe protège votre fichier de connexion.\nC'est la carte d'accès de votre compte.",
+    "create-loginfile-password-hint": "Choose a strong, memorable password.\nThere is no “Forgot password” option.",
+    "create-log-in-any-device": "Use your password and Login File to log in on any device.",
     "create-heading-what-is-loginfile": "Qu'est-ce qu'un fichier de connexion ?",
     "create-login-file-explainer-intro": "Un fichier image, combiné avec votre mot de passe, vous garanti l'accès à votre compte.",
     "create-login-file-paragraph-1": "Nimiq ne conserve pas vos données. Le fichier de connexion remplace une adresse mail pour vous connecter.",
@@ -52,7 +53,7 @@
     "import-words-hint": "Pressez Tab pour passer au champ suivant",
     "import-words-error": "Ce n'est pas un compte valide. Faute de frappe ?",
     "import-words-wrong-seed-phrase": "Ces Mots de Récupération appartiennent à un autre compte",
-    "import-words-download-loginfile": "Sauvegarder votre Fichier de Connexion",
+    "import-words-download-loginfile": "Download your Login File",
 
     "file-import-prompt": "Glissez-déposez ici ou cliquez pour importer",
     "file-import-error-could-not-read": "Impossible de lire le fichier de connexion.",
@@ -243,6 +244,6 @@
     "sign-swap-exchange-fee": "Frais de swap",
     "sign-swap-of-exchange-value": "de la valeur du swap.",
     "sign-swap-total-fees": "Total des frais",
-    "sign-swap-exchange-rate": "Exchange rate",
+    "sign-swap-exchange-rate": "Taux de change",
     "sign-swap-your-bank": "Votre banque"
 }

@@ -24,13 +24,14 @@
     "recovery-words-text": "Qualquer pessoa com estas palavras consegue aceder à sua conta! Mantenha-as seguras.",
     "recovery-words-validate": "Valide o backup",
 
-    "create-heading-select-login-file": "O seu email não é necessário",
-    "create-use-login-file-instead": "Em alternativa use um \"Ficheiro de Login\".",
-    "create-only-you-have-access": "Desta forma só você tem acesso, nem mesmo a equipa da Nimiq ou governos.",
+    "create-heading-select-login-file": "Your key to logging in",
+    "create-no-personal-data": "No need for personal data.",
+    "create-password-and-download": "Create a password and download your Login File to access your wallet.",
     "create-button-set-password": "Defina palavra passe",
-    "create-heading-add-password": "Adicione uma palavra passe",
+    "create-heading-create-password": "Create a password",
     "create-heading-repeat-password": "Repita a sua palavra passe",
-    "create-loginfile-keycard": "A palavra passe protege o seu Ficheiro de Login.\nO 'keyguard' para a sua conta.",
+    "create-loginfile-password-hint": "Choose a strong, memorable password.\nThere is no “Forgot password” option.",
+    "create-log-in-any-device": "Use your password and Login File to log in on any device.",
     "create-heading-what-is-loginfile": "Qual é o Ficheiro de Login?",
     "create-login-file-explainer-intro": "Um ficheiro de imagem que, em combinação com a sua palavra passe, lhe garante acesso à sua conta.",
     "create-login-file-paragraph-1": "A Nimiq não guarda os seus dados. O Ficheiro de Login substitui o e-mail como forma de login.",
@@ -52,7 +53,7 @@
     "import-words-hint": "Clicar em Tab para saltar para o próximo campo",
     "import-words-error": "Isto não é uma conta válida. Erro de escrita?",
     "import-words-wrong-seed-phrase": "Estas Palavras de Backup pertencem a uma conta diferente",
-    "import-words-download-loginfile": "Guarde o seu Ficheiro de Login",
+    "import-words-download-loginfile": "Download your Login File",
 
     "file-import-prompt": "Arraste para aqui ou clique para importar",
     "file-import-error-could-not-read": "Não foi possível ler o Ficheiro de Login.",
@@ -243,6 +244,6 @@
     "sign-swap-exchange-fee": "taxa de troca",
     "sign-swap-of-exchange-value": "de troca de valor",
     "sign-swap-total-fees": "Taxas totais",
-    "sign-swap-exchange-rate": "Exchange rate",
+    "sign-swap-exchange-rate": "Taxa de câmbio",
     "sign-swap-your-bank": "O seu banco"
 }
