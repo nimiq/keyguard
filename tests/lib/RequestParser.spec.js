@@ -176,12 +176,12 @@ describe('RequestParser', () => {
     it('can parse shopLogoUrl', () => {
         const requestParser = new RequestParser();
 
-        expect(() => requestParser.parseShopLogoUrl(5)).toThrow();
-        expect(() => requestParser.parseShopLogoUrl({})).toThrow();
-        expect(() => requestParser.parseShopLogoUrl('isThisAUrl?')).toThrow();
-        expect(() => requestParser.parseShopLogoUrl('file:///home/maxmustermann/image.jpg')).toThrow();
+        expect(() => requestParser.parseLogoUrl(5, true, 'shopLogoUrl')).toThrow();
+        expect(() => requestParser.parseLogoUrl({}, true, 'shopLogoUrl')).toThrow();
+        expect(() => requestParser.parseLogoUrl('isThisAUrl?', true, 'shopLogoUrl')).toThrow();
+        expect(() => requestParser.parseLogoUrl('file:///home/maxmustermann/image.jpg', true, 'shopLogoUrl')).toThrow();
 
-        expect(requestParser.parseShopLogoUrl(undefined)).toBe(undefined);
+        expect(requestParser.parseLogoUrl(undefined, true, 'shopLogoUrl')).toBe(undefined);
 
         const vectors = [
             ['http://exampleshop.com/image.png', 'http://exampleshop.com/image.png'],
@@ -190,7 +190,7 @@ describe('RequestParser', () => {
             ['moz-extension://cjpalhdlnbpafiamejdnhcphjbkeiagm/logo.jpg', 'moz-extension://cjpalhdlnbpafiamejdnhcphjbkeiagm/logo.jpg'],
         ]
         for (const vector of vectors) {
-            const parsedUrl = /** @type {URL} */ (requestParser.parseShopLogoUrl(vector[0]));
+            const parsedUrl = /** @type {URL} */ (requestParser.parseLogoUrl(vector[0], true, 'shopLogoUrl'));
             expect(parsedUrl.href).toEqual(vector[1]);
         }
     });

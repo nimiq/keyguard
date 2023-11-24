@@ -127,10 +127,11 @@ class RequestParser { // eslint-disable-line no-unused-vars
      * @returns {Nimiq.ExtendedTransaction}
      */
     parseTransaction(object) {
-        const accountTypes = new Set([Nimiq.Account.Type.BASIC, Nimiq.Account.Type.VESTING, Nimiq.Account.Type.HTLC]);
         if (!object || typeof object !== 'object' || object === null) {
             throw new Errors.InvalidRequestError('Request must be an object');
         }
+
+        const accountTypes = new Set([Nimiq.Account.Type.BASIC, Nimiq.Account.Type.VESTING, Nimiq.Account.Type.HTLC]);
 
         const sender = this.parseAddress(object.sender, 'sender');
         const senderType = object.senderType || Nimiq.Account.Type.BASIC;
@@ -215,14 +216,17 @@ class RequestParser { // eslint-disable-line no-unused-vars
      * binary data and only ever displayed as HEX.
      *
      * @param {any} message
+     * @param {boolean} [forceString]
      * @returns {string | Uint8Array}
      */
-    parseMessage(message) {
+    parseMessage(message, forceString = false) {
         if (typeof message === 'string') {
             const messageBytes = Utf8Tools.stringToUtf8ByteArray(message);
             if (!Utf8Tools.isValidUtf8(messageBytes)) {
                 throw new Errors.InvalidRequestError('message cannot include control characters');
             }
+        } else if (forceString) {
+            throw new Errors.InvalidRequestError('message must be a string');
         } else if (!(message instanceof Uint8Array)) {
             throw new Errors.InvalidRequestError('message must be a string or Uint8Array');
         }
@@ -247,15 +251,17 @@ class RequestParser { // eslint-disable-line no-unused-vars
 
     /**
      * @param {any} url
+     * @param {boolean} allowEmpty
+     * @param {string} name
      * @returns {URL | undefined}
      */
-    parseShopLogoUrl(url) {
-        if (!url) return undefined;
+    parseLogoUrl(url, allowEmpty, name) {
+        if (!url && allowEmpty) return undefined;
         if (typeof url !== 'string') {
-            throw new Errors.InvalidRequestError('shopLogoUrl must be of type string');
+            throw new Errors.InvalidRequestError(`${name} must be of type string`);
         }
         try {
-            return this._parseUrl(url, 'shopLogoUrl');
+            return this._parseUrl(url, name);
         } catch (error) {
             throw new Errors.InvalidRequestError(error);
         }

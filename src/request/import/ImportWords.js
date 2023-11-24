@@ -99,7 +99,7 @@ class ImportWords {
         this._passwordSetter.on(PasswordSetterBox.Events.ENTERED, () => {
             let colorClass = '';
             if (this._secrets.entropy) {
-                const key = new Key(this._secrets.entropy, false);
+                const key = new Key(this._secrets.entropy, { hasPin: false });
                 const color = IqonHash.getBackgroundColorIndex(
                     key.defaultAddress.toUserFriendlyAddress(),
                 );
@@ -118,7 +118,7 @@ class ImportWords {
 
             // Prepare LoginFile for download
 
-            const key = new Key(/** @type {Nimiq.Entropy} */(this._secrets.entropy), false);
+            const key = new Key(/** @type {Nimiq.Entropy} */(this._secrets.entropy), { hasPin: false });
 
             downloadLoginFile.setEncryptedEntropy(
                 /** @type {Nimiq.SerialBuffer} */ (this._encryptedSecret),
@@ -172,7 +172,7 @@ class ImportWords {
         }
         try {
             if (this._secrets.entropy) {
-                const key = new Key(this._secrets.entropy, false);
+                const key = new Key(this._secrets.entropy, { hasPin: false });
 
                 /** @type {{keyPath: string, address: Uint8Array}[]} */
                 const addresses = this._request.requestedKeyPaths.map(keyPath => ({
@@ -229,7 +229,7 @@ class ImportWords {
                 // Is it possible to encrypt once and use KeyStore.putPlain() instead?
             }
             if (this._secrets.privateKey) {
-                const key = new Key(this._secrets.privateKey, false);
+                const key = new Key(this._secrets.privateKey, { hasPin: false });
 
                 /** @type {KeyguardRequest.SingleKeyResult} */
                 const result = {

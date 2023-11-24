@@ -69,6 +69,11 @@
     "sign-tx-fee": "frais",
     "sign-tx-cancel-payment": "Annuler le paiement",
 
+    "sign-multisig-tx-heading-tx": "Approve Multisig Transaction",
+    "sign-multisig-tx-approving-as": "Approving as",
+    "sign-multisig-tx-with": "with",
+    "sign-multisig-tx-approving-with": "Approving with",
+
     "sign-msg-heading": "Signer le Message",
     "sign-msg-signer": "Signataire",
 
@@ -104,6 +109,7 @@
     "passwordbox-repeat-password-short": "Le mot de passe est trop court",
     "passwordbox-password-skip": "Ignorer pour l'instant",
     "passwordbox-reset-password": "Réinitialiser avec les mots de récupération",
+    "passwordbox-connect-account": "Connect your account",
 
     "payment-info-line-order-amount": "Montant de la commande",
     "payment-info-line-vendor-markup": "Crypto-premium",
@@ -245,5 +251,10 @@
     "sign-swap-of-exchange-value": "de la valeur du swap.",
     "sign-swap-total-fees": "Total des frais",
     "sign-swap-exchange-rate": "Taux de change",
-    "sign-swap-your-bank": "Votre banque"
+    "sign-swap-your-bank": "Votre banque",
+
+    "connect-heading-prefix": "Log in to",
+    "connect-tooltip-multisig-1": "Your account will be used to verify your identity only.",
+    "connect-tooltip-multisig-2": "The shared wallet has its own address. It can receive transactions from anywhere just like a regular wallet.",
+    "connect-tooltip-multisig-3": "The first address of your account will be visible to all participants in your shared wallet."
 }

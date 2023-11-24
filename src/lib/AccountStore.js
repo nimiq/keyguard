@@ -132,7 +132,7 @@ class AccountStore {
         if (!keyRecord) return null;
 
         const secret = await Nimiq.Secret.fromEncrypted(new Nimiq.SerialBuffer(keyRecord.secret), password);
-        return new Key(secret, keyRecord.hasPin);
+        return new Key(secret, { hasPin: keyRecord.hasPin });
     }
 
     /**

@@ -148,6 +148,7 @@ output "👷  Creating folder structure"
 mkdir -p dist/request
 mkdir -p dist/assets/nimiq
 mkdir -p dist/lib
+mkdir -p dist/lib/rsa/sandboxed
 
 # bundle names
 JS_BUNDLE="index.HASH.js"
@@ -357,6 +358,7 @@ cp -v favicon.ico dist
 cp -rv src/assets/* dist/assets/
 cp -v src/lib/QrScannerWorker.js dist/lib/
 cp -v node_modules/@nimiq/style/nimiq-style.icons.svg dist/assets/
+cp -v src/lib/rsa/sandboxed/* dist/lib/rsa/sandboxed/
 # copy service worker (which has to be in root to work)
 cp -v src/ServiceWorker.js dist
 

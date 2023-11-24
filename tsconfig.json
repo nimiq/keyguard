@@ -75,5 +75,6 @@
     "src/translations/index.js",
     "src/lib/bitcoin/BitcoinJS.js",
     "src/lib/polygon/OpenGSN.js",
+    "src/lib/multisig/wasm/pkg",
   ]
 }
