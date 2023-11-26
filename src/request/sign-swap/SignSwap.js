@@ -153,7 +153,7 @@ class SignSwap {
         const exchangeRateDigitsLength = exchangeRate
             .toFixed(CryptoUtils.assetDecimals(exchangeOtherAsset) + 1)
             .split('.')[0]
-            .replace('0', '')
+            .replace(/^0/, '') // Remove 0 when the number is < 1
             .length;
         const exchangeRateDecimals = Math.max(
             0,
