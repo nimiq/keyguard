@@ -3,7 +3,6 @@
 /* global Key */
 /* global KeyStore */
 /* global PasswordBox */
-/* global SignStakingApi */
 /* global Errors */
 /* global Utf8Tools */
 /* global TopLevelApi */
@@ -26,7 +25,7 @@ class SignStaking {
         /** @type {HTMLElement} */
         this.$el = (document.getElementById(SignStaking.Pages.CONFIRM_STAKING));
 
-        const transaction = request.transaction;
+        const transaction = request.plain;
 
         /** @type {HTMLElement} */
         this.$accountDetails = (this.$el.querySelector('#account-details'));
@@ -34,7 +33,7 @@ class SignStaking {
         /** @type {HTMLLinkElement} */
         const $sender = (this.$el.querySelector('.accounts .sender'));
         this._senderAddressInfo = new AddressInfo({
-            userFriendlyAddress: transaction.sender.toUserFriendlyAddress(),
+            userFriendlyAddress: transaction.sender,
             label: request.senderLabel || null,
             imageUrl: null,
             accountLabel: request.keyLabel || null,
@@ -46,13 +45,9 @@ class SignStaking {
 
         /** @type {HTMLLinkElement} */
         const $recipient = (this.$el.querySelector('.accounts .recipient'));
-        const recipientAddress = transaction.recipient.toUserFriendlyAddress();
-        const recipientLabel = 'recipientLabel' in request && !!request.recipientLabel
-            ? request.recipientLabel
-            : null;
         this._recipientAddressInfo = new AddressInfo({
-            userFriendlyAddress: recipientAddress,
-            label: recipientLabel,
+            userFriendlyAddress: transaction.recipient,
+            label: request.recipientLabel || null,
             imageUrl: null,
             accountLabel: null,
         });
@@ -81,7 +76,7 @@ class SignStaking {
             $feeSection.classList.remove('display-none');
         }
 
-        if ($data && transaction.data.byteLength > 0) {
+        if ($data && transaction.data.raw.length) {
             // Set transaction extra data.
             $data.textContent = this._formatData(transaction);
             /** @type {HTMLDivElement} */
@@ -155,70 +150,13 @@ class SignStaking {
         const privateKey = Albatross.PrivateKey.unserialize(powPrivateKey.serialize());
         const keyPair = Albatross.KeyPair.derive(privateKey);
 
-        /** @type {Albatross.Transaction} */
-        let tx;
-
-        switch (request.type) {
-            case SignStakingApi.IncomingStakingType.CREATE_STAKER:
-                tx = Albatross.TransactionBuilder.newCreateStaker(
-                    keyPair.toAddress(),
-                    Albatross.Address.fromString(/** @type {Nimiq.Address} */ (request.delegation).toHex()),
-                    BigInt(request.transaction.value),
-                    BigInt(request.transaction.fee),
-                    request.transaction.validityStartHeight,
-                    request.transaction.networkId,
-                );
-                break;
-            case SignStakingApi.IncomingStakingType.ADD_STAKE:
-                tx = Albatross.TransactionBuilder.newStake(
-                    keyPair.toAddress(),
-                    keyPair.toAddress(),
-                    BigInt(request.transaction.value),
-                    BigInt(request.transaction.fee),
-                    request.transaction.validityStartHeight,
-                    request.transaction.networkId,
-                );
-                break;
-            case SignStakingApi.IncomingStakingType.UPDATE_STAKER:
-                tx = Albatross.TransactionBuilder.newUpdateStaker(
-                    keyPair.toAddress(),
-                    Albatross.Address.fromString(/** @type {Nimiq.Address} */ (request.delegation).toHex()),
-                    Boolean(request.reactivateAllStake),
-                    BigInt(request.transaction.fee),
-                    request.transaction.validityStartHeight,
-                    request.transaction.networkId,
-                );
-                break;
-            case SignStakingApi.IncomingStakingType.SET_INACTIVE_STAKE:
-                tx = Albatross.TransactionBuilder.newSetInactiveStake(
-                    keyPair.toAddress(),
-                    BigInt(request.newInactiveBalance),
-                    BigInt(request.transaction.fee),
-                    request.transaction.validityStartHeight,
-                    request.transaction.networkId,
-                );
-                break;
-            case SignStakingApi.IncomingStakingType.UNSTAKE:
-                tx = Albatross.TransactionBuilder.newUnstake(
-                    keyPair.toAddress(),
-                    BigInt(request.transaction.value),
-                    BigInt(request.transaction.fee),
-                    request.transaction.validityStartHeight,
-                    request.transaction.networkId,
-                );
-                break;
-            default:
-                throw new Errors.KeyguardError('Unreachable');
-        }
-
-        tx.sign(keyPair);
+        request.transaction.sign(keyPair);
 
         /** @type {KeyguardRequest.SignStakingResult} */
         const result = {
             publicKey: keyPair.publicKey.serialize(),
-            signature: tx.proof.subarray(tx.proof.length - 64),
-            data: request.transaction.data,
-            serializedTx: tx.serialize(),
+            signature: request.transaction.proof.subarray(request.transaction.proof.length - 64),
+            transaction: request.transaction.serialize(),
         };
         resolve(result);
     }
@@ -229,47 +167,107 @@ class SignStaking {
     }
 
     /**
-     * @param {Nimiq.Transaction} transaction
+     * @param {Albatross.PlainTransaction} plain
      * @returns {string}
      */
-    _formatData(transaction) {
-        const buf = new Nimiq.SerialBuffer(transaction.data);
-        const type = buf.readUint8();
-        switch (type) {
-            case SignStakingApi.IncomingStakingType.CREATE_STAKER: {
-                let text = 'Start staking';
-                const hasDelegation = buf.readUint8() === 1;
-                if (hasDelegation) {
-                    const delegation = Nimiq.Address.unserialize(buf);
-                    text += ` with validator ${delegation.toUserFriendlyAddress()}`;
-                } else {
-                    text += ' with no validator';
+    _formatData(plain) {
+        console.log(plain);
+        // That either the recipient or the sender is a staking account type is validated in SignStakingApi
+        // @ts-ignore Wrong type definition
+        if (plain.recipientType === 3) {
+            switch (plain.data.type) {
+                case 'create-staker': {
+                    let text = 'Start staking';
+                    const { delegation } = plain.data;
+                    if (delegation) {
+                        text += ` with validator ${delegation}`;
+                    } else {
+                        text += ' with no validator';
+                    }
+                    return text;
                 }
-                return text;
-            }
-            case SignStakingApi.IncomingStakingType.UPDATE_STAKER: {
-                let text = 'Change validator';
-                const hasDelegation = buf.readUint8() === 1;
-                if (hasDelegation) {
-                    const delegation = Nimiq.Address.unserialize(buf);
-                    text += ` to validator ${delegation.toUserFriendlyAddress()}`;
-                } else {
-                    text += ' to no validator';
+                case 'update-staker': {
+                    let text = 'Change validator';
+                    const { newDelegation, reactivateAllStake } = plain.data;
+                    if (newDelegation) {
+                        text += ` to validator ${newDelegation}`;
+                    } else {
+                        text += ' to no validator';
+                    }
+                    if (reactivateAllStake) {
+                        text += ' and reactivate all stake';
+                    }
+                    return text;
                 }
-                if (buf.readUint8() === 1) {
-                    text += ' and reactivate all stake';
+                case 'add-stake': {
+                    const { staker } = plain.data;
+                    return `Add stake to ${staker}`;
                 }
-                return text;
+                case 'set-inactive-stake': {
+                    const { newInactiveBalance } = plain.data;
+                    return `Set inactive stake to ${newInactiveBalance / 1e5} NIM`;
+                }
+                case 'create-validator': {
+                    let text = `Create validator ${plain.sender}`;
+                    const { rewardAddress } = plain.data;
+                    if (rewardAddress !== plain.sender) {
+                        text += ` with reward address ${rewardAddress}`;
+                    }
+                    // TODO: Somehow let users see validator key, signing key, and signal data that they are signing
+                    return text;
+                }
+                case 'update-validator': {
+                    let text = `Update validator ${plain.sender}`;
+                    const {
+                        newRewardAddress,
+                        newVotingKey,
+                        newSigningKey,
+                        newSignalData,
+                    } = plain.data;
+                    text += ` ${plain.sender}`;
+                    if (newRewardAddress) {
+                        text += `, updating reward address to ${newRewardAddress}`;
+                    }
+                    if (newVotingKey) {
+                        text += ', updating voting key';
+                    }
+                    if (newSigningKey) {
+                        text += ', updating signing key';
+                    }
+                    if (newSignalData) {
+                        text += ', updating signal data';
+                    }
+                    return text;
+                }
+                case 'deactivate-validator': {
+                    const { validator } = plain.data;
+                    return `Deactivate validator ${validator}`;
+                }
+                case 'reactivate-validator': {
+                    const { validator } = plain.data;
+                    return `Reactivate validator ${validator}`;
+                }
+                case 'retire-validator': {
+                    return `Retire validator ${plain.sender}`;
+                }
+                default: {
+                    return `Unrecognized in-staking data: ${plain.data.type} - ${plain.data.raw}`;
+                }
             }
-            case SignStakingApi.IncomingStakingType.ADD_STAKE: {
-                const staker = Nimiq.Address.unserialize(buf);
-                return `Add stake for ${staker.toUserFriendlyAddress()}`;
+        } else {
+            switch (plain.senderData.type) {
+                case 'remove-stake': {
+                    return 'Unstake';
+                }
+                case 'delete-validator': {
+                    // Cannot show the validator address here, as the recipient can be any address and the validator
+                    // address is the signer, which the Keyguard only knows after password entry.
+                    return 'Delete validator';
+                }
+                default: {
+                    return `Unrecognized out-staking data: ${plain.senderData.type} - ${plain.senderData.raw}`;
+                }
             }
-            case SignStakingApi.IncomingStakingType.SET_INACTIVE_STAKE: {
-                const inactiveBalance = buf.readUint64();
-                return `Set inactive stake to ${inactiveBalance / 1e5} NIM`;
-            }
-            default: return Nimiq.BufferUtils.toHex(transaction.data);
         }
     }
 }

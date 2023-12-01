@@ -188,19 +188,10 @@ export type SignTransactionRequest
     | SignTransactionRequestCheckout
     | SignTransactionRequestCashlink;
 
-export type SignStakingRequest = SignTransactionRequestCommon & {
-    type: number, // See SignStakingApi for types
-
-    // For createStaker and updateStaker transactions
-    delegation?: string,
-
-    // For updateStaker transactions
-    reactivateAllStake?: boolean,
-
-    // For inactivateStake transactions
-    newInactiveBalance?: number,
-
-    // For unstake transactions
+export type SignStakingRequest = SimpleRequest & {
+    keyPath: string,
+    transaction: Uint8Array,
+    senderLabel?: string,
     recipientLabel?: string,
 };
 
@@ -549,8 +540,7 @@ export type SignTransactionResult = SignatureResult & {
     serializedTx: Uint8Array,
 };
 export type SignStakingResult = SignatureResult & {
-    data: Uint8Array,
-    serializedTx: Uint8Array,
+    transaction: Uint8Array,
 };
 export type SimpleResult = { success: boolean };
 export type SignedBitcoinTransaction = {
