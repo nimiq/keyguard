@@ -2,9 +2,10 @@
 /* global SignStaking */
 /* global Errors */
 /* global Nimiq */
+/* global Albatross */
 
 /** @extends {TopLevelApi<KeyguardRequest.SignStakingRequest>} */
-class SignStakingApi extends TopLevelApi {
+class SignStakingApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
      * @param {KeyguardRequest.SignStakingRequest} request
      * @returns {Promise<Parsed<KeyguardRequest.SignStakingRequest>>}
@@ -23,104 +24,38 @@ class SignStakingApi extends TopLevelApi {
         parsedRequest.senderLabel = this.parseLabel(request.senderLabel);
         parsedRequest.recipientLabel = this.parseLabel(request.recipientLabel);
 
-        const type = this.parseStakingType(request.type);
-        parsedRequest.type = type;
-        let isSignalling = false;
-        switch (type) {
-            case SignStakingApi.IncomingStakingType.CREATE_STAKER:
-            case SignStakingApi.IncomingStakingType.UPDATE_STAKER: {
-                parsedRequest.delegation = this.parseAddress(request.delegation, 'delegation');
-                parsedRequest.reactivateAllStake = this.parseBoolean(request.reactivateAllStake);
-                const data = new Nimiq.SerialBuffer(
-                    1 // Data type
-                    + 1 // Option<> indicator
-                    + Nimiq.Address.SERIALIZED_SIZE // Validator address (delegation)
-                    + (type === SignStakingApi.IncomingStakingType.UPDATE_STAKER ? 1 : 0) // Stake reactivation boolean
-                    + Nimiq.SignatureProof.SINGLE_SIG_SIZE, // Staker signature
-                );
-                data.writeUint8(type);
-                data.writeUint8(1); // Delegation is optional, this signals that we are including it.
-                data.write(parsedRequest.delegation.serialize());
-                if (type === SignStakingApi.IncomingStakingType.UPDATE_STAKER) {
-                    data.writeUint8(parsedRequest.reactivateAllStake ? 1 : 0);
-                }
-                request.data = data;
-                isSignalling = type === SignStakingApi.IncomingStakingType.UPDATE_STAKER;
-                break;
-            }
-            case SignStakingApi.IncomingStakingType.ADD_STAKE: {
-                const sender = this.parseAddress(request.sender, 'sender');
-                const data = new Nimiq.SerialBuffer(
-                    1 // Data type
-                    + Nimiq.Address.SERIALIZED_SIZE, // Staker address
-                );
-                data.writeUint8(type);
-                data.write(sender.serialize());
-                request.data = data;
-                break;
-            }
-            case SignStakingApi.IncomingStakingType.SET_INACTIVE_STAKE: {
-                parsedRequest.newInactiveBalance = this.parseNonNegativeFiniteNumber(
-                    request.newInactiveBalance,
-                    false,
-                    'newInactiveBalance',
-                );
-                const data = new Nimiq.SerialBuffer(
-                    1 // Data type
-                    + 8 // u64 size
-                    + Nimiq.SignatureProof.SINGLE_SIG_SIZE, // Staker signature
-                );
-                data.writeUint8(type);
-                data.writeUint64(/** @type {number} */ (parsedRequest.newInactiveBalance));
-                request.data = data;
-                isSignalling = true;
-                break;
-            }
-            case SignStakingApi.IncomingStakingType.UNSTAKE: {
-                // No special data format is required for unstaking
-                break;
-            }
-            default:
-                throw new Errors.KeyguardError('Unreachable');
-        }
-
-        parsedRequest.transaction = this.parseTransaction(request);
-
-        if (isSignalling) {
-            // @ts-ignore Private property access
-            parsedRequest.transaction._value = 0;
-            // @ts-ignore Private property access
-            parsedRequest.transaction._flags = 0b10; // Signalling flag
-        }
+        parsedRequest.transaction = this.parseStakingTransaction(request.transaction);
+        parsedRequest.plain = parsedRequest.transaction.toPlain();
 
         return parsedRequest;
     }
 
     /**
      * Checks that the given layout is valid
-     * @param {unknown} type
-     * @returns {number}
+     * @param {unknown} transaction
+     * @returns {Albatross.Transaction}
      */
-    parseStakingType(type) {
-        if (!type || typeof type !== 'number') {
-            throw new Errors.InvalidRequestError('Staking type must be a number');
+    parseStakingTransaction(transaction) {
+        if (!transaction) {
+            throw new Errors.InvalidRequestError('transaction is required');
         }
-        if (!Object.values(SignStakingApi.IncomingStakingType).includes(type)) {
-            throw new Errors.InvalidRequestError('Invalid staking type');
+
+        if (!(transaction instanceof Uint8Array)) {
+            throw new Errors.InvalidRequestError('transaction must be a Uint8Array');
         }
-        return type;
+        const tx = Albatross.Transaction.fromAny(Nimiq.BufferUtils.toHex(transaction));
+
+        if (tx.senderType !== Albatross.AccountType.Staking && tx.recipientType !== Albatross.AccountType.Staking) {
+            throw new Errors.InvalidRequestError('transaction must be a staking transaction');
+        }
+
+        // Parsing the transaction does not validate any of it's fields.
+        // TODO: Validate all fields like tx.verify() would?
+
+        return tx;
     }
 
     get Handler() {
         return SignStaking;
     }
 }
-
-SignStakingApi.IncomingStakingType = {
-    UNSTAKE: 1,
-
-    CREATE_STAKER: 5,
-    ADD_STAKE: 6,
-    UPDATE_STAKER: 7,
-    SET_INACTIVE_STAKE: 8,
-};
