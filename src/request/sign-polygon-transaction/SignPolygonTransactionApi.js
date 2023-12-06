@@ -22,10 +22,7 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
         parsedRequest.keyInfo = await this.parseKeyId(request.keyId);
         parsedRequest.keyLabel = /** @type {string} */ (this.parseLabel(request.keyLabel, false, 'keyLabel'));
         parsedRequest.keyPath = this.parsePolygonPath(request.keyPath, 'keyPath');
-        [parsedRequest.request, parsedRequest.description] = this.parseOpenGsnForwardRequest(
-            request,
-            ['transfer', 'transferWithApproval', 'transferWithPermit', 'refund'],
-        );
+        [parsedRequest.request, parsedRequest.description] = this.parseOpenGsnForwardRequest(request);
         parsedRequest.relayData = this.parseOpenGsnRelayData(request.relayData);
         parsedRequest.senderLabel = this.parseLabel(request.senderLabel); // Used for HTLC refunds
         parsedRequest.recipientLabel = this.parseLabel(request.recipientLabel);
@@ -58,7 +55,6 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
     /**
      *
      * @param {KeyguardRequest.PolygonTransactionInfo} request
-     * @param {Array<'transfer' | 'transferWithApproval' | 'transferWithPermit' | 'refund'>} allowedMethods
      * @returns {[
      *     KeyguardRequest.OpenGsnForwardRequest,
      *     PolygonTransferDescription
@@ -67,7 +63,7 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
      *     | PolygonRefundDescription,
      * ]}
      */
-    parseOpenGsnForwardRequest(request, allowedMethods) {
+    parseOpenGsnForwardRequest(request) {
         const forwardRequest = this.parseOpenGsnForwardRequestRoot(request.request);
 
         /**
@@ -93,6 +89,10 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
             if (description.args.token !== CONFIG.USDC_CONTRACT_ADDRESS) {
                 throw new Errors.InvalidRequestError('Invalid USDC token contract in request data');
             }
+
+            if (!['transfer', 'transferWithApproval'].includes(description.name)) {
+                throw new Errors.InvalidRequestError('Requested Polygon contract method is invalid');
+            }
         } else if (forwardRequest.to === CONFIG.NATIVE_USDC_TRANSFER_CONTRACT_ADDRESS) {
             const nativeUsdcTransferContract = new ethers.Contract(
                 CONFIG.NATIVE_USDC_TRANSFER_CONTRACT_ADDRESS,
@@ -108,6 +108,10 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
             if (description.args.token !== CONFIG.NATIVE_USDC_CONTRACT_ADDRESS) {
                 throw new Errors.InvalidRequestError('Invalid native USDC token contract in request data');
             }
+
+            if (!['transfer', 'transferWithPermit'].includes(description.name)) {
+                throw new Errors.InvalidRequestError('Requested Polygon contract method is invalid');
+            }
         } else if (forwardRequest.to === CONFIG.USDC_HTLC_CONTRACT_ADDRESS) {
             const usdcHtlcContract = new ethers.Contract(
                 CONFIG.USDC_HTLC_CONTRACT_ADDRESS,
@@ -119,12 +123,12 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
                 data: forwardRequest.data,
                 value: forwardRequest.value,
             }));
+
+            if (!['refund'].includes(description.name)) {
+                throw new Errors.InvalidRequestError('Requested Polygon contract method is invalid');
+            }
         } else {
             throw new Errors.InvalidRequestError('request.to address is not allowed');
-        }
-
-        if (!allowedMethods.includes(description.name)) {
-            throw new Errors.InvalidRequestError('Requested Polygon contract method is invalid');
         }
 
         // Check that amount exists when method is 'refund', and unset for other methods.
