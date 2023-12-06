@@ -67,19 +67,18 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
                 PolygonContractABIs.USDC_TRANSFER_CONTRACT_ABI,
             );
 
-            /** @type {PolygonTransferDescription | PolygonTransferWithApprovalDescription} */
-            description = (usdcTransferContract.interface.parseTransaction({
-                data: forwardRequest.data,
-                value: forwardRequest.value,
-            }));
+            description = /** @type {PolygonTransferDescription | PolygonTransferWithApprovalDescription} */ (
+                usdcTransferContract.interface.parseTransaction({
+                    data: forwardRequest.data,
+                    value: forwardRequest.value,
+                }));
         } else if (forwardRequest.to === CONFIG.USDC_HTLC_CONTRACT_ADDRESS) {
             const usdcHtlcContract = new ethers.Contract(
                 CONFIG.USDC_HTLC_CONTRACT_ADDRESS,
                 PolygonContractABIs.USDC_HTLC_CONTRACT_ABI,
             );
 
-            /** @type {PolygonRefundDescription} */
-            description = (usdcHtlcContract.interface.parseTransaction({
+            description = /** @type {PolygonRefundDescription} */ (usdcHtlcContract.interface.parseTransaction({
                 data: forwardRequest.data,
                 value: forwardRequest.value,
             }));

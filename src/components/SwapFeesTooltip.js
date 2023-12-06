@@ -24,12 +24,10 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
 
         this.$el = SwapFeesTooltip._createElement();
 
-        /** @private
-         *  @type {SVGCircleElement} */
-        this.$tooltip = (this.$el.querySelector('.tooltip-box'));
-        /** @private
-         *  @type {SVGCircleElement} */
-        this.$fees = (this.$el.querySelector('.fees'));
+        /** @private */
+        this.$tooltip = /** @type {SVGCircleElement} */ (this.$el.querySelector('.tooltip-box'));
+        /** @private */
+        this.$fees = /** @type {SVGCircleElement} */ (this.$el.querySelector('.fees'));
 
         let totalFiatFees = 0;
 

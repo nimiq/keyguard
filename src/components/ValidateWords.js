@@ -25,8 +25,7 @@ class ValidateWords extends Nimiq.Observable {
         this.$buttons = this.$el.querySelectorAll('button');
         this.$targetIndex = /** @type {HTMLElement} */ (this.$el.querySelector('.target-index'));
         this.$el.addEventListener('click', this._onClick.bind(this));
-        /** @type {HTMLElement} */
-        this.$textHint = (this.$el.querySelector('p'));
+        this.$textHint = /** @type {HTMLElement} */ (this.$el.querySelector('p'));
     }
 
     /**

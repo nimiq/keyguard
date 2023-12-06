@@ -25,21 +25,19 @@ class SignPolygonTransaction {
      * @param {reject} reject
      */
     constructor(request, resolve, reject) {
-        /** @type {HTMLElement} */
-        this.$el = (document.getElementById(SignPolygonTransaction.Pages.CONFIRM_TRANSACTION));
+        this.$el = /** @type {HTMLElement} */ (
+            document.getElementById(SignPolygonTransaction.Pages.CONFIRM_TRANSACTION));
 
         const relayRequest = request.request;
 
-        /** @type {HTMLLinkElement} */
-        const $sender = (this.$el.querySelector('.accounts .sender'));
+        const $sender = /** @type {HTMLLinkElement} */ (this.$el.querySelector('.accounts .sender'));
         if (request.description.name === 'refund') {
             new PolygonAddressInfo(relayRequest.to, request.senderLabel, 'unknown').renderTo($sender);
         } else {
             new PolygonAddressInfo(relayRequest.from, request.keyLabel, 'usdc').renderTo($sender);
         }
 
-        /** @type {HTMLLinkElement} */
-        const $recipient = (this.$el.querySelector('.accounts .recipient'));
+        const $recipient = /** @type {HTMLLinkElement} */ (this.$el.querySelector('.accounts .recipient'));
         const recipientAddress = /** @type {string} */ (request.description.args.target);
         new PolygonAddressInfo(
             recipientAddress,
@@ -47,10 +45,8 @@ class SignPolygonTransaction {
             request.description.name === 'refund' ? 'usdc' : 'none',
         ).renderTo($recipient);
 
-        /** @type {HTMLDivElement} */
-        const $value = (this.$el.querySelector('#value'));
-        /** @type {HTMLDivElement} */
-        const $fee = (this.$el.querySelector('#fee'));
+        const $value = /** @type {HTMLDivElement} */ (this.$el.querySelector('#value'));
+        const $fee = /** @type {HTMLDivElement} */ (this.$el.querySelector('#fee'));
 
         // Set value and fee.
         $value.textContent = NumberFormatting.formatNumber(
@@ -64,14 +60,12 @@ class SignPolygonTransaction {
         if (feeUnits > 0) {
             // For the fee, we do not display more than two decimals, as it would not add any value for the user
             $fee.textContent = NumberFormatting.formatNumber(PolygonUtils.unitsToCoins(feeUnits), 2, 2);
-            /** @type {HTMLDivElement} */
-            const $feeSection = (this.$el.querySelector('.fee-section'));
+            const $feeSection = /** @type {HTMLDivElement} */ (this.$el.querySelector('.fee-section'));
             $feeSection.classList.remove('display-none');
         }
 
         // Set up password box.
-        /** @type {HTMLFormElement} */
-        const $passwordBox = (document.querySelector('#password-box'));
+        const $passwordBox = /** @type {HTMLFormElement} */ (document.querySelector('#password-box'));
         this._passwordBox = new PasswordBox($passwordBox, {
             hideInput: !request.keyInfo.encrypted,
             buttonI18nTag: 'passwordbox-confirm-tx',
@@ -101,7 +95,8 @@ class SignPolygonTransaction {
         let key = null;
         try {
             key = await KeyStore.instance.get(request.keyInfo.id, passwordBuf);
-        } catch (e) {
+        } catch (err) {
+            const e = /** @type {Error} */ (err);
             if (e.message === 'Invalid key') {
                 TopLevelApi.setLoading(false);
                 this._passwordBox.onPasswordIncorrect();

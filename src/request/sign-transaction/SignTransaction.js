@@ -25,17 +25,14 @@ class SignTransaction {
      */
     constructor(request, resolve, reject) {
         this._request = request;
-        /** @type {HTMLElement} */
-        this.$el = (document.getElementById(SignTransaction.Pages.CONFIRM_TRANSACTION));
+        this.$el = /** @type {HTMLElement} */ (document.getElementById(SignTransaction.Pages.CONFIRM_TRANSACTION));
         this.$el.classList.add(request.layout);
 
         const transaction = request.transaction;
 
-        /** @type {HTMLElement} */
-        this.$accountDetails = (this.$el.querySelector('#account-details'));
+        this.$accountDetails = /** @type {HTMLElement} */ (this.$el.querySelector('#account-details'));
 
-        /** @type {HTMLLinkElement} */
-        const $sender = (this.$el.querySelector('.accounts .sender'));
+        const $sender = /** @type {HTMLLinkElement} */ (this.$el.querySelector('.accounts .sender'));
         this._senderAddressInfo = new AddressInfo({
             userFriendlyAddress: transaction.sender.toUserFriendlyAddress(),
             label: request.senderLabel || null,
@@ -47,8 +44,7 @@ class SignTransaction {
             this._openDetails(this._senderAddressInfo);
         });
 
-        /** @type {HTMLLinkElement} */
-        const $recipient = (this.$el.querySelector('.accounts .recipient'));
+        const $recipient = /** @type {HTMLLinkElement} */ (this.$el.querySelector('.accounts .recipient'));
         const recipientAddress = transaction.recipient.toUserFriendlyAddress();
         /* eslint-disable no-nested-ternary */
         const recipientLabel = 'shopOrigin' in request && !!request.shopOrigin
@@ -73,8 +69,7 @@ class SignTransaction {
             });
         }
 
-        /** @type {HTMLElement} */
-        const $paymentInfoLine = (this.$el.querySelector('.payment-info-line'));
+        const $paymentInfoLine = /** @type {HTMLElement} */ (this.$el.querySelector('.payment-info-line'));
         if (request.layout === SignTransactionApi.Layouts.CHECKOUT) {
             // eslint-disable-next-line no-new
             new PaymentInfoLine(Object.assign({}, request, {
@@ -90,23 +85,18 @@ class SignTransaction {
             $paymentInfoLine.remove();
         }
 
-        /** @type {HTMLButtonElement} */
-        const $closeDetails = (this.$accountDetails.querySelector('#close-details'));
+        const $closeDetails = /** @type {HTMLButtonElement} */ (this.$accountDetails.querySelector('#close-details'));
         $closeDetails.addEventListener('click', this._closeDetails.bind(this));
 
-        /** @type {HTMLDivElement} */
-        const $value = (this.$el.querySelector('#value'));
-        /** @type {HTMLDivElement} */
-        const $fee = (this.$el.querySelector('#fee'));
-        /** @type {HTMLDivElement} */
-        const $data = (this.$el.querySelector('#data'));
+        const $value = /** @type {HTMLDivElement} */ (this.$el.querySelector('#value'));
+        const $fee = /** @type {HTMLDivElement} */ (this.$el.querySelector('#fee'));
+        const $data = /** @type {HTMLDivElement} */ (this.$el.querySelector('#data'));
 
         // Set value and fee.
         $value.textContent = NumberFormatting.formatNumber(Nimiq.Policy.lunasToCoins(transaction.value));
         if ($fee && transaction.fee > 0) {
             $fee.textContent = NumberFormatting.formatNumber(Nimiq.Policy.lunasToCoins(transaction.fee));
-            /** @type {HTMLDivElement} */
-            const $feeSection = (this.$el.querySelector('.fee-section'));
+            const $feeSection = /** @type {HTMLDivElement} */ (this.$el.querySelector('.fee-section'));
             $feeSection.classList.remove('display-none');
         }
 
@@ -114,21 +104,18 @@ class SignTransaction {
          && Nimiq.BufferUtils.equals(transaction.data, Constants.CASHLINK_FUNDING_DATA)) {
             if (request.cashlinkMessage) {
                 $data.textContent = request.cashlinkMessage;
-                /** @type {HTMLDivElement} */
-                const $dataSection = (this.$el.querySelector('.data-section'));
+                const $dataSection = /** @type {HTMLDivElement} */ (this.$el.querySelector('.data-section'));
                 $dataSection.classList.remove('display-none');
             }
         } else if ($data && transaction.data.byteLength > 0) {
             // Set transaction extra data.
             $data.textContent = this._formatData(transaction);
-            /** @type {HTMLDivElement} */
-            const $dataSection = (this.$el.querySelector('.data-section'));
+            const $dataSection = /** @type {HTMLDivElement} */ (this.$el.querySelector('.data-section'));
             $dataSection.classList.remove('display-none');
         }
 
         // Set up password box.
-        /** @type {HTMLFormElement} */
-        const $passwordBox = (document.querySelector('#password-box'));
+        const $passwordBox = /** @type {HTMLFormElement} */ (document.querySelector('#password-box'));
         this._passwordBox = new PasswordBox($passwordBox, {
             hideInput: !request.keyInfo.encrypted,
             buttonI18nTag: request.layout === SignTransactionApi.Layouts.CASHLINK
@@ -180,12 +167,13 @@ class SignTransaction {
         try {
             key = await KeyStore.instance.get(request.keyInfo.id, passwordBuf);
         } catch (e) {
-            if (e.message === 'Invalid key') {
+            const err = /** @type {Error} */ (e);
+            if (err.message === 'Invalid key') {
                 TopLevelApi.setLoading(false);
                 this._passwordBox.onPasswordIncorrect();
                 return;
             }
-            reject(new Errors.CoreError(e));
+            reject(new Errors.CoreError(err));
             return;
         }
         if (!key) {

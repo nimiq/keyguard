@@ -36,17 +36,15 @@ class FiatApi {
 }
 
 /**
- * @readonly
  * @enum { 'nim' | 'btc' }
  * Crypto currencies supported by the coingecko api that are currently of interest for us.
  */
-FiatApi.SupportedCryptoCurrency = {
+FiatApi.SupportedCryptoCurrency = Object.freeze({
     NIM: /** @type {'nim'} */ ('nim'),
     BTC: /** @type {'btc'} */ ('btc'),
-};
+});
 
 /**
- * @readonly
  * @enum {'aed' | 'ars' | 'aud' | 'bdt' | 'bhd' | 'bmd' | 'brl' | 'cad' | 'chf' | 'clp' | 'cny' | 'czk' | 'dkk' | 'eur'
  *     | 'gbp' | 'hkd' | 'huf' | 'idr' | 'ils' | 'inr' | 'jpy' | 'krw' | 'kwd' | 'lkr' | 'mmk' | 'mxn' | 'myr' | 'nok'
  *     | 'ngn' | 'nzd' | 'php' | 'pkr' | 'pln' | 'rub' | 'sar' | 'sek' | 'sgd' | 'thb' | 'try' | 'twd' | 'uah' | 'usd'
@@ -55,7 +53,7 @@ FiatApi.SupportedCryptoCurrency = {
  * https://api.coingecko.com/api/v3/simple/supported_vs_currencies) but also includes crypto currencies and ounces of
  * gold amongst others that are not fiat currencies. See FiatApi in @nimiq/utils for how this list was assembled.
  */
-FiatApi.SupportedFiatCurrency = {
+FiatApi.SupportedFiatCurrency = Object.freeze({
     AED: /** @type {'aed'} */ ('aed'), // Arab Emirates Dirham
     ARS: /** @type {'ars'} */ ('ars'), // Argentine Peso
     AUD: /** @type {'aud'} */ ('aud'), // Australian Dollar
@@ -101,19 +99,18 @@ FiatApi.SupportedFiatCurrency = {
     // VEF: /** @type {'vef'} */ ('vef'), // Discontinued Venezuelan Bolívar Fuerte replaced by VES. Rates are off.
     VND: /** @type {'vnd'} */ ('vnd'), // Vietnamese Đồng
     ZAR: /** @type {'zar'} */ ('zar'), // South African Rand
-};
+});
 
 /**
- * @readonly
  * Coingecko api url. Note that the origin must be whitelisted in the csp.
+ * @type {Readonly<string>}
  */
 FiatApi.API_URL = 'https://api.coingecko.com/api/v3';
 
 /**
- * @readonly
  * Crypto currency tickers mapped to coingecko coin ids.
  */
-FiatApi.COINGECKO_COIN_IDS = {
+FiatApi.COINGECKO_COIN_IDS = Object.freeze({
     [FiatApi.SupportedCryptoCurrency.NIM]: 'nimiq-2',
     [FiatApi.SupportedCryptoCurrency.BTC]: 'bitcoin',
-};
+});

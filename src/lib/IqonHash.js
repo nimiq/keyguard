@@ -57,7 +57,7 @@ class IqonHash { /* eslint-disable-line no-unused-vars */
      * @returns {string}
      */
     static _padEnd(string, maxLength, fillString) {
-        if (String.prototype.padEnd) return string.padEnd(maxLength, fillString);
+        if ('padEnd' in String.prototype) return string.padEnd(maxLength, fillString);
 
         while (string.length < maxLength) {
             string += fillString;

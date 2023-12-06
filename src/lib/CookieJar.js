@@ -182,10 +182,9 @@ class CookieJar { // eslint-disable-line no-unused-vars
 }
 
 /**
- * @readonly
  * @enum { 'lang' | 'k' | 'removeKey' | 'ssp' | 'cs.' | 'npss.' | 'accounts' | 'migrate' }
  */
-CookieJar.Cookie = {
+CookieJar.Cookie = Object.freeze({
     LANGUAGE: /** @type {'lang'} */ ('lang'),
     KEYS: /** @type {'k'} */ ('k'),
     REMOVE_KEY: /** @type {'removeKey'} */ ('removeKey'),
@@ -202,7 +201,7 @@ CookieJar.Cookie = {
      * @type {'migrate'}
      */
     DEPRECATED_MIGRATION_FLAG: ('migrate'),
-};
+});
 CookieJar.DEFAULT_MAX_AGE = 31536000; // 1 year; in seconds
 // Maximum size per cookie which should be safe for all browsers, measured as the sum of the cookie name and value,
 // but excluding the equal sign and cookie options. The maximum size for different browsers can be tested with

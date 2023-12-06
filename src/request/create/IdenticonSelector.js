@@ -5,7 +5,7 @@
 
 class IdenticonSelector extends Nimiq.Observable {
     /**
-     * @param {HTMLElement} [$el]
+     * @param {HTMLElement} $el
      * @param {string} keyPath
      */
     constructor($el, keyPath) {

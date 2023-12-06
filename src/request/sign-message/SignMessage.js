@@ -21,17 +21,13 @@ class SignMessage {
      * @param {reject} reject
      */
     constructor(request, resolve, reject) {
-        /** @type {HTMLDivElement} */
-        const $page = (document.getElementById(SignMessage.Pages.SIGN_MESSAGE));
+        const $page = /** @type {HTMLDivElement} */ (document.getElementById(SignMessage.Pages.SIGN_MESSAGE));
 
-        /** @type {HTMLDivElement} */
-        const $signerIdenticon = ($page.querySelector('#signer-identicon'));
+        const $signerIdenticon = /** @type {HTMLDivElement} */ ($page.querySelector('#signer-identicon'));
 
-        /** @type {HTMLDivElement} */
-        const $signerLabel = ($page.querySelector('#signer-label'));
+        const $signerLabel = /** @type {HTMLDivElement} */ ($page.querySelector('#signer-label'));
 
-        /** @type {HTMLInputElement} */
-        const $message = ($page.querySelector('#message'));
+        const $message = /** @type {HTMLInputElement} */ ($page.querySelector('#message'));
 
         // Set message
         if (typeof request.message === 'string') {
@@ -41,8 +37,7 @@ class SignMessage {
             if (request.message.includes('\t')) {
                 // Init tab width selector
 
-                /** @type {HTMLDivElement} */
-                const $tabWidthSelector = ($page.querySelector('#tab-width-selector'));
+                const $tabWidthSelector = /** @type {HTMLDivElement} */ ($page.querySelector('#tab-width-selector'));
                 const tws = new TabWidthSelector($tabWidthSelector);
 
                 // @ts-ignore Property 'tabSize' does not exist on type 'CSSStyleDeclaration'
@@ -65,8 +60,7 @@ class SignMessage {
         $signerLabel.textContent = request.signerLabel;
 
         // Set up password box
-        /** @type {HTMLFormElement} */
-        const $passwordBox = (document.querySelector('#password-box'));
+        const $passwordBox = /** @type {HTMLFormElement} */ (document.querySelector('#password-box'));
         this._passwordBox = new PasswordBox($passwordBox, {
             hideInput: !request.keyInfo.encrypted,
             buttonI18nTag: 'passwordbox-sign-msg',
@@ -96,7 +90,8 @@ class SignMessage {
         let key = null;
         try {
             key = await KeyStore.instance.get(request.keyInfo.id, passwordBuf);
-        } catch (e) {
+        } catch (err) {
+            const e = /** @type {Error} */ (err);
             if (e.message === 'Invalid key') {
                 TopLevelApi.setLoading(false);
                 this._passwordBox.onPasswordIncorrect();

@@ -29,24 +29,22 @@ class RemoveKey {
         this._exportWordsHandler = new ExportWords(request, this.run.bind(this), this._reject.bind(this));
         this._exportFileHandler = new ExportFile(request, this.run.bind(this), this._reject.bind(this));
 
-        /** @type {HTMLElement} */
-        const $removeKey = (document.getElementById(RemoveKey.Pages.REMOVE_KEY));
+        const $removeKey = /** @type {HTMLElement} */ (document.getElementById(RemoveKey.Pages.REMOVE_KEY));
 
         // remove key
-        /** @type {HTMLDivElement} */
-        const $loginFileContainer = ($removeKey.querySelector('.login-file-svg-container'));
-        /** @type {HTMLButtonElement} */
-        const $goToDownloadFile = ($removeKey.querySelector('#show-download-login-file'));
-        /** @type {HTMLButtonElement} */
-        const $goToShowRecoveryWords = ($removeKey.querySelector('#show-recovery-words'));
-        /** @type {HTMLDivElement} */
-        const $labelConfirm = ($removeKey.querySelector('#remove-key-label-confirm'));
-        /** @type {HTMLDivElement} */
-        const $labelConfirmInstructions = ($labelConfirm.querySelector('#remove-key-label-confirm-instructions'));
-        /** @type {HTMLInputElement} */
-        this.$labelInput = ($labelConfirm.querySelector('input'));
-        /** @type {HTMLButtonElement} */
-        const $finalConfirmButton = ($removeKey.querySelector('#remove-key-final-confirm'));
+        const $loginFileContainer = /** @type {HTMLDivElement} */ (
+            $removeKey.querySelector('.login-file-svg-container'));
+        const $goToDownloadFile = /** @type {HTMLButtonElement} */ (
+            $removeKey.querySelector('#show-download-login-file'));
+        const $goToShowRecoveryWords = /** @type {HTMLButtonElement} */ (
+            $removeKey.querySelector('#show-recovery-words'));
+        const $labelConfirm = /** @type {HTMLDivElement} */ (
+            $removeKey.querySelector('#remove-key-label-confirm'));
+        const $labelConfirmInstructions = /** @type {HTMLDivElement} */ (
+            $labelConfirm.querySelector('#remove-key-label-confirm-instructions'));
+        this.$labelInput = /** @type {HTMLInputElement} */ ($labelConfirm.querySelector('input'));
+        const $finalConfirmButton = /** @type {HTMLButtonElement} */ (
+            $removeKey.querySelector('#remove-key-final-confirm'));
 
         if (request.keyInfo.type === Nimiq.Secret.Type.PRIVATE_KEY) {
             /** @type {HTMLElement} */

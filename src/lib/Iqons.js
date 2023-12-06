@@ -200,7 +200,7 @@ class Iqons {
         ];
     }
 
-    /** @type {object} */
+    /** @type {Record<string, number>}} */
     static get assetCounts() {
         return {
             face: Iqons.CATALOG.face.length,

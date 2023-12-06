@@ -1,3 +1,4 @@
+// @ts-nocheck
 /*
     JavaScript autoComplete v1.0.4
     Copyright (c) 2014 Simon Steinberger / Pixabay

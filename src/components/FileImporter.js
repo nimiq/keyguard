@@ -46,10 +46,8 @@ class FileImporter extends Nimiq.Observable {
         this.$el = FileImporter._createElement($el);
         this._displayFile = displayFile;
 
-        /** @type {HTMLElement} */
-        this.$errorMessage = (this.$el.querySelector('.error-message'));
-        /** @type {HTMLInputElement} */
-        this.$fileInput = (this.$el.querySelector('input'));
+        this.$errorMessage = /** @type {HTMLElement} */ (this.$el.querySelector('.error-message'));
+        this.$fileInput = /** @type {HTMLInputElement} */ (this.$el.querySelector('input'));
 
         // Add drag-and-drop handlers
         this.$el.addEventListener('dragover', this._onDragOver.bind(this));
@@ -96,8 +94,7 @@ class FileImporter extends Nimiq.Observable {
      * @param {Event} event
      */
     _onFileSelected(event) {
-        /** @type {HTMLInputElement} */
-        const eventTarget = (event.target);
+        const eventTarget = /** @type {HTMLInputElement} */ (event.target);
         if (!eventTarget.files || !eventTarget.files.length) return;
         this._handleFile(eventTarget.files[0]);
     }

@@ -97,9 +97,8 @@ class SignBtcTransactionApi extends BitcoinRequestParserMixin(TopLevelApi) {
 
 /**
  * @enum {KeyguardRequest.SignBtcTransactionRequestLayout}
- * @readonly
  */
-SignBtcTransactionApi.Layouts = {
+SignBtcTransactionApi.Layouts = Object.freeze({
     STANDARD: /** @type {'standard'} */ ('standard'),
     CHECKOUT: /** @type {'checkout'} */ ('checkout'),
-};
+});

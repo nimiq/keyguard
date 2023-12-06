@@ -39,29 +39,24 @@ class ImportFile {
 
         this.importWordsHandler = new ImportWords(request, resolve, reject);
 
-        /** @type {HTMLElement} */
-        this.$importFilePage = (document.getElementById(ImportFile.Pages.IMPORT_FILE));
-        /** @type {HTMLElement} */
-        this.$unlockAccountPage = (document.getElementById(ImportFile.Pages.UNLOCK_ACCOUNT));
+        this.$importFilePage = /** @type {HTMLElement} */ (document.getElementById(ImportFile.Pages.IMPORT_FILE));
+        this.$unlockAccountPage = /** @type {HTMLElement} */ (document.getElementById(ImportFile.Pages.UNLOCK_ACCOUNT));
 
         if (request.isKeyLost) {
-            /** @type {HTMLElement} */
-            (this.$importFilePage.querySelector('.login-to-continue')).classList.remove('display-none');
+            const $link = /** @type {HTMLElement} */ (
+                this.$importFilePage.querySelector('.login-to-continue'));
+            $link.classList.remove('display-none');
         }
 
-        /** @type {HTMLLabelElement} */
-        const $fileImport = (this.$importFilePage.querySelector('.file-import'));
+        const $fileImport = /** @type {HTMLLabelElement} */ (
+            this.$importFilePage.querySelector('.file-import'));
         const fileImport = new FileImporter($fileImport, false);
 
-        /** @type {HTMLButtonElement} */
-        this.$qrVideoButton = (this.$importFilePage.querySelector('.qr-video-button'));
-
-        /** @type {HTMLDivElement} */
-        this.$qrVideoScanner = (this.$importFilePage.querySelector('.qr-video-scanner'));
+        this.$qrVideoButton = /** @type {HTMLButtonElement} */ (this.$importFilePage.querySelector('.qr-video-button'));
+        this.$qrVideoScanner = /** @type {HTMLDivElement} */ (this.$importFilePage.querySelector('.qr-video-scanner'));
         this.qrVideoScanner = new QrVideoScanner(this.$qrVideoScanner, FileImporter.isLoginFileData);
 
-        /** @type {HTMLElement} */
-        const $gotoWords = (this.$importFilePage.querySelector('#goto-words'));
+        const $gotoWords = /** @type {HTMLElement} */ (this.$importFilePage.querySelector('#goto-words'));
         $gotoWords.addEventListener('click', () => { this.importWordsHandler.run(); });
 
         const $gotoCreate = this.$importFilePage.querySelector('#goto-create');
@@ -69,11 +64,11 @@ class ImportFile {
             $gotoCreate.addEventListener('click', this._goToCreate.bind(this));
         }
 
-        /** @type {HTMLImageElement} */
-        this.$loginFileImage = (this.$unlockAccountPage.querySelector('.loginfile-image'));
+        this.$loginFileImage = /** @type {HTMLImageElement} */ (
+            this.$unlockAccountPage.querySelector('.loginfile-image'));
 
-        /** @type {HTMLFormElement} */
-        const $passwordBox = (this.$unlockAccountPage.querySelector('.password-box'));
+        const $passwordBox = /** @type {HTMLFormElement} */ (
+            this.$unlockAccountPage.querySelector('.password-box'));
         this.passwordBox = new PasswordBox(
             $passwordBox,
             { buttonI18nTag: 'passwordbox-log-in' },
@@ -214,8 +209,9 @@ class ImportFile {
             } else {
                 throw new Error(`Unknown key type ${key.type}`);
             }
-        } catch (error) {
-            this._reject(new Errors.KeyguardError(error.message || error));
+        } catch (e) {
+            const err = /** @type {Error | string} */ (e);
+            this._reject(new Errors.KeyguardError(typeof err === 'string' ? err : err.message));
             return;
         }
 

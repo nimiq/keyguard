@@ -60,7 +60,7 @@ class PasswordBox extends Nimiq.Observable {
     }
 
     /**
-     * @param {HTMLFormElement} [$el]
+     * @param {HTMLFormElement | undefined} $el
      * @param {PasswordBoxOptions} options
      * @returns {HTMLFormElement}
      */
@@ -116,8 +116,7 @@ class PasswordBox extends Nimiq.Observable {
         `;
         /* eslint-enable max-len */
 
-        /** @type {HTMLButtonElement} */
-        const submitButton = ($el.querySelector('button.submit'));
+        const submitButton = /** @type {HTMLButtonElement} */ ($el.querySelector('button.submit'));
         submitButton.classList.add('nq-button', options.bgColor);
         submitButton.classList.toggle('inverse', !options.hideInput);
 

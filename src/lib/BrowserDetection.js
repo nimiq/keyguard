@@ -66,6 +66,7 @@ class BrowserDetection { // eslint-disable-line no-unused-vars
     static isTouchDevice() {
         return (('ontouchstart' in window)
             || (navigator.maxTouchPoints > 0)
-            || (navigator.msMaxTouchPoints > 0));
+            || ('msMaxTouchPoints' in navigator
+                && /** @type {{ msMaxTouchPoints: number }} */ (navigator).msMaxTouchPoints > 0));
     }
 }

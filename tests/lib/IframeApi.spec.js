@@ -86,7 +86,7 @@ describe('IframeApi', () => {
         expect(cookieSet).toBe(true);
         expect(KeyStore.instance.migrateAccountsToKeys).not.toHaveBeenCalled();
 
-        const accountsDbAfter = await AccountStore.instance.connect();
+        const accountsDbAfter = await AccountStore.instance['connect']();
         expect(accountsDbAfter).not.toBe(null);
 
         Dummy.Utils.deleteDummyAccountStore();
@@ -96,7 +96,7 @@ describe('IframeApi', () => {
         await Dummy.Utils.createDummyAccountStore();
         spyOn(BrowserDetection, 'isIOS').and.returnValue(false);
 
-        const accountsDbBefore = await AccountStore.instance.connect();
+        const accountsDbBefore = await AccountStore.instance['connect']();
         expect(accountsDbBefore).not.toBe(null);
 
         await iframeApi.migrateAccountsToKeys(null);
@@ -105,12 +105,12 @@ describe('IframeApi', () => {
         // check that keys have been copied correctly
         const ids = (await KeyStore.instance.list()).map(record => record.id);
         for (let id of ids) {
-            const keyRecord = await KeyStore.instance._get(id);
+            const keyRecord = await KeyStore.instance['_get'](id);
             const expectedKeyRecord = /** @type {KeyRecord} */(Dummy.keyRecords().find(record => record.id === id));
             expect(keyRecord).toEqual(expectedKeyRecord);
         }
 
-        const accountsDb = await AccountStore.instance.connect();
+        const accountsDb = await AccountStore.instance['connect']();
         expect(accountsDb).toBe(null);
 
         await Promise.all([
