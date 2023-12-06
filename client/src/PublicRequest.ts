@@ -226,6 +226,14 @@ export type PolygonTransactionInfo = {
     approval?: {
         tokenNonce: number,
     },
+
+    /**
+     * The sender's nonce in the token contract, required when calling the
+     * contract function `transferWithPermit`.
+     */
+    permit?: {
+        tokenNonce: number,
+    },
 };
 
 export type SignPolygonTransactionRequest = Omit<SimpleRequest, 'keyLabel'> & PolygonTransactionInfo & {
