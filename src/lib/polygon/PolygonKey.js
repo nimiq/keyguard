@@ -90,11 +90,7 @@ class PolygonKey { // eslint-disable-line no-unused-vars
             message,
         );
 
-        const sigR = signature.slice(0, 66); // 0x prefix plus 32 bytes = 66 characters
-        const sigS = `0x${signature.slice(66, 130)}`; // 32 bytes = 64 characters
-        const sigV = parseInt(signature.slice(130, 132), 16); // last byte = 2 characters
-
-        return { sigR, sigS, sigV };
+        return this._signatureToParts(signature);
     }
 
     /**
@@ -139,11 +135,7 @@ class PolygonKey { // eslint-disable-line no-unused-vars
             message,
         );
 
-        const sigR = signature.slice(0, 66); // 0x prefix plus 32 bytes = 66 characters
-        const sigS = `0x${signature.slice(66, 130)}`; // 32 bytes = 64 characters
-        const sigV = parseInt(signature.slice(130, 132), 16); // last byte = 2 characters
-
-        return { sigR, sigS, sigV };
+        return this._signatureToParts(signature);
     }
 
     /**
@@ -169,6 +161,18 @@ class PolygonKey { // eslint-disable-line no-unused-vars
      */
     key() {
         return this._key;
+    }
+
+    /**
+     * @param {string} signature
+     * @returns {{sigR: string, sigS: string, sigV: number}}
+     */
+    _signatureToParts(signature) {
+        const sigR = signature.slice(0, 66); // 0x prefix plus 32 bytes = 66 characters
+        const sigS = `0x${signature.slice(66, 130)}`; // 32 bytes = 64 characters
+        const sigV = parseInt(signature.slice(130, 132), 16); // last byte = 2 characters
+
+        return { sigR, sigS, sigV };
     }
 
     /**
