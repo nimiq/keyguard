@@ -117,6 +117,9 @@ class SignPolygonTransaction {
 
         const polygonKey = new PolygonKey(key);
 
+        // Has been validated to be an approved transfer contract address
+        const transferContract = request.request.to;
+
         if (request.description.name === 'transferWithApproval') {
             const { sigR, sigS, sigV } = await polygonKey.signUsdcApproval(
                 request.keyPath,
@@ -124,7 +127,7 @@ class SignPolygonTransaction {
                     CONFIG.USDC_CONTRACT_ADDRESS,
                     PolygonContractABIs.USDC_CONTRACT_ABI,
                 ),
-                CONFIG.USDC_TRANSFER_CONTRACT_ADDRESS,
+                transferContract,
                 request.description.args.approval,
                 // Has been validated to be defined when function called is `transferWithApproval`
                 /** @type {{ tokenNonce: number }} */ (request.approval).tokenNonce,
@@ -132,7 +135,7 @@ class SignPolygonTransaction {
             );
 
             const usdcTransfer = new ethers.Contract(
-                CONFIG.USDC_TRANSFER_CONTRACT_ADDRESS,
+                transferContract,
                 PolygonContractABIs.USDC_TRANSFER_CONTRACT_ABI,
             );
 
@@ -148,11 +151,38 @@ class SignPolygonTransaction {
             ]);
         }
 
+        if (request.description.name === 'transferWithPermit') {
+            const { sigR, sigS, sigV } = await polygonKey.signUsdcPermit(
+                request.keyPath,
+                transferContract,
+                // `value` is the permit approval amount - the transaction value is called `amount`
+                request.description.args.value,
+                // Has been validated to be defined when function called is `transferWithPermit`
+                /** @type {{ tokenNonce: number }} */ (request.permit).tokenNonce,
+                request.request.from,
+            );
+
+            const nativeUsdcTransfer = new ethers.Contract(
+                transferContract,
+                PolygonContractABIs.NATIVE_USDC_TRANSFER_CONTRACT_ABI,
+            );
+
+            request.request.data = nativeUsdcTransfer.interface.encodeFunctionData(request.description.name, [
+                /* address token */ request.description.args.token,
+                /* uint256 amount */ request.description.args.amount,
+                /* address target */ request.description.args.target,
+                /* uint256 fee */ request.description.args.fee,
+                // `value` is the permit approval amount - the transaction value is called `amount` (above)
+                /* uint256 value */ request.description.args.value,
+                /* bytes32 sigR */ sigR,
+                /* bytes32 sigS */ sigS,
+                /* uint8 sigV */ sigV,
+            ]);
+        }
+
         const typedData = new OpenGSN.TypedRequestData(
             CONFIG.POLYGON_CHAIN_ID,
-            request.description.name === 'refund'
-                ? CONFIG.USDC_HTLC_CONTRACT_ADDRESS
-                : CONFIG.USDC_TRANSFER_CONTRACT_ADDRESS,
+            transferContract,
             {
                 request: request.request,
                 relayData: request.relayData,

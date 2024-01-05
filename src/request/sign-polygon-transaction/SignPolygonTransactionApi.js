@@ -22,10 +22,7 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
         parsedRequest.keyInfo = await this.parseKeyId(request.keyId);
         parsedRequest.keyLabel = /** @type {string} */ (this.parseLabel(request.keyLabel, false, 'keyLabel'));
         parsedRequest.keyPath = this.parsePolygonPath(request.keyPath, 'keyPath');
-        [parsedRequest.request, parsedRequest.description] = this.parseOpenGsnForwardRequest(
-            request,
-            ['transfer', 'transferWithApproval', 'refund'],
-        );
+        [parsedRequest.request, parsedRequest.description] = this.parseOpenGsnForwardRequest(request);
         parsedRequest.relayData = this.parseOpenGsnRelayData(request.relayData);
         parsedRequest.senderLabel = this.parseLabel(request.senderLabel); // Used for HTLC refunds
         parsedRequest.recipientLabel = this.parseLabel(request.recipientLabel);
@@ -41,6 +38,15 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
                 ),
             };
         }
+        if (request.permit !== undefined) {
+            parsedRequest.permit = {
+                tokenNonce: this.parsePositiveInteger(
+                    request.permit.tokenNonce,
+                    true,
+                    'permit.tokenNonce',
+                ),
+            };
+        }
 
         return parsedRequest;
     }
@@ -49,16 +55,23 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
     /**
      *
      * @param {KeyguardRequest.PolygonTransactionInfo} request
-     * @param {Array<'transfer' | 'transferWithApproval' | 'refund'>} allowedMethods
      * @returns {[
      *     KeyguardRequest.OpenGsnForwardRequest,
-     *     PolygonTransferDescription | PolygonTransferWithApprovalDescription | PolygonRefundDescription,
+     *     PolygonTransferDescription
+     *     | PolygonTransferWithApprovalDescription
+     *     | PolygonTransferWithPermitDescription
+     *     | PolygonRefundDescription,
      * ]}
      */
-    parseOpenGsnForwardRequest(request, allowedMethods) {
+    parseOpenGsnForwardRequest(request) {
         const forwardRequest = this.parseOpenGsnForwardRequestRoot(request.request);
 
-        /** @type {PolygonTransferDescription | PolygonTransferWithApprovalDescription | PolygonRefundDescription} */
+        /**
+         * @type {PolygonTransferDescription
+         *        | PolygonTransferWithApprovalDescription
+         *        | PolygonTransferWithPermitDescription
+         *        | PolygonRefundDescription}
+         */
         let description;
 
         if (forwardRequest.to === CONFIG.USDC_TRANSFER_CONTRACT_ADDRESS) {
@@ -72,6 +85,33 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
                 data: forwardRequest.data,
                 value: forwardRequest.value,
             }));
+
+            if (description.args.token !== CONFIG.USDC_CONTRACT_ADDRESS) {
+                throw new Errors.InvalidRequestError('Invalid USDC token contract in request data');
+            }
+
+            if (!['transfer', 'transferWithApproval'].includes(description.name)) {
+                throw new Errors.InvalidRequestError('Requested Polygon contract method is invalid');
+            }
+        } else if (forwardRequest.to === CONFIG.NATIVE_USDC_TRANSFER_CONTRACT_ADDRESS) {
+            const nativeUsdcTransferContract = new ethers.Contract(
+                CONFIG.NATIVE_USDC_TRANSFER_CONTRACT_ADDRESS,
+                PolygonContractABIs.NATIVE_USDC_TRANSFER_CONTRACT_ABI,
+            );
+
+            /** @type {PolygonTransferDescription | PolygonTransferWithPermitDescription} */
+            description = (nativeUsdcTransferContract.interface.parseTransaction({
+                data: forwardRequest.data,
+                value: forwardRequest.value,
+            }));
+
+            if (description.args.token !== CONFIG.NATIVE_USDC_CONTRACT_ADDRESS) {
+                throw new Errors.InvalidRequestError('Invalid native USDC token contract in request data');
+            }
+
+            if (!['transfer', 'transferWithPermit'].includes(description.name)) {
+                throw new Errors.InvalidRequestError('Requested Polygon contract method is invalid');
+            }
         } else if (forwardRequest.to === CONFIG.USDC_HTLC_CONTRACT_ADDRESS) {
             const usdcHtlcContract = new ethers.Contract(
                 CONFIG.USDC_HTLC_CONTRACT_ADDRESS,
@@ -83,18 +123,12 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
                 data: forwardRequest.data,
                 value: forwardRequest.value,
             }));
+
+            if (!['refund'].includes(description.name)) {
+                throw new Errors.InvalidRequestError('Requested Polygon contract method is invalid');
+            }
         } else {
             throw new Errors.InvalidRequestError('request.to address is not allowed');
-        }
-
-        if (!allowedMethods.includes(description.name)) {
-            throw new Errors.InvalidRequestError('Requested Polygon contract method is invalid');
-        }
-
-        if (description.name === 'transfer' || description.name === 'transferWithApproval') {
-            if (description.args.token !== CONFIG.USDC_CONTRACT_ADDRESS) {
-                throw new Errors.InvalidRequestError('Invalid USDC token contract in request data');
-            }
         }
 
         // Check that amount exists when method is 'refund', and unset for other methods.
@@ -106,6 +140,12 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
         if ((description.name === 'transferWithApproval') !== !!request.approval) {
             throw new Errors.InvalidRequestError('`approval` object is only allowed for contract method '
                 + '"transferWithApproval"');
+        }
+
+        // Check that permit object exists when method is 'transferWithPermit', and unset for other methods.
+        if ((description.name === 'transferWithPermit') !== !!request.permit) {
+            throw new Errors.InvalidRequestError('`permit` object is only allowed for contract method '
+                + '"transferWithPermit"');
         }
 
         return [forwardRequest, description];

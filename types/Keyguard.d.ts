@@ -62,6 +62,13 @@ interface PolygonUsdcApproval {
     readonly sigV: ethers.BigNumber,
 }
 
+interface PolygonUsdcPermit {
+    readonly value: ethers.BigNumber, // amount to be approved
+    readonly sigR: string,
+    readonly sigS: string,
+    readonly sigV: ethers.BigNumber,
+}
+
 interface PolygonTransferArgs extends ReadonlyArray<any> {
     readonly token: string,
     readonly amount: ethers.BigNumber,
@@ -79,6 +86,13 @@ interface PolygonTransferWithApprovalArgs extends PolygonTransferArgs, PolygonUs
 type PolygonTransferWithApprovalDescription = ethers.utils.TransactionDescription & {
     readonly name: 'transferWithApproval',
     readonly args: PolygonTransferWithApprovalArgs,
+};
+
+interface PolygonTransferWithPermitArgs extends PolygonTransferArgs, PolygonUsdcPermit {}
+
+type PolygonTransferWithPermitDescription = ethers.utils.TransactionDescription & {
+    readonly name: 'transferWithPermit',
+    readonly args: PolygonTransferWithPermitArgs,
 };
 
 interface PolygonOpenArgs extends ReadonlyArray<any> {
@@ -279,6 +293,7 @@ type Parsed<T extends KeyguardRequest.Request> =
         KeyId2KeyInfo<KeyguardRequest.SignPolygonTransactionRequest>
         & { description: PolygonTransferDescription
             | PolygonTransferWithApprovalDescription
+            | PolygonTransferWithPermitDescription
             | PolygonRefundDescription } :
     T extends Is<T, KeyguardRequest.SignSwapRequestStandard> ?
         KeyId2KeyInfo<ConstructSwap<KeyguardRequest.SignSwapRequestStandard>>

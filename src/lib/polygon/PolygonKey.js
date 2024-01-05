@@ -90,11 +90,52 @@ class PolygonKey { // eslint-disable-line no-unused-vars
             message,
         );
 
-        const sigR = signature.slice(0, 66); // 0x prefix plus 32 bytes = 66 characters
-        const sigS = `0x${signature.slice(66, 130)}`; // 32 bytes = 64 characters
-        const sigV = parseInt(signature.slice(130, 132), 16); // last byte = 2 characters
+        return this._signatureToParts(signature);
+    }
 
-        return { sigR, sigS, sigV };
+    /**
+     * @param {string} path
+     * @param {string} forwarderContractAddress
+     * @param {ethers.BigNumber} approvalAmount
+     * @param {number} tokenNonce
+     * @param {string} ownerAddress
+     * @returns {Promise<{sigR: string, sigS: string, sigV: number}>}
+     */
+    async signUsdcPermit(path, forwarderContractAddress, approvalAmount, tokenNonce, ownerAddress) {
+        // TODO: Make the domain parameters configurable in the request?
+        const domain = {
+            name: 'USD Coin', // This is currently the same for testnet and mainnet
+            version: '2', // This is currently the same for testnet and mainnet
+            verifyingContract: CONFIG.NATIVE_USDC_CONTRACT_ADDRESS,
+            chainId: CONFIG.POLYGON_CHAIN_ID,
+        };
+
+        const types = {
+            Permit: [
+                { name: 'owner', type: 'address' },
+                { name: 'spender', type: 'address' },
+                { name: 'value', type: 'uint256' },
+                { name: 'nonce', type: 'uint256' },
+                { name: 'deadline', type: 'uint256' },
+            ],
+        };
+
+        const message = {
+            owner: ownerAddress,
+            spender: forwarderContractAddress,
+            value: approvalAmount,
+            nonce: tokenNonce,
+            deadline: ethers.constants.MaxUint256,
+        };
+
+        const signature = await this.signTypedData(
+            path,
+            domain,
+            types,
+            message,
+        );
+
+        return this._signatureToParts(signature);
     }
 
     /**
@@ -120,6 +161,18 @@ class PolygonKey { // eslint-disable-line no-unused-vars
      */
     key() {
         return this._key;
+    }
+
+    /**
+     * @param {string} signature
+     * @returns {{sigR: string, sigS: string, sigV: number}}
+     */
+    _signatureToParts(signature) {
+        const sigR = signature.slice(0, 66); // 0x prefix plus 32 bytes = 66 characters
+        const sigS = `0x${signature.slice(66, 130)}`; // 32 bytes = 64 characters
+        const sigV = parseInt(signature.slice(130, 132), 16); // last byte = 2 characters
+
+        return { sigR, sigS, sigV };
     }
 
     /**
