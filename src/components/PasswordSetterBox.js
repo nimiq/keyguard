@@ -143,8 +143,10 @@ class PasswordSetterBox extends Nimiq.Observable {
             this._repeatPasswordTimout = null;
         }
 
+        const inputLength = [...this._passwordInput.text].length;
+
         if (this._password) {
-            if (this._passwordInput.text.length > 0 && this._passwordInput.text.length < this._password.length) {
+            if (inputLength > 0 && inputLength < [...this._password].length) {
                 this._repeatPasswordTimout = window.setTimeout(
                     () => {
                         this.$el.classList.remove('repeat-long');
@@ -158,15 +160,14 @@ class PasswordSetterBox extends Nimiq.Observable {
         }
 
         const score = PasswordStrength.strength(this._passwordInput.text);
-        const length = this._passwordInput.text.length;
 
         this.$el.classList.toggle(
             'input-eligible',
-            isValid && (!this._password || this._passwordInput.text.length >= this._password.length),
+            isValid && (!this._password || inputLength >= [...this._password].length),
         );
 
-        this.$el.classList.toggle('too-long', length > PasswordSetterBox.PASSWORD_MAX_LENGTH);
-        this.$el.classList.toggle('strength-short', !isValid && length <= PasswordSetterBox.PASSWORD_MAX_LENGTH);
+        this.$el.classList.toggle('too-long', inputLength > PasswordSetterBox.PASSWORD_MAX_LENGTH);
+        this.$el.classList.toggle('strength-short', !isValid && inputLength <= PasswordSetterBox.PASSWORD_MAX_LENGTH);
         this.$el.classList.toggle('strength-weak', isValid && score < PasswordStrength.Score.MINIMUM);
         this.$el.classList.toggle('strength-good',
             isValid
@@ -180,7 +181,7 @@ class PasswordSetterBox extends Nimiq.Observable {
     }
 
     _isPasswordEligible() {
-        return this._passwordInput.text.length >= PasswordInput.DEFAULT_MIN_LENGTH;
+        return [...this._passwordInput.text].length >= PasswordInput.DEFAULT_MIN_LENGTH;
     }
 
     /**
@@ -207,7 +208,7 @@ class PasswordSetterBox extends Nimiq.Observable {
             this._passwordInput.reset();
             return;
         }
-        if (this._passwordInput.text.length >= this._password.length) {
+        if ([...this._passwordInput.text].length >= [...this._password].length) {
             this.$el.classList.remove('repeat-short');
             this.$el.classList.add('repeat-long');
             await AnimationUtils.animate('shake', this.$el);
