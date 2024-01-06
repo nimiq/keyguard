@@ -45,13 +45,21 @@ class PasswordStrength {
 
         const baseScore = 30;
 
-        for (let i = 0; i < password.length; i++) {
-            if (password.charAt(i).match(/[A-Z]/g)) { count.upperCase += 1; }
-            if (password.charAt(i).match(/[0-9]/g)) { count.numbers += 1; }
-            if (password.charAt(i).match(/(.*[!,@,#,$,%,^,&,*,?,_,~])/)) { count.symbols += 1; }
+        const characters = [...password];
+        const length = characters.length;
+
+        for (let i = 0; i < length; i++) {
+            if (characters[i].match(/[A-Z]/g)) {
+                count.upperCase += 1;
+            } else if (characters[i].match(/[0-9]/g)) {
+                count.numbers += 1;
+            } else if (characters[i].match(/[^a-z]/)) {
+                // Count everything else that is not a lowercase letter as a symbol
+                count.symbols += 1;
+            }
         }
 
-        count.excess = password.length - minLength;
+        count.excess = length - minLength;
 
         if (count.upperCase && count.numbers && count.symbols) {
             weight.combo = 25;
