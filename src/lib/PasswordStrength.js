@@ -54,7 +54,7 @@ class PasswordStrength {
                 count.upperCase += 1;
             } else if (characters[i].match(/[0-9]/g)) {
                 count.numbers += 1;
-            } else if (characters[i].match(/[^a-z]/)) {
+            } else if (!characters[i].match(/[a-z]/)) {
                 // Count everything else that is not a lowercase letter as a symbol
                 count.symbols += 1;
             }
