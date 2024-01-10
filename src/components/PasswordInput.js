@@ -100,7 +100,8 @@ class PasswordInput extends Nimiq.Observable {
     }
 
     _onInputChanged() {
-        const passwordLength = this.$input.value.length;
+        // Split string by characters, not code points, to get the character count
+        const passwordLength = [...this.$input.value].length;
         this.valid = passwordLength >= this._minLength && passwordLength <= this._maxLength;
 
         this.fire(PasswordInput.Events.LENGTH, passwordLength);
