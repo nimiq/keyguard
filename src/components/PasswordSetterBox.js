@@ -143,6 +143,7 @@ class PasswordSetterBox extends Nimiq.Observable {
             this._repeatPasswordTimout = null;
         }
 
+        // Split string by characters, not code points, to get the character count
         const inputLength = [...this._passwordInput.text].length;
 
         if (this._password) {

@@ -45,6 +45,7 @@ class PasswordStrength {
 
         const baseScore = 30;
 
+        // Split string by characters, not code points
         const characters = [...password];
         const length = characters.length;
 
