@@ -81,13 +81,6 @@ type PolygonTransferDescription = ethers.utils.TransactionDescription & {
     readonly args: PolygonTransferArgs,
 };
 
-interface PolygonTransferWithApprovalArgs extends PolygonTransferArgs, PolygonUsdcApproval {}
-
-type PolygonTransferWithApprovalDescription = ethers.utils.TransactionDescription & {
-    readonly name: 'transferWithApproval',
-    readonly args: PolygonTransferWithApprovalArgs,
-};
-
 interface PolygonTransferWithPermitArgs extends PolygonTransferArgs, PolygonUsdcPermit {}
 
 type PolygonTransferWithPermitDescription = ethers.utils.TransactionDescription & {
@@ -292,7 +285,6 @@ type Parsed<T extends KeyguardRequest.Request> =
     T extends Is<T, KeyguardRequest.SignPolygonTransactionRequest> ?
         KeyId2KeyInfo<KeyguardRequest.SignPolygonTransactionRequest>
         & { description: PolygonTransferDescription
-            | PolygonTransferWithApprovalDescription
             | PolygonTransferWithPermitDescription
             | PolygonRefundDescription } :
     T extends Is<T, KeyguardRequest.SignSwapRequestStandard> ?

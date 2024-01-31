@@ -120,37 +120,6 @@ class SignPolygonTransaction {
         // Has been validated to be an approved transfer contract address
         const transferContract = request.request.to;
 
-        if (request.description.name === 'transferWithApproval') {
-            const { sigR, sigS, sigV } = await polygonKey.signUsdcApproval(
-                request.keyPath,
-                new ethers.Contract(
-                    CONFIG.USDC_CONTRACT_ADDRESS,
-                    PolygonContractABIs.USDC_CONTRACT_ABI,
-                ),
-                transferContract,
-                request.description.args.approval,
-                // Has been validated to be defined when function called is `transferWithApproval`
-                /** @type {{ tokenNonce: number }} */ (request.approval).tokenNonce,
-                request.request.from,
-            );
-
-            const usdcTransfer = new ethers.Contract(
-                transferContract,
-                PolygonContractABIs.USDC_TRANSFER_CONTRACT_ABI,
-            );
-
-            request.request.data = usdcTransfer.interface.encodeFunctionData(request.description.name, [
-                /* address token */ request.description.args.token,
-                /* uint256 amount */ request.description.args.amount,
-                /* address target */ request.description.args.target,
-                /* uint256 fee */ request.description.args.fee,
-                /* uint256 approval */ request.description.args.approval,
-                /* bytes32 sigR */ sigR,
-                /* bytes32 sigS */ sigS,
-                /* uint8 sigV */ sigV,
-            ]);
-        }
-
         if (request.description.name === 'transferWithPermit') {
             const { sigR, sigS, sigV } = await polygonKey.signUsdcPermit(
                 request.keyPath,
