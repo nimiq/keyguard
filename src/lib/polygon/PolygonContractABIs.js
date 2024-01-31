@@ -18,5 +18,10 @@ const PolygonContractABIs = { // eslint-disable-line no-unused-vars
         'function transfer(address token, uint256 amount, address target, uint256 fee)',
         'function transferWithPermit(address token, uint256 amount, address target, uint256 fee, uint256 value, bytes32 sigR, bytes32 sigS, uint8 sigV)',
     ],
+
+    SWAP_CONTRACT_ABI: [
+        'function swap(address token, uint256 amount, address pool, uint256 targetAmount, uint256 fee)',
+        'function swapWithApproval(address token, uint256 amount, address pool, uint256 targetAmount, uint256 fee, uint256 approval, bytes32 sigR, bytes32 sigS, uint8 sigV)',
+    ],
 };
 /* eslint-enable max-len */

@@ -59,7 +59,9 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
      *     KeyguardRequest.OpenGsnForwardRequest,
      *     PolygonTransferDescription
      *     | PolygonTransferWithPermitDescription
-     *     | PolygonRefundDescription,
+     *     | PolygonRefundDescription
+     *     | PolygonSwapDescription
+     *     | PolygonSwapWithApprovalDescription,
      * ]}
      */
     parseOpenGsnForwardRequest(request) {
@@ -68,7 +70,9 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
         /**
          * @type {PolygonTransferDescription
          *        | PolygonTransferWithPermitDescription
-         *        | PolygonRefundDescription}
+         *        | PolygonRefundDescription
+         *        | PolygonSwapDescription
+         *        | PolygonSwapWithApprovalDescription}
          */
         let description;
 
@@ -106,8 +110,33 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
             if (!['refund'].includes(description.name)) {
                 throw new Errors.InvalidRequestError('Requested Polygon contract method is invalid');
             }
+        } else if (forwardRequest.to === CONFIG.USDC_SWAP_CONTRACT_ADDRESS) {
+            const usdcTransferContract = new ethers.Contract(
+                CONFIG.USDC_SWAP_CONTRACT_ADDRESS,
+                PolygonContractABIs.SWAP_CONTRACT_ABI,
+            );
+
+            /** @type {PolygonSwapDescription | PolygonSwapWithApprovalDescription} */
+            description = (usdcTransferContract.interface.parseTransaction({
+                data: forwardRequest.data,
+                value: forwardRequest.value,
+            }));
+
+            if (description.args.token !== CONFIG.USDC_CONTRACT_ADDRESS) {
+                throw new Errors.InvalidRequestError('Invalid USDC token contract in request data');
+            }
+
+            if (!['swap', 'swapWithApproval'].includes(description.name)) {
+                throw new Errors.InvalidRequestError('Requested Polygon contract method is invalid');
+            }
         } else {
             throw new Errors.InvalidRequestError('request.to address is not allowed');
+        }
+
+        // Check that permit object exists when method is 'transferWithPermit', and unset for other methods.
+        if ((description.name === 'transferWithPermit') !== !!request.permit) {
+            throw new Errors.InvalidRequestError('`permit` object is only allowed for contract method '
+                + '"transferWithPermit"');
         }
 
         // Check that amount exists when method is 'refund', and unset for other methods.
@@ -115,10 +144,10 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
             throw new Errors.InvalidRequestError('`amount` is only allowed for contract method "refund"');
         }
 
-        // Check that permit object exists when method is 'transferWithPermit', and unset for other methods.
-        if ((description.name === 'transferWithPermit') !== !!request.permit) {
-            throw new Errors.InvalidRequestError('`permit` object is only allowed for contract method '
-                + '"transferWithPermit"');
+        // Check that approval object exists when method is 'swapWithApproval', and unset for other methods.
+        if ((description.name === 'swapWithApproval') !== !!request.approval) {
+            throw new Errors.InvalidRequestError('`approval` object is only allowed for contract method '
+                + '"swapWithApproval"');
         }
 
         return [forwardRequest, description];
