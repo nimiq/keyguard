@@ -24,35 +24,61 @@ class SignStakingApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         parsedRequest.senderLabel = this.parseLabel(request.senderLabel);
         parsedRequest.recipientLabel = this.parseLabel(request.recipientLabel);
 
-        parsedRequest.transaction = this.parseStakingTransaction(request.transaction);
-        parsedRequest.plain = parsedRequest.transaction.toPlain();
+        parsedRequest.transactions = this.parseStakingTransaction(request.transaction);
+        parsedRequest.plain = parsedRequest.transactions.map(tx => tx.toPlain());
+
+        if (parsedRequest.plain.length > 2) {
+            throw new Errors.InvalidRequestError('Only a maximum of two transactions are allowed in a single request');
+        }
+
+        if (parsedRequest.plain.length === 2) {
+            // Ensure the transactions are for stake retiring and removal, in this order
+            if (parsedRequest.plain[0].data.type !== 'retire-stake') {
+                throw new Errors.InvalidRequestError('First transaction must be a retire stake transaction');
+            }
+            if (parsedRequest.plain[1].senderData.type !== 'remove-stake') {
+                throw new Errors.InvalidRequestError('Second transaction must be a remove stake transaction');
+            }
+        }
 
         return parsedRequest;
     }
 
     /**
      * Checks that the given layout is valid
-     * @param {unknown} transaction
-     * @returns {Albatross.Transaction}
+     * @param {unknown} transactions
+     * @returns {Albatross.Transaction[]}
      */
-    parseStakingTransaction(transaction) {
-        if (!transaction) {
+    parseStakingTransaction(transactions) {
+        if (!transactions) {
             throw new Errors.InvalidRequestError('transaction is required');
         }
 
-        if (!(transaction instanceof Uint8Array)) {
-            throw new Errors.InvalidRequestError('transaction must be a Uint8Array');
-        }
-        const tx = Albatross.Transaction.fromAny(Nimiq.BufferUtils.toHex(transaction));
-
-        if (tx.senderType !== Albatross.AccountType.Staking && tx.recipientType !== Albatross.AccountType.Staking) {
-            throw new Errors.InvalidRequestError('transaction must be a staking transaction');
+        if (!Array.isArray(transactions)) {
+            transactions = [transactions];
         }
 
-        // Parsing the transaction does not validate any of it's fields.
-        // TODO: Validate all fields like tx.verify() would?
+        if (/** @type {any[]} */ (transactions).length === 0) {
+            throw new Errors.InvalidRequestError('transaction must not be empty');
+        }
 
-        return tx;
+        const txs = /** @type {any[]} */ (transactions).map(transaction => {
+            if (!(transaction instanceof Uint8Array)) {
+                throw new Errors.InvalidRequestError('transaction must be a Uint8Array');
+            }
+            const tx = Albatross.Transaction.fromAny(Nimiq.BufferUtils.toHex(transaction));
+
+            if (tx.senderType !== Albatross.AccountType.Staking && tx.recipientType !== Albatross.AccountType.Staking) {
+                throw new Errors.InvalidRequestError('transaction must be a staking transaction');
+            }
+
+            // Parsing the transaction does not validate any of it's fields.
+            // TODO: Validate all fields like tx.verify() would?
+
+            return tx;
+        });
+
+        return txs;
     }
 
     get Handler() {

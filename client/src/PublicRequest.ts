@@ -190,7 +190,7 @@ export type SignTransactionRequest
 
 export type SignStakingRequest = SimpleRequest & {
     keyPath: string,
-    transaction: Uint8Array,
+    transaction: Uint8Array | Uint8Array[], // An array is only allowed for retire_stake + remove_stake transactions
     senderLabel?: string,
     recipientLabel?: string,
 };
@@ -546,7 +546,7 @@ export type RedirectResult
     | ExportResult
     | KeyResult
     | SignTransactionResult
-    | SignStakingResult
+    | SignStakingResult[]
     | SignedBitcoinTransaction
     | SignedPolygonTransaction
     | SimpleResult
@@ -560,7 +560,7 @@ export type Result = RedirectResult | IFrameResult;
 
 export type ResultType<T extends RedirectRequest> =
     T extends Is<T, SignMessageRequest> | Is<T, SignTransactionRequest> ? SignatureResult :
-    T extends Is<T, SignStakingRequest> ? SignStakingResult :
+    T extends Is<T, SignStakingRequest> ? SignStakingResult[] :
     T extends Is<T, DeriveAddressRequest> ? DerivedAddress[] :
     T extends Is<T, CreateRequest> | Is<T, ImportRequest> | Is<T, ResetPasswordRequest> ? KeyResult :
     T extends Is<T, ExportRequest> ? ExportResult :
@@ -574,7 +574,7 @@ export type ResultType<T extends RedirectRequest> =
 
 export type ResultByCommand<T extends KeyguardCommand> =
     T extends KeyguardCommand.SIGN_MESSAGE | KeyguardCommand.SIGN_TRANSACTION ? SignatureResult :
-    T extends KeyguardCommand.SIGN_STAKING ? SignStakingResult :
+    T extends KeyguardCommand.SIGN_STAKING ? SignStakingResult[] :
     T extends KeyguardCommand.DERIVE_ADDRESS ? DerivedAddress[] :
     T extends KeyguardCommand.CREATE | KeyguardCommand.IMPORT ? KeyResult :
     T extends KeyguardCommand.EXPORT ? ExportResult :

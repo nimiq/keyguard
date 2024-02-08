@@ -11,7 +11,7 @@
 
 /**
  * @callback SignStaking.resolve
- * @param {KeyguardRequest.SignStakingResult} result
+ * @param {KeyguardRequest.SignStakingResult[]} result
  */
 
 class SignStaking {
@@ -25,7 +25,7 @@ class SignStaking {
         /** @type {HTMLElement} */
         this.$el = (document.getElementById(SignStaking.Pages.CONFIRM_STAKING));
 
-        const transaction = request.plain;
+        const transaction = request.plain[request.plain.length - 1];
 
         /** @type {HTMLElement} */
         this.$accountDetails = (this.$el.querySelector('#account-details'));
@@ -150,15 +150,20 @@ class SignStaking {
         const privateKey = Albatross.PrivateKey.unserialize(powPrivateKey.serialize());
         const keyPair = Albatross.KeyPair.derive(privateKey);
 
-        request.transaction.sign(keyPair);
+        const results = request.transactions.map(transaction => {
+            transaction.sign(keyPair);
 
-        /** @type {KeyguardRequest.SignStakingResult} */
-        const result = {
-            publicKey: keyPair.publicKey.serialize(),
-            signature: request.transaction.proof.subarray(request.transaction.proof.length - 64),
-            transaction: request.transaction.serialize(),
-        };
-        resolve(result);
+            /** @type {KeyguardRequest.SignStakingResult} */
+            const result = {
+                publicKey: keyPair.publicKey.serialize(),
+                signature: transaction.proof.subarray(transaction.proof.length - 64),
+                transaction: transaction.serialize(),
+            };
+
+            return result;
+        });
+
+        resolve(results);
     }
 
     run() {
@@ -206,6 +211,10 @@ class SignStaking {
                 case 'set-active-stake': {
                     const { newActiveBalance } = plain.data;
                     return `Set active stake to ${newActiveBalance / 1e5} NIM`;
+                }
+                case 'retire-stake': {
+                    const { retireStake } = plain.data;
+                    return `Retire ${retireStake / 1e5} NIM stake`;
                 }
                 case 'create-validator': {
                     let text = `Create validator ${plain.sender}`;
