@@ -203,9 +203,9 @@ class SignStaking {
                     const { staker } = plain.data;
                     return `Add stake to ${staker}`;
                 }
-                case 'set-inactive-stake': {
-                    const { newInactiveBalance } = plain.data;
-                    return `Set inactive stake to ${newInactiveBalance / 1e5} NIM`;
+                case 'set-active-stake': {
+                    const { newActiveBalance } = plain.data;
+                    return `Set active stake to ${newActiveBalance / 1e5} NIM`;
                 }
                 case 'create-validator': {
                     let text = `Create validator ${plain.sender}`;
