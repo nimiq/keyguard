@@ -285,8 +285,8 @@ type Parsed<T extends KeyguardRequest.Request> =
         ConstructTransaction<KeyId2KeyInfo<KeyguardRequest.SignTransactionRequestCashlink>> :
     T extends Is<T, KeyguardRequest.SignStakingRequest> ?
         Transform<KeyId2KeyInfo<KeyguardRequest.SignStakingRequest> & {
-            plain: Albatross.PlainTransaction,
-        }, 'transaction', { transaction: Albatross.Transaction }> :
+            plain: Albatross.PlainTransaction[],
+        }, 'transaction', { transactions: Albatross.Transaction[] }> :
     T extends Is<T, KeyguardRequest.SignMessageRequest> ?
         Transform<
             KeyId2KeyInfo<KeyguardRequest.SignMessageRequest>,
