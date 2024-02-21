@@ -37,7 +37,7 @@
     function numBetween(value, min, max) {
         return value < min ? min : value > max ? max : value;
     }
-// Like BitMatrix but accepts arbitry Uint8 values
+// Like BitMatrix but accepts arbitrary Uint8 values
     class Matrix {
         constructor(width, height, buffer) {
             this.width = width;
@@ -2571,7 +2571,7 @@
         const run = end.x - origin.x;
         const towardsEnd = countBlackWhiteRunTowardsPoint(origin, end, matrix, Math.ceil(length / 2));
         const awayFromEnd = countBlackWhiteRunTowardsPoint(origin, { x: origin.x - run, y: origin.y - rise }, matrix, Math.ceil(length / 2));
-        const middleValue = towardsEnd.shift() + awayFromEnd.shift() - 1; // Substract one so we don't double count a pixel
+        const middleValue = towardsEnd.shift() + awayFromEnd.shift() - 1; // Subtract one so we don't double count a pixel
         return awayFromEnd.concat(middleValue).concat(...towardsEnd);
     }
 // Takes in a black white run and an array of expected ratios. Returns the average size of the run as well as the "error" -

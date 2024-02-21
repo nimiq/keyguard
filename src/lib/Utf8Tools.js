@@ -6,7 +6,7 @@
  * Conversion functions taken from
  * https://github.com/google/closure-library/blob/master/closure/goog/crypt/crypt.js
  *
- * UTF-8 validitiy limit values from
+ * UTF-8 validity limit values from
  * https://lemire.me/blog/2018/05/09/how-quickly-can-you-check-that-a-string-is-valid-unicode-utf-8/
  */
 
@@ -94,7 +94,7 @@ class Utf8Tools { // eslint-disable-line no-unused-vars
      * @returns {boolean}
      */
     static isValidUtf8(bytes) {
-        // We cannot use the build-in TextDecoder to check for validity, as we need to
+        // We cannot use the built-in TextDecoder to check for validity, as we need to
         // also filter out control characters, which are valid UTF8.
 
         let i = 0;

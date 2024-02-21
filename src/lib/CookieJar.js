@@ -175,8 +175,8 @@ class CookieJar { // eslint-disable-line no-unused-vars
             const id = key.substr(2);
             return new KeyInfo(id, type, true, hasPin, new Uint8Array(20 /* Nimiq.Address.SERIALIZED_SIZE */));
             // Cookies are only eaten during IframeApi.list(), in which the KeyInfo is
-            // converted into a KeyguardRequest.KeyInfoObject, loosing the 'encrypted' status flag.
-            // Thus it does not matter what we pass to the KeyInfo contructor here for that flag.
+            // converted into a KeyguardRequest.KeyInfoObject, losing the 'encrypted' status flag.
+            // Thus it does not matter what we pass to the KeyInfo constructor here for that flag.
         });
     }
 }

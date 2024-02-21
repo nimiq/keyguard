@@ -456,7 +456,7 @@
             });
         }
         close() {
-            // Clean up old requests and disconnect. Note that until the popup get's closed by the user
+            // Clean up old requests and disconnect. Note that until the popup gets closed by the user
             // it's possible to connect again though by calling init.
             this._connectionState = 0 /* DISCONNECTED */;
             window.removeEventListener('message', this._receiveListener);

@@ -186,7 +186,7 @@ class TopLevelApi extends RequestParser {
     }
 
     /**
-     * Can be overwritten by a request's API class to excute code before the handler's run() is called
+     * Can be overwritten by a request's API class to execute code before the handler's run() is called
      * @param {Parsed<T>} parsedRequest
      */
     async onBeforeRun(parsedRequest) { // eslint-disable-line no-unused-vars
@@ -194,7 +194,7 @@ class TopLevelApi extends RequestParser {
     }
 
     /**
-     * Can be overwritten by a request's API class to excute custom code when the user clicks
+     * Can be overwritten by a request's API class to execute custom code when the user clicks
      * the global-cancel button.
      * The instantiated handler is passed as the only argument.
      * @param {any} handler
