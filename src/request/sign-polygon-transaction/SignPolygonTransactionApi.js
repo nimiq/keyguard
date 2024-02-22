@@ -129,6 +129,19 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
             if (!['swap', 'swapWithApproval'].includes(description.name)) {
                 throw new Errors.InvalidRequestError('Requested Polygon contract method is invalid');
             }
+
+            // Ensure swap `targetAmount` is not too low
+            const inputAmount = /** @type {PolygonSwapDescription | PolygonSwapWithApprovalDescription} */ (description)
+                .args
+                .amount;
+            const targetAmount = /** @type {PolygonSwapDescription | PolygonSwapWithApprovalDescription} */ (description) // eslint-disable-line max-len
+                .args
+                .targetAmount;
+            if (targetAmount.lt(inputAmount.mul(99).div(100))) {
+                throw new Errors.InvalidRequestError(
+                    'Requested Polygon swap `targetAmount` more than 1% lower than the input `amount`',
+                );
+            }
         } else {
             throw new Errors.InvalidRequestError('request.to address is not allowed');
         }
