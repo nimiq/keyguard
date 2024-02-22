@@ -42,14 +42,19 @@ class SignPolygonTransaction {
 
         /** @type {HTMLLinkElement} */
         const $recipient = (this.$el.querySelector('.accounts .recipient'));
-        if (request.description.name === 'swap' || request.description.name === 'swapWithApproval') {
+        if (request.description.name === 'refund') {
+            new PolygonAddressInfo(
+                /** @type {string} */ (request.description.args.target),
+                request.keyLabel,
+                'usdc',
+            ).renderTo($recipient);
+        } else if (request.description.name === 'swap' || request.description.name === 'swapWithApproval') {
             new PolygonAddressInfo(relayRequest.from, 'USDC', 'usdc').renderTo($recipient);
         } else {
-            const recipientAddress = /** @type {string} */ (request.description.args.target);
             new PolygonAddressInfo(
-                recipientAddress,
-                request.description.name === 'refund' ? request.keyLabel : request.recipientLabel,
-                request.description.name === 'refund' ? 'usdc' : 'none',
+                /** @type {string} */ (request.description.args.target),
+                request.recipientLabel,
+                'none',
             ).renderTo($recipient);
         }
 
