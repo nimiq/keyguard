@@ -164,8 +164,8 @@ class SignPolygonTransaction {
             const { sigR, sigS, sigV } = await polygonKey.signUsdcApproval(
                 request.keyPath,
                 new ethers.Contract(
-                    CONFIG.USDC_CONTRACT_ADDRESS,
-                    PolygonContractABIs.USDC_CONTRACT_ABI,
+                    CONFIG.BRIDGED_USDC_CONTRACT_ADDRESS,
+                    PolygonContractABIs.BRIDGED_USDC_CONTRACT_ABI,
                 ),
                 transferContract,
                 request.description.args.approval,

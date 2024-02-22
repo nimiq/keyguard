@@ -95,10 +95,10 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
             if (!['transfer', 'transferWithPermit'].includes(description.name)) {
                 throw new Errors.InvalidRequestError('Requested Polygon contract method is invalid');
             }
-        } else if (forwardRequest.to === CONFIG.USDC_HTLC_CONTRACT_ADDRESS) {
+        } else if (forwardRequest.to === CONFIG.BRIDGED_USDC_HTLC_CONTRACT_ADDRESS) {
             const usdcHtlcContract = new ethers.Contract(
-                CONFIG.USDC_HTLC_CONTRACT_ADDRESS,
-                PolygonContractABIs.USDC_HTLC_CONTRACT_ABI,
+                CONFIG.BRIDGED_USDC_HTLC_CONTRACT_ADDRESS,
+                PolygonContractABIs.BRIDGED_USDC_HTLC_CONTRACT_ABI,
             );
 
             /** @type {PolygonRefundDescription} */
@@ -122,7 +122,7 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
                 value: forwardRequest.value,
             }));
 
-            if (description.args.token !== CONFIG.USDC_CONTRACT_ADDRESS) {
+            if (description.args.token !== CONFIG.BRIDGED_USDC_CONTRACT_ADDRESS) {
                 throw new Errors.InvalidRequestError('Invalid USDC token contract in request data');
             }
 
