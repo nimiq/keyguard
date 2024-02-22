@@ -32,7 +32,7 @@ class SignPolygonTransaction {
 
         /** @type {HTMLLinkElement} */
         const $sender = (this.$el.querySelector('.accounts .sender'));
-        if (request.description.name === 'refund') {
+        if (['redeem', 'redeemWithSecretInData', 'refund'].includes(request.description.name)) {
             new PolygonAddressInfo(relayRequest.to, request.senderLabel, 'unknown').renderTo($sender);
         } else if (request.description.name === 'swap' || request.description.name === 'swapWithApproval') {
             new PolygonAddressInfo(relayRequest.from, 'USDC.e', 'usdc_dark').renderTo($sender);
@@ -42,20 +42,14 @@ class SignPolygonTransaction {
 
         /** @type {HTMLLinkElement} */
         const $recipient = (this.$el.querySelector('.accounts .recipient'));
-        if (request.description.name === 'refund') {
-            new PolygonAddressInfo(
-                /** @type {string} */ (request.description.args.target),
-                request.keyLabel,
-                'usdc',
-            ).renderTo($recipient);
+        if (['redeem', 'redeemWithSecretInData', 'refund'].includes(request.description.name)) {
+            const recipientAddress = /** @type {string} */ (request.description.args.target);
+            new PolygonAddressInfo(recipientAddress, request.keyLabel, 'usdc').renderTo($recipient);
         } else if (request.description.name === 'swap' || request.description.name === 'swapWithApproval') {
             new PolygonAddressInfo(relayRequest.from, 'USDC', 'usdc').renderTo($recipient);
         } else {
-            new PolygonAddressInfo(
-                /** @type {string} */ (request.description.args.target),
-                request.recipientLabel,
-                'none',
-            ).renderTo($recipient);
+            const recipientAddress = /** @type {string} */ (request.description.args.target);
+            new PolygonAddressInfo(recipientAddress, request.recipientLabel, 'none').renderTo($recipient);
         }
 
         /** @type {HTMLDivElement} */
@@ -65,7 +59,7 @@ class SignPolygonTransaction {
 
         // Set value and fee.
         $value.textContent = NumberFormatting.formatNumber(
-            PolygonUtils.unitsToCoins(request.description.name === 'refund'
+            PolygonUtils.unitsToCoins(['redeem', 'redeemWithSecretInData', 'refund'].includes(request.description.name)
                 ? /** @type {number} */ (request.amount)
                 : request.description.args.amount.toNumber()),
             6,
@@ -192,10 +186,10 @@ class SignPolygonTransaction {
             ]);
         }
 
-        if (request.description.name === 'refund') {
+        if (['redeem', 'redeemWithSecretInData', 'refund'].includes(request.description.name)) {
             const derivedAddress = polygonKey.deriveAddress(request.keyPath);
             if (request.description.args.target !== derivedAddress) {
-                reject(new Errors.InvalidRequestError('Refund target does not match derived address'));
+                reject(new Errors.InvalidRequestError('Target address argument does not match derived address'));
                 return;
             }
         }

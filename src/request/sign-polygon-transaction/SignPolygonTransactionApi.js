@@ -59,6 +59,8 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
      *     KeyguardRequest.OpenGsnForwardRequest,
      *     PolygonTransferDescription
      *     | PolygonTransferWithPermitDescription
+     *     | PolygonRedeemDescription
+     *     | PolygonRedeemWithSecretInDataDescription
      *     | PolygonRefundDescription
      *     | PolygonSwapDescription
      *     | PolygonSwapWithApprovalDescription,
@@ -70,6 +72,8 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
         /**
          * @type {PolygonTransferDescription
          *        | PolygonTransferWithPermitDescription
+         *        | PolygonRedeemDescription
+         *        | PolygonRedeemWithSecretInDataDescription
          *        | PolygonRefundDescription
          *        | PolygonSwapDescription
          *        | PolygonSwapWithApprovalDescription}
@@ -101,13 +105,18 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
                 PolygonContractABIs.NATIVE_USDC_HTLC_CONTRACT_ABI,
             );
 
-            /** @type {PolygonRefundDescription} */
+            /**
+             * @type {PolygonRedeemDescription
+             *        | PolygonRedeemWithSecretInDataDescription
+             *        | PolygonRefundDescription
+             * }
+            */
             description = (usdcHtlcContract.interface.parseTransaction({
                 data: forwardRequest.data,
                 value: forwardRequest.value,
             }));
 
-            if (!['refund'].includes(description.name)) {
+            if (!['redeem', 'redeemWithSecretInData', 'refund'].includes(description.name)) {
                 throw new Errors.InvalidRequestError('Requested Polygon contract method is invalid');
             }
         } else if (forwardRequest.to === CONFIG.BRIDGED_USDC_HTLC_CONTRACT_ADDRESS) {
@@ -164,15 +173,17 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
             throw new Errors.InvalidRequestError('request.to address is not allowed');
         }
 
+        // Check that amount exists when request is for refund or redeem, and unset for other methods.
+        if (['redeem', 'redeemWithSecretInData', 'refund'].includes(description.name) !== !!request.amount) {
+            throw new Errors.InvalidRequestError(
+                '`amount` is only allowed for contract methods "refund", "redeem" and "redeemWithSecretInData"',
+            );
+        }
+
         // Check that permit object exists when method is 'transferWithPermit', and unset for other methods.
         if ((description.name === 'transferWithPermit') !== !!request.permit) {
             throw new Errors.InvalidRequestError('`permit` object is only allowed for contract method '
                 + '"transferWithPermit"');
-        }
-
-        // Check that amount exists when method is 'refund', and unset for other methods.
-        if ((description.name === 'refund') !== !!request.amount) {
-            throw new Errors.InvalidRequestError('`amount` is only allowed for contract method "refund"');
         }
 
         // Check that approval object exists when method is 'swapWithApproval', and unset for other methods.

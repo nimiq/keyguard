@@ -710,7 +710,7 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
                     /* bytes32 id */ parsedRequest.redeem.htlcId,
                     /* address target */ storedRequest.redeem.description.args.target,
                     ...(storedRequest.redeem.description.name === 'redeem' ? [
-                        /* uint256 secret */ storedRequest.redeem.description.args.secret,
+                        /* bytes32 secret */ storedRequest.redeem.description.args.secret,
                     ] : []),
                     /* uint256 fee */ storedRequest.redeem.description.args.fee,
                 ],

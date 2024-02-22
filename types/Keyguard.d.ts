@@ -306,6 +306,8 @@ type Parsed<T extends KeyguardRequest.Request> =
         KeyId2KeyInfo<KeyguardRequest.SignPolygonTransactionRequest>
         & { description: PolygonTransferDescription
             | PolygonTransferWithPermitDescription
+            | PolygonRedeemDescription
+            | PolygonRedeemWithSecretInDataDescription
             | PolygonRefundDescription
             | PolygonSwapDescription
             | PolygonSwapWithApprovalDescription } :
