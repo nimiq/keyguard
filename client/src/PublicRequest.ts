@@ -303,7 +303,7 @@ export type SignSwapRequestCommon = SimpleRequest & {
             | 'sender' // Only known in second step (in swap-iframe)
             | 'senderType' // Must be HTLC
             | 'senderLabel' // Not used
-            | 'recipientType' // Must by BASIC (can only redeem to signer address)
+            | 'recipientType' // Must be BASIC (can only redeem to signer address)
             | 'flags' // Must be NONE, as it cannot be CONTRACT_CREATION
         >
         & { recipientLabel: string }

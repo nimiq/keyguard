@@ -9,10 +9,6 @@
 
 class Export {
     /**
-     * If a complete page is missing it will be created.
-     * However these pages will be the default pages which usually don't match the applications requirements.
-     * Refer to the corresponding _buildMoreExportOptions as well as
-     * the Build functions of ExportWords and ExportFile to see the general Structure.
      * @param {Parsed<KeyguardRequest.ExportRequest>} request
      * @param {Export.resolve} resolve
      * @param {reject} reject
