@@ -83,7 +83,7 @@ class SignSwap {
             case 'NIM': swapFromValue = fundTx.transaction.value + fundTx.transaction.fee; break;
             case 'BTC': swapFromValue = fundTx.inputs.reduce((sum, input) => sum + input.witnessUtxo.value, 0)
                     - (fundTx.changeOutput ? fundTx.changeOutput.value : 0); break;
-            case 'USDC': swapFromValue = fundTx.description.args.amount
+            case 'USDC_MATIC': swapFromValue = fundTx.description.args.amount
                 .add(fundTx.description.args.fee).toNumber(); break;
             case 'EUR': swapFromValue = fundTx.amount + fundTx.fee; break;
             default: throw new Errors.KeyguardError('Invalid asset');
@@ -94,7 +94,7 @@ class SignSwap {
         switch (redeemTx.type) {
             case 'NIM': swapToValue = redeemTx.transaction.value; break;
             case 'BTC': swapToValue = redeemTx.output.value; break;
-            case 'USDC': swapToValue = redeemTx.amount; break;
+            case 'USDC_MATIC': swapToValue = redeemTx.amount; break;
             case 'EUR': swapToValue = redeemTx.amount - redeemTx.fee; break;
             default: throw new Errors.KeyguardError('Invalid asset');
         }
@@ -111,19 +111,21 @@ class SignSwap {
 
         $swapLeftValue.textContent = NumberFormatting.formatNumber(
             CryptoUtils.unitsToCoins(leftAsset, leftAmount),
-            leftAsset === 'USDC' ? 2 : CryptoUtils.assetDecimals(leftAsset),
-            leftAsset === 'EUR' || leftAsset === 'USDC' ? 2 : 0,
+            leftAsset === 'USDC_MATIC' ? 2 : CryptoUtils.assetDecimals(leftAsset),
+            leftAsset === 'EUR' || leftAsset === 'USDC_MATIC' ? 2 : 0,
         );
 
         $swapRightValue.textContent = NumberFormatting.formatNumber(
             CryptoUtils.unitsToCoins(rightAsset, rightAmount),
-            rightAsset === 'USDC' ? 2 : CryptoUtils.assetDecimals(rightAsset),
-            rightAsset === 'EUR' || rightAsset === 'USDC' ? 2 : 0,
+            rightAsset === 'USDC_MATIC' ? 2 : CryptoUtils.assetDecimals(rightAsset),
+            rightAsset === 'EUR' || rightAsset === 'USDC_MATIC' ? 2 : 0,
         );
 
-        $swapValues.classList.add(`${fundTx.type.toLowerCase()}-to-${redeemTx.type.toLowerCase()}`);
+        $swapValues.classList.add(
+            `${CryptoUtils.assetToCurrency(fundTx.type)}-to-${CryptoUtils.assetToCurrency(redeemTx.type)}`,
+        );
 
-        /** @type {'NIM' | 'BTC' | 'USDC' | 'EUR'} */
+        /** @type {'NIM' | 'BTC' | 'USDC_MATIC' | 'EUR'} */
         let exchangeBaseAsset;
         // If EUR is part of the swap, the other currency is the base asset
         if (fundTx.type === 'EUR') exchangeBaseAsset = redeemTx.type;
@@ -177,8 +179,8 @@ class SignSwap {
         );
 
         if (request.layout === SignSwapApi.Layouts.STANDARD) {
-            $leftAccount.classList.add(request.fund.type.toLocaleLowerCase());
-            $rightAccount.classList.add(request.redeem.type.toLocaleLowerCase());
+            $leftAccount.classList.add(CryptoUtils.assetToCurrency(request.fund.type));
+            $rightAccount.classList.add(CryptoUtils.assetToCurrency(request.redeem.type));
 
             // Add ticker symbols
             /** @type {HTMLSpanElement} */
@@ -186,8 +188,8 @@ class SignSwap {
             /** @type {HTMLSpanElement} */
             const $toSymbol = (this.$el.querySelector('.swap-values .to-symbol'));
 
-            $fromSymbol.classList.add(`${request.fund.type.toLowerCase()}-symbol`);
-            $toSymbol.classList.add(`${request.redeem.type.toLowerCase()}-symbol`);
+            $fromSymbol.classList.add(`${CryptoUtils.assetToCurrency(request.fund.type)}-symbol`);
+            $toSymbol.classList.add(`${CryptoUtils.assetToCurrency(request.redeem.type)}-symbol`);
 
             if (request.fund.type === 'NIM') {
                 const address = request.fund.transaction.sender.toUserFriendlyAddress();
@@ -196,7 +198,7 @@ class SignSwap {
             } else if (request.fund.type === 'BTC') {
                 $leftIdenticon.innerHTML = TemplateTags.hasVars(0)`<img src="../../assets/icons/bitcoin.svg"></img>`;
                 $leftLabel.textContent = I18n.translatePhrase('bitcoin');
-            } else if (request.fund.type === 'USDC') {
+            } else if (request.fund.type === 'USDC_MATIC') {
                 $leftIdenticon.innerHTML = TemplateTags.hasVars(0)`<img src="../../assets/icons/usdc.svg"></img>`;
                 $leftLabel.textContent = I18n.translatePhrase('usd-coin');
             } else if (request.fund.type === 'EUR') {
@@ -211,7 +213,7 @@ class SignSwap {
             } else if (request.redeem.type === 'BTC') {
                 $rightIdenticon.innerHTML = TemplateTags.hasVars(0)`<img src="../../assets/icons/bitcoin.svg"></img>`;
                 $rightLabel.textContent = I18n.translatePhrase('bitcoin');
-            } else if (request.redeem.type === 'USDC') {
+            } else if (request.redeem.type === 'USDC_MATIC') {
                 $rightIdenticon.innerHTML = TemplateTags.hasVars(0)`<img src="../../assets/icons/usdc.svg"></img>`;
                 $rightLabel.textContent = I18n.translatePhrase('usd-coin');
             } else if (request.redeem.type === 'EUR') {
@@ -242,8 +244,8 @@ class SignSwap {
             /** @type {HTMLSpanElement} */
             const $swapRightSymbol = (this.$el.querySelector('#swap-right-symbol'));
 
-            $swapLeftSymbol.classList.add(`${leftAsset.toLowerCase()}-symbol`);
-            $swapRightSymbol.classList.add(`${rightAsset.toLowerCase()}-symbol`);
+            $swapLeftSymbol.classList.add(`${CryptoUtils.assetToCurrency(leftAsset)}-symbol`);
+            $swapRightSymbol.classList.add(`${CryptoUtils.assetToCurrency(rightAsset)}-symbol`);
 
             /** @type {string | undefined} */
             let swapNimAddress;
@@ -269,10 +271,10 @@ class SignSwap {
                 (leftAsset === 'BTC' ? $leftLabel : $rightLabel).textContent = I18n.translatePhrase('bitcoin');
             }
 
-            if (leftAsset === 'USDC' || rightAsset === 'USDC') {
-                (leftAsset === 'USDC' ? $leftIdenticon : $rightIdenticon)
+            if (leftAsset === 'USDC_MATIC' || rightAsset === 'USDC_MATIC') {
+                (leftAsset === 'USDC_MATIC' ? $leftIdenticon : $rightIdenticon)
                     .innerHTML = TemplateTags.hasVars(0)`<img src="../../assets/icons/usdc.svg"></img>`;
-                (leftAsset === 'USDC' ? $leftLabel : $rightLabel).textContent = I18n.translatePhrase('usd-coin');
+                (leftAsset === 'USDC_MATIC' ? $leftLabel : $rightLabel).textContent = I18n.translatePhrase('usd-coin');
             }
 
             // Add signs in front of swap amounts
@@ -363,19 +365,19 @@ class SignSwap {
                 else rightSegments = segments;
             }
 
-            if (leftAsset === 'USDC' || rightAsset === 'USDC') {
-                const amount = leftAsset === 'USDC' ? leftAmount : rightAmount;
+            if (leftAsset === 'USDC_MATIC' || rightAsset === 'USDC_MATIC') {
+                const amount = leftAsset === 'USDC_MATIC' ? leftAmount : rightAmount;
 
                 const newBalance = request.polygonAddresses[0].usdcBalance
-                    + (amount * (fundTx.type === 'USDC' ? -1 : 1));
+                    + (amount * (fundTx.type === 'USDC_MATIC' ? -1 : 1));
                 const newBalanceFormatted = NumberFormatting.formatNumber(
-                    CryptoUtils.unitsToCoins('USDC', newBalance), 2, 2,
+                    CryptoUtils.unitsToCoins('USDC_MATIC', newBalance), 2, 2,
                 );
 
-                if (leftAsset === 'USDC') {
+                if (leftAsset === 'USDC_MATIC') {
                     $leftNewBalance.textContent = `${newBalanceFormatted} USDC`;
                     $leftAccount.classList.add('usdc');
-                } else if (rightAsset === 'USDC') {
+                } else if (rightAsset === 'USDC_MATIC') {
                     $rightNewBalance.textContent = `${newBalanceFormatted} USDC`;
                     $rightAccount.classList.add('usdc');
                 }
@@ -388,7 +390,7 @@ class SignSwap {
                     newBalance,
                 }];
 
-                if (leftAsset === 'USDC') leftSegments = segments;
+                if (leftAsset === 'USDC_MATIC') leftSegments = segments;
                 else rightSegments = segments;
             }
 
@@ -425,7 +427,7 @@ class SignSwap {
     }
 
     /**
-     * @param {'NIM' | 'BTC' | 'USDC' | 'EUR'} asset
+     * @param {'NIM' | 'BTC' | 'USDC_MATIC' | 'EUR'} asset
      * @param {Parsed<KeyguardRequest.SignSwapRequest>} request
      * @returns {number}
      */
@@ -452,11 +454,11 @@ class SignSwap {
                         // The HTLC balance is represented by the redeeming tx input value.
                         ? redeemTx.input.witnessUtxo.value + request.redeemFees.funding
                         : 0; // Should never happen, if parsing works correctly
-            case 'USDC':
-                return fundTx.type === 'USDC'
+            case 'USDC_MATIC':
+                return fundTx.type === 'USDC_MATIC'
                     // When the user funds USDC, the service receives the HTLC balance - their network fee.
                     ? fundTx.description.args.amount.toNumber() - request.fundFees.redeeming
-                    : redeemTx.type === 'USDC'
+                    : redeemTx.type === 'USDC_MATIC'
                         // When the user redeems USDC, the service lost the HTLC balance + their network fee.
                         // The transaction value is "HTLC balance - tx fee", therefore the "HTLC balance"
                         // is the transaction value + tx fee.
@@ -544,24 +546,20 @@ class SignSwap {
             request.fund.refundAddress = bitcoinKey.deriveAddress(request.fund.refundKeyPath);
         }
 
-        if (request.fund.type === 'USDC') {
-            if (request.fund.description.name === 'openWithApproval') {
-                const { sigR, sigS, sigV } = await polygonKey.signUsdcApproval(
+        if (request.fund.type === 'USDC_MATIC') {
+            if (request.fund.description.name === 'openWithPermit') {
+                const { sigR, sigS, sigV } = await polygonKey.signUsdcPermit(
                     request.fund.keyPath,
-                    new ethers.Contract(
-                        CONFIG.BRIDGED_USDC_CONTRACT_ADDRESS,
-                        PolygonContractABIs.BRIDGED_USDC_CONTRACT_ABI,
-                    ),
-                    CONFIG.BRIDGED_USDC_HTLC_CONTRACT_ADDRESS,
-                    request.fund.description.args.approval,
-                    // Has been validated to be defined when function called is `openWithApproval`
-                    /** @type {{ tokenNonce: number }} */ (request.fund.approval).tokenNonce,
+                    CONFIG.NATIVE_USDC_HTLC_CONTRACT_ADDRESS,
+                    request.fund.description.args.value,
+                    // Has been validated to be defined when function called is `openWithPermit`
+                    /** @type {{ tokenNonce: number }} */ (request.fund.permit).tokenNonce,
                     request.fund.request.from,
                 );
 
                 const htlcContract = new ethers.Contract(
-                    CONFIG.BRIDGED_USDC_HTLC_CONTRACT_ADDRESS,
-                    PolygonContractABIs.BRIDGED_USDC_HTLC_CONTRACT_ABI,
+                    CONFIG.NATIVE_USDC_HTLC_CONTRACT_ADDRESS,
+                    PolygonContractABIs.NATIVE_USDC_HTLC_CONTRACT_ABI,
                 );
 
                 request.fund.request.data = htlcContract.interface.encodeFunctionData(request.fund.description.name, [
@@ -573,7 +571,7 @@ class SignSwap {
                     /* bytes32 hash */ request.fund.description.args.hash,
                     /* uint256 timeout */ request.fund.description.args.timeout,
                     /* uint256 fee */ request.fund.description.args.fee,
-                    /* uint256 approval */ request.fund.description.args.approval,
+                    /* uint256 value */ request.fund.description.args.value,
                     /* bytes32 sigR */ sigR,
                     /* bytes32 sigS */ sigS,
                     /* uint8 sigV */ sigV,
@@ -608,7 +606,7 @@ class SignSwap {
             request.redeem.output.address = address;
         }
 
-        if (request.redeem.type === 'USDC') {
+        if (request.redeem.type === 'USDC_MATIC') {
             const wallet = polygonKey.deriveKeyPair(request.redeem.keyPath);
             privateKeys.usdc = wallet.privateKey;
         }

@@ -95,6 +95,21 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
             if (!['transfer', 'transferWithPermit'].includes(description.name)) {
                 throw new Errors.InvalidRequestError('Requested Polygon contract method is invalid');
             }
+        } else if (forwardRequest.to === CONFIG.NATIVE_USDC_HTLC_CONTRACT_ADDRESS) {
+            const usdcHtlcContract = new ethers.Contract(
+                CONFIG.NATIVE_USDC_HTLC_CONTRACT_ADDRESS,
+                PolygonContractABIs.NATIVE_USDC_HTLC_CONTRACT_ABI,
+            );
+
+            /** @type {PolygonRefundDescription} */
+            description = (usdcHtlcContract.interface.parseTransaction({
+                data: forwardRequest.data,
+                value: forwardRequest.value,
+            }));
+
+            if (!['refund'].includes(description.name)) {
+                throw new Errors.InvalidRequestError('Requested Polygon contract method is invalid');
+            }
         } else if (forwardRequest.to === CONFIG.BRIDGED_USDC_HTLC_CONTRACT_ADDRESS) {
             const usdcHtlcContract = new ethers.Contract(
                 CONFIG.BRIDGED_USDC_HTLC_CONTRACT_ADDRESS,
@@ -137,9 +152,12 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
             const targetAmount = /** @type {PolygonSwapDescription | PolygonSwapWithApprovalDescription} */ (description) // eslint-disable-line max-len
                 .args
                 .targetAmount;
-            if (targetAmount.lt(inputAmount.mul(99).div(100))) {
+            // Allow 1% slippage for swaps on Polygon mainnet, but up to 5% for testnet
+            const maxTargetAmountSlippage = CONFIG.POLYGON_CHAIN_ID === 137 ? 1 : 5;
+            const minTargetAmount = inputAmount.mul(100 - maxTargetAmountSlippage).div(100);
+            if (targetAmount.lt(minTargetAmount)) {
                 throw new Errors.InvalidRequestError(
-                    'Requested Polygon swap `targetAmount` more than 1% lower than the input `amount`',
+                    'Requested USDC swap `targetAmount` is too low',
                 );
             }
         } else {

@@ -73,20 +73,20 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
                 throw new Errors.InvalidRequestError('For locktime to be effective, at least one input must have a '
                     + 'sequence number < 0xffffffff');
             }
-        } else if (request.fund.type === 'USDC') {
+        } else if (request.fund.type === 'USDC_MATIC') {
             const [forwardRequest, description] = this.parseOpenGsnForwardRequest(
                 request.fund,
-                ['open', 'openWithApproval'],
+                ['open', 'openWithPermit'],
             );
 
             parsedRequest.fund = {
-                type: 'USDC',
+                type: 'USDC_MATIC',
                 keyPath: this.parsePolygonPath(request.fund.keyPath, 'fund.keyPath'),
                 // eslint-disable-next-line object-shorthand
-                description: /** @type {PolygonOpenDescription | PolygonOpenWithApprovalDescription} */ (description),
+                description: /** @type {PolygonOpenDescription | PolygonOpenWithPermitDescription} */ (description),
                 request: forwardRequest,
                 relayData: this.parseOpenGsnRelayData(request.fund.relayData),
-                approval: request.fund.approval,
+                permit: request.fund.permit,
             };
         } else if (request.fund.type === 'EUR') {
             parsedRequest.fund = {
@@ -128,14 +128,14 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
                     request.redeem.output, false, 'redeem.output',
                 )),
             };
-        } else if (request.redeem.type === 'USDC') {
+        } else if (request.redeem.type === 'USDC_MATIC') {
             const [forwardRequest, description] = this.parseOpenGsnForwardRequest(
                 request.redeem,
                 ['redeem', 'redeemWithSecretInData'],
             );
 
             parsedRequest.redeem = {
-                type: 'USDC',
+                type: 'USDC_MATIC',
                 keyPath: this.parsePolygonPath(request.redeem.keyPath, 'fund.keyPath'),
                 // eslint-disable-next-line object-shorthand
                 description: /** @type {PolygonRedeemDescription | PolygonRedeemWithSecretInDataDescription} */
@@ -182,7 +182,7 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
 
         if (request.layout === SignSwapApi.Layouts.SLIDER && parsedRequest.layout === SignSwapApi.Layouts.SLIDER) {
             // SLIDER layout is only allowed for crypto-to-crypto swaps
-            const assets = ['NIM', 'BTC', 'USDC'];
+            const assets = ['NIM', 'BTC', 'USDC_MATIC'];
             if (!assets.includes(parsedRequest.fund.type) || !assets.includes(parsedRequest.redeem.type)) {
                 throw new Errors.InvalidRequestError(
                     'The \'slider\' layout is only allowed for swaps between NIM, BTC and USDC',
@@ -227,9 +227,9 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
             }
 
             // Verify that used Polygon address is in polygonAddresses[] and has enough balance
-            const polygonAddress = parsedRequest.fund.type === 'USDC'
+            const polygonAddress = parsedRequest.fund.type === 'USDC_MATIC'
                 ? parsedRequest.fund.request.from
-                : parsedRequest.redeem.type === 'USDC'
+                : parsedRequest.redeem.type === 'USDC_MATIC'
                     // Even for redeeming, the user's address is the `from` address,
                     // because in EVM, redeeming is still an interaction with a contract.
                     // Triggering the payout means calling a function on the HTLC contract,
@@ -245,7 +245,7 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
                         'The address details of the Polygon address doing the swap must be provided',
                     );
                 } else if (
-                    parsedRequest.fund.type === 'USDC'
+                    parsedRequest.fund.type === 'USDC_MATIC'
                     && activePolygonAddress.usdcBalance < parsedRequest.fund.description.args.amount
                         .add(parsedRequest.fund.description.args.fee).toNumber()
                 ) {
@@ -307,12 +307,12 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
     // eslint-disable-next-line valid-jsdoc
     /**
      *
-     * @param {KeyguardRequest.PolygonTransactionInfo} request
-     * @param {Array<'open' | 'openWithApproval' | 'redeem' | 'redeemWithSecretInData'>} allowedMethods
+     * @param {Omit<KeyguardRequest.PolygonTransactionInfo, 'approval' | 'amount'>} request
+     * @param {Array<'open' | 'openWithPermit' | 'redeem' | 'redeemWithSecretInData'>} allowedMethods
      * @returns {[
      *     KeyguardRequest.OpenGsnForwardRequest,
      *     PolygonOpenDescription
-     *     | PolygonOpenWithApprovalDescription
+     *     | PolygonOpenWithPermitDescription
      *     | PolygonRedeemDescription
      *     | PolygonRedeemWithSecretInDataDescription,
      * ]}
@@ -320,19 +320,19 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
     parseOpenGsnForwardRequest(request, allowedMethods) {
         const forwardRequest = this.parseOpenGsnForwardRequestRoot(request.request);
 
-        if (forwardRequest.to !== CONFIG.BRIDGED_USDC_HTLC_CONTRACT_ADDRESS) {
+        if (forwardRequest.to !== CONFIG.NATIVE_USDC_HTLC_CONTRACT_ADDRESS) {
             throw new Errors.InvalidRequestError('request.to address is not allowed');
         }
 
         const usdcHtlcContract = new ethers.Contract(
-            CONFIG.BRIDGED_USDC_HTLC_CONTRACT_ADDRESS,
-            PolygonContractABIs.BRIDGED_USDC_HTLC_CONTRACT_ABI,
+            CONFIG.NATIVE_USDC_HTLC_CONTRACT_ADDRESS,
+            PolygonContractABIs.NATIVE_USDC_HTLC_CONTRACT_ABI,
         );
 
         // eslint-disable-next-line operator-linebreak
         const description =
             /** @type {PolygonOpenDescription
-             *     | PolygonOpenWithApprovalDescription
+             *     | PolygonOpenWithPermitDescription
              *     | PolygonRedeemDescription
              *     | PolygonRedeemWithSecretInDataDescription}
              */ (usdcHtlcContract.interface.parseTransaction({
@@ -344,8 +344,8 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
             throw new Errors.InvalidRequestError('Requested Polygon contract method is invalid');
         }
 
-        if (description.name === 'open' || description.name === 'openWithApproval') {
-            if (description.args.token !== CONFIG.BRIDGED_USDC_CONTRACT_ADDRESS) {
+        if (description.name === 'open' || description.name === 'openWithPermit') {
+            if (description.args.token !== CONFIG.NATIVE_USDC_CONTRACT_ADDRESS) {
                 throw new Errors.InvalidRequestError('Invalid USDC token contract in request data');
             }
 
@@ -360,10 +360,10 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
             }
         }
 
-        // Check that approval object exists when method is 'openWithApproval', and unset for other methods.
-        if ((description.name === 'openWithApproval') !== !!request.approval) {
-            throw new Errors.InvalidRequestError('`approval` object is only allowed for contract method '
-                + '"openWithApproval"');
+        // Check that permit object exists when method is 'openWithPermit', and unset for other methods.
+        if ((description.name === 'openWithPermit') !== !!request.permit) {
+            throw new Errors.InvalidRequestError('`permit` object is only allowed for contract method '
+                + '"openWithPermit"');
         }
 
         return [forwardRequest, description];

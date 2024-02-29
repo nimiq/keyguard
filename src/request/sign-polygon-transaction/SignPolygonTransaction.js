@@ -192,6 +192,14 @@ class SignPolygonTransaction {
             ]);
         }
 
+        if (request.description.name === 'refund') {
+            const derivedAddress = polygonKey.deriveAddress(request.keyPath);
+            if (request.description.args.target !== derivedAddress) {
+                reject(new Errors.InvalidRequestError('Refund target does not match derived address'));
+                return;
+            }
+        }
+
         const typedData = new OpenGSN.TypedRequestData(
             CONFIG.POLYGON_CHAIN_ID,
             transferContract,

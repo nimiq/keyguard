@@ -8,7 +8,7 @@
 
 class CryptoUtils { // eslint-disable-line no-unused-vars
     /**
-     * @param {'NIM' | 'BTC' | 'USDC' | 'EUR'} asset
+     * @param {'NIM' | 'BTC' | 'USDC_MATIC' | 'EUR'} asset
      * @param {number} units
      * @returns {number}
      */
@@ -16,22 +16,36 @@ class CryptoUtils { // eslint-disable-line no-unused-vars
         switch (asset) {
             case 'NIM': return Nimiq.Policy.lunasToCoins(units);
             case 'BTC': return BitcoinUtils.satoshisToCoins(units);
-            case 'USDC': return PolygonUtils.unitsToCoins(units);
+            case 'USDC_MATIC': return PolygonUtils.unitsToCoins(units);
             case 'EUR': return EuroUtils.centsToCoins(units);
             default: throw new Error(`Invalid asset ${asset}`);
         }
     }
 
     /**
-     * @param {'NIM' | 'BTC' | 'USDC' | 'EUR'} asset
+     * @param {'NIM' | 'BTC' | 'USDC_MATIC' | 'EUR'} asset
      * @returns {number}
      */
     static assetDecimals(asset) {
         switch (asset) {
             case 'NIM': return Math.log10(Nimiq.Policy.LUNAS_PER_COIN);
             case 'BTC': return Math.log10(BitcoinConstants.SATOSHIS_PER_COIN);
-            case 'USDC': return Math.log10(PolygonConstants.UNITS_PER_COIN);
+            case 'USDC_MATIC': return Math.log10(PolygonConstants.UNITS_PER_COIN);
             case 'EUR': return Math.log10(EuroConstants.CENTS_PER_COIN);
+            default: throw new Error(`Invalid asset ${asset}`);
+        }
+    }
+
+    /**
+     * @param {'NIM' | 'BTC' | 'USDC_MATIC' | 'EUR'} asset
+     * @returns {'nim' | 'btc' | 'usdc' | 'eur'}
+     */
+    static assetToCurrency(asset) {
+        switch (asset) {
+            case 'NIM': return 'nim';
+            case 'BTC': return 'btc';
+            case 'USDC_MATIC': return 'usdc';
+            case 'EUR': return 'eur';
             default: throw new Error(`Invalid asset ${asset}`);
         }
     }

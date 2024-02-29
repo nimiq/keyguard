@@ -56,17 +56,17 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
         }
 
         // Show USDC fees next
-        if (fundTx.type === 'USDC' || redeemTx.type === 'USDC') {
-            const myFee = fundTx.type === 'USDC'
+        if (fundTx.type === 'USDC_MATIC' || redeemTx.type === 'USDC_MATIC') {
+            const myFee = fundTx.type === 'USDC_MATIC'
                 ? fundTx.description.args.fee.toNumber()
-                : redeemTx.type === 'USDC'
+                : redeemTx.type === 'USDC_MATIC'
                     ? redeemTx.description.args.fee.toNumber()
                     : 0;
 
-            const theirFee = fundTx.type === 'USDC' ? fundFees.redeeming : redeemFees.funding;
+            const theirFee = fundTx.type === 'USDC_MATIC' ? fundFees.redeeming : redeemFees.funding;
 
-            const fiatRate = fundTx.type === 'USDC' ? fundingFiatRate : redeemingFiatRate;
-            const fiatFee = CryptoUtils.unitsToCoins('USDC', myFee + theirFee) * fiatRate;
+            const fiatRate = fundTx.type === 'USDC_MATIC' ? fundingFiatRate : redeemingFiatRate;
+            const fiatFee = CryptoUtils.unitsToCoins('USDC_MATIC', myFee + theirFee) * fiatRate;
 
             const rows = this._createUsdcLine(fiatFee, fiatCurrency);
             this.$tooltip.appendChild(rows[0]);

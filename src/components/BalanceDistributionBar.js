@@ -3,7 +3,7 @@
 /* global CryptoUtils */
 
 /** @typedef {{address: string, balance: number, active: boolean, newBalance: number}} Segment */
-/** @typedef {'NIM' | 'BTC' | 'USDC' | 'EUR'} Asset */
+/** @typedef {'NIM' | 'BTC' | 'USDC_MATIC' | 'EUR'} Asset */
 
 class BalanceDistributionBar { // eslint-disable-line no-unused-vars
     /**
@@ -34,7 +34,7 @@ class BalanceDistributionBar { // eslint-disable-line no-unused-vars
             newBalance: CryptoUtils.unitsToCoins(leftAsset, segment.newBalance) * leftFiatRate,
             backgroundClass: leftAsset === 'NIM'
                 ? LoginFileConfig[IqonHash.getBackgroundColorIndex(segment.address)].className
-                : leftAsset.toLowerCase(),
+                : CryptoUtils.assetToCurrency(leftAsset),
             active: segment.active,
         }));
 
@@ -43,7 +43,7 @@ class BalanceDistributionBar { // eslint-disable-line no-unused-vars
             newBalance: CryptoUtils.unitsToCoins(rightAsset, segment.newBalance) * rightFiatRate,
             backgroundClass: rightAsset === 'NIM'
                 ? LoginFileConfig[IqonHash.getBackgroundColorIndex(segment.address)].className
-                : rightAsset.toLowerCase(),
+                : CryptoUtils.assetToCurrency(rightAsset),
             active: segment.active,
         }));
 

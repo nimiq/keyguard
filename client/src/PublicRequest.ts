@@ -285,8 +285,11 @@ export type SignSwapRequestCommon = SimpleRequest & {
             refundKeyPath: string, // To validate that we own the HTLC script's refund address
         }>
     ) | (
-        {type: 'USDC'}
-        & Omit<PolygonTransactionInfo, 'amount'>
+        {type: 'USDC_MATIC'}
+        & Omit<PolygonTransactionInfo,
+            | 'approval' // HTLC opening for native USDC uses `permit`, not `approval`
+            | 'amount' // Not used for HTLC opening - only for redeem and refund
+        >
     ) | (
         {type: 'EUR'}
         & {
@@ -320,8 +323,12 @@ export type SignSwapRequestCommon = SimpleRequest & {
             output: BitcoinTransactionChangeOutput,
         }
     ) | (
-        {type: 'USDC'}
-        & Omit<PolygonTransactionInfo, 'approval' | 'amount'>
+        {type: 'USDC_MATIC'}
+        & Omit<PolygonTransactionInfo,
+            | 'approval' // Not needed for redeeming
+            | 'permit' // Not needed for redeeming
+            | 'amount' // Overwritten from optional to required
+        >
         & {
             amount: number,
         }
@@ -401,7 +408,7 @@ export type SignSwapTransactionsRequest = {
         type: 'BTC',
         htlcScript: Uint8Array,
     } | {
-        type: 'USDC',
+        type: 'USDC_MATIC',
         htlcData: string,
     } | {
         type: 'EUR',
@@ -419,7 +426,7 @@ export type SignSwapTransactionsRequest = {
         transactionHash: string,
         outputIndex: number;
     } | {
-        type: 'USDC',
+        type: 'USDC_MATIC',
         hash: string,
         timeout: number,
         htlcId: string,

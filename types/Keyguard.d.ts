@@ -104,11 +104,11 @@ type PolygonOpenDescription = ethers.utils.TransactionDescription & {
     readonly args: PolygonOpenArgs,
 };
 
-interface PolygonOpenWithApprovalArgs extends PolygonOpenArgs, PolygonUsdcApproval {}
+interface PolygonOpenWithPermitArgs extends PolygonOpenArgs, PolygonUsdcPermit {}
 
-type PolygonOpenWithApprovalDescription = ethers.utils.TransactionDescription & {
-    readonly name: 'openWithApproval',
-    readonly args: PolygonOpenWithApprovalArgs,
+type PolygonOpenWithPermitDescription = ethers.utils.TransactionDescription & {
+    readonly name: 'openWithPermit',
+    readonly args: PolygonOpenWithPermitArgs,
 };
 
 interface PolygonRedeemArgs extends ReadonlyArray<any> {
@@ -209,9 +209,9 @@ type ConstructSwap<T extends KeyguardRequest.SignSwapRequestCommon> = Transform<
             locktime?: number;
             refundKeyPath: string,
             refundAddress: string,
-        } | Transform<KeyguardRequest.PolygonTransactionInfo, 'amount', {
-            type: 'USDC',
-            description: PolygonOpenDescription | PolygonOpenWithApprovalDescription,
+        } | Transform<KeyguardRequest.PolygonTransactionInfo, 'approval' | 'amount', {
+            type: 'USDC_MATIC',
+            description: PolygonOpenDescription | PolygonOpenWithPermitDescription,
         }> | {
             type: 'EUR',
             amount: number,
@@ -234,8 +234,8 @@ type ConstructSwap<T extends KeyguardRequest.SignSwapRequestCommon> = Transform<
                 keyPath: string,
             },
             output: KeyguardRequest.BitcoinTransactionChangeOutput,
-        } | Transform<KeyguardRequest.PolygonTransactionInfo, 'amount' | 'approval', {
-            type: 'USDC',
+        } | Transform<KeyguardRequest.PolygonTransactionInfo, 'amount' | 'approval' | 'permit', {
+            type: 'USDC_MATIC',
             description: PolygonRedeemDescription | PolygonRedeemWithSecretInDataDescription,
             amount: number,
         }> | {
@@ -341,7 +341,7 @@ type Parsed<T extends KeyguardRequest.Request> =
                     htlcScript: Uint8Array,
                     htlcAddress: string,
                 } | {
-                    type: 'USDC',
+                    type: 'USDC_MATIC',
                     description: PolygonOpenDescription,
                 } | {
                     type: 'EUR',
@@ -361,7 +361,7 @@ type Parsed<T extends KeyguardRequest.Request> =
                     outputIndex: number,
                     outputScript: Buffer,
                 } | {
-                    type: 'USDC',
+                    type: 'USDC_MATIC',
                     htlcId: string,
                     htlcDetails: {
                         hash: string,
