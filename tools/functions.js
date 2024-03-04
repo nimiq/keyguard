@@ -106,7 +106,7 @@ function findDependencies(startFile, class2Path, deps) {
 }
 
 /**
- * Retrieve all script pathes from an HTML file
+ * Retrieve all script paths from an HTML file
  *
  * @param {string} indexPath
  * @returns {string[]}

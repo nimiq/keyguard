@@ -306,7 +306,7 @@ export type SignSwapRequestCommon = SimpleRequest & {
             | 'sender' // Only known in second step (in swap-iframe)
             | 'senderType' // Must be HTLC
             | 'senderLabel' // Not used
-            | 'recipientType' // Must by BASIC (can only redeem to signer adress)
+            | 'recipientType' // Must be BASIC (can only redeem to signer address)
             | 'flags' // Must be NONE, as it cannot be CONTRACT_CREATION
         >
         & { recipientLabel: string }
@@ -603,7 +603,7 @@ export type KeyguardError = {
         GOTO_CREATE: 'GOTO_CREATE',
         // Specifically used to trigger a redirect to a special import after returning to caller
         GOTO_RESET_PASSWORD: 'GOTO_RESET_PASSWORD',
-        // used to signal a user initiated cancelation of the request
+        // used to signal a user initiated cancellation of the request
         CANCELED: 'CANCELED',
         // used to signal that the request expired
         EXPIRED: 'EXPIRED',

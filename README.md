@@ -117,7 +117,7 @@ for tags with the `data-i18n` attribute and put in the appropriate translation.
 <input data-i18n-value="my-value-translation"/>
 ```
 
-Similarily, I18n will translate the texts for value and placeholder.
+Similarly, I18n will translate the texts for value and placeholder.
 
 ### Language picker
 

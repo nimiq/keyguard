@@ -15,7 +15,7 @@ const ErrorConstants = {
         GOTO_CREATE: 'GOTO_CREATE',
         // Specifically used to trigger a redirect to a special import after returning to caller
         GOTO_RESET_PASSWORD: 'GOTO_RESET_PASSWORD',
-        // used to signal a user initiated cancelation of the request
+        // used to signal a user initiated cancellation of the request
         CANCELED: 'CANCELED',
         // used to signal that the request expired
         EXPIRED: 'EXPIRED',

@@ -27,7 +27,7 @@ if [ -z "${SHA256SUM}" ]; then
 fi
 
 # Detecting whether we're using GNU or BSD sed. There is a small but significant
-# idiosyncracy regarding the inplace option (-i).
+# idiosyncrasy regarding the inplace option (-i).
 # Fair warning: Yes, that's quite a hack, but distinguishing GNU and BSD utils
 # isn't that easy.
 if sed --in-place 2>&1 | head -1 | grep -q "illegal"; then
