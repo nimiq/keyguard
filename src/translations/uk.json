@@ -24,14 +24,14 @@
     "recovery-words-text": "Кожен, хто має ці слова, може отримати доступ до вашого рахунку! Зберігайте їх у безпечному місці.",
     "recovery-words-validate": "Перевірити ключові слова",
 
-    "create-heading-select-login-file": "Your key to logging in",
-    "create-no-personal-data": "No need for personal data.",
-    "create-password-and-download": "Create a password and download your Login File to access your wallet.",
+    "create-heading-select-login-file": "Ваш ключ для входу",
+    "create-no-personal-data": "Особисті дані не потрібні.",
+    "create-password-and-download": "Створіть пароль і завантажте Файл-ключ, щоб отримати доступ до свого гаманця.",
     "create-button-set-password": "Зберегти пароль",
-    "create-heading-create-password": "Create a password",
+    "create-heading-create-password": "Створити пароль",
     "create-heading-repeat-password": "Повторіть пароль",
-    "create-loginfile-password-hint": "Choose a strong, memorable password.\nThere is no “Forgot password” option.",
-    "create-log-in-any-device": "Use your password and Login File to log in on any device.",
+    "create-loginfile-password-hint": "Виберіть надійний пароль, що легко запам'ятовується.\nОпції \"Забули пароль\" немає.",
+    "create-log-in-any-device": "Використовуйте свій пароль і логін Файл для входу на будь-якому пристрої.",
     "create-heading-what-is-loginfile": "Що таке файлю-ключ?",
     "create-login-file-explainer-intro": "Файл-ключ, разом з паролем, надає доступ до вашого рахунку.",
     "create-login-file-paragraph-1": "Німік не зберігає ваших даних. Файлю-ключ заміщує емейл як засіб входу.",
@@ -53,7 +53,7 @@
     "import-words-hint": "Натисніть Tab, щоб перейти до наступного поля",
     "import-words-error": "Це невірний рахунок. Схибили?",
     "import-words-wrong-seed-phrase": "Ці секретні слова відповідають іншому рахунку",
-    "import-words-download-loginfile": "Download your Login File",
+    "import-words-download-loginfile": "Завантажте Файл-ключ",
 
     "file-import-prompt": "Перетягніть сюди або клацніть щоб завантажити",
     "file-import-error-could-not-read": "Неможливо прочитати файл-ключ.",
@@ -244,6 +244,6 @@
     "sign-swap-exchange-fee": "Комісія обміну",
     "sign-swap-of-exchange-value": "суми обміну.",
     "sign-swap-total-fees": "Сумарна комісія",
-    "sign-swap-exchange-rate": "Exchange rate",
+    "sign-swap-exchange-rate": "Курс обміну",
     "sign-swap-your-bank": "Ваш банк"
 }
