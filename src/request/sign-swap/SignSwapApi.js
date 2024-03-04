@@ -320,13 +320,13 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
     parseOpenGsnForwardRequest(request, allowedMethods) {
         const forwardRequest = this.parseOpenGsnForwardRequestRoot(request.request);
 
-        if (forwardRequest.to !== CONFIG.USDC_HTLC_CONTRACT_ADDRESS) {
+        if (forwardRequest.to !== CONFIG.BRIDGED_USDC_HTLC_CONTRACT_ADDRESS) {
             throw new Errors.InvalidRequestError('request.to address is not allowed');
         }
 
         const usdcHtlcContract = new ethers.Contract(
-            CONFIG.USDC_HTLC_CONTRACT_ADDRESS,
-            PolygonContractABIs.USDC_HTLC_CONTRACT_ABI,
+            CONFIG.BRIDGED_USDC_HTLC_CONTRACT_ADDRESS,
+            PolygonContractABIs.BRIDGED_USDC_HTLC_CONTRACT_ABI,
         );
 
         // eslint-disable-next-line operator-linebreak
@@ -345,7 +345,7 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
         }
 
         if (description.name === 'open' || description.name === 'openWithApproval') {
-            if (description.args.token !== CONFIG.USDC_CONTRACT_ADDRESS) {
+            if (description.args.token !== CONFIG.BRIDGED_USDC_CONTRACT_ADDRESS) {
                 throw new Errors.InvalidRequestError('Invalid USDC token contract in request data');
             }
 

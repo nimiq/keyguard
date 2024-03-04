@@ -65,7 +65,7 @@ class PolygonKey { // eslint-disable-line no-unused-vars
         const domain = {
             name: 'USD Coin (PoS)', // This is currently the same for testnet and mainnet
             version: '1', // This is currently the same for testnet and mainnet
-            verifyingContract: CONFIG.USDC_CONTRACT_ADDRESS,
+            verifyingContract: CONFIG.BRIDGED_USDC_CONTRACT_ADDRESS,
             salt: ethers.utils.hexZeroPad(ethers.utils.hexlify(CONFIG.POLYGON_CHAIN_ID), 32),
         };
 

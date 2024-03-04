@@ -81,13 +81,6 @@ type PolygonTransferDescription = ethers.utils.TransactionDescription & {
     readonly args: PolygonTransferArgs,
 };
 
-interface PolygonTransferWithApprovalArgs extends PolygonTransferArgs, PolygonUsdcApproval {}
-
-type PolygonTransferWithApprovalDescription = ethers.utils.TransactionDescription & {
-    readonly name: 'transferWithApproval',
-    readonly args: PolygonTransferWithApprovalArgs,
-};
-
 interface PolygonTransferWithPermitArgs extends PolygonTransferArgs, PolygonUsdcPermit {}
 
 type PolygonTransferWithPermitDescription = ethers.utils.TransactionDescription & {
@@ -150,6 +143,26 @@ interface PolygonRefundArgs extends ReadonlyArray<any> {
 type PolygonRefundDescription = ethers.utils.TransactionDescription & {
     readonly name: 'refund',
     readonly args: PolygonRefundArgs,
+};
+
+interface PolygonSwapArgs extends ReadonlyArray<any> {
+    readonly token: string,
+    readonly amount: ethers.BigNumber,
+    readonly pool: string,
+    readonly targetAmount: ethers.BigNumber,
+    readonly fee: ethers.BigNumber,
+}
+
+type PolygonSwapDescription = ethers.utils.TransactionDescription & {
+    readonly name: 'swap',
+    readonly args: PolygonSwapArgs,
+};
+
+interface PolygonSwapWithApprovalArgs extends PolygonSwapArgs, PolygonUsdcApproval {}
+
+type PolygonSwapWithApprovalDescription = ethers.utils.TransactionDescription & {
+    readonly name: 'swapWithApproval',
+    readonly args: PolygonSwapWithApprovalArgs,
 };
 
 type NimHtlcContents = {
@@ -292,9 +305,10 @@ type Parsed<T extends KeyguardRequest.Request> =
     T extends Is<T, KeyguardRequest.SignPolygonTransactionRequest> ?
         KeyId2KeyInfo<KeyguardRequest.SignPolygonTransactionRequest>
         & { description: PolygonTransferDescription
-            | PolygonTransferWithApprovalDescription
             | PolygonTransferWithPermitDescription
-            | PolygonRefundDescription } :
+            | PolygonRefundDescription
+            | PolygonSwapDescription
+            | PolygonSwapWithApprovalDescription } :
     T extends Is<T, KeyguardRequest.SignSwapRequestStandard> ?
         KeyId2KeyInfo<ConstructSwap<KeyguardRequest.SignSwapRequestStandard>>
         & { layout: KeyguardRequest.SignSwapRequestLayout } :

@@ -549,10 +549,10 @@ class SignSwap {
                 const { sigR, sigS, sigV } = await polygonKey.signUsdcApproval(
                     request.fund.keyPath,
                     new ethers.Contract(
-                        CONFIG.USDC_CONTRACT_ADDRESS,
-                        PolygonContractABIs.USDC_CONTRACT_ABI,
+                        CONFIG.BRIDGED_USDC_CONTRACT_ADDRESS,
+                        PolygonContractABIs.BRIDGED_USDC_CONTRACT_ABI,
                     ),
-                    CONFIG.USDC_HTLC_CONTRACT_ADDRESS,
+                    CONFIG.BRIDGED_USDC_HTLC_CONTRACT_ADDRESS,
                     request.fund.description.args.approval,
                     // Has been validated to be defined when function called is `openWithApproval`
                     /** @type {{ tokenNonce: number }} */ (request.fund.approval).tokenNonce,
@@ -560,8 +560,8 @@ class SignSwap {
                 );
 
                 const htlcContract = new ethers.Contract(
-                    CONFIG.USDC_HTLC_CONTRACT_ADDRESS,
-                    PolygonContractABIs.USDC_HTLC_CONTRACT_ABI,
+                    CONFIG.BRIDGED_USDC_HTLC_CONTRACT_ADDRESS,
+                    PolygonContractABIs.BRIDGED_USDC_HTLC_CONTRACT_ABI,
                 );
 
                 request.fund.request.data = htlcContract.interface.encodeFunctionData(request.fund.description.name, [
