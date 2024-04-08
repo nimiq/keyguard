@@ -107,7 +107,7 @@ FiatApi.SupportedFiatCurrency = {
  * @readonly
  * Coingecko api url. Note that the origin must be whitelisted in the csp.
  */
-FiatApi.API_URL = 'https://api.coingecko.com/api/v3';
+FiatApi.API_URL = 'https://nq-coingecko-proxy.deno.dev/api/v3';
 
 /**
  * @readonly
