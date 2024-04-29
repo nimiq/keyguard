@@ -535,9 +535,12 @@ export type DerivedAddress = {
 export type KeyResult = SingleKeyResult[];
 export type ListResult = KeyInfoObject[];
 export type ListLegacyResult = LegacyKeyInfoObject[];
-export type SignTransactionResult = SignatureResult;
+export type SignTransactionResult = SignatureResult & {
+    serializedTx: Uint8Array,
+};
 export type SignStakingResult = SignatureResult & {
     data: Uint8Array,
+    serializedTx: Uint8Array,
 };
 export type SimpleResult = { success: boolean };
 export type SignedBitcoinTransaction = {

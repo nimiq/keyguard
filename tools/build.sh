@@ -147,6 +147,7 @@ rm -rf dist
 output "👷  Creating folder structure"
 mkdir -p dist/request
 mkdir -p dist/assets/nimiq
+mkdir -p dist/assets/albatross
 mkdir -p dist/lib
 
 # bundle names
@@ -283,6 +284,10 @@ for DIR in src/request/*/ ; do
             print space[1] "<script defer src=\"/assets/nimiq/web.js\" integrity=\"sha256-'${CORE_WEB_LIB_HASH}'\"></script>"
             next
         }
+        /<script.*type="module"/ {
+            print
+            next
+        }
         /<script/ {
             # Replace first script tag with bundles, delete all others
             if (!skip_script) {
@@ -360,6 +365,10 @@ cp -v node_modules/@nimiq/style/nimiq-style.icons.svg dist/assets/
 # copy service worker (which has to be in root to work)
 cp -v src/service-worker/ServiceWorker.js dist
 
+# copy Albatross loader and replace import path
+cp -v src/lib/AlbatrossWasm.mjs dist/lib/
+sed -i 's/\.\.\/\.\.\/node_modules\/@nimiq\/albatross-wasm/\.\.\/assets\/albatross/' dist/lib/AlbatrossWasm.mjs
+
 # copy Nimiq files
 output "‼️   Copying Nimiq files"
 cp -v node_modules/@nimiq/core-web/web.js \
@@ -372,5 +381,12 @@ cp -v node_modules/@nimiq/core-web/web.js \
       node_modules/@nimiq/core-web/worker.js \
       node_modules/@nimiq/core-web/worker.js.map \
       dist/assets/nimiq
+
+# copy Albatross files
+output "‼️   Copying Albatross files"
+cp -vr node_modules/@nimiq/albatross-wasm/client-proxy.js \
+       node_modules/@nimiq/albatross-wasm/transfer-handlers.js \
+       node_modules/@nimiq/albatross-wasm/web \
+       dist/assets/albatross
 
 output "✔️   Finished building into ./dist"

@@ -1,4 +1,5 @@
 /* global Nimiq */
+/* global Albatross */
 /* global Key */
 /* global KeyStore */
 /* global PasswordBox */
@@ -149,51 +150,65 @@ class SignStaking {
             return;
         }
 
-        const publicKey = key.derivePublicKey(request.keyPath);
+        const powPrivateKey = key.derivePrivateKey(request.keyPath);
 
-        const stakingTypesWithSignatureData = [
-            SignStakingApi.IncomingStakingType.CREATE_STAKER,
-            SignStakingApi.IncomingStakingType.UPDATE_STAKER,
-        ];
+        const privateKey = Albatross.PrivateKey.unserialize(powPrivateKey.serialize());
+        const keyPair = Albatross.KeyPair.derive(privateKey);
 
-        if (stakingTypesWithSignatureData.includes(request.type)) {
-            // The tx signature of the staker is set in the data
-            const signature = key.sign(request.keyPath, request.transaction.serializeContent());
-            const proof = Nimiq.SignatureProof.singleSig(publicKey, signature);
+        /** @type {Albatross.Transaction} */
+        let tx;
 
-            const data = new Nimiq.SerialBuffer(request.transaction.data);
-            data.writePos = data.length - Nimiq.SignatureProof.SINGLE_SIG_SIZE;
-            data.write(proof.serialize());
-
-            // Reconstruct transaction (as transaction.data is readonly)
-            const tx = request.transaction;
-            const value = tx.value;
-            const flags = tx.flags;
-            request.transaction = new Nimiq.ExtendedTransaction(
-                tx.sender, tx.senderType,
-                tx.recipient, tx.recipientType,
-                /* value */ 1, tx.fee,
-                tx.validityStartHeight, /* flags */ 0,
-                data, // <= data replaced here
-                tx.proof, tx.networkId,
-            );
-
-            // The Nimiq 1.0 Transaction constructor does not allow 0 value or the signalling flag,
-            // so we are setting value and flags here.
-            // @ts-ignore Private property access
-            request.transaction._value = value;
-            // @ts-ignore Private property access
-            request.transaction._flags = flags;
+        switch (request.type) {
+            case SignStakingApi.IncomingStakingType.CREATE_STAKER:
+                tx = Albatross.TransactionBuilder.newCreateStaker(
+                    keyPair.toAddress(),
+                    Albatross.Address.fromString(/** @type {Nimiq.Address} */ (request.delegation).toHex()),
+                    BigInt(request.transaction.value),
+                    BigInt(request.transaction.fee),
+                    request.transaction.validityStartHeight,
+                    request.transaction.networkId,
+                );
+                break;
+            case SignStakingApi.IncomingStakingType.STAKE:
+                tx = Albatross.TransactionBuilder.newStake(
+                    keyPair.toAddress(),
+                    keyPair.toAddress(),
+                    BigInt(request.transaction.value),
+                    BigInt(request.transaction.fee),
+                    request.transaction.validityStartHeight,
+                    request.transaction.networkId,
+                );
+                break;
+            case SignStakingApi.IncomingStakingType.UPDATE_STAKER:
+                tx = Albatross.TransactionBuilder.newUpdateStaker(
+                    keyPair.toAddress(),
+                    Albatross.Address.fromString(/** @type {Nimiq.Address} */ (request.delegation).toHex()),
+                    BigInt(request.transaction.fee),
+                    request.transaction.validityStartHeight,
+                    request.transaction.networkId,
+                );
+                break;
+            case SignStakingApi.IncomingStakingType.UNSTAKE:
+                tx = Albatross.TransactionBuilder.newUnstake(
+                    keyPair.toAddress(),
+                    BigInt(request.transaction.value),
+                    BigInt(request.transaction.fee),
+                    request.transaction.validityStartHeight,
+                    request.transaction.networkId,
+                );
+                break;
+            default:
+                throw new Errors.KeyguardError('Unreachable');
         }
 
-        // Regular tx signature of the sender
-        const signature = key.sign(request.keyPath, request.transaction.serializeContent());
+        tx = tx.sign(keyPair);
 
         /** @type {KeyguardRequest.SignStakingResult} */
         const result = {
-            publicKey: publicKey.serialize(),
-            signature: signature.serialize(),
+            publicKey: keyPair.publicKey.serialize(),
+            signature: tx.proof.subarray(tx.proof.length - 64),
             data: request.transaction.data,
+            serializedTx: tx.serialize(),
         };
         resolve(result);
     }

@@ -12,6 +12,9 @@
 /** @type {Promise<void>?} */
 let __nimiqLoaded = null;
 
+/** @type {Promise<void>?} */
+let __albatrossLoaded = null;
+
 if (navigator.serviceWorker) {
     // Register service worker to strip cookie from requests.
     // This is on a best-effort basis. Cookies might still be sent to the server, if the service worker is not activated
@@ -57,7 +60,20 @@ async function loadNimiq() {
 }
 
 /**
- * @typedef {{loadNimiq: boolean, whitelist: string[]}} Options
+ * Singleton promise
+ *
+ * @returns {Promise<void>}
+ */
+async function loadAlbatross() {
+    // eslint-disable-next-line no-return-assign
+    return __albatrossLoaded || (__albatrossLoaded = new Promise(async resolve => {
+        await Albatross.default(); // eslint-disable-line no-undef
+        resolve();
+    }));
+}
+
+/**
+ * @typedef {{loadNimiq: boolean, loadAlbatross: boolean, whitelist: string[]}} Options
  */
 
 /**
@@ -69,6 +85,7 @@ async function runKeyguard(RequestApiClass, opts) { // eslint-disable-line no-un
     /** @type {Options} */
     const defaultOptions = {
         loadNimiq: true,
+        loadAlbatross: false,
         whitelist: ['request'],
     };
 
@@ -77,6 +94,10 @@ async function runKeyguard(RequestApiClass, opts) { // eslint-disable-line no-un
 
     if (options.loadNimiq) {
         await loadNimiq();
+    }
+
+    if (options.loadAlbatross) {
+        await loadAlbatross();
     }
 
     // If user navigates back to loading screen, skip it

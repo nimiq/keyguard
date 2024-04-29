@@ -1,4 +1,5 @@
 /* global Nimiq */
+/* global Albatross */
 /* global Key */
 /* global KeyStore */
 /* global SignTransactionApi */
@@ -181,13 +182,42 @@ class SignTransaction {
             return;
         }
 
-        const publicKey = key.derivePublicKey(request.keyPath);
-        const signature = key.sign(request.keyPath, request.transaction.serializeContent());
+        const powPrivateKey = key.derivePrivateKey(request.keyPath);
+
+        const privateKey = Albatross.PrivateKey.unserialize(powPrivateKey.serialize());
+        const keyPair = Albatross.KeyPair.derive(privateKey);
+
+        /** @type {Albatross.Transaction} */
+        let tx;
+
+        if (!request.transaction.data.length) {
+            tx = Albatross.TransactionBuilder.newBasic(
+                keyPair.toAddress(),
+                Albatross.Address.fromString(request.transaction.recipient.toHex()),
+                BigInt(request.transaction.value),
+                BigInt(request.transaction.fee),
+                request.transaction.validityStartHeight,
+                request.transaction.networkId,
+            );
+        } else {
+            tx = Albatross.TransactionBuilder.newBasicWithData(
+                keyPair.toAddress(),
+                Albatross.Address.fromString(request.transaction.recipient.toHex()),
+                request.transaction.data,
+                BigInt(request.transaction.value),
+                BigInt(request.transaction.fee),
+                request.transaction.validityStartHeight,
+                request.transaction.networkId,
+            );
+        }
+
+        tx = tx.sign(keyPair);
 
         /** @type {KeyguardRequest.SignTransactionResult} */
         const result = {
-            publicKey: publicKey.serialize(),
-            signature: signature.serialize(),
+            publicKey: keyPair.publicKey.serialize(),
+            signature: tx.proof.subarray(tx.proof.length - 64),
+            serializedTx: tx.serialize(),
         };
         resolve(result);
     }

@@ -1,4 +1,6 @@
 /* global SignStakingApi */
 /* global runKeyguard */
 
-runKeyguard(SignStakingApi);
+runKeyguard(SignStakingApi, {
+    loadAlbatross: true,
+});
