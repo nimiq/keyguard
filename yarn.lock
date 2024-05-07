@@ -433,9 +433,9 @@
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
 "@nimiq/albatross-wasm@npm:@nimiq/core-web@next":
-  version "2.0.0-alpha.21.0"
-  resolved "https://registry.yarnpkg.com/@nimiq/core-web/-/core-web-2.0.0-alpha.21.0.tgz#7f90948b466ad0906da92205b5b131b62e25110c"
-  integrity sha512-MN78xNEH6mmFpV2bLGhbKYqKDhdXZVo4WWMOKjhcGcY8WBg6W8DOiyQVRW1rwQyB3aq1ep0U3cwrJbOLU7nqwg==
+  version "2.0.0-alpha.21.1"
+  resolved "https://registry.yarnpkg.com/@nimiq/core-web/-/core-web-2.0.0-alpha.21.1.tgz#d4d6043df8f47cff6a44cc0d77a4303daa2181e1"
+  integrity sha512-ZKIvqM7O9puW3kXhV3otMlTn8lbfMon+QwW0hsvrAX0Gslq6WoOCzBz1q0jFM6X1oMFv5iyphvPLp1wV+CZczw==
   dependencies:
     comlink "^4.4.1"
     websocket "^1.0.34"
