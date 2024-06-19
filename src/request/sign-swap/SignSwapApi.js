@@ -95,6 +95,13 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
                 fee: this.parsePositiveInteger(request.fund.fee, true, 'fund.fee'),
                 bankLabel: this.parseLabel(request.fund.bankLabel, true, 'fund.bankLabel'),
             };
+        } else if (request.fund.type === 'CRC') {
+            parsedRequest.fund = {
+                type: 'CRC',
+                amount: this.parsePositiveInteger(request.fund.amount, false, 'fund.amount'),
+                fee: this.parsePositiveInteger(request.fund.fee, true, 'fund.fee'),
+                sinpeLabel: this.parseLabel(request.fund.recipientLabel, true, 'fund.recipientLabel'),
+            };
         } else {
             throw new Errors.InvalidRequestError('Invalid funding type');
         }
@@ -152,6 +159,15 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
                 amount: this.parsePositiveInteger(request.redeem.amount, false, 'redeem.amount'),
                 fee: this.parsePositiveInteger(request.redeem.fee, true, 'redeem.fee'),
                 bankLabel: this.parseLabel(request.redeem.bankLabel, true, 'redeem.bankLabel'),
+            };
+        } else if (request.redeem.type === 'CRC') {
+            parsedRequest.redeem = {
+                type: 'CRC',
+                keyPath: this.parsePath(request.redeem.keyPath, 'redeem.keyPath'),
+                settlement: this.parseOasisCrcSettlementInstruction(request.redeem.settlement, 'redeem.settlement'),
+                amount: this.parsePositiveInteger(request.redeem.amount, false, 'redeem.amount'),
+                fee: this.parsePositiveInteger(request.redeem.fee, true, 'redeem.fee'),
+                recipientLabel: this.parseLabel(request.redeem.recipientLabel, true, 'redeem.recipientLabel'),
             };
         } else {
             throw new Errors.InvalidRequestError('Invalid redeeming type');
@@ -420,6 +436,36 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
             }
             default: throw new Errors.InvalidRequestError('Invalid settlement type');
         }
+    }
+
+    /**
+     * Checks that the given instruction is a valid OASIS SettlementInstruction
+     * @param {unknown} obj
+     * @param {string} parameterName
+     * @returns {Omit<KeyguardRequest.SinpeMovilSettlementInstruction, 'contractId'>}
+     */
+    parseOasisCrcSettlementInstruction(obj, parameterName) {
+        if (typeof obj !== 'object' || obj === null) {
+            throw new Errors.InvalidRequestError('Invalid settlement');
+        }
+
+        const recipient = /** @type {{recipient: unknown}} */ (obj).recipient;
+        if (typeof recipient !== 'object' || recipient === null) {
+            throw new Errors.InvalidRequestError('Invalid settlement recipient');
+        }
+
+        /** @type {Omit<KeyguardRequest.SinpeMovilSettlementInstruction, 'contractId'>} */
+        const settlement = {
+            type: 'sinpemovil',
+            phoneNumber: /** @type {string} */ (
+                this.parseLabel(
+                    /** @type {{phoneNumber: unknown}} */ (recipient).phoneNumber,
+                    false,
+                    `${parameterName}.phoneNumber`,
+                )
+            ),
+        };
+        return settlement;
     }
 
     /**

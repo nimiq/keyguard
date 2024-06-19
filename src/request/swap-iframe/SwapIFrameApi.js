@@ -43,6 +43,7 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
          *     nim: string,
          *     btc: string[],
          *     usdc: string,
+         *     crc: string,
          *     eur: string,
          *     btc_refund?: string,
          * }, request: any}} */
@@ -70,6 +71,11 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
         if (request.redeem.type === 'EUR') {
             if (!privateKeys.eur) throw new Error('No EUR key stored in SessionStorage');
             if (privateKeys.eur.length !== 64) throw new Error('Invalid EUR key stored in SessionStorage');
+        }
+
+        if (request.redeem.type === 'CRC') {
+            if (!privateKeys.crc) throw new Error('No CRC key stored in SessionStorage');
+            if (privateKeys.crc.length !== 64) throw new Error('Invalid CRC key stored in SessionStorage');
         }
 
         // Deserialize stored request
@@ -288,6 +294,28 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
         if (request.redeem.type === 'EUR' && storedRequest.redeem.type === 'EUR') {
             redeem = {
                 type: 'EUR',
+                htlcDetails: {
+                    hash: Nimiq.BufferUtils.toHex(Nimiq.BufferUtils.fromAny(request.redeem.hash)),
+                    timeoutTimestamp: this.parsePositiveInteger(request.redeem.timeout, false, 'redeem.timeout'),
+                },
+                htlcId: /** @type {string} */ (this.parseLabel(request.redeem.htlcId, false, 'redeem.htlcId')),
+            };
+        }
+
+        if (request.fund.type === 'CRC' && storedRequest.fund.type === 'CRC') {
+            fund = {
+                type: 'CRC',
+                htlcDetails: {
+                    hash: Nimiq.BufferUtils.toHex(Nimiq.BufferUtils.fromAny(request.fund.hash)),
+                    timeoutTimestamp: this.parsePositiveInteger(request.fund.timeout, false, 'fund.timeout'),
+                },
+                htlcId: /** @type {string} */ (this.parseLabel(request.fund.htlcId, false, 'fund.htlcId')),
+            };
+        }
+
+        if (request.redeem.type === 'CRC' && storedRequest.redeem.type === 'CRC') {
+            redeem = {
+                type: 'CRC',
                 htlcDetails: {
                     hash: Nimiq.BufferUtils.toHex(Nimiq.BufferUtils.fromAny(request.redeem.hash)),
                     timeoutTimestamp: this.parsePositiveInteger(request.redeem.timeout, false, 'redeem.timeout'),
@@ -602,6 +630,11 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
             result.eur = '';
         }
 
+        if (parsedRequest.fund.type === 'CRC' && storedRequest.fund.type === 'CRC') {
+            // Nothing to do for funding sinpemovil
+            result.crc = '';
+        }
+
         if (parsedRequest.redeem.type === 'NIM' && storedRequest.redeem.type === 'NIM') {
             await loadNimiq();
 
@@ -760,6 +793,22 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
             }
 
             result.eur = OasisSettlementInstructionUtils.signSettlementInstruction(key, 'm', settlement);
+        }
+
+        if (parsedRequest.redeem.type === 'CRC' && storedRequest.redeem.type === 'CRC') {
+            await loadNimiq();
+
+            // Create and sign a JWS of the settlement instructions
+            const privateKey = new Nimiq.PrivateKey(Nimiq.BufferUtils.fromHex(privateKeys.crc));
+            const key = new Key(privateKey);
+
+            /** @type {KeyguardRequest.SettlementInstruction} */
+            const settlement = {
+                ...storedRequest.redeem.settlement,
+                contractId: parsedRequest.redeem.htlcId,
+            };
+
+            result.crc = OasisSettlementInstructionUtils.signSettlementInstruction(key, 'm', settlement);
         }
 
         return result;

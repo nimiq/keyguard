@@ -257,7 +257,14 @@ export type SepaSettlementInstruction = {
     },
 };
 
-export type SettlementInstruction = MockSettlementInstruction | SepaSettlementInstruction;
+export type SinpeMovilSettlementInstruction = {
+    type: 'sinpemovil',
+    contractId: string,
+    phoneNumber: string,
+};
+
+export type SettlementInstruction =
+    MockSettlementInstruction | SepaSettlementInstruction | SinpeMovilSettlementInstruction;
 
 export type SignSwapRequestLayout = 'standard' | 'slider';
 
@@ -298,6 +305,13 @@ export type SignSwapRequestCommon = SimpleRequest & {
             bankLabel?: string,
             // bankLogoUrl?: string,
             // bankColor?: string,
+        }
+    ) | (
+        {type: 'CRC'}
+        & {
+            amount: number,
+            fee: number,
+            recipientLabel?: string,
         }
     ),
     redeem: (
@@ -344,6 +358,17 @@ export type SignSwapRequestCommon = SimpleRequest & {
             bankLabel?: string,
             // bankLogoUrl?: string,
             // bankColor?: string,
+        }
+    ) | (
+        { type: 'CRC' }
+        & {
+            keyPath: string,
+            // A SettlementInstruction contains a `type`, so cannot be in the
+            // root of the object (it conflicts with the 'CRC' type).
+            settlement: Omit<SettlementInstruction, 'contractId'>,
+            amount: number,
+            fee: number,
+            recipientLabel?: string,
         }
     ),
 
@@ -394,7 +419,7 @@ export type SignSwapRequestSlider = SignSwapRequestCommon & {
 export type SignSwapRequest = SignSwapRequestStandard | SignSwapRequestSlider;
 
 export type SignSwapResult = SimpleResult & {
-    eurPubKey?: string,
+    fiatPubKey?: string,
     tmpCookieEncryptionKey?: Uint8Array;
 };
 
@@ -411,7 +436,7 @@ export type SignSwapTransactionsRequest = {
         type: 'USDC_MATIC',
         htlcData: string,
     } | {
-        type: 'EUR',
+        type: 'EUR' | 'CRC',
         hash: string,
         timeout: number,
         htlcId: string,
@@ -431,7 +456,7 @@ export type SignSwapTransactionsRequest = {
         timeout: number,
         htlcId: string,
     } | {
-        type: 'EUR',
+        type: 'EUR' | 'CRC',
         hash: string,
         timeout: number,
         htlcId: string,
@@ -531,6 +556,7 @@ export type SignSwapTransactionsResult = {
     btc?: SignedBitcoinTransaction,
     usdc?: SignedPolygonTransaction,
     eur?: string, // When funding EUR: empty string, when redeeming EUR: JWS of the settlement instructions
+    crc?: string, // When funding CRC: empty string, when redeeming CRC: JWS of the settlement instructions
     refundTx?: string,
 };
 

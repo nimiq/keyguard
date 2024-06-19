@@ -75,22 +75,25 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
         }
 
         // Show OASIS fees next
-        if (fundTx.type === 'EUR' || redeemTx.type === 'EUR') {
-            const myFee = fundTx.type === 'EUR'
+        if (fundTx.type === 'EUR' || fundTx.type === 'CRC' || redeemTx.type === 'EUR' || redeemTx.type === 'CRC') {
+            const myFee = fundTx.type === 'EUR' || fundTx.type === 'CRC'
                 ? fundTx.fee
-                : redeemTx.type === 'EUR'
+                : redeemTx.type === 'EUR' || redeemTx.type === 'CRC'
                     ? redeemTx.fee
                     : 0;
 
-            const theirFee = fundTx.type === 'EUR' ? fundFees.processing : redeemFees.processing;
+            const theirFee = fundTx.type === 'EUR' || fundTx.type === 'CRC'
+                ? fundFees.processing : redeemFees.processing;
 
-            const fiatRate = fundTx.type === 'EUR' ? fundingFiatRate : redeemingFiatRate;
-            const fiatFee = CryptoUtils.unitsToCoins('EUR', myFee + theirFee) * fiatRate;
+            const fiatRate = fundTx.type === 'EUR' || fundTx.type === 'CRC' ? fundingFiatRate : redeemingFiatRate;
+            const fiatSwapAsset = (fundTx.type === 'EUR' || fundTx.type === 'CRC' ? fundTx.type : redeemTx.type);
+            const fiatFee = CryptoUtils.unitsToCoins(fiatSwapAsset, myFee + theirFee) * fiatRate;
 
             const rows = this._createOasisLine(
                 fiatFee,
                 fiatCurrency,
-                (myFee + theirFee) / (fundTx.type === 'EUR' ? exchangeFromAmount : exchangeToAmount),
+                (myFee + theirFee) / (fundTx.type === 'EUR' || fundTx.type === 'CRC'
+                    ? exchangeFromAmount : exchangeToAmount),
             );
             this.$tooltip.appendChild(rows[0]);
             this.$tooltip.appendChild(rows[1]);

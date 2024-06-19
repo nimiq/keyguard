@@ -105,6 +105,7 @@ class NumberFormatting { // eslint-disable-line no-unused-vars
             case 'eur':
             case 'chf':
                 return 'de';
+            case 'crc':
             case 'gbp':
             case 'usd':
                 return 'en';

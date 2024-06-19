@@ -184,6 +184,11 @@ type EurHtlcContents = {
     timeoutTimestamp: number,
 };
 
+type CrcHtlcContents = {
+    hash: string,
+    timeoutTimestamp: number
+}
+
 type Transform<T, K extends keyof T, E> = Omit<T, K> & E;
 
 type KeyId2KeyInfo<T extends { keyId: string }> = Transform<T, 'keyId', { keyInfo: KeyInfo }>
@@ -219,6 +224,11 @@ type ConstructSwap<T extends KeyguardRequest.SignSwapRequestCommon> = Transform<
             bankLabel?: string,
             // bankLogoUrl?: string,
             // bankColor?: string,
+        } | {
+            type: 'CRC',
+            amount: number,
+            fee: number,
+            sinpeLabel?: string,
         },
         redeem: {
             type: 'NIM',
@@ -249,6 +259,15 @@ type ConstructSwap<T extends KeyguardRequest.SignSwapRequestCommon> = Transform<
             bankLabel?: string,
             // bankLogoUrl?: string,
             // bankColor?: string,
+        } | {
+            type: 'CRC',
+            keyPath: string,
+            // A SettlementInstruction contains a `type`, so cannot be in the
+            // root of the object (it conflicts with the 'CRC' type).
+            settlement: Omit<KeyguardRequest.SinpeMovilSettlementInstruction, 'contractId'>,
+            amount: number,
+            fee: number,
+            recipientLabel?: string,
         },
     }>
 
@@ -349,7 +368,11 @@ type Parsed<T extends KeyguardRequest.Request> =
                     type: 'EUR',
                     htlcDetails: EurHtlcContents,
                     htlcId: string,
-                },
+                } | {
+                    type: 'CRC',
+                    htlcDetails: CrcHtlcContents,
+                    htlcId: string,
+                };
                 redeem: {
                     type: 'NIM',
                     htlcDetails: NimHtlcContents,
@@ -372,6 +395,10 @@ type Parsed<T extends KeyguardRequest.Request> =
                 } | {
                     type: 'EUR',
                     htlcDetails: EurHtlcContents,
+                    htlcId: string,
+                } | {
+                    type: 'CRC',
+                    htlcDetails: CrcHtlcContents,
                     htlcId: string,
                 },
             }

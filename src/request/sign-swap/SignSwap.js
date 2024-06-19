@@ -85,7 +85,9 @@ class SignSwap {
                     - (fundTx.changeOutput ? fundTx.changeOutput.value : 0); break;
             case 'USDC_MATIC': swapFromValue = fundTx.description.args.amount
                 .add(fundTx.description.args.fee).toNumber(); break;
-            case 'EUR': swapFromValue = fundTx.amount + fundTx.fee; break;
+            case 'CRC':
+            case 'EUR':
+                swapFromValue = fundTx.amount + fundTx.fee; break;
             default: throw new Errors.KeyguardError('Invalid asset');
         }
 
@@ -95,7 +97,9 @@ class SignSwap {
             case 'NIM': swapToValue = redeemTx.transaction.value; break;
             case 'BTC': swapToValue = redeemTx.output.value; break;
             case 'USDC_MATIC': swapToValue = redeemTx.amount; break;
-            case 'EUR': swapToValue = redeemTx.amount - redeemTx.fee; break;
+            case 'CRC':
+            case 'EUR':
+                swapToValue = redeemTx.amount - redeemTx.fee; break;
             default: throw new Errors.KeyguardError('Invalid asset');
         }
 
@@ -112,24 +116,24 @@ class SignSwap {
         $swapLeftValue.textContent = NumberFormatting.formatNumber(
             CryptoUtils.unitsToCoins(leftAsset, leftAmount),
             leftAsset === 'USDC_MATIC' ? 2 : CryptoUtils.assetDecimals(leftAsset),
-            leftAsset === 'EUR' || leftAsset === 'USDC_MATIC' ? 2 : 0,
+            leftAsset === 'EUR' || leftAsset === 'CRC' || leftAsset === 'USDC_MATIC' ? 2 : 0,
         );
 
         $swapRightValue.textContent = NumberFormatting.formatNumber(
             CryptoUtils.unitsToCoins(rightAsset, rightAmount),
             rightAsset === 'USDC_MATIC' ? 2 : CryptoUtils.assetDecimals(rightAsset),
-            rightAsset === 'EUR' || rightAsset === 'USDC_MATIC' ? 2 : 0,
+            rightAsset === 'EUR' || rightAsset === 'CRC' || rightAsset === 'USDC_MATIC' ? 2 : 0,
         );
 
         $swapValues.classList.add(
             `${CryptoUtils.assetToCurrency(fundTx.type)}-to-${CryptoUtils.assetToCurrency(redeemTx.type)}`,
         );
 
-        /** @type {'NIM' | 'BTC' | 'USDC_MATIC' | 'EUR'} */
+        /** @type {'NIM' | 'BTC' | 'USDC_MATIC' | 'EUR' | 'CRC'} */
         let exchangeBaseAsset;
         // If EUR is part of the swap, the other currency is the base asset
-        if (fundTx.type === 'EUR') exchangeBaseAsset = redeemTx.type;
-        else if (redeemTx.type === 'EUR') exchangeBaseAsset = fundTx.type;
+        if (fundTx.type === 'EUR' || fundTx.type === 'CRC') exchangeBaseAsset = redeemTx.type;
+        else if (redeemTx.type === 'EUR' || redeemTx.type === 'CRC') exchangeBaseAsset = fundTx.type;
         // If the layout is 'slider', the left asset is the base asset
         else if (request.layout === SignSwapApi.Layouts.SLIDER) exchangeBaseAsset = leftAsset;
         else exchangeBaseAsset = fundTx.type;
@@ -164,7 +168,8 @@ class SignSwap {
         const exchangeRateString = `1 ${exchangeBaseAsset} = ${NumberFormatting.formatNumber(
             exchangeRate,
             exchangeRateDecimals,
-            exchangeOtherAsset === 'EUR' ? CryptoUtils.assetDecimals(exchangeOtherAsset) : 0,
+            exchangeOtherAsset === 'EUR' || exchangeOtherAsset === 'CRC'
+                ? CryptoUtils.assetDecimals(exchangeOtherAsset) : 0,
         )} ${exchangeOtherAsset}`;
 
         /** @type {HTMLDivElement} */
@@ -204,6 +209,10 @@ class SignSwap {
             } else if (request.fund.type === 'EUR') {
                 $leftIdenticon.innerHTML = TemplateTags.hasVars(0)`<img src="../../assets/icons/bank.svg"></img>`;
                 $leftLabel.textContent = request.fund.bankLabel || I18n.translatePhrase('sign-swap-your-bank');
+            } else if (request.fund.type === 'CRC') {
+                $leftIdenticon.innerHTML = 'TODO';
+                // TODO Translation
+                $leftLabel.textContent = request.fund.sinpeLabel || I18n.translatePhrase('sign-swap-your-bank');
             }
 
             if (request.redeem.type === 'NIM') {
@@ -226,6 +235,12 @@ class SignSwap {
                     label = request.redeem.settlement.recipient.iban;
                 }
 
+                $rightLabel.textContent = label;
+            } else if (request.redeem.type === 'CRC') {
+                $rightIdenticon.innerHTML = 'TODO';
+
+                // TODO Translation
+                const label = request.redeem.recipientLabel || I18n.translatePhrase('sign-swap-your-bank');
                 $rightLabel.textContent = label;
             }
         }
@@ -427,7 +442,7 @@ class SignSwap {
     }
 
     /**
-     * @param {'NIM' | 'BTC' | 'USDC_MATIC' | 'EUR'} asset
+     * @param {'NIM' | 'BTC' | 'USDC_MATIC' | 'EUR' | 'CRC'} asset
      * @param {Parsed<KeyguardRequest.SignSwapRequest>} request
      * @returns {number}
      */
@@ -464,10 +479,11 @@ class SignSwap {
                         // is the transaction value + tx fee.
                         ? redeemTx.amount + redeemTx.description.args.fee.toNumber() + request.redeemFees.funding
                         : 0; // Should never happen, if parsing works correctly
+            case 'CRC':
             case 'EUR':
-                return fundTx.type === 'EUR'
+                return fundTx.type === 'EUR' || fundTx.type === 'CRC'
                     ? fundTx.amount - request.fundFees.redeeming
-                    : redeemTx.type === 'EUR'
+                    : redeemTx.type === 'EUR' || redeemTx.type === 'CRC'
                         ? redeemTx.amount + request.redeemFees.processing + request.redeemFees.funding
                         : 0; // Should never happen, if parsing works correctly
             default:
@@ -507,7 +523,7 @@ class SignSwap {
         const bitcoinKey = new BitcoinKey(key);
         const polygonKey = new PolygonKey(key);
 
-        /** @type {{nim: string, btc: string[], usdc: string, eur: string, btc_refund?: string}} */
+        /** @type {{nim: string, btc: string[], usdc: string, crc: string, eur: string, btc_refund?: string}} */
         const privateKeys = {};
 
         if (request.fund.type === 'NIM') {
@@ -582,7 +598,7 @@ class SignSwap {
             privateKeys.usdc = wallet.privateKey;
         }
 
-        if (request.fund.type === 'EUR') {
+        if (request.fund.type === 'EUR' || request.fund.type === 'CRC') {
             // No signature required
         }
 
@@ -612,7 +628,7 @@ class SignSwap {
         }
 
         /** @type {string | undefined} */
-        let eurPubKey;
+        let fiatPubKey;
 
         if (request.redeem.type === 'EUR') {
             const privateKey = key.derivePrivateKey(request.redeem.keyPath);
@@ -620,7 +636,16 @@ class SignSwap {
 
             // Public key of EUR signing key is required as the contract recipient
             // when confirming a swap to Fastspot from the Hub.
-            eurPubKey = Nimiq.PublicKey.derive(privateKey).toHex();
+            fiatPubKey = Nimiq.PublicKey.derive(privateKey).toHex();
+        }
+
+        if (request.redeem.type === 'CRC') {
+            const privateKey = key.derivePrivateKey(request.redeem.keyPath);
+            privateKeys.crc = privateKey.toHex();
+
+            // Public key of CRC signing key is required as the contract recipient
+            // when confirming a swap to Fastspot from the Hub.
+            fiatPubKey = Nimiq.PublicKey.derive(privateKey).toHex();
         }
 
         try {
@@ -650,7 +675,7 @@ class SignSwap {
 
             resolve({
                 success: true,
-                eurPubKey,
+                fiatPubKey,
 
                 // The Hub will get access to the encryption key, but not the encrypted cookie. The server can
                 // potentially get access to the encrypted cookie, but not the encryption key (the result including
