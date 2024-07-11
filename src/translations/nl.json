@@ -24,14 +24,14 @@
     "recovery-words-text": "Iedereen met deze woorden heeft toegang tot uw account! Houd ze veilig.",
     "recovery-words-validate": "Valideer back-up",
 
-    "create-heading-select-login-file": "Your key to logging in",
-    "create-no-personal-data": "No need for personal data.",
-    "create-password-and-download": "Create a password and download your Login File to access your wallet.",
+    "create-heading-select-login-file": "Jouw sleutel om in te loggen",
+    "create-no-personal-data": "Geen persoonlijke gegevens noodzakelijk.",
+    "create-password-and-download": "Maak een wachtwoord aan en download jouw Login File om toegang te krijgen tot jouw wallet.",
     "create-button-set-password": "Stel een wachtwoord in",
-    "create-heading-create-password": "Create a password",
+    "create-heading-create-password": "Maak een wachtwoord aan",
     "create-heading-repeat-password": "Herhaal je wachtwoord",
-    "create-loginfile-password-hint": "Choose a strong, memorable password.\nThere is no “Forgot password” option.",
-    "create-log-in-any-device": "Use your password and Login File to log in on any device.",
+    "create-loginfile-password-hint": "Kies een sterk en memorabel wachtwoord.\nDe optie voor ‘Wachtwoord vergeten’ is er niet.",
+    "create-log-in-any-device": "Gebruik je wachtwoord en Login File om in te loggen op elk apparaat.",
     "create-heading-what-is-loginfile": "Wat is een Login File?",
     "create-login-file-explainer-intro": "Een Login File, in combinatie met je wachtwoord, toegang geeft tot je account.",
     "create-login-file-paragraph-1": "Nimiq bewaart je gegevens niet. De Login File vervangt je e-mail als manier om in te loggen.",
@@ -53,7 +53,7 @@
     "import-words-hint": "Druk op Tab om naar het volgende veld te springen",
     "import-words-error": "Dit is geen geldig account. Typfoutje?",
     "import-words-wrong-seed-phrase": "Deze herstelwoorden horen bij een ander account",
-    "import-words-download-loginfile": "Download your Login File",
+    "import-words-download-loginfile": "Download jouw Login File",
 
     "file-import-prompt": "Sleep hierheen of klik om te importeren",
     "file-import-error-could-not-read": "Kan Login File niet lezen.",
@@ -244,6 +244,6 @@
     "sign-swap-exchange-fee": "Wisselkosten",
     "sign-swap-of-exchange-value": "van ruilwaarde.",
     "sign-swap-total-fees": "Totale kosten",
-    "sign-swap-exchange-rate": "Exchange rate",
+    "sign-swap-exchange-rate": "Wisselkoers",
     "sign-swap-your-bank": "Jouw bank"
 }

@@ -24,14 +24,14 @@
     "recovery-words-text": "Jeder, der im Besitz dieser Wörter ist, kann auf dein Konto zugreifen. Verwahre sie sicher!",
     "recovery-words-validate": "Wörter überprüfen",
 
-    "create-heading-select-login-file": "Your key to logging in",
-    "create-no-personal-data": "No need for personal data.",
-    "create-password-and-download": "Create a password and download your Login File to access your wallet.",
+    "create-heading-select-login-file": "Dein Schlüssel zum Einloggen",
+    "create-no-personal-data": "Keine persönliche Daten benötigt.",
+    "create-password-and-download": "Erstelle ein Passwort und lade deine Login‑Datei herunter, um auf die Wallet zuzugreifen.",
     "create-button-set-password": "Setze ein Passwort",
     "create-heading-create-password": "Erstelle ein Passwort",
     "create-heading-repeat-password": "Wiederhole dein Passwort",
-    "create-loginfile-password-hint": "Choose a strong, memorable password.\nThere is no “Forgot password” option.",
-    "create-log-in-any-device": "Use your password and Login File to log in on any device.",
+    "create-loginfile-password-hint": "Wähle ein starkes und einprägsames Passwort.\nEs gibt keine \"Passwort vergessen\" Funktion.",
+    "create-log-in-any-device": "Benutze dein Passwort und deine Login-Datei um dich von überall aus einzuloggen",
     "create-heading-what-is-loginfile": "Was ist eine Login-Datei?",
     "create-login-file-explainer-intro": "Eine Bilddatei, die dir in Kombination mit deinem Passwort den Zugang zu deinem Account gewährt.",
     "create-login-file-paragraph-1": "Nimiq speichert deine Daten nicht. Die Login-Datei ersetzt die E-Mail als Möglichkeit, sich einzuloggen.",
@@ -53,7 +53,7 @@
     "import-words-hint": "Springe mit Tab zwischen Feldern",
     "import-words-error": "Das ist kein gültiges Konto. Schreibfehler?",
     "import-words-wrong-seed-phrase": "Diese Wiederherstellungswörter gehören zu einem anderen Konto",
-    "import-words-download-loginfile": "Download your Login File",
+    "import-words-download-loginfile": "Lade deine Login‑Datei herunter",
 
     "file-import-prompt": "Zum Hochladen hierher ziehen oder klicken",
     "file-import-error-could-not-read": "Login-Datei nicht erkannt.",
@@ -244,6 +244,6 @@
     "sign-swap-exchange-fee": "Tauschgebühr",
     "sign-swap-of-exchange-value": "des Tauschwerts.",
     "sign-swap-total-fees": "Gebühren gesamt",
-    "sign-swap-exchange-rate": "Exchange rate",
+    "sign-swap-exchange-rate": "Wechselkurs",
     "sign-swap-your-bank": "Deine Bank"
 }
