@@ -48,9 +48,9 @@ FiatApi.SupportedCryptoCurrency = {
 /**
  * @readonly
  * @enum {'aed' | 'ars' | 'aud' | 'bdt' | 'bhd' | 'bmd' | 'brl' | 'cad' | 'chf' | 'clp' | 'cny' | 'czk' | 'dkk' | 'eur'
- *     | 'gbp' | 'hkd' | 'huf' | 'idr' | 'ils' | 'inr' | 'jpy' | 'krw' | 'kwd' | 'lkr' | 'mmk' | 'mxn' | 'myr' | 'nok'
- *     | 'ngn' | 'nzd' | 'php' | 'pkr' | 'pln' | 'rub' | 'sar' | 'sek' | 'sgd' | 'thb' | 'try' | 'twd' | 'uah' | 'usd'
- *     | 'vnd' | 'zar'}
+ *     | 'gbp' | 'gel' | 'hkd' | 'huf' | 'idr' | 'ils' | 'inr' | 'jpy' | 'krw' | 'kwd' | 'lkr' | 'mmk' | 'mxn' | 'myr'
+ *     | 'ngn' | 'nok' | 'nzd' | 'php' | 'pkr' | 'pln' | 'rub' | 'sar' | 'sek' | 'sgd' | 'thb' | 'try' | 'twd' | 'uah'
+ *     | 'usd' | 'vnd' | 'zar'}
  * Fiat currencies supported by the coingecko api. Note that coingecko supports more vs_currencies (see
  * https://api.coingecko.com/api/v3/simple/supported_vs_currencies) but also includes crypto currencies and ounces of
  * gold amongst others that are not fiat currencies. See FiatApi in @nimiq/utils for how this list was assembled.
@@ -71,6 +71,7 @@ FiatApi.SupportedFiatCurrency = {
     DKK: /** @type {'dkk'} */ ('dkk'), // Danish Krone
     EUR: /** @type {'eur'} */ ('eur'), // Euro
     GBP: /** @type {'gbp'} */ ('gbp'), // British Pound
+    GEL: /** @type {'gel'} */ ('gel'), // Georgian Lari
     HKD: /** @type {'hkd'} */ ('hkd'), // Hong Kong Dollar
     HUF: /** @type {'huf'} */ ('huf'), // Hungarian Forint
     IDR: /** @type {'idr'} */ ('idr'), // Indonesian Rupiah
@@ -83,8 +84,8 @@ FiatApi.SupportedFiatCurrency = {
     MMK: /** @type {'mmk'} */ ('mmk'), // Burmese Kyat
     MXN: /** @type {'mxn'} */ ('mxn'), // Mexican Peso
     MYR: /** @type {'myr'} */ ('myr'), // Malaysian Ringgit
-    NOK: /** @type {'nok'} */ ('nok'), // Norwegian Krone
     NGN: /** @type {'ngn'} */ ('ngn'), // Nigerian Naira
+    NOK: /** @type {'nok'} */ ('nok'), // Norwegian Krone
     NZD: /** @type {'nzd'} */ ('nzd'), // New Zealand Dollar
     PHP: /** @type {'php'} */ ('php'), // Philippine Peso
     PKR: /** @type {'pkr'} */ ('pkr'), // Pakistani Rupee
@@ -107,7 +108,7 @@ FiatApi.SupportedFiatCurrency = {
  * @readonly
  * Coingecko api url. Note that the origin must be whitelisted in the csp.
  */
-FiatApi.API_URL = 'https://nq-coingecko-proxy.deno.dev/api/v3';
+FiatApi.API_URL = 'https://api.coingecko.com/api/v3';
 
 /**
  * @readonly
