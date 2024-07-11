@@ -112,9 +112,9 @@
     "payment-info-line-free-service": "Nimiq предоставляет данный сервис бесплатно.",
     "payment-info-line-total": "Итого",
     "payment-info-line-network-fee": "комиссия сети",
-    "payment-info-line-paying-more": "Вы платите приблизительно на %RATE_DEVIATION% больше, чем по текущему рыночному курсу (coingecko.com).",
-    "payment-info-line-paying-less": "Вы платите приблизительно на %RATE_DEVIATION% меньше, чем по текущему рыночному курсу (coingecko.com).",
-    "payment-info-line-actual-discount": "Ваша фактическая скидка составляет приблизительно %RATE_DEVIATION% по сравнению с текущим рыночным курсом (coingecko.com).",
+    "payment-info-line-paying-more": "Вы платите приблизительно на {formattedRateDeviation} больше, чем по текущему рыночному курсу ({provider}).",
+    "payment-info-line-paying-less": "Вы платите приблизительно на {formattedRateDeviation} меньше, чем по текущему рыночному курсу ({provider}).",
+    "payment-info-line-actual-discount": "Ваша фактическая скидка составляет приблизительно {formattedRateDeviation} по сравнению с текущим рыночным курсом ({provider}).",
 
     "timer-expiry": "Предложение истекает через",
     "timer-second": "секунда",

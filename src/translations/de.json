@@ -112,9 +112,9 @@
     "payment-info-line-free-service": "Nimiq bietet diesen Service kostenfrei an.",
     "payment-info-line-total": "Gesamt",
     "payment-info-line-network-fee": "Netzwerkgebühr",
-    "payment-info-line-paying-more": "Du zahlst etwa %RATE_DEVIATION% mehr als zum aktuellen Wechselkurs (coingecko.com).",
-    "payment-info-line-paying-less": "Du zahlst etwa %RATE_DEVIATION% weniger als zum aktuellen Wechselkurs (coingecko.com).",
-    "payment-info-line-actual-discount": "Dein tatsächlicher Rabatt beträgt etwa %RATE_DEVIATION% zum aktuellen Wechselkurs (coingecko.com).",
+    "payment-info-line-paying-more": "Du zahlst etwa {formattedRateDeviation} mehr als zum aktuellen Wechselkurs ({provider}).",
+    "payment-info-line-paying-less": "Du zahlst etwa {formattedRateDeviation} weniger als zum aktuellen Wechselkurs ({provider}).",
+    "payment-info-line-actual-discount": "Dein tatsächlicher Rabatt beträgt etwa {formattedRateDeviation} zum aktuellen Wechselkurs ({provider}).",
 
     "timer-expiry": "Angebot endet in",
     "timer-second": "Sekunde",

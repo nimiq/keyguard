@@ -20,6 +20,15 @@
  *      expires?: number
  *  }} PaymentInfo */
 
+/**
+ * @type {Record<FiatApi.SupportedProvider, string>}
+ * As Record such that ts notifies us, if an entry is missing.
+ */
+const FIAT_API_PROVIDER_URLS = {
+    [FiatApi.SupportedProvider.CoinGecko]: 'coingecko.com',
+};
+const FIAT_API_PROVIDER_URL = FIAT_API_PROVIDER_URLS[FiatApi.Provider];
+
 class PaymentInfoLine { // eslint-disable-line no-unused-vars
     /**
      * @param {PaymentInfo} paymentInfo
@@ -249,7 +258,9 @@ class PaymentInfoLine { // eslint-disable-line no-unused-vars
 
             // Converted to absolute percent, rounded to one decimal
             const formattedRateDeviation = `${Math.round(Math.abs(rateDeviation) * 100 * 10) / 10}%`;
-            $rateInfo.textContent = rateInfo.replace('%RATE_DEVIATION%', formattedRateDeviation);
+            $rateInfo.textContent = rateInfo
+                .replace('{formattedRateDeviation}', formattedRateDeviation)
+                .replace('{provider}', FIAT_API_PROVIDER_URL);
 
             $rateInfo.style.display = 'block';
         } else {

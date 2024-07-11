@@ -112,9 +112,9 @@
     "payment-info-line-free-service": "A Nimiq oferece este serviço.",
     "payment-info-line-total": "Total",
     "payment-info-line-network-fee": "taxa de rede",
-    "payment-info-line-paying-more": "Está a pagar aproximadamente %RATE_DEVIATION% a mais do que a taxa atual de mercado (coingecko.com).",
-    "payment-info-line-paying-less": "Está a pagar aproximadamente %RATE_DEVIATION% a menos do que a taxa atual de mercado (coingecko.com).",
-    "payment-info-line-actual-discount": "O seu desconto atual é aproximadamente de %RATE_DEVIATION% comparado com a taxa atual de mercado (coingecko.com).",
+    "payment-info-line-paying-more": "Está a pagar aproximadamente {formattedRateDeviation} a mais do que a taxa atual de mercado ({provider}).",
+    "payment-info-line-paying-less": "Está a pagar aproximadamente {formattedRateDeviation} a menos do que a taxa atual de mercado ({provider}).",
+    "payment-info-line-actual-discount": "O seu desconto atual é aproximadamente de {formattedRateDeviation} comparado com a taxa atual de mercado ({provider}).",
 
     "timer-expiry": "Esta oferta expira em",
     "timer-second": "segundo",

@@ -112,9 +112,9 @@
     "payment-info-line-free-service": "Nimiq provee este servicio libre de costo",
     "payment-info-line-total": "Total",
     "payment-info-line-network-fee": "cuota de red",
-    "payment-info-line-paying-more": "Usted esta pagando aproximadamente. %RATE_DEVIATION% más que la taza del mercado actual  (coingecko.com).",
-    "payment-info-line-paying-less": "Usted esta pagando aproximadamente. %RATE_DEVIATION% menos que la taza del mercado actual (coingecko.com).",
-    "payment-info-line-actual-discount": "Su descuento actual es aproximadamente %RATE_DEVIATION% en comparación de la taza del mercado actual (coingecko.com).",
+    "payment-info-line-paying-more": "Usted esta pagando aproximadamente. {formattedRateDeviation} más que la taza del mercado actual  ({provider}).",
+    "payment-info-line-paying-less": "Usted esta pagando aproximadamente. {formattedRateDeviation} menos que la taza del mercado actual ({provider}).",
+    "payment-info-line-actual-discount": "Su descuento actual es aproximadamente {formattedRateDeviation} en comparación de la taza del mercado actual ({provider}).",
 
     "timer-expiry": "La oferta expira en",
     "timer-second": "segundo",

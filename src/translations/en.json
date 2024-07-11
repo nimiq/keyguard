@@ -112,9 +112,9 @@
     "payment-info-line-free-service": "Nimiq provides this service free of charge.",
     "payment-info-line-total": "Total",
     "payment-info-line-network-fee": "network fee",
-    "payment-info-line-paying-more": "You are paying approx. %RATE_DEVIATION% more than at the current market rate (coingecko.com).",
-    "payment-info-line-paying-less": "You are paying approx. %RATE_DEVIATION% less than at the current market rate (coingecko.com).",
-    "payment-info-line-actual-discount": "Your actual discount is approx. %RATE_DEVIATION% compared to the current market rate (coingecko.com).",
+    "payment-info-line-paying-more": "You are paying approx. {formattedRateDeviation} more than at the current market rate ({provider}).",
+    "payment-info-line-paying-less": "You are paying approx. {formattedRateDeviation} less than at the current market rate ({provider}).",
+    "payment-info-line-actual-discount": "Your actual discount is approx. {formattedRateDeviation} compared to the current market rate ({provider}).",
 
     "timer-expiry": "This offer expires in",
     "timer-second": "second",

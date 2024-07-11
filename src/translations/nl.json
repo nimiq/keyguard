@@ -112,9 +112,9 @@
     "payment-info-line-free-service": "Nimiq biedt deze service gratis aan.",
     "payment-info-line-total": "Totaal",
     "payment-info-line-network-fee": "netwerkkosten",
-    "payment-info-line-paying-more": "U betaalt ongeveer %RATE_DEVIATION% meer dan de huidige marktkoers (coingecko.com).",
-    "payment-info-line-paying-less": "Je betaalt ongeveer %RATE_DEVIATION% minder dan het huidige markttarief (coingecko.com).",
-    "payment-info-line-actual-discount": "Je daadwerkelijke korting is ca. %RATE_DEVIATION% in vergelijking met het huidige markttarief (coingecko.com).",
+    "payment-info-line-paying-more": "U betaalt ongeveer {formattedRateDeviation} meer dan de huidige marktkoers ({provider}).",
+    "payment-info-line-paying-less": "Je betaalt ongeveer {formattedRateDeviation} minder dan het huidige markttarief ({provider}).",
+    "payment-info-line-actual-discount": "Je daadwerkelijke korting is ca. {formattedRateDeviation} in vergelijking met het huidige markttarief ({provider}).",
 
     "timer-expiry": "Deze aanbieding vervalt over",
     "timer-second": "seconde",

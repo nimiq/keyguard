@@ -112,9 +112,9 @@
     "payment-info-line-free-service": "Nimiq免费提供这项服务。",
     "payment-info-line-total": "总额",
     "payment-info-line-network-fee": "网络费",
-    "payment-info-line-paying-more": "你需要比当前市场汇率(coingecko.com)多支付大约%RATE_DEVIATION%。",
-    "payment-info-line-paying-less": "你需要比当前市场汇率(coingecko.com)少支付大约%RATE_DEVIATION%。",
-    "payment-info-line-actual-discount": "与当前市场汇率(coingecko.com)相比，你的实际折扣约为%RATE_DEVIATION%。",
+    "payment-info-line-paying-more": "你需要比当前市场汇率({provider})多支付大约{formattedRateDeviation}。",
+    "payment-info-line-paying-less": "你需要比当前市场汇率({provider})少支付大约{formattedRateDeviation}。",
+    "payment-info-line-actual-discount": "与当前市场汇率({provider})相比，你的实际折扣约为{formattedRateDeviation}。",
 
     "timer-expiry": "此报价在以下时间到期",
     "timer-second": "秒",

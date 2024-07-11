@@ -112,9 +112,9 @@
     "payment-info-line-free-service": "Німік надає цю послугу безплатно.",
     "payment-info-line-total": "сума",
     "payment-info-line-network-fee": "комісія мережі",
-    "payment-info-line-paying-more": "У вас знижка приблизно %RATE_DEVIATION% більше в порівнянні з поточним ринковим курсом (coingecko.com).",
-    "payment-info-line-paying-less": "Ви платите приблизно %RATE_DEVIATION% менше в порівнянні з поточним ринковим курсом (coingecko.com).",
-    "payment-info-line-actual-discount": "У вас знижка приблизно %RATE_DEVIATION% в порівнянні з поточним ринковим курсом (coingecko.com).",
+    "payment-info-line-paying-more": "У вас знижка приблизно {formattedRateDeviation} більше в порівнянні з поточним ринковим курсом ({provider}).",
+    "payment-info-line-paying-less": "Ви платите приблизно {formattedRateDeviation} менше в порівнянні з поточним ринковим курсом ({provider}).",
+    "payment-info-line-actual-discount": "У вас знижка приблизно {formattedRateDeviation} в порівнянні з поточним ринковим курсом ({provider}).",
 
     "timer-expiry": "Ця пропозиція закінчується через",
     "timer-second": "секунду",
