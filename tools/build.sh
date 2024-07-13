@@ -384,7 +384,8 @@ cp -v node_modules/@nimiq/core-web/web.js \
 
 # copy Albatross files
 output "‼️   Copying Albatross files"
-cp -vr node_modules/@nimiq/albatross-wasm/lib \
+cp -vr node_modules/@nimiq/albatross-wasm/launcher \
+       node_modules/@nimiq/albatross-wasm/lib \
        node_modules/@nimiq/albatross-wasm/web \
        dist/assets/albatross
 
