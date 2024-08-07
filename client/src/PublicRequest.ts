@@ -311,7 +311,7 @@ export type SignSwapRequestCommon = SimpleRequest & {
         & {
             amount: number,
             fee: number,
-            recipientLabel?: string,
+            senderLabel?: string,
         }
     ),
     redeem: (

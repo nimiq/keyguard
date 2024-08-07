@@ -228,7 +228,7 @@ type ConstructSwap<T extends KeyguardRequest.SignSwapRequestCommon> = Transform<
             type: 'CRC',
             amount: number,
             fee: number,
-            sinpeLabel?: string,
+            senderLabel?: string,
         },
         redeem: {
             type: 'NIM',
@@ -264,10 +264,10 @@ type ConstructSwap<T extends KeyguardRequest.SignSwapRequestCommon> = Transform<
             keyPath: string,
             // A SettlementInstruction contains a `type`, so cannot be in the
             // root of the object (it conflicts with the 'CRC' type).
-            settlement: Omit<KeyguardRequest.SinpeMovilSettlementInstruction, 'contractId'>,
+            settlement: Omit<KeyguardRequest.MockSettlementInstruction, 'contractId'> | Omit<KeyguardRequest.SinpeMovilSettlementInstruction, 'contractId'>,
             amount: number,
             fee: number,
-            recipientLabel?: string,
+            recipientlabel?: string,
         },
     }>
 

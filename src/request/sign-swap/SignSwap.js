@@ -210,9 +210,8 @@ class SignSwap {
                 $leftIdenticon.innerHTML = TemplateTags.hasVars(0)`<img src="../../assets/icons/bank.svg"></img>`;
                 $leftLabel.textContent = request.fund.bankLabel || I18n.translatePhrase('sign-swap-your-bank');
             } else if (request.fund.type === 'CRC') {
-                $leftIdenticon.innerHTML = 'TODO';
-                // TODO Translation
-                $leftLabel.textContent = request.fund.sinpeLabel || I18n.translatePhrase('sign-swap-your-bank');
+                $leftIdenticon.innerHTML = TemplateTags.hasVars(0)`<img src="../../assets/icons/sinpe-movil.svg"></img>`;
+                $leftLabel.textContent = request.fund.senderLabel || 'Sinpe Móvil';
             }
 
             if (request.redeem.type === 'NIM') {
@@ -237,11 +236,8 @@ class SignSwap {
 
                 $rightLabel.textContent = label;
             } else if (request.redeem.type === 'CRC') {
-                $rightIdenticon.innerHTML = 'TODO';
-
-                // TODO Translation
-                const label = request.redeem.recipientLabel || I18n.translatePhrase('sign-swap-your-bank');
-                $rightLabel.textContent = label;
+                $rightIdenticon.innerHTML = TemplateTags.hasVars(0)`<img src="../../assets/icons/sinpe-movil.svg"></img>`;
+                $rightLabel.textContent = request.redeem.recipientlabel || 'Sinpe Móvil';
             }
         }
 
