@@ -237,7 +237,7 @@ class SignSwap {
                 $rightLabel.textContent = label;
             } else if (request.redeem.type === 'CRC') {
                 $rightIdenticon.innerHTML = TemplateTags.hasVars(0)`<img src="../../assets/icons/sinpe-movil.svg"></img>`;
-                $rightLabel.textContent = request.redeem.recipientlabel || 'Sinpe Móvil';
+                $rightLabel.textContent = request.redeem.recipientLabel || 'Sinpe Móvil';
             }
         }
 

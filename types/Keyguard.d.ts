@@ -267,7 +267,7 @@ type ConstructSwap<T extends KeyguardRequest.SignSwapRequestCommon> = Transform<
             settlement: Omit<KeyguardRequest.MockSettlementInstruction, 'contractId'> | Omit<KeyguardRequest.SinpeMovilSettlementInstruction, 'contractId'>,
             amount: number,
             fee: number,
-            recipientlabel?: string,
+            recipientLabel?: string,
         },
     }>
 

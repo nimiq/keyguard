@@ -180,7 +180,7 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
                 settlement,
                 amount: this.parsePositiveInteger(request.redeem.amount, false, 'redeem.amount'),
                 fee: this.parsePositiveInteger(request.redeem.fee, true, 'redeem.fee'),
-                recipientlabel: this.parseLabel(request.redeem.recipientLabel, true, 'redeem.recipientLabel'),
+                recipientLabel: this.parseLabel(request.redeem.recipientLabel, true, 'redeem.recipientLabel'),
             };
         } else {
             throw new Errors.InvalidRequestError('Invalid redeeming type');
