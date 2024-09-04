@@ -65,9 +65,12 @@ class LoginFile {
     async toObjectUrl() {
         await this._drawPromise;
 
-        return new Promise(resolve => {
+        return new Promise((resolve, reject) => {
             this.$canvas.toBlob(blob => {
-                if (!blob) throw new Error('Cannot generate URL');
+                if (!blob) {
+                    reject(new Error('Cannot generate URL'));
+                    return;
+                }
                 const url = URL.createObjectURL(blob);
                 resolve(url);
             });
