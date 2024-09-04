@@ -7,6 +7,7 @@
 /* global Iban */
 /* global ethers */
 /* global CONFIG */
+/* global Constants */
 /* global PolygonContractABIs */
 
 class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(TopLevelApi)) {
@@ -152,11 +153,12 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
                 amount: this.parsePositiveInteger(request.redeem.amount, false, 'redeem.amount'),
             };
         } else if (request.redeem.type === 'EUR') {
-            /** @type MockSettlementInstruction | SepaSettlementInstruction | null */
-            const settlement = this.parseOasisSepaSettlementInstruction(request.redeem.settlement, 'redeem.settlement')
-                || this.parseOasisMockSettlementInstruction(request.redeem.settlement);
-            if (!settlement) {
-                throw new Errors.InvalidRequestError('Invalid redeeming settlement');
+            const settlement = this.parseOasisSettlementInstruction(request.redeem.settlement, 'redeem.settlement');
+            if (
+                settlement.type !== 'sepa'
+                && (CONFIG.NETWORK === Constants.NETWORK.MAIN || settlement.type !== 'mock')
+            ) {
+                throw new Errors.InvalidRequestError('Invalid redeeming settlement type');
             }
             parsedRequest.redeem = {
                 type: 'EUR',
@@ -167,13 +169,13 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
                 bankLabel: this.parseLabel(request.redeem.bankLabel, true, 'redeem.bankLabel'),
             };
         } else if (request.redeem.type === 'CRC') {
-            /** @type MockSettlementInstruction | SinpeMovilSettlementInstruction | null */
-            const settlement = this.parseOasisSinpeMovilSettlementInstruction(request.redeem.settlement)
-                || this.parseOasisMockSettlementInstruction(request.redeem.settlement);
-            if (!settlement) {
-                throw new Errors.InvalidRequestError('Invalid redeeming settlement');
+            const settlement = this.parseOasisSettlementInstruction(request.redeem.settlement, 'redeem.settlement');
+            if (
+                settlement.type !== 'sinpemovil'
+                && (CONFIG.NETWORK === Constants.NETWORK.MAIN || settlement.type !== 'mock')
+            ) {
+                throw new Errors.InvalidRequestError('Invalid redeeming settlement type');
             }
-
             parsedRequest.redeem = {
                 type: 'CRC',
                 keyPath: this.parsePath(request.redeem.keyPath, 'redeem.keyPath'),
@@ -404,99 +406,70 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
      * @typedef {Omit<KeyguardRequest.SinpeMovilSettlementInstruction, 'contractId'>} SinpeMovilSettlementInstruction
      */
 
-
     /**
-     * Checks that the given instruction is a valid OASIS MockSettlementInstruction
-     * @param {unknown} obj
-     * @returns {MockSettlementInstruction | null}
-     * @throws {Errors.InvalidRequestError}
-     */
-    parseOasisMockSettlementInstruction(obj) {
-        if (typeof obj !== 'object' || obj === null) {
-            throw new Errors.InvalidRequestError('Invalid settlement');
-        }
-
-        if (/** @type {{type: unknown}} */ (obj).type !== 'mock') {
-            return null;
-        }
-
-        /** @type {MockSettlementInstruction} */
-        const settlement = { type: 'mock' };
-        return settlement;
-    }
-
-    /**
-     * Checks that the given instruction is a valid OASIS SepaSettlementInstruction
+     * Checks that the given instruction is a valid OASIS SettlementInstruction
      * @param {unknown} obj
      * @param {string} parameterName
-     * @returns {SepaSettlementInstruction | null}
-     * @throws {Errors.InvalidRequestError}
+     * @returns {MockSettlementInstruction | SepaSettlementInstruction | SinpeMovilSettlementInstruction}
      */
-    parseOasisSepaSettlementInstruction(obj, parameterName) {
+    parseOasisSettlementInstruction(obj, parameterName) {
         if (typeof obj !== 'object' || obj === null) {
             throw new Errors.InvalidRequestError('Invalid settlement');
         }
 
-        if (/** @type {{type: unknown}} */ (obj).type !== 'sepa') {
-            return null;
+        switch (/** @type {{type: unknown}} */ (obj).type) {
+            case 'mock': {
+                /** @type {MockSettlementInstruction} */
+                const settlement = {
+                    type: 'mock',
+                };
+                return settlement;
+            }
+            case 'sepa': {
+                const recipient = /** @type {{recipient: unknown}} */ (obj).recipient;
+                if (typeof recipient !== 'object' || recipient === null) {
+                    throw new Errors.InvalidRequestError('Invalid settlement recipient');
+                }
+
+                /** @type {SepaSettlementInstruction} */
+                const settlement = {
+                    type: 'sepa',
+                    recipient: {
+                        name: /** @type {string} */ (
+                            this.parseLabel(
+                                /** @type {{name: unknown}} */(recipient).name,
+                                false,
+                                `${parameterName}.recipient.name`,
+                            )
+                        ),
+                        iban: this.parseIban(
+                            /** @type {{iban: unknown}} */(recipient).iban,
+                            `${parameterName}.recipient.iban`,
+                        ),
+                        bic: this.parseBic(
+                            /** @type {{bic: unknown}} */(recipient).bic,
+                            `${parameterName}.recipient.bic`,
+                        ),
+                    },
+                };
+                return settlement;
+            }
+            case 'sinpemovil': {
+                /** @type {SinpeMovilSettlementInstruction} */
+                const settlement = {
+                    type: 'sinpemovil',
+                    phoneNumber: /** @type {string} */ (
+                        this.parseLabel(
+                            /** @type {{phoneNumber: unknown}} */(obj).phoneNumber,
+                            false,
+                            `${parameterName}.phoneNumber`,
+                        )
+                    ),
+                };
+                return settlement;
+            }
+            default: throw new Errors.InvalidRequestError('Invalid settlement type');
         }
-
-        const recipient = /** @type {{recipient: unknown}} */ (obj).recipient;
-        if (typeof recipient !== 'object' || recipient === null) {
-            throw new Errors.InvalidRequestError('Invalid settlement recipient');
-        }
-
-        /** @type {SepaSettlementInstruction} */
-        const settlement = {
-            type: 'sepa',
-            recipient: {
-                name: /** @type {string} */ (
-                    this.parseLabel(
-                        /** @type {{name: unknown}} */(recipient).name,
-                        false,
-                        `${parameterName}.recipient.name`,
-                    )
-                ),
-                iban: this.parseIban(
-                    /** @type {{iban: unknown}} */(recipient).iban,
-                    `${parameterName}.recipient.iban`,
-                ),
-                bic: this.parseBic(
-                    /** @type {{bic: unknown}} */(recipient).bic,
-                    `${parameterName}.recipient.bic`,
-                ),
-            },
-        };
-        return settlement;
-    }
-
-    /**
-     * Checks that the given instruction is a valid OASIS SinpeMovilSettlementInstruction
-     * @param {unknown} obj
-     * @returns {SinpeMovilSettlementInstruction | null}
-     * @throws {Errors.InvalidRequestError}
-     */
-    parseOasisSinpeMovilSettlementInstruction(obj) {
-        if (typeof obj !== 'object' || obj === null) {
-            throw new Errors.InvalidRequestError('Invalid settlement');
-        }
-
-        if (/** @type {{type: unknown}} */ (obj).type !== 'sinpemovil') {
-            return null;
-        }
-
-        /** @type {SinpeMovilSettlementInstruction} */
-        const settlement = {
-            type: 'sinpemovil',
-            phoneNumber: /** @type {string} */ (
-                this.parseLabel(
-                    /** @type {{phoneNumber: unknown}} */(obj).phoneNumber,
-                    false,
-                    'phoneNumber',
-                )
-            ),
-        };
-        return settlement;
     }
 
     /**
