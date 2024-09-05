@@ -244,11 +244,10 @@ class ImportWords {
             } else {
                 TopLevelApi.setLoading(false);
             }
-        } catch (err) { // Keystore.instance.put throws Errors.KeyguardError
-            const e = /** @type {Error} */ (err);
-            console.log(e);
+        } catch (error) { // Keystore.instance.put throws Errors.KeyguardError
+            console.log(error);
             TopLevelApi.setLoading(false);
-            this._reject(e);
+            this._reject(error instanceof Error ? error : new Error(String(error)));
         }
     }
 

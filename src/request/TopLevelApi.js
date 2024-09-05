@@ -128,7 +128,7 @@ class TopLevelApi extends RequestParser {
             }
 
             window.addEventListener('unhandledrejection', event => {
-                const error = new Errors.UnclassifiedError(/** @type {PromiseRejectionEvent} */(event).reason);
+                const error = new Errors.UnclassifiedError(/** @type {PromiseRejectionEvent} */ (event).reason);
                 this.reject(error);
                 return false;
             });

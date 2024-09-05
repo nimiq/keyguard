@@ -133,14 +133,14 @@ class SignBtcTransaction {
         let key = null;
         try {
             key = await KeyStore.instance.get(request.keyInfo.id, passwordBuf);
-        } catch (err) {
-            const e = /** @type {Error} */ (err);
-            if (e.message === 'Invalid key') {
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            if (errorMessage === 'Invalid key') {
                 TopLevelApi.setLoading(false);
                 this._passwordBox.onPasswordIncorrect();
                 return;
             }
-            reject(new Errors.CoreError(e));
+            reject(new Errors.CoreError(error instanceof Error ? error : errorMessage));
             return;
         }
         if (!key) {
@@ -313,11 +313,11 @@ class SignBtcTransaction {
                 raw: tx.toHex(),
             };
             resolve(result);
-        } catch (err) {
-            const error = /** @type {Error} */ (err);
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
             TopLevelApi.setLoading(false);
             console.error(error);
-            alert(`ERROR: ${error.message}`);
+            alert(`ERROR: ${errorMessage}`); // eslint-disable-line no-alert
         }
     }
 

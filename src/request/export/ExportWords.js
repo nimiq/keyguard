@@ -112,14 +112,14 @@ class ExportWords extends Nimiq.Observable {
                     /** @type {Uint8Array} */ (passwordBuffer),
                 )
                 : await KeyStore.instance.get(this._request.keyInfo.id, passwordBuffer);
-        } catch (err) {
-            const e = /** @type {Error} */ (err);
-            if (e.message === 'Invalid key') {
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            if (errorMessage === 'Invalid key') {
                 this._wordsPasswordBox.onPasswordIncorrect();
                 TopLevelApi.setLoading(false);
                 return;
             }
-            this._reject(new Errors.CoreError(e));
+            this._reject(new Errors.CoreError(error instanceof Error ? error : errorMessage));
             return;
         }
 

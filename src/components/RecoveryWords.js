@@ -140,10 +140,10 @@ class RecoveryWords extends Nimiq.Observable {
             const type = Nimiq.MnemonicUtils.getMnemonicType(mnemonic); // throws on invalid mnemonic
             this._mnemonic = { words: mnemonic, type };
             this.fire(RecoveryWords.Events.COMPLETE, mnemonic, type);
-        } catch (e) {
-            const err = /** @type {Error} */ (e);
-            if (err.message !== 'Invalid checksum') {
-                console.error(e); // eslint-disable-line no-console
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            if (errorMessage !== 'Invalid checksum') {
+                console.error(error); // eslint-disable-line no-console
             } else {
                 // wrong words
                 if (this._mnemonic) this._mnemonic = null;

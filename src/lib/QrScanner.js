@@ -342,10 +342,9 @@ class QrScanner {
                     this._qrEnginePromise,
                     this.$canvas,
                 );
-            } catch (err) {
+            } catch (error) {
                 if (!this._active) return;
-                const error = /** @type {Error | string} */ (err);
-                const errorMessage = typeof error === 'string' ? error : error.message;
+                const errorMessage = error instanceof Error ? error.message : String(error);
                 if (errorMessage.includes('service unavailable')) {
                     // When the native BarcodeDetector crashed, create a new one
                     this._qrEnginePromise = QrScanner.createQrEngine();

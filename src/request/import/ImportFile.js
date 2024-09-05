@@ -209,9 +209,8 @@ class ImportFile {
             } else {
                 throw new Error(`Unknown key type ${key.type}`);
             }
-        } catch (e) {
-            const err = /** @type {Error | string} */ (e);
-            this._reject(new Errors.KeyguardError(typeof err === 'string' ? err : err.message));
+        } catch (error) {
+            this._reject(new Errors.KeyguardError(error instanceof Error ? error : String(error)));
             return;
         }
 
