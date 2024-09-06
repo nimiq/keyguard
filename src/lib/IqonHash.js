@@ -32,7 +32,7 @@ class IqonHash { /* eslint-disable-line no-unused-vars */
         // leading to an invalid bottom index and feature color. Adding
         // padding creates a bottom feature and accent color where no
         // existed previously, thus it's not a disrupting change.
-        return this._padEnd(hash, 13, fullHash[5]);
+        return hash.padEnd(13, fullHash[5]);
     }
 
     /**
@@ -46,22 +46,5 @@ class IqonHash { /* eslint-disable-line no-unused-vars */
             an = (1 - an) * an * k;
         }
         return an;
-    }
-
-    /**
-     * Polyfill for String.padEnd()
-     *
-     * @param {string} string
-     * @param {number} maxLength
-     * @param {string} fillString
-     * @returns {string}
-     */
-    static _padEnd(string, maxLength, fillString) {
-        if ('padEnd' in String.prototype) return string.padEnd(maxLength, fillString);
-
-        while (string.length < maxLength) {
-            string += fillString;
-        }
-        return string.substring(0, Math.max(string.length, maxLength));
     }
 }
