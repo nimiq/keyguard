@@ -1,6 +1,6 @@
 /* global Constants */
 
-// @ts-ignore
+// @ts-expect-error (ts thinks CONFIG is redeclared in other config files as it doesn't know that only one is active)
 const CONFIG = { // eslint-disable-line no-unused-vars
     ALLOWED_ORIGIN: 'https://hub.nimiq.com',
     NETWORK: Constants.NETWORK.MAIN,

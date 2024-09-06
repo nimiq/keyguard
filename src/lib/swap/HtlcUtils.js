@@ -42,7 +42,7 @@ class HtlcUtils { // eslint-disable-line no-unused-vars
         const error = new Errors.InvalidRequestError('Invalid BTC HTLC script');
 
         if (!script || !(script instanceof Uint8Array) || !script.length) throw error;
-        // @ts-ignore Type 'import(...).Buffer' is not assignable to type 'Buffer'.
+        // @ts-expect-error Type 'import(...).Buffer' is not assignable to type 'Buffer'.
         const chunks = BitcoinJS.script.decompile(BitcoinJS.Buffer.from(script));
         if (!chunks) throw error;
         const asm = BitcoinJS.script.toASM(chunks).split(' ');
@@ -77,7 +77,7 @@ class HtlcUtils { // eslint-disable-line no-unused-vars
         // Check timeout
         // Bitcoin HTLC timeouts are backdated 1 hour, to account for Bitcoin's
         // minimum age for valid transaction locktimes (6 blocks).
-        // @ts-ignore Argument of type 'Buffer' is not assignable to parameter of type 'Buffer'
+        // @ts-expect-error Argument of type 'Buffer' is not assignable to parameter of type 'Buffer'
         const timeoutTimestamp = BitcoinJS.script.number.decode(BitcoinJS.Buffer.from(asm[++i], 'hex')) + (60 * 60);
         if (asm[++i] !== 'OP_CHECKLOCKTIMEVERIFY' || asm[++i] !== 'OP_DROP') throw error;
 
@@ -164,7 +164,7 @@ class HtlcUtils { // eslint-disable-line no-unused-vars
 
         writeVector(witness);
 
-        // @ts-ignore Type 'Buffer' is not assignable to type 'Buffer'.
+        // @ts-expect-error Type 'Buffer' is not assignable to type 'Buffer'.
         return BitcoinJS.Buffer.from(buffer);
     }
 }

@@ -9,7 +9,7 @@ if (!/^(?:localhost|bs-local.com)$/.test(window.location.hostname) && !ipRegEx.t
     throw new Error('Using development config is only allowed locally');
 }
 
-// @ts-ignore
+// @ts-expect-error (ts thinks CONFIG is redeclared in other config files as it doesn't know that only one is active)
 const CONFIG = { // eslint-disable-line no-unused-vars
     ALLOWED_ORIGIN: '*',
     NETWORK: Constants.NETWORK.TEST,

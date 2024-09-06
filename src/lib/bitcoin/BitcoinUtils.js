@@ -129,7 +129,7 @@ class BitcoinUtils { // eslint-disable-line no-unused-vars
 
         if (bip === BitcoinConstants.BIP.BIP49) {
             return BitcoinJS.address.toBase58Check(
-                // @ts-ignore Argument of type 'Uint8Array | Buffer' is not assignable to parameter of type 'Buffer'.
+                // @ts-expect-error Argument of type 'Uint8Array | Buffer' is not assignable to type 'Buffer'.
                 bytes,
                 BitcoinConstants.BIP49_ADDRESS_VERSIONS[CONFIG.BTC_NETWORK][1], // 0 => BIP44, 1 => BIP49
             );
@@ -137,7 +137,7 @@ class BitcoinUtils { // eslint-disable-line no-unused-vars
 
         if (bip === BitcoinConstants.BIP.BIP84) {
             return BitcoinJS.address.toBech32(
-                // @ts-ignore Argument of type 'Uint8Array | Buffer' is not assignable to parameter of type 'Buffer'.
+                // @ts-expect-error Argument of type 'Uint8Array | Buffer' is not assignable to type 'Buffer'.
                 bytes,
                 BitcoinConstants.BIP84_ADDRESS_VERSION,
                 BitcoinConstants.BIP84_ADDRESS_PREFIX[CONFIG.BTC_NETWORK],

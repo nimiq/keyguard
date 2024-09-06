@@ -62,7 +62,6 @@ class CurrencyInfo {
         let supportsDisplayNames = 'DisplayNames' in Intl;
         // also normalizes the locales
         [this.locale] = supportsDisplayNames
-            // @ts-ignore TODO use proper types once https://github.com/microsoft/TypeScript/pull/44022 is available
             ? Intl.DisplayNames.supportedLocalesOf(nameLocalesToTry)
             : Intl.NumberFormat.supportedLocalesOf(nameLocalesToTry);
         if (supportsDisplayNames && !this.locale) {
@@ -90,8 +89,7 @@ class CurrencyInfo {
         if (supportsDisplayNames) {
             try {
                 // Use DisplayNames if available as it provides better names.
-                // @ts-ignore TODO use proper types once https://github.com/microsoft/TypeScript/pull/44022 is merged
-                this.name = new Intl.DisplayNames(this.locale, { type: 'currency' }).of(currencyCode);
+                this.name = new Intl.DisplayNames(this.locale, { type: 'currency' }).of(currencyCode) || '';
             } catch (e) {
                 // Ignore and continue with if block below.
             }

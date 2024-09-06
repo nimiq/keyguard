@@ -137,7 +137,7 @@ class RecoveryWordsInputField extends Nimiq.Observable {
      * @param {ClipboardEvent} e
      */
     _onPaste(e) {
-        // @ts-ignore (Property 'clipboardData' does not exist on type 'Window'.)
+        // @ts-expect-error (Property 'clipboardData' does not exist on type 'Window'.)
         let paste = (e.clipboardData || window.clipboardData).getData('text');
         paste = paste.replace(/\s+/g, ' ');
         if (paste && paste.split(' ').length > 1) {

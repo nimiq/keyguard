@@ -27,7 +27,7 @@ class BrowserDetection { // eslint-disable-line no-unused-vars
      * @returns {boolean}
      */
     static isIOS() {
-        // @ts-ignore (MSStream is not on window)
+        // @ts-expect-error (MSStream is not on window)
         return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     }
 

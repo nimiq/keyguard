@@ -13,7 +13,6 @@ class ClipboardUtils { // eslint-disable-line no-unused-vars
         // Prevent keyboard from showing on mobile
         element.setAttribute('readonly', '');
 
-        // @ts-ignore: css property contain not known to current ts version
         element.style.contain = 'strict';
         element.style.position = 'absolute';
         element.style.left = '-9999px';

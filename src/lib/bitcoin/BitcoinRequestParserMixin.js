@@ -72,7 +72,7 @@ function BitcoinRequestParserMixin(clazz) {
                         : undefined,
                     keyPath: this.parseBitcoinPath(input.keyPath, `input[${index}].keypath`),
                     // Address added only for display
-                    // @ts-ignore Argument of type 'Uint8Array' is not assignable to parameter of type 'Buffer'.
+                    // @ts-expect-error Argument of type 'Uint8Array' is not assignable to parameter of type 'Buffer'.
                     address: BitcoinJS.address.fromOutputScript(script, BitcoinUtils.Network),
                 };
 

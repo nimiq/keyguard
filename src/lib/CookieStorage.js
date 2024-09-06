@@ -313,7 +313,7 @@ CookieStorage.ENCRYPTION_ALGORITHM = 'AES-GCM';
 CookieStorage.ENCRYPTION_KEY_SIZE = 256 / 8;
 // 12 bytes; as recommended in 5.2.1.1 of https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-38d.pdf
 CookieStorage.ENCRYPTION_INIT_VECTOR_SIZE = 96 / 8;
-// @ts-ignore _calculateEncodedMetadataSize is private
+// @ts-expect-error _calculateEncodedMetadataSize is private
 CookieStorage.MAX_ENCODED_METADATA_SIZE = CookieStorage._calculateEncodedMetadataSize({
     isEncrypted: true,
     chunkCount: 1,
