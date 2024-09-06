@@ -4,7 +4,7 @@
 class Copyable {
     /**
      * @param {string} text
-     * @param {HTMLDivElement} [$el]
+     * @param {?HTMLDivElement} [$el]
      */
     constructor(text, $el) {
         this._text = text;
@@ -37,7 +37,7 @@ class Copyable {
     }
 
     /**
-     * @param {HTMLDivElement} [$el]
+     * @param {?HTMLDivElement} [$el]
      * @returns {HTMLDivElement}
      */
     static _createElement($el) {

@@ -15,7 +15,7 @@ class Timer extends Nimiq.Observable {
     /**
      * @param {number} startTime
      * @param {number} endTime
-     * @param {HTMLElement} [$el]
+     * @param {?HTMLElement} [$el]
      */
     constructor(startTime, endTime, $el) {
         super();
@@ -52,7 +52,7 @@ class Timer extends Nimiq.Observable {
 
     /**
      * @private
-     * @param {HTMLElement} [$el]
+     * @param {?HTMLElement} [$el]
      * @returns {HTMLElement}
      */
     static _createElement($el) {

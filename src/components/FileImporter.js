@@ -38,7 +38,7 @@ class FileImporter extends Nimiq.Observable {
     }
 
     /**
-     * @param {HTMLLabelElement} [$el]
+     * @param {?HTMLLabelElement} [$el]
      * @param {boolean} [displayFile = true]
      */
     constructor($el, displayFile = true) {
@@ -63,7 +63,7 @@ class FileImporter extends Nimiq.Observable {
     }
 
     /**
-     * @param {HTMLLabelElement} [$el]
+     * @param {?HTMLLabelElement} [$el]
      * @returns {HTMLLabelElement}
      */
     static _createElement($el) {

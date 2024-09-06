@@ -19,7 +19,7 @@
 class PasswordBox extends Nimiq.Observable {
     // eslint-disable-next-line valid-jsdoc
     /**
-     * @param {HTMLFormElement} [$el]
+     * @param {?HTMLFormElement} [$el]
      * @param {Partial<PasswordBoxOptions>} [options]
      */
     constructor($el, options = {}) {
@@ -41,7 +41,7 @@ class PasswordBox extends Nimiq.Observable {
 
         this.$el.classList.toggle('hide-input', this.options.hideInput);
 
-        this._passwordInput = new PasswordInput(this.$el.querySelector('[password-input]'));
+        this._passwordInput = new PasswordInput(/** @type {HTMLElement} */(this.$el.querySelector('[password-input]')));
         this._passwordInput.on(PasswordInput.Events.VALID, isValid => this._onInputChangeValidity(isValid));
 
         this.setMinLength(this.options.minLength);
@@ -60,7 +60,7 @@ class PasswordBox extends Nimiq.Observable {
     }
 
     /**
-     * @param {HTMLFormElement | undefined} $el
+     * @param {?HTMLFormElement | undefined} $el
      * @param {PasswordBoxOptions} options
      * @returns {HTMLFormElement}
      */

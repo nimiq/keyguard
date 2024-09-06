@@ -3,7 +3,7 @@
 
 class LoginFileAnimation {
     /**
-     * @param {HTMLDivElement} [$el]
+     * @param {?HTMLDivElement} [$el]
      */
     constructor($el) {
         this._color = 0;
@@ -58,7 +58,7 @@ class LoginFileAnimation {
     }
 
     /**
-     * @param {HTMLDivElement} [$el]
+     * @param {?HTMLDivElement} [$el]
      * @returns {HTMLDivElement}
      */
     static _createElement($el) {

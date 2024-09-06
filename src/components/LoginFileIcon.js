@@ -3,7 +3,7 @@
 class LoginFileIcon { // eslint-disable-line no-unused-vars
     /**
      *
-     * @param {HTMLDivElement?} [$el]
+     * @param {?HTMLDivElement} [$el]
      */
     constructor($el) {
         this.colorClass = '';

@@ -14,8 +14,9 @@ class AddressInfo { // eslint-disable-line no-unused-vars
 
     /**
      * Inserts this AddressInfo into $el overwriting the original content of $el.
-     * @param {HTMLElement} $el
+     * @param {?HTMLElement} [$el]
      * @param {boolean} [isDetailedView = false]
+     * @returns {HTMLElement}
      */
     renderTo($el, isDetailedView = false) {
         $el = $el || document.createElement('div');
@@ -94,5 +95,7 @@ class AddressInfo { // eslint-disable-line no-unused-vars
             const copyableAddress = new Copyable(this._addressInfo.userFriendlyAddress, $address);
             $el.appendChild(copyableAddress.getElement());
         }
+
+        return $el;
     }
 }

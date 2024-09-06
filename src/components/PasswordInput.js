@@ -5,10 +5,10 @@
 
 class PasswordInput extends Nimiq.Observable {
     /**
-     * @param {?HTMLElement} $el
+     * @param {?HTMLElement} [$el]
      * @param {object} [options]
-     * @param {number=} [options.maxLength = Infinity]
-     * @param {string=} [options.placeholder = '••••••••']
+     * @param {number} [options.maxLength = Infinity]
+     * @param {string} [options.placeholder = '••••••••']
      * @param {'current-password' | 'new-password' | undefined} [options.autocomplete = 'current-password']
      */
     constructor($el, options = {}) {

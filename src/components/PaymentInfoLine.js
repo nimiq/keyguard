@@ -32,7 +32,7 @@ const FIAT_API_PROVIDER_URL = FIAT_API_PROVIDER_URLS[FiatApi.Provider];
 class PaymentInfoLine { // eslint-disable-line no-unused-vars
     /**
      * @param {PaymentInfo} paymentInfo
-     * @param {HTMLElement} [$el]
+     * @param {?HTMLElement} [$el]
      */
     constructor(paymentInfo, $el) {
         this.paymentInfo = paymentInfo;
@@ -65,7 +65,7 @@ class PaymentInfoLine { // eslint-disable-line no-unused-vars
 
     /**
      * @private
-     * @param {HTMLElement} [$el]
+     * @param {?HTMLElement} [$el]
      * @returns {HTMLElement}
      */
     static _createElement($el) {

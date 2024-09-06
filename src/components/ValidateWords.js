@@ -4,7 +4,7 @@
 
 class ValidateWords extends Nimiq.Observable {
     /**
-     * @param {HTMLElement} [$el]
+     * @param {?HTMLElement} [$el]
      */
     constructor($el) {
         super();
@@ -29,7 +29,7 @@ class ValidateWords extends Nimiq.Observable {
     }
 
     /**
-     * @param {HTMLElement} [$el]
+     * @param {?HTMLElement} [$el]
      * @returns {HTMLElement}
      */
     static _createElement($el) {

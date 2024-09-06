@@ -3,7 +3,7 @@
 
 class ProgressIndicator extends Nimiq.Observable { // eslint-disable-line no-unused-vars
     /**
-     * @param {?HTMLElement} $el
+     * @param {?Element | undefined} $el
      * @param {number} numberOfSteps
      * @param {number} [currentStep]
      */
@@ -14,9 +14,9 @@ class ProgressIndicator extends Nimiq.Observable { // eslint-disable-line no-unu
     }
 
     /**
-     * @param {?HTMLElement} $el
+     * @param {?Element | undefined} $el
      * @param {number} numberOfSteps
-     * @returns {HTMLElement}
+     * @returns {Element}
      */
     static _createElement($el, numberOfSteps) {
         $el = $el || document.createElement('div');
@@ -33,12 +33,12 @@ class ProgressIndicator extends Nimiq.Observable { // eslint-disable-line no-unu
         return $el;
     }
 
-    /** @returns {HTMLElement} @deprecated */
+    /** @returns {Element} @deprecated */
     getElement() {
         return this.$el;
     }
 
-    /** @type {HTMLElement} */
+    /** @type {Element} */
     get element() {
         return this.$el;
     }

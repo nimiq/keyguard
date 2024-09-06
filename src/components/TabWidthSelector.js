@@ -4,7 +4,7 @@
 
 class TabWidthSelector extends Nimiq.Observable {
     /**
-     * @param {?HTMLElement} $el
+     * @param {?HTMLElement} [$el]
      */
     constructor($el) {
         super();

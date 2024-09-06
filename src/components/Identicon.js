@@ -3,7 +3,7 @@
 class Identicon { // eslint-disable-line no-unused-vars
     /**
      * @param {string} [address]
-     * @param {HTMLDivElement} [$el]
+     * @param {?HTMLDivElement} [$el]
      */
     constructor(address, $el) {
         this._address = address;
@@ -31,7 +31,7 @@ class Identicon { // eslint-disable-line no-unused-vars
     }
 
     /**
-     * @param {HTMLDivElement} [$el]
+     * @param {?HTMLDivElement} [$el]
      * @returns {HTMLDivElement}
      */
     static _createElement($el) {

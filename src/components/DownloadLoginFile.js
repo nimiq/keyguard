@@ -9,7 +9,7 @@
 
 class DownloadLoginFile extends Nimiq.Observable {
     /**
-     * @param {HTMLDivElement} [$el]
+     * @param {?HTMLDivElement} [$el]
      */
     constructor($el) {
         super();

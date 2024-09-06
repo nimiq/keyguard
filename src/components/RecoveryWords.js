@@ -7,7 +7,7 @@
 class RecoveryWords extends Nimiq.Observable {
     /**
      *
-     * @param {HTMLElement} [$el]
+     * @param {?HTMLElement} [$el]
      * @param {boolean} [providesInput]
      */
     constructor($el, providesInput) {
@@ -40,7 +40,7 @@ class RecoveryWords extends Nimiq.Observable {
     }
 
     /**
-     * @param {HTMLElement} [$el]
+     * @param {?HTMLElement} [$el]
      * @param {boolean} input
      * @returns {HTMLElement}
      * */
@@ -160,7 +160,7 @@ class RecoveryWords extends Nimiq.Observable {
 
     /**
      * @param {number} index
-     * @param {?string} paste
+     * @param {string} [paste]
      */
     _setFocusToNextInput(index, paste) {
         index = Math.max(index, 0);
