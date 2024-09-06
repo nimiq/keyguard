@@ -1,0 +1,8 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "lib": ["WebWorker"]
+  },
+  "include": ["*.js"],
+  "exclude": [] // Overwrite exclusion of service worker
+}

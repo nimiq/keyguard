@@ -1,6 +1,3 @@
-// eslint-disable-next-line spaced-comment
-/// <reference lib='webworker' />
-
 /**
  * Simplified definition of the browser's native CookieStore. Not to be confused with our CookieStorage.
  * @typedef {{get: (name: string) => Promise<{ value: string } | undefined>}} CookieStore
