@@ -15,7 +15,7 @@ class BalanceDistributionBar { // eslint-disable-line no-unused-vars
      *  leftFiatRate: number,
      *  rightFiatRate: number,
      * }} settings
-     * @param {HTMLDivElement} [$el]
+     * @param {?HTMLDivElement} [$el]
      */
     constructor(settings, $el) {
         this.$el = BalanceDistributionBar._createElement($el);
@@ -74,7 +74,7 @@ class BalanceDistributionBar { // eslint-disable-line no-unused-vars
     }
 
     /**
-     * @param {HTMLDivElement} [$el]
+     * @param {?HTMLDivElement} [$el]
      * @returns {HTMLDivElement}
      */
     static _createElement($el) {

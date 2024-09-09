@@ -34,48 +34,34 @@ class SignSwap {
      */
     constructor(request, resolve, reject) {
         this._request = request;
-        /** @type {HTMLElement} */
-        this.$el = (document.getElementById(SignSwap.Pages.CONFIRM_SWAP));
+        this.$el = /** @type {HTMLElement} */ (document.getElementById(SignSwap.Pages.CONFIRM_SWAP));
 
         const fundTx = request.fund;
         const redeemTx = request.redeem;
 
         // Remove unused layout HTML before getting DOM nodes
         if (request.layout === SignSwapApi.Layouts.STANDARD) {
-            /** @type {HTMLDivElement} */
-            const sliderLayout = (this.$el.querySelector('.layout-slider'));
+            const sliderLayout = /** @type {HTMLDivElement} */ (this.$el.querySelector('.layout-slider'));
             this.$el.removeChild(sliderLayout);
         }
         if (request.layout === SignSwapApi.Layouts.SLIDER) {
-            /** @type {HTMLDivElement} */
-            const standardLayout = (this.$el.querySelector('.layout-standard'));
+            const standardLayout = /** @type {HTMLDivElement} */ (this.$el.querySelector('.layout-standard'));
             this.$el.removeChild(standardLayout);
         }
 
         this.$el.classList.add(`layout-${request.layout}`);
 
-        /** @type {HTMLDivElement} */
-        const $leftAccount = (this.$el.querySelector('.left-account'));
-        /** @type {HTMLDivElement} */
-        const $rightAccount = (this.$el.querySelector('.right-account'));
-        /** @type {HTMLDivElement} */
-        const $leftIdenticon = ($leftAccount.querySelector('.identicon'));
-        /** @type {HTMLDivElement} */
-        const $rightIdenticon = ($rightAccount.querySelector('.identicon'));
-        /** @type {HTMLSpanElement} */
-        const $leftLabel = ($leftAccount.querySelector('.label'));
-        /** @type {HTMLSpanElement} */
-        const $rightLabel = ($rightAccount.querySelector('.label'));
-        /** @type {HTMLSpanElement} */
-        const $leftNewBalance = ($leftAccount.querySelector('.new-balance'));
-        /** @type {HTMLDivElement} */
-        const $rightNewBalance = ($rightAccount.querySelector('.new-balance'));
-        /** @type {HTMLDivElement} */
-        const $swapValues = (this.$el.querySelector('.swap-values'));
-        /** @type {HTMLSpanElement} */
-        const $swapLeftValue = (this.$el.querySelector('#swap-left-value'));
-        /** @type {HTMLSpanElement} */
-        const $swapRightValue = (this.$el.querySelector('#swap-right-value'));
+        const $leftAccount = /** @type {HTMLDivElement} */ (this.$el.querySelector('.left-account'));
+        const $rightAccount = /** @type {HTMLDivElement} */ (this.$el.querySelector('.right-account'));
+        const $leftIdenticon = /** @type {HTMLDivElement} */ ($leftAccount.querySelector('.identicon'));
+        const $rightIdenticon = /** @type {HTMLDivElement} */ ($rightAccount.querySelector('.identicon'));
+        const $leftLabel = /** @type {HTMLSpanElement} */ ($leftAccount.querySelector('.label'));
+        const $rightLabel = /** @type {HTMLSpanElement} */ ($rightAccount.querySelector('.label'));
+        const $leftNewBalance = /** @type {HTMLSpanElement} */ ($leftAccount.querySelector('.new-balance'));
+        const $rightNewBalance = /** @type {HTMLDivElement} */ ($rightAccount.querySelector('.new-balance'));
+        const $swapValues = /** @type {HTMLDivElement} */ (this.$el.querySelector('.swap-values'));
+        const $swapLeftValue = /** @type {HTMLSpanElement} */ (this.$el.querySelector('#swap-left-value'));
+        const $swapRightValue = /** @type {HTMLSpanElement} */ (this.$el.querySelector('#swap-right-value'));
 
         // The total amount the user loses
         let swapFromValue = 0;
@@ -167,8 +153,7 @@ class SignSwap {
             exchangeOtherAsset === 'EUR' ? CryptoUtils.assetDecimals(exchangeOtherAsset) : 0,
         )} ${exchangeOtherAsset}`;
 
-        /** @type {HTMLDivElement} */
-        const $topRow = (this.$el.querySelector('.nq-notice'));
+        const $topRow = /** @type {HTMLDivElement} */ (this.$el.querySelector('.nq-notice'));
         $topRow.appendChild(
             new SwapFeesTooltip(
                 request,
@@ -183,10 +168,8 @@ class SignSwap {
             $rightAccount.classList.add(CryptoUtils.assetToCurrency(request.redeem.type));
 
             // Add ticker symbols
-            /** @type {HTMLSpanElement} */
-            const $fromSymbol = (this.$el.querySelector('.swap-values .from-symbol'));
-            /** @type {HTMLSpanElement} */
-            const $toSymbol = (this.$el.querySelector('.swap-values .to-symbol'));
+            const $fromSymbol = /** @type {HTMLSpanElement} */ (this.$el.querySelector('.swap-values .from-symbol'));
+            const $toSymbol = /** @type {HTMLSpanElement} */ (this.$el.querySelector('.swap-values .to-symbol'));
 
             $fromSymbol.classList.add(`${CryptoUtils.assetToCurrency(request.fund.type)}-symbol`);
             $toSymbol.classList.add(`${CryptoUtils.assetToCurrency(request.redeem.type)}-symbol`);
@@ -233,16 +216,16 @@ class SignSwap {
         if (request.layout === SignSwapApi.Layouts.SLIDER) {
             $swapValues.classList.add(request.direction);
 
-            /** @type {HTMLDivElement} */
-            const $balanceDistributionBar = (this.$el.querySelector('.balance-distribution-bar'));
-            /** @type {HTMLSpanElement} */
-            const $swapLeftValueFiat = (this.$el.querySelector('#swap-left-value-fiat'));
-            /** @type {HTMLSpanElement} */
-            const $swapRightValueFiat = (this.$el.querySelector('#swap-right-value-fiat'));
-            /** @type {HTMLSpanElement} */
-            const $swapLeftSymbol = (this.$el.querySelector('#swap-left-symbol'));
-            /** @type {HTMLSpanElement} */
-            const $swapRightSymbol = (this.$el.querySelector('#swap-right-symbol'));
+            const $balanceDistributionBar = /** @type {HTMLDivElement} */ (
+                this.$el.querySelector('.balance-distribution-bar'));
+            const $swapLeftValueFiat = /** @type {HTMLSpanElement} */ (
+                this.$el.querySelector('#swap-left-value-fiat'));
+            const $swapRightValueFiat = /** @type {HTMLSpanElement} */ (
+                this.$el.querySelector('#swap-right-value-fiat'));
+            const $swapLeftSymbol = /** @type {HTMLSpanElement} */ (
+                this.$el.querySelector('#swap-left-symbol'));
+            const $swapRightSymbol = /** @type {HTMLSpanElement} */ (
+                this.$el.querySelector('#swap-right-symbol'));
 
             $swapLeftSymbol.classList.add(`${CryptoUtils.assetToCurrency(leftAsset)}-symbol`);
             $swapRightSymbol.classList.add(`${CryptoUtils.assetToCurrency(rightAsset)}-symbol`);
@@ -409,8 +392,7 @@ class SignSwap {
         }
 
         // Set up password box.
-        /** @type {HTMLFormElement} */
-        const $passwordBox = (document.querySelector('#password-box'));
+        const $passwordBox = /** @type {HTMLFormElement} */ (document.querySelector('#password-box'));
         this._passwordBox = new PasswordBox($passwordBox, {
             hideInput: !request.keyInfo.encrypted,
             buttonI18nTag: 'passwordbox-confirm-swap',
@@ -490,13 +472,14 @@ class SignSwap {
         let key = null;
         try {
             key = await KeyStore.instance.get(request.keyInfo.id, passwordBuf);
-        } catch (e) {
-            if (e.message === 'Invalid key') {
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            if (errorMessage === 'Invalid key') {
                 TopLevelApi.setLoading(false);
                 this._passwordBox.onPasswordIncorrect();
                 return;
             }
-            reject(new Errors.CoreError(e));
+            reject(new Errors.CoreError(error instanceof Error ? error : errorMessage));
             return;
         }
         if (!key) {
@@ -659,7 +642,7 @@ class SignSwap {
                 tmpCookieEncryptionKey,
             });
         } catch (error) {
-            reject(error);
+            reject(error instanceof Error ? error : new Error(String(error)));
         }
     }
 

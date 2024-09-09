@@ -180,7 +180,7 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
             }
 
             const htlcAddress = BitcoinJS.payments.p2wsh({
-                // @ts-ignore Type 'Uint8Array' is not assignable to type 'Buffer'.
+                // @ts-expect-error Type 'Uint8Array' is not assignable to type 'Buffer'.
                 witness: [BitcoinJS.Buffer.from(request.fund.htlcScript)],
                 network: BitcoinUtils.Network,
             }).address;
@@ -205,7 +205,7 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
             }
 
             const outputScript = BitcoinJS.payments.p2wsh({
-                // @ts-ignore Type 'Uint8Array' is not assignable to type 'Buffer'.
+                // @ts-expect-error Type 'Uint8Array' is not assignable to type 'Buffer'.
                 witness: [BitcoinJS.Buffer.from(request.redeem.htlcScript)],
                 network: BitcoinUtils.Network,
             }).output;
@@ -423,7 +423,7 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
             const psbt = new BitcoinJS.Psbt({ network: BitcoinUtils.Network });
 
             // Add inputs
-            // @ts-ignore Argument of type 'Uint8Array' is not assignable to parameter of type 'Buffer'.
+            // @ts-expect-error Argument of type 'Uint8Array' is not assignable to parameter of type 'Buffer'.
             psbt.addInputs(inputs);
             // Add outputs
             psbt.addOutputs(outputs);
@@ -434,7 +434,7 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
 
             // Sign
             const keyPairs = privateKeys.btc.map(privateKey => BitcoinJS.ECPair.fromPrivateKey(
-                // @ts-ignore Argument of type 'import("...").Buffer' is not assignable to parameter of type 'Buffer'.
+                // @ts-expect-error Argument of type 'import("...").Buffer' is not assignable to type 'Buffer'.
                 BitcoinJS.Buffer.from(privateKey, 'hex'),
             ));
             for (const keyPair of keyPairs) {
@@ -468,7 +468,7 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
 
                 const htlcAddress = parsedRequest.fund.htlcAddress;
                 const htlcScript = /** @type {Buffer} */ (BitcoinJS.payments.p2wsh({
-                    // @ts-ignore Type 'import("...").Buffer' is not assignable to type 'Buffer'.
+                    // @ts-expect-error Type 'import("...").Buffer' is not assignable to type 'Buffer'.
                     witness: [BitcoinJS.Buffer.from(parsedRequest.fund.htlcScript, 'hex')],
                     network: BitcoinUtils.Network,
                 }).output);
@@ -484,7 +484,7 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
                         script: htlcScript,
                         value: storedRequest.fund.recipientOutput.value,
                     },
-                    // @ts-ignore Type of type 'import("...").Buffer' is not assignable to type 'Buffer'.
+                    // @ts-expect-error Type of type 'import("...").Buffer' is not assignable to type 'Buffer'.
                     witnessScript: BitcoinJS.Buffer.from(parsedRequest.fund.htlcScript),
                 });
 
@@ -504,7 +504,7 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
 
                 // Sign
                 const refundKeyPair = BitcoinJS.ECPair.fromPrivateKey(
-                    // @ts-ignore Argument of type 'import("...").Buffer' is not assignable to parameter of
+                    // @ts-expect-error Argument of type 'import("...").Buffer' is not assignable to parameter of
                     //            type 'Buffer'.
                     BitcoinJS.Buffer.from(privateKeys.btc_refund, 'hex'),
                 );
@@ -643,14 +643,14 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
             const psbt = new BitcoinJS.Psbt({ network: BitcoinUtils.Network });
 
             // Add inputs
-            // @ts-ignore Argument of type 'Uint8Array' is not assignable to parameter of type 'Buffer'.
+            // @ts-expect-error Argument of type 'Uint8Array' is not assignable to parameter of type 'Buffer'.
             psbt.addInputs(inputs);
             // Add outputs
             psbt.addOutput(output);
 
             // Sign
             const keyPair = BitcoinJS.ECPair.fromPrivateKey(
-                // @ts-ignore Argument of type 'import("...").Buffer' is not assignable to parameter of type 'Buffer'.
+                // @ts-expect-error Argument of type 'import("...").Buffer' is not assignable to type 'Buffer'.
                 BitcoinJS.Buffer.from(privateKeys.btc[0], 'hex'),
             );
             psbt.signInput(0, keyPair);

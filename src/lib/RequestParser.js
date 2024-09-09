@@ -185,7 +185,7 @@ class RequestParser { // eslint-disable-line no-unused-vars
                 data,
             );
         } catch (error) {
-            throw new Errors.InvalidRequestError(error);
+            throw new Errors.InvalidRequestError(error instanceof Error ? error : String(error));
         }
     }
 
@@ -205,7 +205,8 @@ class RequestParser { // eslint-disable-line no-unused-vars
             }
             return new Nimiq.Address(address);
         } catch (error) {
-            throw new Errors.InvalidRequestError(`${name} must be a valid Nimiq address (${error.message})`);
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            throw new Errors.InvalidRequestError(`${name} must be a valid Nimiq address (${errorMessage})`);
         }
     }
 
@@ -241,7 +242,7 @@ class RequestParser { // eslint-disable-line no-unused-vars
             const parsedUrl = this._parseUrl(url, 'shopOrigin');
             return parsedUrl.origin;
         } catch (error) {
-            throw new Errors.InvalidRequestError(error);
+            throw new Errors.InvalidRequestError(error instanceof Error ? error : String(error));
         }
     }
 
@@ -257,7 +258,7 @@ class RequestParser { // eslint-disable-line no-unused-vars
         try {
             return this._parseUrl(url, 'shopLogoUrl');
         } catch (error) {
-            throw new Errors.InvalidRequestError(error);
+            throw new Errors.InvalidRequestError(error instanceof Error ? error : String(error));
         }
     }
 

@@ -1,12 +1,17 @@
 // Adapted and simplified from @nimiq/utils.
 // See there for extended documentation on how the data was generated.
 // This file should also be updated whenever CurrencyInfo in @nimiq/utils is updated.
+
+/**
+ * @typedef {Intl.NumberFormatOptions & { currencyDisplay: string }} NumberFormatOptions
+ */
+
 class CurrencyInfo {
     /**
      * @private
      * @param {number} value
      * @param {string | string[]} [locales]
-     * @param {Intl.NumberFormatOptions} [options]
+     * @param {NumberFormatOptions} [options]
      * @returns {string | null}
      */
     static _failsafeNumberToLocaleString(value, locales, options) {
@@ -57,7 +62,6 @@ class CurrencyInfo {
         let supportsDisplayNames = 'DisplayNames' in Intl;
         // also normalizes the locales
         [this.locale] = supportsDisplayNames
-            // @ts-ignore TODO use proper types once https://github.com/microsoft/TypeScript/pull/44022 is available
             ? Intl.DisplayNames.supportedLocalesOf(nameLocalesToTry)
             : Intl.NumberFormat.supportedLocalesOf(nameLocalesToTry);
         if (supportsDisplayNames && !this.locale) {
@@ -69,7 +73,7 @@ class CurrencyInfo {
         }
 
         const cacheKey = `${this.code} ${this.locale}`;
-        const cachedCurrencyInfo = CurrencyInfo.CACHED_AUTO_GENERATED_CURRENCY_INFOS[cacheKey];
+        const cachedCurrencyInfo = CurrencyInfo._CACHED_AUTO_GENERATED_CURRENCY_INFOS[cacheKey];
         if (cachedCurrencyInfo) {
             return cachedCurrencyInfo;
         }
@@ -85,8 +89,7 @@ class CurrencyInfo {
         if (supportsDisplayNames) {
             try {
                 // Use DisplayNames if available as it provides better names.
-                // @ts-ignore TODO use proper types once https://github.com/microsoft/TypeScript/pull/44022 is merged
-                this.name = new Intl.DisplayNames(this.locale, { type: 'currency' }).of(currencyCode);
+                this.name = new Intl.DisplayNames(this.locale, { type: 'currency' }).of(currencyCode) || '';
             } catch (e) {
                 // Ignore and continue with if block below.
             }
@@ -154,14 +157,12 @@ class CurrencyInfo {
             }
         }
 
-        CurrencyInfo.CACHED_AUTO_GENERATED_CURRENCY_INFOS[cacheKey] = this;
+        CurrencyInfo._CACHED_AUTO_GENERATED_CURRENCY_INFOS[cacheKey] = this;
     }
 }
 
 /**
- * @private
- * @readonly
- * @type {{[code: string]: string | [string, string]}}
+ * @type {Readonly<{[code: string]: string | [string, string]}>}
  */
 CurrencyInfo.EXTRA_SYMBOLS = {
     AED: ['DH', 'د.إ'],
@@ -221,9 +222,7 @@ CurrencyInfo.EXTRA_SYMBOLS = {
  * Some currencies have been devalued so much by inflation that their sub-units have been removed from circulation
  * or are effectively not being used anymore. This is not for all currencies reflected yet in toLocaleString, such
  * that we mark some currencies manually as decimal-less.
- * @private
- * @readonly
- * @type {Set<string>}
+ * @type {Readonly<Set<string>>}
  */
 CurrencyInfo.CUSTOM_DECIMAL_LESS_CURRENCIES = new Set([
     'AMD', // sub-unit rarely used
@@ -272,24 +271,18 @@ CurrencyInfo.CUSTOM_DECIMAL_LESS_CURRENCIES = new Set([
 
 /**
  * Cached auto-generated CurrencyInfos such that they do not need to be recalculated.
- * @private
- * @readonly
  * @type {{[currencyAndLocale: string]: CurrencyInfo}}
  */
-CurrencyInfo.CACHED_AUTO_GENERATED_CURRENCY_INFOS = {};
+CurrencyInfo._CACHED_AUTO_GENERATED_CURRENCY_INFOS = {};
 
 /**
  * Regex for detecting valid currency codes.
- * @private
- * @readonly
  * @type {RegExp}
  */
 CurrencyInfo.CURRENCY_CODE_REGEX = /[A-Z]{3}/i;
 
 /**
  * Regex for detecting the number with optional decimals in a formatted string for useGrouping: false
- * @private
- * @readonly
  * @type {RegExp}
  */
 CurrencyInfo.NUMBER_REGEX = /\d+(?:\D(\d+))?/;
@@ -298,8 +291,6 @@ CurrencyInfo.NUMBER_REGEX = /\d+(?:\D(\d+))?/;
  * Regex for detecting right-to-left text.
  * Simplified and adapted from https://stackoverflow.com/a/14824756.
  * Note that this rtl detection is incomplete but good enough for our needs.
- * @private
- * @readonly
  * @type {RegExp}
  */
 CurrencyInfo.RIGHT_TO_LEFT_DETECTION_REGEX = /[\u0591-\u07FF\uFB1D-\uFDFD\uFE70-\uFEFC]/;

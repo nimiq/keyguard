@@ -5,7 +5,7 @@
 
 class IdenticonSelector extends Nimiq.Observable {
     /**
-     * @param {HTMLElement} [$el]
+     * @param {?HTMLElement | undefined} $el
      * @param {string} keyPath
      */
     constructor($el, keyPath) {
@@ -15,7 +15,7 @@ class IdenticonSelector extends Nimiq.Observable {
 
         this.$el = IdenticonSelector._createElement($el);
 
-        /** @type {{ [address: string]: Nimiq.Entropy}} */
+        /** @type {{ [address: string]: Nimiq.Entropy }} */
         this._volatileEntropies = {};
 
         this.$identicons = /** @type {HTMLElement} */ (this.$el.querySelector('.identicons'));
@@ -25,7 +25,7 @@ class IdenticonSelector extends Nimiq.Observable {
     }
 
     /**
-     * @param {HTMLElement} [$el]
+     * @param {?HTMLElement} [$el]
      *
      * @returns {HTMLElement}
      */

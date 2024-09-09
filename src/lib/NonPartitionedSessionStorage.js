@@ -218,13 +218,12 @@ NonPartitionedSessionStorage.TOP_LEVEL_SESSION_STORAGE_ENTRY = '_topLevelEntry';
 NonPartitionedSessionStorage.IFRAME_SESSION_STORAGE_ENTRY = '_iframeEntry';
 /**
  * Prefix for the FLAG_SESSION_STORAGE_PARTITIONED cookie.
- * @readonly
  * @enum { '1' | '0' }
  */
-NonPartitionedSessionStorage.PREFIX_FLAG_SESSION_STORAGE_PARTITIONED = {
+NonPartitionedSessionStorage.PREFIX_FLAG_SESSION_STORAGE_PARTITIONED = Object.freeze({
     TRUE: /** @type {'1'} */ ('1'),
     FALSE: /** @type {'0'} */ ('0'),
-};
+});
 /** @type {boolean | undefined} */
 NonPartitionedSessionStorage._hasSessionStorageAccess = undefined;
 

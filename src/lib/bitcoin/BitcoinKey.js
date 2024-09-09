@@ -92,7 +92,7 @@ class BitcoinKey { // eslint-disable-line no-unused-vars
         const mnemonic = Nimiq.MnemonicUtils.entropyToMnemonic(this.secret);
         const seed = Nimiq.MnemonicUtils.mnemonicToSeed(mnemonic);
 
-        // @ts-ignore Argument of type 'import("...").Buffer' is not assignable to parameter of type 'Buffer'.
+        // @ts-expect-error Argument of type 'import("...").Buffer' is not assignable to parameter of type 'Buffer'.
         const master = BitcoinJS.bip32.fromSeed(BitcoinJS.Buffer.from(seed), network);
         return master.derivePath(path);
     }

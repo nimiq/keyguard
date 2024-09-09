@@ -230,7 +230,7 @@ class KeyStore {
         await new Promise(async resolve => {
             setTimeout(resolve, 2000); // Wait 2s and then just continue
             await AccountStore.instance.drop();
-            resolve();
+            resolve(undefined);
         });
 
         if (BrowserDetection.isIOS() || BrowserDetection.isSafari()) {
@@ -309,7 +309,7 @@ class KeyStore {
                 request.onerror = () => reject(request.error);
             }),
             new Promise((resolve, reject) => {
-                transaction.oncomplete = () => resolve();
+                transaction.oncomplete = () => resolve(undefined);
                 transaction.onabort = () => reject(transaction.error);
                 transaction.onerror = () => reject(transaction.error);
             }),

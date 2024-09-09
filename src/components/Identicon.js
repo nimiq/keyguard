@@ -3,15 +3,14 @@
 class Identicon { // eslint-disable-line no-unused-vars
     /**
      * @param {string} [address]
-     * @param {HTMLDivElement} [$el]
+     * @param {?HTMLDivElement} [$el]
      */
     constructor(address, $el) {
         this._address = address;
 
         this.$el = Identicon._createElement($el);
 
-        /** @type {HTMLImageElement} */
-        this.$imgEl = (this.$el.firstChild);
+        this.$imgEl = /** @type {HTMLImageElement} */ (this.$el.firstChild);
 
         this._updateIqon();
     }
@@ -32,7 +31,7 @@ class Identicon { // eslint-disable-line no-unused-vars
     }
 
     /**
-     * @param {HTMLDivElement} [$el]
+     * @param {?HTMLDivElement} [$el]
      * @returns {HTMLDivElement}
      */
     static _createElement($el) {

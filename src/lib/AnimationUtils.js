@@ -14,7 +14,7 @@ class AnimationUtils { // eslint-disable-line no-unused-vars
                 if (beforeEndCallback instanceof Function) beforeEndCallback();
                 this.stopAnimate(className, el);
                 el.removeEventListener('animationend', listener);
-                resolve();
+                resolve(undefined);
             };
             el.addEventListener('animationend', listener);
             el.classList.add(className);

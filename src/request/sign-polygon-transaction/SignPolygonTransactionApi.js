@@ -86,11 +86,12 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
                 PolygonContractABIs.NATIVE_USDC_TRANSFER_CONTRACT_ABI,
             );
 
-            /** @type {PolygonTransferDescription | PolygonTransferWithPermitDescription} */
-            description = (nativeUsdcTransferContract.interface.parseTransaction({
-                data: forwardRequest.data,
-                value: forwardRequest.value,
-            }));
+            description = /** @type {PolygonTransferDescription | PolygonTransferWithPermitDescription} */ (
+                nativeUsdcTransferContract.interface.parseTransaction({
+                    data: forwardRequest.data,
+                    value: forwardRequest.value,
+                })
+            );
 
             if (description.args.token !== CONFIG.NATIVE_USDC_CONTRACT_ADDRESS) {
                 throw new Errors.InvalidRequestError('Invalid native USDC token contract in request data');
@@ -105,16 +106,13 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
                 PolygonContractABIs.NATIVE_USDC_HTLC_CONTRACT_ABI,
             );
 
-            /**
-             * @type {PolygonRedeemDescription
-             *        | PolygonRedeemWithSecretInDataDescription
-             *        | PolygonRefundDescription
-             * }
-            */
-            description = (usdcHtlcContract.interface.parseTransaction({
-                data: forwardRequest.data,
-                value: forwardRequest.value,
-            }));
+            // eslint-disable-next-line max-len
+            description = /** @type {PolygonRedeemDescription | PolygonRedeemWithSecretInDataDescription | PolygonRefundDescription} */ (
+                usdcHtlcContract.interface.parseTransaction({
+                    data: forwardRequest.data,
+                    value: forwardRequest.value,
+                })
+            );
 
             if (!['redeem', 'redeemWithSecretInData', 'refund'].includes(description.name)) {
                 throw new Errors.InvalidRequestError('Requested Polygon contract method is invalid');
@@ -125,11 +123,12 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
                 PolygonContractABIs.BRIDGED_USDC_HTLC_CONTRACT_ABI,
             );
 
-            /** @type {PolygonRefundDescription} */
-            description = (usdcHtlcContract.interface.parseTransaction({
-                data: forwardRequest.data,
-                value: forwardRequest.value,
-            }));
+            description = /** @type {PolygonRefundDescription} */ (
+                usdcHtlcContract.interface.parseTransaction({
+                    data: forwardRequest.data,
+                    value: forwardRequest.value,
+                })
+            );
 
             if (!['refund'].includes(description.name)) {
                 throw new Errors.InvalidRequestError('Requested Polygon contract method is invalid');
@@ -140,11 +139,12 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
                 PolygonContractABIs.SWAP_CONTRACT_ABI,
             );
 
-            /** @type {PolygonSwapDescription | PolygonSwapWithApprovalDescription} */
-            description = (usdcTransferContract.interface.parseTransaction({
-                data: forwardRequest.data,
-                value: forwardRequest.value,
-            }));
+            description = /** @type {PolygonSwapDescription | PolygonSwapWithApprovalDescription} */(
+                usdcTransferContract.interface.parseTransaction({
+                    data: forwardRequest.data,
+                    value: forwardRequest.value,
+                })
+            );
 
             if (description.args.token !== CONFIG.BRIDGED_USDC_CONTRACT_ADDRESS) {
                 throw new Errors.InvalidRequestError('Invalid USDC token contract in request data');

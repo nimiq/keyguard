@@ -14,8 +14,7 @@ class QrEncoder {
      * @param {QrEncoderConfig} options
      */
     static _qrCodeGenerator(options) {
-        /** @type {QrEncoderSettings} */
-        const settings = ({});
+        const settings = /** @type {QrEncoderSettings} */ ({});
         Object.assign(settings, this.defaults, options);
         return this._createCanvas(settings);
     }
@@ -248,8 +247,7 @@ class QrEncoder {
             return null;
         }
 
-        /** @type {CanvasRenderingContext2D} */
-        const context = (canvas.getContext('2d'));
+        const context = /** @type {CanvasRenderingContext2D} */ (canvas.getContext('2d'));
 
         this._drawBackground(qr, context, settings);
         this._drawModules(qr, context, settings);

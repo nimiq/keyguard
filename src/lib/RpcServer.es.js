@@ -316,7 +316,7 @@ class RpcServer { // eslint-disable-line no-unused-vars
             return true;
         } catch (error) {
             if (_state) {
-                RpcServer._error(_state, error);
+                RpcServer._error(_state, error instanceof Error ? error : new Error(String(error)));
             }
             return false;
         }

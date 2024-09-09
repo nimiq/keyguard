@@ -9,7 +9,7 @@
 
 class DownloadLoginFile extends Nimiq.Observable {
     /**
-     * @param {HTMLDivElement} [$el]
+     * @param {?HTMLDivElement} [$el]
      */
     constructor($el) {
         super();
@@ -19,20 +19,11 @@ class DownloadLoginFile extends Nimiq.Observable {
         /** @type {LoginFile | null} */
         this._file = null;
 
-        /** @type {HTMLImageElement} */
-        this.$loginfile = (this.$el.querySelector('.loginfile'));
-
-        /** @type {HTMLAnchorElement} */
-        this.$loginfileLink = (this.$el.querySelector('.loginfile-link'));
-
-        /** @type {HTMLAnchorElement} */
-        this.$downloadButton = (this.$el.querySelector('.download-button'));
-
-        /** @type {HTMLButtonElement} */
-        this.$continueButton = (this.$el.querySelector('.continue'));
-
-        /** @type {SVGElement} */
-        this.$longTouchIndicator = (this.$el.querySelector('.long-touch-indicator'));
+        this.$loginfile = /** @type {HTMLImageElement} */ (this.$el.querySelector('.loginfile'));
+        this.$loginfileLink = /** @type {HTMLAnchorElement} */ (this.$el.querySelector('.loginfile-link'));
+        this.$downloadButton = /** @type {HTMLAnchorElement} */ (this.$el.querySelector('.download-button'));
+        this.$continueButton = /** @type {HTMLButtonElement} */ (this.$el.querySelector('.continue'));
+        this.$longTouchIndicator = /** @type {SVGElement} */ (this.$el.querySelector('.long-touch-indicator'));
 
         this.$loginfile.addEventListener('mousedown', e => this._onMouseDown(e));
         this.$loginfile.addEventListener('touchstart', () => this._onTouchStart());
@@ -159,8 +150,7 @@ class DownloadLoginFile extends Nimiq.Observable {
      * @param {MouseEvent} event
      */
     _onMouseDown(event) {
-        /** @type {HTMLElement} */
-        const target = (event.target);
+        const target = /** @type {HTMLElement} */ (event.target);
         // Clicks on the continue or download buttons are already covered by a 'click' handler.
         if (target.matches('.continue') || target.matches('.download-button')) return;
 

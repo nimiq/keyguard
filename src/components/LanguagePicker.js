@@ -2,7 +2,7 @@
 
 class LanguagePicker { // eslint-disable-line no-unused-vars
     /**
-     * @param {HTMLSelectElement} [$el]
+     * @param {?HTMLSelectElement} [$el]
      */
     constructor($el) {
         this.$el = $el || LanguagePicker._createElement($el);
@@ -10,7 +10,7 @@ class LanguagePicker { // eslint-disable-line no-unused-vars
 
     /**
      * Produces a select element that the user can chose an available language from.
-     * @param {HTMLSelectElement} [$el]
+     * @param {?HTMLSelectElement} [$el]
      * @returns {HTMLSelectElement}
      */
     static _createElement($el) {

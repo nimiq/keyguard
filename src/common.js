@@ -88,8 +88,7 @@ async function runKeyguard(RequestApiClass, opts) { // eslint-disable-line no-un
 
     // Back arrow functionality
     document.body.addEventListener('click', event => {
-        // @ts-ignore (Property 'matches' does not exist on type 'EventTarget'.)
-        if (!event.target || !event.target.matches('a.page-header-back-button')) return;
+        if (!(event.target instanceof HTMLElement) || !event.target.matches('a.page-header-back-button')) return;
         window.history.back();
     });
 
@@ -125,7 +124,7 @@ async function runKeyguard(RequestApiClass, opts) { // eslint-disable-line no-un
     window.rpcServer = new RpcServer(CONFIG.ALLOWED_ORIGIN);
 
     options.whitelist.forEach(/** @param {string} method */ method => {
-        // @ts-ignore (Element implicitly has an 'any' type because type 'TopLevelApi' has no index signature.)
+        // @ts-expect-error (Element implicitly has an 'any' type because type 'TopLevelApi' has no index signature.)
         window.rpcServer.onRequest(method, api[method].bind(api));
     });
 

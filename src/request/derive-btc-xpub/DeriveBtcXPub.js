@@ -21,8 +21,7 @@ class DeriveBtcXPub {
         this._resolve = resolve;
         this._reject = reject;
 
-        /** @type {HTMLFormElement} */
-        const $passwordBox = (document.querySelector('.password-box'));
+        const $passwordBox = /** @type {HTMLFormElement} */ (document.querySelector('.password-box'));
 
         // Create components
 
@@ -52,13 +51,14 @@ class DeriveBtcXPub {
         let key = null;
         try {
             key = await KeyStore.instance.get(this._request.keyInfo.id, passwordBuffer);
-        } catch (e) {
-            if (e.message === 'Invalid key') {
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            if (errorMessage === 'Invalid key') {
                 TopLevelApi.setLoading(false);
                 this._passwordBox.onPasswordIncorrect();
                 return;
             }
-            this._reject(new Errors.CoreError(e));
+            this._reject(new Errors.CoreError(error instanceof Error ? error : errorMessage));
             return;
         }
 

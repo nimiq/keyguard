@@ -3,14 +3,13 @@
 
 class LoginFileAnimation {
     /**
-     * @param {HTMLDivElement} [$el]
+     * @param {?HTMLDivElement} [$el]
      */
     constructor($el) {
         this._color = 0;
         this.$el = LoginFileAnimation._createElement($el);
 
-        /** @type {HTMLDivElement} */
-        this.$background = (this.$el.querySelector('.background'));
+        this.$background = /** @type {HTMLDivElement} */ (this.$el.querySelector('.background'));
     }
 
     /**
@@ -59,7 +58,7 @@ class LoginFileAnimation {
     }
 
     /**
-     * @param {HTMLDivElement} [$el]
+     * @param {?HTMLDivElement} [$el]
      * @returns {HTMLDivElement}
      */
     static _createElement($el) {

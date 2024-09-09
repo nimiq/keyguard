@@ -20,8 +20,7 @@ class LoginFile {
         this._label = label && label.trim()
             ? label.trim()
             : I18n.translatePhrase('login-file-default-account-label').replace('{color}', this._config.name);
-        /** @type {CanvasRenderingContext2D} */
-        this._ctx = ($canvas.getContext('2d'));
+        this._ctx = /** @type {CanvasRenderingContext2D} */ ($canvas.getContext('2d'));
         this._drawPromise = this._draw(encodedSecret);
     }
 
@@ -66,8 +65,12 @@ class LoginFile {
     async toObjectUrl() {
         await this._drawPromise;
 
-        return new Promise(resolve => {
+        return new Promise((resolve, reject) => {
             this.$canvas.toBlob(blob => {
+                if (!blob) {
+                    reject(new Error('Cannot generate URL'));
+                    return;
+                }
                 const url = URL.createObjectURL(blob);
                 resolve(url);
             });
@@ -141,7 +144,7 @@ class LoginFile {
         this._ctx.fillText(this._getLabelForDisplay(), x, y, LoginFile.WIDTH - LoginFile.BORDER_WIDTH * 4);
         // reset filter, composite operation and font
         this._ctx.filter = '';
-        this._ctx.globalCompositeOperation = '';
+        this._ctx.globalCompositeOperation = 'source-over'; // This is the default according to MDN
         this._setFont();
     }
 

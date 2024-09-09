@@ -6,8 +6,7 @@ class FlippableHandler {
      */
     static init(classname = 'flipped') {
         if (!FlippableHandler.flippableHandlerInitialised) {
-            /** @type {HTMLElement} */
-            const $rotationContainer = (document.getElementById('rotation-container'));
+            const $rotationContainer = /** @type {HTMLElement} */ (document.getElementById('rotation-container'));
             if (window.location.hash) {
                 const $page = document.querySelector(window.location.hash);
                 if ($page) {
@@ -68,8 +67,7 @@ class FlippableHandler {
      *  Must be a child of `#rotation-container`
      */
     static _updateContainerHeight($enforcedElement) {
-        /** @type {HTMLElement} */
-        const $rotationContainer = (document.getElementById('rotation-container'));
+        const $rotationContainer = /** @type {HTMLElement} */ (document.getElementById('rotation-container'));
         if ($enforcedElement && $rotationContainer.contains($enforcedElement)) {
             $rotationContainer.style.height = `${$enforcedElement.clientHeight}px`;
         } else {

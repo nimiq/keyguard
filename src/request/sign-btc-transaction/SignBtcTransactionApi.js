@@ -74,8 +74,7 @@ class SignBtcTransactionApi extends BitcoinRequestParserMixin(TopLevelApi) {
         if (!layout) {
             return SignBtcTransactionApi.Layouts.STANDARD;
         }
-        // @ts-ignore (Property 'values' does not exist on type 'ObjectConstructor'.)
-        if (Object.values(SignBtcTransactionApi.Layouts).indexOf(layout) === -1) {
+        if (!Object.values(SignBtcTransactionApi.Layouts).includes(/** @type {any} */ (layout))) {
             throw new Errors.InvalidRequestError('Invalid selected layout');
         }
         return /** @type KeyguardRequest.SignBtcTransactionRequestLayout */ (layout);
@@ -97,9 +96,8 @@ class SignBtcTransactionApi extends BitcoinRequestParserMixin(TopLevelApi) {
 
 /**
  * @enum {KeyguardRequest.SignBtcTransactionRequestLayout}
- * @readonly
  */
-SignBtcTransactionApi.Layouts = {
+SignBtcTransactionApi.Layouts = Object.freeze({
     STANDARD: /** @type {'standard'} */ ('standard'),
     CHECKOUT: /** @type {'checkout'} */ ('checkout'),
-};
+});

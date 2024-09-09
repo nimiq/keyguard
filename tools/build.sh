@@ -358,7 +358,7 @@ cp -rv src/assets/* dist/assets/
 cp -v src/lib/QrScannerWorker.js dist/lib/
 cp -v node_modules/@nimiq/style/nimiq-style.icons.svg dist/assets/
 # copy service worker (which has to be in root to work)
-cp -v src/ServiceWorker.js dist
+cp -v src/service-worker/ServiceWorker.js dist
 
 # copy Nimiq files
 output "‼️   Copying Nimiq files"

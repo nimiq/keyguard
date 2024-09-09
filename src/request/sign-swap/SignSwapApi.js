@@ -285,8 +285,7 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
         if (!layout) {
             return SignSwapApi.Layouts.STANDARD;
         }
-        // @ts-ignore (Property 'values' does not exist on type 'ObjectConstructor'.)
-        if (Object.values(SignSwapApi.Layouts).indexOf(layout) === -1) {
+        if (!Object.values(SignSwapApi.Layouts).includes(/** @type {any} */ (layout))) {
             throw new Errors.InvalidRequestError('Invalid selected layout');
         }
         return /** @type KeyguardRequest.SignSwapRequestLayout */ (layout);
@@ -457,9 +456,8 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
 
 /**
  * @enum {KeyguardRequest.SignSwapRequestLayout}
- * @readonly
  */
-SignSwapApi.Layouts = {
+SignSwapApi.Layouts = Object.freeze({
     STANDARD: /** @type {'standard'} */ ('standard'),
     SLIDER: /** @type {'slider'} */ ('slider'),
-};
+});

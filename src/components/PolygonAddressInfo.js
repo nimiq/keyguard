@@ -17,7 +17,7 @@ class PolygonAddressInfo { // eslint-disable-line no-unused-vars
 
     /**
      * Inserts this AddressInfo into $el overwriting the original content of $el.
-     * @param {HTMLElement} [$el]
+     * @param {?HTMLElement} [$el]
      * @returns {HTMLElement}
      */
     renderTo($el) {

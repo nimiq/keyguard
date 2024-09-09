@@ -42,18 +42,18 @@ class Export {
                 .classList.add('display-none');
         }
 
-        /** @type {HTMLDivElement} */
-        this._fileSuccessPage = (document.getElementById(Export.Pages.LOGIN_FILE_SUCCESS));
+        this._fileSuccessPage = /** @type {HTMLDivElement} */ (
+            document.getElementById(Export.Pages.LOGIN_FILE_SUCCESS));
 
-        /** @type {HTMLLinkElement} */
-        const skipWordsButton = (this._fileSuccessPage.querySelector('.skip'));
+        const skipWordsButton = /** @type {HTMLLinkElement} */ (
+            this._fileSuccessPage.querySelector('.skip'));
         skipWordsButton.addEventListener('click', e => {
             e.preventDefault();
             this._resolve(this.exported);
         });
 
-        /** @type {HTMLButtonElement} */
-        const goToWordsButton = (this._fileSuccessPage.querySelector('.page-footer > button'));
+        const goToWordsButton = /** @type {HTMLButtonElement} */ (
+            this._fileSuccessPage.querySelector('.page-footer > button'));
         goToWordsButton.addEventListener('click', () => {
             this._exportWordsHandler.run();
         });

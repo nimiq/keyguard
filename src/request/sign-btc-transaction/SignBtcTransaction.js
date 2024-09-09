@@ -29,8 +29,7 @@ class SignBtcTransaction {
      */
     constructor(request, resolve, reject) {
         this._request = request;
-        /** @type {HTMLElement} */
-        this.$el = (document.getElementById(SignBtcTransaction.Pages.CONFIRM_TRANSACTION));
+        this.$el = /** @type {HTMLElement} */ (document.getElementById(SignBtcTransaction.Pages.CONFIRM_TRANSACTION));
         this.$el.classList.add(request.layout);
 
         const recipientOutput = request.recipientOutput;
@@ -40,12 +39,9 @@ class SignBtcTransaction {
             - recipientOutput.value
             - (changeOutput ? changeOutput.value : 0);
 
-        /** @type {HTMLLinkElement} */
-        const $recipientAvatar = (this.$el.querySelector('#avatar'));
-        /** @type {HTMLLinkElement} */
-        const $recipientLabel = (this.$el.querySelector('#label'));
-        /** @type {HTMLLinkElement} */
-        const $recipientAddress = (this.$el.querySelector('#address'));
+        const $recipientAvatar = /** @type {HTMLLinkElement} */ (this.$el.querySelector('#avatar'));
+        const $recipientLabel = /** @type {HTMLLinkElement} */ (this.$el.querySelector('#label'));
+        const $recipientAddress = /** @type {HTMLLinkElement} */ (this.$el.querySelector('#address'));
 
         const recipientAddress = recipientOutput.address;
         /* eslint-disable no-nested-ternary */
@@ -75,8 +71,7 @@ class SignBtcTransaction {
 
         $recipientAddress.textContent = recipientAddress;
 
-        /** @type {HTMLElement} */
-        const $paymentInfoLine = (this.$el.querySelector('.payment-info-line'));
+        const $paymentInfoLine = /** @type {HTMLElement} */ (this.$el.querySelector('.payment-info-line'));
         if (request.layout === SignBtcTransactionApi.Layouts.CHECKOUT) {
             // eslint-disable-next-line no-new
             new PaymentInfoLine(Object.assign({}, request, {
@@ -92,23 +87,19 @@ class SignBtcTransaction {
             $paymentInfoLine.remove();
         }
 
-        /** @type {HTMLDivElement} */
-        const $value = (this.$el.querySelector('#value'));
-        /** @type {HTMLDivElement} */
-        const $fee = (this.$el.querySelector('#fee'));
+        const $value = /** @type {HTMLDivElement} */ (this.$el.querySelector('#value'));
+        const $fee = /** @type {HTMLDivElement} */ (this.$el.querySelector('#fee'));
 
         // Set value and fee.
         $value.textContent = NumberFormatting.formatNumber(BitcoinUtils.satoshisToCoins(recipientOutput.value), 8);
         if ($fee && fee > 0) {
             $fee.textContent = NumberFormatting.formatNumber(BitcoinUtils.satoshisToCoins(fee), 8);
-            /** @type {HTMLDivElement} */
-            const $feeSection = (this.$el.querySelector('.fee-section'));
+            const $feeSection = /** @type {HTMLDivElement} */ (this.$el.querySelector('.fee-section'));
             $feeSection.classList.remove('display-none');
         }
 
         // Set up password box.
-        /** @type {HTMLFormElement} */
-        const $passwordBox = (document.querySelector('#password-box'));
+        const $passwordBox = /** @type {HTMLFormElement} */ (document.querySelector('#password-box'));
         this._passwordBox = new PasswordBox($passwordBox, {
             hideInput: !request.keyInfo.encrypted,
             buttonI18nTag: 'passwordbox-confirm-tx',
@@ -142,13 +133,14 @@ class SignBtcTransaction {
         let key = null;
         try {
             key = await KeyStore.instance.get(request.keyInfo.id, passwordBuf);
-        } catch (e) {
-            if (e.message === 'Invalid key') {
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            if (errorMessage === 'Invalid key') {
                 TopLevelApi.setLoading(false);
                 this._passwordBox.onPasswordIncorrect();
                 return;
             }
-            reject(new Errors.CoreError(e));
+            reject(new Errors.CoreError(error instanceof Error ? error : errorMessage));
             return;
         }
         if (!key) {
@@ -225,7 +217,7 @@ class SignBtcTransaction {
             const psbt = new BitcoinJS.Psbt({ network: BitcoinUtils.Network });
 
             // Add inputs
-            // @ts-ignore Argument of type 'Uint8Array' is not assignable to parameter of type 'Buffer'.
+            // @ts-expect-error Argument of type 'Uint8Array' is not assignable to parameter of type 'Buffer'.
             psbt.addInputs(request.inputs);
             // Add outputs
             psbt.addOutputs(outputs);
@@ -322,9 +314,10 @@ class SignBtcTransaction {
             };
             resolve(result);
         } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
             TopLevelApi.setLoading(false);
             console.error(error);
-            alert(`ERROR: ${error.message}`);
+            alert(`ERROR: ${errorMessage}`); // eslint-disable-line no-alert
         }
     }
 

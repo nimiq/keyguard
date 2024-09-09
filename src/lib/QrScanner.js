@@ -61,12 +61,10 @@ class QrScanner {
 
         // Allow inline playback on iPhone instead of requiring full screen playback,
         // see https://webkit.org/blog/6784/new-video-policies-for-ios/
-        // @ts-ignore Property 'playsInline' does not exist on type 'HTMLVideoElement'
         this.$video.playsInline = true;
         // Allow play() on iPhone without requiring a user gesture. Should not really be needed as camera stream
         // includes no audio, but just to be safe.
         this.$video.muted = true;
-        // @ts-ignore Property 'disablePictureInPicture' does not exist on type 'HTMLVideoElement'
         this.$video.disablePictureInPicture = true;
         this.$video.addEventListener('play', this._onPlay);
         this.$video.addEventListener('loadedmetadata', this._onLoadedMetaData);
@@ -344,12 +342,12 @@ class QrScanner {
                 );
             } catch (error) {
                 if (!this._active) return;
-                const errorMessage = error.message || error;
+                const errorMessage = error instanceof Error ? error.message : String(error);
                 if (errorMessage.includes('service unavailable')) {
                     // When the native BarcodeDetector crashed, create a new one
                     this._qrEnginePromise = QrScanner.createQrEngine();
                 }
-                this._onDecodeError(error);
+                this._onDecodeError(errorMessage);
             }
 
             if (result) {

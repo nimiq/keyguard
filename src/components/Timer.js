@@ -15,24 +15,20 @@ class Timer extends Nimiq.Observable {
     /**
      * @param {number} startTime
      * @param {number} endTime
-     * @param {HTMLElement} [$el]
+     * @param {?HTMLElement} [$el]
      */
     constructor(startTime, endTime, $el) {
         super();
 
         this.$el = Timer._createElement($el);
-        /** @private
-         *  @type {SVGCircleElement} */
-        this.$timeCircle = (this.$el.querySelector('.time-circle'));
-        /** @private
-         *  @type {SVGCircleElement} */
-        this.$fillerCircle = (this.$el.querySelector('.filler-circle'));
-        /** @private
-         *  @type {SVGTextElement} */
-        this.$countdown = (this.$el.querySelector('.countdown'));
-        /** @private
-         *  @type {HTMLDivElement} */
-        this.$tooltipCountdown = (this.$el.querySelector('.tooltip-countdown'));
+        /** @private */
+        this.$timeCircle = /** @type {SVGCircleElement} */ (this.$el.querySelector('.time-circle'));
+        /** @private */
+        this.$fillerCircle = /** @type {SVGCircleElement} */ (this.$el.querySelector('.filler-circle'));
+        /** @private */
+        this.$countdown = /** @type {SVGTextElement} */ (this.$el.querySelector('.countdown'));
+        /** @private */
+        this.$tooltipCountdown = /** @type {HTMLDivElement} */ (this.$el.querySelector('.tooltip-countdown'));
 
         /** @private
          *  @type {number} */
@@ -56,7 +52,7 @@ class Timer extends Nimiq.Observable {
 
     /**
      * @private
-     * @param {HTMLElement} [$el]
+     * @param {?HTMLElement} [$el]
      * @returns {HTMLElement}
      */
     static _createElement($el) {

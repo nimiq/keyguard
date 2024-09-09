@@ -8,7 +8,7 @@
 class PasswordSetterBox extends Nimiq.Observable {
     // eslint-disable-next-line valid-jsdoc
     /**
-     * @param {?HTMLFormElement} $el
+     * @param {?HTMLFormElement} [$el]
      * @param {{bgColor?: string, buttonI18nTag?: string}} [options]
      */
     constructor($el, options = {}) {
@@ -27,7 +27,7 @@ class PasswordSetterBox extends Nimiq.Observable {
         this.$el = PasswordSetterBox._createElement($el, this.options);
 
         this._passwordInput = new PasswordInput(
-            this.$el.querySelector('[password-input]'),
+            /** @type {HTMLElement} */ (this.$el.querySelector('[password-input]')),
             {
                 maxLength: PasswordSetterBox.PASSWORD_MAX_LENGTH,
                 autocomplete: 'new-password',
@@ -52,7 +52,7 @@ class PasswordSetterBox extends Nimiq.Observable {
     }
 
     /**
-     * @param {?HTMLFormElement} [$el]
+     * @param {?HTMLFormElement | undefined} $el
      * @param {{bgColor: string, buttonI18nTag: string}} options
      * @returns {HTMLFormElement}
      */
