@@ -88,7 +88,7 @@ async function runKeyguard(RequestApiClass, opts) { // eslint-disable-line no-un
 
     // Back arrow functionality
     document.body.addEventListener('click', event => {
-        if (!(event.target instanceof HTMLElement && event.target.matches('a.page-header-back-button'))) return;
+        if (!(event.target instanceof HTMLElement) || !event.target.matches('a.page-header-back-button')) return;
         window.history.back();
     });
 
