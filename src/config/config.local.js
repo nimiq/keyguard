@@ -11,8 +11,8 @@ if (!/^(?:localhost|bs-local.com)$/.test(window.location.hostname) && !ipRegEx.t
 
 // @ts-expect-error (ts thinks CONFIG is redeclared in other config files as it doesn't know that only one is active)
 const CONFIG = { // eslint-disable-line no-unused-vars
-    ALLOWED_ORIGIN: '*',
-    NETWORK: Constants.NETWORK.TEST,
+    ALLOWED_ORIGIN: 'http://localhost:8080',
+    NETWORK: Constants.NETWORK.MAIN,
     BTC_NETWORK: /** @type {'MAIN' | 'TEST'} */ ('TEST'), // BitcoinConstants is not included in the common bundle
     ROOT_REDIRECT: 'https://wallet.nimiq-testnet.com',
 
