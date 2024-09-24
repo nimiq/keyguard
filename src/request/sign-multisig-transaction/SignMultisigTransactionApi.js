@@ -87,7 +87,8 @@ class SignMultisigTransactionApi extends TopLevelApi {
                 publicKeys.push(new Nimiq.PublicKey(key));
             }
         } catch (error) {
-            throw new Errors.InvalidRequestError(`Invalid public keys: ${(error).message}`);
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            throw new Errors.InvalidRequestError(`Invalid public keys: ${errorMessage}`);
         }
 
         const numberOfSigners = this.parsePositiveInteger(object.numberOfSigners, false, 'numberOfSigners');
@@ -112,7 +113,8 @@ class SignMultisigTransactionApi extends TopLevelApi {
                 signerPublicKeys.push(signerPublicKey);
             }
         } catch (error) {
-            throw new Errors.InvalidRequestError(`Invalid signer public keys: ${error.message}`);
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            throw new Errors.InvalidRequestError(`Invalid signer public keys: ${errorMessage}`);
         }
 
         /** @type {MultisigConfig['secret']} */
@@ -126,7 +128,8 @@ class SignMultisigTransactionApi extends TopLevelApi {
                     aggregatedSecret: new Nimiq.RandomSecret(object.secret.aggregatedSecret),
                 };
             } catch (error) {
-                throw new Errors.InvalidRequestError(`Invalid secret: ${error.message}`);
+                const errorMessage = error instanceof Error ? error.message : String(error);
+                throw new Errors.InvalidRequestError(`Invalid secret: ${errorMessage}`);
             }
         } else if ('encryptedSecrets' in object.secret && 'bScalar' in object.secret) {
             // Not checking fixed length here, to stay flexible for future increases of the number of commitments
@@ -199,8 +202,9 @@ class SignMultisigTransactionApi extends TopLevelApi {
         try {
             aggregatedCommitment = new Nimiq.Commitment(object.aggregatedCommitment);
         } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
             throw new Errors.InvalidRequestError(
-                `Invalid aggregated commitment: ${error.message}`,
+                `Invalid aggregated commitment: ${errorMessage}`,
             );
         }
 
@@ -277,10 +281,9 @@ class SignMultisigTransactionApi extends TopLevelApi {
 
 /**
  * @enum {KeyguardRequest.SignMultisigTransactionRequestLayout}
- * @readonly
  */
-SignMultisigTransactionApi.Layouts = {
+SignMultisigTransactionApi.Layouts = Object.freeze({
     STANDARD: /** @type {'standard'} */ ('standard'),
     // CHECKOUT: /** @type {'checkout'} */ ('checkout'),
     // CASHLINK: /** @type {'cashlink'} */ ('cashlink'),
-};
+});
