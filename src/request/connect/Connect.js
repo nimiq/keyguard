@@ -21,20 +21,16 @@ class Connect {
      * @param {reject} reject
      */
     constructor(request, resolve, reject) {
-        /** @type {HTMLDivElement} */
-        const $page = (document.getElementById(Connect.Pages.CONNECT_ACCOUNT));
+        const $page = /** @type {HTMLDivElement} */ (document.getElementById(Connect.Pages.CONNECT_ACCOUNT));
 
-        /** @type {HTMLSpanElement} */
-        const $appName = ($page.querySelector('.app-name'));
+        const $appName = /** @type {HTMLSpanElement} */ ($page.querySelector('.app-name'));
         $appName.textContent = request.appName;
 
-        /** @type {HTMLImageElement} */
-        const $appIcon = ($page.querySelector('.app-icon'));
+        const $appIcon = /** @type {HTMLImageElement} */ ($page.querySelector('.app-icon'));
         $appIcon.src = request.appLogoUrl.href;
         $appIcon.alt = `${request.appName} logo`;
 
-        /** @type {HTMLDivElement} */
-        const $loginFileIcon = ($page.querySelector('.login-file-account-icon'));
+        const $loginFileIcon = /** @type {HTMLDivElement} */ ($page.querySelector('.login-file-account-icon'));
         if (request.keyInfo.type === Nimiq.Secret.Type.ENTROPY) {
             // eslint-disable-next-line no-new
             new LoginFileAccountIcon(request.keyInfo.defaultAddress.toUserFriendlyAddress(), $loginFileIcon);
@@ -44,12 +40,10 @@ class Connect {
             new Identicon(request.keyInfo.defaultAddress.toUserFriendlyAddress(), $loginFileIcon);
         }
 
-        /** @type {HTMLButtonElement} */
-        const $button = ($page.querySelector('.nq-button.continue'));
+        const $button = /** @type {HTMLButtonElement} */ ($page.querySelector('.nq-button.continue'));
 
         // Set up password box
-        /** @type {HTMLFormElement} */
-        const $passwordBox = (document.querySelector('#password-box'));
+        const $passwordBox = /** @type {HTMLFormElement} */ (document.querySelector('#password-box'));
         this._passwordBox = new PasswordBox($passwordBox, {
             hideInput: !request.keyInfo.encrypted,
             buttonI18nTag: 'passwordbox-connect-account',
@@ -84,13 +78,14 @@ class Connect {
         let key = null;
         try {
             key = await KeyStore.instance.get(request.keyInfo.id, passwordBuf);
-        } catch (e) {
-            if (e.message === 'Invalid key') {
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            if (errorMessage === 'Invalid key') {
                 TopLevelApi.setLoading(false);
                 this._passwordBox.onPasswordIncorrect();
                 return;
             }
-            reject(new Errors.CoreError(e));
+            reject(new Errors.CoreError(errorMessage));
             return;
         }
 

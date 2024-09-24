@@ -28,17 +28,15 @@ class SignMultisigTransaction {
      */
     constructor(request, resolve, reject) {
         this._request = request;
-        /** @type {HTMLElement} */
-        this.$el = (document.getElementById(SignMultisigTransaction.Pages.CONFIRM_TRANSACTION));
+        this.$el = /** @type {HTMLElement} */ (
+            document.getElementById(SignMultisigTransaction.Pages.CONFIRM_TRANSACTION));
         this.$el.classList.add(request.layout);
 
         const transaction = request.transaction;
 
-        /** @type {HTMLElement} */
-        this.$accountDetails = (this.$el.querySelector('#account-details'));
+        this.$accountDetails = /** @type {HTMLElement} */ (this.$el.querySelector('#account-details'));
 
-        /** @type {HTMLLinkElement} */
-        const $sender = (this.$el.querySelector('.accounts .sender'));
+        const $sender = /** @type {HTMLLinkElement} */ (this.$el.querySelector('.accounts .sender'));
         this._senderAddressInfo = new AddressInfo({
             userFriendlyAddress: transaction.sender.toUserFriendlyAddress(),
             label: request.senderLabel,
@@ -54,8 +52,7 @@ class SignMultisigTransaction {
             this._openDetails(this._senderAddressInfo);
         });
 
-        /** @type {HTMLLinkElement} */
-        const $recipient = (this.$el.querySelector('.accounts .recipient'));
+        const $recipient = /** @type {HTMLLinkElement} */ (this.$el.querySelector('.accounts .recipient'));
         const recipientAddress = transaction.recipient.toUserFriendlyAddress();
         /* eslint-disable no-nested-ternary */
         // eslint-disable-next-line operator-linebreak
@@ -100,23 +97,19 @@ class SignMultisigTransaction {
         //     $paymentInfoLine.remove();
         // }
 
-        /** @type {HTMLButtonElement} */
-        const $closeDetails = (this.$accountDetails.querySelector('#close-details'));
+
+        const $closeDetails = /** @type {HTMLButtonElement} */ (this.$accountDetails.querySelector('#close-details'));
         $closeDetails.addEventListener('click', this._closeDetails.bind(this));
 
-        /** @type {HTMLDivElement} */
-        const $value = (this.$el.querySelector('#value'));
-        /** @type {HTMLDivElement} */
-        const $fee = (this.$el.querySelector('#fee'));
-        /** @type {HTMLDivElement} */
-        const $data = (this.$el.querySelector('#data'));
+        const $value = /** @type {HTMLDivElement} */ (this.$el.querySelector('#value'));
+        const $fee = /** @type {HTMLDivElement} */ (this.$el.querySelector('#fee'));
+        const $data = /** @type {HTMLDivElement} */ (this.$el.querySelector('#data'));
 
         // Set value and fee.
         $value.textContent = NumberFormatting.formatNumber(Nimiq.Policy.lunasToCoins(transaction.value));
         if ($fee && transaction.fee > 0) {
             $fee.textContent = NumberFormatting.formatNumber(Nimiq.Policy.lunasToCoins(transaction.fee));
-            /** @type {HTMLDivElement} */
-            const $feeSection = (this.$el.querySelector('.fee-section'));
+            const $feeSection = /** @type {HTMLDivElement} */ (this.$el.querySelector('.fee-section'));
             $feeSection.classList.remove('display-none');
         }
 
@@ -131,29 +124,24 @@ class SignMultisigTransaction {
         /* } else */ if ($data && transaction.data.byteLength > 0) {
             // Set transaction extra data.
             $data.textContent = this._formatData(transaction);
-            /** @type {HTMLDivElement} */
-            const $dataSection = (this.$el.querySelector('.data-section'));
+            const $dataSection = /** @type {HTMLDivElement} */ (this.$el.querySelector('.data-section'));
             $dataSection.classList.remove('display-none');
         }
 
         // Set up user and account names
-        /** @type {HTMLDivElement} */
-        const $nameSection = (this.$el.querySelector('.user-and-account-names'));
+        const $nameSection = /** @type {HTMLDivElement} */ (this.$el.querySelector('.user-and-account-names'));
         if (request.multisigConfig.userName) {
             $nameSection.classList.add('approving-as');
-            /** @type {HTMLDivElement} */
-            const $userName = ($nameSection.querySelector('.user-name'));
+            const $userName = /** @type {HTMLDivElement} */ ($nameSection.querySelector('.user-name'));
             $userName.textContent = request.multisigConfig.userName;
         } else {
             $nameSection.classList.add('approving-with');
         }
-        /** @type {HTMLDivElement} */
-        const $accountName = ($nameSection.querySelector('.account-name'));
+        const $accountName = /** @type {HTMLDivElement} */ ($nameSection.querySelector('.account-name'));
         $accountName.textContent = request.keyLabel;
 
         // Set up account icon
-        /** @type {HTMLDivElement} */
-        const $loginFileIcon = ($nameSection.querySelector('.login-file-account-icon'));
+        const $loginFileIcon = /** @type {HTMLDivElement} */ ($nameSection.querySelector('.login-file-account-icon'));
         if (request.keyInfo.type === Nimiq.Secret.Type.ENTROPY) {
             // eslint-disable-next-line no-new
             new LoginFileAccountIcon(request.keyInfo.defaultAddress.toUserFriendlyAddress(), $loginFileIcon);
@@ -166,8 +154,7 @@ class SignMultisigTransaction {
 
 
         // Set up password box.
-        /** @type {HTMLFormElement} */
-        const $passwordBox = (document.querySelector('#password-box'));
+        const $passwordBox = /** @type {HTMLFormElement} */ (document.querySelector('#password-box'));
         this._passwordBox = new PasswordBox($passwordBox, {
             hideInput: !request.keyInfo.encrypted,
             buttonI18nTag: /* request.layout === SignMultisigTransactionApi.Layouts.CASHLINK
@@ -218,13 +205,14 @@ class SignMultisigTransaction {
         let key = null;
         try {
             key = await KeyStore.instance.get(request.keyInfo.id, passwordBuf);
-        } catch (e) {
-            if (e.message === 'Invalid key') {
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            if (errorMessage === 'Invalid key') {
                 TopLevelApi.setLoading(false);
                 this._passwordBox.onPasswordIncorrect();
                 return;
             }
-            reject(new Errors.CoreError(e));
+            reject(new Errors.CoreError(errorMessage));
             return;
         }
         if (!key) {
@@ -256,15 +244,17 @@ class SignMultisigTransaction {
                         await window.crypto.subtle.decrypt({ name: 'RSA-OAEP' }, rsaKey, encrypted),
                     ),
                 ));
-            } catch (e) {
-                reject(new Errors.InvalidRequestError(`Cannot decrypt secrets: ${e.message}`));
+            } catch (error) {
+                const errorMessage = error instanceof Error ? error.message : String(error);
+                reject(new Errors.InvalidRequestError(`Cannot decrypt secrets: ${errorMessage}`));
                 return;
             }
 
             try {
                 aggregatedSecret = await MultisigUtils.aggregateSecrets(secrets, request.multisigConfig.secret.bScalar);
-            } catch (e) {
-                reject(new Errors.InvalidRequestError(`Cannot aggregate secrets: ${e.message}`));
+            } catch (error) {
+                const errorMessage = error instanceof Error ? error.message : String(error);
+                reject(new Errors.InvalidRequestError(`Cannot aggregate secrets: ${errorMessage}`));
                 return;
             }
         }

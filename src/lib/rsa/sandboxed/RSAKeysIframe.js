@@ -7,8 +7,7 @@
  * @typedef {GenerateKeyCommand} Command
  */
 
-/** @type {HTMLSpanElement} */
-const $loading = (document.querySelector('#loading'));
+const $loading = /** @type {HTMLSpanElement} */ (document.querySelector('#loading'));
 
 /**
  * @param {any} key
