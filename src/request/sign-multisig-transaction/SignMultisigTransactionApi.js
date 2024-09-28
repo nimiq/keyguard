@@ -236,6 +236,8 @@ class SignMultisigTransactionApi extends TopLevelApi {
                     'Transaction sender does not match calculated multisig address',
                 );
             }
+        } else if (transaction.senderType === Nimiq.Account.Type.VESTING) {
+            // Cannot verify vesting contract address
         } else if (transaction.recipientType === Nimiq.Account.Type.BASIC) {
             if (!transaction.recipient.equals(multisigAddress)) {
                 throw new Errors.InvalidRequestError(
