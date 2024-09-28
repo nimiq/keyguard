@@ -69,6 +69,11 @@
     "sign-tx-fee": "kosten",
     "sign-tx-cancel-payment": "Annuleer betaling",
 
+    "sign-multisig-tx-heading-tx": "Approve Multisig Transaction",
+    "sign-multisig-tx-approving-as": "Approving as",
+    "sign-multisig-tx-with": "with",
+    "sign-multisig-tx-approving-with": "Approving with",
+
     "sign-msg-heading": "Bericht ondertekenen",
     "sign-msg-signer": "Ondertekenaar",
 
@@ -104,6 +109,7 @@
     "passwordbox-repeat-password-short": "Wachtwoord is te kort",
     "passwordbox-password-skip": "Voor nu overslaan",
     "passwordbox-reset-password": "Resetten met herstelwoorden",
+    "passwordbox-connect-account": "Connect your account",
 
     "payment-info-line-order-amount": "Orderbedrag",
     "payment-info-line-vendor-markup": "Crypto leverancier opmaak",
@@ -245,5 +251,10 @@
     "sign-swap-of-exchange-value": "van ruilwaarde.",
     "sign-swap-total-fees": "Totale kosten",
     "sign-swap-exchange-rate": "Wisselkoers",
-    "sign-swap-your-bank": "Jouw bank"
+    "sign-swap-your-bank": "Jouw bank",
+
+    "connect-heading-prefix": "Log in to",
+    "connect-tooltip-multisig-1": "Your account will be used to verify your identity only.",
+    "connect-tooltip-multisig-2": "The shared wallet has its own address. It can receive transactions from anywhere just like a regular wallet.",
+    "connect-tooltip-multisig-3": "The first address of your account will be visible to all participants in your shared wallet."
 }

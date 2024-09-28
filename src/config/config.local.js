@@ -26,4 +26,15 @@ const CONFIG = { // eslint-disable-line no-unused-vars
     NATIVE_USDC_HTLC_CONTRACT_ADDRESS: '0xA9fAbABE97375565e4A9Ac69A57Df33c91FCB897',
 
     USDC_SWAP_CONTRACT_ADDRESS: '0xf4a619F6561CeE543BDa9BBA0cAC68758B607714',
+
+    RSA_KEY_BITS: 2048, // Possible values are 1024 (fast, but unsafe), 2048 (good compromise), 4096 (slow, but safe)
+    RSA_KDF_FUNCTION: 'PBKDF2-SHA512',
+    RSA_KDF_ITERATIONS: 1024,
+
+    RSA_SUPPORTED_KEY_BITS: [2048],
+    RSA_SUPPORTED_KDF_FUNCTIONS: ['PBKDF2-SHA512'],
+    /** @type {Record<string, number[]>} */
+    RSA_SUPPORTED_KDF_ITERATIONS: {
+        'PBKDF2-SHA512': [1024],
+    },
 };
