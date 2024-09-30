@@ -349,6 +349,10 @@ body.loading .page:target .page-footer > .loading-spinner {
     content: "EUR";
 }
 
+.crc-symbol::before {
+    content: "CRC";
+}
+
 .address {
     font-family: "Fira Mono", "Andale Mono", monospace;
     font-size: 1.625rem;

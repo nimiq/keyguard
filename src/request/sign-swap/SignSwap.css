@@ -5,7 +5,8 @@
 .nim-symbol,
 .btc-symbol,
 .usdc-symbol,
-.eur-symbol {
+.eur-symbol,
+.crc-symbol {
     margin-left: 0.25em;
 }
 
@@ -101,6 +102,7 @@
 }
 
 .layout-standard .account.eur .identicon,
+.layout-standard .account.crc .identicon,
 .layout-standard .account.btc .identicon {
     padding: .25rem;
 }
