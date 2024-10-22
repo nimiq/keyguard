@@ -30,19 +30,42 @@ class SignPolygonTransaction {
 
         const relayRequest = request.request;
 
+        /** @type {'usdc' | 'usdt' | undefined} */
+        let stablecoin;
+        if ([
+            CONFIG.NATIVE_USDC_TRANSFER_CONTRACT_ADDRESS,
+            CONFIG.NATIVE_USDC_HTLC_CONTRACT_ADDRESS,
+            CONFIG.BRIDGED_USDC_HTLC_CONTRACT_ADDRESS,
+            CONFIG.USDC_SWAP_CONTRACT_ADDRESS,
+        ].includes(relayRequest.to)) {
+            stablecoin = 'usdc';
+        } else if ([
+            CONFIG.BRIDGED_USDT_TRANSFER_CONTRACT_ADDRESS,
+            CONFIG.BRIDGED_USDT_HTLC_CONTRACT_ADDRESS,
+        ].includes(relayRequest.to)) {
+            stablecoin = 'usdt';
+        }
+
+        const $stablecoinSymbols = /** @type {NodeListOf<HTMLSpanElement>} */ (
+            this.$el.querySelectorAll('.stablecoin-symbol')
+        );
+        $stablecoinSymbols.forEach($symbol => {
+            $symbol.classList.add(`${stablecoin}-symbol`);
+        });
+
         const $sender = /** @type {HTMLLinkElement} */ (this.$el.querySelector('.accounts .sender'));
         if (['redeem', 'redeemWithSecretInData', 'refund'].includes(request.description.name)) {
             new PolygonAddressInfo(relayRequest.to, request.senderLabel, 'unknown').renderTo($sender);
         } else if (request.description.name === 'swap' || request.description.name === 'swapWithApproval') {
             new PolygonAddressInfo(relayRequest.from, 'USDC.e', 'usdc_dark').renderTo($sender);
         } else {
-            new PolygonAddressInfo(relayRequest.from, request.keyLabel, 'usdc').renderTo($sender);
+            new PolygonAddressInfo(relayRequest.from, request.keyLabel, stablecoin).renderTo($sender);
         }
 
         const $recipient = /** @type {HTMLLinkElement} */ (this.$el.querySelector('.accounts .recipient'));
         if (['redeem', 'redeemWithSecretInData', 'refund'].includes(request.description.name)) {
             const recipientAddress = /** @type {string} */ (request.description.args.target);
-            new PolygonAddressInfo(recipientAddress, request.keyLabel, 'usdc').renderTo($recipient);
+            new PolygonAddressInfo(recipientAddress, request.keyLabel, stablecoin).renderTo($recipient);
         } else if (request.description.name === 'swap' || request.description.name === 'swapWithApproval') {
             new PolygonAddressInfo(relayRequest.from, 'USDC', 'usdc').renderTo($recipient);
         } else {
@@ -143,6 +166,37 @@ class SignPolygonTransaction {
                 /* uint256 fee */ request.description.args.fee,
                 // `value` is the permit approval amount - the transaction value is called `amount` (above)
                 /* uint256 value */ request.description.args.value,
+                /* bytes32 sigR */ sigR,
+                /* bytes32 sigS */ sigS,
+                /* uint8 sigV */ sigV,
+            ]);
+        }
+
+        if (request.description.name === 'transferWithApproval') {
+            const { sigR, sigS, sigV } = await polygonKey.signUsdtApproval(
+                request.keyPath,
+                new ethers.Contract(
+                    CONFIG.BRIDGED_USDT_CONTRACT_ADDRESS,
+                    PolygonContractABIs.BRIDGED_USDT_CONTRACT_ABI,
+                ),
+                transferContract,
+                request.description.args.approval,
+                // Has been validated to be defined when function called is `swapWithApproval`
+                /** @type {{ tokenNonce: number }} */ (request.approval).tokenNonce,
+                request.request.from,
+            );
+
+            const swapContract = new ethers.Contract(
+                transferContract,
+                PolygonContractABIs.BRIDGED_USDT_TRANSFER_CONTRACT_ABI,
+            );
+
+            request.request.data = swapContract.interface.encodeFunctionData(request.description.name, [
+                /* address token */ request.description.args.token,
+                /* uint256 amount */ request.description.args.amount,
+                /* address target */ request.description.args.target,
+                /* uint256 fee */ request.description.args.fee,
+                /* uint256 approval */ request.description.args.approval,
                 /* bytes32 sigR */ sigR,
                 /* bytes32 sigS */ sigS,
                 /* uint8 sigV */ sigV,

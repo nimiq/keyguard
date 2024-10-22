@@ -55,14 +55,14 @@ type ParsedBitcoinTransactionInput = {
     address: string,
 };
 
-interface PolygonUsdcApproval {
+interface PolygonTokenApproval {
     readonly approval: ethers.BigNumber, // amount to be approved
     readonly sigR: string,
     readonly sigS: string,
     readonly sigV: ethers.BigNumber,
 }
 
-interface PolygonUsdcPermit {
+interface PolygonTokenPermit {
     readonly value: ethers.BigNumber, // amount to be approved
     readonly sigR: string,
     readonly sigS: string,
@@ -81,11 +81,18 @@ type PolygonTransferDescription = ethers.utils.TransactionDescription & {
     readonly args: PolygonTransferArgs,
 };
 
-interface PolygonTransferWithPermitArgs extends PolygonTransferArgs, PolygonUsdcPermit {}
+interface PolygonTransferWithPermitArgs extends PolygonTransferArgs, PolygonTokenPermit {}
 
 type PolygonTransferWithPermitDescription = ethers.utils.TransactionDescription & {
     readonly name: 'transferWithPermit',
     readonly args: PolygonTransferWithPermitArgs,
+};
+
+interface PolygonTransferWithApprovalArgs extends PolygonTransferArgs, PolygonTokenApproval {}
+
+type PolygonTransferWithApprovalDescription = ethers.utils.TransactionDescription & {
+    readonly name: 'transferWithApproval',
+    readonly args: PolygonTransferWithApprovalArgs,
 };
 
 interface PolygonOpenArgs extends ReadonlyArray<any> {
@@ -104,7 +111,7 @@ type PolygonOpenDescription = ethers.utils.TransactionDescription & {
     readonly args: PolygonOpenArgs,
 };
 
-interface PolygonOpenWithPermitArgs extends PolygonOpenArgs, PolygonUsdcPermit {}
+interface PolygonOpenWithPermitArgs extends PolygonOpenArgs, PolygonTokenPermit {}
 
 type PolygonOpenWithPermitDescription = ethers.utils.TransactionDescription & {
     readonly name: 'openWithPermit',
@@ -158,7 +165,7 @@ type PolygonSwapDescription = ethers.utils.TransactionDescription & {
     readonly args: PolygonSwapArgs,
 };
 
-interface PolygonSwapWithApprovalArgs extends PolygonSwapArgs, PolygonUsdcApproval {}
+interface PolygonSwapWithApprovalArgs extends PolygonSwapArgs, PolygonTokenApproval {}
 
 type PolygonSwapWithApprovalDescription = ethers.utils.TransactionDescription & {
     readonly name: 'swapWithApproval',
@@ -306,6 +313,7 @@ type Parsed<T extends KeyguardRequest.Request> =
         KeyId2KeyInfo<KeyguardRequest.SignPolygonTransactionRequest>
         & { description: PolygonTransferDescription
             | PolygonTransferWithPermitDescription
+            | PolygonTransferWithApprovalDescription
             | PolygonRedeemDescription
             | PolygonRedeemWithSecretInDataDescription
             | PolygonRefundDescription

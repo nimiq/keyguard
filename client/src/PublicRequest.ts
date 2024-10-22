@@ -221,7 +221,7 @@ export type PolygonTransactionInfo = {
 
     /**
      * The sender's nonce in the token contract, required when calling the
-     * contract function `swapWithApproval` for bridged USDC.e.
+     * contract function `swapWithApproval` for bridged USDC.e or `transferWithApproval` for bridged USDT.
      */
     approval?: {
         tokenNonce: number,

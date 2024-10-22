@@ -59,6 +59,7 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
      *     KeyguardRequest.OpenGsnForwardRequest,
      *     PolygonTransferDescription
      *     | PolygonTransferWithPermitDescription
+     *     | PolygonTransferWithApprovalDescription
      *     | PolygonRedeemDescription
      *     | PolygonRedeemWithSecretInDataDescription
      *     | PolygonRefundDescription
@@ -72,6 +73,7 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
         /**
          * @type {PolygonTransferDescription
          *        | PolygonTransferWithPermitDescription
+         *        | PolygonTransferWithApprovalDescription
          *        | PolygonRedeemDescription
          *        | PolygonRedeemWithSecretInDataDescription
          *        | PolygonRefundDescription
@@ -98,6 +100,26 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
             }
 
             if (!['transfer', 'transferWithPermit'].includes(description.name)) {
+                throw new Errors.InvalidRequestError('Requested Polygon contract method is invalid');
+            }
+        } else if (forwardRequest.to === CONFIG.BRIDGED_USDT_TRANSFER_CONTRACT_ADDRESS) {
+            const bridgedUsdtTransferContract = new ethers.Contract(
+                CONFIG.BRIDGED_USDT_TRANSFER_CONTRACT_ADDRESS,
+                PolygonContractABIs.BRIDGED_USDT_TRANSFER_CONTRACT_ABI,
+            );
+
+            description = /** @type {PolygonTransferDescription | PolygonTransferWithApprovalDescription} */ (
+                bridgedUsdtTransferContract.interface.parseTransaction({
+                    data: forwardRequest.data,
+                    value: forwardRequest.value,
+                })
+            );
+
+            if (description.args.token !== CONFIG.BRIDGED_USDT_CONTRACT_ADDRESS) {
+                throw new Errors.InvalidRequestError('Invalid bridged USDT token contract in request data');
+            }
+
+            if (!['transfer', 'transferWithApproval'].includes(description.name)) {
                 throw new Errors.InvalidRequestError('Requested Polygon contract method is invalid');
             }
         } else if (forwardRequest.to === CONFIG.NATIVE_USDC_HTLC_CONTRACT_ADDRESS) {
@@ -186,10 +208,14 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
                 + '"transferWithPermit"');
         }
 
-        // Check that approval object exists when method is 'swapWithApproval', and unset for other methods.
-        if ((description.name === 'swapWithApproval') !== !!request.approval) {
-            throw new Errors.InvalidRequestError('`approval` object is only allowed for contract method '
-                + '"swapWithApproval"');
+        // Check that approval object exists when method is 'transferWithApproval' or 'swapWithApproval', and unset for
+        // other methods.
+        if ((
+            description.name === 'transferWithApproval'
+            || description.name === 'swapWithApproval'
+        ) !== !!request.approval) {
+            throw new Errors.InvalidRequestError('`approval` object is only allowed for contract methods '
+                + '"transferWithApproval" and "swapWithApproval"');
         }
 
         return [forwardRequest, description];

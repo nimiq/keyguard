@@ -95,6 +95,53 @@ class PolygonKey { // eslint-disable-line no-unused-vars
 
     /**
      * @param {string} path
+     * @param {ethers.Contract} usdtContract
+     * @param {string} forwarderContractAddress
+     * @param {ethers.BigNumber} approvalAmount
+     * @param {number} tokenNonce
+     * @param {string} fromAddress
+     * @returns {Promise<{sigR: string, sigS: string, sigV: number}>}
+     */
+    async signUsdtApproval(path, usdtContract, forwarderContractAddress, approvalAmount, tokenNonce, fromAddress) {
+        const functionSignature = usdtContract.interface.encodeFunctionData(
+            'approve',
+            [forwarderContractAddress, approvalAmount],
+        );
+
+        // TODO: Make the domain parameters configurable in the request?
+        const domain = {
+            name: '(PoS) Tether USD', // This is currently the same for testnet and mainnet
+            version: '1', // This is currently the same for testnet and mainnet
+            verifyingContract: CONFIG.BRIDGED_USDT_CONTRACT_ADDRESS,
+            salt: ethers.utils.hexZeroPad(ethers.utils.hexlify(CONFIG.POLYGON_CHAIN_ID), 32),
+        };
+
+        const types = {
+            MetaTransaction: [
+                { name: 'nonce', type: 'uint256' },
+                { name: 'from', type: 'address' },
+                { name: 'functionSignature', type: 'bytes' },
+            ],
+        };
+
+        const message = {
+            nonce: tokenNonce,
+            from: fromAddress,
+            functionSignature,
+        };
+
+        const signature = await this.signTypedData(
+            path,
+            domain,
+            types,
+            message,
+        );
+
+        return this._signatureToParts(signature);
+    }
+
+    /**
+     * @param {string} path
      * @param {string} forwarderContractAddress
      * @param {ethers.BigNumber} approvalAmount
      * @param {number} tokenNonce
