@@ -37,8 +37,8 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
         if (fundTx.type === 'BTC' || redeemTx.type === 'BTC') {
             const myFee = fundTx.type === 'BTC'
                 ? fundTx.inputs.reduce((sum, input) => sum + input.witnessUtxo.value, 0)
-                    - fundTx.recipientOutput.value
-                    - (fundTx.changeOutput ? fundTx.changeOutput.value : 0)
+                - fundTx.recipientOutput.value
+                - (fundTx.changeOutput ? fundTx.changeOutput.value : 0)
                 : redeemTx.type === 'BTC'
                     ? redeemTx.input.witnessUtxo.value - redeemTx.output.value
                     : 0;
@@ -93,7 +93,9 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
                 fiatFee,
                 fiatCurrency,
                 (myFee + theirFee) / (fundTx.type === 'EUR' || fundTx.type === 'CRC'
-                    ? exchangeFromAmount : exchangeToAmount),
+                    ? exchangeFromAmount
+                    : exchangeToAmount
+                ),
             );
             this.$tooltip.appendChild(rows[0]);
             this.$tooltip.appendChild(rows[1]);
