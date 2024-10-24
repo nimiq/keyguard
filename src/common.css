@@ -345,6 +345,10 @@ body.loading .page:target .page-footer > .loading-spinner {
     content: "USDC";
 }
 
+.usdt-symbol::before {
+    content: "USDT";
+}
+
 .eur-symbol::before {
     content: "EUR";
 }

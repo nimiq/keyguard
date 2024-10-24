@@ -49,7 +49,7 @@
     font-size: 5rem;
 }
 
-#confirm-transaction .total .usdc-symbol {
+#confirm-transaction .total .stablecoin-symbol {
     margin-left: 1rem;
     font-weight: 700;
 }

@@ -7,7 +7,7 @@ class PolygonAddressInfo { // eslint-disable-line no-unused-vars
     /**
      * @param {string} address
      * @param {string} [label]
-     * @param {'none' | 'usdc' | 'usdc_dark' | 'unknown'} [logo = 'none']
+     * @param {'none' | 'usdc' | 'usdc_dark' | 'usdt' | 'unknown'} [logo = 'none']
      */
     constructor(address, label, logo = 'none') {
         this._address = address;
@@ -37,7 +37,12 @@ class PolygonAddressInfo { // eslint-disable-line no-unused-vars
                 $avatar.classList.add('unlabelled');
             }
             $el.appendChild($avatar);
-        } else if (this._logo === 'usdc' || this._logo === 'usdc_dark' || this._logo === 'unknown') {
+        } else if (
+            this._logo === 'usdc'
+            || this._logo === 'usdc_dark'
+            || this._logo === 'usdt'
+            || this._logo === 'unknown'
+        ) {
             const $img = document.createElement('img');
             $img.classList.add('logo');
             $img.src = `../../assets/icons/${this._logo}.svg`;
