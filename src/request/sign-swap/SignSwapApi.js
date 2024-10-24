@@ -367,9 +367,9 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
              *     | PolygonRedeemDescription
              *     | PolygonRedeemWithSecretInDataDescription}
              */ (usdcHtlcContract.interface.parseTransaction({
-                data: forwardRequest.data,
-                value: forwardRequest.value,
-            }));
+            data: forwardRequest.data,
+            value: forwardRequest.value,
+        }));
 
         if (!allowedMethods.includes(description.name)) {
             throw new Errors.InvalidRequestError('Requested Polygon contract method is invalid');
@@ -459,10 +459,9 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
                 const settlement = {
                     type: 'sinpemovil',
                     phoneNumber: /** @type {string} */ (
-                        this.parseLabel(
-                            /** @type {{phoneNumber: unknown}} */(obj).phoneNumber,
-                            false,
-                            `${parameterName}.phoneNumber`,
+                        this.parsePhoneNumber(
+                            /** @type {{phoneNumber: string}} */(obj).phoneNumber,
+                            { expectedCountryCodes: ['+506'] },
                         )
                     ),
                 };
@@ -481,7 +480,7 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
         if (!Iban.isValid(iban)) {
             throw new Errors.InvalidRequestError(`${parameterName} is not a valid IBAN`);
         }
-        return Iban.printFormat(/** @type {string} */ (iban), ' ');
+        return Iban.printFormat(/** @type {string} */(iban), ' ');
     }
 
     get Handler() {

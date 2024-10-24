@@ -158,10 +158,10 @@ class RequestParser { // eslint-disable-line no-unused-vars
             throw new Errors.InvalidRequestError('Data must not exceed 64 bytes');
         }
         if (flags === Nimiq.Transaction.Flag.CONTRACT_CREATION
-                && data.byteLength !== 78 // HTLC
-                && data.byteLength !== 24 // Vesting
-                && data.byteLength !== 36 // Vesting
-                && data.byteLength !== 44) { // Vesting
+            && data.byteLength !== 78 // HTLC
+            && data.byteLength !== 24 // Vesting
+            && data.byteLength !== 36 // Vesting
+            && data.byteLength !== 44) { // Vesting
             throw new Errors.InvalidRequestError(
                 'Contract creation data must be 78 bytes for HTLC and 24, 36, or 44 bytes for vesting contracts',
             );
@@ -358,5 +358,46 @@ class RequestParser { // eslint-disable-line no-unused-vars
             throw new Errors.InvalidRequestError(`${parameterName} protocol must be one of: ${protocolString}`);
         }
         return parsedUrl;
+    }
+
+    /**
+     * Parses and validates a phone number.
+     * @param {string} phoneNumber - The phone number to parse. Should be in E.164 format.
+     * @param {object} [options] - Parsing options
+     * @param {boolean} [options.required] - Whether the phone number is required
+     * @param {string[]} [options.expectedCountryCodes] - Allowed country codes.
+     * @returns {string|undefined} - The formatted phone number or undefined
+     */
+    parsePhoneNumber(phoneNumber, options = {}) {
+        const { required = false, expectedCountryCodes = [] } = options;
+
+        if (phoneNumber === undefined && !required) return undefined;
+
+        if (typeof phoneNumber !== 'string') {
+            throw new Errors.InvalidRequestError('The phone number must be a string');
+        }
+
+        // If it contains spaces, it's not a valid number
+        if (phoneNumber.includes(' ')) {
+            throw new Errors.InvalidRequestError('The phone number must not contain spaces');
+        }
+
+        // Remove all non-digit characters
+        const digitsOnly = phoneNumber.replace(/\D/g, '');
+
+        // Check if the number has a valid length (assuming international format)
+        if (digitsOnly.length < 7 || digitsOnly.length > 15) {
+            throw new Errors.InvalidRequestError('The phone number has an invalid length');
+        }
+
+        if (expectedCountryCodes.length > 0) {
+            const hasValidCountryCode = expectedCountryCodes.some(countryCode => phoneNumber.startsWith(countryCode));
+            if (!hasValidCountryCode) {
+                throw new Errors.InvalidRequestError('The phone number has an invalid country code');
+            }
+        }
+
+        // Format the number (simple E.164 format)
+        return `+${digitsOnly}`;
     }
 }
