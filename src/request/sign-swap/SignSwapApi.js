@@ -35,6 +35,12 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
             throw new Errors.InvalidRequestError('Swap must be between two different currencies');
         }
 
+        const swapToFiat = request.redeem.type === 'EUR' || request.redeem.type === 'CRC';
+        const swapFromFiat = request.fund.type === 'EUR' || request.fund.type === 'CRC';
+        if (swapToFiat && swapFromFiat) {
+            throw new Errors.InvalidRequestError('Swaps between fiat currencies are not supported');
+        }
+
         if (request.fund.type === 'NIM') {
             parsedRequest.fund = {
                 type: 'NIM',
