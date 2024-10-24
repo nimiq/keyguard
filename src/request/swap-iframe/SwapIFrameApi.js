@@ -43,6 +43,7 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
          *     nim: string,
          *     btc: string[],
          *     usdc: string,
+         *     crc: string,
          *     eur: string,
          *     btc_refund?: string,
          * }, request: any}} */
@@ -67,9 +68,12 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
             if (privateKeys.usdc.length !== 66) throw new Error('Invalid USDC key stored in SessionStorage');
         }
 
-        if (request.redeem.type === 'EUR') {
-            if (!privateKeys.eur) throw new Error('No EUR key stored in SessionStorage');
-            if (privateKeys.eur.length !== 64) throw new Error('Invalid EUR key stored in SessionStorage');
+        if (request.redeem.type === 'EUR' || request.redeem.type === 'CRC') {
+            /** @type { keyof typeof privateKeys } */
+            // @ts-ignore The type of fiatKey is checked in the if clause
+            const fiatKey = request.redeem.type.toLocaleLowerCase();
+            if (!privateKeys[fiatKey]) throw new Error(`No ${request.redeem.type} key stored in SessionStorage`);
+            if (privateKeys[fiatKey].length !== 64) throw new Error(`Invalid ${request.redeem.type} key stored in SessionStorage`);
         }
 
         // Deserialize stored request
@@ -274,9 +278,10 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
             };
         }
 
-        if (request.fund.type === 'EUR' && storedRequest.fund.type === 'EUR') {
+        if ((request.fund.type === 'EUR' && storedRequest.fund.type === 'EUR')
+            || (request.fund.type === 'CRC' && storedRequest.fund.type === 'CRC')) {
             fund = {
-                type: 'EUR',
+                type: request.fund.type,
                 htlcDetails: {
                     hash: Nimiq.BufferUtils.toHex(Nimiq.BufferUtils.fromAny(request.fund.hash)),
                     timeoutTimestamp: this.parsePositiveInteger(request.fund.timeout, false, 'fund.timeout'),
@@ -285,9 +290,10 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
             };
         }
 
-        if (request.redeem.type === 'EUR' && storedRequest.redeem.type === 'EUR') {
+        if ((request.redeem.type === 'EUR' && storedRequest.redeem.type === 'EUR')
+            || (request.redeem.type === 'CRC' && storedRequest.redeem.type === 'CRC')) {
             redeem = {
-                type: 'EUR',
+                type: request.redeem.type,
                 htlcDetails: {
                     hash: Nimiq.BufferUtils.toHex(Nimiq.BufferUtils.fromAny(request.redeem.hash)),
                     timeoutTimestamp: this.parsePositiveInteger(request.redeem.timeout, false, 'redeem.timeout'),
@@ -413,7 +419,7 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
                     throw new Errors.KeyguardError('Missing address in funding change output');
                 }
 
-                outputs.push(/** @type {{address: string, value: number}} */ (storedRequest.fund.changeOutput));
+                outputs.push(/** @type {{address: string, value: number}} */(storedRequest.fund.changeOutput));
             }
 
             // Sort outputs by value ASC, then address ASC
@@ -587,7 +593,7 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
 
             const signature = await wallet._signTypedData(
                 typedData.domain,
-                /** @type {Record<string, ethers.ethers.TypedDataField[]>} */ (/** @type {unknown} */ (cleanedTypes)),
+                /** @type {Record<string, ethers.ethers.TypedDataField[]>} */(/** @type {unknown} */ (cleanedTypes)),
                 typedData.message,
             );
 
@@ -600,6 +606,11 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
         if (parsedRequest.fund.type === 'EUR' && storedRequest.fund.type === 'EUR') {
             // Nothing to do for funding EUR
             result.eur = '';
+        }
+
+        if (parsedRequest.fund.type === 'CRC' && storedRequest.fund.type === 'CRC') {
+            // Nothing to do for funding sinpemovil
+            result.crc = '';
         }
 
         if (parsedRequest.redeem.type === 'NIM' && storedRequest.redeem.type === 'NIM') {
@@ -731,7 +742,7 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
 
             const signature = await wallet._signTypedData(
                 typedData.domain,
-                /** @type {Record<string, ethers.ethers.TypedDataField[]>} */ (/** @type {unknown} */ (cleanedTypes)),
+                /** @type {Record<string, ethers.ethers.TypedDataField[]>} */(/** @type {unknown} */ (cleanedTypes)),
                 typedData.message,
             );
 
@@ -741,11 +752,14 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
             };
         }
 
-        if (parsedRequest.redeem.type === 'EUR' && storedRequest.redeem.type === 'EUR') {
+        if ((parsedRequest.redeem.type === 'EUR' && storedRequest.redeem.type === 'EUR')
+            || (parsedRequest.redeem.type === 'CRC' && storedRequest.redeem.type === 'CRC')) {
             await loadNimiq();
 
+            const fiatName = parsedRequest.redeem.type.toLocaleLowerCase();
             // Create and sign a JWS of the settlement instructions
-            const privateKey = new Nimiq.PrivateKey(Nimiq.BufferUtils.fromHex(privateKeys.eur));
+            // @ts-ignore The privateKeyName is checked in the if clause
+            const privateKey = new Nimiq.PrivateKey(Nimiq.BufferUtils.fromHex(privateKeys[fiatName]));
             const key = new Key(privateKey);
 
             /** @type {KeyguardRequest.SettlementInstruction} */
@@ -754,12 +768,13 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
                 contractId: parsedRequest.redeem.htlcId,
             };
 
-            if (settlement.type === 'sepa') {
+            if (fiatName === 'eur' && settlement.type === 'sepa') {
                 // Remove spaces from IBAN
                 settlement.recipient.iban = settlement.recipient.iban.replace(/\s/g, '');
             }
 
-            result.eur = OasisSettlementInstructionUtils.signSettlementInstruction(key, 'm', settlement);
+            // @ts-ignore The privateKeyName is checked in the if clause
+            result[fiatName] = OasisSettlementInstructionUtils.signSettlementInstruction(key, 'm', settlement);
         }
 
         return result;

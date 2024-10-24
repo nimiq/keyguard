@@ -7,6 +7,7 @@
 /* global Iban */
 /* global ethers */
 /* global CONFIG */
+/* global Constants */
 /* global PolygonContractABIs */
 
 class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(TopLevelApi)) {
@@ -32,6 +33,12 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
 
         if (request.fund.type === request.redeem.type) {
             throw new Errors.InvalidRequestError('Swap must be between two different currencies');
+        }
+
+        const swapToFiat = request.redeem.type === 'EUR' || request.redeem.type === 'CRC';
+        const swapFromFiat = request.fund.type === 'EUR' || request.fund.type === 'CRC';
+        if (swapToFiat && swapFromFiat) {
+            throw new Errors.InvalidRequestError('Swaps between fiat currencies are not supported');
         }
 
         if (request.fund.type === 'NIM') {
@@ -95,6 +102,13 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
                 fee: this.parsePositiveInteger(request.fund.fee, true, 'fund.fee'),
                 bankLabel: this.parseLabel(request.fund.bankLabel, true, 'fund.bankLabel'),
             };
+        } else if (request.fund.type === 'CRC') {
+            parsedRequest.fund = {
+                type: 'CRC',
+                amount: this.parsePositiveInteger(request.fund.amount, false, 'fund.amount'),
+                fee: this.parsePositiveInteger(request.fund.fee, true, 'fund.fee'),
+                senderLabel: this.parseLabel(request.fund.senderLabel, true, 'fund.recipientLabel'),
+            };
         } else {
             throw new Errors.InvalidRequestError('Invalid funding type');
         }
@@ -145,13 +159,36 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
                 amount: this.parsePositiveInteger(request.redeem.amount, false, 'redeem.amount'),
             };
         } else if (request.redeem.type === 'EUR') {
+            const settlement = this.parseOasisSettlementInstruction(request.redeem.settlement, 'redeem.settlement');
+            if (
+                settlement.type !== 'sepa'
+                && (CONFIG.NETWORK === Constants.NETWORK.MAIN || settlement.type !== 'mock')
+            ) {
+                throw new Errors.InvalidRequestError('Invalid redeeming settlement type');
+            }
             parsedRequest.redeem = {
                 type: 'EUR',
                 keyPath: this.parsePath(request.redeem.keyPath, 'redeem.keyPath'),
-                settlement: this.parseOasisSettlementInstruction(request.redeem.settlement, 'redeem.settlement'),
+                settlement,
                 amount: this.parsePositiveInteger(request.redeem.amount, false, 'redeem.amount'),
                 fee: this.parsePositiveInteger(request.redeem.fee, true, 'redeem.fee'),
                 bankLabel: this.parseLabel(request.redeem.bankLabel, true, 'redeem.bankLabel'),
+            };
+        } else if (request.redeem.type === 'CRC') {
+            const settlement = this.parseOasisSettlementInstruction(request.redeem.settlement, 'redeem.settlement');
+            if (
+                settlement.type !== 'sinpemovil'
+                && (CONFIG.NETWORK === Constants.NETWORK.MAIN || settlement.type !== 'mock')
+            ) {
+                throw new Errors.InvalidRequestError('Invalid redeeming settlement type');
+            }
+            parsedRequest.redeem = {
+                type: 'CRC',
+                keyPath: this.parsePath(request.redeem.keyPath, 'redeem.keyPath'),
+                settlement,
+                amount: this.parsePositiveInteger(request.redeem.amount, false, 'redeem.amount'),
+                fee: this.parsePositiveInteger(request.redeem.fee, true, 'redeem.fee'),
+                recipientLabel: this.parseLabel(request.redeem.recipientLabel, true, 'redeem.recipientLabel'),
             };
         } else {
             throw new Errors.InvalidRequestError('Invalid redeeming type');
@@ -335,9 +372,9 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
              *     | PolygonRedeemDescription
              *     | PolygonRedeemWithSecretInDataDescription}
              */ (usdcHtlcContract.interface.parseTransaction({
-                data: forwardRequest.data,
-                value: forwardRequest.value,
-            }));
+            data: forwardRequest.data,
+            value: forwardRequest.value,
+        }));
 
         if (!allowedMethods.includes(description.name)) {
             throw new Errors.InvalidRequestError('Requested Polygon contract method is invalid');
@@ -369,11 +406,16 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
     }
 
     /**
+     * @typedef {Omit<KeyguardRequest.MockSettlementInstruction, 'contractId'>} MockSettlementInstruction
+     * @typedef {Omit<KeyguardRequest.SepaSettlementInstruction, 'contractId'>} SepaSettlementInstruction
+     * @typedef {Omit<KeyguardRequest.SinpeMovilSettlementInstruction, 'contractId'>} SinpeMovilSettlementInstruction
+     */
+
+    /**
      * Checks that the given instruction is a valid OASIS SettlementInstruction
      * @param {unknown} obj
      * @param {string} parameterName
-     * @returns {Omit<KeyguardRequest.MockSettlementInstruction, 'contractId'> |
-     *           Omit<KeyguardRequest.SepaSettlementInstruction, 'contractId'>}
+     * @returns {MockSettlementInstruction | SepaSettlementInstruction | SinpeMovilSettlementInstruction}
      */
     parseOasisSettlementInstruction(obj, parameterName) {
         if (typeof obj !== 'object' || obj === null) {
@@ -382,7 +424,7 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
 
         switch (/** @type {{type: unknown}} */ (obj).type) {
             case 'mock': {
-                /** @type {Omit<KeyguardRequest.MockSettlementInstruction, 'contractId'>} */
+                /** @type {MockSettlementInstruction} */
                 const settlement = {
                     type: 'mock',
                 };
@@ -394,26 +436,39 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
                     throw new Errors.InvalidRequestError('Invalid settlement recipient');
                 }
 
-                /** @type {Omit<KeyguardRequest.SepaSettlementInstruction, 'contractId'>} */
+                /** @type {SepaSettlementInstruction} */
                 const settlement = {
                     type: 'sepa',
                     recipient: {
                         name: /** @type {string} */ (
                             this.parseLabel(
-                                /** @type {{name: unknown}} */ (recipient).name,
+                                /** @type {{name: unknown}} */(recipient).name,
                                 false,
                                 `${parameterName}.recipient.name`,
                             )
                         ),
                         iban: this.parseIban(
-                            /** @type {{iban: unknown}} */ (recipient).iban,
+                            /** @type {{iban: unknown}} */(recipient).iban,
                             `${parameterName}.recipient.iban`,
                         ),
                         bic: this.parseBic(
-                            /** @type {{bic: unknown}} */ (recipient).bic,
+                            /** @type {{bic: unknown}} */(recipient).bic,
                             `${parameterName}.recipient.bic`,
                         ),
                     },
+                };
+                return settlement;
+            }
+            case 'sinpemovil': {
+                /** @type {SinpeMovilSettlementInstruction} */
+                const settlement = {
+                    type: 'sinpemovil',
+                    phoneNumber: /** @type {string} */ (
+                        this.parsePhoneNumber(
+                            /** @type {{phoneNumber: string}} */(obj).phoneNumber,
+                            { expectedCountryCodes: ['+506'] },
+                        )
+                    ),
                 };
                 return settlement;
             }
@@ -430,7 +485,7 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
         if (!Iban.isValid(iban)) {
             throw new Errors.InvalidRequestError(`${parameterName} is not a valid IBAN`);
         }
-        return Iban.printFormat(/** @type {string} */ (iban), ' ');
+        return Iban.printFormat(/** @type {string} */(iban), ' ');
     }
 
     get Handler() {
