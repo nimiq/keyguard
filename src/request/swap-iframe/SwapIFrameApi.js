@@ -278,9 +278,10 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
             };
         }
 
-        if (request.fund.type === 'EUR' && storedRequest.fund.type === 'EUR') {
+        if ((request.fund.type === 'EUR' && storedRequest.fund.type === 'EUR')
+            || (request.fund.type === 'CRC' && storedRequest.fund.type === 'CRC')) {
             fund = {
-                type: 'EUR',
+                type: request.fund.type,
                 htlcDetails: {
                     hash: Nimiq.BufferUtils.toHex(Nimiq.BufferUtils.fromAny(request.fund.hash)),
                     timeoutTimestamp: this.parsePositiveInteger(request.fund.timeout, false, 'fund.timeout'),
@@ -289,31 +290,10 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
             };
         }
 
-        if (request.redeem.type === 'EUR' && storedRequest.redeem.type === 'EUR') {
+        if ((request.redeem.type === 'EUR' && storedRequest.redeem.type === 'EUR')
+            || (request.redeem.type === 'CRC' && storedRequest.redeem.type === 'CRC')) {
             redeem = {
-                type: 'EUR',
-                htlcDetails: {
-                    hash: Nimiq.BufferUtils.toHex(Nimiq.BufferUtils.fromAny(request.redeem.hash)),
-                    timeoutTimestamp: this.parsePositiveInteger(request.redeem.timeout, false, 'redeem.timeout'),
-                },
-                htlcId: /** @type {string} */ (this.parseLabel(request.redeem.htlcId, false, 'redeem.htlcId')),
-            };
-        }
-
-        if (request.fund.type === 'CRC' && storedRequest.fund.type === 'CRC') {
-            fund = {
-                type: 'CRC',
-                htlcDetails: {
-                    hash: Nimiq.BufferUtils.toHex(Nimiq.BufferUtils.fromAny(request.fund.hash)),
-                    timeoutTimestamp: this.parsePositiveInteger(request.fund.timeout, false, 'fund.timeout'),
-                },
-                htlcId: /** @type {string} */ (this.parseLabel(request.fund.htlcId, false, 'fund.htlcId')),
-            };
-        }
-
-        if (request.redeem.type === 'CRC' && storedRequest.redeem.type === 'CRC') {
-            redeem = {
-                type: 'CRC',
+                type: request.redeem.type,
                 htlcDetails: {
                     hash: Nimiq.BufferUtils.toHex(Nimiq.BufferUtils.fromAny(request.redeem.hash)),
                     timeoutTimestamp: this.parsePositiveInteger(request.redeem.timeout, false, 'redeem.timeout'),
@@ -812,4 +792,3 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
         return result;
     }
 }
-
