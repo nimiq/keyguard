@@ -752,11 +752,14 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
             };
         }
 
-        if (parsedRequest.redeem.type === 'EUR' && storedRequest.redeem.type === 'EUR') {
+        if ((parsedRequest.redeem.type === 'EUR' && storedRequest.redeem.type === 'EUR')
+            || (parsedRequest.redeem.type === 'CRC' && storedRequest.redeem.type === 'CRC')) {
             await loadNimiq();
 
+            const fiatName = parsedRequest.redeem.type.toLocaleLowerCase();
             // Create and sign a JWS of the settlement instructions
-            const privateKey = new Nimiq.PrivateKey(Nimiq.BufferUtils.fromHex(privateKeys.eur));
+            // @ts-ignore The privateKeyName is checked in the if clause
+            const privateKey = new Nimiq.PrivateKey(Nimiq.BufferUtils.fromHex(privateKeys[fiatName]));
             const key = new Key(privateKey);
 
             /** @type {KeyguardRequest.SettlementInstruction} */
@@ -765,28 +768,13 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
                 contractId: parsedRequest.redeem.htlcId,
             };
 
-            if (settlement.type === 'sepa') {
+            if (fiatName === 'eur' && settlement.type === 'sepa') {
                 // Remove spaces from IBAN
                 settlement.recipient.iban = settlement.recipient.iban.replace(/\s/g, '');
             }
 
-            result.eur = OasisSettlementInstructionUtils.signSettlementInstruction(key, 'm', settlement);
-        }
-
-        if (parsedRequest.redeem.type === 'CRC' && storedRequest.redeem.type === 'CRC') {
-            await loadNimiq();
-
-            // Create and sign a JWS of the settlement instructions
-            const privateKey = new Nimiq.PrivateKey(Nimiq.BufferUtils.fromHex(privateKeys.crc));
-            const key = new Key(privateKey);
-
-            /** @type {KeyguardRequest.SettlementInstruction} */
-            const settlement = {
-                ...storedRequest.redeem.settlement,
-                contractId: parsedRequest.redeem.htlcId,
-            };
-
-            result.crc = OasisSettlementInstructionUtils.signSettlementInstruction(key, 'm', settlement);
+            // @ts-ignore The privateKeyName is checked in the if clause
+            result[fiatName] = OasisSettlementInstructionUtils.signSettlementInstruction(key, 'm', settlement);
         }
 
         return result;
