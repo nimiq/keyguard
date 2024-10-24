@@ -68,14 +68,12 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
             if (privateKeys.usdc.length !== 66) throw new Error('Invalid USDC key stored in SessionStorage');
         }
 
-        if (request.redeem.type === 'EUR') {
-            if (!privateKeys.eur) throw new Error('No EUR key stored in SessionStorage');
-            if (privateKeys.eur.length !== 64) throw new Error('Invalid EUR key stored in SessionStorage');
-        }
-
-        if (request.redeem.type === 'CRC') {
-            if (!privateKeys.crc) throw new Error('No CRC key stored in SessionStorage');
-            if (privateKeys.crc.length !== 64) throw new Error('Invalid CRC key stored in SessionStorage');
+        if (request.redeem.type === 'EUR' || request.redeem.type === 'CRC') {
+            /** @type { keyof typeof privateKeys } */
+            // @ts-ignore The type of fiatKey is checked in the if clause
+            const fiatKey = request.redeem.type.toLocaleLowerCase();
+            if (!privateKeys[fiatKey]) throw new Error(`No ${request.redeem.type} key stored in SessionStorage`);
+            if (privateKeys[fiatKey].length !== 64) throw new Error(`Invalid ${request.redeem.type} key stored in SessionStorage`);
         }
 
         // Deserialize stored request
@@ -441,7 +439,7 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
                     throw new Errors.KeyguardError('Missing address in funding change output');
                 }
 
-                outputs.push(/** @type {{address: string, value: number}} */ (storedRequest.fund.changeOutput));
+                outputs.push(/** @type {{address: string, value: number}} */(storedRequest.fund.changeOutput));
             }
 
             // Sort outputs by value ASC, then address ASC
@@ -615,7 +613,7 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
 
             const signature = await wallet._signTypedData(
                 typedData.domain,
-                /** @type {Record<string, ethers.ethers.TypedDataField[]>} */ (/** @type {unknown} */ (cleanedTypes)),
+                /** @type {Record<string, ethers.ethers.TypedDataField[]>} */(/** @type {unknown} */ (cleanedTypes)),
                 typedData.message,
             );
 
@@ -764,7 +762,7 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
 
             const signature = await wallet._signTypedData(
                 typedData.domain,
-                /** @type {Record<string, ethers.ethers.TypedDataField[]>} */ (/** @type {unknown} */ (cleanedTypes)),
+                /** @type {Record<string, ethers.ethers.TypedDataField[]>} */(/** @type {unknown} */ (cleanedTypes)),
                 typedData.message,
             );
 
@@ -814,3 +812,4 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
         return result;
     }
 }
+
