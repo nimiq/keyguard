@@ -83,7 +83,8 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
                     : 0;
 
             const theirFee = fundTx.type === 'EUR' || fundTx.type === 'CRC'
-                ? fundFees.processing : redeemFees.processing;
+                ? fundFees.processing
+                : redeemFees.processing;
 
             const fiatRate = fundTx.type === 'EUR' || fundTx.type === 'CRC' ? fundingFiatRate : redeemingFiatRate;
             const fiatSwapAsset = (fundTx.type === 'EUR' || fundTx.type === 'CRC' ? fundTx.type : redeemTx.type);
