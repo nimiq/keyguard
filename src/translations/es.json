@@ -228,8 +228,8 @@
     "derive-btc-xpub-heading": "Agregar Bitcoin\na su Cuenta",
     "derive-btc-xpub-text": "Fácilmente intecambie entre NIM, la moneda de pago con super rendimiento y BTC, el estándar de oro en cripto.",
 
-    "derive-polygon-address-heading": "Activar USDC",
-    "derive-polygon-address-text": "USDC es una moneda estable fijada al precio del USD y ahora esta disponible en la billetera.",
+    "derive-polygon-address-heading": "Activar USDC/USDT",
+    "derive-polygon-address-text": "USDC and USDT are stablecoins pegged to USD and now available in the wallet.",
 
     "sign-swap-heading": "Confirmar Intercambio",
     "sign-swap-fees": "cuotas",

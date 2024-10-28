@@ -228,8 +228,8 @@
     "derive-btc-xpub-heading": "Add Bitcoin\nto your account",
     "derive-btc-xpub-text": "Easily swap between NIM, the super performant payment coin and BTC, the gold standard of crypto.",
 
-    "derive-polygon-address-heading": "Activate USDC",
-    "derive-polygon-address-text": "USDC is a stablecoin pegged to USD and now available in the wallet.",
+    "derive-polygon-address-heading": "Activate USDC/USDT",
+    "derive-polygon-address-text": "USDC and USDT are stablecoins pegged to USD and now available in the wallet.",
 
     "sign-swap-heading": "Confirm Swap",
     "sign-swap-fees": "fees",

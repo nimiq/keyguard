@@ -228,8 +228,8 @@
     "derive-btc-xpub-heading": "Füge deinem Account\nBitcoin hinzu",
     "derive-btc-xpub-text": "Einfach zwischen NIM, dem superperformanten Zahlungscoin und BTC, dem Goldstandard der Krytowährungen tauschen.",
 
-    "derive-polygon-address-heading": "Aktiviere USDC",
-    "derive-polygon-address-text": "USDC ist ein Stablecoin, der an den USD gekoppelt ist und jetzt in deiner Wallet verfügbar ist.",
+    "derive-polygon-address-heading": "Aktiviere USDC/USDT",
+    "derive-polygon-address-text": "USDC und USDT sind Stablecoins, die an den USD gekoppelt ist und jetzt in deiner Wallet verfügbar sind.",
 
     "sign-swap-heading": "Tausch Bestätigen",
     "sign-swap-fees": "Gebühren",
