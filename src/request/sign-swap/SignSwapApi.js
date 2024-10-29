@@ -88,6 +88,21 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
                 relayData: this.parseOpenGsnRelayData(request.fund.relayData),
                 permit: request.fund.permit,
             };
+        } else if (request.fund.type === 'USDT_MATIC') {
+            const [forwardRequest, description] = this.parseOpenGsnForwardRequest(
+                request.fund,
+                ['open', 'openWithApproval'],
+            );
+
+            parsedRequest.fund = {
+                type: 'USDT_MATIC',
+                keyPath: this.parsePolygonPath(request.fund.keyPath, 'fund.keyPath'),
+                // eslint-disable-next-line object-shorthand
+                description: /** @type {PolygonOpenDescription | PolygonOpenWithApprovalDescription} */ (description),
+                request: forwardRequest,
+                relayData: this.parseOpenGsnRelayData(request.fund.relayData),
+                approval: request.fund.approval,
+            };
         } else if (request.fund.type === 'EUR') {
             parsedRequest.fund = {
                 type: 'EUR',
@@ -128,14 +143,14 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
                     request.redeem.output, false, 'redeem.output',
                 )),
             };
-        } else if (request.redeem.type === 'USDC_MATIC') {
+        } else if (request.redeem.type === 'USDC_MATIC' || request.redeem.type === 'USDT_MATIC') {
             const [forwardRequest, description] = this.parseOpenGsnForwardRequest(
                 request.redeem,
                 ['redeem', 'redeemWithSecretInData'],
             );
 
             parsedRequest.redeem = {
-                type: 'USDC_MATIC',
+                type: request.redeem.type,
                 keyPath: this.parsePolygonPath(request.redeem.keyPath, 'fund.keyPath'),
                 // eslint-disable-next-line object-shorthand
                 description: /** @type {PolygonRedeemDescription | PolygonRedeemWithSecretInDataDescription} */
@@ -182,10 +197,10 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
 
         if (request.layout === SignSwapApi.Layouts.SLIDER && parsedRequest.layout === SignSwapApi.Layouts.SLIDER) {
             // SLIDER layout is only allowed for crypto-to-crypto swaps
-            const assets = ['NIM', 'BTC', 'USDC_MATIC'];
+            const assets = ['NIM', 'BTC', 'USDC_MATIC', 'USDT_MATIC'];
             if (!assets.includes(parsedRequest.fund.type) || !assets.includes(parsedRequest.redeem.type)) {
                 throw new Errors.InvalidRequestError(
-                    'The \'slider\' layout is only allowed for swaps between NIM, BTC and USDC',
+                    'The \'slider\' layout is only allowed for swaps between NIM, BTC, USDC and USDT',
                 );
             }
 
@@ -198,9 +213,14 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
             parsedRequest.bitcoinAccount = {
                 balance: this.parsePositiveInteger(request.bitcoinAccount.balance, true, 'bitcoinAccount.balance'),
             };
-            parsedRequest.polygonAddresses = request.polygonAddresses.map(({ address, usdcBalance }, index) => ({
+            parsedRequest.polygonAddresses = request.polygonAddresses.map(({
+                address,
+                usdcBalance,
+                usdtBalance,
+            }, index) => ({
                 address: this.parsePolygonAddress(address, `polygonAddresses[${index}].address`),
-                usdcBalance: this.parsePositiveInteger(usdcBalance, true, `polygonAddresses[${index}].balance`),
+                usdcBalance: this.parsePositiveInteger(usdcBalance, true, `polygonAddresses[${index}].usdcBalance`),
+                usdtBalance: this.parsePositiveInteger(usdtBalance, true, `polygonAddresses[${index}].usdtBalance`),
             }));
 
             // Verify that used Nimiq address is in nimiqAddresses[] and has enough balance
@@ -250,6 +270,12 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
                         .add(parsedRequest.fund.description.args.fee).toNumber()
                 ) {
                     throw new Errors.InvalidRequestError('The sending USDC address does not have enough balance');
+                } else if (
+                    parsedRequest.fund.type === 'USDT_MATIC'
+                    && activePolygonAddress.usdtBalance < parsedRequest.fund.description.args.amount
+                        .add(parsedRequest.fund.description.args.fee).toNumber()
+                ) {
+                    throw new Errors.InvalidRequestError('The sending USDT address does not have enough balance');
                 }
             }
         }
@@ -306,12 +332,19 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
     // eslint-disable-next-line valid-jsdoc
     /**
      *
-     * @param {Omit<KeyguardRequest.PolygonTransactionInfo, 'approval' | 'amount'>} request
-     * @param {Array<'open' | 'openWithPermit' | 'redeem' | 'redeemWithSecretInData'>} allowedMethods
+     * @param {Omit<KeyguardRequest.PolygonTransactionInfo, 'amount'>} request
+     * @param {Array<
+     *     | 'open'
+     *     | 'openWithPermit'
+     *     | 'openWithApproval'
+     *     | 'redeem'
+     *     | 'redeemWithSecretInData'
+     * >} allowedMethods
      * @returns {[
      *     KeyguardRequest.OpenGsnForwardRequest,
-     *     PolygonOpenDescription
+     *     | PolygonOpenDescription
      *     | PolygonOpenWithPermitDescription
+     *     | PolygonOpenWithApprovalDescription
      *     | PolygonRedeemDescription
      *     | PolygonRedeemWithSecretInDataDescription,
      * ]}
@@ -319,22 +352,32 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
     parseOpenGsnForwardRequest(request, allowedMethods) {
         const forwardRequest = this.parseOpenGsnForwardRequestRoot(request.request);
 
-        if (forwardRequest.to !== CONFIG.NATIVE_USDC_HTLC_CONTRACT_ADDRESS) {
+        if (
+            forwardRequest.to !== CONFIG.NATIVE_USDC_HTLC_CONTRACT_ADDRESS
+            && forwardRequest.to !== CONFIG.BRIDGED_USDT_HTLC_CONTRACT_ADDRESS
+        ) {
             throw new Errors.InvalidRequestError('request.to address is not allowed');
         }
 
-        const usdcHtlcContract = new ethers.Contract(
-            CONFIG.NATIVE_USDC_HTLC_CONTRACT_ADDRESS,
-            PolygonContractABIs.NATIVE_USDC_HTLC_CONTRACT_ABI,
-        );
+        const htlcContract = {
+            [CONFIG.NATIVE_USDC_HTLC_CONTRACT_ADDRESS]: () => new ethers.Contract(
+                CONFIG.NATIVE_USDC_HTLC_CONTRACT_ADDRESS,
+                PolygonContractABIs.NATIVE_USDC_HTLC_CONTRACT_ABI,
+            ),
+            [CONFIG.BRIDGED_USDT_HTLC_CONTRACT_ADDRESS]: () => new ethers.Contract(
+                CONFIG.BRIDGED_USDT_HTLC_CONTRACT_ADDRESS,
+                PolygonContractABIs.BRIDGED_USDT_HTLC_CONTRACT_ABI,
+            ),
+        }[forwardRequest.to]();
 
         // eslint-disable-next-line operator-linebreak
         const description =
             /** @type {PolygonOpenDescription
              *     | PolygonOpenWithPermitDescription
+             *     | PolygonOpenWithApprovalDescription
              *     | PolygonRedeemDescription
              *     | PolygonRedeemWithSecretInDataDescription}
-             */ (usdcHtlcContract.interface.parseTransaction({
+             */ (htlcContract.interface.parseTransaction({
                 data: forwardRequest.data,
                 value: forwardRequest.value,
             }));
@@ -343,19 +386,37 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
             throw new Errors.InvalidRequestError('Requested Polygon contract method is invalid');
         }
 
-        if (description.name === 'open' || description.name === 'openWithPermit') {
-            if (description.args.token !== CONFIG.NATIVE_USDC_CONTRACT_ADDRESS) {
-                throw new Errors.InvalidRequestError('Invalid USDC token contract in request data');
+        if (
+            description.name === 'open'
+            || description.name === 'openWithPermit'
+            || description.name === 'openWithApproval'
+        ) {
+            if (
+                (description.name === 'open' && forwardRequest.to === CONFIG.NATIVE_USDC_HTLC_CONTRACT_ADDRESS)
+                || description.name === 'openWithPermit'
+            ) {
+                if (description.args.token !== CONFIG.NATIVE_USDC_CONTRACT_ADDRESS) {
+                    throw new Errors.InvalidRequestError('Invalid USDC token contract in request data');
+                }
+            }
+
+            if (
+                (description.name === 'open' && forwardRequest.to === CONFIG.BRIDGED_USDT_HTLC_CONTRACT_ADDRESS)
+                || description.name === 'openWithApproval'
+            ) {
+                if (description.args.token !== CONFIG.BRIDGED_USDT_CONTRACT_ADDRESS) {
+                    throw new Errors.InvalidRequestError('Invalid USDT token contract in request data');
+                }
             }
 
             if (description.args.refundAddress !== forwardRequest.from) {
-                throw new Errors.InvalidRequestError('USDC HTLC refund address must be same as sender');
+                throw new Errors.InvalidRequestError('HTLC refund address must be same as sender');
             }
         }
 
         if (description.name === 'redeem' || description.name === 'redeemWithSecretInData') {
             if (description.args.target !== forwardRequest.from) {
-                throw new Errors.InvalidRequestError('USDC HTLC target address must be same as sender');
+                throw new Errors.InvalidRequestError('HTLC target address must be same as sender');
             }
         }
 
@@ -363,6 +424,12 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
         if ((description.name === 'openWithPermit') !== !!request.permit) {
             throw new Errors.InvalidRequestError('`permit` object is only allowed for contract method '
                 + '"openWithPermit"');
+        }
+
+        // Check that approval object exists when method is 'openWithApproval', and unset for other methods.
+        if ((description.name === 'openWithApproval') !== !!request.approval) {
+            throw new Errors.InvalidRequestError('`approval` object is only allowed for contract method '
+                + '"openWithApproval"');
         }
 
         return [forwardRequest, description];

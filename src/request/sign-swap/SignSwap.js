@@ -69,8 +69,9 @@ class SignSwap {
             case 'NIM': swapFromValue = fundTx.transaction.value + fundTx.transaction.fee; break;
             case 'BTC': swapFromValue = fundTx.inputs.reduce((sum, input) => sum + input.witnessUtxo.value, 0)
                     - (fundTx.changeOutput ? fundTx.changeOutput.value : 0); break;
-            case 'USDC_MATIC': swapFromValue = fundTx.description.args.amount
-                .add(fundTx.description.args.fee).toNumber(); break;
+            case 'USDC_MATIC':
+            case 'USDT_MATIC':
+                swapFromValue = fundTx.description.args.amount.add(fundTx.description.args.fee).toNumber(); break;
             case 'EUR': swapFromValue = fundTx.amount + fundTx.fee; break;
             default: throw new Errors.KeyguardError('Invalid asset');
         }
@@ -80,7 +81,9 @@ class SignSwap {
         switch (redeemTx.type) {
             case 'NIM': swapToValue = redeemTx.transaction.value; break;
             case 'BTC': swapToValue = redeemTx.output.value; break;
-            case 'USDC_MATIC': swapToValue = redeemTx.amount; break;
+            case 'USDC_MATIC':
+            case 'USDT_MATIC':
+                swapToValue = redeemTx.amount; break;
             case 'EUR': swapToValue = redeemTx.amount - redeemTx.fee; break;
             default: throw new Errors.KeyguardError('Invalid asset');
         }
@@ -97,21 +100,21 @@ class SignSwap {
 
         $swapLeftValue.textContent = NumberFormatting.formatNumber(
             CryptoUtils.unitsToCoins(leftAsset, leftAmount),
-            leftAsset === 'USDC_MATIC' ? 2 : CryptoUtils.assetDecimals(leftAsset),
-            leftAsset === 'EUR' || leftAsset === 'USDC_MATIC' ? 2 : 0,
+            ['USDC_MATIC', 'USDT_MATIC'].includes(leftAsset) ? 2 : CryptoUtils.assetDecimals(leftAsset),
+            leftAsset === 'EUR' || ['USDC_MATIC', 'USDT_MATIC'].includes(leftAsset) ? 2 : 0,
         );
 
         $swapRightValue.textContent = NumberFormatting.formatNumber(
             CryptoUtils.unitsToCoins(rightAsset, rightAmount),
-            rightAsset === 'USDC_MATIC' ? 2 : CryptoUtils.assetDecimals(rightAsset),
-            rightAsset === 'EUR' || rightAsset === 'USDC_MATIC' ? 2 : 0,
+            ['USDC_MATIC', 'USDT_MATIC'].includes(rightAsset) ? 2 : CryptoUtils.assetDecimals(rightAsset),
+            rightAsset === 'EUR' || ['USDC_MATIC', 'USDT_MATIC'].includes(rightAsset) ? 2 : 0,
         );
 
         $swapValues.classList.add(
             `${CryptoUtils.assetToCurrency(fundTx.type)}-to-${CryptoUtils.assetToCurrency(redeemTx.type)}`,
         );
 
-        /** @type {'NIM' | 'BTC' | 'USDC_MATIC' | 'EUR'} */
+        /** @type {'NIM' | 'BTC' | 'USDC_MATIC' | 'USDT_MATIC' | 'EUR'} */
         let exchangeBaseAsset;
         // If EUR is part of the swap, the other currency is the base asset
         if (fundTx.type === 'EUR') exchangeBaseAsset = redeemTx.type;
@@ -147,11 +150,13 @@ class SignSwap {
             0,
             CryptoUtils.assetDecimals(exchangeOtherAsset) - exchangeRateDigitsLength,
         );
-        const exchangeRateString = `1 ${exchangeBaseAsset} = ${NumberFormatting.formatNumber(
+        const exchangeBaseCurrency = CryptoUtils.assetToCurrency(exchangeBaseAsset);
+        const exchangeOtherCurrency = CryptoUtils.assetToCurrency(exchangeOtherAsset);
+        const exchangeRateString = `1 ${exchangeBaseCurrency.toUpperCase()} = ${NumberFormatting.formatNumber(
             exchangeRate,
             exchangeRateDecimals,
             exchangeOtherAsset === 'EUR' ? CryptoUtils.assetDecimals(exchangeOtherAsset) : 0,
-        )} ${exchangeOtherAsset}`;
+        )} ${exchangeOtherCurrency.toUpperCase()}`;
 
         const $topRow = /** @type {HTMLDivElement} */ (this.$el.querySelector('.nq-notice'));
         $topRow.appendChild(
@@ -180,10 +185,13 @@ class SignSwap {
                 $leftLabel.textContent = request.fund.senderLabel;
             } else if (request.fund.type === 'BTC') {
                 $leftIdenticon.innerHTML = TemplateTags.hasVars(0)`<img src="../../assets/icons/bitcoin.svg"></img>`;
-                $leftLabel.textContent = I18n.translatePhrase('bitcoin');
+                $leftLabel.textContent = 'Bitcoin';
             } else if (request.fund.type === 'USDC_MATIC') {
                 $leftIdenticon.innerHTML = TemplateTags.hasVars(0)`<img src="../../assets/icons/usdc.svg"></img>`;
-                $leftLabel.textContent = I18n.translatePhrase('usd-coin');
+                $leftLabel.textContent = 'USD Coin';
+            } else if (request.fund.type === 'USDT_MATIC') {
+                $leftIdenticon.innerHTML = TemplateTags.hasVars(0)`<img src="../../assets/icons/usdt.svg"></img>`;
+                $leftLabel.textContent = 'Tether USD';
             } else if (request.fund.type === 'EUR') {
                 $leftIdenticon.innerHTML = TemplateTags.hasVars(0)`<img src="../../assets/icons/bank.svg"></img>`;
                 $leftLabel.textContent = request.fund.bankLabel || I18n.translatePhrase('sign-swap-your-bank');
@@ -195,10 +203,13 @@ class SignSwap {
                 $rightLabel.textContent = request.redeem.recipientLabel;
             } else if (request.redeem.type === 'BTC') {
                 $rightIdenticon.innerHTML = TemplateTags.hasVars(0)`<img src="../../assets/icons/bitcoin.svg"></img>`;
-                $rightLabel.textContent = I18n.translatePhrase('bitcoin');
+                $rightLabel.textContent = 'Bitcoin';
             } else if (request.redeem.type === 'USDC_MATIC') {
                 $rightIdenticon.innerHTML = TemplateTags.hasVars(0)`<img src="../../assets/icons/usdc.svg"></img>`;
-                $rightLabel.textContent = I18n.translatePhrase('usd-coin');
+                $rightLabel.textContent = 'USD Coin';
+            } else if (request.redeem.type === 'USDT_MATIC') {
+                $rightIdenticon.innerHTML = TemplateTags.hasVars(0)`<img src="../../assets/icons/usdt.svg"></img>`;
+                $rightLabel.textContent = 'Tether USD';
             } else if (request.redeem.type === 'EUR') {
                 $rightIdenticon.innerHTML = TemplateTags.hasVars(0)`<img src="../../assets/icons/bank.svg"></img>`;
 
@@ -251,13 +262,19 @@ class SignSwap {
             if (leftAsset === 'BTC' || rightAsset === 'BTC') {
                 (leftAsset === 'BTC' ? $leftIdenticon : $rightIdenticon)
                     .innerHTML = TemplateTags.hasVars(0)`<img src="../../assets/icons/bitcoin.svg"></img>`;
-                (leftAsset === 'BTC' ? $leftLabel : $rightLabel).textContent = I18n.translatePhrase('bitcoin');
+                (leftAsset === 'BTC' ? $leftLabel : $rightLabel).textContent = 'Bitcoin';
             }
 
             if (leftAsset === 'USDC_MATIC' || rightAsset === 'USDC_MATIC') {
                 (leftAsset === 'USDC_MATIC' ? $leftIdenticon : $rightIdenticon)
                     .innerHTML = TemplateTags.hasVars(0)`<img src="../../assets/icons/usdc.svg"></img>`;
-                (leftAsset === 'USDC_MATIC' ? $leftLabel : $rightLabel).textContent = I18n.translatePhrase('usd-coin');
+                (leftAsset === 'USDC_MATIC' ? $leftLabel : $rightLabel).textContent = 'USD Coin';
+            }
+
+            if (leftAsset === 'USDT_MATIC' || rightAsset === 'USDT_MATIC') {
+                (leftAsset === 'USDT_MATIC' ? $leftIdenticon : $rightIdenticon)
+                    .innerHTML = TemplateTags.hasVars(0)`<img src="../../assets/icons/usdt.svg"></img>`;
+                (leftAsset === 'USDT_MATIC' ? $leftLabel : $rightLabel).textContent = 'Tether USD';
             }
 
             // Add signs in front of swap amounts
@@ -377,6 +394,35 @@ class SignSwap {
                 else rightSegments = segments;
             }
 
+            if (leftAsset === 'USDT_MATIC' || rightAsset === 'USDT_MATIC') {
+                const amount = leftAsset === 'USDT_MATIC' ? leftAmount : rightAmount;
+
+                const newBalance = request.polygonAddresses[0].usdtBalance
+                    + (amount * (fundTx.type === 'USDT_MATIC' ? -1 : 1));
+                const newBalanceFormatted = NumberFormatting.formatNumber(
+                    CryptoUtils.unitsToCoins('USDT_MATIC', newBalance), 2, 2,
+                );
+
+                if (leftAsset === 'USDT_MATIC') {
+                    $leftNewBalance.textContent = `${newBalanceFormatted} USDT`;
+                    $leftAccount.classList.add('usdt');
+                } else if (rightAsset === 'USDT_MATIC') {
+                    $rightNewBalance.textContent = `${newBalanceFormatted} USDT`;
+                    $rightAccount.classList.add('usdt');
+                }
+
+                /** @type {Segment[]} */
+                const segments = [{
+                    address: 'usdt',
+                    balance: request.polygonAddresses[0].usdtBalance,
+                    active: true,
+                    newBalance,
+                }];
+
+                if (leftAsset === 'USDT_MATIC') leftSegments = segments;
+                else rightSegments = segments;
+            }
+
             if (!leftSegments || !rightSegments) {
                 throw new Errors.KeyguardError('Missing segments for balance distribution bar');
             }
@@ -409,7 +455,7 @@ class SignSwap {
     }
 
     /**
-     * @param {'NIM' | 'BTC' | 'USDC_MATIC' | 'EUR'} asset
+     * @param {'NIM' | 'BTC' | 'USDC_MATIC' | 'USDT_MATIC' | 'EUR'} asset
      * @param {Parsed<KeyguardRequest.SignSwapRequest>} request
      * @returns {number}
      */
@@ -437,11 +483,12 @@ class SignSwap {
                         ? redeemTx.input.witnessUtxo.value + request.redeemFees.funding
                         : 0; // Should never happen, if parsing works correctly
             case 'USDC_MATIC':
-                return fundTx.type === 'USDC_MATIC'
-                    // When the user funds USDC, the service receives the HTLC balance - their network fee.
+            case 'USDT_MATIC':
+                return fundTx.type === asset
+                    // When the user funds USDC/T, the service receives the HTLC balance - their network fee.
                     ? fundTx.description.args.amount.toNumber() - request.fundFees.redeeming
-                    : redeemTx.type === 'USDC_MATIC'
-                        // When the user redeems USDC, the service lost the HTLC balance + their network fee.
+                    : redeemTx.type === asset
+                        // When the user redeems USDC/T, the service lost the HTLC balance + their network fee.
                         // The transaction value is "HTLC balance - tx fee", therefore the "HTLC balance"
                         // is the transaction value + tx fee.
                         ? redeemTx.amount + redeemTx.description.args.fee.toNumber() + request.redeemFees.funding
@@ -490,7 +537,7 @@ class SignSwap {
         const bitcoinKey = new BitcoinKey(key);
         const polygonKey = new PolygonKey(key);
 
-        /** @type {{nim: string, btc: string[], usdc: string, eur: string, btc_refund?: string}} */
+        /** @type {{nim: string, btc: string[], usdc: string, usdt: string, eur: string, btc_refund?: string}} */
         const privateKeys = {};
 
         if (request.fund.type === 'NIM') {
@@ -565,6 +612,46 @@ class SignSwap {
             privateKeys.usdc = wallet.privateKey;
         }
 
+        if (request.fund.type === 'USDT_MATIC') {
+            if (request.fund.description.name === 'openWithApproval') {
+                const { sigR, sigS, sigV } = await polygonKey.signUsdtApproval(
+                    request.fund.keyPath,
+                    new ethers.Contract(
+                        CONFIG.BRIDGED_USDT_CONTRACT_ADDRESS,
+                        PolygonContractABIs.BRIDGED_USDT_CONTRACT_ABI,
+                    ),
+                    CONFIG.BRIDGED_USDT_HTLC_CONTRACT_ADDRESS,
+                    request.fund.description.args.approval,
+                    // Has been validated to be defined when function called is `openWithApproval`
+                    /** @type {{ tokenNonce: number }} */ (request.fund.approval).tokenNonce,
+                    request.fund.request.from,
+                );
+
+                const htlcContract = new ethers.Contract(
+                    CONFIG.BRIDGED_USDT_HTLC_CONTRACT_ADDRESS,
+                    PolygonContractABIs.BRIDGED_USDT_HTLC_CONTRACT_ABI,
+                );
+
+                request.fund.request.data = htlcContract.interface.encodeFunctionData(request.fund.description.name, [
+                    /* bytes32 id */ request.fund.description.args.id,
+                    /* address token */ request.fund.description.args.token,
+                    /* uint256 amount */ request.fund.description.args.amount,
+                    /* address refundAddress */ request.fund.description.args.refundAddress,
+                    /* address recipientAddress */ request.fund.description.args.recipientAddress,
+                    /* bytes32 hash */ request.fund.description.args.hash,
+                    /* uint256 timeout */ request.fund.description.args.timeout,
+                    /* uint256 fee */ request.fund.description.args.fee,
+                    /* uint256 approval */ request.fund.description.args.approval,
+                    /* bytes32 sigR */ sigR,
+                    /* bytes32 sigS */ sigS,
+                    /* uint8 sigV */ sigV,
+                ]);
+            }
+
+            const wallet = polygonKey.deriveKeyPair(request.fund.keyPath);
+            privateKeys.usdt = wallet.privateKey;
+        }
+
         if (request.fund.type === 'EUR') {
             // No signature required
         }
@@ -592,6 +679,11 @@ class SignSwap {
         if (request.redeem.type === 'USDC_MATIC') {
             const wallet = polygonKey.deriveKeyPair(request.redeem.keyPath);
             privateKeys.usdc = wallet.privateKey;
+        }
+
+        if (request.redeem.type === 'USDT_MATIC') {
+            const wallet = polygonKey.deriveKeyPair(request.redeem.keyPath);
+            privateKeys.usdt = wallet.privateKey;
         }
 
         /** @type {string | undefined} */

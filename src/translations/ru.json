@@ -220,10 +220,7 @@
     "login-file-filename": "Nimiq-Файл-Авторизации-{accountLabel}.png",
     "login-file-default-account-label": "{color} Аккаунт",
 
-    "bitcoin": "Bitcoin",
     "bitcoin-recipient-unlabelled": "Немаркированный",
-
-    "usd-coin": "USD Coin",
 
     "derive-btc-xpub-heading": "Добавьте Биткоин\nна свой аккаунт",
     "derive-btc-xpub-text": "NIM - супербыстрая платёжная монета. BTC - золотой криптовалютный стандарт. Меняйте NIM на BTC - и обратно. Это легко и просто!",
@@ -240,6 +237,7 @@
     "sign-swap-bank-fees": "комиссия",
     "sign-swap-bank-fees-explainer": "Комиссия банка.",
     "sign-swap-usdc-fees": "комиссия сети USDC",
+    "sign-swap-usdt-fees": "комиссия сети USDT",
     "sign-swap-nim-fees": "комиссия сети NIM",
     "sign-swap-exchange-fee": "Комиссия",
     "sign-swap-of-exchange-value": "от суммы обмена.",

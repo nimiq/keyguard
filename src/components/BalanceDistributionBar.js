@@ -3,7 +3,7 @@
 /* global CryptoUtils */
 
 /** @typedef {{address: string, balance: number, active: boolean, newBalance: number}} Segment */
-/** @typedef {'NIM' | 'BTC' | 'USDC_MATIC' | 'EUR'} Asset */
+/** @typedef {'NIM' | 'BTC' | 'USDC_MATIC' | 'USDT_MATIC' | 'EUR'} Asset */
 
 class BalanceDistributionBar { // eslint-disable-line no-unused-vars
     /**

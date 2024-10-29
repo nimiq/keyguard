@@ -37,6 +37,10 @@
     background-color: #2775CA; /* USDC blue */
 }
 
+.balance-distribution-bar .bar.usdt {
+    background-color: #009393; /* USDT green */
+}
+
 .balance-distribution-bar .bar:last-child {
     margin-right: 0;
     justify-content: flex-start;
