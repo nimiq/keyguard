@@ -5,6 +5,7 @@
 .nim-symbol,
 .btc-symbol,
 .usdc-symbol,
+.usdt-symbol,
 .eur-symbol {
     margin-left: 0.25em;
 }
@@ -231,12 +232,14 @@
 }
 
 .layout-slider .btc,
-.layout-slider .usdc {
+.layout-slider .usdc,
+.layout-slider .usdt {
     --column-gap: 2rem;
 }
 
 .layout-slider .btc .identicon,
-.layout-slider .usdc .identicon {
+.layout-slider .usdc .identicon,
+.layout-slider .usdt .identicon {
     width: 5.25rem;
     height: 5.25rem;
     margin: -0.25rem 0;

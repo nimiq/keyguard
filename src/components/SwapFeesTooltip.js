@@ -72,6 +72,25 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
             totalFiatFees += fiatFee;
         }
 
+        // Show USDT fees next
+        if (fundTx.type === 'USDT_MATIC' || redeemTx.type === 'USDT_MATIC') {
+            const myFee = fundTx.type === 'USDT_MATIC'
+                ? fundTx.description.args.fee.toNumber()
+                : redeemTx.type === 'USDT_MATIC'
+                    ? redeemTx.description.args.fee.toNumber()
+                    : 0;
+
+            const theirFee = fundTx.type === 'USDT_MATIC' ? fundFees.redeeming : redeemFees.funding;
+
+            const fiatRate = fundTx.type === 'USDT_MATIC' ? fundingFiatRate : redeemingFiatRate;
+            const fiatFee = CryptoUtils.unitsToCoins('USDT_MATIC', myFee + theirFee) * fiatRate;
+
+            const rows = this._createUsdtLine(fiatFee, fiatCurrency);
+            this.$tooltip.appendChild(rows[0]);
+
+            totalFiatFees += fiatFee;
+        }
+
         // Show OASIS fees next
         if (fundTx.type === 'EUR' || redeemTx.type === 'EUR') {
             const myFee = fundTx.type === 'EUR'
@@ -276,6 +295,24 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
 
         $div.innerHTML = TemplateTags.hasVars(1)`
             <label data-i18n="sign-swap-usdc-fees">USDC network fee</label>
+            <div>${NumberFormatting.formatCurrency(fiatFee, fiatCurrency)}</div>
+        `;
+        I18n.translateDom($div);
+
+        return [$div];
+    }
+
+    /**
+     * @param {number} fiatFee
+     * @param {string} fiatCurrency
+     * @returns {[HTMLDivElement]}
+     */
+    _createUsdtLine(fiatFee, fiatCurrency) {
+        const $div = document.createElement('div');
+        $div.classList.add('price-breakdown');
+
+        $div.innerHTML = TemplateTags.hasVars(1)`
+            <label data-i18n="sign-swap-usdt-fees">USDT network fee</label>
             <div>${NumberFormatting.formatCurrency(fiatFee, fiatCurrency)}</div>
         `;
         I18n.translateDom($div);

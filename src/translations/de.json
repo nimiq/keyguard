@@ -220,10 +220,7 @@
     "login-file-filename": "Nimiq-Login-Datei-{accountLabel}.png",
     "login-file-default-account-label": "{color} Konto",
 
-    "bitcoin": "Bitcoin",
     "bitcoin-recipient-unlabelled": "Unbeschriftet",
-
-    "usd-coin": "USD Coin",
 
     "derive-btc-xpub-heading": "Füge deinem Account\nBitcoin hinzu",
     "derive-btc-xpub-text": "Einfach zwischen NIM, dem superperformanten Zahlungscoin und BTC, dem Goldstandard der Krytowährungen tauschen.",
@@ -240,6 +237,7 @@
     "sign-swap-bank-fees": "Gebühr",
     "sign-swap-bank-fees-explainer": "Bankennetzwerk-Gebühr.",
     "sign-swap-usdc-fees": "USDC Netwerkgebühr",
+    "sign-swap-usdt-fees": "USDT Netwerkgebühr",
     "sign-swap-nim-fees": "NIM Netzwerkgebühr",
     "sign-swap-exchange-fee": "Tauschgebühr",
     "sign-swap-of-exchange-value": "des Tauschwerts.",

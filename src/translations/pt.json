@@ -220,10 +220,7 @@
     "login-file-filename": "Nimiq-Ficheiro-Login-{accountLabel}.png",
     "login-file-default-account-label": "Conta {color}",
 
-    "bitcoin": "Bitcoin",
     "bitcoin-recipient-unlabelled": "Sem marcador",
-
-    "usd-coin": "Moeda USD",
 
     "derive-btc-xpub-heading": "Adiciona Bitcoin\nna tua conta",
     "derive-btc-xpub-text": "Faz uma troca fácil entre NIM, a moeda de pagamento de alto desempenho e BTC, o ouro das criptomoedas.",
@@ -240,6 +237,7 @@
     "sign-swap-bank-fees": "taxa",
     "sign-swap-bank-fees-explainer": "taxa de rede bancária",
     "sign-swap-usdc-fees": "taxa de rede USDC",
+    "sign-swap-usdt-fees": "taxa de rede USDT",
     "sign-swap-nim-fees": "taxa de rede NIM",
     "sign-swap-exchange-fee": "taxa de troca",
     "sign-swap-of-exchange-value": "de troca de valor",

@@ -220,10 +220,7 @@
     "login-file-filename": "Nimiq-Login-File-{accountLabel}.png",
     "login-file-default-account-label": "{color} Account",
 
-    "bitcoin": "Bitcoin",
     "bitcoin-recipient-unlabelled": "Ongelabeld",
-
-    "usd-coin": "USD Munt",
 
     "derive-btc-xpub-heading": "Voeg Bitcoin\ntoe aan je account",
     "derive-btc-xpub-text": "Wissel eenvoudig tussen NIM, de superpresterende betaalmunt en BTC, de gouden standaard van crypto.",
@@ -240,6 +237,7 @@
     "sign-swap-bank-fees": "kosten",
     "sign-swap-bank-fees-explainer": "Bank kosten.",
     "sign-swap-usdc-fees": "USDC-netwerkkosten",
+    "sign-swap-usdt-fees": "USDT-netwerkkosten",
     "sign-swap-nim-fees": "NIM-netwerkkosten",
     "sign-swap-exchange-fee": "Wisselkosten",
     "sign-swap-of-exchange-value": "van ruilwaarde.",

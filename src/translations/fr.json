@@ -220,16 +220,13 @@
     "login-file-filename": "Fichier-de-Connexion-Nimiq-{accountLabel}.png",
     "login-file-default-account-label": "Compte {color}",
 
-    "bitcoin": "Bitcoin",
     "bitcoin-recipient-unlabelled": "Non-libellé",
-
-    "usd-coin": "USD Coin",
 
     "derive-btc-xpub-heading": "Ajouter Bitcoin\nà votre compte",
     "derive-btc-xpub-text": "Swappez facilement entre NIM, la monnaie de paiement super performante et BTC, l'étalon-or de la crypto.",
 
     "derive-polygon-address-heading": "Activer l'USDC/l'USDT",
-    "derive-polygon-address-text": "USDC and USDT are stablecoins pegged to USD and now available in the wallet.",
+    "derive-polygon-address-text": "L'USDC et l'USDT sont des stablecoins indexés sur l'USD et ils sont désormais disponibles dans le wallet.",
 
     "sign-swap-heading": "Confirmer le swap",
     "sign-swap-fees": "frais",
@@ -240,6 +237,7 @@
     "sign-swap-bank-fees": "frais",
     "sign-swap-bank-fees-explainer": "Frais du réseau bancaire.",
     "sign-swap-usdc-fees": "Frais de réseau USDC",
+    "sign-swap-usdt-fees": "Frais de réseau USDT",
     "sign-swap-nim-fees": "Frais de réseau NIM",
     "sign-swap-exchange-fee": "Frais de swap",
     "sign-swap-of-exchange-value": "de la valeur du swap.",

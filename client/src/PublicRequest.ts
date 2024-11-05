@@ -214,22 +214,27 @@ export type PolygonTransactionInfo = {
     relayData: OpenGsnRelayData,
 
     /**
+     * The token contract address. Required for calling the bridged HTLC contract.
+     */
+    token?: string,
+
+    /**
      * For refund and redeem transactions from HTLCs the amount is not part of the forward request / relay request and
      * needs to be specified separately.
      */
     amount?: number,
 
     /**
-     * The sender's nonce in the token contract, required when calling the
-     * contract function `swapWithApproval` for bridged USDC.e or `transferWithApproval` for bridged USDT.
+     * The sender's nonce in the token contract, required when calling the contract function `swapWithApproval` for
+     * bridged USDC.e or `transferWithApproval` and 'openWithApproval`for bridged USDT.
      */
     approval?: {
         tokenNonce: number,
     },
 
     /**
-     * The sender's nonce in the token contract, required when calling the
-     * contract function `transferWithPermit` for native USDC.
+     * The sender's nonce in the token contract, required when calling the contract functions `transferWithPermit` and
+     * `openWithPermit` for native USDC.
      */
     permit?: {
         tokenNonce: number,
@@ -291,6 +296,12 @@ export type SignSwapRequestCommon = SimpleRequest & {
             | 'amount' // Not used for HTLC opening - only for redeem and refund
         >
     ) | (
+        {type: 'USDT_MATIC'}
+        & Omit<PolygonTransactionInfo,
+            | 'permit' // HTLC opening for bridged USDT uses `approval`, not `permit`
+            | 'amount' // Not used for HTLC opening - only for redeem and refund
+        >
+    ) | (
         {type: 'EUR'}
         & {
             amount: number,
@@ -323,7 +334,7 @@ export type SignSwapRequestCommon = SimpleRequest & {
             output: BitcoinTransactionChangeOutput,
         }
     ) | (
-        {type: 'USDC_MATIC'}
+        {type: 'USDC_MATIC' | 'USDT_MATIC'}
         & Omit<PolygonTransactionInfo,
             | 'approval' // Not needed for redeeming
             | 'permit' // Not needed for redeeming
@@ -359,7 +370,7 @@ export type SignSwapRequestCommon = SimpleRequest & {
         funding: number,
         processing: number,
     },
-    serviceSwapFee: number, // Luna, Sats or USDC-units, depending which one gets funded
+    serviceSwapFee: number, // Luna, Sats or USDC/T-units, depending which one gets funded
 
     // Optional KYC info for swapping at higher limits.
     // KYC-enabled swaps facilitated by S3/Fastspot require an s3GrantToken and swaps from or to Euro via OASIS
@@ -388,6 +399,7 @@ export type SignSwapRequestSlider = SignSwapRequestCommon & {
     polygonAddresses: Array<{
         address: string,
         usdcBalance: number, // smallest unit of USDC (= 0.000001 USDC)
+        usdtBalance: number, // smallest unit of USDT (= 0.000001 USDT)
     }>,
 };
 
@@ -408,7 +420,7 @@ export type SignSwapTransactionsRequest = {
         type: 'BTC',
         htlcScript: Uint8Array,
     } | {
-        type: 'USDC_MATIC',
+        type: 'USDC_MATIC' | 'USDT_MATIC',
         htlcData: string,
     } | {
         type: 'EUR',
@@ -426,7 +438,7 @@ export type SignSwapTransactionsRequest = {
         transactionHash: string,
         outputIndex: number;
     } | {
-        type: 'USDC_MATIC',
+        type: 'USDC_MATIC' | 'USDT_MATIC',
         hash: string,
         timeout: number,
         htlcId: string,
@@ -530,6 +542,7 @@ export type SignSwapTransactionsResult = {
     nim?: SignatureResult,
     btc?: SignedBitcoinTransaction,
     usdc?: SignedPolygonTransaction,
+    usdt?: SignedPolygonTransaction,
     eur?: string, // When funding EUR: empty string, when redeeming EUR: JWS of the settlement instructions
     refundTx?: string,
 };
