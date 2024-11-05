@@ -35,15 +35,26 @@ class SignPolygonTransaction {
         if ([
             CONFIG.NATIVE_USDC_TRANSFER_CONTRACT_ADDRESS,
             CONFIG.NATIVE_USDC_HTLC_CONTRACT_ADDRESS,
-            CONFIG.BRIDGED_USDC_HTLC_CONTRACT_ADDRESS,
             CONFIG.USDC_SWAP_CONTRACT_ADDRESS,
         ].includes(relayRequest.to)) {
             stablecoin = 'usdc';
         } else if ([
             CONFIG.BRIDGED_USDT_TRANSFER_CONTRACT_ADDRESS,
-            CONFIG.BRIDGED_USDT_HTLC_CONTRACT_ADDRESS,
         ].includes(relayRequest.to)) {
             stablecoin = 'usdt';
+        }
+
+        if (relayRequest.to === CONFIG.BRIDGED_USDT_HTLC_CONTRACT_ADDRESS) {
+            // The HTLC contract for bridged USDT is the same as for bridged USDC (legacy).
+            if (request.token === CONFIG.BRIDGED_USDT_CONTRACT_ADDRESS) {
+                stablecoin = 'usdt';
+            } else if (request.token === CONFIG.BRIDGED_USDC_CONTRACT_ADDRESS) {
+                stablecoin = 'usdc';
+            }
+        }
+
+        if (!stablecoin) {
+            throw new Errors.KeyguardError('Could not determine the stablecoin for the transaction');
         }
 
         const $stablecoinSymbols = /** @type {NodeListOf<HTMLSpanElement>} */ (

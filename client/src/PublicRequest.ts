@@ -214,6 +214,11 @@ export type PolygonTransactionInfo = {
     relayData: OpenGsnRelayData,
 
     /**
+     * The token contract address. Required for calling the bridged HTLC contract.
+     */
+    token?: string,
+
+    /**
      * For refund and redeem transactions from HTLCs the amount is not part of the forward request / relay request and
      * needs to be specified separately.
      */
