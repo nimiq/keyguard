@@ -102,12 +102,12 @@ make_file_hash() {
 output "🧐  Validating Nimiq Core files integrity"
 
 nimiq_core_hashsums=\
-"fa043fd1c06ba904e3e55510eca0865425695a42294e230a07d07efd68cd7dae  node_modules/@nimiq/core-web/web.js
- 8837e6cc19880e8a233581f72004691c91f51a6fb8853ce60694d30b095a8f45  node_modules/@nimiq/core-web/web-offline.js
+"e1b8b5233f0a8dc73c99dfcfd18d5aa5fa442c12eba2526d5c70db88b7923af9  node_modules/@nimiq/core-web/web.js
+ 8edc158d4a0e2baece54262aa5817e3db44946d3c8af9271fd9f4bc7b4fde91e  node_modules/@nimiq/core-web/web-offline.js
  a658ca600c43789c8daff47578ea5758e7a1a2a5fee1b249e7bb5ce691d126cd  node_modules/@nimiq/core-web/worker-wasm.wasm
  d61df01adc927cb2832314ef5634b9ea97092acacb09beb7628b1a98a0962c70  node_modules/@nimiq/core-web/worker-wasm.js
  154b1251428363c8658c99acbf55b31eef177c0d447767a506952924a37494a9  node_modules/@nimiq/core-web/worker-js.js
- 1418076641bd6a536b5fed60581a9709e6606d4070a17d0af79a76f2110ada34  node_modules/@nimiq/core-web/worker.js"
+ 272dae22e5235f17526ba19a60b2418f1b5926e0f7e683f782bd54aa6db3b945  node_modules/@nimiq/core-web/worker.js"
 
 echo "$nimiq_core_hashsums" | ${SHA256SUM} --check
 
