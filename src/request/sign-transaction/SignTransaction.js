@@ -184,7 +184,7 @@ class SignTransaction {
 
         const powPrivateKey = key.derivePrivateKey(request.keyPath);
 
-        const privateKey = Albatross.PrivateKey.unserialize(powPrivateKey.serialize());
+        const privateKey = Albatross.PrivateKey.deserialize(powPrivateKey.serialize());
         const keyPair = Albatross.KeyPair.derive(privateKey);
 
         /** @type {Albatross.Transaction} */
