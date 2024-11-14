@@ -22,16 +22,13 @@ class SignStaking {
      */
     constructor(request, resolve, reject) {
         this._request = request;
-        /** @type {HTMLElement} */
-        this.$el = (document.getElementById(SignStaking.Pages.CONFIRM_STAKING));
+        this.$el = /** @type {HTMLElement} */ (document.getElementById(SignStaking.Pages.CONFIRM_STAKING));
 
         const transaction = request.plain[request.plain.length - 1];
 
-        /** @type {HTMLElement} */
-        this.$accountDetails = (this.$el.querySelector('#account-details'));
+        this.$accountDetails = /** @type {HTMLElement} */ (this.$el.querySelector('#account-details'));
 
-        /** @type {HTMLLinkElement} */
-        const $sender = (this.$el.querySelector('.accounts .sender'));
+        const $sender = /** @type {HTMLLinkElement} */ (this.$el.querySelector('.accounts .sender'));
         this._senderAddressInfo = new AddressInfo({
             userFriendlyAddress: transaction.sender,
             label: request.senderLabel || null,
@@ -43,8 +40,7 @@ class SignStaking {
             this._openDetails(this._senderAddressInfo);
         });
 
-        /** @type {HTMLLinkElement} */
-        const $recipient = (this.$el.querySelector('.accounts .recipient'));
+        const $recipient = /** @type {HTMLLinkElement} */ (this.$el.querySelector('.accounts .recipient'));
         this._recipientAddressInfo = new AddressInfo({
             userFriendlyAddress: transaction.recipient,
             label: request.recipientLabel || null,
@@ -56,37 +52,30 @@ class SignStaking {
             this._openDetails(this._recipientAddressInfo);
         });
 
-        /** @type {HTMLButtonElement} */
-        const $closeDetails = (this.$accountDetails.querySelector('#close-details'));
+        const $closeDetails = /** @type {HTMLButtonElement} */ (this.$accountDetails.querySelector('#close-details'));
         $closeDetails.addEventListener('click', this._closeDetails.bind(this));
 
-        /** @type {HTMLDivElement} */
-        const $value = (this.$el.querySelector('#value'));
-        /** @type {HTMLDivElement} */
-        const $fee = (this.$el.querySelector('#fee'));
-        /** @type {HTMLDivElement} */
-        const $data = (this.$el.querySelector('#data'));
+        const $value = /** @type {HTMLDivElement} */ (this.$el.querySelector('#value'));
+        const $fee = /** @type {HTMLDivElement} */ (this.$el.querySelector('#fee'));
+        const $data = /** @type {HTMLDivElement} */ (this.$el.querySelector('#data'));
 
         // Set value and fee.
         $value.textContent = NumberFormatting.formatNumber(Nimiq.Policy.lunasToCoins(transaction.value));
         if ($fee && transaction.fee > 0) {
             $fee.textContent = NumberFormatting.formatNumber(Nimiq.Policy.lunasToCoins(transaction.fee));
-            /** @type {HTMLDivElement} */
-            const $feeSection = (this.$el.querySelector('.fee-section'));
+            const $feeSection = /** @type {HTMLDivElement} */ (this.$el.querySelector('.fee-section'));
             $feeSection.classList.remove('display-none');
         }
 
         if ($data && transaction.data.raw.length) {
             // Set transaction extra data.
             $data.textContent = this._formatData(transaction);
-            /** @type {HTMLDivElement} */
-            const $dataSection = (this.$el.querySelector('.data-section'));
+            const $dataSection = /** @type {HTMLDivElement} */ (this.$el.querySelector('.data-section'));
             $dataSection.classList.remove('display-none');
         }
 
         // Set up password box.
-        /** @type {HTMLFormElement} */
-        const $passwordBox = (document.querySelector('#password-box'));
+        const $passwordBox = /** @type {HTMLFormElement} */ (document.querySelector('#password-box'));
         this._passwordBox = new PasswordBox($passwordBox, {
             hideInput: !request.keyInfo.encrypted,
             buttonI18nTag: 'passwordbox-confirm-tx',
@@ -132,12 +121,14 @@ class SignStaking {
         try {
             key = await KeyStore.instance.get(request.keyInfo.id, passwordBuf);
         } catch (e) {
-            if (e.message === 'Invalid key') {
+            if ((e instanceof Error ? e.message : e) === 'Invalid key') {
                 TopLevelApi.setLoading(false);
                 this._passwordBox.onPasswordIncorrect();
                 return;
             }
-            reject(new Errors.CoreError(e));
+            reject(new Errors.CoreError(
+                e instanceof Error || typeof e === 'string' ? e : new Error(/** @type {any} */ (e)),
+            ));
             return;
         }
         if (!key) {
