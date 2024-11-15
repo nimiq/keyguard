@@ -1,9 +1,9 @@
-/* global Nimiq */
+/* global Observable */
 /* global I18n */
 /* global QrScanner */
 /* global TemplateTags */
 
-class QrVideoScanner extends Nimiq.Observable {
+class QrVideoScanner extends Observable {
     // eslint-disable-next-line valid-jsdoc
     /**
      * @param {?HTMLDivElement} [$el]

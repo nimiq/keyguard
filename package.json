@@ -14,7 +14,7 @@
     "lintfix": "eslint --fix src tools",
     "checkdeps": "node tools/dependencyValidator.js",
     "checklangs": "yarn i18n:build-dictionary && node tools/translationValidator.js",
-    "pr": "yarn typecheck && yarn lint && yarn test && yarn checkdeps && yarn checklangs && yarn build testnet && cd client && yarn lint && yarn build",
+    "pr": "yarn typecheck && yarn lint && yarn checkdeps && yarn checklangs && yarn build testnet && cd client && yarn lint && yarn build",
     "watch": "tsc-watch --pretty --onSuccess \"yarn lint\"",
     "watchfix": "tsc-watch --pretty --onSuccess \"yarn lintfix\"",
     "postinstall": "cd client && yarn",

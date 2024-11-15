@@ -8,13 +8,14 @@ funcs.find('src', '.js').forEach(file => {
     const className = funcs.stripExtension(file);
     class2Path.set(className, file);
 });
+class2Path.set('lunasToCoins', 'src/common.js');
 class2Path.set('TRANSLATIONS', 'src/translations/index.js');
 class2Path.set('CONFIG', 'src/config/config.local.js');
-class2Path.set('Nimiq', 'node_modules/@nimiq/core-web/web-offline.js');
+class2Path.set('Nimiq', 'src/lib/AlbatrossWasm.mjs');
+class2Path.set('NimiqPoW', 'node_modules/@nimiq/core-web/web-offline.js');
 class2Path.set('Rpc', 'node_modules/@nimiq/rpc/dist/rpc.umd.js');
 class2Path.set('BarcodeDetector', 'src/lib/QrScanner.js');
 class2Path.set('ethers', 'node_modules/ethers/dist/ethers.umd.js');
-class2Path.set('Albatross', 'src/lib/AlbatrossWasm.mjs');
 class2Path.delete('index');
 
 const requests = funcs.listDirectories('src/request');
@@ -50,9 +51,6 @@ requests.forEach(/** @param {string} request */ request => {
     // Get findScripts from index.html
     const scripts = funcs.findScripts(`src/request/${request}/index.html`);
     // console.log("scripts:", scripts);
-
-    const webJsIndex = scripts.indexOf('../../../node_modules/@nimiq/core-web/web.js');
-    if (webJsIndex > -1) scripts[webJsIndex] = '../../../node_modules/@nimiq/core-web/web-offline.js';
 
     // Find missing and unneeded scripts
     const unneededScripts = scripts.slice();

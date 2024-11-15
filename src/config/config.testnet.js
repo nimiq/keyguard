@@ -4,6 +4,7 @@
 const CONFIG = { // eslint-disable-line no-unused-vars
     ALLOWED_ORIGIN: 'https://hub.pos.nimiq-testnet.com',
     NETWORK: Constants.NETWORK.TEST,
+    NIMIQ_NETWORK_ID: 5,
     BTC_NETWORK: 'TEST', // BitcoinConstants is not included in the common bundle
     ROOT_REDIRECT: 'https://wallet.pos.nimiq-testnet.com',
 

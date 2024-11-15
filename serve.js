@@ -72,7 +72,8 @@ var http = require("http"),
       'wmls'  : 'text/vnd.wap.wmlscript',
       'xsl'   : 'text/xml',
       'xml'   : 'text/xml',
-      'svg'   : 'image/svg+xml'
+      'svg'   : 'image/svg+xml',
+      'wasm'  : 'application/wasm',
     };
 
 http.createServer(function(request, response) {

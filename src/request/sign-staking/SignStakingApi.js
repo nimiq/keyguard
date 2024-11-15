@@ -2,7 +2,6 @@
 /* global SignStaking */
 /* global Errors */
 /* global Nimiq */
-/* global Albatross */
 
 /** @extends {TopLevelApi<KeyguardRequest.SignStakingRequest>} */
 class SignStakingApi extends TopLevelApi { // eslint-disable-line no-unused-vars
@@ -47,7 +46,7 @@ class SignStakingApi extends TopLevelApi { // eslint-disable-line no-unused-vars
     /**
      * Checks that the given layout is valid
      * @param {unknown} transactions
-     * @returns {Albatross.Transaction[]}
+     * @returns {Nimiq.Transaction[]}
      */
     parseStakingTransaction(transactions) {
         if (!transactions) {
@@ -66,9 +65,9 @@ class SignStakingApi extends TopLevelApi { // eslint-disable-line no-unused-vars
             if (!(transaction instanceof Uint8Array)) {
                 throw new Errors.InvalidRequestError('transaction must be a Uint8Array');
             }
-            const tx = Albatross.Transaction.fromAny(Nimiq.BufferUtils.toHex(transaction));
+            const tx = Nimiq.Transaction.fromAny(Nimiq.BufferUtils.toHex(transaction));
 
-            if (tx.senderType !== Albatross.AccountType.Staking && tx.recipientType !== Albatross.AccountType.Staking) {
+            if (tx.senderType !== Nimiq.AccountType.Staking && tx.recipientType !== Nimiq.AccountType.Staking) {
                 throw new Errors.InvalidRequestError('transaction must be a staking transaction');
             }
 

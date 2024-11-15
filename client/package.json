@@ -26,7 +26,7 @@
   },
   "homepage": "https://github.com/nimiq/keyguard/client#readme",
   "dependencies": {
-    "@nimiq/core-web": "1.6.3",
+    "@nimiq/albatross-wasm": "npm:@nimiq/core@next",
     "@nimiq/rpc": "^0.3.0",
     "@opengsn/common": "^2.2.5"
   },

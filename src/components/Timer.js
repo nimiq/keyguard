@@ -1,4 +1,4 @@
-/* global Nimiq */
+/* global Observable */
 /* global I18n */
 /* global Errors */
 /* global TemplateTags */
@@ -11,7 +11,7 @@
  *      strokeWidth: number
  *  }} CircleInfo */
 
-class Timer extends Nimiq.Observable {
+class Timer extends Observable {
     /**
      * @param {number} startTime
      * @param {number} endTime

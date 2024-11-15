@@ -133,7 +133,7 @@ class KeyStore {
         /** @type {Nimiq.SerialBuffer} */
         let buffer;
         if (password) {
-            buffer = await key.secret.exportEncrypted(password);
+            buffer = await Nimiq.Secret.exportEncrypted(key.secret, password);
         } else {
             buffer = new Nimiq.SerialBuffer(KeyStore.UNENCRYPTED_SECRET_SIZE);
 

@@ -1,9 +1,10 @@
+/* global Observable */
 /* global Nimiq */
 /* global I18n */
 /* global Identicon */
 /* global TemplateTags */
 
-class IdenticonSelector extends Nimiq.Observable {
+class IdenticonSelector extends Observable {
     /**
      * @param {?HTMLElement | undefined} $el
      * @param {string} keyPath

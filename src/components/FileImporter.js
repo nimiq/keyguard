@@ -1,3 +1,4 @@
+/* global Observable */
 /* global Nimiq */
 /* global AnimationUtils */
 /* global QrScanner */
@@ -7,7 +8,7 @@
 /* global KeyStore */
 /* global Utf8Tools */
 
-class FileImporter extends Nimiq.Observable {
+class FileImporter extends Observable {
     /**
      * @param {string} str
      * @returns {boolean}

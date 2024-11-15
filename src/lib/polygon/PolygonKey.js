@@ -240,6 +240,8 @@ class PolygonKey { // eslint-disable-line no-unused-vars
      * @type {Nimiq.Secret.Type}
      */
     get type() {
-        return this._key.secret.type;
+        return this._key.secret instanceof Nimiq.PrivateKey
+            ? Nimiq.Secret.Type.PRIVATE_KEY
+            : Nimiq.Secret.Type.ENTROPY;
     }
 }

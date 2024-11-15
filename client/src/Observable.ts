@@ -12,7 +12,7 @@ export default class Observable {
         this._listeners = new Map();
     }
 
-    public on<T>(type: string, callback: (arg: T) => any): number {
+    public on(type: string, callback: (...args: any[]) => any): number {
         if (!this._listeners.has(type)) {
             this._listeners.set(type, [callback]);
             return 0;

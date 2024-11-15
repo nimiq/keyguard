@@ -1,3 +1,4 @@
+/* global Observable */
 /* global IqonHash */
 /* global Key */
 /* global LoginFileIcon */
@@ -17,7 +18,7 @@
  * @param {KeyguardRequest.SimpleResult} result
  */
 
-class ExportFile extends Nimiq.Observable {
+class ExportFile extends Observable {
     /**
      * @param {Parsed<KeyguardRequest.ExportRequest>} request
      * @param {ExportFile.resolve} resolve

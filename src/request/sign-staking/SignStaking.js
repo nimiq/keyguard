@@ -1,5 +1,4 @@
 /* global Nimiq */
-/* global Albatross */
 /* global Key */
 /* global KeyStore */
 /* global PasswordBox */
@@ -8,6 +7,7 @@
 /* global TopLevelApi */
 /* global AddressInfo */
 /* global NumberFormatting */
+/* global lunasToCoins */
 
 /**
  * @callback SignStaking.resolve
@@ -60,9 +60,9 @@ class SignStaking {
         const $data = /** @type {HTMLDivElement} */ (this.$el.querySelector('#data'));
 
         // Set value and fee.
-        $value.textContent = NumberFormatting.formatNumber(Nimiq.Policy.lunasToCoins(transaction.value));
+        $value.textContent = NumberFormatting.formatNumber(lunasToCoins(transaction.value));
         if ($fee && transaction.fee > 0) {
-            $fee.textContent = NumberFormatting.formatNumber(Nimiq.Policy.lunasToCoins(transaction.fee));
+            $fee.textContent = NumberFormatting.formatNumber(lunasToCoins(transaction.fee));
             const $feeSection = /** @type {HTMLDivElement} */ (this.$el.querySelector('.fee-section'));
             $feeSection.classList.remove('display-none');
         }
@@ -138,8 +138,8 @@ class SignStaking {
 
         const powPrivateKey = key.derivePrivateKey(request.keyPath);
 
-        const privateKey = Albatross.PrivateKey.deserialize(powPrivateKey.serialize());
-        const keyPair = Albatross.KeyPair.derive(privateKey);
+        const privateKey = Nimiq.PrivateKey.deserialize(powPrivateKey.serialize());
+        const keyPair = Nimiq.KeyPair.derive(privateKey);
 
         const results = request.transactions.map(transaction => {
             transaction.sign(keyPair);
@@ -163,7 +163,7 @@ class SignStaking {
     }
 
     /**
-     * @param {Albatross.PlainTransaction} plain
+     * @param {Nimiq.PlainTransaction} plain
      * @returns {string}
      */
     _formatData(plain) {

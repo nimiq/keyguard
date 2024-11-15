@@ -13,6 +13,7 @@ if (!/^(?:localhost|bs-local.com)$/.test(window.location.hostname) && !ipRegEx.t
 const CONFIG = { // eslint-disable-line no-unused-vars
     ALLOWED_ORIGIN: '*',
     NETWORK: Constants.NETWORK.TEST,
+    NIMIQ_NETWORK_ID: 5,
     BTC_NETWORK: /** @type {'MAIN' | 'TEST'} */ ('TEST'), // BitcoinConstants is not included in the common bundle
     ROOT_REDIRECT: 'https://wallet.nimiq-testnet.com',
 

@@ -16,14 +16,14 @@ class HtlcUtils { // eslint-disable-line no-unused-vars
 
         const buf = new Nimiq.SerialBuffer(data);
 
-        const sender = Nimiq.Address.unserialize(buf).toUserFriendlyAddress();
-        const recipient = Nimiq.Address.unserialize(buf).toUserFriendlyAddress();
-        const hashAlgorithm = /** @type {Nimiq.Hash.Algorithm} */ (buf.readUint8());
-        const hashRoot = Nimiq.Hash.unserialize(buf, hashAlgorithm).toHex();
+        const sender = new Nimiq.Address(buf).toUserFriendlyAddress();
+        const recipient = new Nimiq.Address(buf).toUserFriendlyAddress();
+        const hashAlgorithm = buf.readUint8();
+        const hashRoot = Nimiq.BufferUtils.toHex(buf);
         const hashCount = buf.readUint8();
         const timeout = buf.readUint32();
 
-        if (hashAlgorithm !== Nimiq.Hash.Algorithm.SHA256) throw error;
+        if (hashAlgorithm !== 3 /* Nimiq.Hash.Algorithm.SHA256 */) throw error;
         if (hashCount !== 1) throw error;
 
         return {

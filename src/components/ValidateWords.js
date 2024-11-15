@@ -1,8 +1,9 @@
+/* global Observable */
 /* global Nimiq */
 /* global I18n */
 /* global AnimationUtils */
 
-class ValidateWords extends Nimiq.Observable {
+class ValidateWords extends Observable {
     /**
      * @param {?HTMLElement} [$el]
      */

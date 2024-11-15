@@ -1,11 +1,11 @@
-/* global Nimiq */
+/* global Observable */
 /* global I18n */
 /* global PasswordInput */
 /* global AnimationUtils */
 /* global PasswordStrength */
 /* global TemplateTags */
 
-class PasswordSetterBox extends Nimiq.Observable {
+class PasswordSetterBox extends Observable {
     // eslint-disable-next-line valid-jsdoc
     /**
      * @param {?HTMLFormElement} [$el]

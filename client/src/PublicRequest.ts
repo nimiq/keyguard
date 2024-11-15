@@ -1,4 +1,4 @@
-import * as Nimiq from '@nimiq/core-web';
+import * as Nimiq from '@nimiq/albatross-wasm';
 import { ForwardRequest as OpenGsnForwardRequest } from '@opengsn/common/dist/EIP712/ForwardRequest';
 import { RelayData as OpenGsnRelayData } from '@opengsn/common/dist/EIP712/RelayData';
 import { KeyguardCommand } from './KeyguardCommand';
@@ -43,13 +43,14 @@ export type TransactionInfo = {
     keyPath: string,
     senderLabel?: string,
     sender: Uint8Array,
-    senderType: Nimiq.Account.Type | 3,
+    senderType: Nimiq.AccountType,
+    senderData?: Uint8Array,
     recipient: Uint8Array,
-    recipientType?: Nimiq.Account.Type,
+    recipientType?: Nimiq.AccountType,
+    recipientData?: Uint8Array,
     value: number,
     fee: number,
     validityStartHeight: number,
-    data?: Uint8Array,
     flags?: number,
 };
 

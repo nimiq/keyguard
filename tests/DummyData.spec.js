@@ -8,7 +8,6 @@
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 10 * 1000; // 10 seconds
 
 beforeAll(async () => {
-    Nimiq._path = `${window.location.origin}/base/node_modules/@nimiq/core-web/`;
     await loadNimiq();
 });
 
@@ -26,6 +25,7 @@ const mnemonics = [
     'habit hurdle aspect maid trip client walk nice fabric mountain tattoo flame quantum foil poem elder security joy hungry fabric casino spring eye scene',
 ];
 
+/** @type {[Nimiq.Entropy, Nimiq.PrivateKey]} */
 const secrets = [
     new Nimiq.Entropy(keys[0]),
     new Nimiq.PrivateKey(keys[1]),
@@ -46,7 +46,7 @@ const hashes = () => {
             ? secret.serialize()
             : Nimiq.PublicKey.derive(secret).toAddress().serialize();
 
-        return Nimiq.Hash.blake2b(input).toBase64();
+        return Nimiq.BufferUtils.toBase64(Nimiq.Hash.computeBlake2b(input));
     }));
 };
 

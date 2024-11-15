@@ -14,10 +14,7 @@ module.exports = function (/** @type {any} */ config) {
 
         // list of files / patterns to load in the browser
         files: [
-            'node_modules/@nimiq/core-web/web-offline.js',
-            {'pattern': 'node_modules/@nimiq/core-web/worker-wasm.wasm', included: false},
-            {'pattern': 'node_modules/@nimiq/core-web/worker-wasm.js', included: false},
-            {'pattern': 'node_modules/@nimiq/core-web/worker.js', included: false},
+            {'pattern': 'node_modules/@nimiq/albatross-wasm/**/*', included: false},
             'instrumented/**/*js',
             'tests/**/*.spec.js'
         ],

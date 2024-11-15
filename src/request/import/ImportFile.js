@@ -250,6 +250,7 @@ class ImportFile {
             // Make sure read position is at 0 even after a wrong password
             this._encryptedKey.reset();
 
+            // TODO: Load NimiqPoW for v1 and v2 encrypted keys
             const secret = await Nimiq.Secret.fromEncrypted(this._encryptedKey, encryptionKey);
 
             // If this code runs, the password was correct and the request returns

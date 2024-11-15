@@ -135,12 +135,12 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
                 ? fundTx.transaction.fee
                 : redeemTx.type === 'NIM'
                     ? redeemTx.transaction.fee
-                    : 0;
+                    : BigInt(0);
 
             const theirFee = fundTx.type === 'NIM' ? fundFees.redeeming : redeemFees.funding;
 
             const fiatRate = fundTx.type === 'NIM' ? fundingFiatRate : redeemingFiatRate;
-            const fiatFee = CryptoUtils.unitsToCoins('NIM', myFee + theirFee) * fiatRate;
+            const fiatFee = CryptoUtils.unitsToCoins('NIM', Number(myFee) + theirFee) * fiatRate;
 
             const rows = this._createNimiqLine(fiatFee, fiatCurrency);
             this.$tooltip.appendChild(rows[0]);

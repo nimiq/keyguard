@@ -1,4 +1,5 @@
-/* global Nimiq */
+/* global Constants */
+/* global lunasToCoins */
 /* global BitcoinConstants */
 /* global BitcoinUtils */
 /* global PolygonConstants */
@@ -14,7 +15,7 @@ class CryptoUtils { // eslint-disable-line no-unused-vars
      */
     static unitsToCoins(asset, units) {
         switch (asset) {
-            case 'NIM': return Nimiq.Policy.lunasToCoins(units);
+            case 'NIM': return lunasToCoins(units);
             case 'BTC': return BitcoinUtils.satoshisToCoins(units);
             case 'USDC_MATIC': return PolygonUtils.unitsToCoins(units);
             case 'USDT_MATIC': return PolygonUtils.unitsToCoins(units);
@@ -29,7 +30,7 @@ class CryptoUtils { // eslint-disable-line no-unused-vars
      */
     static assetDecimals(asset) {
         switch (asset) {
-            case 'NIM': return Math.log10(Nimiq.Policy.LUNAS_PER_COIN);
+            case 'NIM': return Math.log10(Constants.LUNAS_PER_COIN);
             case 'BTC': return Math.log10(BitcoinConstants.SATOSHIS_PER_COIN);
             case 'USDC_MATIC': return Math.log10(PolygonConstants.UNITS_PER_COIN);
             case 'USDT_MATIC': return Math.log10(PolygonConstants.UNITS_PER_COIN);

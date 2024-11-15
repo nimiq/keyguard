@@ -53,7 +53,7 @@ describe('AccountStore', () => {
     });
 
     it('can get a Key', async function() {
-        const passwordBytes = Nimiq.BufferUtils.fromAscii(Dummy.encryptionPassword);
+        const passwordBytes = Nimiq.BufferUtils.fromUtf8(Dummy.encryptionPassword);
         const key = await AccountStore.instance.get('NQ71 CT4K 7R9R EHSB 7HY9 TSTP XNRQ L2RK 8U4U', passwordBytes);
         expect(key).toEqual(Dummy.deprecatedAccount2Keys()[0]);
     });

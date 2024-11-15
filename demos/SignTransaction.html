@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>SignTransaction | Keyguard Demo</title>
     <link href="../src/nimiq-style.css" rel="stylesheet">
-    <script src="../node_modules/@nimiq/core-web/web-offline.js"></script>
+    <script src="../src/lib/AlbatrossWasm.mjs" type="module"></script>
     <script src="../src/lib/Constants.js"></script>
     <script src="../src/lib/Key.js"></script>
     <script src="../src/lib/KeyStore.js"></script>
@@ -135,7 +135,7 @@
         // Generate a random key and put it into the KeyStore.
         const secret = Nimiq.Entropy.generate();
         const key = new Key(secret);
-        const password = keyPassword ? Nimiq.BufferUtils.fromAscii(keyPassword) : undefined;
+        const password = keyPassword ? Nimiq.BufferUtils.fromUtf8(keyPassword) : undefined;
         const id = await KeyStore.instance.put(key, password);
 
         const path = "m/0'/0'";

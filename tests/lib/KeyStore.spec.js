@@ -34,7 +34,7 @@ describe('KeyStore', () => {
     it('can get and decrypt keys', async () => {
         const keys = await Promise.all([
             KeyStore.instance.get(Dummy.keyInfos()[0].id),
-            KeyStore.instance.get(Dummy.keyInfos()[1].id, Nimiq.BufferUtils.fromAscii(Dummy.encryptionPassword)),
+            KeyStore.instance.get(Dummy.keyInfos()[1].id, Nimiq.BufferUtils.fromUtf8(Dummy.encryptionPassword)),
         ]);
 
         for (let [i, key] of keys.entries()) {
@@ -81,7 +81,7 @@ describe('KeyStore', () => {
         expect(currentKeys.length).toBe(0);
 
         // add an encrypted key
-        const password = Nimiq.BufferUtils.fromAscii(Dummy.encryptionPassword);
+        const password = Nimiq.BufferUtils.fromUtf8(Dummy.encryptionPassword);
         await KeyStore.instance.put(new Key(
             Dummy.secrets[1],
             Dummy.keyInfos()[1].hasPin,
@@ -103,7 +103,7 @@ describe('KeyStore', () => {
             KeyStore.instance.get(Dummy.keyInfos()[1].id, password),
         ]);
         if (!key1 || !key2) throw new Error();
-        expect(key1.secret.equals(Dummy.secrets[0])).toBe(true);
+        expect(/** @type {Nimiq.Entropy} */ (key1.secret).equals(Dummy.secrets[0])).toBe(true);
         expect(key2.secret.equals(Dummy.secrets[1])).toBe(true);
     });
 
@@ -176,8 +176,8 @@ describe('KeyStore', () => {
         // first clear database
         await Dummy.Utils.deleteDummyKeyStore();
 
-        const password1 = Nimiq.BufferUtils.fromAscii(Dummy.encryptionPassword);
-        const password2 = Nimiq.BufferUtils.fromAscii(Dummy.encryptionPassword2);
+        const password1 = Nimiq.BufferUtils.fromUtf8(Dummy.encryptionPassword);
+        const password2 = Nimiq.BufferUtils.fromUtf8(Dummy.encryptionPassword2);
 
         let currentKeys = await KeyStore.instance.list();
         expect(currentKeys.length).toBe(0); // Just to be sure
@@ -217,7 +217,7 @@ describe('KeyStore', () => {
         // first clear database
         await Dummy.Utils.deleteDummyKeyStore();
 
-        const password = Nimiq.BufferUtils.fromAscii(Dummy.encryptionPassword);
+        const password = Nimiq.BufferUtils.fromUtf8(Dummy.encryptionPassword);
 
         // add key
         const id1 = await KeyStore.instance.put(new Key(Dummy.secrets[1]), password);

@@ -1,7 +1,7 @@
-/* global Nimiq */
+/* global Observable */
 /* global TemplateTags */
 
-class ProgressIndicator extends Nimiq.Observable { // eslint-disable-line no-unused-vars
+class ProgressIndicator extends Observable { // eslint-disable-line no-unused-vars
     /**
      * @param {?Element | undefined} $el
      * @param {number} numberOfSteps

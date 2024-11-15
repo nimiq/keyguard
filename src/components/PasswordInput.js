@@ -1,9 +1,9 @@
-/* global Nimiq */
+/* global Observable */
 /* global I18n */
 /* global TemplateTags */
 /* global BrowserDetection */
 
-class PasswordInput extends Nimiq.Observable {
+class PasswordInput extends Observable {
     /**
      * @param {?HTMLElement} [$el]
      * @param {object} [options]

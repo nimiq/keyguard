@@ -102,8 +102,7 @@ make_file_hash() {
 output "🧐  Validating Nimiq Core files integrity"
 
 nimiq_core_hashsums=\
-"e1b8b5233f0a8dc73c99dfcfd18d5aa5fa442c12eba2526d5c70db88b7923af9  node_modules/@nimiq/core-web/web.js
- 8edc158d4a0e2baece54262aa5817e3db44946d3c8af9271fd9f4bc7b4fde91e  node_modules/@nimiq/core-web/web-offline.js
+"8edc158d4a0e2baece54262aa5817e3db44946d3c8af9271fd9f4bc7b4fde91e  node_modules/@nimiq/core-web/web-offline.js
  a658ca600c43789c8daff47578ea5758e7a1a2a5fee1b249e7bb5ce691d126cd  node_modules/@nimiq/core-web/worker-wasm.wasm
  d61df01adc927cb2832314ef5634b9ea97092acacb09beb7628b1a98a0962c70  node_modules/@nimiq/core-web/worker-wasm.js
  154b1251428363c8658c99acbf55b31eef177c0d447767a506952924a37494a9  node_modules/@nimiq/core-web/worker-js.js
@@ -253,7 +252,6 @@ JS_POLYGON_BUNDLE=$(add_hash_to_file_name dist/request/$JS_POLYGON_BUNDLE)
 CSS_TOPLEVEL_BUNDLE=$(add_hash_to_file_name dist/request/$CSS_TOPLEVEL_BUNDLE)
 
 CORE_LIB_HASH=$(make_file_hash node_modules/@nimiq/core-web/web-offline.js)
-CORE_WEB_LIB_HASH=$(make_file_hash node_modules/@nimiq/core-web/web.js)
 
 # process index.html scripts and links for each request
 output "🛠️   Building request index.html files"
@@ -277,11 +275,6 @@ for DIR in src/request/*/ ; do
         /<script.*web-offline\.js/ {
             split($0, space, "<") # Preserve intendation.
             print space[1] "<script defer src=\"/assets/nimiq/web-offline.js\" integrity=\"sha256-'${CORE_LIB_HASH}'\"></script>"
-            next
-        }
-        /<script.*web\.js/ {
-            split($0, space, "<") # Preserve intendation.
-            print space[1] "<script defer src=\"/assets/nimiq/web.js\" integrity=\"sha256-'${CORE_WEB_LIB_HASH}'\"></script>"
             next
         }
         /<script.*type="module"/ {
@@ -371,9 +364,7 @@ sed -i 's/\.\.\/\.\.\/node_modules\/@nimiq\/albatross-wasm/\.\.\/assets\/albatro
 
 # copy Nimiq files
 output "‼️   Copying Nimiq files"
-cp -v node_modules/@nimiq/core-web/web.js \
-      node_modules/@nimiq/core-web/web.js.map \
-      node_modules/@nimiq/core-web/web-offline.js \
+cp -v node_modules/@nimiq/core-web/web-offline.js \
       node_modules/@nimiq/core-web/web-offline.js.map \
       node_modules/@nimiq/core-web/worker-wasm.wasm \
       node_modules/@nimiq/core-web/worker-wasm.js \

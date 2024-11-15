@@ -1,5 +1,5 @@
+/* global Observable */
 /* global TRANSLATIONS */ // eslint-disable-line no-unused-vars
-/* global Nimiq */
 /* global CookieJar */
 
 /**
@@ -205,7 +205,7 @@ class I18n { // eslint-disable-line no-unused-vars
     }
 }
 
-I18n.observer = new Nimiq.Observable();
+I18n.observer = new Observable();
 I18n.Events = {
     LANGUAGE_CHANGED: 'language-changed',
 };

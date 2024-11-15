@@ -1,7 +1,5 @@
 /* global Nimiq */
 /* global RpcServer */
-/* global Errors */
-/* global Constants */
 /* global CONFIG */
 
 /**
@@ -11,9 +9,6 @@
 
 /** @type {Promise<void>?} */
 let __nimiqLoaded = null;
-
-/** @type {Promise<void>?} */
-let __albatrossLoaded = null;
 
 if (navigator.serviceWorker) {
     // Register service worker to strip cookie from requests.
@@ -38,42 +33,13 @@ if (navigator.serviceWorker) {
 async function loadNimiq() {
     // eslint-disable-next-line no-return-assign
     return __nimiqLoaded || (__nimiqLoaded = new Promise(async resolve => {
-        // Load web assembly encryption library into browser (if supported)
-        await Nimiq.WasmHelper.doImport();
-
-        switch (CONFIG.NETWORK) {
-            case Constants.NETWORK.DEV:
-                Nimiq.GenesisConfig.dev();
-                break;
-            case Constants.NETWORK.TEST:
-                Nimiq.GenesisConfig.test();
-                break;
-            case Constants.NETWORK.MAIN:
-                Nimiq.GenesisConfig.main();
-                break;
-            default:
-                throw new Errors.InvalidNetworkConfig();
-        }
-
+        await Nimiq.default(); // eslint-disable-line no-undef
         resolve();
     }));
 }
 
 /**
- * Singleton promise
- *
- * @returns {Promise<void>}
- */
-async function loadAlbatross() {
-    // eslint-disable-next-line no-return-assign
-    return __albatrossLoaded || (__albatrossLoaded = new Promise(async resolve => {
-        await Albatross.default(); // eslint-disable-line no-undef
-        resolve();
-    }));
-}
-
-/**
- * @typedef {{loadNimiq: boolean, loadAlbatross: boolean, whitelist: string[]}} Options
+ * @typedef {{loadNimiq: boolean, whitelist: string[]}} Options
  */
 
 /**
@@ -85,7 +51,6 @@ async function runKeyguard(RequestApiClass, opts) { // eslint-disable-line no-un
     /** @type {Options} */
     const defaultOptions = {
         loadNimiq: true,
-        loadAlbatross: false,
         whitelist: ['request'],
     };
 
@@ -94,10 +59,6 @@ async function runKeyguard(RequestApiClass, opts) { // eslint-disable-line no-un
 
     if (options.loadNimiq) {
         await loadNimiq();
-    }
-
-    if (options.loadAlbatross) {
-        await loadAlbatross();
     }
 
     // If user navigates back to loading screen, skip it
@@ -155,4 +116,12 @@ async function runKeyguard(RequestApiClass, opts) { // eslint-disable-line no-un
         // This is not an iframe and no request was handled
         TopLevelApi.showNoRequestErrorPage(); // eslint-disable-line no-undef
     }
+}
+
+/**
+ * @param {number} lunas
+ * @returns {number}
+ */
+function lunasToCoins(lunas) { // eslint-disable-line no-unused-vars
+    return lunas / 1e5;
 }

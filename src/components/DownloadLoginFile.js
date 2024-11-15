@@ -1,3 +1,4 @@
+/* global Observable */
 /* global Nimiq */
 /* global I18n */
 /* global LoginFile */
@@ -7,7 +8,7 @@
 /* global TemplateTags */
 /* global Utf8Tools */
 
-class DownloadLoginFile extends Nimiq.Observable {
+class DownloadLoginFile extends Observable {
     /**
      * @param {?HTMLDivElement} [$el]
      */
