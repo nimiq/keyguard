@@ -199,7 +199,7 @@ done
 
 # prepare bundle lists
 LIST_JS_COMMON=$(echo $LIST_JS_COMMON | tr " " "\n" | sort -ur) # sort common bundle reverse for nicer order
-LIST_JS_TOPLEVEL=$(echo $LIST_JS_TOPLEVEL | tr " " "\n" | sort -u)
+LIST_JS_TOPLEVEL=$(echo $LIST_JS_TOPLEVEL | tr " " "\n" | awk '!x[$0]++')
 LIST_JS_BITCOIN=$(echo $LIST_JS_BITCOIN | tr " " "\n" | sort -u)
 LIST_JS_POLYGON=$(echo $LIST_JS_POLYGON | tr " " "\n" | sort -u)
 # for CSS the order is very important, so sorting is not possible, thus we have to put the list here manually
