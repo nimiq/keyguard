@@ -1,5 +1,6 @@
 /* global Constants */
 /* global Nimiq */
+/* global NimiqPoW */
 /* global Key */
 /* global ImportWords */
 /* global FileImporter */
@@ -250,8 +251,37 @@ class ImportFile {
             // Make sure read position is at 0 even after a wrong password
             this._encryptedKey.reset();
 
-            // TODO: Load NimiqPoW for v1 and v2 encrypted keys
-            const secret = await Nimiq.Secret.fromEncrypted(this._encryptedKey, encryptionKey);
+            /** @type {Nimiq.Entropy | Nimiq.PrivateKey} */
+            let secret;
+
+            const version = this._encryptedKey[0];
+            if (version >= 3) {
+                // Nimiq PoS supports encryption from version 3
+                secret = await Nimiq.Secret.fromEncrypted(this._encryptedKey, encryptionKey);
+            } else {
+                // Use PoW module to decode old encryptions
+
+                // When loading the CryptoWorker, the PoW library uses `Nimiq._path` as the prefix for the worker file.
+                // So we need to temporarily set global `Nimiq` to the PoW library to load the worker correctly.
+                // @ts-expect-error window.Nimiq is not defined
+                const _Nimiq = window.Nimiq;
+                // @ts-expect-error window.Nimiq is not defined
+                window.Nimiq = NimiqPoW;
+
+                await NimiqPoW.WasmHelper.doImport();
+                const _secret = await NimiqPoW.Secret.fromEncrypted(this._encryptedKey, encryptionKey);
+
+                // After the worker is done, we set the global `Nimiq` back to the PoS library
+                // @ts-expect-error window.Nimiq is not defined
+                window.Nimiq = _Nimiq;
+
+                // Convert PoW Entropy/PrivateKey objects to their PoS equivalent
+                if (_secret instanceof NimiqPoW.Entropy) {
+                    secret = Nimiq.Entropy.deserialize(new Nimiq.SerialBuffer(_secret.serialize()));
+                } else {
+                    secret = Nimiq.PrivateKey.deserialize(new Nimiq.SerialBuffer(_secret.serialize()));
+                }
+            }
 
             // If this code runs, the password was correct and the request returns
             /** @type {HTMLElement} */
