@@ -253,6 +253,11 @@ CSS_TOPLEVEL_BUNDLE=$(add_hash_to_file_name dist/request/$CSS_TOPLEVEL_BUNDLE)
 
 CORE_LIB_HASH=$(make_file_hash node_modules/@nimiq/core-web/web-offline.js)
 
+# copy Albatross loader, replace import path and calculate the integrity hash
+cp -v src/lib/AlbatrossWasm.mjs dist/lib/
+inplace_sed 's/\.\.\/\.\.\/node_modules\/@nimiq\/albatross-wasm/\.\.\/assets\/albatross/' dist/lib/AlbatrossWasm.mjs
+ALBATROSS_LOADER_HASH=$(make_file_hash dist/lib/AlbatrossWasm.mjs)
+
 # process index.html scripts and links for each request
 output "🛠️   Building request index.html files"
 for DIR in src/request/*/ ; do
@@ -275,6 +280,11 @@ for DIR in src/request/*/ ; do
         /<script.*web-offline\.js/ {
             split($0, space, "<") # Preserve intendation.
             print space[1] "<script defer src=\"/assets/nimiq/web-offline.js\" integrity=\"sha256-'${CORE_LIB_HASH}'\"></script>"
+            next
+        }
+        /<script.*AlbatrossWasm\.mjs/ {
+            split($0, space, "<") # Preserve intendation.
+            print space[1] "<script defer src=\"/lib/AlbatrossWasm.mjs\" type=\"module\" integrity=\"sha256-'${ALBATROSS_LOADER_HASH}'\"></script>"
             next
         }
         /<script.*type="module"/ {
@@ -357,10 +367,6 @@ cp -v src/lib/QrScannerWorker.js dist/lib/
 cp -v node_modules/@nimiq/style/nimiq-style.icons.svg dist/assets/
 # copy service worker (which has to be in root to work)
 cp -v src/service-worker/ServiceWorker.js dist
-
-# copy Albatross loader and replace import path
-cp -v src/lib/AlbatrossWasm.mjs dist/lib/
-sed -i 's/\.\.\/\.\.\/node_modules\/@nimiq\/albatross-wasm/\.\.\/assets\/albatross/' dist/lib/AlbatrossWasm.mjs
 
 # copy Nimiq files
 output "‼️   Copying Nimiq files"
