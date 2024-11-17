@@ -4,7 +4,6 @@
 /* global TemplateTags */
 
 class QrVideoScanner extends Observable {
-    // eslint-disable-next-line valid-jsdoc
     /**
      * @param {?HTMLDivElement} [$el]
      * @param {(result: string) => boolean} [validator]

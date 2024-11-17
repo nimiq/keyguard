@@ -16,7 +16,6 @@ class Observable { // eslint-disable-line no-unused-vars
         this._listeners = new Map();
     }
 
-    // eslint-disable-next-line valid-jsdoc
     /**
      * @param {string} type
      * @param {(...arg: any[]) => any} callback

@@ -58,7 +58,6 @@ class I18n { // eslint-disable-line no-unused-vars
     static translateDom(dom = document.body, enforcedLanguage) {
         const language = enforcedLanguage ? this.getClosestSupportedLanguage(enforcedLanguage) : this.language;
 
-        /* eslint-disable-next-line valid-jsdoc */ // Multi-line descriptions are not valid JSDoc, apparently
         /**
          * @param {string} tag
          * @param {(element: HTMLElement, translation: string) => void} callback - callback(element, translation) for

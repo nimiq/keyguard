@@ -145,7 +145,6 @@ class Key {
         return Key.deriveHash(input);
     }
 
-    // eslint-disable-next-line valid-jsdoc
     /**
      * @param {unknown} other
      * @returns {other is Key}

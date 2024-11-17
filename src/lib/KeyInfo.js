@@ -85,7 +85,6 @@ class KeyInfo {
         return new KeyInfo(obj.id, obj.type, encrypted, obj.hasPin, defaultAddress);
     }
 
-    // eslint-disable-next-line valid-jsdoc
     /**
      * @param {unknown} other
      * @returns {other is KeyInfo}

@@ -1,6 +1,5 @@
 class TemplateTags {
     // Let typescript infer return value. (Seems to be impossible to declare it the right way in standard JSDoc)
-    // eslint-disable-next-line valid-jsdoc
     /**
      * @template {number} T
      * @param {T} variableCount

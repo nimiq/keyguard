@@ -29,7 +29,6 @@ class QrScanner {
         }
     }
 
-    // eslint-disable-next-line valid-jsdoc
     /**
      * @param {HTMLVideoElement} video
      * @param {(result: string) => any} onDecode

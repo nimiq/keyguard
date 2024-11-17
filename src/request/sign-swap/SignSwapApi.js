@@ -330,7 +330,6 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
         return direction;
     }
 
-    // eslint-disable-next-line valid-jsdoc
     /**
      *
      * @param {Omit<KeyguardRequest.PolygonTransactionInfo, 'amount'>} request

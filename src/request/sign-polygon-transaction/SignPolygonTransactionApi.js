@@ -54,7 +54,6 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
         return parsedRequest;
     }
 
-    // eslint-disable-next-line valid-jsdoc
     /**
      *
      * @param {KeyguardRequest.PolygonTransactionInfo} request

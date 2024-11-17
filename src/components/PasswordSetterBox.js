@@ -6,7 +6,6 @@
 /* global TemplateTags */
 
 class PasswordSetterBox extends Observable {
-    // eslint-disable-next-line valid-jsdoc
     /**
      * @param {?HTMLFormElement} [$el]
      * @param {{bgColor?: string, buttonI18nTag?: string}} [options]

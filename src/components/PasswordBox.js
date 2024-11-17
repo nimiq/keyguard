@@ -17,7 +17,6 @@
  */
 
 class PasswordBox extends Observable {
-    // eslint-disable-next-line valid-jsdoc
     /**
      * @param {?HTMLFormElement} [$el]
      * @param {Partial<PasswordBoxOptions>} [options]

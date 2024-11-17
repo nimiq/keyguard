@@ -217,7 +217,6 @@ class RequestParser { // eslint-disable-line no-unused-vars
         }
     }
 
-    // eslint-disable-next-line valid-jsdoc
     /**
      * @template {boolean} T
      * @param {any} address

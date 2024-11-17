@@ -53,7 +53,6 @@ class JsonUtils {
         return value;
     }
 
-    /* eslint-disable-next-line valid-jsdoc */
     /**
      * @param {number} type
      * @param {string} value
