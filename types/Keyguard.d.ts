@@ -183,7 +183,7 @@ type NimHtlcContents = {
     refundAddress: string,
     redeemAddress: string,
     hash: string,
-    timeoutBlockHeight: number,
+    timeoutTimestamp: number,
 };
 
 type BtcHtlcContents = {

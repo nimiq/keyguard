@@ -4,12 +4,12 @@ describe('HtlcUtils', () => {
     it('can decode NIM HTLC data', () => {
         const vectors = [{
             // Branches verified individually
-            data: Nimiq.BufferUtils.fromHex('eb933bf41fdcc9bc2ebf439305a0b2c64d5aea34df2953459bb18ca54537e55fef20144bc35816280309534fd599fcfd6ca4a0b02e93ca1b93e7c6275cb496b156fa20d950b7a7120c010014eb4f'),
+            data: Nimiq.BufferUtils.fromHex('eb933bf41fdcc9bc2ebf439305a0b2c64d5aea34df2953459bb18ca54537e55fef20144bc35816280309534fd599fcfd6ca4a0b02e93ca1b93e7c6275cb496b156fa20d950b7a7120c010000000051b72c98'),
             result: {
                 refundAddress: 'NQ56 VE9K PV0Y TK4T QBMY 8E9G B85J QR6M MSHL',
                 redeemAddress: 'NQ84 TULM 6HCT N66A AH9P UMFX X80L 9F1M G5H8',
                 hash: '09534fd599fcfd6ca4a0b02e93ca1b93e7c6275cb496b156fa20d950b7a7120c',
-                timeoutBlockHeight: 1370959,
+                timeoutTimestamp: 1370959,
             },
         }];
 

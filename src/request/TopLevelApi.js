@@ -4,7 +4,6 @@
 /* global KeyStore */
 /* global CookieJar */
 /* global I18n */
-/* global Nimiq */
 /* global RequestParser */
 /* global NoRequestErrorPage */
 

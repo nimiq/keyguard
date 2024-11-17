@@ -39,21 +39,30 @@ describe('KeyStore', () => {
 
         for (let [i, key] of keys.entries()) {
             if (!key) throw new Error(`Key with id ${Dummy.keyInfos()[i].id} not found!`);
-            expect(key.id).toEqual(Dummy.keyInfos()[i].id);
-            expect(key.type).toEqual(Dummy.keyInfos()[i].type);
-            expect(key.secret).toEqual(Dummy.secrets[i]);
-            expect(key.hasPin).toEqual(Dummy.keyInfos()[i].hasPin);
+            const expected = Dummy.keyInfos()[i];
+            expect(key.id).toEqual(expected.id);
+            expect(key.type).toEqual(expected.type);
+            expect(key.secret.equals(/** @type {Nimiq.PrivateKey} */ (Dummy.secrets[i]))).toBe(true);
+            expect(key.hasPin).toEqual(expected.hasPin);
         }
     });
 
     it('can list keys', async () => {
         const keyInfos = await KeyStore.instance.list();
-        expect(keyInfos).toEqual(Dummy.keyInfos());
+
+        const expected = Dummy.keyInfos();
+        for (let i = 0; i < Math.max(keyInfos.length, expected.length); i++) {
+            expect(keyInfos[i].equals(expected[i])).toBe(true);
+        }
     });
 
     it('can remove keys', async () => {
         let currentKeys = await KeyStore.instance.list();
-        expect(currentKeys).toEqual(Dummy.keyInfos());
+
+        const expected = Dummy.keyInfos();
+        for (let i = 0; i < Math.max(currentKeys.length, expected.length); i++) {
+            expect(currentKeys[i].equals(expected[i])).toBe(true);
+        }
 
         await KeyStore.instance.remove(Dummy.keyInfos()[0].id);
         currentKeys = await KeyStore.instance.list();
@@ -95,7 +104,10 @@ describe('KeyStore', () => {
             Dummy.keyInfos()[0].hasPin,
         ));
         currentKeys = await KeyStore.instance.list();
-        expect(currentKeys).toEqual(Dummy.keyInfos());
+        const expected = Dummy.keyInfos();
+        for (let i = 0; i < Math.max(currentKeys.length, expected.length); i++) {
+            expect(currentKeys[i].equals(expected[i])).toBe(true);
+        }
 
         // check that the keys have been stored correctly
         const [key1, key2] = await Promise.all([

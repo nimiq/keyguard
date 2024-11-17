@@ -144,6 +144,20 @@ class Key {
             : Nimiq.PublicKey.derive(this._secret).toAddress().serialize();
         return Key.deriveHash(input);
     }
+
+    // eslint-disable-next-line valid-jsdoc
+    /**
+     * @param {unknown} other
+     * @returns {other is Key}
+     */
+    equals(other) {
+        return other instanceof Key
+            && this.id === other.id
+            && this.type === other.type
+            && this.hasPin === other.hasPin
+            && this.secret.equals(/** @type {Nimiq.PrivateKey} */ (other.secret))
+            && this.defaultAddress.equals(other.defaultAddress);
+    }
 }
 
 Key.PIN_LENGTH = 6;

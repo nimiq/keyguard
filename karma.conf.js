@@ -14,7 +14,9 @@ module.exports = function (/** @type {any} */ config) {
 
         // list of files / patterns to load in the browser
         files: [
-            {'pattern': 'node_modules/@nimiq/albatross-wasm/**/*', included: false},
+            {pattern: 'src/lib/AlbatrossWasm.mjs', type: 'module'},
+            {pattern: 'node_modules/@nimiq/albatross-wasm/**/*', included: false},
+            'src/lib/Observable.js',
             'src/lib/*.js', // Force load of lib files before components and common.js
             'src/request/TopLevelApi.js', // Force load of TopLevelApi before BitcoinEnabledTopLevelApi
             'src/lib/bitcoin/*.js',

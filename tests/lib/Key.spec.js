@@ -18,7 +18,7 @@ describe('Key', () => {
         const proof2 = Nimiq.SignatureProof.singleSig(pubkey, signature2);
         expect(proof2.verify(hashedSignedData)).toBe(true);
 
-        expect(signature1).toEqual(signature2);
+        expect(signature1.serialize()).toEqual(signature2.serialize());
     });
 
     it('can sign a message (BIP39)', () => {
@@ -39,7 +39,7 @@ describe('Key', () => {
         const proof2 = Nimiq.SignatureProof.singleSig(pubkey2, signature2);
         expect(proof2.verify(hashedSignedData)).toBe(true);
 
-        expect(signature1).not.toEqual(signature2);
+        expect(signature1.serialize()).not.toEqual(signature2.serialize());
     });
 
     it('can derive addresses (LEGACY)', () => {

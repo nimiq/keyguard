@@ -12,16 +12,16 @@ class HtlcUtils { // eslint-disable-line no-unused-vars
     static decodeNimHtlcData(data) {
         const error = new Errors.InvalidRequestError('Invalid NIM HTLC data');
 
-        if (!data || !(data instanceof Uint8Array) || data.length !== 78) throw error;
+        if (!data || !(data instanceof Uint8Array) || data.length !== 82) throw error;
 
         const buf = new Nimiq.SerialBuffer(data);
 
-        const sender = new Nimiq.Address(buf).toUserFriendlyAddress();
-        const recipient = new Nimiq.Address(buf).toUserFriendlyAddress();
+        const sender = new Nimiq.Address(buf.read(20)).toUserFriendlyAddress();
+        const recipient = new Nimiq.Address(buf.read(20)).toUserFriendlyAddress();
         const hashAlgorithm = buf.readUint8();
-        const hashRoot = Nimiq.BufferUtils.toHex(buf);
+        const hashRoot = Nimiq.BufferUtils.toHex(buf.read(32));
         const hashCount = buf.readUint8();
-        const timeout = buf.readUint32();
+        const timeout = buf.readUint64();
 
         if (hashAlgorithm !== 3 /* Nimiq.Hash.Algorithm.SHA256 */) throw error;
         if (hashCount !== 1) throw error;
@@ -30,7 +30,7 @@ class HtlcUtils { // eslint-disable-line no-unused-vars
             refundAddress: sender,
             redeemAddress: recipient,
             hash: hashRoot,
-            timeoutBlockHeight: timeout,
+            timeoutTimestamp: timeout / 1e3, // Convert to seconds to match Bitcoin, Polygon and OASIS
         };
     }
 
