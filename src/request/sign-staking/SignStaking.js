@@ -8,6 +8,7 @@
 /* global AddressInfo */
 /* global NumberFormatting */
 /* global lunasToCoins */
+/* global I18n */
 
 /**
  * @callback SignStaking.resolve
@@ -24,29 +25,175 @@ class SignStaking {
         this._request = request;
         this.$el = /** @type {HTMLElement} */ (document.getElementById(SignStaking.Pages.CONFIRM_STAKING));
 
-        const transaction = request.plain[request.plain.length - 1];
-
+        this.$headline = /** @type {HTMLElement} */ (this.$el.querySelector('#headline'));
         this.$accountDetails = /** @type {HTMLElement} */ (this.$el.querySelector('#account-details'));
 
         const $sender = /** @type {HTMLLinkElement} */ (this.$el.querySelector('.accounts .sender'));
-        this._senderAddressInfo = new AddressInfo({
-            userFriendlyAddress: transaction.sender,
-            label: request.senderLabel || null,
-            imageUrl: null,
-            accountLabel: request.keyLabel || null,
-        });
+        const $recipient = /** @type {HTMLLinkElement} */ (this.$el.querySelector('.accounts .recipient'));
+
+        const transaction = request.plain[request.plain.length - 1];
+
+        /** @type {Nimiq.Address | undefined} */
+        let validatorAddress;
+
+        let displayValue = transaction.value;
+
+        if (transaction.recipientType === 'staking') {
+            switch (transaction.data.type) {
+                case 'create-staker':
+                    if (transaction.data.delegation) {
+                        validatorAddress = Nimiq.Address.fromUserFriendlyAddress(transaction.data.delegation);
+                    }
+                case 'add-stake': // eslint-disable-line no-fallthrough
+                    validatorAddress = validatorAddress || request.validatorAddress;
+
+                    if (!validatorAddress) {
+                        throw new Errors.InvalidRequestError('No delegation or validatorAddress provided');
+                    }
+
+                    this.$headline.textContent = I18n.translatePhrase('sign-staking-heading-stake');
+                    this._senderAddressInfo = new AddressInfo({ // From user
+                        userFriendlyAddress: transaction.sender,
+                        label: request.senderLabel || null,
+                        imageUrl: null,
+                        accountLabel: request.keyLabel || null,
+                    });
+                    this._recipientAddressInfo = new AddressInfo({ // To validator
+                        userFriendlyAddress: validatorAddress.toUserFriendlyAddress(),
+                        label: request.recipientLabel || null,
+                        imageUrl: request.validatorImageUrl || null,
+                        accountLabel: null,
+                    });
+                    break;
+                case 'update-staker': { // Change validator
+                    if (transaction.data.newDelegation) {
+                        validatorAddress = Nimiq.Address.fromUserFriendlyAddress(transaction.data.newDelegation);
+                    }
+
+                    if (!validatorAddress) {
+                        throw new Errors.InvalidRequestError('No newDelegation provided');
+                    }
+
+                    if (!request.amount) {
+                        throw new Errors.InvalidRequestError('No amount provided');
+                    }
+                    displayValue = request.amount;
+
+                    const fromValidatorAddress = request.validatorAddress;
+                    if (!fromValidatorAddress) {
+                        throw new Errors.InvalidRequestError('No fromValidatorAddress provided');
+                    }
+
+                    this.$headline.textContent = I18n.translatePhrase('sign-staking-heading-change');
+                    this._senderAddressInfo = new AddressInfo({ // From previous validator
+                        userFriendlyAddress: fromValidatorAddress.toUserFriendlyAddress(),
+                        label: request.senderLabel || null,
+                        imageUrl: request.fromValidatorImageUrl || null,
+                        accountLabel: request.keyLabel || null,
+                    });
+                    this._recipientAddressInfo = new AddressInfo({ // To new validator
+                        userFriendlyAddress: validatorAddress.toUserFriendlyAddress(),
+                        label: request.recipientLabel || null,
+                        imageUrl: request.validatorImageUrl || null,
+                        accountLabel: null,
+                    });
+                    break;
+                }
+                case 'set-active-stake':
+                case 'retire-stake':
+                    validatorAddress = request.validatorAddress;
+
+                    if (!validatorAddress) {
+                        throw new Errors.InvalidRequestError('No validatorAddress provided');
+                    }
+
+                    if (!request.amount) {
+                        throw new Errors.InvalidRequestError('No amount provided');
+                    }
+                    displayValue = request.amount;
+
+                    this.$headline.textContent = I18n.translatePhrase('sign-staking-heading-unstake');
+                    this._senderAddressInfo = new AddressInfo({ // From validator
+                        userFriendlyAddress: validatorAddress.toUserFriendlyAddress(),
+                        label: request.recipientLabel || null,
+                        imageUrl: request.validatorImageUrl || null,
+                        accountLabel: null,
+                    });
+                    this._recipientAddressInfo = new AddressInfo({ // To User
+                        userFriendlyAddress: transaction.sender,
+                        label: request.senderLabel || null,
+                        imageUrl: null,
+                        accountLabel: request.keyLabel || null,
+                    });
+                    break;
+                case 'create-validator':
+                case 'update-validator':
+                case 'deactivate-validator':
+                case 'reactivate-validator':
+                case 'retire-validator':
+                default:
+                    this.$headline.textContent = I18n.translatePhrase('sign-tx-heading-tx');
+                    this._senderAddressInfo = new AddressInfo({
+                        userFriendlyAddress: transaction.sender,
+                        label: request.senderLabel || null,
+                        imageUrl: null,
+                        accountLabel: request.keyLabel || null,
+                    });
+                    this._recipientAddressInfo = new AddressInfo({
+                        userFriendlyAddress: transaction.recipient,
+                        label: request.recipientLabel || null,
+                        imageUrl: null,
+                        accountLabel: null,
+                    });
+                    break;
+            }
+        } else {
+            switch (transaction.senderData.type) {
+                case 'remove-stake':
+                    validatorAddress = request.validatorAddress;
+
+                    if (!validatorAddress) {
+                        throw new Errors.InvalidRequestError('No validatorAddress provided');
+                    }
+
+                    this.$headline.textContent = I18n.translatePhrase('sign-staking-heading-unstake');
+                    this._senderAddressInfo = new AddressInfo({ // From validator
+                        userFriendlyAddress: validatorAddress.toUserFriendlyAddress(),
+                        label: request.senderLabel || null,
+                        imageUrl: request.validatorImageUrl || null,
+                        accountLabel: null,
+                    });
+                    this._recipientAddressInfo = new AddressInfo({ // To User
+                        userFriendlyAddress: transaction.recipient,
+                        label: request.recipientLabel || null,
+                        imageUrl: null,
+                        accountLabel: request.keyLabel || null,
+                    });
+                    break;
+                case 'delete-validator':
+                default:
+                    this.$headline.textContent = I18n.translatePhrase('sign-tx-heading-tx');
+                    this._senderAddressInfo = new AddressInfo({
+                        userFriendlyAddress: transaction.sender,
+                        label: request.senderLabel || null,
+                        imageUrl: null,
+                        accountLabel: null,
+                    });
+                    this._recipientAddressInfo = new AddressInfo({
+                        userFriendlyAddress: transaction.recipient,
+                        label: request.recipientLabel || null,
+                        imageUrl: null,
+                        accountLabel: request.keyLabel || null,
+                    });
+                    break;
+            }
+        }
+
         this._senderAddressInfo.renderTo($sender);
         $sender.addEventListener('click', () => {
             this._openDetails(this._senderAddressInfo);
         });
 
-        const $recipient = /** @type {HTMLLinkElement} */ (this.$el.querySelector('.accounts .recipient'));
-        this._recipientAddressInfo = new AddressInfo({
-            userFriendlyAddress: transaction.recipient,
-            label: request.recipientLabel || null,
-            imageUrl: null,
-            accountLabel: null,
-        });
         this._recipientAddressInfo.renderTo($recipient);
         $recipient.addEventListener('click', () => {
             this._openDetails(this._recipientAddressInfo);
@@ -57,21 +204,13 @@ class SignStaking {
 
         const $value = /** @type {HTMLDivElement} */ (this.$el.querySelector('#value'));
         const $fee = /** @type {HTMLDivElement} */ (this.$el.querySelector('#fee'));
-        const $data = /** @type {HTMLDivElement} */ (this.$el.querySelector('#data'));
 
         // Set value and fee.
-        $value.textContent = NumberFormatting.formatNumber(lunasToCoins(transaction.value));
+        $value.textContent = NumberFormatting.formatNumber(lunasToCoins(displayValue));
         if ($fee && transaction.fee > 0) {
             $fee.textContent = NumberFormatting.formatNumber(lunasToCoins(transaction.fee));
             const $feeSection = /** @type {HTMLDivElement} */ (this.$el.querySelector('.fee-section'));
             $feeSection.classList.remove('display-none');
-        }
-
-        if ($data && transaction.data.raw.length) {
-            // Set transaction extra data.
-            $data.textContent = this._formatData(transaction);
-            const $dataSection = /** @type {HTMLDivElement} */ (this.$el.querySelector('.data-section'));
-            $dataSection.classList.remove('display-none');
         }
 
         // Set up password box.
@@ -158,114 +297,6 @@ class SignStaking {
     run() {
         // Go to start page
         window.location.hash = SignStaking.Pages.CONFIRM_STAKING;
-    }
-
-    /**
-     * @param {Nimiq.PlainTransaction} plain
-     * @returns {string}
-     */
-    _formatData(plain) {
-        console.log(plain);
-        // That either the recipient or the sender is a staking account type is validated in SignStakingApi
-        if (plain.recipientType === 'basic') {
-            switch (plain.data.type) {
-                case 'create-staker': {
-                    let text = 'Start staking';
-                    const { delegation } = plain.data;
-                    if (delegation) {
-                        text += ` with validator ${delegation}`;
-                    } else {
-                        text += ' with no validator';
-                    }
-                    return text;
-                }
-                case 'update-staker': {
-                    let text = 'Change validator';
-                    const { newDelegation, reactivateAllStake } = plain.data;
-                    if (newDelegation) {
-                        text += ` to validator ${newDelegation}`;
-                    } else {
-                        text += ' to no validator';
-                    }
-                    if (reactivateAllStake) {
-                        text += ' and reactivate all stake';
-                    }
-                    return text;
-                }
-                case 'add-stake': {
-                    const { staker } = plain.data;
-                    return `Add stake to ${staker}`;
-                }
-                case 'set-active-stake': {
-                    const { newActiveBalance } = plain.data;
-                    return `Set active stake to ${newActiveBalance / 1e5} NIM`;
-                }
-                case 'retire-stake': {
-                    const { retireStake } = plain.data;
-                    return `Retire ${retireStake / 1e5} NIM stake`;
-                }
-                case 'create-validator': {
-                    let text = `Create validator ${plain.sender}`;
-                    const { rewardAddress } = plain.data;
-                    if (rewardAddress !== plain.sender) {
-                        text += ` with reward address ${rewardAddress}`;
-                    }
-                    // TODO: Somehow let users see validator key, signing key, and signal data that they are signing
-                    return text;
-                }
-                case 'update-validator': {
-                    let text = `Update validator ${plain.sender}`;
-                    const {
-                        newRewardAddress,
-                        newVotingKey,
-                        newSigningKey,
-                        newSignalData,
-                    } = plain.data;
-                    text += ` ${plain.sender}`;
-                    if (newRewardAddress) {
-                        text += `, updating reward address to ${newRewardAddress}`;
-                    }
-                    if (newVotingKey) {
-                        text += ', updating voting key';
-                    }
-                    if (newSigningKey) {
-                        text += ', updating signing key';
-                    }
-                    if (newSignalData) {
-                        text += ', updating signal data';
-                    }
-                    return text;
-                }
-                case 'deactivate-validator': {
-                    const { validator } = plain.data;
-                    return `Deactivate validator ${validator}`;
-                }
-                case 'reactivate-validator': {
-                    const { validator } = plain.data;
-                    return `Reactivate validator ${validator}`;
-                }
-                case 'retire-validator': {
-                    return `Retire validator ${plain.sender}`;
-                }
-                default: {
-                    return `Unrecognized in-staking data: ${plain.data.type} - ${plain.data.raw}`;
-                }
-            }
-        } else {
-            switch (plain.senderData.type) {
-                case 'remove-stake': {
-                    return 'Unstake';
-                }
-                case 'delete-validator': {
-                    // Cannot show the validator address here, as the recipient can be any address and the validator
-                    // address is the signer, which the Keyguard only knows after password entry.
-                    return 'Delete validator';
-                }
-                default: {
-                    return `Unrecognized out-staking data: ${plain.senderData.type} - ${plain.senderData.raw}`;
-                }
-            }
-        }
     }
 }
 
