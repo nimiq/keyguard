@@ -457,8 +457,8 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
                 );
                 const refundSignatureProof = Nimiq.SignatureProof.singleSig(publicKey, refundSignature);
 
-                const proof = new Nimiq.SerialBuffer(1 + Nimiq.SignatureProof.SINGLE_SIG_SIZE);
-                proof.writeUint8(3 /* Nimiq.HashedTimeLockedContract.ProofType.TIMEOUT_RESOLVE */);
+                const proof = new Nimiq.SerialBuffer(1 + 1 + 32 + 1 + 64 /* Nimiq.SignatureProof.SINGLE_SIG_SIZE */);
+                proof.writeUint8(2 /* Nimiq.HashedTimeLockedContract.ProofType.TIMEOUT_RESOLVE */);
                 proof.write(refundSignatureProof.serialize());
                 refundTransaction.proof = proof;
 

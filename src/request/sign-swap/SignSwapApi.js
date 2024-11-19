@@ -35,11 +35,14 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
         }
 
         if (request.fund.type === 'NIM') {
+            const recipientData = new Uint8Array(82); // Dummy, required for rust code
+            recipientData[40] = 3; // Hash algorithm (sha-256)
+
             parsedRequest.fund = {
                 type: 'NIM',
                 keyPath: this.parsePath(request.fund.keyPath, 'fund.keyPath'),
                 transaction: this.parseTransaction({
-                    recipientData: new Uint8Array(78), // Dummy, required for CONTRACT_CREATION flag
+                    recipientData,
                     ...request.fund,
                     // Enforced properties
                     recipient: 'CONTRACT_CREATION',

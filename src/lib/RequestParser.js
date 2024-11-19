@@ -164,12 +164,12 @@ class RequestParser { // eslint-disable-line no-unused-vars
             throw new Errors.InvalidRequestError('Data must not exceed 64 bytes');
         }
         if (flags === 1 /* Nimiq.Transaction.Flag.CONTRACT_CREATION */
-                && recipientData.byteLength !== 78 // HTLC
+                && recipientData.byteLength !== 82 // HTLC
                 && recipientData.byteLength !== 28 // Vesting
                 && recipientData.byteLength !== 44 // Vesting
                 && recipientData.byteLength !== 52) { // Vesting
             throw new Errors.InvalidRequestError(
-                'Contract creation data must be 78 bytes for HTLC and 28, 44, or 52 bytes for vesting contracts',
+                'Contract creation data must be 82 bytes for HTLC and 28, 44, or 52 bytes for vesting contracts',
             );
         }
         if (
