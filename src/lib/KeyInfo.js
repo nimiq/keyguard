@@ -84,4 +84,18 @@ class KeyInfo {
     static fromObject(obj, encrypted, defaultAddress) {
         return new KeyInfo(obj.id, obj.type, encrypted, obj.hasPin, defaultAddress);
     }
+
+    /**
+     * @param {unknown} other
+     * @returns {other is KeyInfo}
+     */
+    equals(other) {
+        return other instanceof KeyInfo
+            && this.id === other.id
+            && this.type === other.type
+            && this.hasPin === other.hasPin
+            && this.encrypted === other.encrypted
+            && this.useLegacyStore === other.useLegacyStore
+            && this.defaultAddress.equals(other.defaultAddress);
+    }
 }

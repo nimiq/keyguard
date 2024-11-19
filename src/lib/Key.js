@@ -8,7 +8,7 @@ class Key {
      * @returns {string}
      */
     static deriveHash(input) {
-        return Nimiq.Hash.blake2b(input).toBase64();
+        return Nimiq.BufferUtils.toBase64(Nimiq.Hash.computeBlake2b(input));
     }
 
     /**
@@ -71,8 +71,8 @@ class Key {
 
         // Construct buffer
         const data = new Nimiq.SerialBuffer(dataLength);
-        data.write(Nimiq.BufferUtils.fromAscii(SignMessageConstants.SIGN_MSG_PREFIX));
-        data.write(Nimiq.BufferUtils.fromAscii(msgLengthAsString));
+        data.write(Nimiq.BufferUtils.fromUtf8(SignMessageConstants.SIGN_MSG_PREFIX));
+        data.write(Nimiq.BufferUtils.fromUtf8(msgLengthAsString));
         data.write(message);
 
         // Hash data before signing (uses SHA256, because it is the widest available)
@@ -112,7 +112,9 @@ class Key {
      * @type {Nimiq.Secret.Type}
      */
     get type() {
-        return this._secret.type;
+        return this._secret instanceof Nimiq.PrivateKey
+            ? Nimiq.Secret.Type.PRIVATE_KEY
+            : Nimiq.Secret.Type.ENTROPY;
     }
 
     /**
@@ -141,6 +143,19 @@ class Key {
             ? this._secret.serialize()
             : Nimiq.PublicKey.derive(this._secret).toAddress().serialize();
         return Key.deriveHash(input);
+    }
+
+    /**
+     * @param {unknown} other
+     * @returns {other is Key}
+     */
+    equals(other) {
+        return other instanceof Key
+            && this.id === other.id
+            && this.type === other.type
+            && this.hasPin === other.hasPin
+            && this.secret.equals(/** @type {Nimiq.PrivateKey} */ (other.secret))
+            && this.defaultAddress.equals(other.defaultAddress);
     }
 }
 

@@ -116,7 +116,6 @@ class CookieStorage {
         return !!CookieJar.readCookie(this._getChunkCookieName(name, 0, namespace));
     }
 
-    // eslint-disable-next-line valid-jsdoc
     /**
      * @param {string} name
      * @param {Uint8Array} data

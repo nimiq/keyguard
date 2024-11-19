@@ -1,9 +1,10 @@
+/* global Observable */
 /* global Nimiq */
 /* global I18n */
 /* global AutoComplete */
 /* global AnimationUtils */
 
-class RecoveryWordsInputField extends Nimiq.Observable {
+class RecoveryWordsInputField extends Observable {
     /**
      *
      * @param {number} index

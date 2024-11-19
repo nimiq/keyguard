@@ -1,7 +1,6 @@
 // Adapted and reduced version of FiatApi.ts from @nimiq/utils
 // This file should also be updated whenever FiatApi.ts in @nimiq/utils is updated.
 class FiatApi {
-    // eslint-disable-next-line valid-jsdoc
     /**
      * @param {Array<FiatApi.SupportedCryptoCurrency>} cryptoCurrencies
      * @param {Array<FiatApi.SupportedFiatCurrency>} vsCurrencies

@@ -10,7 +10,8 @@
           img-src http: https: blob: data:;
           child-src 'self' blob:;
           style-src 'self';
-          font-src 'self';">
+          font-src 'self';
+          connect-src 'self' https://api.coingecko.com">
     <title>Nimiq Keyguard</title>
 
     <script defer manual type="module" src="../../lib/AlbatrossWasm.mjs"></script>
@@ -42,22 +43,29 @@
     <script defer bundle-toplevel src="../TopLevelApi.js"></script>
     <script defer bundle-toplevel src="../../translations/index.js"></script>
 
+    <script defer src="../../lib/ClipboardUtils.js"></script>
     <script defer src="../../lib/IqonHash.js"></script>
     <script defer src="../../lib/Iqons.js"></script>
-    <script defer src="../../components/TabWidthSelector.js"></script>
+    <script defer src="../../lib/CurrencyInfo.js"></script>
+    <script defer src="../../lib/NumberFormatting.js"></script>
+    <script defer src="../../components/Copyable.js"></script>
     <script defer src="../../components/Identicon.js"></script>
-    <script defer src="SignMessageApi.js"></script>
-    <script defer src="SignMessage.js"></script>
+    <script defer src="../../components/AddressInfo.js"></script>
+    <script defer src="SignStaking.js"></script>
+    <script defer src="SignStakingApi.js"></script>
     <script defer src="index.js"></script>
 
     <link rel="stylesheet" bundle-toplevel href="../../../node_modules/@nimiq/style/nimiq-style.min.css">
     <link rel="stylesheet" bundle-toplevel href="../../nimiq-style.css">
     <link rel="stylesheet" bundle-toplevel href="../../common.css">
-    <link rel="stylesheet" bundle-toplevel href="../../components/TabWidthSelector.css">
     <link rel="stylesheet" bundle-toplevel href="../../components/PasswordInput.css">
     <link rel="stylesheet" bundle-toplevel href="../../components/PasswordBox.css">
 
-    <link rel="stylesheet" href="SignMessage.css">
+    <link rel="stylesheet" href="../../components/Tooltip.css">
+    <link rel="stylesheet" href="../../components/Copyable.css">
+    <link rel="stylesheet" href="../../components/AddressInfo.css">
+    <link rel="stylesheet" href="../../components/AddressInfoDetailed.css">
+    <link rel="stylesheet" href="SignStaking.css">
 </head>
 <body class="loading">
     <div class="header-top">
@@ -67,28 +75,41 @@
     </div>
 
     <div id="app">
-        <div id="sign-message" class="page nq-card">
-            <div class="page-header nq-card-header">
-                <h1 data-i18n="sign-msg-heading" class="nq-h1">Sign Message</h1>
+        <div id="confirm-staking" class="page nq-card">
+            <div id="account-details">
+                <button id="close-details" class="nq-button-s">
+                    <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-close"/></svg>
+                </button>
+                <div id="details"></div>
             </div>
-
-            <div class="page-body nq-card-body">
-                <textarea id="message" readonly="readonly"></textarea>
-                <div class="tab-width">
-                    <div id="tab-width-selector"></div>
+            <div id="effect-container">
+                <div class="page-header nq-card-header">
+                    <h1 data-i18n="sign-tx-heading-tx" class="nq-h1">Confirm Transaction</h1>
                 </div>
 
-                <div class="account">
-                    <div class="identicon" id="signer-identicon"></div>
-                    <div class="account-text">
-                        <div class="label" id="signer-label"></div>
-                        <span class="label-right" data-i18n="sign-msg-signer">Signer</span>
+                <div class="page-body nq-card-body transaction">
+                    <div class="center accounts">
+                        <div class="sender"></div>
+                        <svg class="nq-icon arrow"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-right"/></svg>
+                        <div class="recipient"></div>
+                    </div>
+
+                    <div class="value-fee-data">
+                        <div class="total nq-light-blue">
+                            <span id="value"></span><span class="nim-symbol"></span>
+                        </div>
+
+                        <div class="fee-section nq-text-s display-none">
+                            + <span id="fee"></span> <span class="nim-symbol"></span> <span data-i18n="sign-tx-fee">fee</span>
+                        </div>
+
+                        <div class="data-section display-none nq-text nq-blue" id="data"></div>
                     </div>
                 </div>
-            </div>
 
-            <div class="page-footer nq-card-footer">
-                <form id="password-box"></form>
+                <div class="page-footer nq-card-footer">
+                    <form id="password-box"></form>
+                </div>
             </div>
         </div>
 
@@ -100,9 +121,9 @@
         <!-- Default and loading screen -->
         <div id="loading" class="page">
             <!-- Loading spinner SVG -->
-            <svg height="48" width="54" color="inherit" class="loading-spinner"><g stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round">
-                <path class="big-hex" d="M51.9,21.9L41.3,3.6c-0.8-1.3-2.2-2.1-3.7-2.1H16.4c-1.5,0-2.9,0.8-3.7,2.1L2.1,21.9c-0.8,1.3-0.8,2.9,0,4.2 l10.6,18.3c0.8,1.3,2.2,2.1,3.7,2.1h21.3c1.5,0,2.9-0.8,3.7-2.1l10.6-18.3C52.7,24.8,52.7,23.2,51.9,21.9z" opacity="0.4" stroke-dasharray="92.5 60"/>
-                <path class="small-hex" d="M51.9,21.9L41.3,3.6c-0.8-1.3-2.2-2.1-3.7-2.1H16.4c-1.5,0-2.9,0.8-3.7,2.1L2.1,21.9c-0.8,1.3-0.8,2.9,0,4.2 l10.6,18.3c0.8,1.3,2.2,2.1,3.7,2.1h21.3c1.5,0,2.9-0.8,3.7-2.1l10.6-18.3C52.7,24.8,52.7,23.2,51.9,21.9z" stroke-dasharray="47.5 105"/>
+            <svg height="48" width="54" color="inherit" class="loading-spinner"><g>
+                <path class="big-hex" d="M51.9,21.9L41.3,3.6c-0.8-1.3-2.2-2.1-3.7-2.1H16.4c-1.5,0-2.9,0.8-3.7,2.1L2.1,21.9c-0.8,1.3-0.8,2.9,0,4.2 l10.6,18.3c0.8,1.3,2.2,2.1,3.7,2.1h21.3c1.5,0,2.9-0.8,3.7-2.1l10.6-18.3C52.7,24.8,52.7,23.2,51.9,21.9z" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.4" stroke-dasharray="92.5 60"/>
+                <path class="small-hex" d="M51.9,21.9L41.3,3.6c-0.8-1.3-2.2-2.1-3.7-2.1H16.4c-1.5,0-2.9,0.8-3.7,2.1L2.1,21.9c-0.8,1.3-0.8,2.9,0,4.2 l10.6,18.3c0.8,1.3,2.2,2.1,3.7,2.1h21.3c1.5,0,2.9-0.8,3.7-2.1l10.6-18.3C52.7,24.8,52.7,23.2,51.9,21.9z" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-dasharray="47.5 105"/>
             </g></svg>
         </div>
     </div>

@@ -66,7 +66,7 @@ class SignSwap {
         // The total amount the user loses
         let swapFromValue = 0;
         switch (fundTx.type) {
-            case 'NIM': swapFromValue = fundTx.transaction.value + fundTx.transaction.fee; break;
+            case 'NIM': swapFromValue = Number(fundTx.transaction.value + fundTx.transaction.fee); break;
             case 'BTC': swapFromValue = fundTx.inputs.reduce((sum, input) => sum + input.witnessUtxo.value, 0)
                     - (fundTx.changeOutput ? fundTx.changeOutput.value : 0); break;
             case 'USDC_MATIC':
@@ -79,7 +79,7 @@ class SignSwap {
         // The total amount the user receives
         let swapToValue = 0;
         switch (redeemTx.type) {
-            case 'NIM': swapToValue = redeemTx.transaction.value; break;
+            case 'NIM': swapToValue = Number(redeemTx.transaction.value); break;
             case 'BTC': swapToValue = redeemTx.output.value; break;
             case 'USDC_MATIC':
             case 'USDT_MATIC':
@@ -466,12 +466,12 @@ class SignSwap {
             case 'NIM':
                 return fundTx.type === 'NIM'
                     // When the user funds NIM, the service receives the HTLC balance - their network fee.
-                    ? fundTx.transaction.value - request.fundFees.redeeming
+                    ? Number(fundTx.transaction.value) - request.fundFees.redeeming
                     : redeemTx.type === 'NIM'
                         // When the user redeems NIM, the service lost the HTLC balance + their network fee.
                         // The transaction value is "HTLC balance - tx fee", therefore the "HTLC balance"
                         // is the transaction value + tx fee.
-                        ? redeemTx.transaction.value + redeemTx.transaction.fee + request.redeemFees.funding
+                        ? Number(redeemTx.transaction.value + redeemTx.transaction.fee) + request.redeemFees.funding
                         : 0; // Should never happen, if parsing works correctly
             case 'BTC':
                 return fundTx.type === 'BTC'

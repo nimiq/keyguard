@@ -1,8 +1,8 @@
-/* global Nimiq */
+/* global Observable */
 /* global I18n */
 /* global TemplateTags */
 
-class TabWidthSelector extends Nimiq.Observable {
+class TabWidthSelector extends Observable {
     /**
      * @param {?HTMLElement} [$el]
      */

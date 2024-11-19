@@ -1,7 +1,5 @@
 /* global Nimiq */
 /* global RpcServer */
-/* global Errors */
-/* global Constants */
 /* global CONFIG */
 
 /**
@@ -35,23 +33,7 @@ if (navigator.serviceWorker) {
 async function loadNimiq() {
     // eslint-disable-next-line no-return-assign
     return __nimiqLoaded || (__nimiqLoaded = new Promise(async resolve => {
-        // Load web assembly encryption library into browser (if supported)
-        await Nimiq.WasmHelper.doImport();
-
-        switch (CONFIG.NETWORK) {
-            case Constants.NETWORK.DEV:
-                Nimiq.GenesisConfig.dev();
-                break;
-            case Constants.NETWORK.TEST:
-                Nimiq.GenesisConfig.test();
-                break;
-            case Constants.NETWORK.MAIN:
-                Nimiq.GenesisConfig.main();
-                break;
-            default:
-                throw new Errors.InvalidNetworkConfig();
-        }
-
+        await Nimiq.default(); // eslint-disable-line no-undef
         resolve();
     }));
 }
@@ -134,4 +116,12 @@ async function runKeyguard(RequestApiClass, opts) { // eslint-disable-line no-un
         // This is not an iframe and no request was handled
         TopLevelApi.showNoRequestErrorPage(); // eslint-disable-line no-undef
     }
+}
+
+/**
+ * @param {number} lunas
+ * @returns {number}
+ */
+function lunasToCoins(lunas) { // eslint-disable-line no-unused-vars
+    return lunas / 1e5;
 }

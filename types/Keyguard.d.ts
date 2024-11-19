@@ -183,7 +183,7 @@ type NimHtlcContents = {
     refundAddress: string,
     redeemAddress: string,
     hash: string,
-    timeoutBlockHeight: number,
+    timeoutTimestamp: number,
 };
 
 type BtcHtlcContents = {
@@ -202,16 +202,16 @@ type Transform<T, K extends keyof T, E> = Omit<T, K> & E;
 
 type KeyId2KeyInfo<T extends { keyId: string }> = Transform<T, 'keyId', { keyInfo: KeyInfo }>
 type ConstructTransaction<T extends KeyguardRequest.TransactionInfo> = Transform<T,
-    'sender' | 'senderType' | 'recipient' | 'recipientType' | 'value' | 'fee' |
-    'validityStartHeight' | 'data' | 'flags',
-    { transaction: Nimiq.ExtendedTransaction }>
+    'sender' | 'senderType' | 'senderData' | 'recipient' | 'recipientType' | 'recipientData' |
+    'value' | 'fee' | 'validityStartHeight' | 'flags',
+    { transaction: Nimiq.Transaction }>
 
 type ConstructSwap<T extends KeyguardRequest.SignSwapRequestCommon> = Transform<T,
     'fund' | 'redeem', {
         fund: {
             type: 'NIM',
             keyPath: string,
-            transaction: Nimiq.ExtendedTransaction,
+            transaction: Nimiq.Transaction,
             senderLabel: string,
         } | {
             type: 'BTC',
@@ -240,7 +240,7 @@ type ConstructSwap<T extends KeyguardRequest.SignSwapRequestCommon> = Transform<
         redeem: {
             type: 'NIM',
             keyPath: string,
-            transaction: Nimiq.ExtendedTransaction,
+            transaction: Nimiq.Transaction,
             recipientLabel: string,
         } | {
             type: 'BTC',
@@ -283,6 +283,10 @@ type Parsed<T extends KeyguardRequest.Request> =
         > :
     T extends Is<T, KeyguardRequest.SignTransactionRequestCashlink> ?
         ConstructTransaction<KeyId2KeyInfo<KeyguardRequest.SignTransactionRequestCashlink>> :
+    T extends Is<T, KeyguardRequest.SignStakingRequest> ?
+        Transform<KeyId2KeyInfo<KeyguardRequest.SignStakingRequest> & {
+            plain: Nimiq.PlainTransaction[],
+        }, 'transaction', { transactions: Nimiq.Transaction[] }> :
     T extends Is<T, KeyguardRequest.SignMessageRequest> ?
         Transform<
             KeyId2KeyInfo<KeyguardRequest.SignMessageRequest>,

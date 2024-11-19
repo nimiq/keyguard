@@ -125,7 +125,7 @@ class Create {
             // Set up LoginFile
             const key = new Key(this._entropy);
             const passwordBuffer = Utf8Tools.stringToUtf8ByteArray(password);
-            const encryptedSecret = await key.secret.exportEncrypted(passwordBuffer);
+            const encryptedSecret = await Nimiq.Secret.exportEncrypted(key.secret, passwordBuffer);
 
             this._downloadLoginFile.setEncryptedEntropy(encryptedSecret, key.defaultAddress);
             // Reset to initial state

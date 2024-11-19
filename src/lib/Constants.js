@@ -1,4 +1,5 @@
 const Constants = { // eslint-disable-line no-unused-vars
+    LUNAS_PER_COIN: 1e5,
     MIN_WIDTH_FOR_AUTOFOCUS: 600, // px
     NETWORK: {
         DEV: 'dev',

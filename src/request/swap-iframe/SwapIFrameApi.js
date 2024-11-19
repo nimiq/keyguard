@@ -161,13 +161,6 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
                 throw new Errors.InvalidRequestError('NIM HTLC refund address must be same as sender');
             }
 
-            // Check that validityStartHeight is before HTLC timeout
-            if (storedRequest.fund.transaction.validityStartHeight >= htlcDetails.timeoutBlockHeight) {
-                throw new Errors.InvalidRequestError(
-                    'Fund validityStartHeight must be lower than HTLC timeout block height',
-                );
-            }
-
             fund = {
                 type: 'NIM',
                 htlcDetails,
@@ -182,18 +175,11 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
                 throw new Errors.InvalidRequestError('NIM HTLC redeem address must be same as recipient');
             }
 
-            // Check that validityStartHeight is before HTLC timeout
-            if (storedRequest.redeem.transaction.validityStartHeight >= htlcDetails.timeoutBlockHeight) {
-                throw new Errors.InvalidRequestError(
-                    'Redeem validityStartHeight must be lower than HTLC timeout block height',
-                );
-            }
-
             redeem = {
                 type: 'NIM',
                 htlcDetails,
                 htlcData: request.redeem.htlcData,
-                htlcAddress: this.parseAddress(request.redeem.htlcAddress, 'redeem.htlcAddress')
+                htlcAddress: this.parseAddress(request.redeem.htlcAddress, 'redeem.htlcAddress', false)
                     .toUserFriendlyAddress(),
             };
         }
@@ -395,22 +381,16 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
         // Validate timeouts of the two contracts
         // The redeem HTLC must have a later timeout than the funding HTLC.
         const fundingTimeout = 'htlcDetails' in fund
-            ? 'timeoutTimestamp' in fund.htlcDetails
-                ? fund.htlcDetails.timeoutTimestamp
-                : undefined
+            ? fund.htlcDetails.timeoutTimestamp
             : fund.description.args.timeout.toNumber();
-        const redeemingTimeout = 'timeoutTimestamp' in redeem.htlcDetails
-            ? redeem.htlcDetails.timeoutTimestamp
-            : undefined;
-        if (fundingTimeout && redeemingTimeout) {
-            const diff = redeemingTimeout - fundingTimeout;
+        const redeemingTimeout = redeem.htlcDetails.timeoutTimestamp;
+        const diff = redeemingTimeout - fundingTimeout;
 
-            // Validate that the difference is at least 15 minutes
-            if (diff < 15 * 60) {
-                throw new Errors.InvalidRequestError(
-                    'HTLC redeem timeout must be 15 min or more after the funding timeout',
-                );
-            }
+        // Validate that the difference is at least 15 minutes
+        if (diff < 15 * 60) {
+            throw new Errors.InvalidRequestError(
+                'HTLC redeem timeout must be 15 min or more after the funding timeout',
+            );
         }
 
         /** @type {Parsed<KeyguardRequest.SignSwapTransactionsRequest>} */
@@ -429,12 +409,24 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
             const privateKey = new Nimiq.PrivateKey(Nimiq.BufferUtils.fromHex(privateKeys.nim));
             const publicKey = Nimiq.PublicKey.derive(privateKey);
 
-            const transaction = Nimiq.Transaction.fromPlain({
+            let transaction = Nimiq.Transaction.fromPlain({
                 ...storedRequest.fund.transaction.toPlain(),
-                data: parsedRequest.fund.htlcData,
-                // Must be the exact object reference, which gets lost with toPlain()
-                recipient: Nimiq.Address.CONTRACT_CREATION,
+                data: {
+                    type: 'raw',
+                    raw: Nimiq.BufferUtils.toHex(parsedRequest.fund.htlcData),
+                },
+                // This NULL-address as the recipient gets replaced below
+                recipient: new Nimiq.Address(new Uint8Array(20)).toUserFriendlyAddress(),
             });
+            // Calculate the contract address of the HTLC that gets created and recreate the transaction
+            // with that address as the recipient:
+            const contractAddress = new Nimiq.Address(Nimiq.BufferUtils.fromHex(transaction.hash()));
+            transaction = new Nimiq.Transaction(
+                transaction.sender, transaction.senderType, transaction.senderData,
+                contractAddress, transaction.recipientType, transaction.data,
+                transaction.value, transaction.fee,
+                transaction.flags, transaction.validityStartHeight, transaction.networkId,
+            );
 
             const signature = Nimiq.Signature.create(privateKey, publicKey, transaction.serializeContent());
 
@@ -444,18 +436,18 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
                 signature: signature.serialize(),
             };
 
-            if (transaction.senderType === Nimiq.Account.Type.BASIC) {
-                const feePerUnit = transaction.fee / transaction.serializedSize;
-                const fee = Math.ceil(feePerUnit * 167); // 167 = NIM HTLC refunding tx size
+            if (transaction.senderType === Nimiq.AccountType.Basic) {
+                const feePerUnit = Number(transaction.fee) / transaction.serializedSize;
+                const fee = BigInt(Math.ceil(feePerUnit * 167)); // 167 = NIM HTLC refunding tx size
 
                 // Create refund transaction
-                const refundTransaction = new Nimiq.ExtendedTransaction(
-                    transaction.recipient, Nimiq.Account.Type.HTLC,
-                    transaction.sender, Nimiq.Account.Type.BASIC,
+                const refundTransaction = new Nimiq.Transaction(
+                    transaction.recipient, Nimiq.AccountType.HTLC, new Uint8Array(0),
+                    transaction.sender, Nimiq.AccountType.Basic, new Uint8Array(0),
                     transaction.value - fee, fee,
-                    parsedRequest.fund.htlcDetails.timeoutBlockHeight,
-                    Nimiq.Transaction.Flag.NONE,
-                    new Uint8Array(0),
+                    0 /* Nimiq.Transaction.Flag.NONE */,
+                    parsedRequest.fund.htlcDetails.timeoutTimestamp,
+                    CONFIG.NIMIQ_NETWORK_ID,
                 );
 
                 const refundSignature = Nimiq.Signature.create(
@@ -465,9 +457,9 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
                 );
                 const refundSignatureProof = Nimiq.SignatureProof.singleSig(publicKey, refundSignature);
 
-                const proof = new Nimiq.SerialBuffer(1 + Nimiq.SignatureProof.SINGLE_SIG_SIZE);
-                proof.writeUint8(Nimiq.HashedTimeLockedContract.ProofType.TIMEOUT_RESOLVE);
-                refundSignatureProof.serialize(proof);
+                const proof = new Nimiq.SerialBuffer(1 + 1 + 32 + 1 + 64 /* Nimiq.SignatureProof.SINGLE_SIG_SIZE */);
+                proof.writeUint8(2 /* Nimiq.HashedTimeLockedContract.ProofType.TIMEOUT_RESOLVE */);
+                proof.write(refundSignatureProof.serialize());
                 refundTransaction.proof = proof;
 
                 result.refundTx = Nimiq.BufferUtils.toHex(refundTransaction.serialize());

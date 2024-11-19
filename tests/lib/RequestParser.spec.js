@@ -83,7 +83,7 @@ describe('RequestParser', () => {
         expect(error).toEqual(new Errors.KeyNotFoundError());
 
         const parsedKeyInfo = await requestParser.parseKeyId(Dummy.keyInfos()[0].id);
-        expect(parsedKeyInfo).toEqual(Dummy.keyInfos()[0]);
+        expect(parsedKeyInfo.equals(Dummy.keyInfos()[0])).toBe(true);
 
         await Dummy.Utils.deleteDummyKeyStore();
     });
@@ -110,7 +110,7 @@ describe('RequestParser', () => {
         expect(() => requestParser.parseTransaction({})).toThrow();
 
         const transaction = {
-            data: new Uint8Array([84, 104, 97, 110, 107, 32, 121, 111, 117, 32, 102, 111, 114, 32, 115, 104, 111, 112, 112, 105, 110, 103, 32, 97, 116, 32, 115, 104, 111, 112, 46, 110, 105, 109, 105, 113, 46, 99, 111, 109, 32, 40, 72, 51, 88, 67, 48, 68, 41]),
+            recipientData: new Uint8Array([84, 104, 97, 110, 107, 32, 121, 111, 117, 32, 102, 111, 114, 32, 115, 104, 111, 112, 112, 105, 110, 103, 32, 97, 116, 32, 115, 104, 111, 112, 46, 110, 105, 109, 105, 113, 46, 99, 111, 109, 32, 40, 72, 51, 88, 67, 48, 68, 41]),
             fee: 0,
             recipient: new Uint8Array([225, 253, 0, 255, 238, 105, 158, 173, 122, 16, 27, 203, 31, 16, 3, 178, 231, 105, 81, 188]),
             sender: new Uint8Array([238, 61, 13, 183, 158, 200, 247, 106, 130, 61, 9, 123, 134, 82, 60, 95, 16, 71, 39, 70]),
@@ -118,19 +118,32 @@ describe('RequestParser', () => {
             validityStartHeight: 176450,
             value: 545000000,
         };
-        expect(requestParser.parseTransaction(transaction)).toEqual(
-            new Nimiq.ExtendedTransaction(
-                new Nimiq.Address(new Uint8Array([238, 61, 13, 183, 158, 200, 247, 106, 130, 61, 9, 123, 134, 82, 60, 95, 16, 71, 39, 70])), //sender
-                Nimiq.Account.Type.BASIC, // senderType
-                new Nimiq.Address(new Uint8Array([225, 253, 0, 255, 238, 105, 158, 173, 122, 16, 27, 203, 31, 16, 3, 178, 231, 105, 81, 188])), // recipient
-                Nimiq.Account.Type.BASIC, //recipientType
-                545000000, // value
-                0, // fee
-                176450, // validityStartHeight
-                0, // flags
-                new Uint8Array([84, 104, 97, 110, 107, 32, 121, 111, 117, 32, 102, 111, 114, 32, 115, 104, 111, 112, 112, 105, 110, 103, 32, 97, 116, 32, 115, 104, 111, 112, 46, 110, 105, 109, 105, 113, 46, 99, 111, 109, 32, 40, 72, 51, 88, 67, 48, 68, 41]), // data
-            ),
+
+        const parsed = requestParser.parseTransaction(transaction);
+        const expected = new Nimiq.Transaction(
+            new Nimiq.Address(new Uint8Array([238, 61, 13, 183, 158, 200, 247, 106, 130, 61, 9, 123, 134, 82, 60, 95, 16, 71, 39, 70])), //sender
+            Nimiq.AccountType.Basic, // senderType
+            new Uint8Array(0),
+            new Nimiq.Address(new Uint8Array([225, 253, 0, 255, 238, 105, 158, 173, 122, 16, 27, 203, 31, 16, 3, 178, 231, 105, 81, 188])), // recipient
+            Nimiq.AccountType.Basic, //recipientType
+            new Uint8Array([84, 104, 97, 110, 107, 32, 121, 111, 117, 32, 102, 111, 114, 32, 115, 104, 111, 112, 112, 105, 110, 103, 32, 97, 116, 32, 115, 104, 111, 112, 46, 110, 105, 109, 105, 113, 46, 99, 111, 109, 32, 40, 72, 51, 88, 67, 48, 68, 41]), // recipientData
+            545000000n, // value
+            0n, // fee
+            0, // flags
+            176450, // validityStartHeight
+            5, // networkId
         );
+        expect(parsed.sender.equals(expected.sender)).toBe(true);
+        expect(parsed.senderType).toBe(expected.senderType);
+        expect(parsed.senderData).toEqual(expected.senderData);
+        expect(parsed.recipient.equals(expected.recipient)).toBe(true);
+        expect(parsed.recipientType).toBe(expected.recipientType);
+        expect(parsed.data).toEqual(expected.data);
+        expect(parsed.value).toEqual(expected.value);
+        expect(parsed.fee).toEqual(expected.fee);
+        expect(parsed.flags).toEqual(expected.flags);
+        expect(parsed.validityStartHeight).toEqual(expected.validityStartHeight);
+        expect(parsed.networkId).toEqual(expected.networkId);
 
         const sender = transaction.sender;
         transaction.sender = transaction.recipient;

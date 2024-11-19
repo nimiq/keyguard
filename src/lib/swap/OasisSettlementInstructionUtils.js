@@ -19,7 +19,7 @@ class OasisSettlementInstructionUtils { // eslint-disable-line no-unused-vars
             this._textToBase64Url(JSON.stringify(instruction)),
         ].join('.');
 
-        const signature = key.sign(path, Nimiq.BufferUtils.fromAscii(body));
+        const signature = key.sign(path, Nimiq.BufferUtils.fromUtf8(body));
         const base64UrlSignature = Nimiq.BufferUtils.toBase64Url(signature.serialize())
             .replace(/\.*$/, ''); // Remove trailing periods
 

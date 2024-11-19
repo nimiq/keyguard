@@ -8,7 +8,11 @@ describe('CookieJar', () => {
 
     it('can decode a cookie', () => {
         const decoded = CookieJar._decodeKeysCookie(Dummy.keyInfoCookieEncoded);
-        expect(decoded).toEqual(Dummy.cookieKeyInfos());
+
+        const expected = Dummy.cookieKeyInfos();
+        for (let i = 0; i < Math.max(decoded.length, expected.length); i++) {
+            expect(decoded[i].equals(expected[i])).toBe(true);
+        }
     });
 
     it('can be filled with key info', () => {
@@ -27,6 +31,10 @@ describe('CookieJar', () => {
         const deprecatedAccountInfo = CookieJar.eatDeprecatedAccounts();
         expect(deprecatedAccountInfo).toEqual(Dummy.deprecatedAccountInfos);
         const keyInfo = CookieJar.eatKeys();
-        expect(keyInfo).toEqual(Dummy.cookieKeyInfos());
+
+        const expected = Dummy.cookieKeyInfos();
+        for (let i = 0; i < Math.max(keyInfo.length, expected.length); i++) {
+            expect(keyInfo[i].equals(expected[i])).toBe(true);
+        }
     });
 });

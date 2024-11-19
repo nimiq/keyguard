@@ -7,7 +7,6 @@
  * @typedef {new (...args: any[]) => T} PolygonRequestParserMixinConstructor;
  */
 
-// eslint-disable-next-line valid-jsdoc
 /**
  * A mixin to add Polygon-related request parsers to a RequestParser class.
  *

@@ -8,7 +8,6 @@
  * @typedef {new (...args: any[]) => T} BitcoinRequestParserMixinConstructor;
  */
 
-// eslint-disable-next-line valid-jsdoc
 /**
  * A mixin to add Bitcoin-related request parsers to a RequestParser class.
  *

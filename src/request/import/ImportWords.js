@@ -9,6 +9,7 @@
 /* global LoginFileConfig */
 /* global LoginFileIcon */
 /* global Nimiq */
+/* global NimiqPoW */
 /* global PasswordInput */
 /* global PasswordSetterBox */
 /* global RecoveryWords */
@@ -269,7 +270,7 @@ class ImportWords {
         if (mnemonicType === Nimiq.MnemonicUtils.MnemonicType.LEGACY
             || mnemonicType === Nimiq.MnemonicUtils.MnemonicType.UNKNOWN) {
             this._fileAvailable = false;
-            const entropy = Nimiq.MnemonicUtils.legacyMnemonicToEntropy(mnemonic);
+            const entropy = NimiqPoW.MnemonicUtils.legacyMnemonicToEntropy(mnemonic);
             this._secrets.privateKey = new Nimiq.PrivateKey(entropy.serialize());
         }
 

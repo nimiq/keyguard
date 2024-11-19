@@ -20,7 +20,7 @@ class SignMessageApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         parsedRequest.keyPath = this.parsePath(request.keyPath, 'keyPath');
         parsedRequest.message = this.parseMessage(request.message);
         parsedRequest.signerLabel = /** @type {string} */ (this.parseLabel(request.signerLabel, false));
-        parsedRequest.signer = this.parseAddress(request.signer, 'signer');
+        parsedRequest.signer = this.parseAddress(request.signer, 'signer', false);
 
         return parsedRequest;
     }

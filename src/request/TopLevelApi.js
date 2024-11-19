@@ -4,7 +4,6 @@
 /* global KeyStore */
 /* global CookieJar */
 /* global I18n */
-/* global Nimiq */
 /* global RequestParser */
 /* global NoRequestErrorPage */
 
@@ -124,7 +123,9 @@ class TopLevelApi extends RequestParser {
              */
             if (!(/** @type {any} */(parsedRequest).keyInfo)
                 || /** @type {any} */(parsedRequest).keyInfo.encrypted) {
-                Nimiq.CryptoWorker.getInstanceAsync();
+                // The crypto worker can only be pre-loaded by triggering a method that instantiates it
+                // behind the scenes, thus we call otpKdf with dummy parameters.
+                // Nimiq.CryptoUtils.otpKdf(new Uint8Array(0), new Uint8Array(0), new Uint8Array(0), 0);
             }
 
             window.addEventListener('unhandledrejection', event => {

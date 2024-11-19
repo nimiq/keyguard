@@ -35,16 +35,19 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
         }
 
         if (request.fund.type === 'NIM') {
+            const recipientData = new Uint8Array(82); // Dummy, required for rust code
+            recipientData[40] = 3; // Hash algorithm (sha-256)
+
             parsedRequest.fund = {
                 type: 'NIM',
                 keyPath: this.parsePath(request.fund.keyPath, 'fund.keyPath'),
                 transaction: this.parseTransaction({
-                    data: new Uint8Array(78), // Dummy, required for CONTRACT_CREATION flag
+                    recipientData,
                     ...request.fund,
                     // Enforced properties
                     recipient: 'CONTRACT_CREATION',
-                    recipientType: Nimiq.Account.Type.HTLC,
-                    flags: Nimiq.Transaction.Flag.CONTRACT_CREATION,
+                    recipientType: Nimiq.AccountType.HTLC,
+                    flags: 1 /* Nimiq.Transaction.Flag.CONTRACT_CREATION */,
                 }),
                 senderLabel: /** @type {string} */ (this.parseLabel(
                     request.fund.senderLabel, false, 'fund.senderLabel',
@@ -119,12 +122,12 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
                 type: 'NIM',
                 keyPath: this.parsePath(request.redeem.keyPath, 'redeem.keyPath'),
                 transaction: this.parseTransaction({
-                    sender: Nimiq.Address.NULL.toUserFriendlyAddress(), // Dummy
+                    sender: new Nimiq.Address(new Uint8Array(20)).toUserFriendlyAddress(), // Dummy
                     ...request.redeem,
                     // Enforced properties
-                    senderType: Nimiq.Account.Type.HTLC,
-                    recipientType: Nimiq.Account.Type.BASIC,
-                    flags: Nimiq.Transaction.Flag.NONE,
+                    senderType: Nimiq.AccountType.HTLC,
+                    recipientType: Nimiq.AccountType.Basic,
+                    flags: 0 /* Nimiq.Transaction.Flag.NONE */,
                 }),
                 recipientLabel: /** @type {string} */ (this.parseLabel(
                     request.redeem.recipientLabel, false, 'recipientLabel',
@@ -207,7 +210,8 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
             parsedRequest.direction = this.parseDirection(request.direction);
 
             parsedRequest.nimiqAddresses = request.nimiqAddresses.map((address, index) => ({
-                address: this.parseAddress(address.address, `nimiqAddresses[${index}].address`).toUserFriendlyAddress(),
+                address: this.parseAddress(address.address, `nimiqAddresses[${index}].address`, false)
+                    .toUserFriendlyAddress(),
                 balance: this.parsePositiveInteger(address.balance, true, `nimiqAddresses[${index}].balance`),
             }));
             parsedRequest.bitcoinAccount = {
@@ -329,7 +333,6 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
         return direction;
     }
 
-    // eslint-disable-next-line valid-jsdoc
     /**
      *
      * @param {Omit<KeyguardRequest.PolygonTransactionInfo, 'amount'>} request

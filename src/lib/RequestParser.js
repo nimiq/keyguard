@@ -3,6 +3,7 @@
 /* global AccountStore */
 /* global Errors */
 /* global Utf8Tools */
+/* global CONFIG */
 
 class RequestParser { // eslint-disable-line no-unused-vars
     /**
@@ -124,79 +125,110 @@ class RequestParser { // eslint-disable-line no-unused-vars
 
     /**
      * @param {any} object
-     * @returns {Nimiq.ExtendedTransaction}
+     * @returns {Nimiq.Transaction}
      */
     parseTransaction(object) {
-        const accountTypes = new Set([Nimiq.Account.Type.BASIC, Nimiq.Account.Type.VESTING, Nimiq.Account.Type.HTLC]);
+        const accountTypes = new Set([
+            Nimiq.AccountType.Basic,
+            Nimiq.AccountType.Vesting,
+            Nimiq.AccountType.HTLC,
+            3 /* Staking */,
+        ]);
         if (!object || typeof object !== 'object' || object === null) {
             throw new Errors.InvalidRequestError('Request must be an object');
         }
 
-        const sender = this.parseAddress(object.sender, 'sender');
-        const senderType = object.senderType || Nimiq.Account.Type.BASIC;
+        const sender = this.parseAddress(object.sender, 'sender', false);
+        const senderType = object.senderType || Nimiq.AccountType.Basic;
         if (!accountTypes.has(senderType)) {
             throw new Errors.InvalidRequestError('Invalid sender type');
         }
 
-        const recipient = this.parseAddress(object.recipient, 'recipient');
-        const recipientType = object.recipientType || Nimiq.Account.Type.BASIC;
+        const senderData = typeof object.senderData === 'string'
+            ? Utf8Tools.stringToUtf8ByteArray(object.senderData)
+            : object.senderData || new Uint8Array(0);
+
+        const recipient = this.parseAddress(object.recipient, 'recipient', true);
+        const recipientType = object.recipientType || Nimiq.AccountType.Basic;
         if (!accountTypes.has(recipientType)) {
             throw new Errors.InvalidRequestError('Invalid recipient type');
         }
 
-        if (sender.equals(recipient)) {
-            throw new Errors.InvalidRequestError('Sender and recipient must not match');
-        }
+        const recipientData = typeof object.recipientData === 'string'
+            ? Utf8Tools.stringToUtf8ByteArray(object.recipientData)
+            : object.recipientData || new Uint8Array(0);
 
-        const flags = object.flags || Nimiq.Transaction.Flag.NONE;
+        const flags = object.flags || 0/* Nimiq.Transaction.Flag.NONE */;
 
-        const data = typeof object.data === 'string'
-            ? Utf8Tools.stringToUtf8ByteArray(object.data)
-            : object.data || new Uint8Array(0);
-
-        if (flags === Nimiq.Transaction.Flag.NONE && data.byteLength > 64) {
+        if (flags === 0 /* Nimiq.Transaction.Flag.NONE */ && recipientType !== 3 && recipientData.byteLength > 64) {
             throw new Errors.InvalidRequestError('Data must not exceed 64 bytes');
         }
-        if (flags === Nimiq.Transaction.Flag.CONTRACT_CREATION
-                && data.byteLength !== 78 // HTLC
-                && data.byteLength !== 24 // Vesting
-                && data.byteLength !== 36 // Vesting
-                && data.byteLength !== 44) { // Vesting
+        if (flags === 1 /* Nimiq.Transaction.Flag.CONTRACT_CREATION */
+                && recipientData.byteLength !== 82 // HTLC
+                && recipientData.byteLength !== 28 // Vesting
+                && recipientData.byteLength !== 44 // Vesting
+                && recipientData.byteLength !== 52) { // Vesting
             throw new Errors.InvalidRequestError(
-                'Contract creation data must be 78 bytes for HTLC and 24, 36, or 44 bytes for vesting contracts',
+                'Contract creation data must be 82 bytes for HTLC and 28, 44, or 52 bytes for vesting contracts',
             );
         }
-        if (flags === Nimiq.Transaction.Flag.CONTRACT_CREATION && recipient !== Nimiq.Address.CONTRACT_CREATION) {
+        if (
+            flags === 1 /* Nimiq.Transaction.Flag.CONTRACT_CREATION */
+            && recipient !== 'CONTRACT_CREATION'
+        ) {
             throw new Errors.InvalidRequestError(
-                'Transaction recipient must be CONTRACT_CREATION when creating contracts',
+                'Transaction recipient must be "CONTRACT_CREATION" when creating contracts',
             );
         }
 
         try {
-            return new Nimiq.ExtendedTransaction(
+            let tx = new Nimiq.Transaction(
                 sender,
                 senderType,
-                recipient,
+                senderData,
+                recipient === 'CONTRACT_CREATION' ? new Nimiq.Address(new Uint8Array(20)) : recipient,
                 recipientType,
-                object.value,
-                object.fee,
-                object.validityStartHeight,
+                recipientData,
+                BigInt(object.value),
+                BigInt(object.fee),
                 flags,
-                data,
+                object.validityStartHeight,
+                CONFIG.NIMIQ_NETWORK_ID,
             );
+            if (recipient === 'CONTRACT_CREATION') {
+                // Calculate the contract address of the HTLC that gets created and recreate the transaction
+                // with that address as the recipient:
+                const contractAddress = new Nimiq.Address(Nimiq.BufferUtils.fromHex(tx.hash()));
+                tx = new Nimiq.Transaction(
+                    tx.sender, tx.senderType, tx.senderData,
+                    contractAddress, tx.recipientType, tx.data,
+                    tx.value, tx.fee,
+                    tx.flags, tx.validityStartHeight, tx.networkId,
+                );
+            }
+
+            if (tx.sender.equals(tx.recipient)) {
+                throw new Error('Sender and recipient must not match');
+            }
+
+            return tx;
         } catch (error) {
             throw new Errors.InvalidRequestError(error instanceof Error ? error : String(error));
         }
     }
 
     /**
+     * @template {boolean} T
      * @param {any} address
      * @param {string} name
-     * @returns {Nimiq.Address}
+     * @param {T} allowContractCreation
+     * @returns {Nimiq.Address | (T extends true ?  'CONTRACT_CREATION' : never)}
      */
-    parseAddress(address, name) {
-        if (address === 'CONTRACT_CREATION') {
-            return Nimiq.Address.CONTRACT_CREATION;
+    parseAddress(address, name, allowContractCreation) {
+        if (allowContractCreation && address === 'CONTRACT_CREATION') {
+            // @ts-expect-error Type '"CONTRACT_CREATION"' is not assignable to type
+            //                  'Address | (T extends true ? "CONTRACT_CREATION" : never)'
+            return 'CONTRACT_CREATION';
         }
 
         try {

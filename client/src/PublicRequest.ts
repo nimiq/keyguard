@@ -1,4 +1,4 @@
-import * as Nimiq from '@nimiq/core-web';
+import * as Nimiq from '@nimiq/albatross-wasm';
 import { ForwardRequest as OpenGsnForwardRequest } from '@opengsn/common/dist/EIP712/ForwardRequest';
 import { RelayData as OpenGsnRelayData } from '@opengsn/common/dist/EIP712/RelayData';
 import { KeyguardCommand } from './KeyguardCommand';
@@ -43,13 +43,14 @@ export type TransactionInfo = {
     keyPath: string,
     senderLabel?: string,
     sender: Uint8Array,
-    senderType: Nimiq.Account.Type,
+    senderType: Nimiq.AccountType,
+    senderData?: Uint8Array,
     recipient: Uint8Array,
-    recipientType?: Nimiq.Account.Type,
+    recipientType?: Nimiq.AccountType,
+    recipientData?: Uint8Array,
     value: number,
     fee: number,
     validityStartHeight: number,
-    data?: Uint8Array,
     flags?: number,
 };
 
@@ -187,6 +188,13 @@ export type SignTransactionRequest
     = SignTransactionRequestStandard
     | SignTransactionRequestCheckout
     | SignTransactionRequestCashlink;
+
+export type SignStakingRequest = SimpleRequest & {
+    keyPath: string,
+    transaction: Uint8Array | Uint8Array[], // An array is only allowed for retire_stake + remove_stake transactions
+    senderLabel?: string,
+    recipientLabel?: string,
+};
 
 export type SignBtcTransactionRequestStandard = SimpleRequest & BitcoinTransactionInfo & {
     layout?: 'standard',
@@ -489,6 +497,7 @@ export type RedirectRequest
     | RemoveKeyRequest
     | SignMessageRequest
     | SignTransactionRequest
+    | SignStakingRequest
     | SignBtcTransactionRequest
     | SignPolygonTransactionRequest
     | SimpleRequest
@@ -528,7 +537,12 @@ export type DerivedAddress = {
 export type KeyResult = SingleKeyResult[];
 export type ListResult = KeyInfoObject[];
 export type ListLegacyResult = LegacyKeyInfoObject[];
-export type SignTransactionResult = SignatureResult;
+export type SignTransactionResult = SignatureResult & {
+    serializedTx: Uint8Array,
+};
+export type SignStakingResult = SignatureResult & {
+    transaction: Uint8Array,
+};
 export type SimpleResult = { success: boolean };
 export type SignedBitcoinTransaction = {
     transactionHash: string,
@@ -561,6 +575,7 @@ export type RedirectResult
     | ExportResult
     | KeyResult
     | SignTransactionResult
+    | SignStakingResult[]
     | SignedBitcoinTransaction
     | SignedPolygonTransaction
     | SimpleResult
@@ -574,6 +589,7 @@ export type Result = RedirectResult | IFrameResult;
 
 export type ResultType<T extends RedirectRequest> =
     T extends Is<T, SignMessageRequest> | Is<T, SignTransactionRequest> ? SignatureResult :
+    T extends Is<T, SignStakingRequest> ? SignStakingResult[] :
     T extends Is<T, DeriveAddressRequest> ? DerivedAddress[] :
     T extends Is<T, CreateRequest> | Is<T, ImportRequest> | Is<T, ResetPasswordRequest> ? KeyResult :
     T extends Is<T, ExportRequest> ? ExportResult :
@@ -587,6 +603,7 @@ export type ResultType<T extends RedirectRequest> =
 
 export type ResultByCommand<T extends KeyguardCommand> =
     T extends KeyguardCommand.SIGN_MESSAGE | KeyguardCommand.SIGN_TRANSACTION ? SignatureResult :
+    T extends KeyguardCommand.SIGN_STAKING ? SignStakingResult[] :
     T extends KeyguardCommand.DERIVE_ADDRESS ? DerivedAddress[] :
     T extends KeyguardCommand.CREATE | KeyguardCommand.IMPORT ? KeyResult :
     T extends KeyguardCommand.EXPORT ? ExportResult :

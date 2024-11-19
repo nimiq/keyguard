@@ -58,6 +58,7 @@
   "include": [
     "types/*",
     "src/**/*.js",
+    "src/**/*.mjs",
     "tests/**/*.js"
   ],
   "exclude": [

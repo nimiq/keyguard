@@ -11,6 +11,7 @@
 /* global Constants */
 /* global NumberFormatting */
 /* global I18n */
+/* global lunasToCoins */
 
 /**
  * @callback SignTransaction.resolve
@@ -76,10 +77,10 @@ class SignTransaction {
                 recipient: recipientAddress,
                 label: recipientLabel || recipientAddress,
                 imageUrl: request.shopLogoUrl,
-                amount: request.transaction.value,
+                amount: Number(request.transaction.value),
                 currency: /** @type {'nim'} */ ('nim'),
-                unitsToCoins: Nimiq.Policy.lunasToCoins,
-                networkFee: request.transaction.fee,
+                unitsToCoins: lunasToCoins,
+                networkFee: Number(request.transaction.fee),
             }), $paymentInfoLine);
         } else {
             $paymentInfoLine.remove();
@@ -93,9 +94,9 @@ class SignTransaction {
         const $data = /** @type {HTMLDivElement} */ (this.$el.querySelector('#data'));
 
         // Set value and fee.
-        $value.textContent = NumberFormatting.formatNumber(Nimiq.Policy.lunasToCoins(transaction.value));
+        $value.textContent = NumberFormatting.formatNumber(lunasToCoins(Number(transaction.value)));
         if ($fee && transaction.fee > 0) {
-            $fee.textContent = NumberFormatting.formatNumber(Nimiq.Policy.lunasToCoins(transaction.fee));
+            $fee.textContent = NumberFormatting.formatNumber(lunasToCoins(Number(transaction.fee)));
             const $feeSection = /** @type {HTMLDivElement} */ (this.$el.querySelector('.fee-section'));
             $feeSection.classList.remove('display-none');
         }
@@ -181,13 +182,42 @@ class SignTransaction {
             return;
         }
 
-        const publicKey = key.derivePublicKey(request.keyPath);
-        const signature = key.sign(request.keyPath, request.transaction.serializeContent());
+        const powPrivateKey = key.derivePrivateKey(request.keyPath);
+
+        const privateKey = Nimiq.PrivateKey.deserialize(powPrivateKey.serialize());
+        const keyPair = Nimiq.KeyPair.derive(privateKey);
+
+        /** @type {Nimiq.Transaction} */
+        let tx;
+
+        if (!request.transaction.data.length) {
+            tx = Nimiq.TransactionBuilder.newBasic(
+                keyPair.toAddress(),
+                Nimiq.Address.fromString(request.transaction.recipient.toHex()),
+                BigInt(request.transaction.value),
+                BigInt(request.transaction.fee),
+                request.transaction.validityStartHeight,
+                request.transaction.networkId,
+            );
+        } else {
+            tx = Nimiq.TransactionBuilder.newBasicWithData(
+                keyPair.toAddress(),
+                Nimiq.Address.fromString(request.transaction.recipient.toHex()),
+                request.transaction.data,
+                BigInt(request.transaction.value),
+                BigInt(request.transaction.fee),
+                request.transaction.validityStartHeight,
+                request.transaction.networkId,
+            );
+        }
+
+        tx.sign(keyPair);
 
         /** @type {KeyguardRequest.SignTransactionResult} */
         const result = {
-            publicKey: publicKey.serialize(),
-            signature: signature.serialize(),
+            publicKey: keyPair.publicKey.serialize(),
+            signature: tx.proof.subarray(tx.proof.length - 64),
+            serializedTx: tx.serialize(),
         };
         resolve(result);
     }
@@ -206,7 +236,7 @@ class SignTransaction {
             return I18n.translatePhrase('funding-cashlink');
         }
 
-        if (transaction.hasFlag(Nimiq.Transaction.Flag.CONTRACT_CREATION)) {
+        if (transaction.flags === 1 /* Nimiq.Transaction.Flag.CONTRACT_CREATION */) {
             // TODO: Decode contract creation transactions
             // return ...
         }

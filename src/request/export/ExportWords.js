@@ -1,5 +1,7 @@
+/* global Observable */
 /* global FlippableHandler */
 /* global Nimiq */
+/* global NimiqPoW */
 /* global RecoveryWords */
 /* global PasswordBox */
 /* global ProgressIndicator */
@@ -16,7 +18,7 @@
  * @param {KeyguardRequest.SimpleResult} result
  */
 
-class ExportWords extends Nimiq.Observable {
+class ExportWords extends Observable {
     /**
      * @param {Parsed<KeyguardRequest.ExportRequest>} request
      * @param {ExportWords.resolve} resolve
@@ -138,7 +140,7 @@ class ExportWords extends Nimiq.Observable {
     _goToRecoveryWords(key) {
         let words = [''];
         if (key.secret instanceof Nimiq.PrivateKey) {
-            words = Nimiq.MnemonicUtils.entropyToLegacyMnemonic(key.secret.serialize());
+            words = NimiqPoW.MnemonicUtils.entropyToLegacyMnemonic(key.secret.serialize());
         } else if (key.secret instanceof Nimiq.Entropy) {
             words = Nimiq.MnemonicUtils.entropyToMnemonic(key.secret);
         } else {

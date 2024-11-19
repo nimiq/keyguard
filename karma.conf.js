@@ -14,15 +14,14 @@ module.exports = function (/** @type {any} */ config) {
 
         // list of files / patterns to load in the browser
         files: [
-            'node_modules/@nimiq/core-web/web-offline.js',
-            {'pattern': 'node_modules/@nimiq/core-web/worker-wasm.wasm', included: false},
-            {'pattern': 'node_modules/@nimiq/core-web/worker-wasm.js', included: false},
-            {'pattern': 'node_modules/@nimiq/core-web/worker.js', included: false},
+            {pattern: 'src/lib/AlbatrossWasm.mjs', type: 'module'},
+            {pattern: 'node_modules/@nimiq/albatross-wasm/**/*', included: false},
+            'src/lib/Observable.js',
             'src/lib/*.js', // Force load of lib files before components and common.js
             'src/request/TopLevelApi.js', // Force load of TopLevelApi before BitcoinEnabledTopLevelApi
             'src/lib/bitcoin/*.js',
             'node_modules/ethers/dist/ethers.umd.js',
-            'src/**/*js',
+            'src/**/*.js',
             'tests/**/*.spec.js',
         ],
 

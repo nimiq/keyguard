@@ -1,12 +1,11 @@
-/* global Nimiq */
+/* global Observable */
 /* global I18n */
 /* global PasswordInput */
 /* global AnimationUtils */
 /* global PasswordStrength */
 /* global TemplateTags */
 
-class PasswordSetterBox extends Nimiq.Observable {
-    // eslint-disable-next-line valid-jsdoc
+class PasswordSetterBox extends Observable {
     /**
      * @param {?HTMLFormElement} [$el]
      * @param {{bgColor?: string, buttonI18nTag?: string}} [options]

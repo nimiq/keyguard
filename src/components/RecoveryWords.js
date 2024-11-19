@@ -1,10 +1,11 @@
+/* global Observable */
 /* global Nimiq */
 /* global I18n */
 /* global RecoveryWordsInputField */
 /* global AnimationUtils */
 /* global TemplateTags */
 
-class RecoveryWords extends Nimiq.Observable {
+class RecoveryWords extends Observable {
     /**
      *
      * @param {?HTMLElement} [$el]
