@@ -2,11 +2,11 @@
 
 // @ts-expect-error (ts thinks CONFIG is redeclared in other config files as it doesn't know that only one is active)
 const CONFIG = { // eslint-disable-line no-unused-vars
-    ALLOWED_ORIGIN: 'https://hub.pos.nimiq-testnet.com',
+    ALLOWED_ORIGIN: 'https://hub.nimiq-testnet.com',
     NETWORK: Constants.NETWORK.TEST,
     NIMIQ_NETWORK_ID: 5,
     BTC_NETWORK: 'TEST', // BitcoinConstants is not included in the common bundle
-    ROOT_REDIRECT: 'https://wallet.pos.nimiq-testnet.com',
+    ROOT_REDIRECT: 'https://wallet.nimiq-testnet.com',
 
     POLYGON_CHAIN_ID: 80002,
     BRIDGED_USDC_CONTRACT_ADDRESS: '',
