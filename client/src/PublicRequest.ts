@@ -194,6 +194,11 @@ export type SignStakingRequest = SimpleRequest & {
     transaction: Uint8Array | Uint8Array[], // An array is only allowed for retire_stake + remove_stake transactions
     senderLabel?: string,
     recipientLabel?: string,
+    validatorAddress?: string,
+    validatorImageUrl?: string,
+    fromValidatorAddress?: string,
+    fromValidatorImageUrl?: string,
+    amount?: number,
 };
 
 export type SignBtcTransactionRequestStandard = SimpleRequest & BitcoinTransactionInfo & {

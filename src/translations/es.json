@@ -69,6 +69,10 @@
     "sign-tx-fee": "cuota",
     "sign-tx-cancel-payment": "Cancelar pago",
 
+    "sign-staking-heading-stake": "Stake NIM",
+    "sign-staking-heading-unstake": "Unstake NIM",
+    "sign-staking-heading-change": "Change Validator",
+
     "sign-msg-heading": "Firmar Mensaje",
     "sign-msg-signer": "Firmador",
 

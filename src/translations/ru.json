@@ -69,6 +69,10 @@
     "sign-tx-fee": "комиссия",
     "sign-tx-cancel-payment": "Отменить платёж",
 
+    "sign-staking-heading-stake": "Stake NIM",
+    "sign-staking-heading-unstake": "Unstake NIM",
+    "sign-staking-heading-change": "Change Validator",
+
     "sign-msg-heading": "Подписать сообщение",
     "sign-msg-signer": "Отправитель",
 
