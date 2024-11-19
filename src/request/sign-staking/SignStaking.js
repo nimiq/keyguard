@@ -169,8 +169,7 @@ class SignStaking {
     _formatData(plain) {
         console.log(plain);
         // That either the recipient or the sender is a staking account type is validated in SignStakingApi
-        // @ts-ignore Wrong type definition
-        if (plain.recipientType === 3) {
+        if (plain.recipientType === 'basic') {
             switch (plain.data.type) {
                 case 'create-staker': {
                     let text = 'Start staking';

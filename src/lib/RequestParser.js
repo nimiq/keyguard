@@ -160,7 +160,11 @@ class RequestParser { // eslint-disable-line no-unused-vars
 
         const flags = object.flags || 0/* Nimiq.Transaction.Flag.NONE */;
 
-        if (flags === 0 /* Nimiq.Transaction.Flag.NONE */ && recipientType !== 3 && recipientData.byteLength > 64) {
+        if (
+            flags === 0 /* Nimiq.Transaction.Flag.NONE */
+            && recipientType !== Nimiq.AccountType.Staking
+            && recipientData.byteLength > 64
+        ) {
             throw new Errors.InvalidRequestError('Data must not exceed 64 bytes');
         }
         if (flags === 1 /* Nimiq.Transaction.Flag.CONTRACT_CREATION */
