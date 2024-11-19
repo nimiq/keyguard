@@ -389,7 +389,7 @@ class RequestParser { // eslint-disable-line no-unused-vars
      */
     _parseUrl(url, parameterName) {
         const parsedUrl = new URL(url);
-        const whitelistedProtocols = ['https:', 'http:', 'chrome-extension:', 'moz-extension:'];
+        const whitelistedProtocols = ['https:', 'http:', 'chrome-extension:', 'moz-extension:', 'data:'];
         if (!whitelistedProtocols.includes(parsedUrl.protocol)) {
             const protocolString = whitelistedProtocols.join(', ');
             throw new Errors.InvalidRequestError(`${parameterName} protocol must be one of: ${protocolString}`);

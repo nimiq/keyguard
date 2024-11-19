@@ -27,7 +27,6 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding-top: 2rem;
     flex-grow: 1;
 }
 
@@ -118,8 +117,6 @@
 #confirm-staking .accounts {
     flex-direction: row;
     align-items: flex-start;
-    padding-bottom: 2rem;
-    border-bottom: 1px solid rgba(31, 35, 72, 0.1);
     flex-shrink: 0;
 }
 
@@ -146,11 +143,4 @@
 #confirm-staking .fee-section {
     opacity: 0.5;
     margin-bottom: 0.25rem;
-}
-
-#confirm-staking .data-section {
-    margin: 1rem 3rem;
-    text-align: center;
-    max-width: 100%;
-    overflow-wrap: break-word;
 }

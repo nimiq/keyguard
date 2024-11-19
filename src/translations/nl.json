@@ -69,6 +69,10 @@
     "sign-tx-fee": "kosten",
     "sign-tx-cancel-payment": "Annuleer betaling",
 
+    "sign-staking-heading-stake": "Stake NIM",
+    "sign-staking-heading-unstake": "Unstake NIM",
+    "sign-staking-heading-change": "Change Validator",
+
     "sign-msg-heading": "Bericht ondertekenen",
     "sign-msg-signer": "Ondertekenaar",
 

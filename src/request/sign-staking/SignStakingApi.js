@@ -40,6 +40,33 @@ class SignStakingApi extends TopLevelApi { // eslint-disable-line no-unused-vars
             }
         }
 
+        if (request.validatorAddress) {
+            parsedRequest.validatorAddress = this.parseAddress(request.validatorAddress, 'validatorAddress', false);
+        }
+
+        if (request.validatorImageUrl) {
+            parsedRequest.validatorImageUrl = this._parseUrl(request.validatorImageUrl, 'validatorImageUrl');
+        }
+
+        if (request.fromValidatorAddress) {
+            parsedRequest.validatorAddress = this.parseAddress(
+                request.fromValidatorAddress,
+                'fromValidatorAddress',
+                false,
+            );
+        }
+
+        if (request.fromValidatorImageUrl) {
+            parsedRequest.fromValidatorImageUrl = this._parseUrl(
+                request.fromValidatorImageUrl,
+                'fromValidatorImageUrl',
+            );
+        }
+
+        if (request.amount) {
+            parsedRequest.amount = this.parseNonNegativeFiniteNumber(request.amount, true, 'amount');
+        }
+
         return parsedRequest;
     }
 
