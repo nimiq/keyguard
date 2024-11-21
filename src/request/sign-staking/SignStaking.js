@@ -136,9 +136,7 @@ class SignStaking {
             return;
         }
 
-        const powPrivateKey = key.derivePrivateKey(request.keyPath);
-
-        const privateKey = Nimiq.PrivateKey.deserialize(powPrivateKey.serialize());
+        const privateKey = key.derivePrivateKey(request.keyPath);
         const keyPair = Nimiq.KeyPair.derive(privateKey);
 
         const results = request.transactions.map(transaction => {
