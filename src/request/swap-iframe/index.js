@@ -2,7 +2,7 @@
 /* global SwapIFrameApi */
 
 runKeyguard(SwapIFrameApi, {
-    loadNimiq: false,
+    loadNimiq: true,
     whitelist: [
         'signSwapTransactions',
     ],
