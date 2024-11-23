@@ -2,7 +2,7 @@
 /* global IFrameApi */
 
 runKeyguard(IFrameApi, {
-    loadNimiq: false,
+    loadNimiq: true,
     whitelist: [
         'list',
         'hasKeys',
