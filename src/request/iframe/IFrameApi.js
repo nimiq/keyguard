@@ -6,7 +6,6 @@
 /* global AccountStore */
 /* global KeyStore */
 /* global Nimiq */
-/* global loadNimiq */
 /* global Errors */
 
 class IFrameApi {
@@ -44,8 +43,6 @@ class IFrameApi {
             // NonPartitionedSessionStorage.get, therefore we don't handle this case here.
             throw new Errors.KeyguardError('Unexpected: top-level sessionStorage got migrated in iframe.');
         }
-
-        await loadNimiq();
 
         const entropy = new Nimiq.Entropy(storedEntropy);
         const master = entropy.toExtendedPrivateKey();
@@ -89,7 +86,6 @@ class IFrameApi {
         if (accounts.length === 0) return [];
 
         // Convert to KeyInfoObjects
-        await loadNimiq();
         return KeyStore.accountInfos2KeyInfos(accounts);
     }
 
@@ -121,9 +117,6 @@ class IFrameApi {
             CookieJar.writeCookie(CookieJar.Cookie.DEPRECATED_MIGRATION_FLAG, '1');
             return { success: true };
         }
-
-        // Requires Nimiq lib to be loaded, to derive keyIds from legacy accounts' user-friendly addresses
-        await loadNimiq();
 
         await KeyStore.instance.migrateAccountsToKeys();
         return { success: true };

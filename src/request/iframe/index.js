@@ -2,7 +2,7 @@
 /* global IFrameApi */
 
 runKeyguard(IFrameApi, {
-    loadNimiq: true,
+    loadNimiq: true, // At least Nimiq.Address is used in all methods
     whitelist: [
         'list',
         'hasKeys',
