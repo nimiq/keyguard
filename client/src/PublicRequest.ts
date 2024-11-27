@@ -1,4 +1,4 @@
-import * as Nimiq from '@nimiq/albatross-wasm';
+import * as Nimiq from '@nimiq/core';
 import { ForwardRequest as OpenGsnForwardRequest } from '@opengsn/common/dist/EIP712/ForwardRequest';
 import { RelayData as OpenGsnRelayData } from '@opengsn/common/dist/EIP712/RelayData';
 import { KeyguardCommand } from './KeyguardCommand';

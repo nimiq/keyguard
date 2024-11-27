@@ -38,7 +38,7 @@
   },
   "homepage": "https://github.com/nimiq/keyguard#readme",
   "devDependencies": {
-    "@nimiq/albatross-wasm": "npm:@nimiq/core@^2.0.1",
+    "@nimiq/albatross-wasm": "npm:@nimiq/core@^2.0.5",
     "@nimiq/core-web": "1.6.3",
     "@nimiq/rpc": "^0.3.0",
     "@nimiq/style": "^0.8.3",
