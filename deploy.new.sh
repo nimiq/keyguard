@@ -478,7 +478,7 @@ fi
 
 # Build the project
 echo -e "${BLUE}Building project with $BUILD_ENV configuration...${NC}"
-run_command "yarn build $BUILD_ENV" "Failed to build project"
+run_command "env \"build=$BUILD_ENV\" yarn build" "Failed to build project"
 
 # Deploy to deployment repository
 echo -e "${BLUE}Deploying to $DEPLOYMENT_REPO...${NC}"
