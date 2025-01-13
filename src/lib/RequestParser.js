@@ -132,7 +132,7 @@ class RequestParser { // eslint-disable-line no-unused-vars
             Nimiq.AccountType.Basic,
             Nimiq.AccountType.Vesting,
             Nimiq.AccountType.HTLC,
-            3 /* Staking */,
+            Nimiq.AccountType.Staking,
         ]);
         if (!object || typeof object !== 'object' || object === null) {
             throw new Errors.InvalidRequestError('Request must be an object');
@@ -158,16 +158,16 @@ class RequestParser { // eslint-disable-line no-unused-vars
             ? Utf8Tools.stringToUtf8ByteArray(object.recipientData)
             : object.recipientData || new Uint8Array(0);
 
-        const flags = object.flags || 0/* Nimiq.Transaction.Flag.NONE */;
+        const flags = object.flags || Nimiq.TransactionFlag.None;
 
         if (
-            flags === 0 /* Nimiq.Transaction.Flag.NONE */
+            flags === Nimiq.TransactionFlag.None
             && recipientType !== Nimiq.AccountType.Staking
             && recipientData.byteLength > 64
         ) {
             throw new Errors.InvalidRequestError('Data must not exceed 64 bytes');
         }
-        if (flags === 1 /* Nimiq.Transaction.Flag.CONTRACT_CREATION */
+        if (flags === Nimiq.TransactionFlag.ContractCreation
                 && recipientData.byteLength !== 82 // HTLC
                 && recipientData.byteLength !== 28 // Vesting
                 && recipientData.byteLength !== 44 // Vesting
@@ -177,7 +177,7 @@ class RequestParser { // eslint-disable-line no-unused-vars
             );
         }
         if (
-            flags === 1 /* Nimiq.Transaction.Flag.CONTRACT_CREATION */
+            flags === Nimiq.TransactionFlag.ContractCreation
             && recipient !== 'CONTRACT_CREATION'
         ) {
             throw new Errors.InvalidRequestError(

@@ -215,7 +215,7 @@ class SignTransaction {
             return I18n.translatePhrase('funding-cashlink');
         }
 
-        if (transaction.flags === 1 /* Nimiq.Transaction.Flag.CONTRACT_CREATION */) {
+        if (transaction.flags === Nimiq.TransactionFlag.ContractCreation) {
             // TODO: Decode contract creation transactions
             // return ...
         }

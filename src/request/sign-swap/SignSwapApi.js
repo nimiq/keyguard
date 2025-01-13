@@ -47,7 +47,7 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
                     // Enforced properties
                     recipient: 'CONTRACT_CREATION',
                     recipientType: Nimiq.AccountType.HTLC,
-                    flags: 1 /* Nimiq.Transaction.Flag.CONTRACT_CREATION */,
+                    flags: Nimiq.TransactionFlag.ContractCreation,
                 }),
                 senderLabel: /** @type {string} */ (this.parseLabel(
                     request.fund.senderLabel, false, 'fund.senderLabel',
@@ -127,7 +127,7 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
                     // Enforced properties
                     senderType: Nimiq.AccountType.HTLC,
                     recipientType: Nimiq.AccountType.Basic,
-                    flags: 0 /* Nimiq.Transaction.Flag.NONE */,
+                    flags: Nimiq.TransactionFlag.None,
                 }),
                 recipientLabel: /** @type {string} */ (this.parseLabel(
                     request.redeem.recipientLabel, false, 'recipientLabel',
