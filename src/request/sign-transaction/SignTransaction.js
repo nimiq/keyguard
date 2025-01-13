@@ -183,37 +183,18 @@ class SignTransaction {
         }
 
         const privateKey = key.derivePrivateKey(request.keyPath);
-        const keyPair = Nimiq.KeyPair.derive(privateKey);
+        const publicKey = Nimiq.PublicKey.derive(privateKey);
 
-        /** @type {Nimiq.Transaction} */
-        let tx;
+        const tx = request.transaction;
 
-        if (!request.transaction.data.length) {
-            tx = Nimiq.TransactionBuilder.newBasic(
-                keyPair.toAddress(),
-                Nimiq.Address.fromString(request.transaction.recipient.toHex()),
-                BigInt(request.transaction.value),
-                BigInt(request.transaction.fee),
-                request.transaction.validityStartHeight,
-                request.transaction.networkId,
-            );
-        } else {
-            tx = Nimiq.TransactionBuilder.newBasicWithData(
-                keyPair.toAddress(),
-                Nimiq.Address.fromString(request.transaction.recipient.toHex()),
-                request.transaction.data,
-                BigInt(request.transaction.value),
-                BigInt(request.transaction.fee),
-                request.transaction.validityStartHeight,
-                request.transaction.networkId,
-            );
-        }
-
-        tx.sign(keyPair);
+        // Manually create signature proof, because tx.sign(keyPair) does not support HTLC redeeming transactions.
+        const signature = Nimiq.Signature.create(privateKey, publicKey, tx.serializeContent());
+        const proof = Nimiq.SignatureProof.singleSig(publicKey, signature);
+        tx.proof = proof.serialize();
 
         /** @type {KeyguardRequest.SignTransactionResult} */
         const result = {
-            publicKey: keyPair.publicKey.serialize(),
+            publicKey: publicKey.serialize(),
             signature: tx.proof.subarray(tx.proof.length - 64),
             serializedTx: tx.serialize(),
         };
