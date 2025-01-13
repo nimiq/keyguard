@@ -148,7 +148,7 @@ class SignStaking {
                     break;
             }
         } else {
-            switch (transaction.senderData.type) {
+            switch (transaction.senderData ? transaction.senderData.type : '') {
                 case 'remove-stake':
                     validatorAddress = request.validatorAddress;
 

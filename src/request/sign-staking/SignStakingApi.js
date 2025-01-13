@@ -35,7 +35,7 @@ class SignStakingApi extends TopLevelApi { // eslint-disable-line no-unused-vars
             if (parsedRequest.plain[0].data.type !== 'retire-stake') {
                 throw new Errors.InvalidRequestError('First transaction must be a retire stake transaction');
             }
-            if (parsedRequest.plain[1].senderData.type !== 'remove-stake') {
+            if (parsedRequest.plain[1].senderData && parsedRequest.plain[1].senderData.type !== 'remove-stake') {
                 throw new Errors.InvalidRequestError('Second transaction must be a remove stake transaction');
             }
         }
