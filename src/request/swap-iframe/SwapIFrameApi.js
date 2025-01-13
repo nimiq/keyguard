@@ -445,8 +445,9 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
                     transaction.recipient, Nimiq.AccountType.HTLC, new Uint8Array(0),
                     transaction.sender, Nimiq.AccountType.Basic, new Uint8Array(0),
                     transaction.value - fee, fee,
-                    0 /* Nimiq.Transaction.Flag.NONE */,
-                    parsedRequest.fund.htlcDetails.timeoutTimestamp,
+                    Nimiq.TransactionFlag.None,
+                    transaction.validityStartHeight
+                        + (parsedRequest.fund.htlcDetails.timeoutTimestamp - Math.round(Date.now() / 1e3)),
                     CONFIG.NIMIQ_NETWORK_ID,
                 );
 
