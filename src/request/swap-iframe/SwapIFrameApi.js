@@ -409,21 +409,10 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
             const privateKey = new Nimiq.PrivateKey(Nimiq.BufferUtils.fromHex(privateKeys.nim));
             const publicKey = Nimiq.PublicKey.derive(privateKey);
 
-            let transaction = Nimiq.Transaction.fromPlain({
-                ...storedRequest.fund.transaction.toPlain(),
-                data: {
-                    type: 'raw',
-                    raw: Nimiq.BufferUtils.toHex(parsedRequest.fund.htlcData),
-                },
-                // This NULL-address as the recipient gets replaced below
-                recipient: new Nimiq.Address(new Uint8Array(20)).toUserFriendlyAddress(),
-            });
-            // Calculate the contract address of the HTLC that gets created and recreate the transaction
-            // with that address as the recipient:
-            const contractAddress = new Nimiq.Address(Nimiq.BufferUtils.fromHex(transaction.hash()));
+            let transaction = storedRequest.fund.transaction;
             transaction = new Nimiq.Transaction(
                 transaction.sender, transaction.senderType, transaction.senderData,
-                contractAddress, transaction.recipientType, transaction.data,
+                new Nimiq.Address(new Uint8Array(20)), transaction.recipientType, parsedRequest.fund.htlcData,
                 transaction.value, transaction.fee,
                 transaction.flags, transaction.validityStartHeight, transaction.networkId,
             );
