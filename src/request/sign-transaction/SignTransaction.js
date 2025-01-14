@@ -182,21 +182,16 @@ class SignTransaction {
             return;
         }
 
-        const privateKey = key.derivePrivateKey(request.keyPath);
-        const publicKey = Nimiq.PublicKey.derive(privateKey);
+        const publicKey = key.derivePublicKey(request.keyPath);
+        const signature = key.sign(request.keyPath, request.transaction.serializeContent());
 
-        const tx = request.transaction;
-
-        // Manually create signature proof, because tx.sign(keyPair) does not support HTLC redeeming transactions.
-        const signature = Nimiq.Signature.create(privateKey, publicKey, tx.serializeContent());
-        const proof = Nimiq.SignatureProof.singleSig(publicKey, signature);
-        tx.proof = proof.serialize();
+        request.transaction.proof = Nimiq.SignatureProof.singleSig(publicKey, signature).serialize();
 
         /** @type {KeyguardRequest.SignTransactionResult} */
         const result = {
             publicKey: publicKey.serialize(),
-            signature: tx.proof.subarray(tx.proof.length - 64),
-            serializedTx: tx.serialize(),
+            signature: signature.serialize(),
+            serializedTx: request.transaction.serialize(),
         };
         resolve(result);
     }
