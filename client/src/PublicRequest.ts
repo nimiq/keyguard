@@ -198,16 +198,14 @@ export type EncryptionKeyParams = {
 
 export type MultisigConfig = {
     publicKeys: Uint8Array[],
-    numberOfSigners: number,
-    signerPublicKeys: Uint8Array[],
-    secret: {
-        aggregatedSecret: Uint8Array,
-    } | {
-        encryptedSecrets: Uint8Array[],
-        bScalar: Uint8Array,
+    signers: Array<{
+        publicKey: Uint8Array,
+        commitments: Uint8Array[],
+    }>,
+    secrets: Uint8Array[] | {
+        encrypted: Uint8Array[],
         keyParams: EncryptionKeyParams,
     },
-    aggregatedCommitment: Uint8Array,
     userName?: string,
 };
 

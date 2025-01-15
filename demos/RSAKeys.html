@@ -109,9 +109,9 @@
 
 				// Extend 32-byte entropy into 1024-byte seed
 				const entropyBuffer = Nimiq.BufferUtils.fromHex($entropy.value);
-				const seed = Nimiq.BufferUtils.toAscii(Nimiq.CryptoUtils.computePBKDF2sha512(
+				const seed = Nimiq.BufferUtils.toUtf8(Nimiq.CryptoUtils.computePBKDF2sha512(
 					entropyBuffer,
-					Nimiq.PublicKey.derive(Nimiq.PrivateKey.unserialize(entropyBuffer)).toAddress().serialize(),
+					Nimiq.PublicKey.derive(Nimiq.PrivateKey.deserialize(entropyBuffer)).toAddress().serialize(),
 					1024, // Iterations
 					1024, // Output size
 				));

@@ -1,7 +1,6 @@
 /* global Nimiq */
 /* global TopLevelApi */
 /* global SignMultisigTransaction */
-/* global MultisigUtils */
 /* global Errors */
 /* global CONFIG */
 
@@ -83,7 +82,7 @@ class SignMultisigTransactionApi extends TopLevelApi {
             if (!('publicKeys' in object)) throw new Error('missing');
             if (!Array.isArray(object.publicKeys)) throw new Error('not an array');
             for (const key of object.publicKeys) {
-                if (!(key instanceof Uint8Array)) throw new Error('not an Uint8Array');
+                if (!(key instanceof Uint8Array)) throw new Error('not a Uint8Array');
                 publicKeys.push(new Nimiq.PublicKey(key));
             }
         } catch (error) {
@@ -91,55 +90,67 @@ class SignMultisigTransactionApi extends TopLevelApi {
             throw new Errors.InvalidRequestError(`Invalid public keys: ${errorMessage}`);
         }
 
-        const numberOfSigners = this.parsePositiveInteger(object.numberOfSigners, false, 'numberOfSigners');
-        if (numberOfSigners > publicKeys.length) {
-            throw new Errors.InvalidRequestError('Number of signers must be smaller or equal to number of public keys');
-        }
-
-        /** @type {Nimiq.PublicKey[]} */
-        const signerPublicKeys = [];
+        /** @type {{publicKey: Nimiq.PublicKey, commitments: Nimiq.Commitment[]}[]} */
+        const signers = [];
         try {
-            if (!('signerPublicKeys' in object)) throw new Error('missing');
-            if (!Array.isArray(object.signerPublicKeys)) throw new Error('not an array');
-            if (object.signerPublicKeys.length < numberOfSigners) throw new Error('missing keys');
-            if (object.signerPublicKeys.length > numberOfSigners) throw new Error('too many keys');
-            for (const key of object.signerPublicKeys) {
-                if (!(key instanceof Uint8Array)) throw new Error('not an Uint8Array');
-                const signerPublicKey = new Nimiq.PublicKey(key);
+            if (!('signers' in object)) throw new Error('missing');
+            if (!Array.isArray(object.signers)) throw new Error('not an array');
+            for (const obj of object.signers) {
+                if (typeof obj !== 'object' || obj === null) throw new Error('not objects');
+
+                if (!('publicKey' in obj)) throw new Error('missing publicKey');
+                if (!(obj.publicKey instanceof Uint8Array)) throw new Error('publicKey not a Uint8Array');
+                const signerPublicKey = new Nimiq.PublicKey(obj.publicKey);
                 // Verify key is included in publicKeys as well
                 if (!publicKeys.find(publicKey => publicKey.equals(signerPublicKey))) {
                     throw new Errors.InvalidRequestError('not in public keys');
                 }
-                signerPublicKeys.push(signerPublicKey);
+
+                if (!('commitments' in obj)) throw new Error('missing commitments');
+                if (!Array.isArray(obj.commitments) || obj.commitments.length < 2) {
+                    throw new Error('commitments must be an array with at least 2 elements');
+                }
+                /** @type {Nimiq.Commitment[]} */
+                const signerCommitments = [];
+                for (const commitment of obj.commitments) {
+                    if (!(commitment instanceof Uint8Array)) throw new Error('commitment must be a Uint8Array');
+                    signerCommitments.push(new Nimiq.Commitment(commitment));
+                }
+
+                signers.push({
+                    publicKey: signerPublicKey,
+                    commitments: signerCommitments,
+                });
             }
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : String(error);
-            throw new Errors.InvalidRequestError(`Invalid signer public keys: ${errorMessage}`);
+            throw new Errors.InvalidRequestError(`Invalid signers: ${errorMessage}`);
         }
 
-        /** @type {MultisigConfig['secret']} */
-        let secret;
-        if (typeof object.secret !== 'object') {
-            throw new Errors.InvalidRequestError('Invalid secret: must be an object');
-        }
-        if ('aggregatedSecret' in object.secret) {
-            try {
-                secret = {
-                    aggregatedSecret: new Nimiq.RandomSecret(object.secret.aggregatedSecret),
-                };
-            } catch (error) {
-                const errorMessage = error instanceof Error ? error.message : String(error);
-                throw new Errors.InvalidRequestError(`Invalid secret: ${errorMessage}`);
-            }
-        } else if ('encryptedSecrets' in object.secret && 'bScalar' in object.secret) {
+        /** @type {MultisigConfig['secrets']} */
+        let secrets;
+        if (Array.isArray(object.secrets)) {
+            secrets = object.secrets.map(
+                /**
+                 * @param {any} secret
+                 * @returns {Nimiq.RandomSecret}
+                 */
+                secret => {
+                    if (!(secret instanceof Uint8Array)) {
+                        throw new Errors.InvalidRequestError('Invalid secrets: must be Uint8Arrays');
+                    }
+                    return new Nimiq.RandomSecret(secret);
+                },
+            );
+        } else if ('encrypted' in object.secrets) {
             // Not checking fixed length here, to stay flexible for future increases of the number of commitments
-            if (!Array.isArray(object.secret.encryptedSecrets) || object.secret.encryptedSecrets.length < 2) {
+            if (!Array.isArray(object.secrets.encrypted) || object.secrets.encrypted.length < 2) {
                 throw new Errors.InvalidRequestError(
-                    'Invalid secret.encryptedSecrets: must be an array with at least 2 elements',
+                    'Invalid secrets.encrypted: must be an array with at least 2 elements',
                 );
             }
-            // Validate encryptedSecrets are Uint8Arrays
-            if (object.secret.encryptedSecrets.some(
+            // Validate encrypted secrets are Uint8Arrays
+            if (object.secrets.encrypted.some(
                 /**
                  * @param {unknown} array
                  * @returns {boolean}
@@ -147,16 +158,16 @@ class SignMultisigTransactionApi extends TopLevelApi {
                 array => !(array instanceof Uint8Array),
             )) {
                 throw new Errors.InvalidRequestError(
-                    'Invalid secret.encryptedSecrets: must be an array of Uint8Arrays',
+                    'Invalid secrets.encrypted: must be an array of Uint8Arrays',
                 );
             }
             // Validate the RSA key used to encrypt the secrets is a supported size
-            const rsaKeySize = object.secret.encryptedSecrets[0].length * 8;
+            const rsaKeySize = object.secrets.encrypted[0].length * 8;
             if (!CONFIG.RSA_SUPPORTED_KEY_BITS.includes(rsaKeySize)) {
-                throw new Errors.InvalidRequestError('Invalid secret.encryptedSecrets: invalid RSA key size');
+                throw new Errors.InvalidRequestError('Invalid secrets.encrypted: invalid RSA key size');
             }
-            // Validate all encryptedSecrets are the same length
-            if (object.secret.encryptedSecrets.some(
+            // Validate all encrypted are the same length
+            if (object.secrets.encrypted.some(
                 /**
                  * @param {Uint8Array} array
                  * @returns {boolean}
@@ -164,20 +175,16 @@ class SignMultisigTransactionApi extends TopLevelApi {
                 array => array.length * 8 !== rsaKeySize,
             )) {
                 throw new Errors.InvalidRequestError(
-                    'Invalid secret.encryptedSecrets: encrypted strings must be the same length',
+                    'Invalid secrets.encrypted: all encrypted secrets must be the same length',
                 );
             }
-            // Validate bScalar
-            if (!(object.secret.bScalar instanceof Uint8Array) || object.secret.bScalar.length !== 32) {
-                throw new Errors.InvalidRequestError('Invalid secret.bScalar: must be an Uint8Array(32)');
-            }
             // Validate keyParams
-            if (!object.secret.keyParams) {
-                throw new Errors.InvalidRequestError('Missing secret.keyParams');
+            if (!object.secrets.keyParams) {
+                throw new Errors.InvalidRequestError('Missing secrets.keyParams');
             }
-            const keyParams = object.secret.keyParams;
+            const keyParams = object.secrets.keyParams;
             if (!('kdf' in keyParams) || !('iterations' in keyParams) || !('keySize' in keyParams)) {
-                throw new Errors.InvalidRequestError('Invalid secret.keyParams: missing properties');
+                throw new Errors.InvalidRequestError('Invalid secrets.keyParams: missing properties');
             }
             if (!CONFIG.RSA_SUPPORTED_KDF_FUNCTIONS.includes(keyParams.kdf)) {
                 throw new Errors.InvalidRequestError(`Unsupported keyParams KDF function: ${keyParams.kdf}`);
@@ -188,34 +195,20 @@ class SignMultisigTransactionApi extends TopLevelApi {
             if (keyParams.keySize !== rsaKeySize) {
                 throw new Errors.InvalidRequestError(`Wrong keyParams key size: ${keyParams.keySize}`);
             }
-            secret = {
-                encryptedSecrets: object.secret.encryptedSecrets,
-                bScalar: object.secret.bScalar,
+            secrets = {
+                encrypted: object.secrets.encrypted,
                 keyParams,
             };
         } else {
-            throw new Errors.InvalidRequestError('Invalid secret format');
-        }
-
-        /** @type {Nimiq.RandomSecret} */
-        let aggregatedCommitment;
-        try {
-            aggregatedCommitment = new Nimiq.Commitment(object.aggregatedCommitment);
-        } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : String(error);
-            throw new Errors.InvalidRequestError(
-                `Invalid aggregated commitment: ${errorMessage}`,
-            );
+            throw new Errors.InvalidRequestError('Invalid secrets format');
         }
 
         const userName = this.parseLabel(object.userName, true, 'userName');
 
         return {
             publicKeys,
-            numberOfSigners,
-            signerPublicKeys,
-            secret,
-            aggregatedCommitment,
+            signers,
+            secrets,
             userName,
         };
     }
@@ -225,20 +218,20 @@ class SignMultisigTransactionApi extends TopLevelApi {
      * @param {MultisigConfig} multisig
      */
     verifyMultisigAddress(transaction, multisig) {
-        const multisigAddress = MultisigUtils.calculateAddress(
+        const multisigAddress = Nimiq.Address.fromPublicKeys(
             multisig.publicKeys,
-            multisig.numberOfSigners,
+            multisig.signers.length,
         );
 
-        if (transaction.senderType === Nimiq.Account.Type.BASIC) {
+        if (transaction.senderType === Nimiq.AccountType.Basic) {
             if (!transaction.sender.equals(multisigAddress)) {
                 throw new Errors.InvalidRequestError(
                     'Transaction sender does not match calculated multisig address',
                 );
             }
-        } else if (transaction.senderType === Nimiq.Account.Type.VESTING) {
+        } else if (transaction.senderType === Nimiq.AccountType.Vesting) {
             // Cannot verify vesting contract address
-        } else if (transaction.recipientType === Nimiq.Account.Type.BASIC) {
+        } else if (transaction.recipientType === Nimiq.AccountType.Basic) {
             if (!transaction.recipient.equals(multisigAddress)) {
                 throw new Errors.InvalidRequestError(
                     'Transaction recipient does not match calculated multisig address',

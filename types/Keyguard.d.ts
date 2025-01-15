@@ -55,16 +55,14 @@ type KeyRecord = {
 
 type MultisigConfig = {
     publicKeys: Nimiq.PublicKey[]
-    numberOfSigners: number
-    signerPublicKeys: Nimiq.PublicKey[]
-    secret: {
-        aggregatedSecret: Nimiq.RandomSecret
-    } | {
-        encryptedSecrets: Uint8Array[]
-        bScalar: Uint8Array
+    signers: Array<{
+        publicKey: Nimiq.PublicKey,
+        commitments: Nimiq.Commitment[],
+    }>
+    secrets: Nimiq.RandomSecret[] | {
+        encrypted: Uint8Array[]
         keyParams: EncryptionKeyParams
     }
-    aggregatedCommitment: Nimiq.Commitment
     userName?: string
 }
 

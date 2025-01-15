@@ -9,7 +9,6 @@
     <script src="../src/lib/Key.js"></script>
     <script src="../src/lib/KeyStore.js"></script>
     <script src="../src/lib/multisig/MerkleTreePatch.js"></script>
-    <script src="../src/lib/multisig/MultisigUtils.js"></script>
     <script src="../node_modules/@nimiq/rpc/dist/rpc.umd.js"></script>
 
     <style>
@@ -175,7 +174,7 @@
             keyLabel: 'Demo Account',
 
             // Transaction information
-            sender: MultisigUtils.calculateAddress(publicKeys, numberOfSigners).serialize(),
+            sender: Nimiq.Address.fromPublicKeys(publicKeys, numberOfSigners).serialize(),
             senderLabel: 'Our Multisig Wallet',
             recipient: Nimiq.Address.fromUserFriendlyAddress('NQ82 HP54 C9D4 2FAG 69QD 6Q71 LURR 5187 0V3X').serialize(),
             recipientLabel: 'Best Friend',

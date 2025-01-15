@@ -1,4 +1,5 @@
 /* global Nimiq */
+/* global lunasToCoins */
 /* global Key */
 /* global KeyStore */
 // /* global SignMultisigTransactionApi */
@@ -11,7 +12,6 @@
 /* global Constants */
 /* global NumberFormatting */
 /* global I18n */
-/* global MultisigUtils */
 /* global LoginFileAccountIcon */
 /* global Identicon */
 
@@ -43,7 +43,7 @@ class SignMultisigTransaction {
             imageUrl: null,
             accountLabel: null,
             multisig: {
-                signers: request.multisigConfig.numberOfSigners,
+                signers: request.multisigConfig.signers.length,
                 participants: request.multisigConfig.publicKeys.length,
             },
         });
@@ -106,9 +106,9 @@ class SignMultisigTransaction {
         const $data = /** @type {HTMLDivElement} */ (this.$el.querySelector('#data'));
 
         // Set value and fee.
-        $value.textContent = NumberFormatting.formatNumber(Nimiq.Policy.lunasToCoins(transaction.value));
+        $value.textContent = NumberFormatting.formatNumber(lunasToCoins(Number(transaction.value)));
         if ($fee && transaction.fee > 0) {
-            $fee.textContent = NumberFormatting.formatNumber(Nimiq.Policy.lunasToCoins(transaction.fee));
+            $fee.textContent = NumberFormatting.formatNumber(lunasToCoins(Number(transaction.fee)));
             const $feeSection = /** @type {HTMLDivElement} */ (this.$el.querySelector('.fee-section'));
             $feeSection.classList.remove('display-none');
         }
@@ -223,26 +223,32 @@ class SignMultisigTransaction {
         const publicKey = key.derivePublicKey(request.keyPath);
 
         // Verify publicKey is part of the signing public keys
-        if (!request.multisigConfig.signerPublicKeys.find(pubKey => pubKey.equals(publicKey))) {
+        const ownSigner = request.multisigConfig.signers.find(signer => signer.publicKey.equals(publicKey));
+        if (!ownSigner) {
             reject(new Errors.InvalidRequestError('Selected key is not part of the multisig transaction signers'));
             return;
         }
 
-        /** @type {Nimiq.RandomSecret} */
-        let aggregatedSecret;
-        if ('aggregatedSecret' in request.multisigConfig.secret) {
-            aggregatedSecret = request.multisigConfig.secret.aggregatedSecret;
+        /** @type {Nimiq.CommitmentPair[]} */
+        const ownCommitmentPairs = [];
+        if (Array.isArray(request.multisigConfig.secrets)) {
+            for (let i = 0; i < request.multisigConfig.secrets.length; i++) {
+                ownCommitmentPairs.push(new Nimiq.CommitmentPair(
+                    request.multisigConfig.secrets[i],
+                    ownSigner.commitments[i],
+                ));
+            }
         } else {
-            // If we only have encrypted secrets, decrypt them and aggregate them with the bScalar
-            const rsaKey = await key.getRsaPrivateKey(request.multisigConfig.secret.keyParams);
+            // If we only have encrypted secrets, decrypt them first
+            const rsaKey = await key.getRsaPrivateKey(request.multisigConfig.secrets.keyParams);
 
-            /** @type {Uint8Array[]} */
+            /** @type {Nimiq.RandomSecret[]} */
             let secrets;
             try {
-                secrets = await Promise.all(request.multisigConfig.secret.encryptedSecrets.map(
-                    async encrypted => new Uint8Array(
+                secrets = await Promise.all(request.multisigConfig.secrets.encrypted.map(
+                    async encrypted => new Nimiq.RandomSecret(new Uint8Array(
                         await window.crypto.subtle.decrypt({ name: 'RSA-OAEP' }, rsaKey, encrypted),
-                    ),
+                    )),
                 ));
             } catch (error) {
                 const errorMessage = error instanceof Error ? error.message : String(error);
@@ -250,21 +256,19 @@ class SignMultisigTransaction {
                 return;
             }
 
-            try {
-                aggregatedSecret = await MultisigUtils.aggregateSecrets(secrets, request.multisigConfig.secret.bScalar);
-            } catch (error) {
-                const errorMessage = error instanceof Error ? error.message : String(error);
-                reject(new Errors.InvalidRequestError(`Cannot aggregate secrets: ${errorMessage}`));
-                return;
+            for (let i = 0; i < secrets.length; i++) {
+                ownCommitmentPairs.push(new Nimiq.CommitmentPair(
+                    secrets[i],
+                    ownSigner.commitments[i],
+                ));
             }
         }
 
         const signature = key.signPartially(
             request.keyPath,
             request.transaction.serializeContent(),
-            request.multisigConfig.signerPublicKeys,
-            aggregatedSecret,
-            request.multisigConfig.aggregatedCommitment,
+            ownCommitmentPairs,
+            request.multisigConfig.signers.filter(signer => !signer.publicKey.equals(publicKey)),
         );
 
         /** @type {KeyguardRequest.SignMultisigTransactionResult} */
@@ -289,7 +293,7 @@ class SignMultisigTransaction {
             return I18n.translatePhrase('funding-cashlink');
         }
 
-        if (transaction.hasFlag(Nimiq.Transaction.Flag.CONTRACT_CREATION)) {
+        if (transaction.flags === Nimiq.TransactionFlag.ContractCreation) {
             // TODO: Decode contract creation transactions
             // return ...
         }

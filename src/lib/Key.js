@@ -94,21 +94,28 @@ class Key {
      *
      * @param {string} path
      * @param {Uint8Array} data
-     * @param {Nimiq.PublicKey[]} signerPublicKeys
-     * @param {Nimiq.RandomSecret} secret
-     * @param {Nimiq.Commitment} aggregatedCommitment
+     * @param {Nimiq.CommitmentPair[]} ownCommitmentPairs
+     * @param {{publicKey: Nimiq.PublicKey, commitments: Nimiq.Commitment[]}[]} otherSigners
      * @returns {Nimiq.PartialSignature}
      */
-    signPartially(path, data, signerPublicKeys, secret, aggregatedCommitment) {
+    signPartially(path, data, ownCommitmentPairs, otherSigners) {
         const privateKey = this.derivePrivateKey(path);
         const publicKey = Nimiq.PublicKey.derive(privateKey);
-        signerPublicKeys.sort((a, b) => a.compare(b));
+        const [otherPublicKeys, otherCommitments] = otherSigners.reduce((acc, signer) => {
+            acc[0].push(signer.publicKey);
+            acc[1].push(signer.commitments);
+            return acc;
+        }, [
+            /** @type {Nimiq.PublicKey[]} */ ([]),
+            /** @type {Nimiq.Commitment[][]} */ ([]),
+        ]);
+
         return Nimiq.PartialSignature.create(
             privateKey,
             publicKey,
-            signerPublicKeys,
-            secret,
-            aggregatedCommitment,
+            ownCommitmentPairs,
+            otherPublicKeys,
+            otherCommitments,
             data,
         );
     }
@@ -215,7 +222,7 @@ class Key {
         }
 
         // Extend 32-byte secret into 1024-byte seed as bytestring
-        /** @type {Nimiq.SerialBuffer} */
+        /** @type {Uint8Array} */
         let seed;
         switch (keyParams.kdf) {
             case 'PBKDF2-SHA512':
@@ -233,7 +240,7 @@ class Key {
         // Send computation command to iframe
         iframe.contentWindow.postMessage({
             command: 'generateKey',
-            seed: Nimiq.BufferUtils.toAscii(seed), // seed is a bytestring
+            seed: Nimiq.BufferUtils.toUtf8(seed), // seed is a bytestring
             keySize: keyParams.keySize,
         }, '*');
 

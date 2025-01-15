@@ -14,7 +14,7 @@
           connect-src 'self' https://api.coingecko.com">
     <title>Nimiq Keyguard</title>
 
-    <script defer manual src="../../../node_modules/@nimiq/core-web/web-offline.js"></script>
+    <script defer manual type="module" src="../../lib/AlbatrossWasm.mjs"></script>
     <script defer manual src="../../lib/Constants.js"></script>
     <script defer manual src="../../config/config.local.js"></script>
 
@@ -31,6 +31,7 @@
     <script defer bundle-common src="../../lib/AccountStore.js"></script>
     <script defer bundle-common src="../../common.js"></script>
 
+    <script defer bundle-toplevel src="../../lib/Observable.js"></script>
     <script defer bundle-toplevel src="../../components/NoRequestErrorPage.js"></script>
     <script defer bundle-toplevel src="../../components/PasswordBox.js"></script>
     <script defer bundle-toplevel src="../../components/PasswordInput.js"></script>
@@ -55,8 +56,6 @@
     <script defer src="../../components/LoginFileAccountIcon.js"></script>
     <!-- <script defer src="../../components/Timer.js"></script> -->
     <!-- <script defer src="../../components/PaymentInfoLine.js"></script> -->
-    <script defer src="../../lib/multisig/MerkleTreePatch.js"></script>
-    <script defer src="../../lib/multisig/MultisigUtils.js"></script>
     <script defer src="SignMultisigTransaction.js"></script>
     <script defer src="SignMultisigTransactionApi.js"></script>
     <script defer src="index.js"></script>
