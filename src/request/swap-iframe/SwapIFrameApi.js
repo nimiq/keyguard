@@ -409,21 +409,10 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
             const privateKey = new Nimiq.PrivateKey(Nimiq.BufferUtils.fromHex(privateKeys.nim));
             const publicKey = Nimiq.PublicKey.derive(privateKey);
 
-            let transaction = Nimiq.Transaction.fromPlain({
-                ...storedRequest.fund.transaction.toPlain(),
-                data: {
-                    type: 'raw',
-                    raw: Nimiq.BufferUtils.toHex(parsedRequest.fund.htlcData),
-                },
-                // This NULL-address as the recipient gets replaced below
-                recipient: new Nimiq.Address(new Uint8Array(20)).toUserFriendlyAddress(),
-            });
-            // Calculate the contract address of the HTLC that gets created and recreate the transaction
-            // with that address as the recipient:
-            const contractAddress = new Nimiq.Address(Nimiq.BufferUtils.fromHex(transaction.hash()));
+            let transaction = storedRequest.fund.transaction;
             transaction = new Nimiq.Transaction(
                 transaction.sender, transaction.senderType, transaction.senderData,
-                contractAddress, transaction.recipientType, transaction.data,
+                new Nimiq.Address(new Uint8Array(20)), transaction.recipientType, parsedRequest.fund.htlcData,
                 transaction.value, transaction.fee,
                 transaction.flags, transaction.validityStartHeight, transaction.networkId,
             );
@@ -440,13 +429,34 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
                 const feePerUnit = Number(transaction.fee) / transaction.serializedSize;
                 const fee = BigInt(Math.ceil(feePerUnit * 167)); // 167 = NIM HTLC refunding tx size
 
+                /**
+                 * Calculate future ValidityStartHeight for the refund transaction.
+                 *
+                 * This is not exact, unfortunately. But hopefully close enough. The calculated VSH is always
+                 * smaller than it should be (blocks are faster than 1/second on average, time taken between
+                 * request creation and this code is subtracted as well). Additionally, if the user's system
+                 * clock is off, the resulting VHS will be wrong, too.
+                 *
+                 * But the watchtower only sends the refund transaction once the timeout _timestamp_ of the swap
+                 * has passed, at which point the transaction will still be valid (except if totally wrong because
+                 * of system clock).
+                 *
+                 * If the refund transaction is invalid when it is supposed to be sent, the user can always
+                 * trigger a refund manually from the transaction details in the Wallet.
+                 */
+                const validityStartHeight = Math.max(
+                    transaction.validityStartHeight,
+                    transaction.validityStartHeight
+                        + (parsedRequest.fund.htlcDetails.timeoutTimestamp - Math.round(Date.now() / 1e3)),
+                );
+
                 // Create refund transaction
                 const refundTransaction = new Nimiq.Transaction(
                     transaction.recipient, Nimiq.AccountType.HTLC, new Uint8Array(0),
                     transaction.sender, Nimiq.AccountType.Basic, new Uint8Array(0),
                     transaction.value - fee, fee,
-                    0 /* Nimiq.Transaction.Flag.NONE */,
-                    parsedRequest.fund.htlcDetails.timeoutTimestamp,
+                    Nimiq.TransactionFlag.None,
+                    validityStartHeight,
                     CONFIG.NIMIQ_NETWORK_ID,
                 );
 

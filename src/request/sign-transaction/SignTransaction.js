@@ -182,40 +182,16 @@ class SignTransaction {
             return;
         }
 
-        const privateKey = key.derivePrivateKey(request.keyPath);
-        const keyPair = Nimiq.KeyPair.derive(privateKey);
+        const publicKey = key.derivePublicKey(request.keyPath);
+        const signature = key.sign(request.keyPath, request.transaction.serializeContent());
 
-        /** @type {Nimiq.Transaction} */
-        let tx;
-
-        if (!request.transaction.data.length) {
-            tx = Nimiq.TransactionBuilder.newBasic(
-                keyPair.toAddress(),
-                Nimiq.Address.fromString(request.transaction.recipient.toHex()),
-                BigInt(request.transaction.value),
-                BigInt(request.transaction.fee),
-                request.transaction.validityStartHeight,
-                request.transaction.networkId,
-            );
-        } else {
-            tx = Nimiq.TransactionBuilder.newBasicWithData(
-                keyPair.toAddress(),
-                Nimiq.Address.fromString(request.transaction.recipient.toHex()),
-                request.transaction.data,
-                BigInt(request.transaction.value),
-                BigInt(request.transaction.fee),
-                request.transaction.validityStartHeight,
-                request.transaction.networkId,
-            );
-        }
-
-        tx.sign(keyPair);
+        request.transaction.proof = Nimiq.SignatureProof.singleSig(publicKey, signature).serialize();
 
         /** @type {KeyguardRequest.SignTransactionResult} */
         const result = {
-            publicKey: keyPair.publicKey.serialize(),
-            signature: tx.proof.subarray(tx.proof.length - 64),
-            serializedTx: tx.serialize(),
+            publicKey: publicKey.serialize(),
+            signature: signature.serialize(),
+            serializedTx: request.transaction.serialize(),
         };
         resolve(result);
     }
@@ -234,7 +210,7 @@ class SignTransaction {
             return I18n.translatePhrase('funding-cashlink');
         }
 
-        if (transaction.flags === 1 /* Nimiq.Transaction.Flag.CONTRACT_CREATION */) {
+        if (transaction.flags === Nimiq.TransactionFlag.ContractCreation) {
             // TODO: Decode contract creation transactions
             // return ...
         }
