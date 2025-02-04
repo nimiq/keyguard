@@ -236,11 +236,15 @@ class Key {
             default:
                 throw new Error(`Unsupported KDF function: ${keyParams.kdf}`);
         }
+        let seedString = '';
+        for (const byte of seed) {
+            seedString += String.fromCharCode(byte);
+        }
 
         // Send computation command to iframe
         iframe.contentWindow.postMessage({
             command: 'generateKey',
-            seed: Nimiq.BufferUtils.toUtf8(seed), // seed is a bytestring
+            seed: seedString,
             keySize: keyParams.keySize,
         }, '*');
 
