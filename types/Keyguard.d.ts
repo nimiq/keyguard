@@ -32,11 +32,7 @@ type AccountRecord = AccountInfo & {
     encryptedKeyPair: Uint8Array
 }
 
-type EncryptionKeyParams = {
-    kdf: string
-    iterations: number
-    keySize: number
-}
+type EncryptionKeyParams = KeyguardRequest.EncryptionKeyParams;
 
 type RsaKeyPairExport = {
     privateKey: Uint8Array

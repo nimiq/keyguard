@@ -209,10 +209,11 @@ export type MultisigConfig = {
     userName?: string,
 };
 
-export type SignMultisigTransactionRequestCommon = Transform<SignTransactionRequestCommon, 'keyLabel' | 'senderLabel', {
-    keyLabel: string, // Not optional
-    senderLabel: string, // Not optional
-}> & {
+export type SignMultisigTransactionRequestCommon = Transform<
+    SignTransactionRequestCommon,
+    'keyLabel' | 'senderLabel',
+    Required<Pick<SignTransactionRequestCommon, 'keyLabel' | 'senderLabel'>>
+> & {
     multisigConfig: MultisigConfig,
 };
 
