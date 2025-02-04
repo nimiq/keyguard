@@ -1,7 +1,7 @@
 /* global forge */
 
 /**
- * @typedef {{command: 'generateKey', seed: string, keySize: number}} GenerateKeyCommand
+ * @typedef {{command: 'generateKey', seed: Uint8Array, keySize: number}} GenerateKeyCommand
  * ...add new command types here and add them to the `Command` union type below
  *
  * @typedef {GenerateKeyCommand} Command
@@ -10,17 +10,16 @@
 const $loading = /** @type {HTMLSpanElement} */ (document.querySelector('#loading'));
 
 /**
- * @param {any} key
- * @returns {ArrayBuffer}
+ * @param {forge.asn1.Asn1} key
+ * @returns {Uint8Array}
  */
-function key2ArrayBuffer(key) {
-    const bytes = /** @type {string} */ (forge.asn1.toDer(key).getBytes());
-    const buffer = new ArrayBuffer(bytes.length);
-    const view = new Uint8Array(buffer);
-    for (let i = 0; i < view.length; i++) {
-        view[i] = bytes.charCodeAt(i);
+function keyToUint8Array(key) {
+    const bytes = forge.asn1.toDer(key).getBytes();
+    const result = new Uint8Array(bytes.length);
+    for (let i = 0; i < bytes.length; i++) {
+        result[i] = bytes.charCodeAt(i);
     }
-    return buffer;
+    return result;
 }
 
 window.addEventListener('message', async event => {
@@ -33,19 +32,22 @@ window.addEventListener('message', async event => {
     const data = event.data;
     if (!('command' in data) || data.command !== 'generateKey') return;
     console.debug('RSA iframe MSG:', data);
+    if (!(data.seed instanceof Uint8Array) || typeof data.keySize !== 'number') throw new Error('Invalid RSA command');
 
     $loading.textContent = '(generating...)';
     await new Promise(res => window.setTimeout(res, 50)); // Give DOM time to update
 
     // PRNG-seeded RSA key generation
     const prng = forge.random.createInstance();
+    const seedByteBuffer = new forge.util.ByteStringBuffer(data.seed.buffer);
+    const seed = seedByteBuffer.getBytes();
     prng.seedFileSync = needed => {
-        // console.log('Need', needed, 'bytes of randomness, have', data.seed.length);
-        let seed = '';
-        while (seed.length < needed) {
-            seed += data.seed;
+        // console.log('Need', needed, 'bytes of randomness, have', seed.length);
+        let result = '';
+        while (result.length < needed) {
+            result += seed;
         }
-        return seed.substring(0, needed);
+        return result.substring(0, needed);
     };
 
 
@@ -76,10 +78,15 @@ window.addEventListener('message', async event => {
     // Export to ASN1 notation (already in SPKI format)
     const publicKeyInfo = forge.pki.publicKeyToAsn1(keyPair.publicKey);
 
+    const privateKey = keyToUint8Array(privateKeyInfo);
+    const publicKey = keyToUint8Array(publicKeyInfo);
     /** @type {Window} */ (event.source).postMessage({
-        privateKey: key2ArrayBuffer(privateKeyInfo),
-        publicKey: key2ArrayBuffer(publicKeyInfo),
-    }, '*');
+        privateKey,
+        publicKey,
+    }, {
+        targetOrigin: '*',
+        transfer: [privateKey.buffer, publicKey.buffer], // Transfer ArrayBuffers without copying them.
+    });
 
     $loading.textContent = '';
 });

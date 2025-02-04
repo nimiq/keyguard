@@ -221,7 +221,7 @@ class Key {
             throw new Error('Could not load sandboxed RSA iframe');
         }
 
-        // Extend 32-byte secret into 1024-byte seed as bytestring
+        // Extend 32-byte secret into 1024-byte seed
         /** @type {Uint8Array} */
         let seed;
         switch (keyParams.kdf) {
@@ -236,17 +236,16 @@ class Key {
             default:
                 throw new Error(`Unsupported KDF function: ${keyParams.kdf}`);
         }
-        let seedString = '';
-        for (const byte of seed) {
-            seedString += String.fromCharCode(byte);
-        }
 
         // Send computation command to iframe
         iframe.contentWindow.postMessage({
             command: 'generateKey',
-            seed: seedString,
+            seed,
             keySize: keyParams.keySize,
-        }, '*');
+        }, {
+            targetOrigin: '*',
+            transfer: [seed.buffer], // Transfer ownership of the seed without copying the underlying ArrayBuffer.
+        });
 
         /** @type {(keyPair: RsaKeyPairExport) => void} */
         let resolver;
@@ -264,15 +263,15 @@ class Key {
                 return;
             }
 
-            /** @type {{privateKey: ArrayBuffer, publicKey: ArrayBuffer}} */
+            /** @type {{privateKey: Uint8Array, publicKey: Uint8Array}} */
             const data = event.data;
             if (!('privateKey' in data) || !('publicKey' in data)) return;
 
             window.removeEventListener('message', onMessage);
 
             resolver({
-                privateKey: new Uint8Array(data.privateKey),
-                publicKey: new Uint8Array(data.publicKey),
+                privateKey: data.privateKey,
+                publicKey: data.publicKey,
                 keyParams,
             });
         }
