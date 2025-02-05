@@ -7,6 +7,15 @@
  * @typedef {GenerateKeyCommand} Command
  */
 
+if (// Refuse to run if:
+    // - In a top level window
+    window.self === window.top
+    // - Iframe is embedded in another domain
+    || window.location.origin !== new URL(document.referrer).origin
+    // - Iframe can access parent page and is thus not sandboxed
+    || !!window.frameElement
+) throw new Error('Only allowed to run in a sandboxed iframe');
+
 const $loading = /** @type {HTMLSpanElement} */ (document.querySelector('#loading'));
 
 /**
