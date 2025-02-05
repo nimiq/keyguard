@@ -32,10 +32,7 @@ function keyToUint8Array(key) {
 }
 
 window.addEventListener('message', async event => {
-    if (event.source === event.target) {
-        // console.log("Ignored same-window event:", event);
-        return;
-    }
+    if (event.origin !== window.location.origin) return; // Reject messages from other origins
 
     /** @type {Command} */
     const data = event.data;
@@ -93,7 +90,7 @@ window.addEventListener('message', async event => {
         privateKey,
         publicKey,
     }, {
-        targetOrigin: '*',
+        targetOrigin: window.location.origin, // Only allow responses back to the same origin.
         transfer: [privateKey.buffer, publicKey.buffer], // Transfer ArrayBuffers without copying them.
     });
 

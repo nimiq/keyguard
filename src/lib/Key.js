@@ -243,8 +243,12 @@ class Key {
             seed,
             keySize: keyParams.keySize,
         }, {
+            // Because the iframe has a separate sandboxed origin, we need to specify '*' as target, which is still
+            // safe, as we're posting the message directly to the iframe we fully control, such that it won't have been
+            // redirected to a different domain in the meantime, which could intercept the message.
             targetOrigin: '*',
-            transfer: [seed.buffer], // Transfer ownership of the seed without copying the underlying ArrayBuffer.
+            // Transfer ownership of the seed without copying the underlying ArrayBuffer.
+            transfer: [seed.buffer],
         });
 
         /** @type {(keyPair: RsaKeyPairExport) => void} */
@@ -258,8 +262,12 @@ class Key {
          * @param {MessageEvent} event
          */
         function onMessage(event) {
-            if (event.source === event.target) {
-                // console.log("Ignored same-window event:", event);
+            if (event.source !== iframe.contentWindow) {
+                // Reject any messages which are not from the iframe. Otherwise, the following attack is possible:
+                // A malicious site starts a Connect request in an iframe (via Hub, which then redirects to the
+                // Keyguard). Then, when the malicious site suspects that the Keyguard is waiting for the RSA key
+                // calculation, it itself sends a postmessage to the popup with an RSA key known to the attacker,
+                // which the Keyguard would willingly store and continue to use, also for other websites.
                 return;
             }
 
