@@ -16,8 +16,6 @@ if (// Refuse to run if:
     || !!window.frameElement
 ) throw new Error('Only allowed to run in a sandboxed iframe');
 
-const $loading = /** @type {HTMLSpanElement} */ (document.querySelector('#loading'));
-
 /**
  * @param {forge.asn1.Asn1} key
  * @returns {Uint8Array}
@@ -40,8 +38,12 @@ window.addEventListener('message', async event => {
     console.debug('RSA iframe MSG:', data);
     if (!(data.seed instanceof Uint8Array) || typeof data.keySize !== 'number') throw new Error('Invalid RSA command');
 
+    const $loading = /** @type {HTMLSpanElement} */ (document.querySelector('#loading'));
     $loading.textContent = '(generating...)';
-    await new Promise(res => window.setTimeout(res, 50)); // Give DOM time to update
+    // The RSA key generation is computationally expensive. Before we start the process, give the DOM time to update,
+    // especially the parent page. Otherwise, the iframe also blocks DOM updates of the parent page in browsers which do
+    // not run the iframe on a separate thread, like Firefox.
+    await new Promise(res => window.setTimeout(res, 50));
 
     // PRNG-seeded RSA key generation
     const prng = forge.random.createInstance();
@@ -69,22 +71,17 @@ window.addEventListener('message', async event => {
     };
 
 
-    /**
-     * The async version of Forge's pki.rsa.generateKeyPair uses WebWorkers. Sadly, those cannot be
-     * created in sandboxed iframes without `allow-same-origin` (https://stackoverflow.com/a/30567964/4204380).
-     */
+    // Use the synchronous version of forge.rsa.generateKeyPair and not the asynchronous version with WebWorkers because
+    // - WebWorkers cannot be created in sandboxed iframes without `allow-same-origin`:
+    //   https://stackoverflow.com/a/30567964/4204380.
+    // - Using multiple WebWorkers introduces race conditions, which causes the key generation to not be deterministic
+    //   anymore, even if a deterministically seeded PRNG is used, see documentation on `primeincFindPrimeWithWorkers`:
+    //   https://github.com/digitalbazaar/forge/blob/a0a4a4264bedb3296974b9675349c9c190144aeb/lib/prime.js#L150-L153
+    //   If using WebWorkers, that method is called via `generateKeyPair` > `_generateKeyPair` > `generateProbablePrime`
+    //   > `primeincFindPrime` > `primeincFindPrimeWithWorkers`.
+    // Unfortunately, this blocks the main thread in some browsers like Firefox, where same origin iframes are running
+    // on the same thread as the main window. In Chrome, that is not the case thanks to its oop iframes.
     const keyPair = forge.pki.rsa.generateKeyPair({ bits: data.keySize, prng });
-    // const keyPair = await new Promise((resolve, reject) => forge.pki.rsa.generateKeyPair(
-    //     { bits: data.keySize, prng, workers: -1, workerScript: './node-forge/prime.worker.min.js' },
-    //     (error, keyPair) => {
-    //         if (error) {
-    //             reject(error);
-    //             return;
-    //         }
-
-    //         resolve(keyPair);
-    //     },
-    // ));
 
     // console.log({ keyPair });
 
