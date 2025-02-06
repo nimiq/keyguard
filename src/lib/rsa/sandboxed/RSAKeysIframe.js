@@ -49,11 +49,23 @@ window.addEventListener('message', async event => {
     const seed = seedByteBuffer.getBytes();
     prng.seedFileSync = needed => {
         // console.log('Need', needed, 'bytes of randomness, have', seed.length);
-        let result = '';
-        while (result.length < needed) {
-            result += seed;
+        if (needed > seed.length) {
+            throw new Error(`Seed does not provide enough entropy. ${needed} bytes needed`);
         }
-        return result.substring(0, needed);
+        // Note, there's no reason to truncate the entropy if we have more than needed, as any excess will be used, too
+        // (github.com/digitalbazaar/forge/blob/a0a4a4264bedb3296974b9675349c9c190144aeb/lib/prng.js#L210).
+        // Additionally, note that `forge.prng` does in fact reseed the prng every time new random data is requested
+        // (github.com/digitalbazaar/forge/blob/a0a4a4264bedb3296974b9675349c9c190144aeb/lib/prng.js#L90-L95). A quick
+        // experiment showed that a `forge.rsa.generateKeyPair` does trigger two reseeds. So if there is excess data,
+        // instead of returning the entire entropy, one could also think about returning a new entropy slice each time.
+        // Therefore, one might consider returning two individual slices of `needed` bytes each, and requiring a seed of
+        // total length `2 * needed`. However, looking at the linked comment, it seems like the frequent seeding is
+        // mostly out of paranoia and not strictly required.
+        // Overall, returning the full, non-truncated seed in a single slice on all reseeds is a good middle ground.
+        // Finally note, that reseeding with the same seed does not mean the same random numbers are generated, as the
+        // reseeding algorithm also takes the previous seeding result and the reseeding iteration count into account
+        // (https://github.com/digitalbazaar/forge/blob/2bb97afb5058285ef09bcf1d04d6bd6b87cffd58/lib/prng.js#L217).
+        return seed;
     };
 
 
