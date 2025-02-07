@@ -29,11 +29,12 @@ class Key {
     }
 
     /**
+     * @private
      * @param {EncryptionKeyParams} paramsA
      * @param {EncryptionKeyParams} paramsB
      * @returns {boolean}
      */
-    static _isEncryptionKeyParamsEqual(paramsA, paramsB) {
+    static _areEncryptionKeyParamsEqual(paramsA, paramsB) {
         return typeof paramsA === 'object' && typeof paramsB === 'object'
             && paramsA.kdf === paramsB.kdf
             && paramsA.iterations === paramsB.iterations
@@ -41,11 +42,12 @@ class Key {
     }
 
     /**
+     * @private
      * @param {EncryptionKeyParams} params
      * @returns {boolean}
      */
-    static _isDefaultEncryptionKeyParams(params) {
-        return Key._isEncryptionKeyParamsEqual(params, Key.defaultEncryptionKeyParams);
+    static _areDefaultEncryptionKeyParams(params) {
+        return Key._areEncryptionKeyParamsEqual(params, Key.defaultEncryptionKeyParams);
     }
 
     /**
@@ -55,11 +57,10 @@ class Key {
     constructor(secret, config = {}) {
         this._secret = secret;
         this._hasPin = Boolean(config.hasPin);
+        this._rsaKeyPair = config.rsaKeyPair;
         /** @type {string?} */
         this._id = null;
         this._defaultAddress = this.deriveAddress(Constants.DEFAULT_DERIVATION_PATH);
-
-        this.rsaKeyPair = config.rsaKeyPair;
     }
 
     /**
@@ -101,14 +102,8 @@ class Key {
     signPartially(path, data, ownCommitmentPairs, otherSigners) {
         const privateKey = this.derivePrivateKey(path);
         const publicKey = Nimiq.PublicKey.derive(privateKey);
-        const [otherPublicKeys, otherCommitments] = otherSigners.reduce((acc, signer) => {
-            acc[0].push(signer.publicKey);
-            acc[1].push(signer.commitments);
-            return acc;
-        }, [
-            /** @type {Nimiq.PublicKey[]} */ ([]),
-            /** @type {Nimiq.Commitment[][]} */ ([]),
-        ]);
+        const otherPublicKeys = otherSigners.map(({ publicKey: pubKey }) => pubKey);
+        const otherCommitments = otherSigners.map(({ commitments }) => commitments);
 
         return Nimiq.PartialSignature.create(
             privateKey,
@@ -162,20 +157,38 @@ class Key {
     }
 
     /**
+     * @returns {RsaKeyPairExport | undefined}
+     */
+    getRsaKeyPairIfExists() {
+        return this._rsaKeyPair;
+    }
+
+    /**
+     * Calculates and sets the RSA key pair for the given key params. The RSA key is calculated deterministically based
+     * on _secret, such that the same RSA key is generated for the same key params.
+     * Warning: this is computationally expensive.
+     * @param {EncryptionKeyParams} keyParams
+     * @returns {Promise<RsaKeyPairExport>}
+     */
+    async setRsaKeyPair(keyParams) {
+        if (!this._rsaKeyPair || !Key._areEncryptionKeyParamsEqual(keyParams, this._rsaKeyPair.keyParams)) {
+            this._rsaKeyPair = await this._computeRsaKeyPair(keyParams);
+            if (Key._areDefaultEncryptionKeyParams(keyParams)) {
+                await KeyStore.instance.setRsaKeypair(this.id, this._rsaKeyPair);
+            }
+        }
+        return this._rsaKeyPair;
+    }
+
+    /**
      * @param {EncryptionKeyParams} keyParams
      * @returns {Promise<CryptoKey>}
      */
     async getRsaPrivateKey(keyParams) {
-        if (!this.rsaKeyPair || !Key._isEncryptionKeyParamsEqual(keyParams, this.rsaKeyPair.keyParams)) {
-            this.rsaKeyPair = await this._computeRsaKeyPair(keyParams);
-            if (Key._isDefaultEncryptionKeyParams(keyParams)) {
-                await KeyStore.instance.setRsaKeypair(this.id, this.rsaKeyPair);
-            }
-        }
-
+        const rsaKeyPair = await this.setRsaKeyPair(keyParams);
         return window.crypto.subtle.importKey(
             'pkcs8',
-            this.rsaKeyPair.privateKey,
+            rsaKeyPair.privateKey,
             { name: 'RSA-OAEP', hash: 'SHA-256' },
             false, // Prevent extraction
             ['decrypt'],
@@ -187,16 +200,10 @@ class Key {
      * @returns {Promise<CryptoKey>}
      */
     async getRsaPublicKey(keyParams) {
-        if (!this.rsaKeyPair || !Key._isEncryptionKeyParamsEqual(keyParams, this.rsaKeyPair.keyParams)) {
-            this.rsaKeyPair = await this._computeRsaKeyPair(keyParams);
-            if (Key._isDefaultEncryptionKeyParams(keyParams)) {
-                await KeyStore.instance.setRsaKeypair(this.id, this.rsaKeyPair);
-            }
-        }
-
+        const rsaKeyPair = await this.setRsaKeyPair(keyParams);
         return window.crypto.subtle.importKey(
             'spki',
-            this.rsaKeyPair.publicKey,
+            rsaKeyPair.publicKey,
             { name: 'RSA-OAEP', hash: 'SHA-256' },
             true, // Allow extraction
             ['encrypt'],
@@ -212,8 +219,8 @@ class Key {
         iframe.classList.add('rsa-sandboxed-iframe'); // Styles in common.css hide this class
         iframe.setAttribute('sandbox', 'allow-scripts');
         iframe.src = '../../lib/rsa/sandboxed/RSAKeysIframe.html'; // Relative path from a request URL
-        /** @type {Promise<void>} */
-        const loadPromise = new Promise(resolve => iframe.addEventListener('load', () => resolve()));
+        /** @type {Promise<unknown>} */
+        const loadPromise = new Promise(resolve => iframe.addEventListener('load', resolve));
         document.body.appendChild(iframe);
         await loadPromise;
 
@@ -251,43 +258,36 @@ class Key {
             transfer: [seed.buffer],
         });
 
-        /** @type {(keyPair: RsaKeyPairExport) => void} */
-        let resolver;
-        /** @type {Promise<RsaKeyPairExport>} */
-        const resultPromise = new Promise(resolve => {
-            resolver = resolve;
-        });
+        return new Promise(resolve => {
+            /**
+             * @param {MessageEvent} event
+             */
+            function onMessage(event) {
+                if (event.source !== iframe.contentWindow) {
+                    // Reject any messages which are not from the iframe. Otherwise, the following attack is possible:
+                    // A malicious site starts a Connect request in an iframe (via Hub, which then redirects to the
+                    // Keyguard). Then, when the malicious site suspects that the Keyguard is waiting for the RSA key
+                    // calculation, it itself sends a postmessage to the popup with an RSA key known to the attacker,
+                    // which the Keyguard would willingly store and continue to use, also for other websites.
+                    return;
+                }
 
-        /**
-         * @param {MessageEvent} event
-         */
-        function onMessage(event) {
-            if (event.source !== iframe.contentWindow) {
-                // Reject any messages which are not from the iframe. Otherwise, the following attack is possible:
-                // A malicious site starts a Connect request in an iframe (via Hub, which then redirects to the
-                // Keyguard). Then, when the malicious site suspects that the Keyguard is waiting for the RSA key
-                // calculation, it itself sends a postmessage to the popup with an RSA key known to the attacker,
-                // which the Keyguard would willingly store and continue to use, also for other websites.
-                return;
+                /** @type {{privateKey: Uint8Array, publicKey: Uint8Array}} */
+                const data = event.data;
+                if (!('privateKey' in data) || !('publicKey' in data)) return;
+
+                window.removeEventListener('message', onMessage);
+
+                resolve({
+                    privateKey: data.privateKey,
+                    publicKey: data.publicKey,
+                    keyParams,
+                });
             }
 
-            /** @type {{privateKey: Uint8Array, publicKey: Uint8Array}} */
-            const data = event.data;
-            if (!('privateKey' in data) || !('publicKey' in data)) return;
-
-            window.removeEventListener('message', onMessage);
-
-            resolver({
-                privateKey: data.privateKey,
-                publicKey: data.publicKey,
-                keyParams,
-            });
-        }
-
-        // Listen for result from iframe
-        window.addEventListener('message', onMessage);
-
-        return resultPromise;
+            // Listen for result from iframe
+            window.addEventListener('message', onMessage);
+        });
     }
 
     /**

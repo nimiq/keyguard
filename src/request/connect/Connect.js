@@ -111,7 +111,7 @@ class Connect {
         }
 
         const rsaPublicCryptoKey = await key.getRsaPublicKey(Key.defaultEncryptionKeyParams);
-        const keyParams = /** @type {RsaKeyPairExport} */ (key.rsaKeyPair).keyParams;
+        const keyParams = /** @type {RsaKeyPairExport} */ (key.getRsaKeyPairIfExists()).keyParams;
 
         /** @type {KeyguardRequest.ConnectResult} */
         const result = {

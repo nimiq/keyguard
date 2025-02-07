@@ -160,7 +160,7 @@ class KeyStore {
             hasPin: key.hasPin,
             secret: buffer.subarray(0, buffer.byteLength),
             defaultAddress: key.defaultAddress.serialize(),
-            rsaKeyPair: key.rsaKeyPair,
+            rsaKeyPair: key.getRsaKeyPairIfExists(),
         };
 
         return this.putPlain(keyRecord);
