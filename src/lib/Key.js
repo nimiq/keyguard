@@ -283,6 +283,7 @@ class Key {
                 if (!('privateKey' in data) || !('publicKey' in data)) return;
 
                 window.removeEventListener('message', onMessage);
+                iframe.remove();
 
                 resolve({
                     privateKey: data.privateKey,
