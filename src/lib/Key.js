@@ -211,10 +211,16 @@ class Key {
     }
 
     /**
+     * Deterministically computes an RSA keypair from _secret via the RSAKeysIframe.
+     * Warning: this is computationally expensive.
      * @param {EncryptionKeyParams} keyParams
      * @returns {Promise<RsaKeyPairExport>}
      */
     async _computeRsaKeyPair(keyParams) {
+        // Setup the RSAKeysIframe in which the actual computation of the RSA key happens via node-forge. The reason why
+        // we don't use the browser crypto API instead, is that it does not support deterministic generation of RSA keys
+        // from an existing secret, and the reason why node-forge is not used directly here is that we want to run it in
+        // a sandbox, to reduce the attack surface from a big external dependency not thoroughly audited by us.
         const iframe = document.createElement('iframe');
         iframe.classList.add('rsa-sandboxed-iframe'); // Styles in common.css hide this class
         iframe.setAttribute('sandbox', 'allow-scripts');
