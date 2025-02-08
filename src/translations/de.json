@@ -255,7 +255,9 @@
     "sign-swap-exchange-rate": "Wechselkurs",
     "sign-swap-your-bank": "Deine Bank",
 
-    "connect-heading-prefix": "Log in to",
+    "connect-heading": "Log in to {appName}",
+    "connect-heading-description": "Connect and use your account to\napprove transactions.",
+    "connect-bottom-explainer": "The connection is for approving only.\nYour funds remain unaffected.",
     "connect-tooltip-multisig-1": "Your account will be used to verify your identity only.",
     "connect-tooltip-multisig-2": "The shared wallet has its own address. It can receive transactions from anywhere just like a regular wallet.",
     "connect-tooltip-multisig-3": "The first address of your account will be visible to all participants in your shared wallet."

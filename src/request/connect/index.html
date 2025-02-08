@@ -71,12 +71,9 @@
     <div id="app">
         <div id="connect-account" class="page nq-card">
             <div class="page-header nq-card-header">
-                <h1 class="nq-h1">
-                    <span data-i18n="connect-heading-prefix">Log in to</span>
-                    <span class="app-name"></span>
-                </h1>
-                <span class="more">
-                    Connect and use your account to<br>
+                <h1 class="connect-heading nq-h1">Log in to {appName}</h1>
+                <span class="more i18n-multiline" data-i18n="connect-heading-description">
+                    Connect and use your account to
                     approve transactions.
                 </span>
             </div>
@@ -90,8 +87,10 @@
                 <div class="flex-grow"></div>
 
                 <div class="bottom-explainer">
-                    The connection is for approving only.<br>
-                    Your funds remain unaffected.
+                    <span class="i18n-multiline" data-i18n="connect-bottom-explainer">
+                        The connection is for approving only.
+                        Your funds remain unaffected.
+                    </span>
                     <div class="tooltip top" tabindex="0">
                         <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-info-circle-small"/></svg>
                         <div class="tooltip-box">

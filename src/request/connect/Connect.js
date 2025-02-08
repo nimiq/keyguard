@@ -1,4 +1,5 @@
 /* global Nimiq */
+/* global I18n */
 /* global Key */
 /* global KeyStore */
 /* global LoginFileAccountIcon */
@@ -23,8 +24,8 @@ class Connect {
     constructor(request, resolve, reject) {
         const $page = /** @type {HTMLDivElement} */ (document.getElementById(Connect.Pages.CONNECT_ACCOUNT));
 
-        const $appName = /** @type {HTMLSpanElement} */ ($page.querySelector('.app-name'));
-        $appName.textContent = request.appName;
+        const $connectHeading = /** @type {HTMLHeadingElement} */ ($page.querySelector('.connect-heading'));
+        I18n.translateToHtmlContent($connectHeading, 'connect-heading', { appName: request.appName });
 
         const $appIcon = /** @type {HTMLImageElement} */ ($page.querySelector('.app-icon'));
         $appIcon.src = request.appLogoUrl.href;
