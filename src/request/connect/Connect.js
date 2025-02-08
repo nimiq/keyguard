@@ -41,19 +41,12 @@ class Connect {
             new Identicon(request.keyInfo.defaultAddress.toUserFriendlyAddress(), $loginFileIcon);
         }
 
-        const $button = /** @type {HTMLButtonElement} */ ($page.querySelector('.nq-button.continue'));
-
         // Set up password box
         const $passwordBox = /** @type {HTMLFormElement} */ (document.querySelector('#password-box'));
         this._passwordBox = new PasswordBox($passwordBox, {
             hideInput: !request.keyInfo.encrypted,
             buttonI18nTag: 'passwordbox-connect-account',
             minLength: request.keyInfo.hasPin ? Key.PIN_LENGTH : undefined,
-        });
-
-        $button.addEventListener('click', () => {
-            $button.classList.add('display-none');
-            $passwordBox.classList.remove('display-none');
         });
 
         this._passwordBox.on(
@@ -86,7 +79,7 @@ class Connect {
                 this._passwordBox.onPasswordIncorrect();
                 return;
             }
-            reject(new Errors.CoreError(errorMessage));
+            reject(new Errors.CoreError(error instanceof Error ? error : errorMessage));
             return;
         }
 
@@ -111,8 +104,8 @@ class Connect {
             });
         }
 
-        const rsaPublicCryptoKey = await key.getRsaPublicKey(Key.defaultEncryptionKeyParams);
-        const keyParams = /** @type {RsaKeyPairExport} */ (key.getRsaKeyPairIfExists()).keyParams;
+        const keyParams = Key.defaultEncryptionKeyParams;
+        const rsaPublicCryptoKey = await key.getRsaPublicKey(keyParams);
 
         /** @type {KeyguardRequest.ConnectResult} */
         const result = {
@@ -120,7 +113,10 @@ class Connect {
             encryptionKey: {
                 format: 'spki',
                 keyData: new Uint8Array(await window.crypto.subtle.exportKey('spki', rsaPublicCryptoKey)),
-                algorithm: { name: 'RSA-OAEP', hash: 'SHA-256' },
+                algorithm: {
+                    name: rsaPublicCryptoKey.algorithm.name,
+                    hash: (/** @type {RsaHashedKeyAlgorithm} */ (rsaPublicCryptoKey.algorithm)).hash.name,
+                },
                 keyUsages: ['encrypt'],
                 keyParams,
             },

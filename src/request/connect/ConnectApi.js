@@ -57,12 +57,12 @@ class ConnectApi extends TopLevelApi { // eslint-disable-line no-unused-vars
      */
     parsePermissions(permissions) {
         if (!Array.isArray(permissions)) {
-            throw new Errors.InvalidRequestError('permissions must be an array');
+            throw new Errors.InvalidRequestError('Permissions must be an array');
         }
 
         for (const permission of permissions) {
             if (!PermissionKeyguardCommands.includes(permission)) {
-                throw new Errors.InvalidRequestError(`invalid permission requested: ${permission}`);
+                throw new Errors.InvalidRequestError(`Invalid permission requested: ${permission}`);
             }
         }
 
