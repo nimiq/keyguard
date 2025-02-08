@@ -127,6 +127,62 @@ class I18n { // eslint-disable-line no-unused-vars
     }
 
     /**
+     * @template V
+     * @param {string} id - Translation dict ID
+     * @param {Record<string, V>} [variables] - Variables to replace translation placeholders with
+     * @returns {Array<string | V>} - Translation parts where placeholders have been replaced by their variables
+     */
+    static translateToParts(id, variables) {
+        const translation = this._translate(id, this.language);
+        const parts = translation.split(/({\w+?})/g).filter(part => !!part);
+        return parts.map(part => {
+            if (!variables || !part.startsWith('{') || !part.endsWith('}')) return part; // no vars or not a placeholder
+            const variableName = part.substring(1, part.length - 1);
+            return variables[variableName] !== undefined ? variables[variableName] : part;
+        });
+    }
+
+    /**
+     * @callback StopUpdates
+     * @returns {void}
+     */
+    /**
+     * @overload
+     * @param {HTMLElement} element - Parent element for which to set translated HTML content
+     * @param {string} id - Translation dict ID
+     * @param {Record<string, string | Node>} [variables] - Variables to replace translation placeholders with
+     * @param {true} [updateOnLanguageChange=true] - Auto-update HTML content on language change
+     * @returns {StopUpdates} - A method to stop automated updates on language change
+     */
+    /**
+     * @overload
+     * @param {HTMLElement} element - Parent element for which to set translated HTML content
+     * @param {string} id - Translation dict ID
+     * @param {Record<string, string | Node> | undefined} variables - Variables to replace translation placeholders with
+     * @param {false} updateOnLanguageChange - Set to false to disable auto-updating HTML content on language change
+     * @returns {void}
+     */
+    /**
+     * @param {HTMLElement} element - Parent element for which to set translated HTML content
+     * @param {string} id - Translation dict ID
+     * @param {Record<string, string | Node>} [variables] - Variables to replace translation placeholders with
+     * @param {boolean} [updateOnLanguageChange=true] - Auto-update HTML content on language change
+     * @returns {StopUpdates | undefined} - A method to stop automated updates on language change
+     */
+    static translateToHtmlContent(element, id, variables, updateOnLanguageChange = true) {
+        // eslint-disable-next-line require-jsdoc-except/require-jsdoc
+        const update = () => {
+            element.innerHTML = ''; // clear previous content
+            element.append(...I18n.translateToParts(id, variables));
+        };
+        update();
+        if (!updateOnLanguageChange) return;
+        const observerId = I18n.observer.on(I18n.Events.LANGUAGE_CHANGED, update);
+        // eslint-disable-next-line consistent-return
+        return () => I18n.observer.off(I18n.Events.LANGUAGE_CHANGED, observerId);
+    }
+
+    /**
      * @param {string} id
      * @param {string} language
      * @returns {string}

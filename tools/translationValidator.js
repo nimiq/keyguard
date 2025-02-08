@@ -19,7 +19,7 @@ const REF_DICT = {
 function findI18nKeysAndStrings(filePath) {
     const textContentRegEx = /data-i18n="(.*?)".*?>\s*(.*?)\s*</gs;
     const placeholderRegEx = /data-i18n-placeholder="(.*?)"(?:.*?placeholder="(.*?)")?/g;
-    const phraseRegEx = /translatePhrase\('(.*?)'/g;
+    const phraseRegEx = /(?:translatePhrase\(|translateToParts\(|translateToHtmlContent\([^']+)'(.+?)'/g;
 
     // Get global variable
     const contents = fs.readFileSync(filePath).toString();
