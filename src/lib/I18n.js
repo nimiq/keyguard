@@ -94,13 +94,36 @@ class I18n { // eslint-disable-line no-unused-vars
     }
 
     /**
-     * @param {string} id - translation dict ID
+     * @overload
+     * @param {string} id - Translation dict ID
      * @param {string} [enforcedLanguage] - ISO code of language to translate to
      * @returns {string}
      */
-    static translatePhrase(id, enforcedLanguage) {
+    /**
+     * @overload
+     * @param {string} id - Translation dict ID
+     * @param {Record<string, string | number>} [variables] - Variables to replace translation placeholders with
+     * @param {string} [enforcedLanguage] - ISO code of language to translate to
+     * @returns {string}
+     */
+    /**
+     * @param {string} id
+     * @param {Record<string, string | number> | string} [variablesOrEnforcedLanguage]
+     * @param {string} [enforcedLanguage]
+     * @returns {string}
+     */
+    static translatePhrase(id, variablesOrEnforcedLanguage, enforcedLanguage) {
+        const variables = typeof variablesOrEnforcedLanguage === 'object' ? variablesOrEnforcedLanguage : undefined;
+        enforcedLanguage = typeof variablesOrEnforcedLanguage === 'string'
+            ? variablesOrEnforcedLanguage
+            : enforcedLanguage;
         const language = enforcedLanguage ? this.getClosestSupportedLanguage(enforcedLanguage) : this.language;
-        return this._translate(id, language);
+        const translation = this._translate(id, language);
+        if (!variables) return translation;
+        return translation.replace(
+            /{(\w+?)}/g,
+            (match, variableName) => (variables[variableName] !== undefined ? `${variables[variableName]}` : match),
+        );
     }
 
     /**

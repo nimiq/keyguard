@@ -3,7 +3,6 @@ const { spawnSync } = require('child_process');
 
 const localizedFiles = spawnSync('grep', ['-i', '-r', '-l', 'i18n', 'src'], { shell: true })
     .stdout.toString()
-    .replace('src/lib/I18n.js\n', '')
     .replace('src/translations/index.js\n', '')
     .trim()
     .split('\n');
@@ -20,7 +19,7 @@ const REF_DICT = {
 function findI18nKeysAndStrings(filePath) {
     const textContentRegEx = /data-i18n="(.*?)".*?>\s*(.*?)\s*</gs;
     const placeholderRegEx = /data-i18n-placeholder="(.*?)"(?:.*?placeholder="(.*?)")?/g;
-    const phraseRegEx = /translatePhrase\('(.*?)'\)/g;
+    const phraseRegEx = /translatePhrase\('(.*?)'/g;
 
     // Get global variable
     const contents = fs.readFileSync(filePath).toString();
