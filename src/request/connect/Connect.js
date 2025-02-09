@@ -41,6 +41,38 @@ class Connect {
             new Identicon(request.keyInfo.defaultAddress.toUserFriendlyAddress(), $loginFileIcon);
         }
 
+        const $addressCountInfo = /** @type {HTMLElement} */ ($page.querySelector('.address-count-info'));
+        if (request.requestedKeyPaths.length > 1) {
+            I18n.translateToHtmlContent($addressCountInfo, 'connect-address-count-info', {
+                appName: request.appName,
+                addressCount: request.requestedKeyPaths.length.toString(),
+            });
+            $addressCountInfo.classList.remove('display-none');
+        }
+
+        const $tooltipAddressInfo = /** @type {HTMLElement} */ ($page.querySelector('.connect-tooltip-address-info'));
+        if (request.requestedKeyPaths.length === 1 && request.requestedKeyPaths[0] === 'm/44\'/242\'/0\'/0\'') {
+            // Special translation for the most common case, that only the first address is used.
+            I18n.translateToHtmlContent($tooltipAddressInfo, 'connect-tooltip-address-info-first-address');
+        } else {
+            const translateTooltipAddressInfo = () => { // eslint-disable-line require-jsdoc-except/require-jsdoc
+                const listFormatter = new Intl.ListFormat([
+                    I18n.language,
+                    navigator.language, // fallback
+                    'en-US', // en-US as last resort
+                ]);
+                const paths = listFormatter.format(request.requestedKeyPaths);
+                I18n.translateToHtmlContent(
+                    $tooltipAddressInfo,
+                    'connect-tooltip-address-info-multiple-addresses',
+                    { paths },
+                    false,
+                );
+            };
+            translateTooltipAddressInfo();
+            I18n.observer.on(I18n.Events.LANGUAGE_CHANGED, translateTooltipAddressInfo);
+        }
+
         // Set up password box
         const $passwordBox = /** @type {HTMLFormElement} */ (document.querySelector('#password-box'));
         this._passwordBox = new PasswordBox($passwordBox, {

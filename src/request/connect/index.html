@@ -87,6 +87,9 @@
                 <div class="flex-grow"></div>
 
                 <div class="bottom-explainer">
+                    <div class="address-count-info display-none">
+                        {appName} is requesting access to {addressCount} addresses.
+                    </div>
                     <span class="i18n-multiline" data-i18n="connect-bottom-explainer">
                         The connection is for approving only.
                         Your funds remain unaffected.
@@ -100,9 +103,7 @@
                             <p data-i18n="connect-tooltip-multisig-2">
                                 The shared wallet has its own address. It can receive transactions from anywhere just like a regular wallet.
                             </p>
-                            <p data-i18n="connect-tooltip-multisig-3">
-                                The first address of your account will be visible to all participants in your shared wallet.
-                            </p>
+                            <p class="connect-tooltip-address-info"></p>
                         </div>
                     </div>
                 </div>
