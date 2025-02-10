@@ -1,6 +1,6 @@
 /* global Constants */
 /* global Nimiq */
-/* global SignMessageConstants */
+/* global SignMessagePrefix */
 /* global KeyStore */
 /* global CONFIG */
 
@@ -118,9 +118,10 @@ class Key {
     /**
      * @param {string} path
      * @param {Uint8Array} message - A byte array
+     * @param {SignMessagePrefix} [prefix=SignMessagePrefix.SIGNED_MESSAGE]
      * @returns {Nimiq.Signature}
      */
-    signMessage(path, message) {
+    signMessage(path, message, prefix = SignMessagePrefix.SIGNED_MESSAGE) {
         const msgLength = message.byteLength;
         const msgLengthAsString = msgLength.toString(10);
 
@@ -130,13 +131,11 @@ class Key {
          * request can sign arbitrary data (e.g. a transaction) and use the signature to
          * impersonate the victim. (https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sign)
          */
-        const dataLength = SignMessageConstants.SIGN_MSG_PREFIX.length
-                         + msgLengthAsString.length
-                         + msgLength;
+        const dataLength = prefix.length + msgLengthAsString.length + msgLength;
 
         // Construct buffer
         const data = new Nimiq.SerialBuffer(dataLength);
-        data.write(Nimiq.BufferUtils.fromUtf8(SignMessageConstants.SIGN_MSG_PREFIX));
+        data.write(Nimiq.BufferUtils.fromUtf8(prefix));
         data.write(Nimiq.BufferUtils.fromUtf8(msgLengthAsString));
         data.write(message);
 

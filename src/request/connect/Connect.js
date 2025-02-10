@@ -1,4 +1,5 @@
 /* global Nimiq */
+/* global SignMessagePrefix */
 /* global I18n */
 /* global Key */
 /* global KeyStore */
@@ -128,7 +129,9 @@ class Connect {
 
             /** @type {Uint8Array} */
             const messageBytes = Utf8Tools.stringToUtf8ByteArray(request.challenge);
-            const signature = key.signMessage(keyPath, messageBytes);
+            // Sign the challenge with a distinct prefix, to avoid blind signing as a regular Nimiq message, which could
+            // be used to impersonate the user.
+            const signature = key.signMessage(keyPath, messageBytes, SignMessagePrefix.CONNECT_CHALLENGE);
 
             signatures.push({
                 publicKey: publicKey.serialize(),
