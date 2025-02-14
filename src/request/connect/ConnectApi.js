@@ -1,20 +1,21 @@
 /* global TopLevelApi */
 /* global Connect */
 /* global Errors */
+/* global KeyguardCommand */
 
 const PermissionKeyguardCommands = [
-    /** @type {KeyguardCommand.KeyguardCommand} */ ('remove-key'),
-    /** @type {KeyguardCommand.KeyguardCommand} */ ('export'),
-    /** @type {KeyguardCommand.KeyguardCommand} */ ('change-password'),
-    // /** @type {KeyguardCommand.KeyguardCommand} */ ('sign-transaction'), // Already third-party whitelisted in Hub
-    /** @type {KeyguardCommand.KeyguardCommand} */ ('sign-multisig-transaction'),
-    // /** @type {KeyguardCommand.KeyguardCommand} */ ('sign-message'), // Already third-party whitelisted in Hub
-    /** @type {KeyguardCommand.KeyguardCommand} */ ('derive-address'),
+    KeyguardCommand.REMOVE,
+    KeyguardCommand.EXPORT,
+    KeyguardCommand.CHANGE_PASSWORD,
+    // KeyguardCommand.SIGN_TRANSACTION, // Already third-party whitelisted in Hub
+    KeyguardCommand.SIGN_MULTISIG_TRANSACTION,
+    // KeyguardCommand.SIGN_MESSAGE, // Already third-party whitelisted in Hub
+    KeyguardCommand.DERIVE_ADDRESS,
     // Bitcoin
-    /** @type {KeyguardCommand.KeyguardCommand} */ ('sign-btc-transaction'),
-    /** @type {KeyguardCommand.KeyguardCommand} */ ('derive-btc-xpub'),
+    KeyguardCommand.SIGN_BTC_TRANSACTION,
+    KeyguardCommand.DERIVE_BTC_XPUB,
     // Swap
-    /** @type {KeyguardCommand.KeyguardCommand} */ ('sign-swap'),
+    KeyguardCommand.SIGN_SWAP,
 ];
 
 /** @extends {TopLevelApi<KeyguardRequest.ConnectRequest>} */
@@ -53,7 +54,7 @@ class ConnectApi extends TopLevelApi { // eslint-disable-line no-unused-vars
 
     /**
      * @param {unknown} permissions
-     * @returns {KeyguardCommand.KeyguardCommand[]}
+     * @returns {KeyguardCommand[]}
      */
     parsePermissions(permissions) {
         if (!Array.isArray(permissions)) {
