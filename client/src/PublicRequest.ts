@@ -530,9 +530,9 @@ export type DerivePolygonAddressResult = {
 
 export type ConnectRequest = SimpleRequest & {
     appLogoUrl: string,
-    permissions: KeyguardCommand[],
     requestedKeyPaths: string[],
     challenge: string,
+    // permissions: KeyguardCommand[],
 };
 
 export type ConnectResult = {
