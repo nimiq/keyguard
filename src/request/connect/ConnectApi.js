@@ -9,11 +9,15 @@ const PermissionKeyguardCommands = [
     KeyguardCommand.CHANGE_PASSWORD,
     // KeyguardCommand.SIGN_TRANSACTION, // Already third-party whitelisted in Hub
     KeyguardCommand.SIGN_MULTISIG_TRANSACTION,
+    // KeyguardCommand.SIGN_STAKING, // Already third-party whitelisted in Hub
     // KeyguardCommand.SIGN_MESSAGE, // Already third-party whitelisted in Hub
     KeyguardCommand.DERIVE_ADDRESS,
     // Bitcoin
     KeyguardCommand.SIGN_BTC_TRANSACTION,
     KeyguardCommand.DERIVE_BTC_XPUB,
+    // Polygon
+    KeyguardCommand.SIGN_POLYGON_TRANSACTION,
+    KeyguardCommand.DERIVE_POLYGON_ADDRESS,
     // Swap
     KeyguardCommand.SIGN_SWAP,
 ];
