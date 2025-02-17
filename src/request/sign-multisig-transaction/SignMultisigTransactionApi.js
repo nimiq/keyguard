@@ -72,9 +72,7 @@ class SignMultisigTransactionApi extends TopLevelApi {
      * @returns {MultisigConfig}
      */
     parseMultisigConfig(object) {
-        if (!object || typeof object !== 'object' || object === null) {
-            throw new Errors.InvalidRequestError('Request must be an object');
-        }
+        if (!object || typeof object !== 'object') throw new Errors.InvalidRequestError('Request must be an object');
 
         /** @type {Nimiq.PublicKey[]} */
         const publicKeys = [];
@@ -90,24 +88,25 @@ class SignMultisigTransactionApi extends TopLevelApi {
             throw new Errors.InvalidRequestError(`Invalid public keys: ${errorMessage}`);
         }
 
-        /** @type {{publicKey: Nimiq.PublicKey, commitments: Nimiq.Commitment[]}[]} */
+        /** @type {MultisigConfig['signers']} */
         const signers = [];
         try {
             if (!('signers' in object)) throw new Error('missing');
             if (!Array.isArray(object.signers)) throw new Error('not an array');
             for (const obj of object.signers) {
-                if (typeof obj !== 'object' || obj === null) throw new Error('not objects');
+                if (!obj || typeof obj !== 'object') throw new Error('not objects');
 
                 if (!('publicKey' in obj)) throw new Error('missing publicKey');
                 if (!(obj.publicKey instanceof Uint8Array)) throw new Error('publicKey not a Uint8Array');
                 const signerPublicKey = new Nimiq.PublicKey(obj.publicKey);
                 // Verify key is included in publicKeys as well
                 if (!publicKeys.find(publicKey => publicKey.equals(signerPublicKey))) {
-                    throw new Errors.InvalidRequestError('not in public keys');
+                    throw new Error('not in public keys');
                 }
 
                 if (!('commitments' in obj)) throw new Error('missing commitments');
                 if (!Array.isArray(obj.commitments) || obj.commitments.length < 2) {
+                    // Musig2 used in Nimiq PoS mandates at least 2 commitments per signer (MUSIG2_PARAMETER_V).
                     throw new Error('commitments must be an array with at least 2 elements');
                 }
                 /** @type {Nimiq.Commitment[]} */
@@ -130,19 +129,18 @@ class SignMultisigTransactionApi extends TopLevelApi {
         /** @type {MultisigConfig['secrets']} */
         let secrets;
         if (Array.isArray(object.secrets)) {
-            secrets = object.secrets.map(
-                /**
-                 * @param {any} secret
-                 * @returns {Nimiq.RandomSecret}
-                 */
-                secret => {
-                    if (!(secret instanceof Uint8Array)) {
-                        throw new Errors.InvalidRequestError('Invalid secrets: must be Uint8Arrays');
-                    }
-                    return new Nimiq.RandomSecret(secret);
-                },
-            );
-        } else if ('encrypted' in object.secrets) {
+            secrets = [];
+            try {
+                for (const secret of object.secrets) {
+                    if (!(secret instanceof Uint8Array)) throw new Error('must be Uint8Arrays');
+                    secrets.push(new Nimiq.RandomSecret(secret));
+                }
+            } catch (error) {
+                const errorMessage = error instanceof Error ? error.message : String(error);
+                throw new Errors.InvalidRequestError(`Invalid secrets: ${errorMessage}`);
+            }
+        } else if (object.secrets && typeof object.secrets === 'object'
+            && 'encrypted' in object.secrets && 'keyParams' in object.secrets) {
             // Not checking fixed length here, to stay flexible for future increases of the number of commitments
             if (!Array.isArray(object.secrets.encrypted) || object.secrets.encrypted.length < 2) {
                 throw new Errors.InvalidRequestError(
@@ -150,12 +148,12 @@ class SignMultisigTransactionApi extends TopLevelApi {
                 );
             }
             // Validate encrypted secrets are Uint8Arrays
-            if (object.secrets.encrypted.some(
+            if (!object.secrets.encrypted.every(
                 /**
-                 * @param {unknown} array
+                 * @param {unknown} encryptedSecret
                  * @returns {boolean}
                  */
-                array => !(array instanceof Uint8Array),
+                encryptedSecret => encryptedSecret instanceof Uint8Array,
             )) {
                 throw new Errors.InvalidRequestError(
                     'Invalid secrets.encrypted: must be an array of Uint8Arrays',
@@ -167,20 +165,20 @@ class SignMultisigTransactionApi extends TopLevelApi {
                 throw new Errors.InvalidRequestError('Invalid secrets.encrypted: invalid RSA key size');
             }
             // Validate all encrypted are the same length
-            if (object.secrets.encrypted.some(
+            if (!object.secrets.encrypted.every(
                 /**
                  * @param {Uint8Array} array
                  * @returns {boolean}
                  */
-                array => array.length * 8 !== rsaKeySize,
+                array => array.length * 8 === rsaKeySize,
             )) {
                 throw new Errors.InvalidRequestError(
                     'Invalid secrets.encrypted: all encrypted secrets must be the same length',
                 );
             }
             // Validate keyParams
-            if (!object.secrets.keyParams) {
-                throw new Errors.InvalidRequestError('Missing secrets.keyParams');
+            if (!object.secrets.keyParams || typeof object.secrets.keyParams !== 'object') {
+                throw new Errors.InvalidRequestError('Invalid secrets.keyParams');
             }
             const keyParams = object.secrets.keyParams;
             if (!('kdf' in keyParams) || !('iterations' in keyParams) || !('keySize' in keyParams)) {
@@ -223,23 +221,18 @@ class SignMultisigTransactionApi extends TopLevelApi {
             multisig.signers.length,
         );
 
-        if (transaction.senderType === Nimiq.AccountType.Basic) {
-            if (!transaction.sender.equals(multisigAddress)) {
-                throw new Errors.InvalidRequestError(
-                    'Transaction sender does not match calculated multisig address',
-                );
-            }
-        } else if (transaction.senderType === Nimiq.AccountType.Vesting) {
-            // Cannot verify vesting contract address
-        } else if (transaction.recipientType === Nimiq.AccountType.Basic) {
-            if (!transaction.recipient.equals(multisigAddress)) {
-                throw new Errors.InvalidRequestError(
-                    'Transaction recipient does not match calculated multisig address',
-                );
-            }
-        } else {
+        if (!(transaction.senderType === Nimiq.AccountType.Basic && transaction.sender.equals(multisigAddress))
+            // Vesting contracts owned by the multisig are allowed to send anywhere. The contract address can't be
+            // verified here, it can however be assumed to be owned by the multisig, as only the owner can sign a valid
+            // vesting withdrawal transaction.
+            && transaction.senderType !== Nimiq.AccountType.Vesting
+            // For other transactions which are not from a basic account, i.e. from a contract (other than a vesting
+            // contract), we enforce the multisig to be the recipient. E.g. unstaking, HTLC refund, HTLC withdrawal etc.
+            // are only allowed to the multisig address.
+            && !(transaction.recipientType === Nimiq.AccountType.Basic && transaction.recipient.equals(multisigAddress))
+        ) {
             throw new Errors.InvalidRequestError(
-                'The multisig account must either be the sender or the recipient of the transaction',
+                'The transaction must either be sent from or to the multisig, or from a vesting contract owned by it',
             );
         }
     }
@@ -253,8 +246,7 @@ class SignMultisigTransactionApi extends TopLevelApi {
         if (!layout) {
             return SignMultisigTransactionApi.Layouts.STANDARD;
         }
-        // @ts-ignore (Property 'values' does not exist on type 'ObjectConstructor'.)
-        if (Object.values(SignMultisigTransactionApi.Layouts).indexOf(layout) === -1) {
+        if (!Object.values(SignMultisigTransactionApi.Layouts).includes(/** @type {any} */ (layout))) {
             throw new Errors.InvalidRequestError('Invalid selected layout');
         }
         return /** @type KeyguardRequest.SignMultisigTransactionRequestLayout */ (layout);
