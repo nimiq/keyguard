@@ -1,5 +1,4 @@
 /* global Nimiq */
-/* global lunasToCoins */
 /* global Key */
 /* global KeyStore */
 // /* global SignMultisigTransactionApi */
@@ -12,6 +11,7 @@
 /* global Constants */
 /* global NumberFormatting */
 /* global I18n */
+/* global lunasToCoins */
 /* global LoginFileAccountIcon */
 /* global Identicon */
 
@@ -54,7 +54,6 @@ class SignMultisigTransaction {
 
         const $recipient = /** @type {HTMLLinkElement} */ (this.$el.querySelector('.accounts .recipient'));
         const recipientAddress = transaction.recipient.toUserFriendlyAddress();
-        /* eslint-disable no-nested-ternary */
         // eslint-disable-next-line operator-linebreak
         const recipientLabel = /* 'shopOrigin' in request && !!request.shopOrigin
             ? request.shopOrigin.split('://')[1]
@@ -62,7 +61,6 @@ class SignMultisigTransaction {
                 ? request.recipientLabel
                 : null;
         /** @type {URL | null} */
-        /* eslint-enable no-nested-ternary */
         // eslint-disable-next-line operator-linebreak
         const recipientImage = /* 'shopLogoUrl' in request && !!request.shopLogoUrl
             ? request.shopLogoUrl
@@ -96,7 +94,6 @@ class SignMultisigTransaction {
         // } else {
         //     $paymentInfoLine.remove();
         // }
-
 
         const $closeDetails = /** @type {HTMLButtonElement} */ (this.$accountDetails.querySelector('#close-details'));
         $closeDetails.addEventListener('click', this._closeDetails.bind(this));
@@ -147,11 +144,9 @@ class SignMultisigTransaction {
             new LoginFileAccountIcon(request.keyInfo.defaultAddress.toUserFriendlyAddress(), $loginFileIcon);
         } else {
             // Show identicon for legacy accounts (which must be supported to support Team Nimiq Multisig)
-            $loginFileIcon.innerHTML = ''; // Remove LoginFile icon
             // eslint-disable-next-line no-new
             new Identicon(request.keyInfo.defaultAddress.toUserFriendlyAddress(), $loginFileIcon);
         }
-
 
         // Set up password box.
         const $passwordBox = /** @type {HTMLFormElement} */ (document.querySelector('#password-box'));
@@ -212,7 +207,7 @@ class SignMultisigTransaction {
                 this._passwordBox.onPasswordIncorrect();
                 return;
             }
-            reject(new Errors.CoreError(errorMessage));
+            reject(new Errors.CoreError(error instanceof Error ? error : errorMessage));
             return;
         }
         if (!key) {
@@ -229,25 +224,18 @@ class SignMultisigTransaction {
             return;
         }
 
-        /** @type {Nimiq.CommitmentPair[]} */
-        const ownCommitmentPairs = [];
+        /** @type {Nimiq.RandomSecret[]} */
+        let ownCommitmentSecrets;
         if (Array.isArray(request.multisigConfig.secrets)) {
-            for (let i = 0; i < request.multisigConfig.secrets.length; i++) {
-                ownCommitmentPairs.push(new Nimiq.CommitmentPair(
-                    request.multisigConfig.secrets[i],
-                    ownSigner.commitments[i],
-                ));
-            }
+            ownCommitmentSecrets = request.multisigConfig.secrets;
         } else {
             // If we only have encrypted secrets, decrypt them first
             const rsaKey = await key.getRsaPrivateKey(request.multisigConfig.secrets.keyParams);
 
-            /** @type {Nimiq.RandomSecret[]} */
-            let secrets;
             try {
-                secrets = await Promise.all(request.multisigConfig.secrets.encrypted.map(
+                ownCommitmentSecrets = await Promise.all(request.multisigConfig.secrets.encrypted.map(
                     async encrypted => new Nimiq.RandomSecret(new Uint8Array(
-                        await window.crypto.subtle.decrypt({ name: 'RSA-OAEP' }, rsaKey, encrypted),
+                        await window.crypto.subtle.decrypt(rsaKey.algorithm, rsaKey, encrypted),
                     )),
                 ));
             } catch (error) {
@@ -255,24 +243,25 @@ class SignMultisigTransaction {
                 reject(new Errors.InvalidRequestError(`Cannot decrypt secrets: ${errorMessage}`));
                 return;
             }
-
-            for (let i = 0; i < secrets.length; i++) {
-                ownCommitmentPairs.push(new Nimiq.CommitmentPair(
-                    secrets[i],
-                    ownSigner.commitments[i],
-                ));
-            }
         }
-        if (ownCommitmentPairs.length !== ownSigner.commitments.length) {
+        if (ownCommitmentSecrets.length !== ownSigner.commitments.length) {
             reject(new Errors.InvalidRequestError('The number of secrets does not match the number of my commitments'));
             return;
+        }
+        /** @type {Nimiq.CommitmentPair[]} */
+        const ownCommitmentPairs = [];
+        for (let i = 0; i < ownCommitmentSecrets.length; i++) {
+            ownCommitmentPairs.push(new Nimiq.CommitmentPair(
+                ownCommitmentSecrets[i],
+                ownSigner.commitments[i],
+            ));
         }
 
         const signature = key.signPartially(
             request.keyPath,
             request.transaction.serializeContent(),
             ownCommitmentPairs,
-            request.multisigConfig.signers.filter(signer => !signer.publicKey.equals(publicKey)),
+            request.multisigConfig.signers.filter(signer => signer !== ownSigner),
         );
 
         /** @type {KeyguardRequest.SignMultisigTransactionResult} */
