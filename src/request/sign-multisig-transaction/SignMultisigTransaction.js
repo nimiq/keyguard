@@ -125,27 +125,36 @@ class SignMultisigTransaction {
             $dataSection.classList.remove('display-none');
         }
 
-        // Set up user and account names
+        // Set up username and account name with account icon
         const $nameSection = /** @type {HTMLDivElement} */ (this.$el.querySelector('.user-and-account-names'));
-        if (request.multisigConfig.userName) {
-            $nameSection.classList.add('approving-as');
-            const $userName = /** @type {HTMLDivElement} */ ($nameSection.querySelector('.user-name'));
-            $userName.textContent = request.multisigConfig.userName;
-        } else {
-            $nameSection.classList.add('approving-with');
-        }
-        const $accountName = /** @type {HTMLDivElement} */ ($nameSection.querySelector('.account-name'));
-        $accountName.textContent = request.keyLabel;
-
-        // Set up account icon
-        const $loginFileIcon = /** @type {HTMLDivElement} */ ($nameSection.querySelector('.login-file-account-icon'));
+        const $accountIcon = document.createElement('div');
+        $accountIcon.classList.add('account-icon');
         if (request.keyInfo.type === Nimiq.Secret.Type.ENTROPY) {
             // eslint-disable-next-line no-new
-            new LoginFileAccountIcon(request.keyInfo.defaultAddress.toUserFriendlyAddress(), $loginFileIcon);
+            new LoginFileAccountIcon(request.keyInfo.defaultAddress.toUserFriendlyAddress(), $accountIcon);
         } else {
             // Show identicon for legacy accounts (which must be supported to support Team Nimiq Multisig)
             // eslint-disable-next-line no-new
-            new Identicon(request.keyInfo.defaultAddress.toUserFriendlyAddress(), $loginFileIcon);
+            new Identicon(request.keyInfo.defaultAddress.toUserFriendlyAddress(), $accountIcon);
+        }
+        const $accountName = document.createElement('div');
+        $accountName.classList.add('account-name');
+        $accountName.textContent = request.keyLabel;
+        const $accountIconAndName = document.createElement('div');
+        $accountIconAndName.classList.add('account-icon-and-name');
+        $accountIconAndName.append($accountIcon, $accountName);
+        if (request.multisigConfig.userName) {
+            const $userName = document.createElement('div');
+            $userName.classList.add('user-name');
+            $userName.textContent = request.multisigConfig.userName;
+            I18n.translateToHtmlContent($nameSection, 'sign-multisig-tx-approving-as-name-with-account', {
+                userName: $userName,
+                accountName: $accountIconAndName,
+            });
+        } else {
+            I18n.translateToHtmlContent($nameSection, 'sign-multisig-tx-approving-with-account', {
+                accountName: $accountIconAndName,
+            });
         }
 
         // Set up password box.

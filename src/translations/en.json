@@ -70,9 +70,8 @@
     "sign-tx-cancel-payment": "Cancel payment",
 
     "sign-multisig-tx-heading-tx": "Approve Multisig Transaction",
-    "sign-multisig-tx-approving-as": "Approving as",
-    "sign-multisig-tx-with": "with",
-    "sign-multisig-tx-approving-with": "Approving with",
+    "sign-multisig-tx-approving-as-name-with-account": "Approving as {userName} with {accountName}",
+    "sign-multisig-tx-approving-with-account": "Approving with {accountName}",
 
     "sign-staking-heading-stake": "Stake NIM",
     "sign-staking-heading-unstake": "Unstake NIM",
