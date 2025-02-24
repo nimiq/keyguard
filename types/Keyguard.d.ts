@@ -230,7 +230,10 @@ type ConstructTransaction<T extends KeyguardRequest.TransactionInfo> = Transform
 
 type ConstructMultisigTransaction<T extends KeyguardRequest.TransactionInfo & {
     multisigConfig: KeyguardRequest.MultisigConfig,
-}> = ConstructTransaction<Transform<T, 'multisigConfig', { multisigConfig: MultisigConfig }>>;
+}> = ConstructTransaction<Transform<T, 'multisigConfig', {
+    multisigConfig: MultisigConfig,
+    multisigAddress: Nimiq.Address,
+}>>;
 
 type ConstructSwap<T extends KeyguardRequest.SignSwapRequestCommon> = Transform<T,
     'fund' | 'redeem', {

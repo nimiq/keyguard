@@ -24,9 +24,11 @@ class SignMultisigTransactionApi extends TopLevelApi {
         parsedRequest.senderLabel = /** @type {string} */ (this.parseLabel(request.senderLabel, false, 'senderLabel'));
         parsedRequest.transaction = this.parseTransaction(request);
         parsedRequest.multisigConfig = this.parseMultisigConfig(request.multisigConfig);
+        parsedRequest.multisigAddress = this.parseMultisigAddress(
+            parsedRequest.transaction,
+            parsedRequest.multisigConfig,
+        );
         parsedRequest.layout = this.parseLayout(request.layout);
-
-        this.verifyMultisigAddress(parsedRequest.transaction, parsedRequest.multisigConfig);
 
         if ((!request.layout || request.layout === SignMultisigTransactionApi.Layouts.STANDARD)
             && parsedRequest.layout === SignMultisigTransactionApi.Layouts.STANDARD) {
@@ -215,8 +217,9 @@ class SignMultisigTransactionApi extends TopLevelApi {
     /**
      * @param {Nimiq.Transaction} transaction
      * @param {MultisigConfig} multisig
+     * @returns {Nimiq.Address}
      */
-    verifyMultisigAddress(transaction, multisig) {
+    parseMultisigAddress(transaction, multisig) {
         const multisigAddress = Nimiq.Address.fromPublicKeys(
             multisig.publicKeys,
             multisig.signers.length,
@@ -236,6 +239,8 @@ class SignMultisigTransactionApi extends TopLevelApi {
                 'The transaction must either be sent from or to the multisig, or from a vesting contract owned by it',
             );
         }
+
+        return multisigAddress;
     }
 
     /**

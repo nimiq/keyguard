@@ -33,6 +33,14 @@ class SignMultisigTransaction {
         this.$el.classList.add(request.layout);
 
         const transaction = request.transaction;
+        const multisigAddressInfo = {
+            signers: request.multisigConfig.signers.length,
+            participants: request.multisigConfig.publicKeys.length,
+        };
+        // If the multisig isn't the recipient (for example of a remove-stake transaction), assume that it's the sender,
+        // even if the sender address does not match (for example for transactions from a vesting contract owned by the
+        // multisig).
+        const isSenderMultisig = !request.multisigAddress.equals(transaction.recipient);
 
         this.$accountDetails = /** @type {HTMLElement} */ (this.$el.querySelector('#account-details'));
 
@@ -42,10 +50,7 @@ class SignMultisigTransaction {
             label: request.senderLabel,
             imageUrl: null,
             accountLabel: null,
-            multisig: {
-                signers: request.multisigConfig.signers.length,
-                participants: request.multisigConfig.publicKeys.length,
-            },
+            multisig: isSenderMultisig ? multisigAddressInfo : undefined,
         });
         this._senderAddressInfo.renderTo($sender);
         $sender.addEventListener('click', () => {
@@ -70,6 +75,7 @@ class SignMultisigTransaction {
             label: recipientLabel,
             imageUrl: recipientImage,
             accountLabel: null,
+            multisig: isSenderMultisig ? undefined : multisigAddressInfo,
         }/* , request.layout === SignMultisigTransactionApi.Layouts.CASHLINK */);
         this._recipientAddressInfo.renderTo($recipient);
         // if (request.layout !== SignMultisigTransactionApi.Layouts.CASHLINK) {
