@@ -13,7 +13,10 @@
     "back-to-vote": "Terug naar Nimiq Vote",
     "back-to-cpl": "Terug naar CryptoPayment.link",
 
-    "funding-cashlink": "Financiering cashlink",
+    "tx-data-funding-cashlink": "Funding cashlink",
+    "tx-data-contract-creation": "{contractType} creation",
+    "tx-data-contract-withdrawal": "{contractType} withdrawal",
+    "tx-data-staking-update": "Staking update",
     "label-unknown": "Onbekend",
 
     "recovery-words-title": "Schrijf deze 24 woorden op papier",

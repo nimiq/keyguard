@@ -13,7 +13,10 @@
     "back-to-vote": "Zurück zur Abstimmung",
     "back-to-cpl": "Zurück zu CryptoPayment.link",
 
-    "funding-cashlink": "Cashlink aufladen",
+    "tx-data-funding-cashlink": "Funding cashlink",
+    "tx-data-contract-creation": "{contractType} creation",
+    "tx-data-contract-withdrawal": "{contractType} withdrawal",
+    "tx-data-staking-update": "Staking update",
     "label-unknown": "Unbekannt",
 
     "recovery-words-title": "Schreibe diese 24 Wörter auf Papier",

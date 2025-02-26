@@ -13,7 +13,10 @@
     "back-to-vote": "Voltar para Votação da Nimiq",
     "back-to-cpl": "Voltar para CryptoPayment.link",
 
-    "funding-cashlink": "Financiar cashlink",
+    "tx-data-funding-cashlink": "Funding cashlink",
+    "tx-data-contract-creation": "{contractType} creation",
+    "tx-data-contract-withdrawal": "{contractType} withdrawal",
+    "tx-data-staking-update": "Staking update",
     "label-unknown": "Desconhecido",
 
     "recovery-words-title": "Escreve estas 24 Palavras em Papel",

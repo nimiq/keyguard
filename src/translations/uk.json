@@ -13,7 +13,10 @@
     "back-to-vote": "Повернутися до Nimiq голосування",
     "back-to-cpl": "Повернутися до CryptoPayment.link",
 
-    "funding-cashlink": "Чек поповнюється",
+    "tx-data-funding-cashlink": "Funding cashlink",
+    "tx-data-contract-creation": "{contractType} creation",
+    "tx-data-contract-withdrawal": "{contractType} withdrawal",
+    "tx-data-staking-update": "Staking update",
     "label-unknown": "Невідомо",
 
     "recovery-words-title": "Напишіть ці 24 слова на папері",

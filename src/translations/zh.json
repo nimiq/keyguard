@@ -13,7 +13,10 @@
     "back-to-vote": "返回Nimiq投票",
     "back-to-cpl": "返回CryptoPayment.link",
 
-    "funding-cashlink": "现金链接充值",
+    "tx-data-funding-cashlink": "Funding cashlink",
+    "tx-data-contract-creation": "{contractType} creation",
+    "tx-data-contract-withdrawal": "{contractType} withdrawal",
+    "tx-data-staking-update": "Staking update",
     "label-unknown": "未知",
 
     "recovery-words-title": "请将这24个单词写在纸上",

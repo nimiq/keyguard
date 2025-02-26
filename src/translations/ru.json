@@ -13,7 +13,10 @@
     "back-to-vote": "Назад к Nimiq Vote",
     "back-to-cpl": "Назад к CryptoPayment.link",
 
-    "funding-cashlink": "Финансирование Cashlink",
+    "tx-data-funding-cashlink": "Funding cashlink",
+    "tx-data-contract-creation": "{contractType} creation",
+    "tx-data-contract-withdrawal": "{contractType} withdrawal",
+    "tx-data-staking-update": "Staking update",
     "label-unknown": "Неизвестно",
 
     "recovery-words-title": "Запишите эти 24 слова на бумаге",
