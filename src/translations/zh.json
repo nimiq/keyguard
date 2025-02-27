@@ -86,6 +86,7 @@
     "tab-width-selector-label": "标签宽度",
 
     "address-info-new-cashlink": "新的现金链接",
+    "address-info-multisig-badge": "{signerCount} of {totalParticipantCount}",
 
     "copyable-copied": "已复制",
 

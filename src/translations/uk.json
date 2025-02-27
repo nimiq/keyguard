@@ -86,6 +86,7 @@
     "tab-width-selector-label": "Довжина вкладки",
 
     "address-info-new-cashlink": "Новий чек",
+    "address-info-multisig-badge": "{signerCount} of {totalParticipantCount}",
 
     "copyable-copied": "Скопійовано",
 

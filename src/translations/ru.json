@@ -86,6 +86,7 @@
     "tab-width-selector-label": "Ширина вкладки",
 
     "address-info-new-cashlink": "Новый Cashlink",
+    "address-info-multisig-badge": "{signerCount} of {totalParticipantCount}",
 
     "copyable-copied": "Скопировано",
 

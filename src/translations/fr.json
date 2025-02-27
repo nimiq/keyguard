@@ -86,6 +86,7 @@
     "tab-width-selector-label": "Largeur de Tabulation",
 
     "address-info-new-cashlink": "Nouveau Cashlink",
+    "address-info-multisig-badge": "{signerCount} of {totalParticipantCount}",
 
     "copyable-copied": "Copié",
 

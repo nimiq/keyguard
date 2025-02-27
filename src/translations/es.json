@@ -86,6 +86,7 @@
     "tab-width-selector-label": "Ancho de Pestaña",
 
     "address-info-new-cashlink": "Nuevo Cashlink",
+    "address-info-multisig-badge": "{signerCount} of {totalParticipantCount}",
 
     "copyable-copied": "Copiado",
 

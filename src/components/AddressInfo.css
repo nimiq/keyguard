@@ -45,6 +45,7 @@
     border-radius: 5rem;
     font-weight: bold;
     font-size: 1.75rem;
+    color: rgba(255, 255, 255, .6);
     padding: 0.375rem 0.75rem;
     line-height: 1;
     border: 0.5rem solid white;
@@ -56,8 +57,8 @@
     transform-origin: 100% 100%;
 }
 
-.address-info .identicon .multisig-badge .of {
-    opacity: 0.6;
+.address-info .identicon .multisig-badge .count {
+    color: white;
 }
 
 .address-info:not(.detailed-view) .label {
