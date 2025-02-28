@@ -197,11 +197,23 @@ export type EncryptionKeyParams = {
 };
 
 export type MultisigConfig = {
+    /**
+     * The public keys of all n potential signers of a k of n multisig. So notably, these are not pre-aggregated public
+     * keys over signer combinations, but the original public keys. This also means that the Keyguard's multisig support
+     * is currently limited to k of n multisigs, where each combination of signers which can sign together has identical
+     * size k. Arbitrary public key combinations, for example of varying size or varying overlap, are not supported.
+     */
     publicKeys: Uint8Array[],
+    /** The k of n potential signers involved in signing this transaction. */
     signers: Array<{
         publicKey: Uint8Array,
+        /** The commitments shared by the signer. Must be at least 2 for musig2. */
         commitments: Uint8Array[],
     }>,
+    /**
+     * The corresponding secrets for my own commitments. Can optionally be encrypted by an encryption key obtained via a
+     * Connect request.
+     */
     secrets: Uint8Array[] | {
         encrypted: Uint8Array[],
         keyParams: EncryptionKeyParams,
