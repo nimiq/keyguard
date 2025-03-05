@@ -8,8 +8,7 @@
 
 /**
  * Usage:
- * <script src="lib/key.js"></script>
- * <script src="lib/key-store-indexeddb.js"></script>
+ * <script src="lib/KeyStore.js"></script>
  *
  * const keyStore = KeyStore.instance;
  * const accounts = await keyStore.list();
@@ -76,6 +75,8 @@ class KeyStore {
             return null;
         }
 
+        /** @type {Nimiq.Entropy | Nimiq.PrivateKey} */
+        let secret;
         if (!KeyStore.isEncrypted(keyRecord)) {
             // Compare stored type with purposeID to make sure there was no storage error.
             const purposeId = new Nimiq.SerialBuffer(keyRecord.secret).readUint32();
@@ -86,24 +87,25 @@ class KeyStore {
                 throw new Errors.KeyguardError('Stored type does not match secret\'s purposeId');
             }
 
-            const secret = keyRecord.type === Nimiq.Secret.Type.PRIVATE_KEY
+            secret = keyRecord.type === Nimiq.Secret.Type.PRIVATE_KEY
                 ? new Nimiq.PrivateKey(keyRecord.secret.subarray(4)) // The first 4 bytes are the purposeId
                 : new Nimiq.Entropy(keyRecord.secret.subarray(4));
-
-            return new Key(secret, {
-                hasPin: keyRecord.hasPin,
-                rsaKeyPair: keyRecord.rsaKeyPair,
-            });
+        } else {
+            if (!password) {
+                throw new Error('Password required');
+            }
+            secret = await Nimiq.Secret.fromEncrypted(new Nimiq.SerialBuffer(keyRecord.secret), password);
         }
 
-        if (!password) {
-            throw new Error('Password required');
-        }
-
-        const secret = await Nimiq.Secret.fromEncrypted(new Nimiq.SerialBuffer(keyRecord.secret), password);
+        const rsaKeyPair = keyRecord.rsaKeyPair
+            // Discard previously existing, unencrypted rsa key pairs, as they were not only stored unencrypted, but
+            // also generated insecurely, see PR #458.
+            && 'encrypted' in keyRecord.rsaKeyPair.privateKey
+            ? await KeyStore._decryptRsaKeyPair(keyRecord.rsaKeyPair, secret)
+            : undefined;
         return new Key(secret, {
             hasPin: keyRecord.hasPin,
-            rsaKeyPair: keyRecord.rsaKeyPair,
+            rsaKeyPair,
         });
     }
 
@@ -153,6 +155,8 @@ class KeyStore {
             key.secret.serialize(buffer);
         }
 
+        const rsaKeyPair = key.getRsaKeyPairIfExists();
+
         /** @type {KeyRecord} */
         const keyRecord = {
             id: key.id,
@@ -160,7 +164,7 @@ class KeyStore {
             hasPin: key.hasPin,
             secret: buffer.subarray(0, buffer.byteLength),
             defaultAddress: key.defaultAddress.serialize(),
-            rsaKeyPair: key.getRsaKeyPairIfExists(),
+            rsaKeyPair: rsaKeyPair ? await KeyStore._encryptRsaKeyPair(rsaKeyPair, key.secret) : undefined,
         };
 
         return this.putPlain(keyRecord);
@@ -190,14 +194,14 @@ class KeyStore {
 
     /**
      *
-     * @param {string} id
+     * @param {Key} key
      * @param {RsaKeyPairExport} rsaKeyPair
      * @returns {Promise<string>}
      */
-    async setRsaKeypair(id, rsaKeyPair) {
-        const record = await this._get(id);
+    async setRsaKeypair(key, rsaKeyPair) {
+        const record = await this._get(key.id);
         if (!record) throw new Error('Key does not exist');
-        record.rsaKeyPair = rsaKeyPair;
+        record.rsaKeyPair = await KeyStore._encryptRsaKeyPair(rsaKeyPair, key.secret);
         return this.putPlain(record);
     }
 
@@ -343,6 +347,56 @@ class KeyStore {
         // Promise.all returns an array of resolved promises, but we are only
         // interested in the request.result, which is the first item.
         return done[0];
+    }
+
+    /**
+     * @param {RsaKeyPairExport} rsaKeyPair
+     * @param {Nimiq.Secret | Nimiq.PrivateKey} entropy
+     * @returns {Promise<RsaKeyPairEncryptedExport>}
+     * @private
+     */
+    static async _encryptRsaKeyPair(rsaKeyPair, entropy) {
+        // Encrypt rsa key in a similar fashion to Nimiq.Secret.exportEncrypted. However, instead of deriving the one-
+        // time pad key from the password, we derive it from the key entropy. This way, we're already using a very high
+        // entropy key for encryption (so don't need a lot of key derivation rounds), don't need to know the password
+        // here, and don't need to re-encrypt the rsa key when the user changes the password.
+        const rsaPrivateKey = rsaKeyPair.privateKey;
+        const checksum = Nimiq.Hash.computeBlake2b(rsaPrivateKey).subarray(0, Nimiq.Secret.ENCRYPTION_CHECKSUM_SIZE_V3);
+        const plaintext = new Nimiq.SerialBuffer(checksum.byteLength + rsaPrivateKey.byteLength);
+        plaintext.write(checksum);
+        plaintext.write(rsaPrivateKey);
+        const salt = Nimiq.CryptoUtils.getRandomValues(Nimiq.Secret.ENCRYPTION_SALT_SIZE);
+        const kdfRounds = 8; // Because the input already has a very high entropy, few kdf rounds suffice.
+        const ciphertext = await Nimiq.CryptoUtils.otpKdf(plaintext, entropy.serialize(), salt, kdfRounds);
+        return {
+            ...rsaKeyPair,
+            privateKey: {
+                salt,
+                kdfRounds,
+                encrypted: ciphertext,
+            },
+        };
+    }
+
+    /**
+     * @param {RsaKeyPairEncryptedExport} rsaKeyPair
+     * @param {Nimiq.Secret | Nimiq.PrivateKey} entropy
+     * @returns {Promise<RsaKeyPairExport>}
+     * @private
+     */
+    static async _decryptRsaKeyPair(rsaKeyPair, entropy) {
+        const { salt, kdfRounds, encrypted: ciphertext } = rsaKeyPair.privateKey;
+        const plaintext = await Nimiq.CryptoUtils.otpKdf(ciphertext, entropy.serialize(), salt, kdfRounds);
+        const referenceChecksum = plaintext.subarray(0, Nimiq.Secret.ENCRYPTION_CHECKSUM_SIZE_V3);
+        const rsaPrivateKey = plaintext.subarray(Nimiq.Secret.ENCRYPTION_CHECKSUM_SIZE_V3);
+        const checksum = Nimiq.Hash.computeBlake2b(rsaPrivateKey).subarray(0, Nimiq.Secret.ENCRYPTION_CHECKSUM_SIZE_V3);
+        if (!Nimiq.BufferUtils.equals(checksum, referenceChecksum)) {
+            throw new Error('Invalid decryption key');
+        }
+        return {
+            ...rsaKeyPair,
+            privateKey: rsaPrivateKey,
+        };
     }
 
     /**

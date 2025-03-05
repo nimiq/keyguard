@@ -40,13 +40,21 @@ type RsaKeyPairExport = {
     keyParams: RsaKeyParams
 }
 
+type RsaKeyPairEncryptedExport = Transform<RsaKeyPairExport, 'privateKey', {
+    privateKey: {
+        salt: Uint8Array,
+        kdfRounds: number,
+        encrypted: Uint8Array, // key + checksum
+    },
+}>;
+
 type KeyRecord = {
     id: string
     type: Nimiq.Secret.Type
     hasPin: boolean
     secret: Uint8Array
     defaultAddress: Uint8Array
-    rsaKeyPair?: RsaKeyPairExport
+    rsaKeyPair?: RsaKeyPairEncryptedExport
 }
 
 type MultisigConfig = {

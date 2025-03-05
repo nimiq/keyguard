@@ -173,7 +173,7 @@ class Key {
         if (!this._rsaKeyPair || !Key._areEqualRsaKeyParams(keyParams, this._rsaKeyPair.keyParams)) {
             this._rsaKeyPair = await this._computeRsaKeyPair(keyParams);
             if (Key._areDefaultRsaKeyParams(keyParams)) {
-                await KeyStore.instance.setRsaKeypair(this.id, this._rsaKeyPair);
+                await KeyStore.instance.setRsaKeypair(this, this._rsaKeyPair);
             }
         }
         return this._rsaKeyPair;
