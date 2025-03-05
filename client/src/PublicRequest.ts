@@ -190,7 +190,7 @@ export type SignTransactionRequest
     | SignTransactionRequestCheckout
     | SignTransactionRequestCashlink;
 
-export type EncryptionKeyParams = {
+export type RsaKeyParams = {
     kdf: string,
     iterations: number,
     keySize: number,
@@ -216,7 +216,7 @@ export type MultisigConfig = {
      */
     secrets: Uint8Array[] | {
         encrypted: Uint8Array[],
-        keyParams: EncryptionKeyParams,
+        keyParams: RsaKeyParams,
     },
     userName?: string,
 };
@@ -554,7 +554,7 @@ export type ConnectResult = {
         keyData: Uint8Array,
         algorithm: { name: string, hash: string },
         keyUsages: ['encrypt'],
-        keyParams: EncryptionKeyParams,
+        keyParams: RsaKeyParams,
     },
 };
 

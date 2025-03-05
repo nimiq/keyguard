@@ -32,12 +32,12 @@ type AccountRecord = AccountInfo & {
     encryptedKeyPair: Uint8Array
 }
 
-type EncryptionKeyParams = KeyguardRequest.EncryptionKeyParams;
+type RsaKeyParams = KeyguardRequest.RsaKeyParams;
 
 type RsaKeyPairExport = {
     privateKey: Uint8Array
     publicKey: Uint8Array
-    keyParams: EncryptionKeyParams
+    keyParams: RsaKeyParams
 }
 
 type KeyRecord = {
@@ -57,7 +57,7 @@ type MultisigConfig = {
     }>
     secrets: Nimiq.RandomSecret[] | {
         encrypted: Uint8Array[]
-        keyParams: EncryptionKeyParams
+        keyParams: RsaKeyParams
     }
     userName?: string
 }

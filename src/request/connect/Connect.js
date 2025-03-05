@@ -139,7 +139,7 @@ class Connect {
             });
         }
 
-        const keyParams = Key.defaultEncryptionKeyParams;
+        const keyParams = Key.defaultRsaKeyParams;
         const rsaPublicCryptoKey = await key.getRsaPublicKey(keyParams);
 
         /** @type {KeyguardRequest.ConnectResult} */

@@ -18,9 +18,9 @@ class Key {
     }
 
     /**
-     * @returns {EncryptionKeyParams}
+     * @returns {RsaKeyParams}
      */
-    static get defaultEncryptionKeyParams() {
+    static get defaultRsaKeyParams() {
         return {
             kdf: CONFIG.RSA_KDF_FUNCTION,
             iterations: CONFIG.RSA_KDF_ITERATIONS,
@@ -30,11 +30,11 @@ class Key {
 
     /**
      * @private
-     * @param {EncryptionKeyParams} paramsA
-     * @param {EncryptionKeyParams} paramsB
+     * @param {RsaKeyParams} paramsA
+     * @param {RsaKeyParams} paramsB
      * @returns {boolean}
      */
-    static _areEncryptionKeyParamsEqual(paramsA, paramsB) {
+    static _areEqualRsaKeyParams(paramsA, paramsB) {
         return typeof paramsA === 'object' && typeof paramsB === 'object'
             && paramsA.kdf === paramsB.kdf
             && paramsA.iterations === paramsB.iterations
@@ -43,11 +43,11 @@ class Key {
 
     /**
      * @private
-     * @param {EncryptionKeyParams} params
+     * @param {RsaKeyParams} params
      * @returns {boolean}
      */
-    static _areDefaultEncryptionKeyParams(params) {
-        return Key._areEncryptionKeyParamsEqual(params, Key.defaultEncryptionKeyParams);
+    static _areDefaultRsaKeyParams(params) {
+        return Key._areEqualRsaKeyParams(params, Key.defaultRsaKeyParams);
     }
 
     /**
@@ -166,13 +166,13 @@ class Key {
      * Calculates and sets the RSA key pair for the given key params. The RSA key is calculated deterministically based
      * on _secret, such that the same RSA key is generated for the same key params.
      * Warning: this is computationally expensive.
-     * @param {EncryptionKeyParams} keyParams
+     * @param {RsaKeyParams} keyParams
      * @returns {Promise<RsaKeyPairExport>}
      */
     async setRsaKeyPair(keyParams) {
-        if (!this._rsaKeyPair || !Key._areEncryptionKeyParamsEqual(keyParams, this._rsaKeyPair.keyParams)) {
+        if (!this._rsaKeyPair || !Key._areEqualRsaKeyParams(keyParams, this._rsaKeyPair.keyParams)) {
             this._rsaKeyPair = await this._computeRsaKeyPair(keyParams);
-            if (Key._areDefaultEncryptionKeyParams(keyParams)) {
+            if (Key._areDefaultRsaKeyParams(keyParams)) {
                 await KeyStore.instance.setRsaKeypair(this.id, this._rsaKeyPair);
             }
         }
@@ -180,7 +180,7 @@ class Key {
     }
 
     /**
-     * @param {EncryptionKeyParams} keyParams
+     * @param {RsaKeyParams} keyParams
      * @returns {Promise<CryptoKey>}
      */
     async getRsaPrivateKey(keyParams) {
@@ -195,7 +195,7 @@ class Key {
     }
 
     /**
-     * @param {EncryptionKeyParams} keyParams
+     * @param {RsaKeyParams} keyParams
      * @returns {Promise<CryptoKey>}
      */
     async getRsaPublicKey(keyParams) {
@@ -212,7 +212,7 @@ class Key {
     /**
      * Deterministically computes an RSA keypair from _secret via the RSAKeysIframe.
      * Warning: this is computationally expensive.
-     * @param {EncryptionKeyParams} keyParams
+     * @param {RsaKeyParams} keyParams
      * @returns {Promise<RsaKeyPairExport>}
      */
     async _computeRsaKeyPair(keyParams) {
