@@ -141,10 +141,11 @@ class SignMultisigTransactionApi extends TopLevelApi {
             }
         } else if (object.secrets && typeof object.secrets === 'object'
             && 'encrypted' in object.secrets && 'keyParams' in object.secrets) {
-            // Not checking fixed length here, to stay flexible for future increases of the number of commitments
-            if (!Array.isArray(object.secrets.encrypted) || object.secrets.encrypted.length < 2) {
+            if (!Array.isArray(object.secrets.encrypted)) {
+                // No need to check object.secrets.encrypted.length here, as the number will later be checked against
+                // the number of my provided commitments, after we identify them in SignMultisigTransaction.
                 throw new Errors.InvalidRequestError(
-                    'Invalid secrets.encrypted: must be an array with at least 2 elements',
+                    'Invalid secrets.encrypted: must be an array',
                 );
             }
             // Validate encrypted secrets are Uint8Arrays

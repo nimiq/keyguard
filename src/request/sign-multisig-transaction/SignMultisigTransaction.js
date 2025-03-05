@@ -263,6 +263,10 @@ class SignMultisigTransaction {
                 ));
             }
         }
+        if (ownCommitmentPairs.length !== ownSigner.commitments.length) {
+            reject(new Errors.InvalidRequestError('The number of secrets does not match the number of my commitments'));
+            return;
+        }
 
         const signature = key.signPartially(
             request.keyPath,
