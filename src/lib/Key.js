@@ -3,6 +3,7 @@
 /* global SignMessagePrefix */
 /* global KeyStore */
 /* global CONFIG */
+/* global Utf8Tools */
 
 /**
  * @typedef {{hasPin?: boolean, rsaKeyPair?: RsaKeyPairExport}} KeyConfig
@@ -156,6 +157,61 @@ class Key {
     }
 
     /**
+     * @param {Uint8Array} hkdfSalt
+     * @param {string} useCase - Allows to generate a separate AES key per use case.
+     * @param {Partial<AesKeyGenParams>} [aesParams={name:'AES-GCM',length:256}]
+     * @returns {Promise<CryptoKey>}
+     */
+    async getAesKey(hkdfSalt, useCase, aesParams) {
+        const hkdfHashAlgorithm = 'SHA-256';
+        if (hkdfSalt.byteLength * 8 < 256) {
+            // Salt too short, see developer.mozilla.org/en-US/docs/Web/API/HkdfParams#salt.
+            throw new Error(`HKDF salt length should be at least the output length of used hash ${hkdfHashAlgorithm}`);
+        }
+        const hkdfParams = {
+            name: 'HKDF',
+            hash: hkdfHashAlgorithm,
+            salt: hkdfSalt,
+            info: Utf8Tools.stringToUtf8ByteArray(useCase),
+        };
+        const hkdfKeyMaterial = await window.crypto.subtle.importKey(
+            /* format */ 'raw',
+            /* keyData */ this.secret.serialize(),
+            /* algorithm */ hkdfParams, // The key material is to be used in a HKDF derivation.
+            /* extractable */ false,
+            /* keyUsages */ ['deriveKey'],
+        );
+
+        /** @type {AesKeyGenParams} */
+        const aesEffectiveParams = {
+            // Default to AES-GCM as it's authenticated, which means that it includes checks that the ciphertext has not
+            // been modified, see developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/encrypt#aes-gcm
+            name: aesParams && aesParams.name ? aesParams.name : 'AES-GCM',
+            length: aesParams && aesParams.length ? aesParams.length : 256,
+        };
+        /** @type {KeyUsage[]} */
+        const aesKeyUsages = aesEffectiveParams.name === 'AES-KW'
+            // AES-KW's doesn't require an initialization vector, but only supports wrapping and encrypted data length
+            // must be a multiple of 8, see developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/wrapKey#aes-kw.
+            ? ['wrapKey', 'unwrapKey']
+            : ['encrypt', 'decrypt', 'wrapKey', 'unwrapKey'];
+
+        // Derive AES key from key material via a HKDF key derivation.
+        // HKDF is a suitable key derivation function in this case, because the key material has a very high entropy,
+        // see developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/deriveKey#key_derivation_algorithms.
+        // Note that HKDF is not computationally expensive, unlike PBKDF2, and thus we can compute the AES key on the
+        // fly, and don't really need to cache or persist it. Instead, it's in fact used as encryption key for other
+        // persisted data.
+        return window.crypto.subtle.deriveKey(
+            /* algorithm */ hkdfParams,
+            /* baseKey */ hkdfKeyMaterial,
+            /* derivedKeyAlgorithm */ aesEffectiveParams,
+            /* extractable */ false,
+            /* keyUsages */ aesKeyUsages,
+        );
+    }
+
+    /**
      * @returns {RsaKeyPairExport | undefined}
      */
     getRsaKeyPairIfExists() {
@@ -163,18 +219,28 @@ class Key {
     }
 
     /**
-     * Calculates and sets the RSA key pair for the given key params. The RSA key is calculated deterministically based
-     * on _secret, such that the same RSA key is generated for the same key params.
-     * Warning: this is computationally expensive.
-     * @param {RsaKeyParams} keyParams
+     * Sets a known RSA key pair, or computes and sets the RSA key pair for the given key params. The RSA key is
+     * calculated deterministically based on _secret, such that the same RSA key is generated for the same key params.
+     * Warning: the key computation is computationally expensive.
+     * @param {RsaKeyPairExport | RsaKeyParams} keyOrKeyParams
+     * @param {boolean} [persist=true]
      * @returns {Promise<RsaKeyPairExport>}
      */
-    async setRsaKeyPair(keyParams) {
-        if (!this._rsaKeyPair || !Key._areEqualRsaKeyParams(keyParams, this._rsaKeyPair.keyParams)) {
-            this._rsaKeyPair = await this._computeRsaKeyPair(keyParams);
-            if (Key._areDefaultRsaKeyParams(keyParams)) {
-                await KeyStore.instance.setRsaKeypair(this, this._rsaKeyPair);
-            }
+    async setRsaKeyPair(keyOrKeyParams, persist = true) {
+        const oldRsaKeyPair = this._rsaKeyPair;
+        if ('privateKey' in keyOrKeyParams) {
+            // A key was passed.
+            this._rsaKeyPair = keyOrKeyParams;
+        } else if (!this._rsaKeyPair || !Key._areEqualRsaKeyParams(keyOrKeyParams, this._rsaKeyPair.keyParams)) {
+            // Key params were passed. Only compute the RSA key pair if they differ from the old key's params, as the
+            // computation is expensive.
+            this._rsaKeyPair = await this._computeRsaKeyPair(keyOrKeyParams);
+        }
+        if ((!oldRsaKeyPair || !Key._areEqualRsaKeyParams(this._rsaKeyPair.keyParams, oldRsaKeyPair.keyParams))
+            && Key._areDefaultRsaKeyParams(this._rsaKeyPair.keyParams)
+            && persist) {
+            // Persist if the key changed, matches the default params, and persisting is requested.
+            await KeyStore.instance.setRsaKeypair(this, this._rsaKeyPair);
         }
         return this._rsaKeyPair;
     }

@@ -97,16 +97,17 @@ class KeyStore {
             secret = await Nimiq.Secret.fromEncrypted(new Nimiq.SerialBuffer(keyRecord.secret), password);
         }
 
-        const rsaKeyPair = keyRecord.rsaKeyPair
-            // Discard previously existing, unencrypted rsa key pairs, as they were not only stored unencrypted, but
-            // also generated insecurely, see PR #458.
-            && 'encrypted' in keyRecord.rsaKeyPair.privateKey
-            ? await KeyStore._decryptRsaKeyPair(keyRecord.rsaKeyPair, secret)
-            : undefined;
-        return new Key(secret, {
-            hasPin: keyRecord.hasPin,
-            rsaKeyPair,
-        });
+        const key = new Key(secret, { hasPin: keyRecord.hasPin });
+
+        if (keyRecord.rsaKeyPair && 'encrypted' in keyRecord.rsaKeyPair.privateKey) {
+            // Decrypt stored RSA key pairs.
+            // Previously existing, unencrypted RSA key pairs are discarded, as they were not only stored unencrypted,
+            // but also generated insecurely, see PR #458.
+            const rsaKeyPair = await KeyStore._decryptRsaKeyPair(keyRecord.rsaKeyPair, key);
+            await key.setRsaKeyPair(rsaKeyPair, /* persist */ false);
+        }
+
+        return key;
     }
 
     /**
@@ -164,7 +165,7 @@ class KeyStore {
             hasPin: key.hasPin,
             secret: buffer.subarray(0, buffer.byteLength),
             defaultAddress: key.defaultAddress.serialize(),
-            rsaKeyPair: rsaKeyPair ? await KeyStore._encryptRsaKeyPair(rsaKeyPair, key.secret) : undefined,
+            rsaKeyPair: rsaKeyPair ? await KeyStore._encryptRsaKeyPair(rsaKeyPair, key) : undefined,
         };
 
         return this.putPlain(keyRecord);
@@ -201,7 +202,7 @@ class KeyStore {
     async setRsaKeypair(key, rsaKeyPair) {
         const record = await this._get(key.id);
         if (!record) throw new Error('Key does not exist');
-        record.rsaKeyPair = await KeyStore._encryptRsaKeyPair(rsaKeyPair, key.secret);
+        record.rsaKeyPair = await KeyStore._encryptRsaKeyPair(rsaKeyPair, key);
         return this.putPlain(record);
     }
 
@@ -351,51 +352,62 @@ class KeyStore {
 
     /**
      * @param {RsaKeyPairExport} rsaKeyPair
-     * @param {Nimiq.Secret | Nimiq.PrivateKey} entropy
+     * @param {Key} key
      * @returns {Promise<RsaKeyPairEncryptedExport>}
      * @private
      */
-    static async _encryptRsaKeyPair(rsaKeyPair, entropy) {
-        // Encrypt rsa key in a similar fashion to Nimiq.Secret.exportEncrypted. However, instead of deriving the one-
-        // time pad key from the password, we derive it from the key entropy. This way, we're already using a very high
-        // entropy key for encryption (so don't need a lot of key derivation rounds), don't need to know the password
-        // here, and don't need to re-encrypt the rsa key when the user changes the password.
-        const rsaPrivateKey = rsaKeyPair.privateKey;
-        const checksum = Nimiq.Hash.computeBlake2b(rsaPrivateKey).subarray(0, Nimiq.Secret.ENCRYPTION_CHECKSUM_SIZE_V3);
-        const plaintext = new Nimiq.SerialBuffer(checksum.byteLength + rsaPrivateKey.byteLength);
-        plaintext.write(checksum);
-        plaintext.write(rsaPrivateKey);
-        const salt = Nimiq.CryptoUtils.getRandomValues(Nimiq.Secret.ENCRYPTION_SALT_SIZE);
-        const kdfRounds = 8; // Because the input already has a very high entropy, few kdf rounds suffice.
-        const ciphertext = await Nimiq.CryptoUtils.otpKdf(plaintext, entropy.serialize(), salt, kdfRounds);
+    static async _encryptRsaKeyPair(rsaKeyPair, key) {
+        const rsaPrivateKey = await window.crypto.subtle.importKey(
+            /* format */ 'pkcs8',
+            rsaKeyPair.privateKey,
+            /* algorithm */ { name: 'RSA-OAEP', hash: 'SHA-256' },
+            /* extractable */ true, // we want to export the data
+            /* keyUsages */ ['decrypt'],
+        );
+        const salt = Nimiq.CryptoUtils.getRandomValues(32);
+        const aesKey = await key.getAesKey(salt, 'KeyStore RSA private key encryption');
+        const iv = Nimiq.CryptoUtils.getRandomValues(12); // recommended length according to AES-GCM specification
+        const encrypted = new Uint8Array(await window.crypto.subtle.wrapKey(
+            /* format */ 'pkcs8',
+            rsaPrivateKey,
+            aesKey,
+            /* wrapAlgorithm */ { name: aesKey.algorithm.name, iv },
+        ));
         return {
             ...rsaKeyPair,
             privateKey: {
                 salt,
-                kdfRounds,
-                encrypted: ciphertext,
+                iv,
+                encrypted,
             },
         };
     }
 
     /**
      * @param {RsaKeyPairEncryptedExport} rsaKeyPair
-     * @param {Nimiq.Secret | Nimiq.PrivateKey} entropy
+     * @param {Key} key
      * @returns {Promise<RsaKeyPairExport>}
      * @private
      */
-    static async _decryptRsaKeyPair(rsaKeyPair, entropy) {
-        const { salt, kdfRounds, encrypted: ciphertext } = rsaKeyPair.privateKey;
-        const plaintext = await Nimiq.CryptoUtils.otpKdf(ciphertext, entropy.serialize(), salt, kdfRounds);
-        const referenceChecksum = plaintext.subarray(0, Nimiq.Secret.ENCRYPTION_CHECKSUM_SIZE_V3);
-        const rsaPrivateKey = plaintext.subarray(Nimiq.Secret.ENCRYPTION_CHECKSUM_SIZE_V3);
-        const checksum = Nimiq.Hash.computeBlake2b(rsaPrivateKey).subarray(0, Nimiq.Secret.ENCRYPTION_CHECKSUM_SIZE_V3);
-        if (!Nimiq.BufferUtils.equals(checksum, referenceChecksum)) {
-            throw new Error('Invalid decryption key');
-        }
+    static async _decryptRsaKeyPair(rsaKeyPair, key) {
+        const { salt, iv, encrypted } = rsaKeyPair.privateKey;
+        const aesKey = await key.getAesKey(salt, 'KeyStore RSA private key encryption');
+        const rsaPrivateKey = await window.crypto.subtle.unwrapKey(
+            /* format */ 'pkcs8',
+            encrypted.buffer,
+            aesKey,
+            /* unwrapAlgorithm */ { name: aesKey.algorithm.name, iv },
+            /* unwrappedKeyAlgorithm */ { name: 'RSA-OAEP', hash: 'SHA-256' },
+            /* extractable */ true,
+            /* keyUsages */ ['decrypt'],
+        );
+        const rsaPrivateKeyBytes = new Uint8Array(await window.crypto.subtle.exportKey(
+            /* format */ 'pkcs8',
+            rsaPrivateKey,
+        ));
         return {
             ...rsaKeyPair,
-            privateKey: rsaPrivateKey,
+            privateKey: rsaPrivateKeyBytes,
         };
     }
 

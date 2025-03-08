@@ -43,8 +43,8 @@ type RsaKeyPairExport = {
 type RsaKeyPairEncryptedExport = Transform<RsaKeyPairExport, 'privateKey', {
     privateKey: {
         salt: Uint8Array,
-        kdfRounds: number,
-        encrypted: Uint8Array, // key + checksum
+        iv: Uint8Array, // AES initialization vector
+        encrypted: Uint8Array,
     },
 }>;
 
