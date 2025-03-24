@@ -34,18 +34,19 @@ type AccountRecord = AccountInfo & {
 
 type RsaKeyParams = KeyguardRequest.RsaKeyParams;
 
-type RsaKeyPairExport = {
-    privateKey: Uint8Array
-    publicKey: Uint8Array
+type RsaKeyPair = {
+    privateKey: CryptoKey
+    publicKey: CryptoKey
     keyParams: RsaKeyParams
 }
 
-type RsaKeyPairEncryptedExport = Transform<RsaKeyPairExport, 'privateKey', {
+type RsaKeyPairEncryptedExport = Transform<RsaKeyPair, 'privateKey' | 'publicKey', {
     privateKey: {
-        salt: Uint8Array,
+        salt: Uint8Array, // HKDF salt
         iv: Uint8Array, // AES initialization vector
         encrypted: Uint8Array,
     },
+    publicKey: Uint8Array,
 }>;
 
 type KeyRecord = {

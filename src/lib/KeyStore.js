@@ -100,10 +100,10 @@ class KeyStore {
         const key = new Key(secret, { hasPin: keyRecord.hasPin });
 
         if (keyRecord.rsaKeyPair && 'encrypted' in keyRecord.rsaKeyPair.privateKey) {
-            // Decrypt stored RSA key pairs.
+            // Decrypt and import stored RSA key pairs.
             // Previously existing, unencrypted RSA key pairs are discarded, as they were not only stored unencrypted,
             // but also generated insecurely, see PR #458.
-            const rsaKeyPair = await KeyStore._decryptRsaKeyPair(keyRecord.rsaKeyPair, key);
+            const rsaKeyPair = await KeyStore._importRsaKeyPair(keyRecord.rsaKeyPair, key);
             await key.setRsaKeyPair(rsaKeyPair, /* persist */ false);
         }
 
@@ -165,7 +165,7 @@ class KeyStore {
             hasPin: key.hasPin,
             secret: buffer.subarray(0, buffer.byteLength),
             defaultAddress: key.defaultAddress.serialize(),
-            rsaKeyPair: rsaKeyPair ? await KeyStore._encryptRsaKeyPair(rsaKeyPair, key) : undefined,
+            rsaKeyPair: rsaKeyPair ? await KeyStore._exportRsaKeyPair(rsaKeyPair, key) : undefined,
         };
 
         return this.putPlain(keyRecord);
@@ -196,13 +196,13 @@ class KeyStore {
     /**
      *
      * @param {Key} key
-     * @param {RsaKeyPairExport} rsaKeyPair
+     * @param {RsaKeyPair} rsaKeyPair
      * @returns {Promise<string>}
      */
     async setRsaKeypair(key, rsaKeyPair) {
         const record = await this._get(key.id);
         if (!record) throw new Error('Key does not exist');
-        record.rsaKeyPair = await KeyStore._encryptRsaKeyPair(rsaKeyPair, key);
+        record.rsaKeyPair = await KeyStore._exportRsaKeyPair(rsaKeyPair, key);
         return this.putPlain(record);
     }
 
@@ -351,63 +351,70 @@ class KeyStore {
     }
 
     /**
-     * @param {RsaKeyPairExport} rsaKeyPair
+     * @param {RsaKeyPair} rsaKeyPair
      * @param {Key} key
      * @returns {Promise<RsaKeyPairEncryptedExport>}
      * @private
      */
-    static async _encryptRsaKeyPair(rsaKeyPair, key) {
-        const rsaPrivateKey = await window.crypto.subtle.importKey(
-            /* format */ 'pkcs8',
-            rsaKeyPair.privateKey,
-            /* algorithm */ { name: 'RSA-OAEP', hash: 'SHA-256' },
-            /* extractable */ true, // we want to export the data
-            /* keyUsages */ ['decrypt'],
-        );
+    static async _exportRsaKeyPair(rsaKeyPair, key) {
         const salt = Nimiq.CryptoUtils.getRandomValues(32);
         const aesKey = await key.getAesKey(salt, 'KeyStore RSA private key encryption');
         const iv = Nimiq.CryptoUtils.getRandomValues(12); // recommended length according to AES-GCM specification
-        const encrypted = new Uint8Array(await window.crypto.subtle.wrapKey(
+        const encryptedPrivateKey = new Uint8Array(await window.crypto.subtle.wrapKey(
             /* format */ 'pkcs8',
-            rsaPrivateKey,
+            rsaKeyPair.privateKey,
             aesKey,
             /* wrapAlgorithm */ { name: aesKey.algorithm.name, iv },
         ));
+
+        const publicKey = new Uint8Array(await window.crypto.subtle.exportKey(
+            /* format */ 'spki',
+            rsaKeyPair.publicKey,
+        ));
+
         return {
             ...rsaKeyPair,
             privateKey: {
                 salt,
                 iv,
-                encrypted,
+                encrypted: encryptedPrivateKey,
             },
+            publicKey,
         };
     }
 
     /**
      * @param {RsaKeyPairEncryptedExport} rsaKeyPair
      * @param {Key} key
-     * @returns {Promise<RsaKeyPairExport>}
+     * @returns {Promise<RsaKeyPair>}
      * @private
      */
-    static async _decryptRsaKeyPair(rsaKeyPair, key) {
-        const { salt, iv, encrypted } = rsaKeyPair.privateKey;
+    static async _importRsaKeyPair(rsaKeyPair, key) {
+        const rsaAlgorithmParams = { name: 'RSA-OAEP', hash: 'SHA-256' };
+        const { salt, iv, encrypted: encryptedPrivateKey } = rsaKeyPair.privateKey;
         const aesKey = await key.getAesKey(salt, 'KeyStore RSA private key encryption');
-        const rsaPrivateKey = await window.crypto.subtle.unwrapKey(
+        const privateKey = await window.crypto.subtle.unwrapKey(
             /* format */ 'pkcs8',
-            encrypted.buffer,
+            encryptedPrivateKey,
             aesKey,
             /* unwrapAlgorithm */ { name: aesKey.algorithm.name, iv },
-            /* unwrappedKeyAlgorithm */ { name: 'RSA-OAEP', hash: 'SHA-256' },
-            /* extractable */ true,
+            /* unwrappedKeyAlgorithm */ rsaAlgorithmParams,
+            /* extractable */ true, // we want to be able to re-export
             /* keyUsages */ ['decrypt'],
         );
-        const rsaPrivateKeyBytes = new Uint8Array(await window.crypto.subtle.exportKey(
-            /* format */ 'pkcs8',
-            rsaPrivateKey,
-        ));
+
+        const publicKey = await window.crypto.subtle.importKey(
+            /* format */ 'spki',
+            rsaKeyPair.publicKey,
+            rsaAlgorithmParams,
+            /* extractable */ true, // we want to be able to re-export
+            /* keyUsages */ ['encrypt'],
+        );
+
         return {
             ...rsaKeyPair,
-            privateKey: rsaPrivateKeyBytes,
+            privateKey,
+            publicKey,
         };
     }
 

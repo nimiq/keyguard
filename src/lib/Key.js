@@ -6,7 +6,7 @@
 /* global Utf8Tools */
 
 /**
- * @typedef {{hasPin?: boolean, rsaKeyPair?: RsaKeyPairExport}} KeyConfig
+ * @typedef {{hasPin?: boolean, rsaKeyPair?: RsaKeyPair}} KeyConfig
  */
 
 class Key {
@@ -212,7 +212,7 @@ class Key {
     }
 
     /**
-     * @returns {RsaKeyPairExport | undefined}
+     * @returns {RsaKeyPair | undefined}
      */
     getRsaKeyPairIfExists() {
         return this._rsaKeyPair;
@@ -222,14 +222,14 @@ class Key {
      * Sets a known RSA key pair, or computes and sets the RSA key pair for the given key params. The RSA key is
      * calculated deterministically based on _secret, such that the same RSA key is generated for the same key params.
      * Warning: the key computation is computationally expensive.
-     * @param {RsaKeyPairExport | RsaKeyParams} keyOrKeyParams
+     * @param {RsaKeyPair | RsaKeyParams} keyOrKeyParams
      * @param {boolean} [persist=true]
-     * @returns {Promise<RsaKeyPairExport>}
+     * @returns {Promise<RsaKeyPair>}
      */
     async setRsaKeyPair(keyOrKeyParams, persist = true) {
         const oldRsaKeyPair = this._rsaKeyPair;
         if ('privateKey' in keyOrKeyParams) {
-            // A key was passed.
+            // A key pair was passed.
             this._rsaKeyPair = keyOrKeyParams;
         } else if (!this._rsaKeyPair || !Key._areEqualRsaKeyParams(keyOrKeyParams, this._rsaKeyPair.keyParams)) {
             // Key params were passed. Only compute the RSA key pair if they differ from the old key's params, as the
@@ -251,13 +251,7 @@ class Key {
      */
     async getRsaPrivateKey(keyParams) {
         const rsaKeyPair = await this.setRsaKeyPair(keyParams);
-        return window.crypto.subtle.importKey(
-            'pkcs8',
-            rsaKeyPair.privateKey,
-            { name: 'RSA-OAEP', hash: 'SHA-256' },
-            false, // Prevent extraction
-            ['decrypt'],
-        );
+        return rsaKeyPair.privateKey;
     }
 
     /**
@@ -266,20 +260,14 @@ class Key {
      */
     async getRsaPublicKey(keyParams) {
         const rsaKeyPair = await this.setRsaKeyPair(keyParams);
-        return window.crypto.subtle.importKey(
-            'spki',
-            rsaKeyPair.publicKey,
-            { name: 'RSA-OAEP', hash: 'SHA-256' },
-            true, // Allow extraction
-            ['encrypt'],
-        );
+        return rsaKeyPair.publicKey;
     }
 
     /**
      * Deterministically computes an RSA keypair from _secret via the RSAKeysIframe.
      * Warning: this is computationally expensive.
      * @param {RsaKeyParams} keyParams
-     * @returns {Promise<RsaKeyPairExport>}
+     * @returns {Promise<RsaKeyPair>}
      */
     async _computeRsaKeyPair(keyParams) {
         // Setup the RSAKeysIframe in which the actual computation of the RSA key happens via node-forge. The reason why
@@ -329,11 +317,11 @@ class Key {
             transfer: [seed.buffer],
         });
 
-        return new Promise(resolve => {
+        return new Promise((resolve, reject) => {
             /**
              * @param {MessageEvent} event
              */
-            function onMessage(event) {
+            async function onMessage(event) {
                 if (event.source !== iframe.contentWindow) {
                     // Reject any messages which are not from the iframe. Otherwise, the following attack is possible:
                     // A malicious site starts a Connect request in an iframe (via Hub, which then redirects to the
@@ -350,11 +338,31 @@ class Key {
                 window.removeEventListener('message', onMessage);
                 iframe.remove();
 
-                resolve({
-                    privateKey: data.privateKey,
-                    publicKey: data.publicKey,
-                    keyParams,
-                });
+                try {
+                    const rsaAlgorithmParams = { name: 'RSA-OAEP', hash: 'SHA-256' };
+                    const privateKey = await window.crypto.subtle.importKey(
+                        /* format */ 'pkcs8',
+                        data.privateKey,
+                        rsaAlgorithmParams,
+                        /* extractable */ true, // to be exportable in KeyStore
+                        /* keyUsages */ ['decrypt'],
+                    );
+                    const publicKey = await window.crypto.subtle.importKey(
+                        /* format */ 'spki',
+                        data.publicKey,
+                        rsaAlgorithmParams,
+                        /* extractable */ true, // to be exportable in KeyStore
+                        /* keyUsages */ ['encrypt'],
+                    );
+
+                    resolve({
+                        privateKey,
+                        publicKey,
+                        keyParams,
+                    });
+                } catch (e) {
+                    reject(e);
+                }
             }
 
             // Listen for result from iframe
