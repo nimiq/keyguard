@@ -212,36 +212,21 @@ class Key {
     }
 
     /**
-     * @returns {RsaKeyPair | undefined}
+     * Sets a known RSA key pair and persists it, if requested and the key's parameters match the default parameters.
+     * @param {RsaKeyPair} keyPair
+     * @param {boolean} persist
      */
-    getRsaKeyPairIfExists() {
-        return this._rsaKeyPair;
+    async setRsaKeyPair(keyPair, persist) {
+        this._rsaKeyPair = keyPair;
+        // Persist if requested and the key params match the default params.
+        if (!persist || !Key._areDefaultRsaKeyParams(keyPair.keyParams)) return;
+        await KeyStore.instance.setRsaKeypair(this, keyPair);
     }
 
     /**
-     * Sets a known RSA key pair, or computes and sets the RSA key pair for the given key params. The RSA key is
-     * calculated deterministically based on _secret, such that the same RSA key is generated for the same key params.
-     * Warning: the key computation is computationally expensive.
-     * @param {RsaKeyPair | RsaKeyParams} keyOrKeyParams
-     * @param {boolean} [persist=true]
-     * @returns {Promise<RsaKeyPair>}
+     * @returns {RsaKeyPair | undefined}
      */
-    async setRsaKeyPair(keyOrKeyParams, persist = true) {
-        const oldRsaKeyPair = this._rsaKeyPair;
-        if ('privateKey' in keyOrKeyParams) {
-            // A key pair was passed.
-            this._rsaKeyPair = keyOrKeyParams;
-        } else if (!this._rsaKeyPair || !Key._areEqualRsaKeyParams(keyOrKeyParams, this._rsaKeyPair.keyParams)) {
-            // Key params were passed. Only compute the RSA key pair if they differ from the old key's params, as the
-            // computation is expensive.
-            this._rsaKeyPair = await this._computeRsaKeyPair(keyOrKeyParams);
-        }
-        if ((!oldRsaKeyPair || !Key._areEqualRsaKeyParams(this._rsaKeyPair.keyParams, oldRsaKeyPair.keyParams))
-            && Key._areDefaultRsaKeyParams(this._rsaKeyPair.keyParams)
-            && persist) {
-            // Persist if the key changed, matches the default params, and persisting is requested.
-            await KeyStore.instance.setRsaKeypair(this, this._rsaKeyPair);
-        }
+    getRsaKeyPairIfExists() {
         return this._rsaKeyPair;
     }
 
@@ -250,7 +235,7 @@ class Key {
      * @returns {Promise<CryptoKey>}
      */
     async getRsaPrivateKey(keyParams) {
-        const rsaKeyPair = await this.setRsaKeyPair(keyParams);
+        const rsaKeyPair = await this._getOrComputeRsaKeyPair(keyParams);
         return rsaKeyPair.privateKey;
     }
 
@@ -259,13 +244,28 @@ class Key {
      * @returns {Promise<CryptoKey>}
      */
     async getRsaPublicKey(keyParams) {
-        const rsaKeyPair = await this.setRsaKeyPair(keyParams);
+        const rsaKeyPair = await this._getOrComputeRsaKeyPair(keyParams);
         return rsaKeyPair.publicKey;
     }
 
     /**
-     * Deterministically computes an RSA keypair from _secret via the RSAKeysIframe.
-     * Warning: this is computationally expensive.
+     * @private
+     * If the key has already previously been set, or computed and cached, that key is returned. If no cached key is
+     * available, the key is computed, which is computationally very expensive, and then cached.
+     * @param {RsaKeyParams} keyParams
+     * @returns {Promise<RsaKeyPair>}
+     */
+    async _getOrComputeRsaKeyPair(keyParams) {
+        const oldRsaKeyPair = this.getRsaKeyPairIfExists();
+        if (oldRsaKeyPair && Key._areEqualRsaKeyParams(keyParams, oldRsaKeyPair.keyParams)) return oldRsaKeyPair;
+        const rsaKeyPair = await this._computeRsaKeyPair(keyParams);
+        await this.setRsaKeyPair(rsaKeyPair, /* persist */ Key._areDefaultRsaKeyParams(keyParams));
+        return rsaKeyPair;
+    }
+
+    /**
+     * @private
+     * Deterministically computes an RSA keypair from _secret for the given key params via the RSAKeysIframe.
      * @param {RsaKeyParams} keyParams
      * @returns {Promise<RsaKeyPair>}
      */
