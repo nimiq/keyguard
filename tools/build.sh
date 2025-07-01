@@ -362,9 +362,13 @@ cp dist/index.html dist/request
 
 # Build RSA iframe
 output "🔑  Building RSA Iframe"
+
+# Integrity check that forge.min.js is from node-forge 1.3.1
+nodeforge_hashsum="dc67fd132427ad96c9666c844b39565413c40ddb1f2d063c53512fbf6d387dfd  src/lib/rsa/sandboxed/forge.min.js"
+echo "$nodeforge_hashsum" | ${SHA256SUM} --check
+
 cp src/lib/rsa/sandboxed/forge.min.js dist/lib/rsa/sandboxed/forge.min.HASH.js
-# Integirty check that forge.min.js is from node-forge 1.3.1
-RSA_IFRAME_FORGE_HASH="3Gf9EyQnrZbJZmyESzlWVBPEDdsfLQY8U1Evv204ff0="
+RSA_IFRAME_FORGE_HASH=$(make_file_hash dist/lib/rsa/sandboxed/forge.min.HASH.js)
 RSA_IFRAME_FORGE_NAME=$(add_hash_to_file_name dist/lib/rsa/sandboxed/forge.min.HASH.js)
 cp src/lib/rsa/sandboxed/RSAKeysIframe.js dist/lib/rsa/sandboxed/RSAKeysIframe.HASH.js
 RSA_IFRAME_SCRIPT_HASH=$(make_file_hash dist/lib/rsa/sandboxed/RSAKeysIframe.HASH.js)
