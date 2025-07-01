@@ -266,7 +266,9 @@ class SignMultisigTransaction {
             }
         }
         if (ownCommitmentSecrets.length !== ownSigner.commitments.length) {
-            reject(new Errors.InvalidRequestError('The number of secrets does not match the number of my commitments'));
+            reject(new Errors.InvalidRequestError(
+                'The number of secrets does not match the number of this signer\'s commitments',
+            ));
             return;
         }
         /** @type {Nimiq.CommitmentPair[]} */

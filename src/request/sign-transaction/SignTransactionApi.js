@@ -60,7 +60,7 @@ class SignTransactionApi extends TopLevelApi {
 
         if (parsedRequest.transaction.senderType === Nimiq.AccountType.Staking
             || parsedRequest.transaction.recipientType === Nimiq.AccountType.Staking) {
-            throw new Errors.InvalidRequestError('For staking transactions, use a Keyguard sign-staking request');
+            throw new Errors.InvalidRequestError('For staking transactions, use the Keyguard request "sign-staking"');
         }
 
         return parsedRequest;
