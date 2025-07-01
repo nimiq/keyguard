@@ -2,11 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>RSA Keys Iframe | Keyguard Demo</title>
+    <!-- Note: sandbox and frame-ancestors policies can not actually be specified via a meta tag. You have to send them
+    as response headers. Additionally, the server needs to include the sandboxed iframe's null origin in its cors header
+    for the script files imported here, in order to pass integrity checks added by the build process. -->
+    <meta http-equiv="Content-Security-Policy" content="
+        sandbox allow-scripts;
+        frame-ancestors 'self';
+        default-src 'none';
+        script-src 'self';
+    ">
+    <title>RSA Keys Iframe</title>
     <script src="./forge.min.js"></script>
 </head>
 <body>
-	RSA Keys Iframe <span id="loading"></span>
+    RSA Keys Iframe <span id="loading"></span>
 
     <script src="./RSAKeysIframe.js"></script>
 </body>

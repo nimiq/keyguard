@@ -33,12 +33,12 @@ fi
 if sed --in-place 2>&1 | head -1 | grep -q "illegal"; then
   # For BSD
   function inplace_sed() {
-    sed -i "" $@
+    sed -i "" "$@"
   }
 else
   # For GNU
   function inplace_sed() {
-    sed -i"" $@
+    sed -i"" "$@"
   }
 fi
 
@@ -360,13 +360,31 @@ awk '
 # make redirect file available at /request/ too
 cp dist/index.html dist/request
 
+# Build RSA iframe
+output "🔑  Building RSA Iframe"
+cp src/lib/rsa/sandboxed/forge.min.js dist/lib/rsa/sandboxed/forge.min.HASH.js
+# Integirty check that forge.min.js is from node-forge 1.3.1
+RSA_IFRAME_FORGE_HASH="3Gf9EyQnrZbJZmyESzlWVBPEDdsfLQY8U1Evv204ff0="
+RSA_IFRAME_FORGE_NAME=$(add_hash_to_file_name dist/lib/rsa/sandboxed/forge.min.HASH.js)
+cp src/lib/rsa/sandboxed/RSAKeysIframe.js dist/lib/rsa/sandboxed/RSAKeysIframe.HASH.js
+RSA_IFRAME_SCRIPT_HASH=$(make_file_hash dist/lib/rsa/sandboxed/RSAKeysIframe.HASH.js)
+RSA_IFRAME_SCRIPT_NAME=$(add_hash_to_file_name dist/lib/rsa/sandboxed/RSAKeysIframe.HASH.js)
+cp src/lib/rsa/sandboxed/RSAKeysIframe.html dist/lib/rsa/sandboxed/
+# Note: requests in a sandboxed iframe are considered cross origin requests, for which, in addition to integrity checks,
+# also cors headers must be checked, see https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity.
+# Thus, we're adding crossorigin="anonymous", and the cors headers of these resources must be configured accordingly on
+# the server, to allow serving to the iframe's null origin.
+inplace_sed \
+    -e 's:src="\./forge.min.js":src="./'${RSA_IFRAME_FORGE_NAME}'" integrity="sha256-'${RSA_IFRAME_FORGE_HASH}'" crossorigin="anonymous":' \
+    -e 's:src="\./RSAKeysIframe.js":src="./'${RSA_IFRAME_SCRIPT_NAME}'" integrity="sha256-'${RSA_IFRAME_SCRIPT_HASH}'" crossorigin="anonymous":' \
+    dist/lib/rsa/sandboxed/RSAKeysIframe.html
+
 # copy assets
 output "🐑  Copying static assets"
 cp -v favicon.ico dist
 cp -rv src/assets/* dist/assets/
 cp -v src/lib/QrScannerWorker.js dist/lib/
 cp -v node_modules/@nimiq/style/nimiq-style.icons.svg dist/assets/
-cp -v src/lib/rsa/sandboxed/* dist/lib/rsa/sandboxed/
 # copy service worker (which has to be in root to work)
 cp -v src/service-worker/ServiceWorker.js dist
 

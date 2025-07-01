@@ -1,3 +1,6 @@
+/* Note: these styles are also used in SignMultisigTransaction. Thus, on any changes here, it should be verified that
+nothing breaks in SignMultisigTransaction. */
+
 #confirm-transaction {
     position: relative;
     overflow: hidden;

@@ -1,7 +1,6 @@
 /* global I18n */
 /* global Copyable */
 /* global Identicon */
-/* global TemplateTags */
 
 class AddressInfo { // eslint-disable-line no-unused-vars
     // eslint-disable-next-line valid-jsdoc
@@ -71,13 +70,19 @@ class AddressInfo { // eslint-disable-line no-unused-vars
         }
 
         if (this._addressInfo.multisig) {
+            const $signerCount = document.createElement('span');
+            $signerCount.classList.add('count');
+            $signerCount.textContent = this._addressInfo.multisig.signers.toString();
+            const $totalParticipantCount = document.createElement('span');
+            $totalParticipantCount.classList.add('count');
+            $totalParticipantCount.textContent = this._addressInfo.multisig.participants.toString();
+
             const $badge = document.createElement('div');
             $badge.classList.add('multisig-badge', 'nq-blue-bg');
-            $badge.innerHTML = TemplateTags.hasVars(2)`
-                ${this._addressInfo.multisig.signers}
-                <span class="of">of</span>
-                ${this._addressInfo.multisig.participants}
-            `;
+            I18n.translateToHtmlContent($badge, 'address-info-multisig-badge', {
+                signerCount: $signerCount,
+                totalParticipantCount: $totalParticipantCount,
+            });
             $identicon.appendChild($badge);
         }
 

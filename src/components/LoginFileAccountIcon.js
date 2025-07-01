@@ -3,7 +3,7 @@
 
 class LoginFileAccountIcon { // eslint-disable-line no-unused-vars
     /**
-     * @param {string} [address]
+     * @param {string} address
      * @param {HTMLDivElement} [$el]
      */
     constructor(address, $el) {
@@ -47,10 +47,6 @@ class LoginFileAccountIcon { // eslint-disable-line no-unused-vars
     }
 
     _update() {
-        if (!this._address) {
-            return;
-        }
-
         const bgColorClassName = LoginFileConfig[IqonHash.getBackgroundColorIndex(this._address)].className;
         this.$el.classList.add(bgColorClassName);
     }

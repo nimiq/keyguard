@@ -128,8 +128,8 @@ class RequestParser { // eslint-disable-line no-unused-vars
      * @returns {Nimiq.Transaction}
      */
     parseTransaction(object) {
-        if (!object || typeof object !== 'object' || object === null) {
-            throw new Errors.InvalidRequestError('Request must be an object');
+        if (!object || typeof object !== 'object') {
+            throw new Errors.InvalidRequestError('Transaction info must be an object');
         }
 
         const accountTypes = new Set([

@@ -1,6 +1,5 @@
 /* global Observable */
 /* global Nimiq */
-/* global I18n */
 /* global AutoComplete */
 /* global AnimationUtils */
 
@@ -52,13 +51,7 @@ class RecoveryWordsInputField extends Observable {
         input.setAttribute('autocorrect', 'off');
         input.setAttribute('autocapitalize', 'none');
         input.setAttribute('spellcheck', 'false');
-
-        /** */
-        const setPlaceholder = () => {
-            input.placeholder = `${this._index < 9 ? '0' : ''}${this._index + 1}`;
-        };
-        I18n.observer.on(I18n.Events.LANGUAGE_CHANGED, setPlaceholder);
-        setPlaceholder();
+        input.placeholder = `${this._index < 9 ? '0' : ''}${this._index + 1}`;
 
         const placeholder = document.createElement('div');
         placeholder.className = 'placeholder';

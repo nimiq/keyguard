@@ -237,21 +237,19 @@ class PaymentInfoLine { // eslint-disable-line no-unused-vars
         $tooltip.classList.toggle('bad-rate', isBadRate);
 
         if (isBadRate || Math.abs(rateDeviation) >= PaymentInfoLine.RATE_DEVIATION_THRESHOLD) {
-            let rateInfo;
+            const placeholderVariables = {
+                // Converted to absolute percent, rounded to one decimal
+                formattedRateDeviation: `${Math.round(Math.abs(rateDeviation) * 100 * 10) / 10}%`,
+                provider: FIAT_API_PROVIDER_URL,
+            };
             if (rateDeviation < 0 && isBadRate) {
                 // False discount
-                rateInfo = I18n.translatePhrase('payment-info-line-actual-discount');
+                $rateInfo.textContent = I18n.translatePhrase('payment-info-line-actual-discount', placeholderVariables);
             } else if (rateDeviation >= 0) {
-                rateInfo = I18n.translatePhrase('payment-info-line-paying-more');
+                $rateInfo.textContent = I18n.translatePhrase('payment-info-line-paying-more', placeholderVariables);
             } else {
-                rateInfo = I18n.translatePhrase('payment-info-line-paying-less');
+                $rateInfo.textContent = I18n.translatePhrase('payment-info-line-paying-less', placeholderVariables);
             }
-
-            // Converted to absolute percent, rounded to one decimal
-            const formattedRateDeviation = `${Math.round(Math.abs(rateDeviation) * 100 * 10) / 10}%`;
-            $rateInfo.textContent = rateInfo
-                .replace('{formattedRateDeviation}', formattedRateDeviation)
-                .replace('{provider}', FIAT_API_PROVIDER_URL);
 
             $rateInfo.style.display = 'block';
         } else {

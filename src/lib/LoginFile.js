@@ -19,7 +19,7 @@ class LoginFile {
         if (!this._config) throw new Error(`Invalid color index: ${color}`);
         this._label = label && label.trim()
             ? label.trim()
-            : I18n.translatePhrase('login-file-default-account-label').replace('{color}', this._config.name);
+            : I18n.translatePhrase('login-file-default-account-label', { color: this._config.name });
         this._ctx = /** @type {CanvasRenderingContext2D} */ ($canvas.getContext('2d'));
         this._drawPromise = this._draw(encodedSecret);
     }
@@ -39,16 +39,13 @@ class LoginFile {
      * @returns {string}
      */
     filename() {
-        const filename = I18n.translatePhrase('login-file-filename');
-        return filename.replace(
-            '{accountLabel}',
-            // Replace spaces and sanitize file name (see https://stackoverflow.com/a/31976060).
-            // However, sanitizing the file name would not be strictly necessary as the browser also takes care of it.
-            // Note that the browser sanitization seems to also replace zero width joiners \u200D which breaks joined
-            // symbols like some emojis (https://en.wikipedia.org/wiki/Zero-width_joiner) into their components.
-            // eslint-disable-next-line no-control-regex
-            this._label.replace(/\s+/gu, '-').replace(/[<>:"/\\|?*\x00-\x1F]/gu, '_'),
-        );
+        // Replace spaces and sanitize file name (see https://stackoverflow.com/a/31976060).
+        // However, sanitizing the file name would not be strictly necessary as the browser also takes care of it.
+        // Note that the browser sanitization seems to also replace zero width joiners \u200D which breaks joined
+        // symbols like some emojis (https://en.wikipedia.org/wiki/Zero-width_joiner) into their components.
+        // eslint-disable-next-line no-control-regex
+        const sanitizedAccountLabel = this._label.replace(/\s+/gu, '-').replace(/[<>:"/\\|?*\x00-\x1F]/gu, '_');
+        return I18n.translatePhrase('login-file-filename', { accountLabel: sanitizedAccountLabel });
     }
 
     /**
@@ -154,8 +151,7 @@ class LoginFile {
     _getLabelForDisplay() {
         if (!this._label) {
             // Generate default account label
-            const label = I18n.translatePhrase('login-file-default-account-label');
-            return label.replace('{color}', this._config.name);
+            return I18n.translatePhrase('login-file-default-account-label', { color: this._config.name });
         }
 
         // Truncate the label if necessary. To handle unicode astral symbols consisting of two surrogate chars (like

@@ -44,6 +44,8 @@ import {
     ConnectRequest,
 } from './PublicRequest';
 
+import { SignMessagePrefix } from './SignMessagePrefix';
+
 import Observable from './Observable';
 
 export class KeyguardClient {
@@ -259,7 +261,7 @@ export class KeyguardClient {
     }
 }
 
-import '../../src/lib/SignMessageConstants.js';
-
-// tslint:disable-next-line:variable-name
-export const MSG_PREFIX = window.__messageSigningPrefix.MSG_PREFIX;
+/**
+ * @deprecated - Import SignMessagePrefix instead.
+ */
+export const MSG_PREFIX = SignMessagePrefix.SIGNED_MESSAGE;
