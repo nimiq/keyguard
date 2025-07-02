@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>SignTransaction | Keyguard Demo</title>
     <link href="../src/nimiq-style.css" rel="stylesheet">
-    <script src="../node_modules/@nimiq/core-web/web-offline.js"></script>
+    <script type="module" src="../src/lib/AlbatrossWasm.mjs"></script>
     <script src="../src/lib/KeyInfo.js"></script>
     <script src="../src/lib/KeyStore.js"></script>
     <script src="../node_modules/@nimiq/rpc/dist/rpc.umd.js"></script>
@@ -14,7 +14,7 @@
             margin: 1rem 0;
         }
 
-        label, input {
+        label {
             display: block;
             margin: 5px;
         }
@@ -52,6 +52,11 @@
 </form>
 
 <script>
+    window.addEventListener('load', async () => {
+        await Nimiq.default();
+	    loadAccounts();
+    });
+
     const accountSelector = document.querySelector('#account');
 
 	async function loadAccounts() {
@@ -66,7 +71,6 @@
 		}
 		accountSelector.appendChild(dom);
 	}
-	loadAccounts();
 
     document.querySelector('button#popup').addEventListener('click', async () => {
         connectAccountPopup(await generateRequest());
