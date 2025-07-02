@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>RSA Keys | Keyguard Demo</title>
     <link href="../src/nimiq-style.css" rel="stylesheet">
-    <script src="../node_modules/@nimiq/core-web/web-offline.js"></script>
+    <script type="module" src="../src/lib/AlbatrossWasm.mjs"></script>
     <script src="../src/lib/Constants.js"></script>
     <!-- <script src="../src/lib/Key.js"></script> -->
     <script src="../src/lib/KeyStore.js"></script>
@@ -77,6 +77,10 @@
 	</p>
 
 	<script>
+		window.addEventListener('load', async () => {
+			await Nimiq.default();
+		});
+
 		/** @type {HTMLButtonElement} */
 		const $newEntropy = document.querySelector('#new-entropy');
 		/** @type {HTMLTextAreaElement} */
@@ -105,16 +109,14 @@
 			$generate.disabled = true;
 
 			try {
-				await Nimiq.WasmHelper.doImport();
-
 				// Extend 32-byte entropy into 1024-byte seed
 				const entropyBuffer = Nimiq.BufferUtils.fromHex($entropy.value);
-				const seed = Nimiq.BufferUtils.toUtf8(Nimiq.CryptoUtils.computePBKDF2sha512(
+				const seed = Nimiq.CryptoUtils.computePBKDF2sha512(
 					entropyBuffer,
 					Nimiq.PublicKey.derive(Nimiq.PrivateKey.deserialize(entropyBuffer)).toAddress().serialize(),
 					1024, // Iterations
 					1024, // Output size
-				));
+				);
 				const keySize = parseInt($keysize.value);
 				const iframe = $iframe.contentWindow;
 
