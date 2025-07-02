@@ -69,6 +69,11 @@
     "sign-tx-fee": "taxa",
     "sign-tx-cancel-payment": "Cancelar pagamento",
 
+    "sign-multisig-tx-heading-tx": "Approve Multisig Transaction",
+    "sign-multisig-tx-approving-as": "Approving as",
+    "sign-multisig-tx-with": "with",
+    "sign-multisig-tx-approving-with": "Approving with",
+
     "sign-staking-heading-stake": "Stake NIM",
     "sign-staking-heading-unstake": "Unstake NIM",
     "sign-staking-heading-change": "Change Validator",
@@ -108,6 +113,7 @@
     "passwordbox-repeat-password-short": "Palavra passe demasiado curta",
     "passwordbox-password-skip": "Passar por enquanto",
     "passwordbox-reset-password": "Redefinir com as Palavras de Recuperação",
+    "passwordbox-connect-account": "Connect your account",
 
     "payment-info-line-order-amount": "Valor do pedido",
     "payment-info-line-vendor-markup": "Margem de lucro do vendedor da criptomoeda",
@@ -247,5 +253,10 @@
     "sign-swap-of-exchange-value": "de troca de valor",
     "sign-swap-total-fees": "Taxas totais",
     "sign-swap-exchange-rate": "Taxa de câmbio",
-    "sign-swap-your-bank": "O teu banco"
+    "sign-swap-your-bank": "O teu banco",
+
+    "connect-heading-prefix": "Log in to",
+    "connect-tooltip-multisig-1": "Your account will be used to verify your identity only.",
+    "connect-tooltip-multisig-2": "The shared wallet has its own address. It can receive transactions from anywhere just like a regular wallet.",
+    "connect-tooltip-multisig-3": "The first address of your account will be visible to all participants in your shared wallet."
 }

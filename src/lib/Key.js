@@ -1,6 +1,12 @@
 /* global Constants */
 /* global Nimiq */
 /* global SignMessageConstants */
+/* global KeyStore */
+/* global CONFIG */
+
+/**
+ * @typedef {{hasPin?: boolean, rsaKeyPair?: RsaKeyPairExport}} KeyConfig
+ */
 
 class Key {
     /**
@@ -12,15 +18,48 @@ class Key {
     }
 
     /**
-     * @param {Nimiq.Entropy|Nimiq.PrivateKey} secret
-     * @param {boolean} [hasPin]
+     * @returns {EncryptionKeyParams}
      */
-    constructor(secret, hasPin = false) {
+    static get defaultEncryptionKeyParams() {
+        return {
+            kdf: CONFIG.RSA_KDF_FUNCTION,
+            iterations: CONFIG.RSA_KDF_ITERATIONS,
+            keySize: CONFIG.RSA_KEY_BITS,
+        };
+    }
+
+    /**
+     * @param {EncryptionKeyParams} paramsA
+     * @param {EncryptionKeyParams} paramsB
+     * @returns {boolean}
+     */
+    static _isEncryptionKeyParamsEqual(paramsA, paramsB) {
+        return typeof paramsA === 'object' && typeof paramsB === 'object'
+            && paramsA.kdf === paramsB.kdf
+            && paramsA.iterations === paramsB.iterations
+            && paramsA.keySize === paramsB.keySize;
+    }
+
+    /**
+     * @param {EncryptionKeyParams} params
+     * @returns {boolean}
+     */
+    static _isDefaultEncryptionKeyParams(params) {
+        return Key._isEncryptionKeyParamsEqual(params, Key.defaultEncryptionKeyParams);
+    }
+
+    /**
+     * @param {Nimiq.Entropy|Nimiq.PrivateKey} secret
+     * @param {KeyConfig} [config]
+     */
+    constructor(secret, config = {}) {
         this._secret = secret;
-        this._hasPin = hasPin;
+        this._hasPin = Boolean(config.hasPin);
         /** @type {string?} */
         this._id = null;
         this._defaultAddress = this.deriveAddress(Constants.DEFAULT_DERIVATION_PATH);
+
+        this.rsaKeyPair = config.rsaKeyPair;
     }
 
     /**
@@ -48,6 +87,37 @@ class Key {
         const privateKey = this.derivePrivateKey(path);
         const publicKey = Nimiq.PublicKey.derive(privateKey);
         return Nimiq.Signature.create(privateKey, publicKey, data);
+    }
+
+    /**
+     * Partially sign a multisig transaction
+     *
+     * @param {string} path
+     * @param {Uint8Array} data
+     * @param {Nimiq.CommitmentPair[]} ownCommitmentPairs
+     * @param {{publicKey: Nimiq.PublicKey, commitments: Nimiq.Commitment[]}[]} otherSigners
+     * @returns {Nimiq.PartialSignature}
+     */
+    signPartially(path, data, ownCommitmentPairs, otherSigners) {
+        const privateKey = this.derivePrivateKey(path);
+        const publicKey = Nimiq.PublicKey.derive(privateKey);
+        const [otherPublicKeys, otherCommitments] = otherSigners.reduce((acc, signer) => {
+            acc[0].push(signer.publicKey);
+            acc[1].push(signer.commitments);
+            return acc;
+        }, [
+            /** @type {Nimiq.PublicKey[]} */ ([]),
+            /** @type {Nimiq.Commitment[][]} */ ([]),
+        ]);
+
+        return Nimiq.PartialSignature.create(
+            privateKey,
+            publicKey,
+            ownCommitmentPairs,
+            otherPublicKeys,
+            otherCommitments,
+            data,
+        );
     }
 
     /**
@@ -89,6 +159,124 @@ class Key {
         return this._secret instanceof Nimiq.Entropy
             ? this._secret.toExtendedPrivateKey().derivePath(path).privateKey
             : this._secret;
+    }
+
+    /**
+     * @param {EncryptionKeyParams} keyParams
+     * @returns {Promise<CryptoKey>}
+     */
+    async getRsaPrivateKey(keyParams) {
+        if (!this.rsaKeyPair || !Key._isEncryptionKeyParamsEqual(keyParams, this.rsaKeyPair.keyParams)) {
+            this.rsaKeyPair = await this._computeRsaKeyPair(keyParams);
+            if (Key._isDefaultEncryptionKeyParams(keyParams)) {
+                await KeyStore.instance.setRsaKeypair(this.id, this.rsaKeyPair);
+            }
+        }
+
+        return window.crypto.subtle.importKey(
+            'pkcs8',
+            this.rsaKeyPair.privateKey,
+            { name: 'RSA-OAEP', hash: 'SHA-256' },
+            false, // Prevent extraction
+            ['decrypt'],
+        );
+    }
+
+    /**
+     * @param {EncryptionKeyParams} keyParams
+     * @returns {Promise<CryptoKey>}
+     */
+    async getRsaPublicKey(keyParams) {
+        if (!this.rsaKeyPair || !Key._isEncryptionKeyParamsEqual(keyParams, this.rsaKeyPair.keyParams)) {
+            this.rsaKeyPair = await this._computeRsaKeyPair(keyParams);
+            if (Key._isDefaultEncryptionKeyParams(keyParams)) {
+                await KeyStore.instance.setRsaKeypair(this.id, this.rsaKeyPair);
+            }
+        }
+
+        return window.crypto.subtle.importKey(
+            'spki',
+            this.rsaKeyPair.publicKey,
+            { name: 'RSA-OAEP', hash: 'SHA-256' },
+            true, // Allow extraction
+            ['encrypt'],
+        );
+    }
+
+    /**
+     * @param {EncryptionKeyParams} keyParams
+     * @returns {Promise<RsaKeyPairExport>}
+     */
+    async _computeRsaKeyPair(keyParams) {
+        const iframe = document.createElement('iframe');
+        iframe.classList.add('rsa-sandboxed-iframe'); // Styles in common.css hide this class
+        iframe.setAttribute('sandbox', 'allow-scripts');
+        iframe.src = '../../lib/rsa/sandboxed/RSAKeysIframe.html'; // Relative path from a request URL
+        /** @type {Promise<void>} */
+        const loadPromise = new Promise(resolve => iframe.addEventListener('load', () => resolve()));
+        document.body.appendChild(iframe);
+        await loadPromise;
+
+        if (!iframe.contentWindow) {
+            throw new Error('Could not load sandboxed RSA iframe');
+        }
+
+        // Extend 32-byte secret into 1024-byte seed as bytestring
+        /** @type {Uint8Array} */
+        let seed;
+        switch (keyParams.kdf) {
+            case 'PBKDF2-SHA512':
+                seed = Nimiq.CryptoUtils.computePBKDF2sha512(
+                    this.secret.serialize(),
+                    this._defaultAddress.serialize(),
+                    keyParams.iterations,
+                    1024, // Output size (required)
+                );
+                break;
+            default:
+                throw new Error(`Unsupported KDF function: ${keyParams.kdf}`);
+        }
+
+        // Send computation command to iframe
+        iframe.contentWindow.postMessage({
+            command: 'generateKey',
+            seed: Nimiq.BufferUtils.toUtf8(seed), // seed is a bytestring
+            keySize: keyParams.keySize,
+        }, '*');
+
+        /** @type {(keyPair: RsaKeyPairExport) => void} */
+        let resolver;
+        /** @type {Promise<RsaKeyPairExport>} */
+        const resultPromise = new Promise(resolve => {
+            resolver = resolve;
+        });
+
+        /**
+         * @param {MessageEvent} event
+         */
+        function onMessage(event) {
+            if (event.source === event.target) {
+                // console.log("Ignored same-window event:", event);
+                return;
+            }
+
+            /** @type {{privateKey: ArrayBuffer, publicKey: ArrayBuffer}} */
+            const data = event.data;
+            if (!('privateKey' in data) || !('publicKey' in data)) return;
+
+            window.removeEventListener('message', onMessage);
+
+            resolver({
+                privateKey: new Uint8Array(data.privateKey),
+                publicKey: new Uint8Array(data.publicKey),
+                keyParams,
+            });
+        }
+
+        // Listen for result from iframe
+        window.addEventListener('message', onMessage);
+
+        return resultPromise;
     }
 
     /**

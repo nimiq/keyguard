@@ -83,6 +83,7 @@ class PasswordBox extends Observable {
             'passwordbox-show-words': '<button class="submit" data-i18n="passwordbox-show-words">Show recovery words</button>',
             'passwordbox-sign-msg': '<button class="submit" data-i18n="passwordbox-sign-msg">Sign message</button>',
             'passwordbox-confirm-swap': '<button class="submit" data-i18n="passwordbox-confirm-swap">Confirm swap</button>',
+            'passwordbox-connect-account': '<button class="submit" data-i18n="passwordbox-connect-account">Connect your account</button>',
         };
         if (!buttonVersions[options.buttonI18nTag]) throw new Error('PasswordBox button i18n tag not defined');
 
