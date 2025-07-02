@@ -2,13 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>SignTransaction | Keyguard Demo</title>
+    <title>SignMultisigTransaction | Keyguard Demo</title>
     <link href="../src/nimiq-style.css" rel="stylesheet">
-    <script src="../node_modules/@nimiq/core-web/web-offline.js"></script>
+    <script type="module" src="../src/lib/AlbatrossWasm.mjs"></script>
     <script src="../src/lib/Constants.js"></script>
     <script src="../src/lib/Key.js"></script>
     <script src="../src/lib/KeyStore.js"></script>
-    <script src="../src/lib/multisig/MerkleTreePatch.js"></script>
     <script src="../node_modules/@nimiq/rpc/dist/rpc.umd.js"></script>
 
     <style>
@@ -104,11 +103,9 @@
 </form>
 
 <script>
-    (async () => {
-        await Nimiq.WasmHelper.doImport();
-        Nimiq.GenesisConfig.test();
-        Nimiq.CryptoWorker.getInstanceAsync();
-    })();
+    window.addEventListener('load', async () => {
+        await Nimiq.default();
+    });
 
     const layoutSelector = document.querySelector('#layout');
     const checkoutOnlyOptions = document.querySelectorAll('.checkout-only');
@@ -150,7 +147,7 @@
         // Generate a random key and put it into the KeyStore.
         const secret = Nimiq.Entropy.generate();
         const key = new Key(secret);
-        const password = keyPassword ? Nimiq.BufferUtils.fromAscii(keyPassword) : undefined;
+        const password = keyPassword ? Nimiq.BufferUtils.fromUtf8(keyPassword) : undefined;
         const id = await KeyStore.instance.put(key, password);
 
         const path = "m/0'/0'";
@@ -185,12 +182,11 @@
 
             multisigConfig: {
                 publicKeys: publicKeys.map(key => key.serialize()),
-                numberOfSigners,
-                signerPublicKeys: publicKeys.slice(0, numberOfSigners).map(key => key.serialize()),
-                secret: {
-                    aggregatedSecret: Nimiq.PrivateKey.generate().serialize(), // Using random data
-                },
-                aggregatedCommitment: Nimiq.PrivateKey.generate().serialize(), // Using random data
+                signers: publicKeys.slice(0, numberOfSigners).map(key => ({
+                    publicKey: key.serialize(),
+                    commitments: new Array(2).fill(0).map(() => Nimiq.CommitmentPair.generate().commitment.serialize()), // Using random data
+                })),
+                secrets: new Array(2).fill(0).map(() => Nimiq.CommitmentPair.generate().secret.serialize()), // Using random data,
                 userName,
             }
         };
