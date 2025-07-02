@@ -30,7 +30,10 @@ function keyToUint8Array(key) {
 }
 
 window.addEventListener('message', async event => {
-    if (event.origin !== window.location.origin) return; // Reject messages from other origins
+    // Reject messages from other origins
+    if (event.origin !== window.location.origin) return;
+    // Ignore messages from the iframe itself (sometimes triggered by browser extensions)
+    if (event.source === event.target) return;
 
     /** @type {Command} */
     const data = event.data;
