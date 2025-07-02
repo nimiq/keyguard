@@ -13,9 +13,6 @@
     "baseUrl": ".",
     "declaration": true,
     "declarationDir": "./dist/src/",
-    /* Skip lib check because our typescript version is too old to handle the types of ethers. */
-    /* TODO once typescript has been updated, this can be removed. */
-    "skipLibCheck": true,
     "lib": [
       "es2017",
       "dom",

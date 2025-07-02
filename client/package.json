@@ -26,7 +26,7 @@
   },
   "homepage": "https://github.com/nimiq/keyguard/client#readme",
   "dependencies": {
-    "@nimiq/core": "^2.0.5",
+    "@nimiq/core": "^2.1.1",
     "@nimiq/rpc": "^0.3.0",
     "@opengsn/common": "^2.2.5"
   },

@@ -1,5 +1,5 @@
 // @ts-expect-error Cannot read types
-import * as NimiqPoS from '../../node_modules/@nimiq/albatross-wasm/web/index.js';
+import * as NimiqPoS from '../../node_modules/@nimiq/core/web/index.js';
 
 // Move any defined `Nimiq` global to `NimiqPoW`
 // @ts-expect-error window.NimiqPoW is not defined

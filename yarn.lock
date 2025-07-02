@@ -432,17 +432,18 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
-"@nimiq/albatross-wasm@https://gitpkg.now.sh/nimiq/core-rs-albatross/web-client/dist?06999e1626b3312a906a0a490339d7feb781811b":
-  version "2.0.6"
-  resolved "https://gitpkg.now.sh/nimiq/core-rs-albatross/web-client/dist?06999e1626b3312a906a0a490339d7feb781811b#4a2410c47b536d90e1862f1bc23c5b14a43c2a62"
-  dependencies:
-    comlink "^4.4.1"
-    websocket "^1.0.34"
-
 "@nimiq/core-web@1.6.3":
   version "1.6.3"
   resolved "https://registry.yarnpkg.com/@nimiq/core-web/-/core-web-1.6.3.tgz#b4a8f8c5d289850b20cb4009766af5b1cafd6e20"
   integrity sha512-D6RrJi2cRU81odNpmwczhUBvOQ47+/Db1svrTkH/G4xNd72lr9MS5nMdfpUz+rBRnSprljrzW2mdUtZ6W9bPaA==
+
+"@nimiq/core@^2.1.1":
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/@nimiq/core/-/core-2.1.1.tgz#75b1ff1114aea049db3e6c2aecf6c44c1b660f35"
+  integrity sha512-GOgWG5Uo9TPQld13EbVVKCBAL411LrqBd5qOXrrv0Qr52uq6GmY9AjbchUyMahtpFFOisX7Zvdtz8agYBNuS2A==
+  dependencies:
+    comlink "^4.4.1"
+    websocket "^1.0.34"
 
 "@nimiq/rpc@^0.3.0":
   version "0.3.0"

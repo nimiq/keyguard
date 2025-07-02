@@ -98,20 +98,47 @@ make_file_hash() {
     hex_to_binary "$(${SHA256SUM} "$1" | cut -d' ' -f1)" | base64
 }
 
-# Before writing any files, verify integrity of Nimiq lib
-output "🧐  Validating Nimiq Core files integrity"
+# Before writing any files, verify integrity of Nimiq PoW lib
+output "🧐  Validating Nimiq PoW files integrity"
 
-nimiq_core_hashsums=\
+nimiq_pow_hashsums=\
 "8edc158d4a0e2baece54262aa5817e3db44946d3c8af9271fd9f4bc7b4fde91e  node_modules/@nimiq/core-web/web-offline.js
  a658ca600c43789c8daff47578ea5758e7a1a2a5fee1b249e7bb5ce691d126cd  node_modules/@nimiq/core-web/worker-wasm.wasm
  d61df01adc927cb2832314ef5634b9ea97092acacb09beb7628b1a98a0962c70  node_modules/@nimiq/core-web/worker-wasm.js
  154b1251428363c8658c99acbf55b31eef177c0d447767a506952924a37494a9  node_modules/@nimiq/core-web/worker-js.js
  272dae22e5235f17526ba19a60b2418f1b5926e0f7e683f782bd54aa6db3b945  node_modules/@nimiq/core-web/worker.js"
-
-echo "$nimiq_core_hashsums" | ${SHA256SUM} --check
+echo "$nimiq_pow_hashsums" | ${SHA256SUM} --check
 
 if [ ! $? -eq 0 ]; then
-    output "💥  Nimiq Core file integrity check failed!"
+    output "💥  Nimiq PoW file integrity check failed!"
+    exit 1;
+fi
+
+# Before writing any files, verify integrity of Nimiq PoS lib
+output "🧐  Validating Nimiq PoS files integrity"
+
+nimiq_pos_hashsums=\
+"49bf18fbd44ca9b3bf8b331508f92d2fe48087a27c7d0034120fc7fc0d383951  node_modules/@nimiq/core/launcher/browser/client-proxy.mjs
+ 955cceee2e144efe114fec23ae202e010dae6edd12ef802d0d239fb36fdf537f  node_modules/@nimiq/core/launcher/browser/cryptoutils-worker-proxy.mjs
+ f26f70a14ee0ffa85261500dd786f51aa6051e523c9a4627ab8ba064ff8934dc  node_modules/@nimiq/core/launcher/browser/transfer-handlers.mjs
+ f00e4c72cdbc653dfcc426c80337c0555f0b94b8883bd791b324aa95edfd498a  node_modules/@nimiq/core/lib/web/index.mjs
+ 0ec8db9acefe632eb46205a9cd7de4351bafb83fad792508b0f61449ccf9f4ec  node_modules/@nimiq/core/web/comlink.min.js
+ 64a91ba6922851ba36ba21944bcc6a14e8a57f805203fa92925190175a882297  node_modules/@nimiq/core/web/comlink.min.js.map
+ 7b8c1509c4e7ec89948110c9f459409d381d1ee92b0a0d30bf112a568a8fc7a6  node_modules/@nimiq/core/web/comlink.min.mjs
+ e8d70f535e0d6d1bca2dfb7a8afb96b068f87c1e0b44d864e0b54d8ec4589173  node_modules/@nimiq/core/web/comlink.min.mjs.map
+ dd9833c434200f9338f01eac7e5462dfa146b235bc0ab57ed846bf076f6c5cd3  node_modules/@nimiq/core/web/crypto.js
+ ec0b18473e98a8582ce2d09fc30b6f8e9da463a4b51643d3849824e9b36d2dca  node_modules/@nimiq/core/web/crypto-wasm/index_bg.wasm
+ 3162c0a8c6f72b4cc24352f5ec4d2bcca1ecb3c766061082b1934c980a3253b3  node_modules/@nimiq/core/web/crypto-wasm/index.js
+ 7a48cc3f66857626c3c175ba6688bd1cfd54abdfffe90388fa291494b9e1a261  node_modules/@nimiq/core/web/index.js
+ 507736197228a98a5f657d685f3b02e88d8a43cc63986d21c5dedced980c4447  node_modules/@nimiq/core/web/main-wasm/index_bg.wasm
+ d3063143db75080354fe3ae724cc748b0326a6ccfc355d51b6936fe88f121b7d  node_modules/@nimiq/core/web/main-wasm/index.js
+ 8199c9d229df43a66dc8399731074a75b4e973d3071bdcde9988cb68a7978260  node_modules/@nimiq/core/web/worker.js
+ c87f8c0fc04d3a3a5c47b0fe3092508a8efc98b57889c6c86898a161f8cec1d1  node_modules/@nimiq/core/web/worker-wasm/index_bg.wasm
+ 7d73578e8dff3a0ac0be4c70fb5cae7ccc0a63a27aeb63ae957b564037dca470  node_modules/@nimiq/core/web/worker-wasm/index.js"
+echo "$nimiq_pos_hashsums" | ${SHA256SUM} --check
+
+if [ ! $? -eq 0 ]; then
+    output "💥  Nimiq PoS file integrity check failed!"
     exit 1;
 fi
 
@@ -145,8 +172,8 @@ rm -rf dist
 # create folder structure
 output "👷  Creating folder structure"
 mkdir -p dist/request
-mkdir -p dist/assets/nimiq
-mkdir -p dist/assets/albatross
+mkdir -p dist/assets/nimiq-pow
+mkdir -p dist/assets/nimiq-pos
 mkdir -p dist/lib
 mkdir -p dist/lib/rsa/sandboxed
 
@@ -252,12 +279,12 @@ JS_BITCOIN_BUNDLE=$(add_hash_to_file_name dist/request/$JS_BITCOIN_BUNDLE)
 JS_POLYGON_BUNDLE=$(add_hash_to_file_name dist/request/$JS_POLYGON_BUNDLE)
 CSS_TOPLEVEL_BUNDLE=$(add_hash_to_file_name dist/request/$CSS_TOPLEVEL_BUNDLE)
 
-CORE_LIB_HASH=$(make_file_hash node_modules/@nimiq/core-web/web-offline.js)
+NIMIQ_POW_LIB_HASH=$(make_file_hash node_modules/@nimiq/core-web/web-offline.js)
 
-# copy Albatross loader, replace import path and calculate the integrity hash
-cp -v src/lib/AlbatrossWasm.mjs dist/lib/
-inplace_sed 's/\.\.\/\.\.\/node_modules\/@nimiq\/albatross-wasm/\.\.\/assets\/albatross/' dist/lib/AlbatrossWasm.mjs
-ALBATROSS_LOADER_HASH=$(make_file_hash dist/lib/AlbatrossWasm.mjs)
+# copy Nimiq PoS loader, replace import path and calculate the integrity hash
+cp -v src/lib/Nimiq.mjs dist/lib/
+inplace_sed 's/\.\.\/\.\.\/node_modules\/@nimiq\/core/\.\.\/assets\/nimiq-pos/' dist/lib/Nimiq.mjs
+NIMIQ_POS_LOADER_HASH=$(make_file_hash dist/lib/Nimiq.mjs)
 
 # process index.html scripts and links for each request
 output "🛠️   Building request index.html files"
@@ -280,12 +307,12 @@ for DIR in src/request/*/ ; do
         }
         /<script.*web-offline\.js/ {
             split($0, space, "<") # Preserve intendation.
-            print space[1] "<script defer src=\"/assets/nimiq/web-offline.js\" integrity=\"sha256-'${CORE_LIB_HASH}'\"></script>"
+            print space[1] "<script defer src=\"/assets/nimiq-pow/web-offline.js\" integrity=\"sha256-'${NIMIQ_POW_LIB_HASH}'\"></script>"
             next
         }
-        /<script.*AlbatrossWasm\.mjs/ {
+        /<script.*Nimiq\.mjs/ {
             split($0, space, "<") # Preserve intendation.
-            print space[1] "<script defer src=\"/lib/AlbatrossWasm.mjs\" type=\"module\" integrity=\"sha256-'${ALBATROSS_LOADER_HASH}'\"></script>"
+            print space[1] "<script defer src=\"/lib/Nimiq.mjs\" type=\"module\" integrity=\"sha256-'${NIMIQ_POS_LOADER_HASH}'\"></script>"
             next
         }
         /<script.*type="module"/ {
@@ -392,22 +419,21 @@ cp -v node_modules/@nimiq/style/nimiq-style.icons.svg dist/assets/
 # copy service worker (which has to be in root to work)
 cp -v src/service-worker/ServiceWorker.js dist
 
-# copy Nimiq files
-output "‼️   Copying Nimiq files"
+# copy Nimiq PoW files
+output "‼️   Copying Nimiq PoW files"
 cp -v node_modules/@nimiq/core-web/web-offline.js \
-      node_modules/@nimiq/core-web/web-offline.js.map \
       node_modules/@nimiq/core-web/worker-wasm.wasm \
       node_modules/@nimiq/core-web/worker-wasm.js \
       node_modules/@nimiq/core-web/worker-js.js \
       node_modules/@nimiq/core-web/worker.js \
-      node_modules/@nimiq/core-web/worker.js.map \
-      dist/assets/nimiq
+      dist/assets/nimiq-pow
 
-# copy Albatross files
-output "‼️   Copying Albatross files"
-cp -vr node_modules/@nimiq/albatross-wasm/launcher \
-       node_modules/@nimiq/albatross-wasm/lib \
-       node_modules/@nimiq/albatross-wasm/web \
-       dist/assets/albatross
+# copy Nimiq PoS files
+output "‼️   Copying Nimiq PoS files"
+mkdir -p dist/assets/nimiq-pos/launcher
+cp -vr node_modules/@nimiq/core/launcher/browser dist/assets/nimiq-pos/launcher/browser
+mkdir -p dist/assets/nimiq-pos/lib
+cp -vr node_modules/@nimiq/core/lib/web dist/assets/nimiq-pos/lib/web
+cp -vr node_modules/@nimiq/core/web dist/assets/nimiq-pos/web
 
 output "✔️   Finished building into ./dist"
