@@ -196,6 +196,10 @@ describe('RequestParser', () => {
 
         expect(requestParser.parseLogoUrl(undefined, true, 'shopLogoUrl')).toBe(undefined);
 
+        // Test allowEmpty = false
+        expect(() => requestParser.parseLogoUrl('http://exampleshop.com/image.png', false, 'shopLogoUrl')).not.toThrow();
+        expect(() => requestParser.parseLogoUrl(undefined, false, 'shopLogoUrl')).toThrow();
+
         const vectors = [
             ['http://exampleshop.com/image.png', 'http://exampleshop.com/image.png'],
             ['https://nimiq.com/some/path/some/where/index.jpg?foo=bar', 'https://nimiq.com/some/path/some/where/index.jpg?foo=bar'],
