@@ -17,7 +17,7 @@
 
 /**
  * @callback SignMultisigTransaction.resolve
- * @param {KeyguardRequest.SignMultisigTransactionResult} result
+ * @param {KeyguardRequest.SignatureResult} result
  */
 
 class SignMultisigTransaction {
@@ -290,7 +290,7 @@ class SignMultisigTransaction {
             otherSigners,
         );
 
-        /** @type {KeyguardRequest.SignMultisigTransactionResult} */
+        /** @type {KeyguardRequest.SignatureResult} */
         const result = {
             publicKey: publicKey.serialize(),
             signature: signature.serialize(),
