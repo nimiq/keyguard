@@ -211,10 +211,10 @@
     "@ethersproject/properties" "^5.7.0"
     "@ethersproject/strings" "^5.7.0"
 
-"@nimiq/core@^2.0.5":
-  version "2.0.5"
-  resolved "https://registry.yarnpkg.com/@nimiq/core/-/core-2.0.5.tgz#055407407eb5a3016183460b61c552936d3f989c"
-  integrity sha512-fqTXjPqU3+uCa0W/3X//grMzu96eyyFdJR+aaZ5jlZrEah/Pb/ERjHuTgsC3y0TBBuYT8ohTDHktvs+p8MKPPA==
+"@nimiq/core@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@nimiq/core/-/core-2.1.0.tgz#e1873c8da0a1d4122960caf22e82bd25281438ed"
+  integrity sha512-fLhd589UyTLdn9aGVADVud9xQw4FPUldRRJoRNpFbjdVKyPS6+ohV4bNHGsUzPrjPdz6zSO3XHy6AK2zNCmc7Q==
   dependencies:
     comlink "^4.4.1"
     websocket "^1.0.34"

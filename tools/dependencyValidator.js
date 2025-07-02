@@ -11,7 +11,7 @@ funcs.find('src', '.js').forEach(file => {
 class2Path.set('lunasToCoins', 'src/common.js');
 class2Path.set('TRANSLATIONS', 'src/translations/index.js');
 class2Path.set('CONFIG', 'src/config/config.local.js');
-class2Path.set('Nimiq', 'src/lib/AlbatrossWasm.mjs');
+class2Path.set('Nimiq', 'src/lib/Nimiq.mjs');
 class2Path.set('NimiqPoW', 'node_modules/@nimiq/core-web/web-offline.js');
 class2Path.set('Rpc', 'node_modules/@nimiq/rpc/dist/rpc.umd.js');
 class2Path.set('BarcodeDetector', 'src/lib/QrScanner.js');
