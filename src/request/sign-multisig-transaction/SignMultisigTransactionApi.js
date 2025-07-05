@@ -145,7 +145,7 @@ class SignMultisigTransactionApi extends TopLevelApi {
             && 'encrypted' in object.secrets && 'keyParams' in object.secrets) {
             if (!Array.isArray(object.secrets.encrypted)) {
                 // No need to check object.secrets.encrypted.length here, as the number will later be checked against
-                // the number of my provided commitments, after we identify them in SignMultisigTransaction.
+                // the number of this signer's provided commitments, after we identify them in SignMultisigTransaction.
                 throw new Errors.InvalidRequestError(
                     'Invalid secrets.encrypted: must be an array',
                 );

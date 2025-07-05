@@ -35,7 +35,7 @@ class Key {
      * @param {RsaKeyParams} paramsB
      * @returns {boolean}
      */
-    static _areEqualRsaKeyParams(paramsA, paramsB) {
+    static _areRsaKeyParamsEqual(paramsA, paramsB) {
         return typeof paramsA === 'object' && typeof paramsB === 'object'
             && paramsA.kdf === paramsB.kdf
             && paramsA.iterations === paramsB.iterations
@@ -47,8 +47,8 @@ class Key {
      * @param {RsaKeyParams} params
      * @returns {boolean}
      */
-    static _areDefaultRsaKeyParams(params) {
-        return Key._areEqualRsaKeyParams(params, Key.defaultRsaKeyParams);
+    static _areRsaKeyParamsDefault(params) {
+        return Key._areRsaKeyParamsEqual(params, Key.defaultRsaKeyParams);
     }
 
     /**
@@ -219,7 +219,7 @@ class Key {
     async setRsaKeyPair(keyPair, persist) {
         this._rsaKeyPair = keyPair;
         // Persist if requested and the key params match the default params.
-        if (!persist || !Key._areDefaultRsaKeyParams(keyPair.keyParams)) return;
+        if (!persist || !Key._areRsaKeyParamsDefault(keyPair.keyParams)) return;
         await KeyStore.instance.setRsaKeypair(this, keyPair);
     }
 
@@ -257,9 +257,9 @@ class Key {
      */
     async _getOrComputeRsaKeyPair(keyParams) {
         const oldRsaKeyPair = this.getRsaKeyPairIfExists();
-        if (oldRsaKeyPair && Key._areEqualRsaKeyParams(keyParams, oldRsaKeyPair.keyParams)) return oldRsaKeyPair;
+        if (oldRsaKeyPair && Key._areRsaKeyParamsEqual(keyParams, oldRsaKeyPair.keyParams)) return oldRsaKeyPair;
         const rsaKeyPair = await this._computeRsaKeyPair(keyParams);
-        await this.setRsaKeyPair(rsaKeyPair, /* persist */ Key._areDefaultRsaKeyParams(keyParams));
+        await this.setRsaKeyPair(rsaKeyPair, /* persist */ Key._areRsaKeyParamsDefault(keyParams));
         return rsaKeyPair;
     }
 

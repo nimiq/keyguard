@@ -17,7 +17,7 @@
 
 /**
  * @callback SignMultisigTransaction.resolve
- * @param {KeyguardRequest.SignMultisigTransactionResult} result
+ * @param {KeyguardRequest.SignatureResult} result
  */
 
 class SignMultisigTransaction {
@@ -244,6 +244,9 @@ class SignMultisigTransaction {
             reject(new Errors.InvalidRequestError('Selected key is not part of the multisig transaction signers'));
             return;
         }
+        // Get a list of other signers, excluding the own signer. This works because `ownSigner` is a reference into
+        // the `signers` array, so we can use object-equality.
+        const otherSigners = request.multisigConfig.signers.filter(signer => signer !== ownSigner);
 
         /** @type {Nimiq.RandomSecret[]} */
         let ownCommitmentSecrets;
@@ -266,7 +269,9 @@ class SignMultisigTransaction {
             }
         }
         if (ownCommitmentSecrets.length !== ownSigner.commitments.length) {
-            reject(new Errors.InvalidRequestError('The number of secrets does not match the number of my commitments'));
+            reject(new Errors.InvalidRequestError(
+                'The number of secrets does not match the number of this signer\'s commitments',
+            ));
             return;
         }
         /** @type {Nimiq.CommitmentPair[]} */
@@ -282,10 +287,10 @@ class SignMultisigTransaction {
             request.keyPath,
             request.transaction.serializeContent(),
             ownCommitmentPairs,
-            request.multisigConfig.signers.filter(signer => signer !== ownSigner),
+            otherSigners,
         );
 
-        /** @type {KeyguardRequest.SignMultisigTransactionResult} */
+        /** @type {KeyguardRequest.SignatureResult} */
         const result = {
             publicKey: publicKey.serialize(),
             signature: signature.serialize(),

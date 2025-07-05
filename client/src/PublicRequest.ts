@@ -613,7 +613,6 @@ export type ListLegacyResult = LegacyKeyInfoObject[];
 export type SignTransactionResult = SignatureResult & {
     serializedTx: Uint8Array,
 };
-export type SignMultisigTransactionResult = SignatureResult;
 export type SignStakingResult = SignatureResult & {
     transaction: Uint8Array,
 };
@@ -651,7 +650,6 @@ export type RedirectResult
     | SignatureResult
     | ConnectResult
     | SignTransactionResult
-    | SignMultisigTransactionResult
     | SignStakingResult[]
     | SignedBitcoinTransaction
     | SignedPolygonTransaction
@@ -667,7 +665,7 @@ export type Result = RedirectResult | IFrameResult;
 export type ResultType<T extends RedirectRequest> =
     T extends Is<T, SignMessageRequest> ? SignatureResult :
     T extends Is<T, SignTransactionRequest> ? SignTransactionResult :
-    T extends Is<T, SignMultisigTransactionRequest> ? SignMultisigTransactionResult :
+    T extends Is<T, SignMultisigTransactionRequest> ? SignatureResult :
     T extends Is<T, SignStakingRequest> ? SignStakingResult[] :
     T extends Is<T, ConnectRequest> ? ConnectResult :
     T extends Is<T, DeriveAddressRequest> ? DerivedAddress[] :
@@ -684,7 +682,7 @@ export type ResultType<T extends RedirectRequest> =
 export type ResultByCommand<T extends KeyguardCommand> =
     T extends KeyguardCommand.SIGN_MESSAGE ? SignatureResult :
     T extends KeyguardCommand.SIGN_TRANSACTION ? SignTransactionResult :
-    T extends KeyguardCommand.SIGN_MULTISIG_TRANSACTION ? SignMultisigTransactionResult :
+    T extends KeyguardCommand.SIGN_MULTISIG_TRANSACTION ? SignatureResult :
     T extends KeyguardCommand.SIGN_STAKING ? SignStakingResult[] :
     T extends KeyguardCommand.CONNECT_ACCOUNT ? ConnectResult :
     T extends KeyguardCommand.DERIVE_ADDRESS ? DerivedAddress[] :
