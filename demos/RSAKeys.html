@@ -76,10 +76,8 @@
         <textarea id="public-key" class="key" placeholder="-----BEGIN PUBLIC KEY-----"></textarea>
     </p>
 
-    <script>
-        window.addEventListener('load', async () => {
-            await Nimiq.default();
-        });
+    <script type="module">
+        await Nimiq.default();
 
         /** @type {HTMLButtonElement} */
         const $newEntropy = document.querySelector('#new-entropy');

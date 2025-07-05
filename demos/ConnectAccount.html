@@ -51,11 +51,8 @@
     <p id="result"></p>
 </form>
 
-<script>
-    window.addEventListener('load', async () => {
-        await Nimiq.default();
-        loadAccounts();
-    });
+<script type="module">
+    await Nimiq.default();
 
     const accountSelector = document.querySelector('#account');
 
@@ -71,6 +68,7 @@
         }
         accountSelector.appendChild(dom);
     }
+    loadAccounts();
 
     document.querySelector('button#popup').addEventListener('click', async () => {
         connectAccountPopup(await generateRequest());

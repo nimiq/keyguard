@@ -102,10 +102,8 @@
     <p id="result"></p>
 </form>
 
-<script>
-    window.addEventListener('load', async () => {
-        await Nimiq.default();
-    });
+<script type="module">
+    await Nimiq.default();
 
     const layoutSelector = document.querySelector('#layout');
     const checkoutOnlyOptions = document.querySelectorAll('.checkout-only');
