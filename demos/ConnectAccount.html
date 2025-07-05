@@ -35,14 +35,14 @@
 
     <div class="row">
         <label>Challenge</label>
-		<input id="challenge" value="some random characters">
+        <input id="challenge" value="some random characters">
     </div>
 
     <div class="row">
         <label>Permissions</label>
-		<label>
-			<input type="checkbox" id="permission-sign-multisig-transaction" checked> sign-multisig-transaction
-		</label>
+        <label>
+            <input type="checkbox" id="permission-sign-multisig-transaction" checked> sign-multisig-transaction
+        </label>
     </div>
 
     <!-- <br><button id="redirect" type="button" class="small" disabled>Connect Account (redirect)</button> -->
@@ -54,23 +54,23 @@
 <script>
     window.addEventListener('load', async () => {
         await Nimiq.default();
-	    loadAccounts();
+        loadAccounts();
     });
 
     const accountSelector = document.querySelector('#account');
 
-	async function loadAccounts() {
-		/** @type {KeyInfo[]} */
-		const keyInfos = await KeyStore.instance.list();
-		const dom = document.createDocumentFragment();
-		for (const keyInfo of keyInfos) {
-			const option = document.createElement('option');
-			option.value = keyInfo.id;
-			option.textContent = keyInfo.defaultAddress.toUserFriendlyAddress();
-			dom.appendChild(option);
-		}
-		accountSelector.appendChild(dom);
-	}
+    async function loadAccounts() {
+        /** @type {KeyInfo[]} */
+        const keyInfos = await KeyStore.instance.list();
+        const dom = document.createDocumentFragment();
+        for (const keyInfo of keyInfos) {
+            const option = document.createElement('option');
+            option.value = keyInfo.id;
+            option.textContent = keyInfo.defaultAddress.toUserFriendlyAddress();
+            dom.appendChild(option);
+        }
+        accountSelector.appendChild(dom);
+    }
 
     document.querySelector('button#popup').addEventListener('click', async () => {
         connectAccountPopup(await generateRequest());
@@ -79,7 +79,7 @@
     async function generateRequest() {
         const keyId = accountSelector.value;
         const challenge = document.querySelector('#challenge').value;
-		const permissions = ['sign-multisig-transaction']; // TODO
+        const permissions = ['sign-multisig-transaction']; // TODO
 
         const request = {
             appName: 'Nimiq Multisig',
@@ -88,9 +88,9 @@
             keyLabel: 'Some Account',
 
             appLogoUrl: `${window.location.origin}/demos/multisig-logo.svg`,
-			permissions,
+            permissions,
             requestedKeyPaths: [`m/44'/242'/0'/0'`],
-			challenge,
+            challenge,
         };
 
         return request;

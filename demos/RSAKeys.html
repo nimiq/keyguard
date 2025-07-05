@@ -21,23 +21,23 @@
             margin: 5px;
         }
 
-		textarea {
-			width: 300px;
-			height: 100px;
-		}
+        textarea {
+            width: 300px;
+            height: 100px;
+        }
 
-		textarea.key {
-			width: 500px;
-			height: 400px;
-		}
+        textarea.key {
+            width: 500px;
+            height: 400px;
+        }
 
-		textarea.key.same {
-			background: lightgreen;
-		}
+        textarea.key.same {
+            background: lightgreen;
+        }
 
-		iframe {
-			height: 40px;
-		}
+        iframe {
+            height: 40px;
+        }
 
         #result {
             max-width: 900px;
@@ -46,141 +46,141 @@
     </style>
 </head>
 <body>
-	<h1>RSA Keys</h1>
+    <h1>RSA Keys</h1>
 
-	<p>
-		<label>Entropy: <button id="new-entropy">New</button></label>
-		<textarea id="entropy">cd52908f241166411ca945ea4254daea7cc63dd7f3044ea2f04d7685e31bd397</textarea>
-	</p>
+    <p>
+        <label>Entropy: <button id="new-entropy">New</button></label>
+        <textarea id="entropy">cd52908f241166411ca945ea4254daea7cc63dd7f3044ea2f04d7685e31bd397</textarea>
+    </p>
 
-	<p>
-		<label>Key Size:</label>
-		<select id="key-size">
-			<option>1024 (unsafe)</option>
-			<option selected>2048 (fast)</option>
-			<option>4096 (safe)</option>
-		</select>
-	</p>
+    <p>
+        <label>Key Size:</label>
+        <select id="key-size">
+            <option>1024 (unsafe)</option>
+            <option selected>2048 (fast)</option>
+            <option>4096 (safe)</option>
+        </select>
+    </p>
 
-	<p>
-		<label>Sandboxed Iframe:</label>
-		<iframe src="/src/lib/rsa/sandboxed/RSAKeysIframe.html" sandbox="allow-scripts" id="iframe"></iframe>
-	</p>
+    <p>
+        <label>Sandboxed Iframe:</label>
+        <iframe src="/src/lib/rsa/sandboxed/RSAKeysIframe.html" sandbox="allow-scripts" id="iframe"></iframe>
+    </p>
 
-	<p>
-		<button id="generate">Generate RSA Key</button>
-	</p>
+    <p>
+        <button id="generate">Generate RSA Key</button>
+    </p>
 
-	<p>
-		<textarea id="private-key" class="key" placeholder="-----BEGIN RSA PRIVATE KEY-----"></textarea>
-		<textarea id="public-key" class="key" placeholder="-----BEGIN PUBLIC KEY-----"></textarea>
-	</p>
+    <p>
+        <textarea id="private-key" class="key" placeholder="-----BEGIN RSA PRIVATE KEY-----"></textarea>
+        <textarea id="public-key" class="key" placeholder="-----BEGIN PUBLIC KEY-----"></textarea>
+    </p>
 
-	<script>
-		window.addEventListener('load', async () => {
-			await Nimiq.default();
-		});
+    <script>
+        window.addEventListener('load', async () => {
+            await Nimiq.default();
+        });
 
-		/** @type {HTMLButtonElement} */
-		const $newEntropy = document.querySelector('#new-entropy');
-		/** @type {HTMLTextAreaElement} */
-		const $entropy = document.querySelector('#entropy');
-		/** @type {HTMLSelectElement} */
-		const $keysize = document.querySelector('#key-size');
-		/** @type {HTMLIFrameElement} */
-		const $iframe = document.querySelector('#iframe');
-		/** @type {HTMLButtonElement} */
-		const $generate = document.querySelector('#generate');
-		/** @type {HTMLTextAreaElement} */
-		const $privateKey = document.querySelector('#private-key');
-		/** @type {HTMLTextAreaElement} */
-		const $publicKey = document.querySelector('#public-key');
+        /** @type {HTMLButtonElement} */
+        const $newEntropy = document.querySelector('#new-entropy');
+        /** @type {HTMLTextAreaElement} */
+        const $entropy = document.querySelector('#entropy');
+        /** @type {HTMLSelectElement} */
+        const $keysize = document.querySelector('#key-size');
+        /** @type {HTMLIFrameElement} */
+        const $iframe = document.querySelector('#iframe');
+        /** @type {HTMLButtonElement} */
+        const $generate = document.querySelector('#generate');
+        /** @type {HTMLTextAreaElement} */
+        const $privateKey = document.querySelector('#private-key');
+        /** @type {HTMLTextAreaElement} */
+        const $publicKey = document.querySelector('#public-key');
 
-		let lastPrivatePEM = '';
-		let lastPublicPEM = '';
+        let lastPrivatePEM = '';
+        let lastPublicPEM = '';
 
-		$newEntropy.addEventListener('click', () => {
-			$entropy.value = Nimiq.Entropy.generate().toHex();
-		});
+        $newEntropy.addEventListener('click', () => {
+            $entropy.value = Nimiq.Entropy.generate().toHex();
+        });
 
-		$generate.addEventListener('click', async () => {
-			$privateKey.value = '';
-			$publicKey.value = '';
-			$generate.disabled = true;
+        $generate.addEventListener('click', async () => {
+            $privateKey.value = '';
+            $publicKey.value = '';
+            $generate.disabled = true;
 
-			try {
-				// Extend 32-byte entropy into 1024-byte seed
-				const entropyBuffer = Nimiq.BufferUtils.fromHex($entropy.value);
-				const seed = Nimiq.CryptoUtils.computePBKDF2sha512(
-					entropyBuffer,
-					Nimiq.PublicKey.derive(Nimiq.PrivateKey.deserialize(entropyBuffer)).toAddress().serialize(),
-					1024, // Iterations
-					1024, // Output size
-				);
-				const keySize = parseInt($keysize.value);
-				const iframe = $iframe.contentWindow;
+            try {
+                // Extend 32-byte entropy into 1024-byte seed
+                const entropyBuffer = Nimiq.BufferUtils.fromHex($entropy.value);
+                const seed = Nimiq.CryptoUtils.computePBKDF2sha512(
+                    entropyBuffer,
+                    Nimiq.PublicKey.derive(Nimiq.PrivateKey.deserialize(entropyBuffer)).toAddress().serialize(),
+                    1024, // Iterations
+                    1024, // Output size
+                );
+                const keySize = parseInt($keysize.value);
+                const iframe = $iframe.contentWindow;
 
-				iframe.postMessage({ command: 'generateKey', seed, keySize }, '*');
-			} catch (error) {
-				alert(error.message);
-				$generate.disabled = false;
-			}
-		});
+                iframe.postMessage({ command: 'generateKey', seed, keySize }, '*');
+            } catch (error) {
+                alert(error.message);
+                $generate.disabled = false;
+            }
+        });
 
-		window.addEventListener('message', async (event) => {
-			if (event.source === event.target) {
-				// console.log("Ignored same-window event:", event);
-				return;
-			}
+        window.addEventListener('message', async (event) => {
+            if (event.source === event.target) {
+                // console.log("Ignored same-window event:", event);
+                return;
+            }
 
-			/** @type {{privateKey: ArrayBuffer, publicKey: ArrayBuffer}} */
-			const data = event.data;
+            /** @type {{privateKey: ArrayBuffer, publicKey: ArrayBuffer}} */
+            const data = event.data;
             if (!('privateKey' in data) || !('publicKey' in data)) return;
-			console.log("MSG:", data);
+            console.log("MSG:", data);
 
-			const keyPair = {
-				privateKey: await window.crypto.subtle.importKey(
-					'pkcs8',
-					data.privateKey,
-					{
-						name: 'RSA-OAEP',
-						hash: 'SHA-256',
-					},
-					true,
-					['decrypt'],
-				),
-				publicKey: await window.crypto.subtle.importKey(
-					'spki',
-					data.publicKey,
-					{
-						name: 'RSA-OAEP',
-						hash: 'SHA-256',
-					},
-					true,
-					['encrypt'],
-				),
-			};
+            const keyPair = {
+                privateKey: await window.crypto.subtle.importKey(
+                    'pkcs8',
+                    data.privateKey,
+                    {
+                        name: 'RSA-OAEP',
+                        hash: 'SHA-256',
+                    },
+                    true,
+                    ['decrypt'],
+                ),
+                publicKey: await window.crypto.subtle.importKey(
+                    'spki',
+                    data.publicKey,
+                    {
+                        name: 'RSA-OAEP',
+                        hash: 'SHA-256',
+                    },
+                    true,
+                    ['encrypt'],
+                ),
+            };
 
-			const privateKeyExport = await window.crypto.subtle.exportKey('pkcs8', keyPair.privateKey);
-			const publicKeyExport = await window.crypto.subtle.exportKey('spki', keyPair.publicKey);
+            const privateKeyExport = await window.crypto.subtle.exportKey('pkcs8', keyPair.privateKey);
+            const publicKeyExport = await window.crypto.subtle.exportKey('spki', keyPair.publicKey);
 
-			const privateB64 = Nimiq.BufferUtils.toBase64(new Nimiq.SerialBuffer(privateKeyExport));
-			const publicB64 = Nimiq.BufferUtils.toBase64(new Nimiq.SerialBuffer(publicKeyExport));
+            const privateB64 = Nimiq.BufferUtils.toBase64(new Nimiq.SerialBuffer(privateKeyExport));
+            const publicB64 = Nimiq.BufferUtils.toBase64(new Nimiq.SerialBuffer(publicKeyExport));
 
-			const privatePEM = `-----BEGIN RSA PRIVATE KEY-----\n${privateB64}\n-----END RSA PRIVATE KEY-----`;
-			const publicPEM = `-----BEGIN PUBLIC KEY-----\n${publicB64}\n-----END PUBLIC KEY-----`;
+            const privatePEM = `-----BEGIN RSA PRIVATE KEY-----\n${privateB64}\n-----END RSA PRIVATE KEY-----`;
+            const publicPEM = `-----BEGIN PUBLIC KEY-----\n${publicB64}\n-----END PUBLIC KEY-----`;
 
-			$privateKey.value = privatePEM;
-			$publicKey.value = publicPEM;
+            $privateKey.value = privatePEM;
+            $publicKey.value = publicPEM;
 
-			$privateKey.classList.toggle('same', privatePEM === lastPrivatePEM);
-			$publicKey.classList.toggle('same', publicPEM === lastPublicPEM);
+            $privateKey.classList.toggle('same', privatePEM === lastPrivatePEM);
+            $publicKey.classList.toggle('same', publicPEM === lastPublicPEM);
 
-			lastPrivatePEM = privatePEM;
-			lastPublicPEM = publicPEM;
+            lastPrivatePEM = privatePEM;
+            lastPublicPEM = publicPEM;
 
-			$generate.disabled = false;
-		});
-	</script>
+            $generate.disabled = false;
+        });
+    </script>
 </body>
 </html>
