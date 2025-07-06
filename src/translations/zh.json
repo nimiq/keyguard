@@ -13,7 +13,7 @@
     "back-to-vote": "返回Nimiq投票",
     "back-to-cpl": "返回CryptoPayment.link",
 
-    "tx-data-funding-cashlink": "Funding cashlink",
+    "tx-data-funding-cashlink": "现金链接充值",
     "tx-data-contract-creation": "{contractType} creation",
     "tx-data-contract-withdrawal": "{contractType} withdrawal",
     "tx-data-staking": "Staking",

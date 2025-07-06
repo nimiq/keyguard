@@ -13,7 +13,7 @@
     "back-to-vote": "Zurück zur Abstimmung",
     "back-to-cpl": "Zurück zu CryptoPayment.link",
 
-    "tx-data-funding-cashlink": "Funding cashlink",
+    "tx-data-funding-cashlink": "Cashlink aufladen",
     "tx-data-contract-creation": "{contractType} creation",
     "tx-data-contract-withdrawal": "{contractType} withdrawal",
     "tx-data-staking": "Staking",

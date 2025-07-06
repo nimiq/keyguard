@@ -13,7 +13,7 @@
     "back-to-vote": "Назад к Nimiq Vote",
     "back-to-cpl": "Назад к CryptoPayment.link",
 
-    "tx-data-funding-cashlink": "Funding cashlink",
+    "tx-data-funding-cashlink": "Финансирование Cashlink",
     "tx-data-contract-creation": "{contractType} creation",
     "tx-data-contract-withdrawal": "{contractType} withdrawal",
     "tx-data-staking": "Staking",

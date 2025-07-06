@@ -13,7 +13,7 @@
     "back-to-vote": "Повернутися до Nimiq голосування",
     "back-to-cpl": "Повернутися до CryptoPayment.link",
 
-    "tx-data-funding-cashlink": "Funding cashlink",
+    "tx-data-funding-cashlink": "Чек поповнюється",
     "tx-data-contract-creation": "{contractType} creation",
     "tx-data-contract-withdrawal": "{contractType} withdrawal",
     "tx-data-staking": "Staking",
@@ -73,7 +73,7 @@
     "sign-tx-fee": "комісія",
     "sign-tx-cancel-payment": "Скасувати платіж",
 
-    "sign-multisig-tx-heading-tx": "Approve Multisig Transaction",
+    "sign-multisig-tx-heading-tx": "Схвалити Multisig переказ",
     "sign-multisig-tx-approving-as-name-with-account": "Approving as {userName} with {accountName}",
     "sign-multisig-tx-approving-with-account": "Approving with {accountName}",
 
@@ -117,7 +117,7 @@
     "passwordbox-repeat-password-short": "Пароль занадто короткий",
     "passwordbox-password-skip": "Наразі пропустити",
     "passwordbox-reset-password": "Скинути за допомогою секретних слів",
-    "passwordbox-connect-account": "Connect your account",
+    "passwordbox-connect-account": "Підключіть свій рахунок",
 
     "payment-info-line-order-amount": "Сума замовлення",
     "payment-info-line-vendor-markup": "Націнка від постачальника",

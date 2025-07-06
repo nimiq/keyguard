@@ -13,7 +13,7 @@
     "back-to-vote": "Voltar para Votação da Nimiq",
     "back-to-cpl": "Voltar para CryptoPayment.link",
 
-    "tx-data-funding-cashlink": "Funding cashlink",
+    "tx-data-funding-cashlink": "Financiar cashlink",
     "tx-data-contract-creation": "{contractType} creation",
     "tx-data-contract-withdrawal": "{contractType} withdrawal",
     "tx-data-staking": "Staking",
@@ -73,7 +73,7 @@
     "sign-tx-fee": "taxa",
     "sign-tx-cancel-payment": "Cancelar pagamento",
 
-    "sign-multisig-tx-heading-tx": "Approve Multisig Transaction",
+    "sign-multisig-tx-heading-tx": "Aprovar transação Multisig",
     "sign-multisig-tx-approving-as-name-with-account": "Approving as {userName} with {accountName}",
     "sign-multisig-tx-approving-with-account": "Approving with {accountName}",
 
@@ -117,7 +117,7 @@
     "passwordbox-repeat-password-short": "Palavra passe demasiado curta",
     "passwordbox-password-skip": "Passar por enquanto",
     "passwordbox-reset-password": "Redefinir com as Palavras de Recuperação",
-    "passwordbox-connect-account": "Connect your account",
+    "passwordbox-connect-account": "Conecte a sua conta",
 
     "payment-info-line-order-amount": "Valor do pedido",
     "payment-info-line-vendor-markup": "Margem de lucro do vendedor da criptomoeda",
