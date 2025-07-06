@@ -20,6 +20,7 @@ import {
     ReleaseKeyRequest,
     ResetPasswordRequest,
     SignTransactionRequest,
+    SignMultisigTransactionRequest,
     SignStakingRequest,
     SignMessageRequest,
     SimpleRequest,
@@ -40,7 +41,10 @@ import {
     SignSwapRequest,
     SignSwapTransactionsRequest,
     SignSwapTransactionsResult,
+    ConnectRequest,
 } from './PublicRequest';
+
+import { SignMessagePrefix } from './SignMessagePrefix';
 
 import Observable from './Observable';
 
@@ -121,6 +125,10 @@ export class KeyguardClient {
         this._redirectRequest<SignTransactionRequest>(KeyguardCommand.SIGN_TRANSACTION, request);
     }
 
+    public signMultisigTransaction(request: SignMultisigTransactionRequest) {
+        this._redirectRequest<SignMultisigTransactionRequest>(KeyguardCommand.SIGN_MULTISIG_TRANSACTION, request);
+    }
+
     public signStaking(request: SignStakingRequest) {
         this._redirectRequest<SignStakingRequest>(KeyguardCommand.SIGN_STAKING, request);
     }
@@ -151,6 +159,10 @@ export class KeyguardClient {
 
     public signSwap(request: SignSwapRequest) {
         this._redirectRequest<SignSwapRequest>(KeyguardCommand.SIGN_SWAP, request);
+    }
+
+    public connectAccount(request: ConnectRequest) {
+        this._redirectRequest<ConnectRequest>(KeyguardCommand.CONNECT_ACCOUNT, request);
     }
 
     /* IFRAME REQUESTS */
@@ -249,7 +261,7 @@ export class KeyguardClient {
     }
 }
 
-import '../../src/lib/SignMessageConstants.js';
-
-// tslint:disable-next-line:variable-name
-export const MSG_PREFIX = window.__messageSigningPrefix.MSG_PREFIX;
+/**
+ * @deprecated - Import SignMessagePrefix instead.
+ */
+export const MSG_PREFIX = SignMessagePrefix.SIGNED_MESSAGE;

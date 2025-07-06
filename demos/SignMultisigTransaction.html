@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SignMultisigTransaction | Keyguard Demo</title>
+    <link href="../src/nimiq-style.css" rel="stylesheet">
+    <script type="module" src="../src/lib/AlbatrossWasm.mjs"></script>
+    <script src="../src/lib/Constants.js"></script>
+    <script src="../src/lib/Key.js"></script>
+    <script src="../src/lib/KeyStore.js"></script>
+    <script src="../node_modules/@nimiq/rpc/dist/rpc.umd.js"></script>
+
+    <style>
+        .row {
+            margin: 1rem 0;
+        }
+
+        label, input {
+            display: block;
+            margin: 5px;
+        }
+
+        #result {
+            max-width: 900px;
+            overflow-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+
+<form class="center">
+    <div class="row">
+        <label>Layout</label>
+        <select id="layout">
+            <option>standard</option>
+            <!-- <option>checkout</option>
+            <option>cashlink</option> -->
+        </select>
+    </div>
+
+    <div class="row">
+        <label>Transaction amount (luna)</label>
+        <input id="amount" value="200000000" type="number">
+    </div>
+
+    <div class="row">
+        <label>Transaction fee (luna)</label>
+        <input id="fee" value="0" type="number">
+    </div>
+
+    <div class="row">
+        <label>Transaction data (ascii)</label>
+        <input id="data" value="">
+    </div>
+
+    <div class="row">
+        <label>Key password</label>
+        <input id="password" value="1234567890">
+    </div>
+
+    <div class="row">
+        <label>Multisig Config</label>
+        <input id="signers" value="2" min="1" step="1" type="number" style="width: 75px"> of
+        <input id="participants" value="3" min="2" step="1" type="number" style="width: 75px">
+    </div>
+
+    <div class="row">
+        <label>User name</label>
+        <input id="userName" value="Anton">
+    </div>
+
+    <!-- <div class="row checkout-only">
+        <label>Fiat Amount (optional)</label>
+        <input id="fiat-amount" type="number">
+    </div>
+
+    <div class="row checkout-only">
+        <label>Fiat Currency Code (optional)</label>
+        <input id="fiat-currency">
+    </div>
+
+    <div class="row checkout-only">
+        <label>Vendor Markup (optional)</label>
+        <input id="vendor-markup" type="number">
+    </div>
+
+    <div class="row checkout-only">
+        <label>Request Time (optional)</label>
+        <input id="time" type="number">
+        <button id="set-current-time" type="button">Current time</button>
+    </div>
+
+    <div class="row checkout-only">
+        <label>Expiry Time (optional)</label>
+        <input id="expires" type="number">
+        <button id="set-expiry-time" type="button">2 Minutes</button>
+    </div> -->
+
+    <br><button id="redirect" type="button" class="small" disabled>Sign transaction (redirect)</button>
+    <br><button id="popup" type="button" class="small">Sign transaction (popup)</button>
+
+    <p id="result"></p>
+</form>
+
+<script type="module">
+    await Nimiq.default();
+
+    const layoutSelector = document.querySelector('#layout');
+    const checkoutOnlyOptions = document.querySelectorAll('.checkout-only');
+    function updateOptions() {
+        checkoutOnlyOptions.forEach((el) => el.style.display = layoutSelector.value === 'checkout' ? '' : 'none');
+    }
+
+    layoutSelector.addEventListener('change', updateOptions);
+    updateOptions();
+
+    // const timeInput = document.querySelector('#time');
+    // document.querySelector('button#set-current-time').addEventListener('click', () => {
+    //     timeInput.value = Date.now();
+    // });
+
+    // const expiresInput = document.querySelector('#expires');
+    // document.querySelector('button#set-expiry-time').addEventListener('click', () => {
+    //     expiresInput.value = (parseFloat(timeInput.value) || Date.now()) + 2 * 60 * 1000; // set default of 2 minutes
+    // });
+
+    // document.querySelector('button#redirect').addEventListener('click', async () => {
+    //     signTransactionRedirect(await generateRequest());
+    // });
+
+    document.querySelector('button#popup').addEventListener('click', async () => {
+        signTransactionPopup(await generateRequest());
+    });
+
+    async function generateRequest() {
+        const layout = document.querySelector('#layout').value;
+        const txAmount = parseInt(document.querySelector('#amount').value) || 0;
+        const txFee = parseInt(document.querySelector('#fee').value) || 0;
+        const txData = document.querySelector('#data').value || '';
+        const keyPassword = document.querySelector('#password').value || '';
+        const numberOfSigners = parseInt(document.querySelector('#signers').value || '2');
+        const numberOfKeys = parseInt(document.querySelector('#participants').value || '3');
+        const userName = document.querySelector('#userName').value;
+
+        // Generate a random key and put it into the KeyStore.
+        const secret = Nimiq.Entropy.generate();
+        const key = new Key(secret);
+        const password = keyPassword ? Nimiq.BufferUtils.fromUtf8(keyPassword) : undefined;
+        const id = await KeyStore.instance.put(key, password);
+
+        const path = "m/0'/0'";
+        const myPublicKey = Nimiq.PublicKey.derive(
+            secret instanceof Nimiq.Entropy
+                ? secret.toExtendedPrivateKey().derivePath(path).privateKey
+                : secret,
+        );
+
+        const publicKeys = new Array(numberOfKeys - 1).fill(0).map(() => Nimiq.PublicKey.derive(Nimiq.PrivateKey.generate()));
+        publicKeys.push(myPublicKey);
+        publicKeys.reverse(); // Move my public key to the front, so when slicing the signerPublicKeys, mine is included
+
+        const request = {
+            appName: 'SignMultisigTx Demo',
+
+            layout,
+
+            keyId: id,
+            keyPath: path,
+            keyLabel: 'Demo Account',
+
+            // Transaction information
+            sender: Nimiq.Address.fromPublicKeys(publicKeys, numberOfSigners).serialize(),
+            senderLabel: 'Our Multisig Wallet',
+            recipient: Nimiq.Address.fromUserFriendlyAddress('NQ82 HP54 C9D4 2FAG 69QD 6Q71 LURR 5187 0V3X').serialize(),
+            recipientLabel: 'Best Friend',
+            value: txAmount,
+            fee: txFee,
+            data: Nimiq.BufferUtils.fromUtf8(txData),
+            validityStartHeight: 0,
+
+            multisigConfig: {
+                publicKeys: publicKeys.map(key => key.serialize()),
+                signers: publicKeys.slice(0, numberOfSigners).map(key => ({
+                    publicKey: key.serialize(),
+                    commitments: new Array(2).fill(0).map(() => Nimiq.CommitmentPair.generate().commitment.serialize()), // Using random data
+                })),
+                secrets: new Array(2).fill(0).map(() => Nimiq.CommitmentPair.generate().secret.serialize()), // Using random data,
+                userName,
+            }
+        };
+
+        // if (layout === 'checkout') {
+        //     request.shopOrigin = location.origin;
+
+        //     const fiatAmount = parseFloat(document.querySelector('#fiat-amount').value);
+        //     if (!Number.isNaN(fiatAmount)) {
+        //         request.fiatAmount = fiatAmount;
+        //     }
+
+        //     const fiatCurrency = document.querySelector('#fiat-currency').value;
+        //     if (fiatCurrency !== '') {
+        //         request.fiatCurrency = fiatCurrency;
+        //     }
+
+        //     const vendorMarkup = parseFloat(document.querySelector('#vendor-markup').value);
+        //     if (!Number.isNaN(vendorMarkup)) {
+        //         request.vendorMarkup = vendorMarkup;
+        //     }
+
+        //     const time = timeInput.value;
+        //     if (time !== '') {
+        //         request.time = parseFloat(time);
+        //     }
+
+        //     const expires = expiresInput.value;
+        //     if (expires !== '') {
+        //         request.expires = parseFloat(expires);
+        //     }
+        // }
+
+        return request;
+    }
+
+    // function signTransactionRedirect(txRequest) {
+    //     return client.signTransaction(txRequest, RedirectRequestBehavior.withLocalState({ keyId: txRequest.keyId }));
+    // }
+
+    async function signTransactionPopup(txRequest) {
+        const keyguard = window.open('../src/request/sign-multisig-transaction/', 'SignMultisigTx Demo',
+            `left=${window.innerWidth / 2 - 350},top=75,width=700,height=850,location=yes,dependent=yes`);
+        const rpc = new Rpc.PostMessageRpcClient(keyguard, '*');
+        await rpc.init();
+
+        try {
+            const result = await rpc.call('request', txRequest);
+            console.log('Keyguard result:', result);
+            document.querySelector('#result').textContent = 'TX signed: ' + JSON.stringify(result);
+        } catch (e) {
+            console.error('Keyguard error', e);
+            document.querySelector('#result').textContent = `Error: ${e.message || e}`;
+        }
+
+        keyguard.close();
+        await KeyStore.instance.remove(txRequest.keyId);
+    }
+</script>
+
+</body>
+</html>

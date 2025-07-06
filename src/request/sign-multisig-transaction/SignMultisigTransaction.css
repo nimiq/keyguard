@@ -1,0 +1,66 @@
+/* Style overrides to SignTransaction.ccs */
+
+#confirm-transaction .nq-card-body {
+    padding-top: 0;
+}
+
+#confirm-transaction .value-fee-data {
+    padding-top: unset;
+}
+
+#confirm-transaction .accounts {
+    padding-bottom: unset;
+    border-bottom: unset;
+}
+
+/* Styles specific to SignMultisigTransaction */
+
+#confirm-transaction .user-and-account-names {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    font-size: 2rem;
+    gap: 0.5rem;
+    margin: 0 -2rem -0.5rem;
+    color: rgba(31, 35, 72, .6); /* based on Nimiq Blue */
+}
+
+#confirm-transaction .user-and-account-names .account-icon-and-name {
+    display: contents; /* contents as direct flex children of .user-and-account-names */
+}
+
+#confirm-transaction .user-and-account-names .account-icon {
+    flex-shrink: 0;
+    width: 2rem;
+    height: 3.5rem;
+    border-radius: 0.25rem;
+    margin: 0 0.5rem;
+}
+
+#confirm-transaction .user-and-account-names .account-icon.identicon {
+    width: 3rem;
+    margin: 0;
+}
+
+#confirm-transaction .user-and-account-names .user-name,
+#confirm-transaction .user-and-account-names .account-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--nimiq-blue);
+}
+
+#confirm-transaction .user-and-account-names .user-name {
+    flex-shrink: 0.5;
+}
+
+#confirm-transaction .user-and-account-names .account-name {
+    flex-shrink: 1;
+    font-weight: 600;
+}
+
+@media (max-width: 450px) {
+    #confirm-transaction .user-and-account-names {
+        margin: 0 -1rem;
+    }
+}

@@ -32,12 +32,43 @@ type AccountRecord = AccountInfo & {
     encryptedKeyPair: Uint8Array
 }
 
+type RsaKeyParams = KeyguardRequest.RsaKeyParams;
+
+type RsaKeyPair = {
+    privateKey: CryptoKey
+    publicKey: CryptoKey
+    keyParams: RsaKeyParams
+}
+
+type RsaKeyPairEncryptedExport = Transform<RsaKeyPair, 'privateKey' | 'publicKey', {
+    privateKey: {
+        salt: Uint8Array, // HKDF salt
+        iv: Uint8Array, // AES initialization vector
+        encrypted: Uint8Array,
+    },
+    publicKey: Uint8Array,
+}>;
+
 type KeyRecord = {
     id: string
     type: Nimiq.Secret.Type
     hasPin: boolean
     secret: Uint8Array
     defaultAddress: Uint8Array
+    rsaKeyPair?: RsaKeyPairEncryptedExport
+}
+
+type MultisigConfig = {
+    publicKeys: Nimiq.PublicKey[]
+    signers: Array<{
+        publicKey: Nimiq.PublicKey,
+        commitments: Nimiq.Commitment[],
+    }>
+    secrets: Nimiq.RandomSecret[] | {
+        encrypted: Uint8Array[]
+        keyParams: RsaKeyParams
+    }
+    userName?: string
 }
 
 type ParsedBitcoinTransactionInput = {
@@ -206,6 +237,13 @@ type ConstructTransaction<T extends KeyguardRequest.TransactionInfo> = Transform
     'value' | 'fee' | 'validityStartHeight' | 'flags',
     { transaction: Nimiq.Transaction }>
 
+type ConstructMultisigTransaction<T extends KeyguardRequest.TransactionInfo & {
+    multisigConfig: KeyguardRequest.MultisigConfig,
+}> = ConstructTransaction<Transform<T, 'multisigConfig', {
+    multisigConfig: MultisigConfig,
+    multisigAddress: Nimiq.Address,
+}>>;
+
 type ConstructSwap<T extends KeyguardRequest.SignSwapRequestCommon> = Transform<T,
     'fund' | 'redeem', {
         fund: {
@@ -283,6 +321,9 @@ type Parsed<T extends KeyguardRequest.Request> =
         > :
     T extends Is<T, KeyguardRequest.SignTransactionRequestCashlink> ?
         ConstructTransaction<KeyId2KeyInfo<KeyguardRequest.SignTransactionRequestCashlink>> :
+    T extends Is<T, KeyguardRequest.SignMultisigTransactionRequestStandard> ?
+        ConstructMultisigTransaction<KeyId2KeyInfo<KeyguardRequest.SignMultisigTransactionRequestStandard>>
+        & { layout: KeyguardRequest.SignMultisigTransactionRequestLayout } :
     T extends Is<T, KeyguardRequest.SignStakingRequest> ?
         Transform<KeyId2KeyInfo<KeyguardRequest.SignStakingRequest> & {
             plain: Nimiq.PlainTransaction[],
@@ -298,6 +339,12 @@ type Parsed<T extends KeyguardRequest.Request> =
             KeyId2KeyInfo<KeyguardRequest.SignMessageRequest>,
             'signer' | 'message',
             { signer: Nimiq.Address, message: Uint8Array | string }
+        > :
+    T extends Is<T, KeyguardRequest.ConnectRequest> ?
+        Transform<
+            KeyId2KeyInfo<KeyguardRequest.ConnectRequest>,
+            'appLogoUrl',
+            { appLogoUrl: URL }
         > :
     T extends Is<T, KeyguardRequest.SimpleRequest>
         | Is<T, KeyguardRequest.DeriveAddressRequest>

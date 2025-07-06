@@ -94,6 +94,7 @@ export type BitcoinTransactionInfo = {
 };
 
 export type SignTransactionRequestLayout = 'standard' | 'checkout' | 'cashlink';
+export type SignMultisigTransactionRequestLayout = 'standard';
 export type SignBtcTransactionRequestLayout = 'standard' | 'checkout';
 
 // Specific Requests
@@ -188,6 +189,53 @@ export type SignTransactionRequest
     = SignTransactionRequestStandard
     | SignTransactionRequestCheckout
     | SignTransactionRequestCashlink;
+
+export type RsaKeyParams = {
+    kdf: string,
+    iterations: number,
+    keySize: number,
+};
+
+export type MultisigConfig = {
+    /**
+     * The public keys of all n potential signers of a k of n multisig. So notably, these are not pre-aggregated public
+     * keys over signer combinations, but the original public keys. This also means that the Keyguard's multisig support
+     * is currently limited to k of n multisigs, where each combination of signers which can sign together has identical
+     * size k. Arbitrary public key combinations, for example of varying size or varying overlap, are not supported.
+     */
+    publicKeys: Uint8Array[],
+    /** The k of n potential signers involved in signing this transaction. */
+    signers: Array<{
+        publicKey: Uint8Array,
+        /** The commitments shared by the signer. Must be at least 2 for musig2. */
+        commitments: Uint8Array[],
+    }>,
+    /**
+     * The corresponding secrets for my own commitments. Can optionally be encrypted by an encryption key obtained via a
+     * Connect request.
+     */
+    secrets: Uint8Array[] | {
+        encrypted: Uint8Array[],
+        keyParams: RsaKeyParams,
+    },
+    userName?: string,
+};
+
+export type SignMultisigTransactionRequestCommon = Transform<
+    SignTransactionRequestCommon,
+    'keyLabel' | 'senderLabel',
+    Required<Pick<SignTransactionRequestCommon, 'keyLabel' | 'senderLabel'>>
+> & {
+    multisigConfig: MultisigConfig,
+};
+
+export type SignMultisigTransactionRequestStandard = SignMultisigTransactionRequestCommon & {
+    layout?: 'standard',
+    recipientLabel?: string,
+};
+
+export type SignMultisigTransactionRequest
+    = SignMultisigTransactionRequestStandard;
 
 export type SignStakingRequest = SimpleRequest & {
     keyPath: string,
@@ -492,6 +540,24 @@ export type DerivePolygonAddressResult = {
     }>,
 };
 
+export type ConnectRequest = SimpleRequest & {
+    appLogoUrl: string,
+    requestedKeyPaths: string[],
+    challenge: string,
+    // permissions: KeyguardCommand[],
+};
+
+export type ConnectResult = {
+    signatures: SignatureResult[],
+    encryptionKey: {
+        format: 'spki',
+        keyData: Uint8Array,
+        algorithm: { name: string, hash: string },
+        keyUsages: ['encrypt'],
+        keyParams: RsaKeyParams,
+    },
+};
+
 // Request unions
 
 export type RedirectRequest
@@ -501,10 +567,12 @@ export type RedirectRequest
     | ImportRequest
     | RemoveKeyRequest
     | SignMessageRequest
+    | ConnectRequest
     | SignTransactionRequest
     | SignStakingRequest
     | SignBtcTransactionRequest
     | SignPolygonTransactionRequest
+    | SignMultisigTransactionRequest
     | SimpleRequest
     | DeriveBtcXPubRequest
     | DerivePolygonAddressRequest
@@ -579,6 +647,8 @@ export type RedirectResult
     = DerivedAddress[]
     | ExportResult
     | KeyResult
+    | SignatureResult
+    | ConnectResult
     | SignTransactionResult
     | SignStakingResult[]
     | SignedBitcoinTransaction
@@ -593,8 +663,11 @@ export type Result = RedirectResult | IFrameResult;
 // Derived Result types
 
 export type ResultType<T extends RedirectRequest> =
-    T extends Is<T, SignMessageRequest> | Is<T, SignTransactionRequest> ? SignatureResult :
+    T extends Is<T, SignMessageRequest> ? SignatureResult :
+    T extends Is<T, SignTransactionRequest> ? SignTransactionResult :
+    T extends Is<T, SignMultisigTransactionRequest> ? SignatureResult :
     T extends Is<T, SignStakingRequest> ? SignStakingResult[] :
+    T extends Is<T, ConnectRequest> ? ConnectResult :
     T extends Is<T, DeriveAddressRequest> ? DerivedAddress[] :
     T extends Is<T, CreateRequest> | Is<T, ImportRequest> | Is<T, ResetPasswordRequest> ? KeyResult :
     T extends Is<T, ExportRequest> ? ExportResult :
@@ -607,8 +680,11 @@ export type ResultType<T extends RedirectRequest> =
     never;
 
 export type ResultByCommand<T extends KeyguardCommand> =
-    T extends KeyguardCommand.SIGN_MESSAGE | KeyguardCommand.SIGN_TRANSACTION ? SignatureResult :
+    T extends KeyguardCommand.SIGN_MESSAGE ? SignatureResult :
+    T extends KeyguardCommand.SIGN_TRANSACTION ? SignTransactionResult :
+    T extends KeyguardCommand.SIGN_MULTISIG_TRANSACTION ? SignatureResult :
     T extends KeyguardCommand.SIGN_STAKING ? SignStakingResult[] :
+    T extends KeyguardCommand.CONNECT_ACCOUNT ? ConnectResult :
     T extends KeyguardCommand.DERIVE_ADDRESS ? DerivedAddress[] :
     T extends KeyguardCommand.CREATE | KeyguardCommand.IMPORT ? KeyResult :
     T extends KeyguardCommand.EXPORT ? ExportResult :

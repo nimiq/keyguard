@@ -3,8 +3,18 @@
 /* global Identicon */
 
 class AddressInfo { // eslint-disable-line no-unused-vars
+    // eslint-disable-next-line valid-jsdoc
     /**
-     * @param {{ userFriendlyAddress: string, label: string?, imageUrl: URL?, accountLabel: string?}} addressInfo
+     * @param {{
+     *     userFriendlyAddress: string,
+     *     label: string?,
+     *     imageUrl: URL?,
+     *     accountLabel: string?,
+     *     multisig?: {
+     *         signers: number,
+     *         participants: number,
+     *     },
+     * }} addressInfo
      * @param {boolean} [displayAsCashlink = false]
      */
     constructor(addressInfo, displayAsCashlink = false) {
@@ -58,6 +68,24 @@ class AddressInfo { // eslint-disable-line no-unused-vars
             // eslint-disable-next-line no-new
             new Identicon(this._addressInfo.userFriendlyAddress, $identicon);
         }
+
+        if (this._addressInfo.multisig) {
+            const $signerCount = document.createElement('span');
+            $signerCount.classList.add('count');
+            $signerCount.textContent = this._addressInfo.multisig.signers.toString();
+            const $totalParticipantCount = document.createElement('span');
+            $totalParticipantCount.classList.add('count');
+            $totalParticipantCount.textContent = this._addressInfo.multisig.participants.toString();
+
+            const $badge = document.createElement('div');
+            $badge.classList.add('multisig-badge', 'nq-blue-bg');
+            I18n.translateToHtmlContent($badge, 'address-info-multisig-badge', {
+                signerCount: $signerCount,
+                totalParticipantCount: $totalParticipantCount,
+            });
+            $identicon.appendChild($badge);
+        }
+
         $el.appendChild($identicon);
 
         // label

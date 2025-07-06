@@ -1,3 +1,4 @@
+/* global Nimiq */
 /* global I18n */
 /* global TopLevelApi */
 /* global SignTransaction */
@@ -29,7 +30,7 @@ class SignTransactionApi extends TopLevelApi {
         } else if (request.layout === SignTransactionApi.Layouts.CHECKOUT
             && parsedRequest.layout === SignTransactionApi.Layouts.CHECKOUT) {
             parsedRequest.shopOrigin = this.parseShopOrigin(request.shopOrigin);
-            parsedRequest.shopLogoUrl = this.parseShopLogoUrl(request.shopLogoUrl);
+            parsedRequest.shopLogoUrl = this.parseLogoUrl(request.shopLogoUrl, true, 'shopLogoUrl');
             if (parsedRequest.shopLogoUrl && parsedRequest.shopLogoUrl.origin !== parsedRequest.shopOrigin) {
                 throw new Errors.InvalidRequestError('origin of shopLogoUrl must be same as shopOrigin');
             }
@@ -55,6 +56,11 @@ class SignTransactionApi extends TopLevelApi {
             && parsedRequest.layout === SignTransactionApi.Layouts.CASHLINK
             && request.cashlinkMessage) {
             parsedRequest.cashlinkMessage = /** @type {string} */(this.parseMessage(request.cashlinkMessage));
+        }
+
+        if (parsedRequest.transaction.senderType === Nimiq.AccountType.Staking
+            || parsedRequest.transaction.recipientType === Nimiq.AccountType.Staking) {
+            throw new Errors.InvalidRequestError('For staking transactions, use the Keyguard request "sign-staking"');
         }
 
         return parsedRequest;

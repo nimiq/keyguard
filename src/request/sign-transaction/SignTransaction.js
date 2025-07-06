@@ -10,6 +10,7 @@
 /* global PaymentInfoLine */
 /* global Constants */
 /* global NumberFormatting */
+/* global TransactionDataFormatting */
 /* global I18n */
 /* global lunasToCoins */
 
@@ -108,11 +109,17 @@ class SignTransaction {
                 const $dataSection = /** @type {HTMLDivElement} */ (this.$el.querySelector('.data-section'));
                 $dataSection.classList.remove('display-none');
             }
-        } else if ($data && transaction.data.byteLength > 0) {
-            // Set transaction extra data.
-            $data.textContent = this._formatData(transaction);
-            const $dataSection = /** @type {HTMLDivElement} */ (this.$el.querySelector('.data-section'));
-            $dataSection.classList.remove('display-none');
+        } else {
+            const formattedData = TransactionDataFormatting.formatTransactionData(transaction);
+            if (formattedData) {
+                $data.textContent = formattedData;
+                const $dataSection = /** @type {HTMLDivElement} */ (this.$el.querySelector('.data-section'));
+                $dataSection.classList.remove('display-none');
+                I18n.observer.on(
+                    I18n.Events.LANGUAGE_CHANGED,
+                    () => { $data.textContent = TransactionDataFormatting.formatTransactionData(transaction); },
+                );
+            }
         }
 
         // Set up password box.
@@ -199,25 +206,6 @@ class SignTransaction {
     run() {
         // Go to start page
         window.location.hash = SignTransaction.Pages.CONFIRM_TRANSACTION;
-    }
-
-    /**
-     * @param {Nimiq.Transaction} transaction
-     * @returns {string}
-     */
-    _formatData(transaction) {
-        if (Nimiq.BufferUtils.equals(transaction.data, Constants.CASHLINK_FUNDING_DATA)) {
-            return I18n.translatePhrase('funding-cashlink');
-        }
-
-        if (transaction.flags === Nimiq.TransactionFlag.ContractCreation) {
-            // TODO: Decode contract creation transactions
-            // return ...
-        }
-
-        return Utf8Tools.isValidUtf8(transaction.data)
-            ? Utf8Tools.utf8ByteArrayToString(transaction.data)
-            : Nimiq.BufferUtils.toHex(transaction.data);
     }
 }
 

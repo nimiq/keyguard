@@ -52,6 +52,7 @@ class Observable { // eslint-disable-line no-unused-vars
         if (this._listeners.has(type)) {
             const listeners = /** @type {Array<(...args: any) => any>} */ (this._listeners.get(type));
             for (const listener of listeners) {
+                if (!listener) continue; // skip deleted listeners
                 const res = listener(...args);
                 if (res instanceof Promise) promises.push(res);
             }
@@ -61,6 +62,7 @@ class Observable { // eslint-disable-line no-unused-vars
         if (this._listeners.has(Observable.WILDCARD)) {
             const listeners = /** @type {Array<(...args: any) => any>} */ (this._listeners.get(Observable.WILDCARD));
             for (const listener of listeners) {
+                if (!listener) continue; // skip deleted listeners
                 const res = listener(...args);
                 if (res instanceof Promise) promises.push(res);
             }

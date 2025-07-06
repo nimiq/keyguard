@@ -57,18 +57,14 @@ class RemoveKey {
             $loginFileContainer.classList.add(colorClass);
         }
 
-        // eslint-disable-next-line require-jsdoc-except/require-jsdoc
-        const setLabelConfirmInstructions = () => {
-            $labelConfirmInstructions.textContent = ''; // clear
-            const instructions = I18n.translatePhrase('remove-key-label-confirm-instructions');
-            const instructionParts = instructions.split('{accountLabel}');
-            const $accountLabel = document.createElement('span');
-            $accountLabel.classList.add('account-label');
-            $accountLabel.textContent = this._request.keyLabel;
-            $labelConfirmInstructions.append(instructionParts[0], $accountLabel, instructionParts[1]);
-        };
-        setLabelConfirmInstructions();
-        I18n.observer.on(I18n.Events.LANGUAGE_CHANGED, setLabelConfirmInstructions);
+        const $accountLabel = document.createElement('span');
+        $accountLabel.classList.add('account-label');
+        $accountLabel.textContent = this._request.keyLabel;
+        I18n.translateToHtmlContent(
+            $labelConfirmInstructions,
+            'remove-key-label-confirm-instructions',
+            { accountLabel: $accountLabel },
+        );
 
         // events
         $goToShowRecoveryWords.addEventListener('click', () => this._exportWordsHandler.run());

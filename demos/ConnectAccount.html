@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SignTransaction | Keyguard Demo</title>
+    <link href="../src/nimiq-style.css" rel="stylesheet">
+    <script type="module" src="../src/lib/AlbatrossWasm.mjs"></script>
+    <script src="../src/lib/KeyInfo.js"></script>
+    <script src="../src/lib/KeyStore.js"></script>
+    <script src="../node_modules/@nimiq/rpc/dist/rpc.umd.js"></script>
+
+    <style>
+        .row {
+            margin: 1rem 0;
+        }
+
+        label {
+            display: block;
+            margin: 5px;
+        }
+
+        #result {
+            max-width: 900px;
+            overflow-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+
+<form class="center">
+    <div class="row">
+        <label>Account to connect</label>
+        <select id="account"></select>
+    </div>
+
+    <div class="row">
+        <label>Challenge</label>
+        <input id="challenge" value="some random characters">
+    </div>
+
+    <div class="row">
+        <label>Permissions</label>
+        <label>
+            <input type="checkbox" id="permission-sign-multisig-transaction" checked> sign-multisig-transaction
+        </label>
+    </div>
+
+    <!-- <br><button id="redirect" type="button" class="small" disabled>Connect Account (redirect)</button> -->
+    <br><button id="popup" type="button" class="small">Connect Account (popup)</button>
+
+    <p id="result"></p>
+</form>
+
+<script type="module">
+    await Nimiq.default();
+
+    const accountSelector = document.querySelector('#account');
+
+    async function loadAccounts() {
+        /** @type {KeyInfo[]} */
+        const keyInfos = await KeyStore.instance.list();
+        const dom = document.createDocumentFragment();
+        for (const keyInfo of keyInfos) {
+            const option = document.createElement('option');
+            option.value = keyInfo.id;
+            option.textContent = keyInfo.defaultAddress.toUserFriendlyAddress();
+            dom.appendChild(option);
+        }
+        accountSelector.appendChild(dom);
+    }
+    loadAccounts();
+
+    document.querySelector('button#popup').addEventListener('click', async () => {
+        connectAccountPopup(await generateRequest());
+    });
+
+    async function generateRequest() {
+        const keyId = accountSelector.value;
+        const challenge = document.querySelector('#challenge').value;
+        const permissions = ['sign-multisig-transaction']; // TODO
+
+        const request = {
+            appName: 'Nimiq Multisig',
+
+            keyId,
+            keyLabel: 'Some Account',
+
+            appLogoUrl: `${window.location.origin}/demos/multisig-logo.svg`,
+            permissions,
+            requestedKeyPaths: [`m/44'/242'/0'/0'`],
+            challenge,
+        };
+
+        return request;
+    }
+
+    // function connectAccountRedirect(txRequest) {
+    //     return client.connect(txRequest, RedirectRequestBehavior.withLocalState({ keyId: txRequest.keyId }));
+    // }
+
+    async function connectAccountPopup(txRequest) {
+        const keyguard = window.open('../src/request/connect/', 'ConnectAccount Demo',
+            `left=${window.innerWidth / 2 - 350},top=75,width=700,height=850,location=yes,dependent=yes`);
+        const rpc = new Rpc.PostMessageRpcClient(keyguard, '*');
+        await rpc.init();
+
+        try {
+            const result = await rpc.call('request', txRequest);
+            console.log('Keyguard result:', result);
+            document.querySelector('#result').textContent = 'TX signed: ' + JSON.stringify(result);
+        } catch (e) {
+            console.error('Keyguard error', e);
+            document.querySelector('#result').textContent = `Error: ${e.message || e}`;
+        }
+
+        keyguard.close();
+    }
+</script>
+
+</body>
+</html>

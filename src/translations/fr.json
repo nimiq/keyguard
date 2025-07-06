@@ -13,7 +13,11 @@
     "back-to-vote": "Retour à Nimiq Vote",
     "back-to-cpl": "Retour à CryptoPayment.link",
 
-    "funding-cashlink": "Financement du cashlink",
+    "tx-data-funding-cashlink": "Funding cashlink",
+    "tx-data-contract-creation": "{contractType} creation",
+    "tx-data-contract-withdrawal": "{contractType} withdrawal",
+    "tx-data-staking": "Staking",
+    "tx-data-staking-update": "Staking update",
     "label-unknown": "Inconnu",
 
     "recovery-words-title": "Écrivez ces 24 Mots sur du papier",
@@ -69,6 +73,10 @@
     "sign-tx-fee": "frais",
     "sign-tx-cancel-payment": "Annuler le paiement",
 
+    "sign-multisig-tx-heading-tx": "Approve Multisig Transaction",
+    "sign-multisig-tx-approving-as-name-with-account": "Approving as {userName} with {accountName}",
+    "sign-multisig-tx-approving-with-account": "Approving with {accountName}",
+
     "sign-staking-heading-stake": "Staker du NIM",
     "sign-staking-heading-unstake": "Dé-staker du NIM",
     "sign-staking-heading-change": "Changer de Validateur",
@@ -79,6 +87,7 @@
     "tab-width-selector-label": "Largeur de Tabulation",
 
     "address-info-new-cashlink": "Nouveau Cashlink",
+    "address-info-multisig-badge": "{signerCount} of {totalParticipantCount}",
 
     "copyable-copied": "Copié",
 
@@ -108,6 +117,7 @@
     "passwordbox-repeat-password-short": "Le mot de passe est trop court",
     "passwordbox-password-skip": "Ignorer pour l'instant",
     "passwordbox-reset-password": "Réinitialiser avec les mots de récupération",
+    "passwordbox-connect-account": "Connect your account",
 
     "payment-info-line-order-amount": "Montant de la commande",
     "payment-info-line-vendor-markup": "Crypto-premium",
@@ -247,5 +257,14 @@
     "sign-swap-of-exchange-value": "de la valeur du swap.",
     "sign-swap-total-fees": "Total des frais",
     "sign-swap-exchange-rate": "Taux de change",
-    "sign-swap-your-bank": "Votre banque"
+    "sign-swap-your-bank": "Votre banque",
+
+    "connect-heading": "Log in to {appName}",
+    "connect-heading-description": "Connect and use your account to\napprove transactions.",
+    "connect-address-count-info": "{appName} is requesting access to {addressCount} addresses.",
+    "connect-bottom-explainer": "The connection is for approving only.\nYour funds remain unaffected.",
+    "connect-tooltip-multisig-1": "Your account will be used to verify your identity only.",
+    "connect-tooltip-multisig-2": "The shared wallet has its own address. It can receive transactions from anywhere just like a regular wallet.",
+    "connect-tooltip-address-info-first-address": "The first address of your account will be visible to all participants in your shared wallet.",
+    "connect-tooltip-address-info-multiple-addresses": "The addresses for the following derivation paths will be visible to all participants in your shared wallet: {paths}."
 }
