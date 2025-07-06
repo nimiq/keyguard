@@ -32,17 +32,22 @@ type AccountRecord = AccountInfo & {
     encryptedKeyPair: Uint8Array
 }
 
-type EncryptionKeyParams = {
-    kdf: string
-    iterations: number
-    keySize: number
+type RsaKeyParams = KeyguardRequest.RsaKeyParams;
+
+type RsaKeyPair = {
+    privateKey: CryptoKey
+    publicKey: CryptoKey
+    keyParams: RsaKeyParams
 }
 
-type RsaKeyPairExport = {
-    privateKey: Uint8Array
-    publicKey: Uint8Array
-    keyParams: EncryptionKeyParams
-}
+type RsaKeyPairEncryptedExport = Transform<RsaKeyPair, 'privateKey' | 'publicKey', {
+    privateKey: {
+        salt: Uint8Array, // HKDF salt
+        iv: Uint8Array, // AES initialization vector
+        encrypted: Uint8Array,
+    },
+    publicKey: Uint8Array,
+}>;
 
 type KeyRecord = {
     id: string
@@ -50,7 +55,7 @@ type KeyRecord = {
     hasPin: boolean
     secret: Uint8Array
     defaultAddress: Uint8Array
-    rsaKeyPair?: RsaKeyPairExport
+    rsaKeyPair?: RsaKeyPairEncryptedExport
 }
 
 type MultisigConfig = {
@@ -61,7 +66,7 @@ type MultisigConfig = {
     }>
     secrets: Nimiq.RandomSecret[] | {
         encrypted: Uint8Array[]
-        keyParams: EncryptionKeyParams
+        keyParams: RsaKeyParams
     }
     userName?: string
 }
@@ -234,7 +239,10 @@ type ConstructTransaction<T extends KeyguardRequest.TransactionInfo> = Transform
 
 type ConstructMultisigTransaction<T extends KeyguardRequest.TransactionInfo & {
     multisigConfig: KeyguardRequest.MultisigConfig,
-}> = ConstructTransaction<Transform<T, 'multisigConfig', { multisigConfig: MultisigConfig }>>;
+}> = ConstructTransaction<Transform<T, 'multisigConfig', {
+    multisigConfig: MultisigConfig,
+    multisigAddress: Nimiq.Address,
+}>>;
 
 type ConstructSwap<T extends KeyguardRequest.SignSwapRequestCommon> = Transform<T,
     'fund' | 'redeem', {

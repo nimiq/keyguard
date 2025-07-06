@@ -1,5 +1,4 @@
 /* global Nimiq */
-/* global lunasToCoins */
 /* global Key */
 /* global KeyStore */
 // /* global SignMultisigTransactionApi */
@@ -9,15 +8,16 @@
 /* global TopLevelApi */
 /* global AddressInfo */
 // /* global PaymentInfoLine */
-/* global Constants */
 /* global NumberFormatting */
+/* global TransactionDataFormatting */
 /* global I18n */
+/* global lunasToCoins */
 /* global LoginFileAccountIcon */
 /* global Identicon */
 
 /**
  * @callback SignMultisigTransaction.resolve
- * @param {KeyguardRequest.SignMultisigTransactionResult} result
+ * @param {KeyguardRequest.SignatureResult} result
  */
 
 class SignMultisigTransaction {
@@ -33,6 +33,14 @@ class SignMultisigTransaction {
         this.$el.classList.add(request.layout);
 
         const transaction = request.transaction;
+        const multisigAddressInfo = {
+            signers: request.multisigConfig.signers.length,
+            participants: request.multisigConfig.publicKeys.length,
+        };
+        // If the multisig isn't the recipient (for example of a remove-stake transaction), assume that it's the sender,
+        // even if the sender address does not match (for example for transactions from a vesting contract owned by the
+        // multisig).
+        const isSenderMultisig = !request.multisigAddress.equals(transaction.recipient);
 
         this.$accountDetails = /** @type {HTMLElement} */ (this.$el.querySelector('#account-details'));
 
@@ -42,10 +50,7 @@ class SignMultisigTransaction {
             label: request.senderLabel,
             imageUrl: null,
             accountLabel: null,
-            multisig: {
-                signers: request.multisigConfig.signers.length,
-                participants: request.multisigConfig.publicKeys.length,
-            },
+            multisig: isSenderMultisig ? multisigAddressInfo : undefined,
         });
         this._senderAddressInfo.renderTo($sender);
         $sender.addEventListener('click', () => {
@@ -54,7 +59,6 @@ class SignMultisigTransaction {
 
         const $recipient = /** @type {HTMLLinkElement} */ (this.$el.querySelector('.accounts .recipient'));
         const recipientAddress = transaction.recipient.toUserFriendlyAddress();
-        /* eslint-disable no-nested-ternary */
         // eslint-disable-next-line operator-linebreak
         const recipientLabel = /* 'shopOrigin' in request && !!request.shopOrigin
             ? request.shopOrigin.split('://')[1]
@@ -62,7 +66,6 @@ class SignMultisigTransaction {
                 ? request.recipientLabel
                 : null;
         /** @type {URL | null} */
-        /* eslint-enable no-nested-ternary */
         // eslint-disable-next-line operator-linebreak
         const recipientImage = /* 'shopLogoUrl' in request && !!request.shopLogoUrl
             ? request.shopLogoUrl
@@ -72,6 +75,7 @@ class SignMultisigTransaction {
             label: recipientLabel,
             imageUrl: recipientImage,
             accountLabel: null,
+            multisig: isSenderMultisig ? undefined : multisigAddressInfo,
         }/* , request.layout === SignMultisigTransactionApi.Layouts.CASHLINK */);
         this._recipientAddressInfo.renderTo($recipient);
         // if (request.layout !== SignMultisigTransactionApi.Layouts.CASHLINK) {
@@ -97,7 +101,6 @@ class SignMultisigTransaction {
         //     $paymentInfoLine.remove();
         // }
 
-
         const $closeDetails = /** @type {HTMLButtonElement} */ (this.$accountDetails.querySelector('#close-details'));
         $closeDetails.addEventListener('click', this._closeDetails.bind(this));
 
@@ -121,37 +124,50 @@ class SignMultisigTransaction {
         //         const $dataSection = (this.$el.querySelector('.data-section'));
         //         $dataSection.classList.remove('display-none');
         //     }
-        /* } else */ if ($data && transaction.data.byteLength > 0) {
-            // Set transaction extra data.
-            $data.textContent = this._formatData(transaction);
+        // } else {
+        const formattedData = TransactionDataFormatting.formatTransactionData(transaction);
+        if (formattedData) {
+            $data.textContent = formattedData;
             const $dataSection = /** @type {HTMLDivElement} */ (this.$el.querySelector('.data-section'));
             $dataSection.classList.remove('display-none');
+            I18n.observer.on(
+                I18n.Events.LANGUAGE_CHANGED,
+                () => { $data.textContent = TransactionDataFormatting.formatTransactionData(transaction); },
+            );
         }
+        // }
 
-        // Set up user and account names
+        // Set up username and account name with account icon
         const $nameSection = /** @type {HTMLDivElement} */ (this.$el.querySelector('.user-and-account-names'));
-        if (request.multisigConfig.userName) {
-            $nameSection.classList.add('approving-as');
-            const $userName = /** @type {HTMLDivElement} */ ($nameSection.querySelector('.user-name'));
-            $userName.textContent = request.multisigConfig.userName;
-        } else {
-            $nameSection.classList.add('approving-with');
-        }
-        const $accountName = /** @type {HTMLDivElement} */ ($nameSection.querySelector('.account-name'));
-        $accountName.textContent = request.keyLabel;
-
-        // Set up account icon
-        const $loginFileIcon = /** @type {HTMLDivElement} */ ($nameSection.querySelector('.login-file-account-icon'));
+        const $accountIcon = document.createElement('div');
+        $accountIcon.classList.add('account-icon');
         if (request.keyInfo.type === Nimiq.Secret.Type.ENTROPY) {
             // eslint-disable-next-line no-new
-            new LoginFileAccountIcon(request.keyInfo.defaultAddress.toUserFriendlyAddress(), $loginFileIcon);
+            new LoginFileAccountIcon(request.keyInfo.defaultAddress.toUserFriendlyAddress(), $accountIcon);
         } else {
             // Show identicon for legacy accounts (which must be supported to support Team Nimiq Multisig)
-            $loginFileIcon.innerHTML = ''; // Remove LoginFile icon
             // eslint-disable-next-line no-new
-            new Identicon(request.keyInfo.defaultAddress.toUserFriendlyAddress(), $loginFileIcon);
+            new Identicon(request.keyInfo.defaultAddress.toUserFriendlyAddress(), $accountIcon);
         }
-
+        const $accountName = document.createElement('div');
+        $accountName.classList.add('account-name');
+        $accountName.textContent = request.keyLabel;
+        const $accountIconAndName = document.createElement('div');
+        $accountIconAndName.classList.add('account-icon-and-name');
+        $accountIconAndName.append($accountIcon, $accountName);
+        if (request.multisigConfig.userName) {
+            const $userName = document.createElement('div');
+            $userName.classList.add('user-name');
+            $userName.textContent = request.multisigConfig.userName;
+            I18n.translateToHtmlContent($nameSection, 'sign-multisig-tx-approving-as-name-with-account', {
+                userName: $userName,
+                accountName: $accountIconAndName,
+            });
+        } else {
+            I18n.translateToHtmlContent($nameSection, 'sign-multisig-tx-approving-with-account', {
+                accountName: $accountIconAndName,
+            });
+        }
 
         // Set up password box.
         const $passwordBox = /** @type {HTMLFormElement} */ (document.querySelector('#password-box'));
@@ -212,7 +228,7 @@ class SignMultisigTransaction {
                 this._passwordBox.onPasswordIncorrect();
                 return;
             }
-            reject(new Errors.CoreError(errorMessage));
+            reject(new Errors.CoreError(error instanceof Error ? error : errorMessage));
             return;
         }
         if (!key) {
@@ -228,26 +244,22 @@ class SignMultisigTransaction {
             reject(new Errors.InvalidRequestError('Selected key is not part of the multisig transaction signers'));
             return;
         }
+        // Get a list of other signers, excluding the own signer. This works because `ownSigner` is a reference into
+        // the `signers` array, so we can use object-equality.
+        const otherSigners = request.multisigConfig.signers.filter(signer => signer !== ownSigner);
 
-        /** @type {Nimiq.CommitmentPair[]} */
-        const ownCommitmentPairs = [];
+        /** @type {Nimiq.RandomSecret[]} */
+        let ownCommitmentSecrets;
         if (Array.isArray(request.multisigConfig.secrets)) {
-            for (let i = 0; i < request.multisigConfig.secrets.length; i++) {
-                ownCommitmentPairs.push(new Nimiq.CommitmentPair(
-                    request.multisigConfig.secrets[i],
-                    ownSigner.commitments[i],
-                ));
-            }
+            ownCommitmentSecrets = request.multisigConfig.secrets;
         } else {
             // If we only have encrypted secrets, decrypt them first
             const rsaKey = await key.getRsaPrivateKey(request.multisigConfig.secrets.keyParams);
 
-            /** @type {Nimiq.RandomSecret[]} */
-            let secrets;
             try {
-                secrets = await Promise.all(request.multisigConfig.secrets.encrypted.map(
+                ownCommitmentSecrets = await Promise.all(request.multisigConfig.secrets.encrypted.map(
                     async encrypted => new Nimiq.RandomSecret(new Uint8Array(
-                        await window.crypto.subtle.decrypt({ name: 'RSA-OAEP' }, rsaKey, encrypted),
+                        await window.crypto.subtle.decrypt(rsaKey.algorithm, rsaKey, encrypted),
                     )),
                 ));
             } catch (error) {
@@ -255,23 +267,30 @@ class SignMultisigTransaction {
                 reject(new Errors.InvalidRequestError(`Cannot decrypt secrets: ${errorMessage}`));
                 return;
             }
-
-            for (let i = 0; i < secrets.length; i++) {
-                ownCommitmentPairs.push(new Nimiq.CommitmentPair(
-                    secrets[i],
-                    ownSigner.commitments[i],
-                ));
-            }
+        }
+        if (ownCommitmentSecrets.length !== ownSigner.commitments.length) {
+            reject(new Errors.InvalidRequestError(
+                'The number of secrets does not match the number of this signer\'s commitments',
+            ));
+            return;
+        }
+        /** @type {Nimiq.CommitmentPair[]} */
+        const ownCommitmentPairs = [];
+        for (let i = 0; i < ownCommitmentSecrets.length; i++) {
+            ownCommitmentPairs.push(new Nimiq.CommitmentPair(
+                ownCommitmentSecrets[i],
+                ownSigner.commitments[i],
+            ));
         }
 
         const signature = key.signPartially(
             request.keyPath,
             request.transaction.serializeContent(),
             ownCommitmentPairs,
-            request.multisigConfig.signers.filter(signer => !signer.publicKey.equals(publicKey)),
+            otherSigners,
         );
 
-        /** @type {KeyguardRequest.SignMultisigTransactionResult} */
+        /** @type {KeyguardRequest.SignatureResult} */
         const result = {
             publicKey: publicKey.serialize(),
             signature: signature.serialize(),
@@ -282,25 +301,6 @@ class SignMultisigTransaction {
     run() {
         // Go to start page
         window.location.hash = SignMultisigTransaction.Pages.CONFIRM_TRANSACTION;
-    }
-
-    /**
-     * @param {Nimiq.Transaction} transaction
-     * @returns {string}
-     */
-    _formatData(transaction) {
-        if (Nimiq.BufferUtils.equals(transaction.data, Constants.CASHLINK_FUNDING_DATA)) {
-            return I18n.translatePhrase('funding-cashlink');
-        }
-
-        if (transaction.flags === Nimiq.TransactionFlag.ContractCreation) {
-            // TODO: Decode contract creation transactions
-            // return ...
-        }
-
-        return Utf8Tools.isValidUtf8(transaction.data)
-            ? Utf8Tools.utf8ByteArrayToString(transaction.data)
-            : Nimiq.BufferUtils.toHex(transaction.data);
     }
 }
 

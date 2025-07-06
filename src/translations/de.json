@@ -13,7 +13,11 @@
     "back-to-vote": "Zurück zur Abstimmung",
     "back-to-cpl": "Zurück zu CryptoPayment.link",
 
-    "funding-cashlink": "Cashlink aufladen",
+    "tx-data-funding-cashlink": "Funding cashlink",
+    "tx-data-contract-creation": "{contractType} creation",
+    "tx-data-contract-withdrawal": "{contractType} withdrawal",
+    "tx-data-staking": "Staking",
+    "tx-data-staking-update": "Staking update",
     "label-unknown": "Unbekannt",
 
     "recovery-words-title": "Schreibe diese 24 Wörter auf Papier",
@@ -70,9 +74,8 @@
     "sign-tx-cancel-payment": "Zahlung abbrechen",
 
     "sign-multisig-tx-heading-tx": "Approve Multisig Transaction",
-    "sign-multisig-tx-approving-as": "Approving as",
-    "sign-multisig-tx-with": "with",
-    "sign-multisig-tx-approving-with": "Approving with",
+    "sign-multisig-tx-approving-as-name-with-account": "Approving as {userName} with {accountName}",
+    "sign-multisig-tx-approving-with-account": "Approving with {accountName}",
 
     "sign-staking-heading-stake": "Stake NIM",
     "sign-staking-heading-unstake": "Unstake NIM",
@@ -84,6 +87,7 @@
     "tab-width-selector-label": "Tab-Breite",
 
     "address-info-new-cashlink": "Neuer Cashlink",
+    "address-info-multisig-badge": "{signerCount} of {totalParticipantCount}",
 
     "copyable-copied": "Kopiert",
 
@@ -255,8 +259,12 @@
     "sign-swap-exchange-rate": "Wechselkurs",
     "sign-swap-your-bank": "Deine Bank",
 
-    "connect-heading-prefix": "Log in to",
+    "connect-heading": "Log in to {appName}",
+    "connect-heading-description": "Connect and use your account to\napprove transactions.",
+    "connect-address-count-info": "{appName} is requesting access to {addressCount} addresses.",
+    "connect-bottom-explainer": "The connection is for approving only.\nYour funds remain unaffected.",
     "connect-tooltip-multisig-1": "Your account will be used to verify your identity only.",
     "connect-tooltip-multisig-2": "The shared wallet has its own address. It can receive transactions from anywhere just like a regular wallet.",
-    "connect-tooltip-multisig-3": "The first address of your account will be visible to all participants in your shared wallet."
+    "connect-tooltip-address-info-first-address": "The first address of your account will be visible to all participants in your shared wallet.",
+    "connect-tooltip-address-info-multiple-addresses": "The addresses for the following derivation paths will be visible to all participants in your shared wallet: {paths}."
 }

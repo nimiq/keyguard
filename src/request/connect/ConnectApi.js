@@ -1,21 +1,26 @@
 /* global TopLevelApi */
 /* global Connect */
 /* global Errors */
+// /* global KeyguardCommand */
 
-const PermissionKeyguardCommands = [
-    /** @type {KeyguardCommand.KeyguardCommand} */ ('remove-key'),
-    /** @type {KeyguardCommand.KeyguardCommand} */ ('export'),
-    /** @type {KeyguardCommand.KeyguardCommand} */ ('change-password'),
-    // /** @type {KeyguardCommand.KeyguardCommand} */ ('sign-transaction'), // Already third-party whitelisted in Hub
-    /** @type {KeyguardCommand.KeyguardCommand} */ ('sign-multisig-transaction'),
-    // /** @type {KeyguardCommand.KeyguardCommand} */ ('sign-message'), // Already third-party whitelisted in Hub
-    /** @type {KeyguardCommand.KeyguardCommand} */ ('derive-address'),
-    // Bitcoin
-    /** @type {KeyguardCommand.KeyguardCommand} */ ('sign-btc-transaction'),
-    /** @type {KeyguardCommand.KeyguardCommand} */ ('derive-btc-xpub'),
-    // Swap
-    /** @type {KeyguardCommand.KeyguardCommand} */ ('sign-swap'),
-];
+// const PermissionKeyguardCommands = [
+//     KeyguardCommand.REMOVE,
+//     KeyguardCommand.EXPORT,
+//     KeyguardCommand.CHANGE_PASSWORD,
+//     // KeyguardCommand.SIGN_TRANSACTION, // Already third-party whitelisted in Hub
+//     KeyguardCommand.SIGN_MULTISIG_TRANSACTION,
+//     // KeyguardCommand.SIGN_STAKING, // Already third-party whitelisted in Hub
+//     // KeyguardCommand.SIGN_MESSAGE, // Already third-party whitelisted in Hub
+//     KeyguardCommand.DERIVE_ADDRESS,
+//     // Bitcoin
+//     KeyguardCommand.SIGN_BTC_TRANSACTION,
+//     KeyguardCommand.DERIVE_BTC_XPUB,
+//     // Polygon
+//     KeyguardCommand.SIGN_POLYGON_TRANSACTION,
+//     KeyguardCommand.DERIVE_POLYGON_ADDRESS,
+//     // Swap
+//     KeyguardCommand.SIGN_SWAP,
+// ];
 
 /** @extends {TopLevelApi<KeyguardRequest.ConnectRequest>} */
 class ConnectApi extends TopLevelApi { // eslint-disable-line no-unused-vars
@@ -36,38 +41,40 @@ class ConnectApi extends TopLevelApi { // eslint-disable-line no-unused-vars
             path => this.parsePath(path, 'requestedKeyPaths'),
         );
         parsedRequest.appLogoUrl = /** @type {URL} */ (this.parseLogoUrl(request.appLogoUrl, false, 'appLogoUrl'));
-        parsedRequest.permissions = this.parsePermissions(request.permissions);
         parsedRequest.challenge = /** @type {string} */ (this.parseMessage(request.challenge, true));
 
-        // Temporary limitation of permissions until UI can represent other permissions
-        // When adding new permissioned request types here, the Connect UI must be updated to be able
-        // to display these permissions to the user.
-        if (parsedRequest.permissions.length !== 1 || parsedRequest.permissions[0] !== 'sign-multisig-transaction') {
-            throw new Errors.InvalidRequestError(
-                'Only the sign-multisig-transaction permission is supported currently',
-            );
-        }
+        // parsedRequest.permissions = this.parsePermissions(request.permissions);
+        // // Temporary limitation of permissions until UI can represent other permissions
+        // // When adding new permissioned request types here, the Connect UI must be updated to be able to display
+        // // these permissions to the user, and the Keyguard must persist the granted permissions, or return a signed,
+        // // and potentially expiring, access token specific for the requesting app, and finally, requests must also
+        // // check for granted permissions.
+        // if (parsedRequest.permissions.length !== 1 || parsedRequest.permissions[0] !== 'sign-multisig-transaction') {
+        //     throw new Errors.InvalidRequestError(
+        //         'Only the sign-multisig-transaction permission is supported currently',
+        //     );
+        // }
 
         return parsedRequest;
     }
 
-    /**
-     * @param {unknown} permissions
-     * @returns {KeyguardCommand.KeyguardCommand[]}
-     */
-    parsePermissions(permissions) {
-        if (!Array.isArray(permissions)) {
-            throw new Errors.InvalidRequestError('permissions must be an array');
-        }
-
-        for (const permission of permissions) {
-            if (!PermissionKeyguardCommands.includes(permission)) {
-                throw new Errors.InvalidRequestError(`invalid permission requested: ${permission}`);
-            }
-        }
-
-        return permissions;
-    }
+    // /**
+    //  * @param {unknown} permissions
+    //  * @returns {KeyguardCommand[]}
+    //  */
+    // parsePermissions(permissions) {
+    //     if (!Array.isArray(permissions)) {
+    //         throw new Errors.InvalidRequestError('Permissions must be an array');
+    //     }
+    //
+    //     for (const permission of permissions) {
+    //         if (!PermissionKeyguardCommands.includes(permission)) {
+    //             throw new Errors.InvalidRequestError(`Invalid permission requested: ${permission}`);
+    //         }
+    //     }
+    //
+    //     return permissions;
+    // }
 
     get Handler() {
         return Connect;

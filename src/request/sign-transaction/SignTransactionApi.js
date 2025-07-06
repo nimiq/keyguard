@@ -1,3 +1,4 @@
+/* global Nimiq */
 /* global I18n */
 /* global TopLevelApi */
 /* global SignTransaction */
@@ -55,6 +56,11 @@ class SignTransactionApi extends TopLevelApi {
             && parsedRequest.layout === SignTransactionApi.Layouts.CASHLINK
             && request.cashlinkMessage) {
             parsedRequest.cashlinkMessage = /** @type {string} */(this.parseMessage(request.cashlinkMessage));
+        }
+
+        if (parsedRequest.transaction.senderType === Nimiq.AccountType.Staking
+            || parsedRequest.transaction.recipientType === Nimiq.AccountType.Staking) {
+            throw new Errors.InvalidRequestError('For staking transactions, use the Keyguard request "sign-staking"');
         }
 
         return parsedRequest;

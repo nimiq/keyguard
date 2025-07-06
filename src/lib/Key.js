@@ -1,11 +1,12 @@
 /* global Constants */
 /* global Nimiq */
-/* global SignMessageConstants */
+/* global SignMessagePrefix */
 /* global KeyStore */
 /* global CONFIG */
+/* global Utf8Tools */
 
 /**
- * @typedef {{hasPin?: boolean, rsaKeyPair?: RsaKeyPairExport}} KeyConfig
+ * @typedef {{hasPin?: boolean, rsaKeyPair?: RsaKeyPair}} KeyConfig
  */
 
 class Key {
@@ -18,9 +19,9 @@ class Key {
     }
 
     /**
-     * @returns {EncryptionKeyParams}
+     * @returns {RsaKeyParams}
      */
-    static get defaultEncryptionKeyParams() {
+    static get defaultRsaKeyParams() {
         return {
             kdf: CONFIG.RSA_KDF_FUNCTION,
             iterations: CONFIG.RSA_KDF_ITERATIONS,
@@ -29,11 +30,12 @@ class Key {
     }
 
     /**
-     * @param {EncryptionKeyParams} paramsA
-     * @param {EncryptionKeyParams} paramsB
+     * @private
+     * @param {RsaKeyParams} paramsA
+     * @param {RsaKeyParams} paramsB
      * @returns {boolean}
      */
-    static _isEncryptionKeyParamsEqual(paramsA, paramsB) {
+    static _areRsaKeyParamsEqual(paramsA, paramsB) {
         return typeof paramsA === 'object' && typeof paramsB === 'object'
             && paramsA.kdf === paramsB.kdf
             && paramsA.iterations === paramsB.iterations
@@ -41,11 +43,12 @@ class Key {
     }
 
     /**
-     * @param {EncryptionKeyParams} params
+     * @private
+     * @param {RsaKeyParams} params
      * @returns {boolean}
      */
-    static _isDefaultEncryptionKeyParams(params) {
-        return Key._isEncryptionKeyParamsEqual(params, Key.defaultEncryptionKeyParams);
+    static _areRsaKeyParamsDefault(params) {
+        return Key._areRsaKeyParamsEqual(params, Key.defaultRsaKeyParams);
     }
 
     /**
@@ -55,11 +58,10 @@ class Key {
     constructor(secret, config = {}) {
         this._secret = secret;
         this._hasPin = Boolean(config.hasPin);
+        this._rsaKeyPair = config.rsaKeyPair;
         /** @type {string?} */
         this._id = null;
         this._defaultAddress = this.deriveAddress(Constants.DEFAULT_DERIVATION_PATH);
-
-        this.rsaKeyPair = config.rsaKeyPair;
     }
 
     /**
@@ -101,14 +103,8 @@ class Key {
     signPartially(path, data, ownCommitmentPairs, otherSigners) {
         const privateKey = this.derivePrivateKey(path);
         const publicKey = Nimiq.PublicKey.derive(privateKey);
-        const [otherPublicKeys, otherCommitments] = otherSigners.reduce((acc, signer) => {
-            acc[0].push(signer.publicKey);
-            acc[1].push(signer.commitments);
-            return acc;
-        }, [
-            /** @type {Nimiq.PublicKey[]} */ ([]),
-            /** @type {Nimiq.Commitment[][]} */ ([]),
-        ]);
+        const otherPublicKeys = otherSigners.map(({ publicKey: pubKey }) => pubKey);
+        const otherCommitments = otherSigners.map(({ commitments }) => commitments);
 
         return Nimiq.PartialSignature.create(
             privateKey,
@@ -123,9 +119,10 @@ class Key {
     /**
      * @param {string} path
      * @param {Uint8Array} message - A byte array
+     * @param {SignMessagePrefix} [prefix=SignMessagePrefix.SIGNED_MESSAGE]
      * @returns {Nimiq.Signature}
      */
-    signMessage(path, message) {
+    signMessage(path, message, prefix = SignMessagePrefix.SIGNED_MESSAGE) {
         const msgLength = message.byteLength;
         const msgLengthAsString = msgLength.toString(10);
 
@@ -135,13 +132,11 @@ class Key {
          * request can sign arbitrary data (e.g. a transaction) and use the signature to
          * impersonate the victim. (https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sign)
          */
-        const dataLength = SignMessageConstants.SIGN_MSG_PREFIX.length
-                         + msgLengthAsString.length
-                         + msgLength;
+        const dataLength = prefix.length + msgLengthAsString.length + msgLength;
 
         // Construct buffer
         const data = new Nimiq.SerialBuffer(dataLength);
-        data.write(Nimiq.BufferUtils.fromUtf8(SignMessageConstants.SIGN_MSG_PREFIX));
+        data.write(Nimiq.BufferUtils.fromUtf8(prefix));
         data.write(Nimiq.BufferUtils.fromUtf8(msgLengthAsString));
         data.write(message);
 
@@ -162,58 +157,129 @@ class Key {
     }
 
     /**
-     * @param {EncryptionKeyParams} keyParams
+     * @param {Uint8Array} hkdfSalt
+     * @param {string} useCase - Allows to generate a separate AES key per use case.
+     * @param {Partial<AesKeyGenParams>} [aesParams={name:'AES-GCM',length:256}]
+     * @returns {Promise<CryptoKey>}
+     */
+    async getAesKey(hkdfSalt, useCase, aesParams) {
+        const hkdfHashAlgorithm = 'SHA-256';
+        if (hkdfSalt.byteLength * 8 < 256) {
+            // Salt too short, see developer.mozilla.org/en-US/docs/Web/API/HkdfParams#salt.
+            throw new Error(`HKDF salt length should be at least the output length of used hash ${hkdfHashAlgorithm}`);
+        }
+        const hkdfParams = {
+            name: 'HKDF',
+            hash: hkdfHashAlgorithm,
+            salt: hkdfSalt,
+            info: Utf8Tools.stringToUtf8ByteArray(useCase),
+        };
+        const hkdfKeyMaterial = await window.crypto.subtle.importKey(
+            /* format */ 'raw',
+            /* keyData */ this.secret.serialize(),
+            /* algorithm */ hkdfParams, // The key material is to be used in a HKDF derivation.
+            /* extractable */ false,
+            /* keyUsages */ ['deriveKey'],
+        );
+
+        /** @type {AesKeyGenParams} */
+        const aesEffectiveParams = {
+            // Default to AES-GCM as it's authenticated, which means that it includes checks that the ciphertext has not
+            // been modified, see developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/encrypt#aes-gcm
+            name: aesParams && aesParams.name ? aesParams.name : 'AES-GCM',
+            length: aesParams && aesParams.length ? aesParams.length : 256,
+        };
+        /** @type {KeyUsage[]} */
+        const aesKeyUsages = aesEffectiveParams.name === 'AES-KW'
+            // AES-KW's doesn't require an initialization vector, but only supports wrapping and encrypted data length
+            // must be a multiple of 8, see developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/wrapKey#aes-kw.
+            ? ['wrapKey', 'unwrapKey']
+            : ['encrypt', 'decrypt', 'wrapKey', 'unwrapKey'];
+
+        // Derive AES key from key material via a HKDF key derivation.
+        // HKDF is a suitable key derivation function in this case, because the key material has a very high entropy,
+        // see developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/deriveKey#key_derivation_algorithms.
+        // Note that HKDF is not computationally expensive, unlike PBKDF2, and thus we can compute the AES key on the
+        // fly, and don't really need to cache or persist it. Instead, it's in fact used as encryption key for other
+        // persisted data.
+        return window.crypto.subtle.deriveKey(
+            /* algorithm */ hkdfParams,
+            /* baseKey */ hkdfKeyMaterial,
+            /* derivedKeyAlgorithm */ aesEffectiveParams,
+            /* extractable */ false,
+            /* keyUsages */ aesKeyUsages,
+        );
+    }
+
+    /**
+     * Sets a known RSA key pair and persists it, if requested and the key's parameters match the default parameters.
+     * @param {RsaKeyPair} keyPair
+     * @param {boolean} persist
+     */
+    async setRsaKeyPair(keyPair, persist) {
+        this._rsaKeyPair = keyPair;
+        // Persist if requested and the key params match the default params.
+        if (!persist || !Key._areRsaKeyParamsDefault(keyPair.keyParams)) return;
+        await KeyStore.instance.setRsaKeypair(this, keyPair);
+    }
+
+    /**
+     * @returns {RsaKeyPair | undefined}
+     */
+    getRsaKeyPairIfExists() {
+        return this._rsaKeyPair;
+    }
+
+    /**
+     * @param {RsaKeyParams} keyParams
      * @returns {Promise<CryptoKey>}
      */
     async getRsaPrivateKey(keyParams) {
-        if (!this.rsaKeyPair || !Key._isEncryptionKeyParamsEqual(keyParams, this.rsaKeyPair.keyParams)) {
-            this.rsaKeyPair = await this._computeRsaKeyPair(keyParams);
-            if (Key._isDefaultEncryptionKeyParams(keyParams)) {
-                await KeyStore.instance.setRsaKeypair(this.id, this.rsaKeyPair);
-            }
-        }
-
-        return window.crypto.subtle.importKey(
-            'pkcs8',
-            this.rsaKeyPair.privateKey,
-            { name: 'RSA-OAEP', hash: 'SHA-256' },
-            false, // Prevent extraction
-            ['decrypt'],
-        );
+        const rsaKeyPair = await this._getOrComputeRsaKeyPair(keyParams);
+        return rsaKeyPair.privateKey;
     }
 
     /**
-     * @param {EncryptionKeyParams} keyParams
+     * @param {RsaKeyParams} keyParams
      * @returns {Promise<CryptoKey>}
      */
     async getRsaPublicKey(keyParams) {
-        if (!this.rsaKeyPair || !Key._isEncryptionKeyParamsEqual(keyParams, this.rsaKeyPair.keyParams)) {
-            this.rsaKeyPair = await this._computeRsaKeyPair(keyParams);
-            if (Key._isDefaultEncryptionKeyParams(keyParams)) {
-                await KeyStore.instance.setRsaKeypair(this.id, this.rsaKeyPair);
-            }
-        }
-
-        return window.crypto.subtle.importKey(
-            'spki',
-            this.rsaKeyPair.publicKey,
-            { name: 'RSA-OAEP', hash: 'SHA-256' },
-            true, // Allow extraction
-            ['encrypt'],
-        );
+        const rsaKeyPair = await this._getOrComputeRsaKeyPair(keyParams);
+        return rsaKeyPair.publicKey;
     }
 
     /**
-     * @param {EncryptionKeyParams} keyParams
-     * @returns {Promise<RsaKeyPairExport>}
+     * @private
+     * If the key has already previously been set, or computed and cached, that key is returned. If no cached key is
+     * available, the key is computed, which is computationally very expensive, and then cached.
+     * @param {RsaKeyParams} keyParams
+     * @returns {Promise<RsaKeyPair>}
+     */
+    async _getOrComputeRsaKeyPair(keyParams) {
+        const oldRsaKeyPair = this.getRsaKeyPairIfExists();
+        if (oldRsaKeyPair && Key._areRsaKeyParamsEqual(keyParams, oldRsaKeyPair.keyParams)) return oldRsaKeyPair;
+        const rsaKeyPair = await this._computeRsaKeyPair(keyParams);
+        await this.setRsaKeyPair(rsaKeyPair, /* persist */ Key._areRsaKeyParamsDefault(keyParams));
+        return rsaKeyPair;
+    }
+
+    /**
+     * @private
+     * Deterministically computes an RSA keypair from _secret for the given key params via the RSAKeysIframe.
+     * @param {RsaKeyParams} keyParams
+     * @returns {Promise<RsaKeyPair>}
      */
     async _computeRsaKeyPair(keyParams) {
+        // Setup the RSAKeysIframe in which the actual computation of the RSA key happens via node-forge. The reason why
+        // we don't use the browser crypto API instead, is that it does not support deterministic generation of RSA keys
+        // from an existing secret, and the reason why node-forge is not used directly here is that we want to run it in
+        // a sandbox, to reduce the attack surface from a big external dependency not thoroughly audited by us.
         const iframe = document.createElement('iframe');
         iframe.classList.add('rsa-sandboxed-iframe'); // Styles in common.css hide this class
         iframe.setAttribute('sandbox', 'allow-scripts');
         iframe.src = '../../lib/rsa/sandboxed/RSAKeysIframe.html'; // Relative path from a request URL
-        /** @type {Promise<void>} */
-        const loadPromise = new Promise(resolve => iframe.addEventListener('load', () => resolve()));
+        /** @type {Promise<unknown>} */
+        const loadPromise = new Promise(resolve => iframe.addEventListener('load', resolve));
         document.body.appendChild(iframe);
         await loadPromise;
 
@@ -221,7 +287,7 @@ class Key {
             throw new Error('Could not load sandboxed RSA iframe');
         }
 
-        // Extend 32-byte secret into 1024-byte seed as bytestring
+        // Extend 32-byte secret into 1024-byte seed
         /** @type {Uint8Array} */
         let seed;
         switch (keyParams.kdf) {
@@ -240,43 +306,68 @@ class Key {
         // Send computation command to iframe
         iframe.contentWindow.postMessage({
             command: 'generateKey',
-            seed: Nimiq.BufferUtils.toUtf8(seed), // seed is a bytestring
+            seed,
             keySize: keyParams.keySize,
-        }, '*');
-
-        /** @type {(keyPair: RsaKeyPairExport) => void} */
-        let resolver;
-        /** @type {Promise<RsaKeyPairExport>} */
-        const resultPromise = new Promise(resolve => {
-            resolver = resolve;
+        }, {
+            // Because the iframe has a separate sandboxed origin, we need to specify '*' as target, which is still
+            // safe, as we're posting the message directly to the iframe we fully control, such that it won't have been
+            // redirected to a different domain in the meantime, which could intercept the message.
+            targetOrigin: '*',
+            // Transfer ownership of the seed without copying the underlying ArrayBuffer.
+            transfer: [seed.buffer],
         });
 
-        /**
-         * @param {MessageEvent} event
-         */
-        function onMessage(event) {
-            if (event.source === event.target) {
-                // console.log("Ignored same-window event:", event);
-                return;
+        return new Promise((resolve, reject) => {
+            /**
+             * @param {MessageEvent} event
+             */
+            async function onMessage(event) {
+                if (event.source !== iframe.contentWindow) {
+                    // Reject any messages which are not from the iframe. Otherwise, the following attack is possible:
+                    // A malicious site starts a Connect request in an iframe (via Hub, which then redirects to the
+                    // Keyguard). Then, when the malicious site suspects that the Keyguard is waiting for the RSA key
+                    // calculation, it itself sends a postmessage to the popup with an RSA key known to the attacker,
+                    // which the Keyguard would willingly store and continue to use, also for other websites.
+                    return;
+                }
+
+                /** @type {{privateKey: Uint8Array, publicKey: Uint8Array}} */
+                const data = event.data;
+                if (!('privateKey' in data) || !('publicKey' in data)) return;
+
+                window.removeEventListener('message', onMessage);
+                iframe.remove();
+
+                try {
+                    const rsaAlgorithmParams = { name: 'RSA-OAEP', hash: 'SHA-256' };
+                    const privateKey = await window.crypto.subtle.importKey(
+                        /* format */ 'pkcs8',
+                        data.privateKey,
+                        rsaAlgorithmParams,
+                        /* extractable */ true, // to be exportable in KeyStore
+                        /* keyUsages */ ['decrypt'],
+                    );
+                    const publicKey = await window.crypto.subtle.importKey(
+                        /* format */ 'spki',
+                        data.publicKey,
+                        rsaAlgorithmParams,
+                        /* extractable */ true, // to be exportable in KeyStore
+                        /* keyUsages */ ['encrypt'],
+                    );
+
+                    resolve({
+                        privateKey,
+                        publicKey,
+                        keyParams,
+                    });
+                } catch (e) {
+                    reject(e);
+                }
             }
 
-            /** @type {{privateKey: ArrayBuffer, publicKey: ArrayBuffer}} */
-            const data = event.data;
-            if (!('privateKey' in data) || !('publicKey' in data)) return;
-
-            window.removeEventListener('message', onMessage);
-
-            resolver({
-                privateKey: new Uint8Array(data.privateKey),
-                publicKey: new Uint8Array(data.publicKey),
-                keyParams,
-            });
-        }
-
-        // Listen for result from iframe
-        window.addEventListener('message', onMessage);
-
-        return resultPromise;
+            // Listen for result from iframe
+            window.addEventListener('message', onMessage);
+        });
     }
 
     /**

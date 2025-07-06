@@ -190,29 +190,42 @@ export type SignTransactionRequest
     | SignTransactionRequestCheckout
     | SignTransactionRequestCashlink;
 
-export type EncryptionKeyParams = {
+export type RsaKeyParams = {
     kdf: string,
     iterations: number,
     keySize: number,
 };
 
 export type MultisigConfig = {
+    /**
+     * The public keys of all n potential signers of a k of n multisig. So notably, these are not pre-aggregated public
+     * keys over signer combinations, but the original public keys. This also means that the Keyguard's multisig support
+     * is currently limited to k of n multisigs, where each combination of signers which can sign together has identical
+     * size k. Arbitrary public key combinations, for example of varying size or varying overlap, are not supported.
+     */
     publicKeys: Uint8Array[],
+    /** The k of n potential signers involved in signing this transaction. */
     signers: Array<{
         publicKey: Uint8Array,
+        /** The commitments shared by the signer. Must be at least 2 for musig2. */
         commitments: Uint8Array[],
     }>,
+    /**
+     * The corresponding secrets for my own commitments. Can optionally be encrypted by an encryption key obtained via a
+     * Connect request.
+     */
     secrets: Uint8Array[] | {
         encrypted: Uint8Array[],
-        keyParams: EncryptionKeyParams,
+        keyParams: RsaKeyParams,
     },
     userName?: string,
 };
 
-export type SignMultisigTransactionRequestCommon = Transform<SignTransactionRequestCommon, 'keyLabel' | 'senderLabel', {
-    keyLabel: string, // Not optional
-    senderLabel: string, // Not optional
-}> & {
+export type SignMultisigTransactionRequestCommon = Transform<
+    SignTransactionRequestCommon,
+    'keyLabel' | 'senderLabel',
+    Required<Pick<SignTransactionRequestCommon, 'keyLabel' | 'senderLabel'>>
+> & {
     multisigConfig: MultisigConfig,
 };
 
@@ -529,9 +542,9 @@ export type DerivePolygonAddressResult = {
 
 export type ConnectRequest = SimpleRequest & {
     appLogoUrl: string,
-    permissions: KeyguardCommand[],
     requestedKeyPaths: string[],
     challenge: string,
+    // permissions: KeyguardCommand[],
 };
 
 export type ConnectResult = {
@@ -541,7 +554,7 @@ export type ConnectResult = {
         keyData: Uint8Array,
         algorithm: { name: string, hash: string },
         keyUsages: ['encrypt'],
-        keyParams: EncryptionKeyParams,
+        keyParams: RsaKeyParams,
     },
 };
 
@@ -600,7 +613,6 @@ export type ListLegacyResult = LegacyKeyInfoObject[];
 export type SignTransactionResult = SignatureResult & {
     serializedTx: Uint8Array,
 };
-export type SignMultisigTransactionResult = SignatureResult;
 export type SignStakingResult = SignatureResult & {
     transaction: Uint8Array,
 };
@@ -638,7 +650,6 @@ export type RedirectResult
     | SignatureResult
     | ConnectResult
     | SignTransactionResult
-    | SignMultisigTransactionResult
     | SignStakingResult[]
     | SignedBitcoinTransaction
     | SignedPolygonTransaction
@@ -654,7 +665,7 @@ export type Result = RedirectResult | IFrameResult;
 export type ResultType<T extends RedirectRequest> =
     T extends Is<T, SignMessageRequest> ? SignatureResult :
     T extends Is<T, SignTransactionRequest> ? SignTransactionResult :
-    T extends Is<T, SignMultisigTransactionRequest> ? SignMultisigTransactionResult :
+    T extends Is<T, SignMultisigTransactionRequest> ? SignatureResult :
     T extends Is<T, SignStakingRequest> ? SignStakingResult[] :
     T extends Is<T, ConnectRequest> ? ConnectResult :
     T extends Is<T, DeriveAddressRequest> ? DerivedAddress[] :
@@ -671,7 +682,7 @@ export type ResultType<T extends RedirectRequest> =
 export type ResultByCommand<T extends KeyguardCommand> =
     T extends KeyguardCommand.SIGN_MESSAGE ? SignatureResult :
     T extends KeyguardCommand.SIGN_TRANSACTION ? SignTransactionResult :
-    T extends KeyguardCommand.SIGN_MULTISIG_TRANSACTION ? SignMultisigTransactionResult :
+    T extends KeyguardCommand.SIGN_MULTISIG_TRANSACTION ? SignatureResult :
     T extends KeyguardCommand.SIGN_STAKING ? SignStakingResult[] :
     T extends KeyguardCommand.CONNECT_ACCOUNT ? ConnectResult :
     T extends KeyguardCommand.DERIVE_ADDRESS ? DerivedAddress[] :
