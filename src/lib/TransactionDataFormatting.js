@@ -19,30 +19,29 @@ class TransactionDataFormatting { // eslint-disable-line no-unused-vars
             return I18n.translatePhrase('tx-data-funding-cashlink');
         }
 
-        // For regular transactions allow interpreting the data as utf8
+        let message = '';
+
+        // For transactions to basic accounts allow interpreting the data as utf8
+        // (the check for no flags is technically redundant, because the chain would
+        // reject any transaction to a basic account with flags)
         if (transaction.flags === Nimiq.TransactionFlag.None
-            && transaction.senderType === Nimiq.AccountType.Basic
             && transaction.recipientType === Nimiq.AccountType.Basic
-            && transaction.senderData.length === 0
             && Utf8Tools.isValidUtf8(transaction.data)) {
-            return Utf8Tools.utf8ByteArrayToString(transaction.data);
+            message = Utf8Tools.utf8ByteArrayToString(transaction.data);
         }
 
         const plainTransaction = transaction.toPlain();
         const plainData = plainTransaction.data;
 
-        // Contract withdrawal without any data
-        // If a transaction has no transaction data but a special sender type, try to give it a useful label nonetheless
-        if (transaction.senderData.length === 0
-            && transaction.data.length === 0
-            && transaction.senderType !== Nimiq.AccountType.Basic) {
-            return I18n.translatePhrase('tx-data-contract-withdrawal', {
+        let prefix = '';
+        let includeDataType = true;
+
+        // Contract withdrawal
+        if (transaction.senderType !== Nimiq.AccountType.Basic) {
+            prefix = I18n.translatePhrase('tx-data-contract-withdrawal', {
                 contractType: TransactionDataFormatting._capitalize(plainTransaction.senderType),
             });
         }
-
-        let prefix = '';
-        let includeDataType = true;
 
         // Contract creation
         if (transaction.flags & Nimiq.TransactionFlag.ContractCreation) { // eslint-disable-line no-bitwise
@@ -53,21 +52,18 @@ class TransactionDataFormatting { // eslint-disable-line no-unused-vars
         }
 
         // Staking transaction
-        if (transaction.senderType === Nimiq.AccountType.Staking) {
-            // A staking withdrawal transaction. Those are never signaling transactions.
-            prefix = I18n.translatePhrase('tx-data-contract-withdrawal', { contractType: 'Staking' });
-        } else if (transaction.recipientType === Nimiq.AccountType.Staking) {
+        if (transaction.recipientType === Nimiq.AccountType.Staking) {
             if (!(transaction.flags & Nimiq.TransactionFlag.Signaling)) { // eslint-disable-line no-bitwise
                 // A staking transaction which creates/adds actual stake by moving funds to the staking contract
-                prefix = I18n.translatePhrase('tx-data-contract-creation', { contractType: 'Staking' });
+                prefix = I18n.translatePhrase('tx-data-staking');
             } else {
                 // A staking signaling transaction which does not move funds but only updates the staking setup
                 prefix = I18n.translatePhrase('tx-data-staking-update');
             }
         }
 
-        const formattedPlainData = TransactionDataFormatting._formatPlainData(plainData, includeDataType);
-        const formattedData = [prefix, formattedPlainData].filter(entry => !!entry).join(': ');
+        const formattedPlainData = message || TransactionDataFormatting._formatPlainData(plainData, includeDataType);
+        const formattedData = [prefix, formattedPlainData].filter(Boolean).join(': ');
         return TransactionDataFormatting._capitalize(formattedData, true);
     }
 
