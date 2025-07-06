@@ -34,6 +34,7 @@ class TransactionDataFormatting { // eslint-disable-line no-unused-vars
         const plainData = plainTransaction.data;
 
         let prefix = '';
+        let includeDataType = true;
 
         // Contract withdrawal
         if (transaction.senderType !== Nimiq.AccountType.Basic) {
@@ -41,8 +42,6 @@ class TransactionDataFormatting { // eslint-disable-line no-unused-vars
                 contractType: TransactionDataFormatting._capitalize(plainTransaction.senderType),
             });
         }
-
-        let includeDataType = true;
 
         // Contract creation
         if (transaction.flags & Nimiq.TransactionFlag.ContractCreation) { // eslint-disable-line no-bitwise
@@ -53,10 +52,7 @@ class TransactionDataFormatting { // eslint-disable-line no-unused-vars
         }
 
         // Staking transaction
-        if (transaction.senderType === Nimiq.AccountType.Staking) {
-            // A staking withdrawal transaction. Those are never signaling transactions.
-            prefix = I18n.translatePhrase('tx-data-contract-withdrawal', { contractType: 'Staking' });
-        } else if (transaction.recipientType === Nimiq.AccountType.Staking) {
+        if (transaction.recipientType === Nimiq.AccountType.Staking) {
             if (!(transaction.flags & Nimiq.TransactionFlag.Signaling)) { // eslint-disable-line no-bitwise
                 // A staking transaction which creates/adds actual stake by moving funds to the staking contract
                 prefix = I18n.translatePhrase('tx-data-staking');
