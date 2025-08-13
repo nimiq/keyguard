@@ -14,10 +14,10 @@
     "back-to-cpl": "Retour à CryptoPayment.link",
 
     "tx-data-funding-cashlink": "Financement du cashlink",
-    "tx-data-contract-creation": "{contractType} creation",
-    "tx-data-contract-withdrawal": "{contractType} withdrawal",
+    "tx-data-contract-creation": "Création de {contractType}",
+    "tx-data-contract-withdrawal": "Retrait de {contractType}",
     "tx-data-staking": "Staking",
-    "tx-data-staking-update": "Staking update",
+    "tx-data-staking-update": "Mise à jour du staking",
     "label-unknown": "Inconnu",
 
     "recovery-words-title": "Écrivez ces 24 Mots sur du papier",
@@ -74,8 +74,8 @@
     "sign-tx-cancel-payment": "Annuler le paiement",
 
     "sign-multisig-tx-heading-tx": "Approuver la transaction Multisig",
-    "sign-multisig-tx-approving-as-name-with-account": "Approving as {userName} with {accountName}",
-    "sign-multisig-tx-approving-with-account": "Approving with {accountName}",
+    "sign-multisig-tx-approving-as-name-with-account": "Approbation en tant que{userName} avec {accountName}",
+    "sign-multisig-tx-approving-with-account": "Approbation avec {accountName}",
 
     "sign-staking-heading-stake": "Staker du NIM",
     "sign-staking-heading-unstake": "Dé-staker du NIM",
@@ -259,12 +259,12 @@
     "sign-swap-exchange-rate": "Taux de change",
     "sign-swap-your-bank": "Votre banque",
 
-    "connect-heading": "Log in to {appName}",
-    "connect-heading-description": "Connect and use your account to\napprove transactions.",
-    "connect-address-count-info": "{appName} is requesting access to {addressCount} addresses.",
-    "connect-bottom-explainer": "The connection is for approving only.\nYour funds remain unaffected.",
-    "connect-tooltip-multisig-1": "Your account will be used to verify your identity only.",
-    "connect-tooltip-multisig-2": "The shared wallet has its own address. It can receive transactions from anywhere just like a regular wallet.",
-    "connect-tooltip-address-info-first-address": "The first address of your account will be visible to all participants in your shared wallet.",
+    "connect-heading": "Se connecter à {appName}",
+    "connect-heading-description": "Connectez-vous et utilisez votre compte pour\napprouver des transactions.",
+    "connect-address-count-info": "{appName} demande l'accès à {addressCount} adresses.",
+    "connect-bottom-explainer": "La connexion ne sert qu'à l'approbation.\nVos fonds ne seront pas impactés.",
+    "connect-tooltip-multisig-1": "Votre compte sera utilisé uniquement pour vérifier votre identité.",
+    "connect-tooltip-multisig-2": "Le wallet partagé possède sa propre adresse. Il peut recevoir des transactions de n'importe qui, comme un wallet classique.",
+    "connect-tooltip-address-info-first-address": "La première adresse de votre compte sera visible par tous les membres de votre wallet partagé.",
     "connect-tooltip-address-info-multiple-addresses": "The addresses for the following derivation paths will be visible to all participants in your shared wallet: {paths}."
 }

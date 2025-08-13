@@ -14,10 +14,10 @@
     "back-to-cpl": "Voltar para CryptoPayment.link",
 
     "tx-data-funding-cashlink": "Financiar cashlink",
-    "tx-data-contract-creation": "{contractType} creation",
-    "tx-data-contract-withdrawal": "{contractType} withdrawal",
-    "tx-data-staking": "Staking",
-    "tx-data-staking-update": "Staking update",
+    "tx-data-contract-creation": "{contractType}criado",
+    "tx-data-contract-withdrawal": "{contractType} levantado",
+    "tx-data-staking": "Participar",
+    "tx-data-staking-update": "Atualização de participação",
     "label-unknown": "Desconhecido",
 
     "recovery-words-title": "Escreve estas 24 Palavras em Papel",
@@ -74,12 +74,12 @@
     "sign-tx-cancel-payment": "Cancelar pagamento",
 
     "sign-multisig-tx-heading-tx": "Aprovar transação Multisig",
-    "sign-multisig-tx-approving-as-name-with-account": "Approving as {userName} with {accountName}",
-    "sign-multisig-tx-approving-with-account": "Approving with {accountName}",
+    "sign-multisig-tx-approving-as-name-with-account": "A aprovar {userName} com {accountName}",
+    "sign-multisig-tx-approving-with-account": "Aprovar com {accountName}",
 
-    "sign-staking-heading-stake": "Stake NIM",
-    "sign-staking-heading-unstake": "Unstake NIM",
-    "sign-staking-heading-change": "Change Validator",
+    "sign-staking-heading-stake": "Participa NIM",
+    "sign-staking-heading-unstake": "Retira NIM",
+    "sign-staking-heading-change": "Muda validador",
 
     "sign-msg-heading": "Assinar Mensagem",
     "sign-msg-signer": "Signatário",
@@ -87,7 +87,7 @@
     "tab-width-selector-label": "Largura do Tab",
 
     "address-info-new-cashlink": "Novo Cashlink",
-    "address-info-multisig-badge": "{signerCount} of {totalParticipantCount}",
+    "address-info-multisig-badge": "{signerCount} de {totalParticipantCount}",
 
     "copyable-copied": "Copiado",
 
@@ -259,12 +259,12 @@
     "sign-swap-exchange-rate": "Taxa de câmbio",
     "sign-swap-your-bank": "O teu banco",
 
-    "connect-heading": "Log in to {appName}",
-    "connect-heading-description": "Connect and use your account to\napprove transactions.",
-    "connect-address-count-info": "{appName} is requesting access to {addressCount} addresses.",
-    "connect-bottom-explainer": "The connection is for approving only.\nYour funds remain unaffected.",
-    "connect-tooltip-multisig-1": "Your account will be used to verify your identity only.",
-    "connect-tooltip-multisig-2": "The shared wallet has its own address. It can receive transactions from anywhere just like a regular wallet.",
-    "connect-tooltip-address-info-first-address": "The first address of your account will be visible to all participants in your shared wallet.",
-    "connect-tooltip-address-info-multiple-addresses": "The addresses for the following derivation paths will be visible to all participants in your shared wallet: {paths}."
+    "connect-heading": "Entrar para {appName}",
+    "connect-heading-description": "Conecta e usa as tua contas para \naprovar transações.",
+    "connect-address-count-info": "{appName} está a pedir acesso aos endereços {addressCount} .",
+    "connect-bottom-explainer": "A conexão é só para aprovar.\nOs teus fundos não serão afetados.",
+    "connect-tooltip-multisig-1": "A tua conta será utilizada apenas para verificar a tua identidade.",
+    "connect-tooltip-multisig-2": "A wallet partilhada tem o seu próprio endereço e pode receber transações de qualquer lugar, como por exemplo uma wallet comum.",
+    "connect-tooltip-address-info-first-address": "O primeiro endereço da tua conta será visível para todos os participantes da tua wallet partilhada.",
+    "connect-tooltip-address-info-multiple-addresses": "Os endereços para os seguintes caminhos de derivação serão visíveis para todos os participantes na tua wallet partilhada: {paths}."
 }
