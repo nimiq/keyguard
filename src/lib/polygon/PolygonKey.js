@@ -110,7 +110,7 @@ class PolygonKey { // eslint-disable-line no-unused-vars
 
         // TODO: Make the domain parameters configurable in the request?
         const domain = {
-            name: '(PoS) Tether USD', // This is currently the same for testnet and mainnet
+            name: 'USDT0', // This is currently the same for testnet(?) and mainnet
             version: '1', // This is currently the same for testnet and mainnet
             verifyingContract: CONFIG.BRIDGED_USDT_CONTRACT_ADDRESS,
             salt: ethers.utils.hexZeroPad(ethers.utils.hexlify(CONFIG.POLYGON_CHAIN_ID), 32),
