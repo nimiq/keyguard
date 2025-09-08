@@ -394,20 +394,14 @@ output "🔑  Building RSA Iframe"
 nodeforge_hashsum="dc67fd132427ad96c9666c844b39565413c40ddb1f2d063c53512fbf6d387dfd  src/lib/rsa/sandboxed/forge.min.js"
 echo "$nodeforge_hashsum" | ${SHA256SUM} --check
 
-cp src/lib/rsa/sandboxed/forge.min.js dist/lib/rsa/sandboxed/forge.min.HASH.js
-RSA_IFRAME_FORGE_HASH=$(make_file_hash dist/lib/rsa/sandboxed/forge.min.HASH.js)
-RSA_IFRAME_FORGE_NAME=$(add_hash_to_file_name dist/lib/rsa/sandboxed/forge.min.HASH.js)
-cp src/lib/rsa/sandboxed/RSAKeysIframe.js dist/lib/rsa/sandboxed/RSAKeysIframe.HASH.js
-RSA_IFRAME_SCRIPT_HASH=$(make_file_hash dist/lib/rsa/sandboxed/RSAKeysIframe.HASH.js)
-RSA_IFRAME_SCRIPT_NAME=$(add_hash_to_file_name dist/lib/rsa/sandboxed/RSAKeysIframe.HASH.js)
+# Note: requests in a sandboxed iframe are considered cross origin requests, and are thus blocked by adblockers
+# (adblockers block loading scripts off a *.nimiq.com domain when the request does not originate from that same origin).
+# Therefore we inline the scripts here to avoid loading external scripts.
 cp src/lib/rsa/sandboxed/RSAKeysIframe.html dist/lib/rsa/sandboxed/
-# Note: requests in a sandboxed iframe are considered cross origin requests, for which, in addition to integrity checks,
-# also cors headers must be checked, see https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity.
-# Thus, we're adding crossorigin="anonymous", and the cors headers of these resources must be configured accordingly on
-# the server, to allow serving to the iframe's null origin.
 inplace_sed \
-    -e 's:src="\./forge.min.js":src="./'${RSA_IFRAME_FORGE_NAME}'" integrity="sha256-'${RSA_IFRAME_FORGE_HASH}'" crossorigin="anonymous":' \
-    -e 's:src="\./RSAKeysIframe.js":src="./'${RSA_IFRAME_SCRIPT_NAME}'" integrity="sha256-'${RSA_IFRAME_SCRIPT_HASH}'" crossorigin="anonymous":' \
+    -e 's/<script src="\.\/[^"]*">/<script>/' \
+    -e '/RSA_IFRAME_FORGE_CONTENTS/{r src/lib/rsa/sandboxed/forge.min.js' -e 'd}' \
+    -e '/RSA_IFRAME_SCRIPT_CONTENTS/{r src/lib/rsa/sandboxed/RSAKeysIframe.js' -e 'd}' \
     dist/lib/rsa/sandboxed/RSAKeysIframe.html
 
 # copy assets
