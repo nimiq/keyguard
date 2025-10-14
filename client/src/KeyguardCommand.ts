@@ -19,6 +19,9 @@ export enum KeyguardCommand {
     SIGN_POLYGON_TRANSACTION = 'sign-polygon-transaction',
     DERIVE_POLYGON_ADDRESS = 'derive-polygon-address',
 
+    // USDT Cashlink
+    SIGN_USDT_CASHLINK = 'sign-usdt-cashlink',
+
     // Swap
     SIGN_SWAP = 'sign-swap',
 

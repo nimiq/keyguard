@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SignUsdtCashlink | Keyguard Demo</title>
+    <link href="../src/nimiq-style.css" rel="stylesheet">
+    <script src="../src/lib/Nimiq.mjs" type="module"></script>
+    <script src="../src/lib/Constants.js"></script>
+    <script src="../src/lib/Key.js"></script>
+    <script src="../src/lib/KeyStore.js"></script>
+    <script src="../node_modules/@nimiq/rpc/dist/rpc.umd.js"></script>
+    <script src="../node_modules/ethers/dist/ethers.umd.js"></script>
+
+    <style>
+        .row {
+            margin: 1rem 0;
+        }
+
+        label, input {
+            display: block;
+            margin: 5px;
+        }
+
+        #result {
+            max-width: 900px;
+            overflow-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+
+<form class="center">
+    <div class="row">
+        <label>USDT Amount (units, 6 decimals)</label>
+        <input id="amount" value="1000000" type="number">
+    </div>
+
+    <div class="row">
+        <label>Fee (units, 6 decimals)</label>
+        <input id="fee" value="10000" type="number">
+    </div>
+
+    <div class="row">
+        <label>Cashlink Message (optional)</label>
+        <input id="cashlink-message" value="Happy Birthday!">
+    </div>
+
+    <div class="row">
+        <label>Key password</label>
+        <input id="password" value="1234567890">
+    </div>
+
+    <br><button id="popup" type="button" class="small">Sign USDT Cashlink (popup)</button>
+
+    <p id="result"></p>
+</form>
+
+<script>
+    (async () => {
+        // Wait for Nimiq to be loaded by the module script
+        while (!window.Nimiq) {
+            await new Promise(resolve => setTimeout(resolve, 10));
+        }
+
+        console.log('Nimiq available:', window.Nimiq);
+
+        // Initialize Nimiq
+        if (window.Nimiq.default) {
+            console.log('Initializing Nimiq with default()');
+            await window.Nimiq.default();
+        } else {
+            console.log('Nimiq.default not found');
+        }
+
+        console.log('Nimiq initialization complete');
+    })();
+
+    document.querySelector('button#popup').addEventListener('click', async () => {
+        signUsdtCashlinkPopup(await generateRequest());
+    });
+
+    async function generateRequest() {
+        const amount = parseInt(document.querySelector('#amount').value) || 0;
+        const fee = parseInt(document.querySelector('#fee').value) || 0;
+        const cashlinkMessage = document.querySelector('#cashlink-message').value || '';
+        const keyPassword = document.querySelector('#password').value || '';
+
+        // Generate a random key and put it into the KeyStore.
+        const secret = Nimiq.Entropy.generate();
+        const key = new Key(secret);
+        const password = keyPassword ? Nimiq.BufferUtils.fromUtf8(keyPassword) : undefined;
+        const id = await KeyStore.instance.put(key, password);
+
+        const path = "m/0'/0'"; // Nimiq-style path
+        const publicKey = key.derivePublicKey(path);
+        const fromAddress = ethers.utils.computeAddress(publicKey.serialize());
+
+        // Create a mock USDT transfer request
+        const request = {
+            appName: 'USDT Cashlink Demo',
+
+            keyId: id,
+            keyPath: path,
+            keyLabel: 'USDT Cashlink Account',
+
+            // Mock OpenGSN forward request
+            request: {
+                from: fromAddress,
+                to: '0x3c870b039bf82d2f883b6e89d41d06d26b9f4486', // New USDT cashlink contract
+                value: '0',
+                gas: '100000',
+                nonce: '0',
+                data: '0x', // Will be set by the contract
+                validUntil: String(Math.floor(Date.now() / 1000) + 3600), // 1 hour from now
+            },
+
+            // Mock relay data
+            relayData: {
+                gasPrice: '20000000000', // 20 gwei
+                pctRelayFee: '70', // 0.7%
+                baseRelayFee: '0',
+                relayWorker: '0x0000000000000000000000000000000000000000',
+                paymaster: '0x0000000000000000000000000000000000000000',
+                paymasterData: '0x',
+                clientId: '1',
+                forwarder: '0x0000000000000000000000000000000000000000',
+            },
+
+            // Mock approval data
+            approval: {
+                tokenNonce: 1,
+            },
+
+            // USDT token contract address (mainnet)
+            token: '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
+
+            cashlinkMessage: cashlinkMessage,
+        };
+
+        return request;
+    }
+
+    async function signUsdtCashlinkPopup(request) {
+        const keyguard = window.open('../src/request/sign-usdt-cashlink/', 'SignUsdtCashlink Demo',
+            `left=${window.innerWidth / 2 - 350},top=75,width=700,height=850,location=yes,dependent=yes`);
+        const rpc = new Rpc.PostMessageRpcClient(keyguard, '*');
+        await rpc.init();
+
+        try {
+            const result = await rpc.call('request', request);
+            console.log('Keyguard result:', result);
+            document.querySelector('#result').textContent = 'USDT Cashlink signed: ' + JSON.stringify(result);
+        } catch (e) {
+            console.error('Keyguard error', e);
+            document.querySelector('#result').textContent = `Error: ${e.message || e}`;
+        }
+
+        keyguard.close();
+        await KeyStore.instance.remove(request.keyId);
+    }
+</script>
+
+</body>
+</html>
