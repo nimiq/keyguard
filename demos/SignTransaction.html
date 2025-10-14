@@ -93,9 +93,22 @@
 
 <script>
     (async () => {
-        await Nimiq.WasmHelper.doImport();
-        Nimiq.GenesisConfig.test();
-        Nimiq.CryptoWorker.getInstanceAsync();
+        // Wait for Nimiq to be loaded by the module script
+        while (!window.Nimiq) {
+            await new Promise(resolve => setTimeout(resolve, 10));
+        }
+
+        console.log('Nimiq available:', window.Nimiq);
+
+        // Initialize Nimiq
+        if (window.Nimiq.default) {
+            console.log('Initializing Nimiq with default()');
+            await window.Nimiq.default();
+        } else {
+            console.log('Nimiq.default not found');
+        }
+
+        console.log('Nimiq initialization complete');
     })();
 
     const layoutSelector = document.querySelector('#layout');
