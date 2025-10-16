@@ -8,6 +8,7 @@
     <script src="../src/lib/Constants.js"></script>
     <script src="../src/lib/Key.js"></script>
     <script src="../src/lib/KeyStore.js"></script>
+    <script src="../src/lib/polygon/PolygonContractABIs.js"></script>
     <script src="../node_modules/@nimiq/rpc/dist/rpc.umd.js"></script>
     <script src="../node_modules/ethers/dist/ethers.umd.js"></script>
 
@@ -95,6 +96,22 @@
         const publicKey = key.derivePublicKey(path);
         const fromAddress = ethers.utils.computeAddress(publicKey.serialize());
 
+        const cashlinkContract = new ethers.Contract(
+            '0x3c870b039bf82d2f883b6e89d41d06d26b9f4486', // New USDT cashlink contract
+            PolygonContractABIs.BRIDGED_USDT_TRANSFER_CONTRACT_ABI,
+        );
+
+        const data = cashlinkContract.interface.encodeFunctionData('transferWithApproval', [
+            /* address token */ '0x1616d425Cd540B256475cBfb604586C8598eC0FB', // USDT token contract
+            /* uint256 amount */ amount,
+            /* address target */ '0x0000000000000000000000000000000000000000', // TODO: Replace with generated cashlink address
+            /* uint256 fee */ fee,
+            /* uint256 approval */ amount + fee,
+            /* bytes32 sigR */ '0x0000000000000000000000000000000000000000000000000000000000000000', // Signature will be set by Keyguard
+            /* bytes32 sigS */ '0x0000000000000000000000000000000000000000000000000000000000000000', // Signature will be set by Keyguard
+            /* uint8 sigV */ 0, // Signature will be set by Keyguard
+        ]);
+
         // Create a mock USDT transfer request
         const request = {
             appName: 'USDT Cashlink Demo',
@@ -110,7 +127,7 @@
                 value: '0',
                 gas: '100000',
                 nonce: '0',
-                data: '0x', // Will be set by the contract
+                data,
                 validUntil: String(Math.floor(Date.now() / 1000) + 3600), // 1 hour from now
             },
 
