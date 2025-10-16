@@ -386,6 +386,9 @@ type Parsed<T extends KeyguardRequest.Request> =
             | PolygonRefundDescription
             | PolygonSwapDescription
             | PolygonSwapWithApprovalDescription } :
+    T extends Is<T, KeyguardRequest.SignUsdtCashlinkRequest> ?
+        KeyId2KeyInfo<KeyguardRequest.SignUsdtCashlinkRequest>
+        & { description: PolygonTransferWithApprovalDescription } :
     T extends Is<T, KeyguardRequest.SignSwapRequestStandard> ?
         KeyId2KeyInfo<ConstructSwap<KeyguardRequest.SignSwapRequestStandard>>
         & { layout: KeyguardRequest.SignSwapRequestLayout } :
