@@ -7,7 +7,7 @@ class PolygonAddressInfo { // eslint-disable-line no-unused-vars
     /**
      * @param {string} address
      * @param {string} [label]
-     * @param {'none' | 'usdc' | 'usdc_dark' | 'usdt' | 'unknown'} [logo = 'none']
+     * @param {'none' | 'usdc' | 'usdc_dark' | 'usdt' | 'unknown' | 'cashlink'} [logo = 'none']
      */
     constructor(address, label, logo = 'none') {
         this._address = address;
@@ -37,6 +37,31 @@ class PolygonAddressInfo { // eslint-disable-line no-unused-vars
                 $avatar.classList.add('unlabelled');
             }
             $el.appendChild($avatar);
+        } else if (this._logo === 'cashlink') {
+            // Create identicon wrapper
+            const $identicon = document.createElement('div');
+            $identicon.classList.add('identicon');
+
+            // Create the cashlink icon SVG
+            const $cashlinkIcon = document.createElementNS(
+                'http://www.w3.org/2000/svg',
+                'svg',
+            );
+            const cashlinkIconUseTag = document.createElementNS(
+                'http://www.w3.org/2000/svg',
+                'use',
+            );
+            cashlinkIconUseTag.setAttributeNS(
+                'http://www.w3.org/1999/xlink',
+                'xlink:href',
+                '../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-cashlink',
+            );
+            $cashlinkIcon.appendChild(cashlinkIconUseTag);
+            $cashlinkIcon.classList.add('nq-icon', 'nq-blue-bg');
+
+            // Append icon to identicon wrapper, then wrapper to main element
+            $identicon.appendChild($cashlinkIcon);
+            $el.appendChild($identicon);
         } else if (
             this._logo === 'usdc'
             || this._logo === 'usdc_dark'
@@ -52,7 +77,11 @@ class PolygonAddressInfo { // eslint-disable-line no-unused-vars
         // Label
         const $label = document.createElement('div');
         $label.classList.add('label');
-        if (this._label) {
+        if (this._logo === 'cashlink') {
+            // For cashlink, show "New Cashlink" label instead of address
+            $label.textContent = I18n.translatePhrase('address-info-new-cashlink');
+            $label.dataset.i18n = 'address-info-new-cashlink';
+        } else if (this._label) {
             $label.textContent = this._label;
         } else {
             $label.textContent = I18n.translatePhrase('label-unknown');
@@ -61,7 +90,12 @@ class PolygonAddressInfo { // eslint-disable-line no-unused-vars
         }
         $el.appendChild($label);
 
-        // Address
+        // Address (hide for cashlink)
+        if (this._logo === 'cashlink') {
+            // Don't show address for cashlinks
+            return $el;
+        }
+
         const $shortAddress = document.createElement('div');
         $shortAddress.classList.add('short-address', 'tooltip');
         const $prefix = document.createElement('span');

@@ -20,7 +20,7 @@ class SignUsdtCashlinkApi extends PolygonRequestParserMixin(TopLevelApi) { // es
         const parsedRequest = {};
         parsedRequest.appName = this.parseAppName(request.appName);
         parsedRequest.keyInfo = await this.parseKeyId(request.keyId);
-        parsedRequest.keyLabel = /** @type {string} */ (this.parseLabel(request.keyLabel, false));
+        parsedRequest.keyLabel = /** @type {string} */ (this.parseLabel(request.keyLabel, false, 'keyLabel'));
         parsedRequest.keyPath = this.parsePolygonPath(request.keyPath, 'keyPath');
         parsedRequest.senderLabel = this.parseLabel(request.senderLabel);
         parsedRequest.cashlinkMessage = /** @type {string} */ (this.parseMessage(request.cashlinkMessage, true));

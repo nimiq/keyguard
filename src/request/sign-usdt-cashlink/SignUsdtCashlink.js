@@ -39,8 +39,8 @@ class SignUsdtCashlink {
         new PolygonAddressInfo(relayRequest.from, request.keyLabel, stablecoin).renderTo($sender);
 
         const $recipient = /** @type {HTMLLinkElement} */ (this.$el.querySelector('.accounts .recipient'));
-        // For cashlink, recipient is always the cashlink contract address
-        new PolygonAddressInfo(relayRequest.to, 'USDT Cashlink', 'none').renderTo($recipient);
+        // For cashlink, show the cashlink icon and hide the address
+        new PolygonAddressInfo(relayRequest.to, undefined, 'cashlink').renderTo($recipient);
 
         const $value = /** @type {HTMLDivElement} */ (this.$el.querySelector('#value'));
         const $fee = /** @type {HTMLDivElement} */ (this.$el.querySelector('#fee'));
