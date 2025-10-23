@@ -2,11 +2,11 @@
 
 // @ts-expect-error (ts thinks CONFIG is redeclared in other config files as it doesn't know that only one is active)
 const CONFIG = { // eslint-disable-line no-unused-vars
-    ALLOWED_ORIGIN: 'https://hub.nimiq.com',
+    ALLOWED_ORIGIN: 'https://usdt-cashlink-hub.netlify.app',
     NETWORK: Constants.NETWORK.MAIN,
     NIMIQ_NETWORK_ID: 24,
     BTC_NETWORK: 'MAIN', // BitcoinConstants is not included in the common bundle
-    ROOT_REDIRECT: 'https://wallet.nimiq.com',
+    ROOT_REDIRECT: 'https://usdt-cashlink-wallet.netlify.app',
 
     POLYGON_CHAIN_ID: 137,
     BRIDGED_USDC_CONTRACT_ADDRESS: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
