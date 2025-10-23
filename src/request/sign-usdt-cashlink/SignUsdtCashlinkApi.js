@@ -35,7 +35,9 @@ class SignUsdtCashlinkApi extends PolygonRequestParserMixin(TopLevelApi) { // es
 
         // Validate that this is a USDT transfer
         if (forwardRequest.to !== CONFIG.BRIDGED_USDT_CASHLINK_CONTRACT_ADDRESS) {
-            throw new Errors.InvalidRequestError('USDT cashlink must use BRIDGED_USDT_CASHLINK_CONTRACT_ADDRESS contract');
+            throw new Errors.InvalidRequestError(
+                'USDT cashlink must use BRIDGED_USDT_CASHLINK_CONTRACT_ADDRESS contract',
+            );
         }
 
         // Validate that the token is USDT

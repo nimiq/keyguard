@@ -12,7 +12,6 @@
 /* global CONFIG */
 /* global PolygonKey */
 /* global OpenGSN */
-/* global I18n */
 
 /**
  * @callback SignUsdtCashlink.resolve
