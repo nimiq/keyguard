@@ -27,6 +27,7 @@ class SignPolygonTransaction {
     constructor(request, resolve, reject) {
         this.$el = /** @type {HTMLElement} */ (
             document.getElementById(SignPolygonTransaction.Pages.CONFIRM_TRANSACTION));
+        this.$el.classList.add(request.layout || 'standard');
 
         const relayRequest = request.request;
 
@@ -40,6 +41,7 @@ class SignPolygonTransaction {
             stablecoin = 'usdc';
         } else if ([
             CONFIG.BRIDGED_USDT_TRANSFER_CONTRACT_ADDRESS,
+            CONFIG.BRIDGED_USDT_CASHLINK_CONTRACT_ADDRESS,
         ].includes(relayRequest.to)) {
             stablecoin = 'usdt';
         }
@@ -79,6 +81,9 @@ class SignPolygonTransaction {
             new PolygonAddressInfo(recipientAddress, request.keyLabel, stablecoin).renderTo($recipient);
         } else if (request.description.name === 'swap' || request.description.name === 'swapWithApproval') {
             new PolygonAddressInfo(relayRequest.from, 'USDC', 'usdc').renderTo($recipient);
+        } else if (request.layout === 'usdt-cashlink') {
+            const recipientAddress = /** @type {string} */ (request.description.args.target);
+            new PolygonAddressInfo(recipientAddress, undefined, 'cashlink').renderTo($recipient);
         } else {
             const recipientAddress = /** @type {string} */ (request.description.args.target);
             new PolygonAddressInfo(recipientAddress, request.recipientLabel, 'none').renderTo($recipient);
@@ -103,11 +108,21 @@ class SignPolygonTransaction {
             $feeSection.classList.remove('display-none');
         }
 
+        // Display cashlink message if provided
+        if (request.layout === 'usdt-cashlink' && request.cashlinkMessage) {
+            const $data = /** @type {HTMLDivElement} */ (this.$el.querySelector('#data'));
+            $data.textContent = request.cashlinkMessage;
+            const $dataSection = /** @type {HTMLDivElement} */ (this.$el.querySelector('.data-section'));
+            $dataSection.classList.remove('display-none');
+        }
+
         // Set up password box.
         const $passwordBox = /** @type {HTMLFormElement} */ (document.querySelector('#password-box'));
         this._passwordBox = new PasswordBox($passwordBox, {
             hideInput: !request.keyInfo.encrypted,
-            buttonI18nTag: 'passwordbox-confirm-tx',
+            buttonI18nTag: request.layout === 'usdt-cashlink'
+                ? 'passwordbox-create-cashlink'
+                : 'passwordbox-confirm-tx',
             minLength: request.keyInfo.hasPin ? Key.PIN_LENGTH : undefined,
         });
 

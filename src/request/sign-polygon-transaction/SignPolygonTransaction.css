@@ -3,6 +3,11 @@
     overflow: hidden;
 }
 
+#confirm-transaction.standard .hide-standard,
+#confirm-transaction.usdt-cashlink .hide-usdt-cashlink {
+    display: none;
+}
+
 #confirm-transaction .nq-card-body {
     padding-bottom: 2rem;
 }
@@ -12,11 +17,12 @@
     flex-direction: column;
 }
 
-#confirm-transaction .value-fee {
+#confirm-transaction .value-fee-data {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    padding-top: 2rem;
     flex-grow: 1;
 }
 
@@ -57,4 +63,11 @@
 #confirm-transaction .fee-section {
     opacity: 0.5;
     margin-bottom: 0.25rem;
+}
+
+#confirm-transaction .data-section {
+    margin: 1rem 3rem;
+    text-align: center;
+    max-width: 100%;
+    overflow-wrap: break-word;
 }

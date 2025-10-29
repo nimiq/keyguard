@@ -24,8 +24,23 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
         parsedRequest.keyPath = this.parsePolygonPath(request.keyPath, 'keyPath');
         [parsedRequest.request, parsedRequest.description] = this.parseOpenGsnForwardRequest(request);
         parsedRequest.relayData = this.parseOpenGsnRelayData(request.relayData);
-        parsedRequest.senderLabel = this.parseLabel(request.senderLabel); // Used for HTLC refunds
-        parsedRequest.recipientLabel = this.parseLabel(request.recipientLabel);
+        parsedRequest.layout = this.parseLayout(request.layout);
+        parsedRequest.senderLabel = this.parseLabel(request.senderLabel); // Used for HTLC refunds and cashlink
+        if ((!request.layout || request.layout === SignPolygonTransactionApi.Layouts.STANDARD)
+            && parsedRequest.layout === SignPolygonTransactionApi.Layouts.STANDARD) {
+            parsedRequest.recipientLabel = this.parseLabel(request.recipientLabel);
+        } else if (request.layout === SignPolygonTransactionApi.Layouts.USDT_CASHLINK
+            && parsedRequest.layout === SignPolygonTransactionApi.Layouts.USDT_CASHLINK) {
+            if (request.cashlinkMessage) {
+                parsedRequest.cashlinkMessage = /** @type {string} */ (this.parseMessage(request.cashlinkMessage));
+            }
+            // Validate that this is a USDT cashlink transaction
+            if (parsedRequest.request.to !== CONFIG.BRIDGED_USDT_CASHLINK_CONTRACT_ADDRESS) {
+                throw new Errors.InvalidRequestError(
+                    'USDT cashlink must use BRIDGED_USDT_CASHLINK_CONTRACT_ADDRESS contract',
+                );
+            }
+        }
         if (request.amount !== undefined) {
             parsedRequest.amount = this.parsePositiveInteger(request.amount, false, 'amount');
         }
@@ -104,9 +119,12 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
             if (!['transfer', 'transferWithPermit'].includes(description.name)) {
                 throw new Errors.InvalidRequestError('Requested Polygon contract method is invalid');
             }
-        } else if (forwardRequest.to === CONFIG.BRIDGED_USDT_TRANSFER_CONTRACT_ADDRESS) {
+        } else if (
+            forwardRequest.to === CONFIG.BRIDGED_USDT_TRANSFER_CONTRACT_ADDRESS
+            || forwardRequest.to === CONFIG.BRIDGED_USDT_CASHLINK_CONTRACT_ADDRESS
+        ) {
             const transferContract = new ethers.Contract(
-                CONFIG.BRIDGED_USDT_TRANSFER_CONTRACT_ADDRESS,
+                forwardRequest.to,
                 PolygonContractABIs.BRIDGED_USDT_TRANSFER_CONTRACT_ABI,
             );
 
@@ -252,7 +270,30 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
         return [forwardRequest, description];
     }
 
+    /**
+     * Checks that the given layout is valid
+     * @param {unknown} layout
+     * @returns {KeyguardRequest.SignPolygonTransactionRequestLayout}
+     */
+    parseLayout(layout) {
+        if (!layout) {
+            return SignPolygonTransactionApi.Layouts.STANDARD;
+        }
+        if (!Object.values(SignPolygonTransactionApi.Layouts).includes(/** @type {any} */ (layout))) {
+            throw new Errors.InvalidRequestError('Invalid selected layout');
+        }
+        return /** @type KeyguardRequest.SignPolygonTransactionRequestLayout */ (layout);
+    }
+
     get Handler() {
         return SignPolygonTransaction;
     }
 }
+
+/**
+ * @enum {KeyguardRequest.SignPolygonTransactionRequestLayout}
+ */
+SignPolygonTransactionApi.Layouts = Object.freeze({
+    STANDARD: /** @type {'standard'} */ ('standard'),
+    USDT_CASHLINK: /** @type {'usdt-cashlink'} */ ('usdt-cashlink'),
+});

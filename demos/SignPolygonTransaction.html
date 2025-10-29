@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>SignUsdtCashlink | Keyguard Demo</title>
+    <title>SignPolygonTransaction | Keyguard Demo</title>
     <link href="../src/nimiq-style.css" rel="stylesheet">
     <script src="../src/lib/Nimiq.mjs" type="module"></script>
     <script src="../src/lib/Constants.js"></script>
@@ -26,11 +26,23 @@
             max-width: 900px;
             overflow-wrap: break-word;
         }
+
+        .usdt-cashlink-only {
+            display: none;
+        }
     </style>
 </head>
 <body>
 
 <form class="center">
+    <div class="row">
+        <label>Layout</label>
+        <select id="layout">
+            <option>standard</option>
+            <option value="usdt-cashlink">USDT Cashlink</option>
+        </select>
+    </div>
+
     <div class="row">
         <label>USDT Amount (units, 6 decimals)</label>
         <input id="amount" value="1000000" type="number">
@@ -41,8 +53,8 @@
         <input id="fee" value="10000" type="number">
     </div>
 
-    <div class="row">
-        <label>Cashlink Message (optional)</label>
+    <div class="row usdt-cashlink-only">
+        <label>USDT Cashlink Message (optional)</label>
         <input id="cashlink-message" value="Happy Birthday!">
     </div>
 
@@ -51,7 +63,7 @@
         <input id="password" value="1234567890">
     </div>
 
-    <br><button id="popup" type="button" class="small">Sign USDT Cashlink (popup)</button>
+    <br><button id="popup" type="button" class="small">Sign Polygon Transaction (popup)</button>
 
     <p id="result"></p>
 </form>
@@ -76,11 +88,23 @@
         console.log('Nimiq initialization complete');
     })();
 
+    const layoutSelector = document.querySelector('#layout');
+    const usdtCashlinkOnlyOptions = document.querySelectorAll('.usdt-cashlink-only');
+    function updateOptions() {
+        usdtCashlinkOnlyOptions.forEach((el) => {
+            el.style.display = layoutSelector.value === 'usdt-cashlink' ? '' : 'none';
+        });
+    }
+
+    layoutSelector.addEventListener('change', updateOptions);
+    updateOptions();
+
     document.querySelector('button#popup').addEventListener('click', async () => {
-        signUsdtCashlinkPopup(await generateRequest());
+        signPolygonTransactionPopup(await generateRequest());
     });
 
     async function generateRequest() {
+        const layout = document.querySelector('#layout').value;
         const amount = parseInt(document.querySelector('#amount').value) || 0;
         const fee = parseInt(document.querySelector('#fee').value) || 0;
         const cashlinkMessage = document.querySelector('#cashlink-message').value || '';
@@ -92,19 +116,24 @@
         const password = keyPassword ? Nimiq.BufferUtils.fromUtf8(keyPassword) : undefined;
         const id = await KeyStore.instance.put(key, password);
 
-        const path = "m/0'/0'"; // Nimiq-style path
+        const path = "m/0'/0'"; // Nimiq-style path for Polygon
         const publicKey = key.derivePublicKey(path);
         const fromAddress = ethers.utils.computeAddress(publicKey.serialize());
 
-        const cashlinkContract = new ethers.Contract(
-            '0x3c870b039bf82d2f883b6e89d41d06d26b9f4486', // New USDT cashlink contract
+        // Determine which contract to use based on layout
+        const contractAddress = layout === 'usdt-cashlink'
+            ? '0x3c870b039bf82d2f883b6e89d41d06d26b9f4486' // BRIDGED_USDT_CASHLINK_CONTRACT_ADDRESS
+            : '0x98E69a6927747339d5E543586FC0262112eBe4BD'; // BRIDGED_USDT_TRANSFER_CONTRACT_ADDRESS (mainnet)
+
+        const transferContract = new ethers.Contract(
+            contractAddress,
             PolygonContractABIs.BRIDGED_USDT_TRANSFER_CONTRACT_ABI,
         );
 
-        const data = cashlinkContract.interface.encodeFunctionData('transferWithApproval', [
-            /* address token */ '0xc2132D05D31c914a87C6611C10748AEb04B58e8F', // USDT token contract (mainnet)
+        const data = transferContract.interface.encodeFunctionData('transferWithApproval', [
+            /* address token */ '0xc2132D05D31c914a87C6611C10748AEb04B58e8F', // BRIDGED_USDT_CONTRACT_ADDRESS (mainnet)
             /* uint256 amount */ amount,
-            /* address target */ '0x0000000000000000000000000000000000000000', // TODO: Replace with generated cashlink address
+            /* address target */ '0x0000000000000000000000000000000000000001', // Dummy recipient address
             /* uint256 fee */ fee,
             /* uint256 approval */ amount + fee,
             /* bytes32 sigR */ '0x0000000000000000000000000000000000000000000000000000000000000000', // Signature will be set by Keyguard
@@ -112,18 +141,20 @@
             /* uint8 sigV */ 0, // Signature will be set by Keyguard
         ]);
 
-        // Create a mock USDT transfer request
         const request = {
-            appName: 'USDT Cashlink Demo',
+            appName: 'Polygon Transaction Demo',
 
             keyId: id,
             keyPath: path,
-            keyLabel: 'USDT Cashlink Account',
+            keyLabel: 'Polygon Account',
+            senderLabel: 'Spending Account',
+
+            layout,
 
             // Mock OpenGSN forward request
             request: {
                 from: fromAddress,
-                to: '0x3c870b039bf82d2f883b6e89d41d06d26b9f4486', // New USDT cashlink contract
+                to: contractAddress,
                 value: '0',
                 gas: '100000',
                 nonce: '0',
@@ -150,15 +181,19 @@
 
             // USDT token contract address (mainnet)
             token: '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
-
-            cashlinkMessage: cashlinkMessage,
         };
+
+        if (layout === 'standard') {
+            request.recipientLabel = 'Best Friend';
+        } else if (layout === 'usdt-cashlink') {
+            request.cashlinkMessage = cashlinkMessage;
+        }
 
         return request;
     }
 
-    async function signUsdtCashlinkPopup(request) {
-        const keyguard = window.open('../src/request/sign-usdt-cashlink/', 'SignUsdtCashlink Demo',
+    async function signPolygonTransactionPopup(request) {
+        const keyguard = window.open('../src/request/sign-polygon-transaction/', 'SignPolygonTransaction Demo',
             `left=${window.innerWidth / 2 - 350},top=75,width=700,height=850,location=yes,dependent=yes`);
         const rpc = new Rpc.PostMessageRpcClient(keyguard, '*');
         await rpc.init();
@@ -166,7 +201,7 @@
         try {
             const result = await rpc.call('request', request);
             console.log('Keyguard result:', result);
-            document.querySelector('#result').textContent = 'USDT Cashlink signed: ' + JSON.stringify(result);
+            document.querySelector('#result').textContent = 'Polygon transaction signed: ' + JSON.stringify(result);
         } catch (e) {
             console.error('Keyguard error', e);
             document.querySelector('#result').textContent = `Error: ${e.message || e}`;
@@ -179,3 +214,4 @@
 
 </body>
 </html>
+

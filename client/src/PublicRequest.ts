@@ -96,6 +96,7 @@ export type BitcoinTransactionInfo = {
 export type SignTransactionRequestLayout = 'standard' | 'checkout' | 'cashlink';
 export type SignMultisigTransactionRequestLayout = 'standard';
 export type SignBtcTransactionRequestLayout = 'standard' | 'checkout';
+export type SignPolygonTransactionRequestLayout = 'standard' | 'usdt-cashlink';
 
 // Specific Requests
 
@@ -302,17 +303,24 @@ export type PolygonTransactionInfo = {
     },
 };
 
-export type SignPolygonTransactionRequest = Omit<SimpleRequest, 'keyLabel'> & PolygonTransactionInfo & {
+type SignPolygonTransactionRequestCommon = Omit<SimpleRequest, 'keyLabel'> & PolygonTransactionInfo & {
     keyLabel: string,
     senderLabel?: string,
+};
+
+export type SignPolygonTransactionRequestStandard = SignPolygonTransactionRequestCommon & {
+    layout?: 'standard',
     recipientLabel?: string,
 };
 
-export type SignUsdtCashlinkRequest = Omit<SimpleRequest, 'keyLabel'> & PolygonTransactionInfo & {
-    keyLabel: string,
-    senderLabel?: string,
+export type SignPolygonTransactionRequestCashlink = SignPolygonTransactionRequestCommon & {
+    layout: 'usdt-cashlink',
     cashlinkMessage?: string,
 };
+
+export type SignPolygonTransactionRequest
+    = SignPolygonTransactionRequestStandard
+    | SignPolygonTransactionRequestCashlink;
 
 export type MockSettlementInstruction = {
     type: 'mock',
@@ -578,7 +586,6 @@ export type RedirectRequest
     | SignStakingRequest
     | SignBtcTransactionRequest
     | SignPolygonTransactionRequest
-    | SignUsdtCashlinkRequest
     | SignMultisigTransactionRequest
     | SimpleRequest
     | DeriveBtcXPubRequest
@@ -683,7 +690,6 @@ export type ResultType<T extends RedirectRequest> =
     T extends Is<T, DeriveBtcXPubRequest> ? DeriveBtcXPubResult :
     T extends Is<T, DerivePolygonAddressRequest> ? DerivePolygonAddressResult :
     T extends Is<T, SignPolygonTransactionRequest> ? SignedPolygonTransaction :
-    T extends Is<T, SignUsdtCashlinkRequest> ? SignedPolygonTransaction :
     T extends Is<T, SignSwapRequest> ? SignSwapResult :
     never;
 
@@ -701,7 +707,6 @@ export type ResultByCommand<T extends KeyguardCommand> =
     T extends KeyguardCommand.DERIVE_BTC_XPUB ? DeriveBtcXPubResult :
     T extends KeyguardCommand.DERIVE_POLYGON_ADDRESS ? DerivePolygonAddressResult :
     T extends KeyguardCommand.SIGN_POLYGON_TRANSACTION ? SignedPolygonTransaction :
-    T extends KeyguardCommand.SIGN_USDT_CASHLINK ? SignedPolygonTransaction :
     T extends KeyguardCommand.SIGN_SWAP ? SignSwapResult :
     never;
 

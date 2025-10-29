@@ -80,7 +80,8 @@
     <div id="app">
         <div id="confirm-transaction" class="page nq-card">
             <div class="page-header nq-card-header">
-                <h1 data-i18n="sign-tx-heading-tx" class="nq-h1">Confirm Transaction</h1>
+                <h1 data-i18n="sign-tx-heading-tx" class="nq-h1 hide-usdt-cashlink">Confirm Transaction</h1>
+                <h1 class="nq-h1 hide-standard">Create a USDT Cashlink</h1>
             </div>
 
             <div class="page-body nq-card-body transaction">
@@ -90,7 +91,7 @@
                     <div class="recipient"></div>
                 </div>
 
-                <div class="value-fee">
+                <div class="value-fee-data">
                     <div class="total nq-light-blue">
                         <span id="value"></span><span class="stablecoin-symbol"></span>
                     </div>
@@ -98,6 +99,8 @@
                     <div class="fee-section nq-text-s display-none">
                         + <span id="fee"></span> <span class="stablecoin-symbol"></span> <span data-i18n="sign-tx-fee">fee</span>
                     </div>
+
+                    <div class="data-section display-none nq-text nq-blue" id="data"></div>
                 </div>
             </div>
 
