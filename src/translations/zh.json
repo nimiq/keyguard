@@ -70,6 +70,7 @@
     "sign-tx-heading-tx": "确认交易",
     "sign-tx-heading-checkout": "验证付款",
     "sign-tx-heading-cashlink": "创建现金链接",
+    "sign-tx-heading-usdt-cashlink": "Create a USDT Cashlink",
     "sign-tx-fee": "手续费",
     "sign-tx-cancel-payment": "取消付款",
 

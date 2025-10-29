@@ -70,6 +70,7 @@
     "sign-tx-heading-tx": "Подтвердите транзакцию",
     "sign-tx-heading-checkout": "Проверьте Платёж",
     "sign-tx-heading-cashlink": "Создать Cashlink",
+    "sign-tx-heading-usdt-cashlink": "Create a USDT Cashlink",
     "sign-tx-fee": "комиссия",
     "sign-tx-cancel-payment": "Отменить платёж",
 

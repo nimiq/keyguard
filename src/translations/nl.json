@@ -70,6 +70,7 @@
     "sign-tx-heading-tx": "Bevestig transactie",
     "sign-tx-heading-checkout": "Verifieer betaling",
     "sign-tx-heading-cashlink": "Maak een Cashlink",
+    "sign-tx-heading-usdt-cashlink": "Create a USDT Cashlink",
     "sign-tx-fee": "kosten",
     "sign-tx-cancel-payment": "Annuleer betaling",
 

@@ -70,6 +70,7 @@
     "sign-tx-heading-tx": "Confirmer la Transaction",
     "sign-tx-heading-checkout": "Vérifier le Paiement",
     "sign-tx-heading-cashlink": "Créer un Cashlink",
+    "sign-tx-heading-usdt-cashlink": "Create a USDT Cashlink",
     "sign-tx-fee": "frais",
     "sign-tx-cancel-payment": "Annuler le paiement",
 

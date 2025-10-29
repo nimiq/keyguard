@@ -70,6 +70,7 @@
     "sign-tx-heading-tx": "Підтвердіть переказ",
     "sign-tx-heading-checkout": "Підтвердіть платіж",
     "sign-tx-heading-cashlink": "Створити чек",
+    "sign-tx-heading-usdt-cashlink": "Create a USDT Cashlink",
     "sign-tx-fee": "комісія",
     "sign-tx-cancel-payment": "Скасувати платіж",
 
