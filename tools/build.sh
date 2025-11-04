@@ -127,14 +127,14 @@ nimiq_pos_hashsums=\
  7b8c1509c4e7ec89948110c9f459409d381d1ee92b0a0d30bf112a568a8fc7a6  node_modules/@nimiq/core/web/comlink.min.mjs
  e8d70f535e0d6d1bca2dfb7a8afb96b068f87c1e0b44d864e0b54d8ec4589173  node_modules/@nimiq/core/web/comlink.min.mjs.map
  dd9833c434200f9338f01eac7e5462dfa146b235bc0ab57ed846bf076f6c5cd3  node_modules/@nimiq/core/web/crypto.js
- 73aede27736e8c9b9a6603cd4228984266196d4ffe2bb247a60ae3209765f729  node_modules/@nimiq/core/web/crypto-wasm/index_bg.wasm
- 9f3c8dc3aa1fbe6e49f16d74d068c0878b1c1154cf0ce1465cd5cdbf13588b16  node_modules/@nimiq/core/web/crypto-wasm/index.js
+ 7d22aeda13488a0f5a9d92064f3e66335c40c33c00c875ae255dd8a23b5804b7  node_modules/@nimiq/core/web/crypto-wasm/index_bg.wasm
+ 7a6a3507481a5f9e943a2e77735712640e63fa02908722f1cf5b651e0751ff95  node_modules/@nimiq/core/web/crypto-wasm/index.js
  7a48cc3f66857626c3c175ba6688bd1cfd54abdfffe90388fa291494b9e1a261  node_modules/@nimiq/core/web/index.js
- 2c6ab22d296f99d86b3bf4f8bcdf7f2b54051e785b8059a32911e133abccce9b  node_modules/@nimiq/core/web/main-wasm/index_bg.wasm
- 5c32340f984ee82595f109aeae0468383dbb14c1d143222fe99aadec91152a9d  node_modules/@nimiq/core/web/main-wasm/index.js
- 8199c9d229df43a66dc8399731074a75b4e973d3071bdcde9988cb68a7978260  node_modules/@nimiq/core/web/worker.js
- 1a6bb5b576ba5777262b872b5568669a5469142bf0abd0a09b02dbc23f567bf4  node_modules/@nimiq/core/web/worker-wasm/index_bg.wasm
- c98d57188fe2f2123967b7ebc13fbf2b2a1e2ac5f2e501571b5ea038b2ccbcfd  node_modules/@nimiq/core/web/worker-wasm/index.js"
+ 2a6bc25e8a4e0de114a44eb19a817d9ac8a8ff33dbd9332ee91b758c578d92a2  node_modules/@nimiq/core/web/main-wasm/index_bg.wasm
+ 03830c861d0d7fe0c801f8f8e9133c18f1fc9e50f769c6b9df89ba497e13bae6  node_modules/@nimiq/core/web/main-wasm/index.js
+ 0436d25dd54159b106c7d2f5f37d1710fd029dca60a067898a20a89218a74d1c  node_modules/@nimiq/core/web/worker.js
+ d8fa020399ac535d9c948c1be04d48739e7f4d7310c1a3a500def16419d65883  node_modules/@nimiq/core/web/worker-wasm/index_bg.wasm
+ 7807684cf26c9b4972ec607bb7fe9fa81ade11da2678d60bcb94132466ed7ec5  node_modules/@nimiq/core/web/worker-wasm/index.js"
 echo "$nimiq_pos_hashsums" | ${SHA256SUM} --check
 
 if [ ! $? -eq 0 ]; then

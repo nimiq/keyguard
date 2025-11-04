@@ -437,10 +437,10 @@
   resolved "https://registry.yarnpkg.com/@nimiq/core-web/-/core-web-1.6.3.tgz#b4a8f8c5d289850b20cb4009766af5b1cafd6e20"
   integrity sha512-D6RrJi2cRU81odNpmwczhUBvOQ47+/Db1svrTkH/G4xNd72lr9MS5nMdfpUz+rBRnSprljrzW2mdUtZ6W9bPaA==
 
-"@nimiq/core@^2.1.2-rc.0":
-  version "2.1.2-rc.0"
-  resolved "https://registry.yarnpkg.com/@nimiq/core/-/core-2.1.2-rc.0.tgz#0aa1bee5083a5b6eabc55c9a7e261bda6c83cb28"
-  integrity sha512-zzX8Ctahkg/Ds3Wt5a8uAE56EKGUE27NOSAhM1skfucx+lAQs5YUtEarDKc7tAS85fPT9z0qPWKbLZfCbt8wzA==
+"@nimiq/core@^2.2.0":
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/@nimiq/core/-/core-2.2.0.tgz#3eb719e643f5a1e8018c3110124e8fd9d0df399b"
+  integrity sha512-6k4bax+cc/XPQCNix9+FUXi0ayY3IO6X7ylAC7n8Enoa93dbVuAX1sBfZzwfmtxLjav8q+PDi0eWd7W7ftBEww==
   dependencies:
     comlink "^4.4.1"
     websocket "^1.0.34"
