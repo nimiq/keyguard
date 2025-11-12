@@ -14,10 +14,10 @@
     "back-to-cpl": "Zurück zu CryptoPayment.link",
 
     "tx-data-funding-cashlink": "Cashlink aufladen",
-    "tx-data-contract-creation": "{contractType} creation",
-    "tx-data-contract-withdrawal": "{contractType} withdrawal",
+    "tx-data-contract-creation": "{contractType} erstellung",
+    "tx-data-contract-withdrawal": "{contractType} Abhebung",
     "tx-data-staking": "Staking",
-    "tx-data-staking-update": "Staking update",
+    "tx-data-staking-update": "Staking-Aktualisierung",
     "label-unknown": "Unbekannt",
 
     "recovery-words-title": "Schreibe diese 24 Wörter auf Papier",
@@ -73,13 +73,13 @@
     "sign-tx-fee": "Gebühr",
     "sign-tx-cancel-payment": "Zahlung abbrechen",
 
-    "sign-multisig-tx-heading-tx": "Approve Multisig Transaction",
-    "sign-multisig-tx-approving-as-name-with-account": "Approving as {userName} with {accountName}",
-    "sign-multisig-tx-approving-with-account": "Approving with {accountName}",
+    "sign-multisig-tx-heading-tx": "Multisig-Transaktion genehmigen",
+    "sign-multisig-tx-approving-as-name-with-account": "Genehmigung als {userName} mit {accountName}",
+    "sign-multisig-tx-approving-with-account": "Genehmigung mit {accountName}",
 
-    "sign-staking-heading-stake": "Stake NIM",
-    "sign-staking-heading-unstake": "Unstake NIM",
-    "sign-staking-heading-change": "Change Validator",
+    "sign-staking-heading-stake": "NIM staken",
+    "sign-staking-heading-unstake": "NIM unstaken",
+    "sign-staking-heading-change": "Validator wechseln",
 
     "sign-msg-heading": "Nachricht signieren",
     "sign-msg-signer": "Unterzeichner",
@@ -87,7 +87,7 @@
     "tab-width-selector-label": "Tab-Breite",
 
     "address-info-new-cashlink": "Neuer Cashlink",
-    "address-info-multisig-badge": "{signerCount} of {totalParticipantCount}",
+    "address-info-multisig-badge": "{signerCount} von {totalParticipantCount}",
 
     "copyable-copied": "Kopiert",
 
@@ -117,7 +117,7 @@
     "passwordbox-repeat-password-short": "Das Passwort ist zu kurz",
     "passwordbox-password-skip": "Erstmal überspringen",
     "passwordbox-reset-password": "Mit Wiederherstellungswörtern zurücksetzen",
-    "passwordbox-connect-account": "Connect your account",
+    "passwordbox-connect-account": "Verbinde dein Konto",
 
     "payment-info-line-order-amount": "Kaufbetrag",
     "payment-info-line-vendor-markup": "Krypto-Aufschlag des Verkäufers",
@@ -259,12 +259,12 @@
     "sign-swap-exchange-rate": "Wechselkurs",
     "sign-swap-your-bank": "Deine Bank",
 
-    "connect-heading": "Log in to {appName}",
-    "connect-heading-description": "Connect and use your account to\napprove transactions.",
-    "connect-address-count-info": "{appName} is requesting access to {addressCount} addresses.",
-    "connect-bottom-explainer": "The connection is for approving only.\nYour funds remain unaffected.",
-    "connect-tooltip-multisig-1": "Your account will be used to verify your identity only.",
-    "connect-tooltip-multisig-2": "The shared wallet has its own address. It can receive transactions from anywhere just like a regular wallet.",
-    "connect-tooltip-address-info-first-address": "The first address of your account will be visible to all participants in your shared wallet.",
-    "connect-tooltip-address-info-multiple-addresses": "The addresses for the following derivation paths will be visible to all participants in your shared wallet: {paths}."
+    "connect-heading": "Melde dich bei {appName} an",
+    "connect-heading-description": "Verbinde dich und nutze dein Konto,\num Transaktionen zu genehmigen.",
+    "connect-address-count-info": "{appName} fordert Zugriff auf {addressCount} Adressen an.",
+    "connect-bottom-explainer": "Die Verbindung dient ausschließlich der Genehmigung.\nDeine Gelder bleiben unberührt.",
+    "connect-tooltip-multisig-1": "Dein Konto wird nur zur Verifizierung deiner Identität verwendet.",
+    "connect-tooltip-multisig-2": "Die gemeinsame Wallet hat ihre eigene Adresse. Sie kann Transaktionen von überall empfangen; genau wie eine normale Wallet.",
+    "connect-tooltip-address-info-first-address": "Die erste Adresse deines Kontos wird für alle Teilnehmer eurer gemeinsamen Wallet sichtbar sein.",
+    "connect-tooltip-address-info-multiple-addresses": "Die Adressen der folgenden Ableitungspfade werden für alle Teilnehmer deiner gemeinsamen Wallet sichtbar sein: {paths}."
 }

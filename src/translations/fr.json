@@ -266,5 +266,5 @@
     "connect-tooltip-multisig-1": "Votre compte sera utilisé uniquement pour vérifier votre identité.",
     "connect-tooltip-multisig-2": "Le wallet partagé possède sa propre adresse. Il peut recevoir des transactions de n'importe qui, comme un wallet classique.",
     "connect-tooltip-address-info-first-address": "La première adresse de votre compte sera visible par tous les membres de votre wallet partagé.",
-    "connect-tooltip-address-info-multiple-addresses": "The addresses for the following derivation paths will be visible to all participants in your shared wallet: {paths}."
+    "connect-tooltip-address-info-multiple-addresses": "Les adresses des chemins de dérivation suivants seront visibles par tous les participants de votre portefeuille partagé : {paths}."
 }
