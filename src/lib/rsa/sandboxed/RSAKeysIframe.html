@@ -2,9 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- Note: sandbox and frame-ancestors policies can not actually be specified via a meta tag. You have to send them
-    as response headers. Additionally, the server needs to include the sandboxed iframe's null origin in its cors header
-    for the script files imported here, in order to pass integrity checks added by the build process. -->
+    <!-- Note: "sandbox allow-scripts;" and "frame-ancestors 'self';" policies can not be specified via a meta tag. They
+    have to be sent as response headers. Additionally, as sandboxed iframes have a null origin, imported scripts are
+    loaded as cross-origin requests, for which proper cors headers whitelisting the null origin would need to be set on
+    the server. However, some ad-blockers also block cross-origin requests of files from Nimiq's domain to historically
+    block mining on third party websites. To circumvent these cross-origin issues, we inline the scripts during the
+    build process. -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline';">
     <title>RSA Keys Iframe</title>
     <script src="./forge.min.js">
