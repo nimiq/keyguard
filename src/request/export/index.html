@@ -43,12 +43,14 @@
     <script defer bundle-toplevel src="../TopLevelApi.js"></script>
     <script defer bundle-toplevel src="../../translations/index.js"></script>
 
+    <script defer src="../../lib/ClipboardUtils.js"></script>
     <script defer src="../../lib/AutoComplete.js"></script>
     <script defer src="../../lib/IqonHash.js"></script>
     <script defer src="../../lib/PasswordStrength.js"></script>
     <script defer src="../../lib/QrEncoder.js"></script>
     <script defer src="../../lib/LoginFileConfig.js"></script>
     <script defer src="../../lib/LoginFile.js"></script>
+    <script defer src="../../lib/BackupCodes.js"></script>
     <script defer src="../../components/ProgressIndicator.js"></script>
     <script defer src="../../components/DownloadLoginFile.js"></script>
     <script defer src="../../components/FlippableHandler.js"></script>
@@ -57,8 +59,10 @@
     <script defer src="../../components/RecoveryWords.js"></script>
     <script defer src="../../components/RecoveryWordsInputField.js"></script>
     <script defer src="../../components/ValidateWords.js"></script>
+    <script defer src="../../components/BackupCodesIllustration.js"></script>
     <script defer src="ExportFile.js"></script>
     <script defer src="ExportWords.js"></script>
+    <script defer src="ExportBackupCodes.js"></script>
     <script defer src="Export.js"></script>
     <script defer src="ExportApi.js"></script>
     <script defer src="index.js"></script>
@@ -76,6 +80,7 @@
     <link rel="stylesheet" href="../../components/RecoveryWords.css">
     <link rel="stylesheet" href="../../components/RecoveryWordsInputField.css">
     <link rel="stylesheet" href="../../components/ValidateWords.css">
+    <link rel="stylesheet" href="../../components/BackupCodesIllustration.css">
     <link rel="stylesheet" href="Export.css">
 </head>
 <body class="loading">
@@ -137,7 +142,7 @@
                     <a tabindex="0" class="page-header-back-button">
                         <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
                     </a>
-                    <h1 data-i18n="export-words-unlock-heading" class="nq-h1">Unlock your Backup</h1>
+                    <h1 data-i18n="export-unlock-heading" class="nq-h1">Unlock your Backup</h1>
                 </div>
 
                 <div class="page-body nq-card-body">
@@ -317,6 +322,172 @@
 
                 <div class="page-body nq-card-body">
                     <div class="download-loginfile"></div>
+                </div>
+            </div>
+
+            <div id="backup-codes-unlock" class="page nq-card nq-blue-bg">
+                <div class="page-header nq-card-header">
+                    <div class="progress-indicator"></div>
+                    <a tabindex="0" class="page-header-back-button">
+                        <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
+                    </a>
+                    <h1 data-i18n="export-unlock-heading" class="nq-h1">Unlock your Backup</h1>
+                </div>
+
+                <div class="page-body nq-card-body">
+                    <svg class="nq-icon">
+                        <use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-lock-locked"/>
+                    </svg>
+                </div>
+
+                <div class="page-footer nq-card-footer">
+                    <form class="password-box"></form>
+                </div>
+            </div>
+
+            <div id="backup-codes-intro" class="page nq-card nq-blue-bg">
+                <div class="page-header nq-card-header">
+                    <div class="progress-indicator"></div>
+                    <a tabindex="0" class="page-header-back-button">
+                        <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
+                    </a>
+                    <h1 data-i18n="export-backup-codes-intro-heading" class="nq-h1">Send yourself two backup codes</h1>
+                    <p class="nq-notice" data-i18n="export-backup-codes-intro-text">
+                        The codes combined grant access to your account.
+                        Send them to yourself using two different platforms.
+                    </p>
+                </div>
+
+                <div class="page-body nq-card-body backup-codes-illustration"></div>
+
+                <div class="page-footer nq-card-footer">
+                    <p class="nq-notice warning" data-i18n="export-backup-codes-intro-warning">
+                        Anyone with both codes will have full access!
+                        Don't share them and keep them safe.
+                    </p>
+                    <button data-i18n="export-backup-codes-lets-go" class="nq-button light-blue">Let's go</button>
+                </div>
+            </div>
+
+            <div id="backup-codes-send-code-1" class="page nq-card nq-blue-bg">
+                <div class="page-header nq-card-header">
+                    <div class="progress-indicator"></div>
+                    <a tabindex="0" class="page-header-back-button">
+                        <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
+                    </a>
+                    <h1 data-i18n="export-backup-codes-send-code-heading" class="nq-h1">Send yourself Code {n}</h1>
+                    <p class="nq-notice" data-i18n="export-backup-codes-send-code-instructions-code-1">
+                        Send this code to yourself for example by email or messenger.
+                        Make sure you will find it, in case you need it.
+                    </p>
+                </div>
+
+                <div class="page-body nq-card-body backup-codes-illustration"></div>
+
+                <div class="page-footer nq-card-footer">
+                    <p class="nq-notice show-loading" data-i18n="export-backup-codes-send-code-loading">
+                        Generating codes...
+                    </p>
+                    <button data-i18n="export-backup-codes-send-code-copy" class="nq-button light-blue hide-loading">
+                        Copy code {n}
+                    </button>
+                    <a href="#TODO" target="_blank" rel="noopener" class="skip nq-link hide-loading">
+                        <span data-i18n="export-backup-codes-send-code-instructions-link">How to send to yourself</span>
+                        <svg class="nq-icon">
+                            <use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-caret-right-small"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <div id="backup-codes-send-code-1-confirm" class="page nq-card nq-blue-bg">
+                <div class="page-header nq-card-header">
+                    <div class="progress-indicator"></div>
+                    <a tabindex="0" class="page-header-back-button">
+                        <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
+                    </a>
+                    <h1 data-i18n="export-backup-codes-send-code-confirm-heading-code-1" class="nq-h1">
+                        Did you send Code 1 to yourself?
+                    </h1>
+                </div>
+
+                <div class="page-body nq-card-body backup-codes-illustration"></div>
+
+                <div class="page-footer nq-card-footer">
+                    <button data-i18n="export-backup-codes-send-code-confirm-continue-code-1" class="nq-button light-blue">
+                        Yes, continue to code 2
+                    </button>
+                    <button data-i18n="export-backup-codes-send-code-confirm-go-back" class="nq-button-s inverse">
+                        No, go back
+                    </button>
+                </div>
+            </div>
+
+            <div id="backup-codes-send-code-2" class="page nq-card nq-blue-bg">
+                <div class="page-header nq-card-header">
+                    <div class="progress-indicator"></div>
+                    <a tabindex="0" class="page-header-back-button">
+                        <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
+                    </a>
+                    <h1 data-i18n="export-backup-codes-send-code-heading" class="nq-h1">Send yourself Code {n}</h1>
+                    <p class="nq-notice" data-i18n="export-backup-codes-send-code-instructions-code-2">
+                        Send this code to yourself using another email or messenger.
+                        For your safety, both codes must be stored separately.
+                    </p>
+                </div>
+
+                <div class="page-body nq-card-body backup-codes-illustration"></div>
+
+                <div class="page-footer nq-card-footer">
+                    <button data-i18n="export-backup-codes-send-code-copy" class="nq-button light-blue">
+                        Copy code {n}
+                    </button>
+                </div>
+            </div>
+
+            <div id="backup-codes-send-code-2-confirm" class="page nq-card nq-blue-bg">
+                <div class="page-header nq-card-header">
+                    <div class="progress-indicator"></div>
+                    <a tabindex="0" class="page-header-back-button">
+                        <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
+                    </a>
+                    <h1 data-i18n="export-backup-codes-send-code-confirm-heading-code-2" class="nq-h1">
+                        Did you send Code 2 with a different method than Code 1?
+                    </h1>
+                </div>
+
+                <div class="page-body nq-card-body backup-codes-illustration"></div>
+
+                <div class="page-footer nq-card-footer">
+                    <button data-i18n="export-backup-codes-send-code-confirm-continue-code-2" class="nq-button light-blue">
+                        Yes, all done
+                    </button>
+                    <button data-i18n="export-backup-codes-send-code-confirm-go-back" class="nq-button-s inverse">
+                        No, go back
+                    </button>
+                </div>
+            </div>
+
+            <div id="backup-codes-success" class="page nq-card nq-blue-bg">
+                <div class="page-header nq-card-header">
+                    <div class="progress-indicator"></div>
+                    <a tabindex="0" class="page-header-back-button">
+                        <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
+                    </a>
+                    <h1 data-i18n="export-backup-codes-success-heading" class="nq-h1">All set up?</h1>
+                    <p class="nq-notice" data-i18n="export-backup-codes-success-text">
+                        You should now have both codes, stored as messages on two separate platforms.
+                    </p>
+                </div>
+
+                <div class="page-body nq-card-body backup-codes-illustration"></div>
+
+                <div class="page-footer nq-card-footer">
+                    <p class="nq-notice info" data-i18n="export-backup-codes-success-recovery">
+                        If you lose your password or Login File,
+                        you can regain access by entering both codes in the login screen.
+                    </p>
+                    <button data-i18n="export-backup-codes-lets-go" class="nq-button light-blue">Let's go</button>
                 </div>
             </div>
         </div>

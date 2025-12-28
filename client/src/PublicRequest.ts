@@ -31,6 +31,7 @@ export type SingleKeyResult = {
     }>;
     fileExported: boolean;
     wordsExported: boolean;
+    backupCodesExported: boolean;
     bitcoinXPub?: string;
     polygonAddresses?: Array<{
         address: string,
@@ -155,11 +156,13 @@ export type SimpleRequest = BasicRequest & {
 export type ExportRequest = SimpleRequest & {
     fileOnly?: boolean,
     wordsOnly?: boolean,
+    backupCodesOnly?: boolean,
 };
 
 export type ExportResult = {
     fileExported: boolean,
     wordsExported: boolean,
+    backupCodesExported: boolean,
 };
 
 type SignTransactionRequestCommon = SimpleRequest & TransactionInfo;

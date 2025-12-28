@@ -36,12 +36,12 @@ ul.nq-list li > .nq-icon {
 
 .page#recovery-words .recovery-words {
     height: 39rem;
-    margin: 0;
     position: relative;
     margin: -4rem;
-    padding: 0rem 3rem;
-    -webkit-mask-image: linear-gradient(0deg , rgba(255,255,255,0), rgba(255,255,255, 1) 4rem, rgba(255,255,255,1) calc(100% - 4rem), rgba(255,255,255,0));
+    padding: 0 3rem;
     mask-image: linear-gradient(0deg , rgba(255,255,255,0), rgba(255,255,255, 1) 4rem, rgba(255,255,255,1) calc(100% - 4rem), rgba(255,255,255,0));
+    overflow-x: hidden;
+    overflow-y: scroll;
 }
 
 .recovery-words .words-container .word-section {
@@ -82,6 +82,26 @@ ul.nq-list li > .nq-icon {
     opacity: 1;
 }
 
+/* blur when page is displayed in background */
+.page#recovery-words .page-header .warning,
+.page#recovery-words .words-container {
+    transition: filter .6s, opacity .6s;
+}
+.page#recovery-words:not(:target) .page-header .warning,
+.page#recovery-words:not(:target) .words-container {
+    filter: blur(10px);
+    opacity: .4;
+}
+/* hide elements which are covered or don't look nice in the background when blurred */
+.page#recovery-words:not(:target) .page-header > :not(.warning),
+.page#recovery-words:not(:target) .page-footer {
+    opacity: 0;
+}
+/* hide scroll bar when page is displayed in background */
+.page#recovery-words:not(:target) .recovery-words {
+    overflow-y: hidden;
+}
+
 .page#recovery-words-intro .warning {
     margin-top: 1.5rem;
 }
@@ -108,16 +128,14 @@ ul.nq-list li > .nq-icon {
     margin-right: auto;
 }
 
-.page#login-file-unlock .nq-card-body,
-.page#recovery-words-unlock .nq-card-body {
+.page:is(#login-file-unlock, #recovery-words-unlock, #backup-codes-unlock) .nq-card-body {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-around;
 }
 
-.page#login-file-unlock .nq-card-body .nq-icon,
-.page#recovery-words-unlock .nq-card-body .nq-icon {
+.page:is(#login-file-unlock, #recovery-words-unlock, #backup-codes-unlock) .nq-card-body .nq-icon {
     width: 8rem;
     height: auto;
     opacity: 0.3;
@@ -170,15 +188,21 @@ ul.nq-list li > .nq-icon {
     flex-direction: column;
 }
 
+/* blur when page is displayed in background */
 .page#login-file-download img {
     display: flex;
     transition: filter .6s, opacity .6s;
-    opacity: .15;
-    -webkit-filter: blur(20px);
-    -moz-filter: blur(20px);
-    -o-filter: blur(20px);
-    -ms-filter: blur(20px);
+}
+.page#login-file-download:not(:target) img {
     filter: blur(20px);
+    opacity: .15;
+}
+/* hide elements which don't look nice in the background when blurred */
+.page#login-file-download:not(:target) .page-header,
+.page#login-file-download:not(:target) button,
+.page#login-file-download:not(:target) .download-button,
+.page#login-file-download:not(:target) .continue {
+    opacity: 0;
 }
 
 .page#login-file-download.loginfile-download-initiated .page-header .nq-h1:not(.confirm-download),
@@ -186,89 +210,28 @@ ul.nq-list li > .nq-icon {
     display: none;
 }
 
-.page#recovery-words .page-header .warning,
-.page#recovery-words .words-container {
-    transition: filter .6s, opacity .6s;
-    opacity: .4;
-    -webkit-filter: blur(10px);
-    -moz-filter: blur(10px);
-    -o-filter: blur(10px);
-    -ms-filter: blur(10px);
-    filter: blur(10px);
-}
-
-.page#recovery-words .recovery-words {
-    overflow-x: hidden;
-    overflow-y: hidden;
-}
-
-.page#login-file-download:target img,
-.page#recovery-words:target .page-header .warning,
-.page#recovery-words:target .words-container  {
-    opacity: 1;
-    -webkit-filter: blur(0px);
-    -moz-filter: blur(0px);
-    -o-filter: blur(0px);
-    -ms-filter: blur(0px);
-    filter: blur(0px);
-}
-
-.page#recovery-words:target .recovery-words {
-    overflow-y: scroll;
-    overflow-x: hidden;
-}
-
-.page#login-file-unlock:target ~ .page#login-file-download,
-.page#login-file-success:target ~ .page#login-file-download,
-.page#recovery-words-intro:target ~ .page#login-file-download,
+.page:is(#login-file-unlock, #login-file-success, #recovery-words-intro):target ~ .page#login-file-download,
 .page#recovery-words-intro:target ~ .page#login-file-success,
-.page#recovery-words-unlock:target ~ .page#recovery-words {
-    display: flex; /* display previous page as blurred background or backside during flip */
+.page#recovery-words-unlock:target ~ .page#recovery-words,
+.page#backup-codes-unlock:target ~ .page#backup-codes-intro {
+    display: flex; /* display page as blurred background or on backside during flip */
     max-height: 70.5rem; /* avoid that page overflows the foreground page */
-}
-
-.page#recovery-words .page-header h1,
-.page#recovery-words .page-footer,
-.page#recovery-words .page-header .progress-indicator,
-.page#recovery-words .page-header .page-header-back-button,
-.page#login-file-download .page-header,
-.page#login-file-download button,
-.page#login-file-download .download-button,
-.page#login-file-download .continue {
-    opacity: 0;
-}
-
-.page#recovery-words:target .page-header h1,
-.page#recovery-words:target .page-footer,
-.page#recovery-words:target .page-header .progress-indicator,
-.page#login-file-download:target .page-header,
-.page#login-file-download:target button,
-.page#login-file-download:target .download-button {
-    opacity: 1;
-}
-
-.page#recovery-words:target .page-header .page-header-back-button {
-    opacity: .4;
-}
-.page#recovery-words:target .page-header .page-header-back-button:hover,
-.page#recovery-words:target .page-header .page-header-back-button:focus {
-    opacity: 1;
 }
 
 .page#login-file-unlock,
 .page#login-file-success,
-.page#recovery-words-unlock {
+.page#recovery-words-unlock,
+.page#backup-codes-unlock {
     background-image: none;
-    background-color: rgba(255, 255, 255, .0); /* transparent white */
+    background-color: rgba(255, 255, 255, .0); /* transparent white, such that background page is visible */
 }
 
 .page#login-file-success {
-    opacity: 0;
     transition: opacity .3s .1s ease;
 }
 
-.page#login-file-success:target {
-    opacity: 1;
+.page#login-file-success:not(:target) {
+    opacity: 0;
 }
 
 .page#login-file-success .page-body {
@@ -338,4 +301,90 @@ ul.nq-list li > .nq-icon {
 
 .page#login-file-success p {
     text-align: center;
+}
+
+/* backup codes view transition setup */
+.page[id*="backup-codes"]:not(.disable-view-transition-names):target,
+.page[id*="backup-codes"].enforce-view-transition-names {
+    view-transition-name: backup-codes-page;
+}
+#rotation-container:has(.page[id*="backup-codes"]:target) ~ .global-close {
+    view-transition-name: global-close;
+}
+.page[id*="backup-codes"]:not(.disable-view-transition-names):target .nq-button,
+.page[id*="backup-codes"].enforce-view-transition-names .nq-button {
+    view-transition-name: backup-codes-continue-button;
+}
+.page[id*="backup-codes"]:not(.disable-view-transition-names):target .page-header-back-button,
+.page[id*="backup-codes"].enforce-view-transition-names .page-header-back-button {
+    view-transition-name: backup-codes-page-header-back-button;
+}
+::view-transition-old(backup-codes-page),
+::view-transition-new(backup-codes-page) {
+    height: 100%;
+}
+
+/* blur when page is displayed in background */
+.page#backup-codes-intro :is(.page-header, .page-footer) .nq-notice,
+.page#backup-codes-intro .backup-codes-illustration {
+    transition: filter .6s, opacity .6s;
+}
+.page#backup-codes-intro:not(.enforce-view-transition-names):not(:target) :is(.page-header, .page-footer) .nq-notice {
+    filter: blur(10px);
+    opacity: .4;
+}
+.page#backup-codes-intro:not(.enforce-view-transition-names):not(:target) .backup-codes-illustration {
+    filter: blur(20px);
+    opacity: .15;
+}
+/* hide elements which don't look nice in the background when blurred */
+.page#backup-codes-intro:not(.enforce-view-transition-names):not(:target) :is(.page-header, .page-footer) > :not(.nq-notice) {
+    opacity: 0;
+}
+
+/* individual export backup codes page and element styles */
+
+.page:is([id*="backup-codes"]):not(#backup-codes-unlock) .page-header {
+    padding-top: 3rem;
+    padding-bottom: 1.5rem;
+}
+
+.page:is(#backup-codes-intro, #backup-codes-send-code-1, #backup-codes-send-code-2, #backup-codes-success) .nq-notice {
+    text-align: center;
+    line-height: 1.38;
+}
+
+.page:is(#backup-codes-intro, #backup-codes-send-code-1, #backup-codes-send-code-2, #backup-codes-success) .page-header .nq-notice,
+.page#backup-codes-send-code-1 .page-footer .nq-notice {
+    margin-top: 1.75rem;
+    color: rgba(255, 255, 255, .7);
+}
+
+.page:is(#backup-codes-intro, #backup-codes-success) .page-footer .nq-notice {
+    margin: 1rem 0;
+}
+
+.page#backup-codes-intro .page-footer .nq-notice {
+    margin-bottom: 1.25rem;
+    white-space: pre-line;
+}
+
+.page#backup-codes-success .page-footer .nq-notice {
+    margin: 0 3rem 3.25rem;
+}
+
+.page#backup-codes-send-code-1.loading .page-footer .hide-loading,
+.page#backup-codes-send-code-1:not(.loading) .page-footer .show-loading {
+    display: none;
+}
+
+.page#backup-codes-send-code-1 .page-footer .nq-link {
+    margin: -1.5rem 0 1rem;
+}
+
+.page:is(#backup-codes-send-code-1-confirm, #backup-codes-send-code-2-confirm) .page-footer .nq-button-s {
+    margin-bottom: 2rem;
+    padding: 0 3rem;
+    align-self: center;
+    background: rgba(255, 255, 255, .1);
 }

@@ -157,6 +157,155 @@ class Key {
     }
 
     /**
+     * Deterministically derive a secret from the key's secret via a key derivation function. The use of a kdf ensures
+     * that the generated secret is computationally expensive to generate, and can thus be exposed securely, without the
+     * risk of exposing the underlying key's secret or making brute-forcing the key's secret more feasible by serving as
+     * a cheap hint for the correct secret.
+     * @param {string} useCase - Allows to generate a separate secret per use case.
+     * @param {'PBKDF2-SHA512' | 'Argon2d' | 'Argon2id'} kdfAlgorithm
+     * @param {number} kdfIterations
+     * @param {number} derivedSecretLength - Size in bytes.
+     * @returns {Promise<Uint8Array>}
+     */
+    async deriveSecret(useCase, kdfAlgorithm, kdfIterations, derivedSecretLength) {
+        const seedBytes = this.secret.serialize();
+        // As we want to deterministically derive secrets, we have to use a deterministic salt too, instead of a random
+        // salt. This leverages the fact that the underlying seed is already a very high entropy input, and thus no
+        // random salt is required for additional entropy, rainbow table resistance or resilience to reused input
+        // (typically password reuse).
+        let salt;
+        if (useCase === 'RSA Seed' && kdfAlgorithm === 'PBKDF2-SHA512') {
+            // Legacy salt for the RSA Seed kept for compatibility.
+            salt = this._defaultAddress.serialize();
+        } else {
+            // Generate a salt specific to the use case and kdf parameters.
+            const saltCustomization = Utf8Tools.stringToUtf8ByteArray([
+                useCase,
+                kdfAlgorithm,
+                kdfIterations,
+                derivedSecretLength,
+                // Use different salts for legacy PrivateKey based accounts, and modern Entropy based accounts, to avoid
+                // deriving the same secrets if their underlying secret bytes are the same.
+                this.secret instanceof Nimiq.PrivateKey ? 'PrivateKey' : 'Entropy',
+            ].join());
+            // We use hkdf to derive the salt. This will likely not add much to the security of the final derived secret
+            // compared to simply using just saltCustomization as salt directly, as it's still just derived from the
+            // seed and the kdf parameters, but adding another kdf into the mix won't hurt either, and hkdf is cheap.
+            const hkdfParams = {
+                name: 'HKDF',
+                hash: 'SHA-256',
+                salt: saltCustomization,
+                info: saltCustomization,
+            };
+            const hkdfKeyMaterial = await window.crypto.subtle.importKey(
+                /* format */ 'raw',
+                /* keyData */ seedBytes,
+                /* algorithm */ hkdfParams, // The key material is to be used in a HKDF derivation.
+                /* extractable */ false,
+                /* keyUsages */ ['deriveBits'],
+            );
+            salt = new Uint8Array(await window.crypto.subtle.deriveBits(
+                /* algorithm */ hkdfParams,
+                /* baseKey */ hkdfKeyMaterial,
+                /* length */ 256,
+            ));
+        }
+
+        switch (kdfAlgorithm) {
+            case 'PBKDF2-SHA512': {
+                const pbkdf2Params = {
+                    name: 'PBKDF2',
+                    hash: 'SHA-512',
+                    salt,
+                    iterations: kdfIterations,
+                };
+                const pbkdf2KeyMaterial = await window.crypto.subtle.importKey(
+                    /* format */ 'raw',
+                    /* keyData */ seedBytes,
+                    /* algorithm */ pbkdf2Params, // The key material is to be used in a PBKDF2 derivation.
+                    /* extractable */ false,
+                    /* keyUsages */ ['deriveBits'],
+                );
+                return new Uint8Array(await window.crypto.subtle.deriveBits(
+                    /* algorithm */ pbkdf2Params,
+                    /* baseKey */ pbkdf2KeyMaterial,
+                    /* length */ derivedSecretLength * 8,
+                ));
+            }
+            case 'Argon2d': {
+                // Argon2d isn't supported by the browser's subtle crypto APIs and Nimiq PoS only provides a synchronous
+                // method for Argon2d, but we can get away with not having to run a web worker by using the asynchronous
+                // otpKdf, from which the Argon2d hash can be reconstructed by canceling out the dummy data via a second
+                // xor.
+                const dummyData = new Uint8Array(derivedSecretLength);
+                return Nimiq.BufferUtils.xor(
+                    await Nimiq.CryptoUtils.otpKdf(dummyData, seedBytes, salt, kdfIterations),
+                    dummyData,
+                );
+            }
+            case 'Argon2id': {
+                // Argon2id isn't supported by the browser's subtle crypto API and Nimiq PoS only provides a synchronous
+                // method for it. We run it in a worker to avoid blocking the main thread. This unfortunately introduces
+                // some overhead by having to start the worker thread and having to load Nimiq in the worker.
+                // We need to specify the Nimiq PoS module as absolute path, as the worker's import.meta is a blob url.
+                // Note that this path gets adapted by the build script for production.
+                const nimiqPath = new URL('../../../node_modules/@nimiq/core/web/index.js', window.location.href).href;
+                const workerScript = new Blob([`
+                    import * as Nimiq from '${nimiqPath}';
+                    self.addEventListener('message', async event => {
+                        try {
+                            if (typeof event.data !== 'object') throw new Error('Unexpected worker message');
+                            const { seedBytes, salt, kdfIterations, derivedSecretLength } = event.data;
+                            await Nimiq.default();
+                            const response = Nimiq.Hash.computeNimiqArgon2id(
+                                seedBytes,
+                                salt,
+                                kdfIterations,
+                                derivedSecretLength,
+                            );
+                            self.postMessage(response, { transfer: [response.buffer] });
+                        } catch (e) {
+                            const errorMessage = e instanceof Error ? e.message : String(e);
+                            self.postMessage('Error in deriveSecret Argon2id worker: ' + errorMessage);
+                        }
+                    });
+                `], { type: 'text/javascript' });
+                const workerUrl = URL.createObjectURL(workerScript);
+                const worker = new Worker(workerUrl, { type: 'module' });
+                try {
+                    return await new Promise((resolve, reject) => {
+                        worker.onmessage = event => {
+                            worker.onmessage = null;
+                            worker.onerror = null;
+                            if (event.data instanceof Uint8Array) {
+                                resolve(event.data);
+                            } else {
+                                reject(event.data);
+                            }
+                        };
+                        worker.onerror = error => {
+                            worker.onmessage = null;
+                            worker.onerror = null;
+                            const errorMessage = error instanceof Error ? error.message : String(error);
+                            reject(new Error(`Error in deriveSecret Argon2id worker: ${errorMessage}`));
+                        };
+                        worker.postMessage(
+                            // eslint-disable-next-line object-curly-newline
+                            { seedBytes, salt, kdfIterations, derivedSecretLength },
+                            { transfer: [seedBytes.buffer, salt.buffer] },
+                        );
+                    });
+                } finally {
+                    URL.revokeObjectURL(workerUrl);
+                    worker.terminate();
+                }
+            }
+            default:
+                throw new Error(`Unsupported KDF algorithm: ${kdfAlgorithm}`);
+        }
+    }
+
+    /**
      * @param {Uint8Array} hkdfSalt
      * @param {string} useCase - Allows to generate a separate AES key per use case.
      * @param {Partial<AesKeyGenParams>} [aesParams={name:'AES-GCM',length:256}]
@@ -281,26 +430,22 @@ class Key {
         /** @type {Promise<unknown>} */
         const loadPromise = new Promise(resolve => iframe.addEventListener('load', resolve));
         document.body.appendChild(iframe);
-        await loadPromise;
-
-        if (!iframe.contentWindow) {
-            throw new Error('Could not load sandboxed RSA iframe');
-        }
 
         // Extend 32-byte secret into 1024-byte seed
         /** @type {Uint8Array} */
         let seed;
         switch (keyParams.kdf) {
             case 'PBKDF2-SHA512':
-                seed = Nimiq.CryptoUtils.computePBKDF2sha512(
-                    this.secret.serialize(),
-                    this._defaultAddress.serialize(),
-                    keyParams.iterations,
-                    1024, // Output size (required)
-                );
+                seed = await this.deriveSecret('RSA Seed', keyParams.kdf, keyParams.iterations, 1024);
                 break;
             default:
                 throw new Error(`Unsupported KDF function: ${keyParams.kdf}`);
+        }
+
+        await loadPromise;
+
+        if (!iframe.contentWindow) {
+            throw new Error('Could not load sandboxed RSA iframe');
         }
 
         // Send computation command to iframe

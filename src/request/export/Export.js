@@ -1,5 +1,6 @@
 /* global ExportFile */
 /* global ExportWords */
+/* global ExportBackupCodes */
 /* global Nimiq */
 
 /**
@@ -21,6 +22,7 @@ class Export {
         this.exported = {
             wordsExported: false,
             fileExported: false,
+            backupCodesExported: false,
         };
 
         this._exportWordsHandler = new ExportWords(request,
@@ -28,6 +30,9 @@ class Export {
             this._reject.bind(this));
         this._exportFileHandler = new ExportFile(request,
             this._fileExportSuccessful.bind(this),
+            this._reject.bind(this));
+        this._exportBackupCodesHandler = new ExportBackupCodes(request,
+            this._backupCodesExportSuccessful.bind(this),
             this._reject.bind(this));
 
         /** @type {HTMLElement} */
@@ -41,6 +46,11 @@ class Export {
             (document.querySelector(`#${ExportWords.Pages.RECOVERY_WORDS_INTRO} .page-header-back-button`))
                 .classList.add('display-none');
         }
+
+        // Note: the Export flow supports exporting the Login File followed by the Recovery Words in a combined flow for
+        // historical reasons. This is however not actually used anymore in Nimiq's apps, and also not in third-party
+        // apps, as the Hub Export request is only whitelisted for Nimiq domains. Support for this combined flow could
+        // thus be removed. The newer export of backup codes is only supported individually anymore.
 
         this._fileSuccessPage = /** @type {HTMLDivElement} */ (
             document.getElementById(Export.Pages.LOGIN_FILE_SUCCESS));
@@ -58,6 +68,7 @@ class Export {
             this._exportWordsHandler.run();
         });
 
+        // For a combined Login File + Recovery Words export, set the key on the other handler, if it has been unlocked.
         this._exportFileHandler.on(ExportFile.Events.KEY_CHANGED,
             key => this._exportWordsHandler.setKey(key));
         this._exportWordsHandler.on(ExportWords.Events.KEY_CHANGED,
@@ -65,15 +76,20 @@ class Export {
     }
 
     run() {
-        if (this._request.wordsOnly || this._request.keyInfo.type === Nimiq.Secret.Type.PRIVATE_KEY) {
+        if (this._request.backupCodesOnly) {
+            this._exportBackupCodesHandler.run();
+        } else if (this._request.wordsOnly
+            // Legacy private keys do not support Login Files. Let them export to Recovery Words by instead.
+            || this._request.keyInfo.type === Nimiq.Secret.Type.PRIVATE_KEY) {
             this._exportWordsHandler.run();
         } else {
+            // In general, by default, start the flow with the Login File export, potentially to be followed by the
+            // Recovery Words export.
             this._exportFileHandler.run();
         }
     }
 
     /**
-     *
      * @param {KeyguardRequest.SimpleResult} fileResult
      */
     _fileExportSuccessful(fileResult) {
@@ -89,11 +105,18 @@ class Export {
     }
 
     /**
-     *
      * @param {KeyguardRequest.SimpleResult} wordsResult
      */
     _wordsExportSuccessful(wordsResult) {
         this.exported.wordsExported = wordsResult.success;
+        this._resolve(this.exported);
+    }
+
+    /**
+     * @param {KeyguardRequest.SimpleResult} backupCodesResult
+     */
+    _backupCodesExportSuccessful(backupCodesResult) {
+        this.exported.backupCodesExported = backupCodesResult.success;
         this._resolve(this.exported);
     }
 }

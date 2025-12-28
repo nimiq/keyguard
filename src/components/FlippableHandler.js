@@ -1,5 +1,21 @@
 class FlippableHandler {
     /**
+     * @returns {boolean}
+     */
+    static get disabled() {
+        return !!this._disabled;
+    }
+
+    /**
+     * @param {boolean} shouldDisable
+     */
+    static set disabled(shouldDisable) {
+        const $rotationContainer = /** @type {HTMLElement} */ (document.getElementById('rotation-container'));
+        $rotationContainer.classList.toggle('disabled', shouldDisable);
+        this._disabled = shouldDisable;
+    }
+
+    /**
      * Classname 'flipped' is the default flippable name, and has its css already available.
      * If other classes should be flipped to the backside they need to be added to FlippableHandler.css
      * @param {string} [classname = "flipped"] - Pages with this classname will be on the backside of the flip.
@@ -18,12 +34,19 @@ class FlippableHandler {
                     }, 0);
                 }
             }
+
             window.addEventListener('hashchange', event => {
                 const newHash = new URL(event.newURL).hash;
                 const oldHash = new URL(event.oldURL).hash;
+                const $oldEl = oldHash ? document.querySelector(oldHash) || undefined : undefined;
+                const $newEl = newHash ? document.querySelector(newHash) || undefined : undefined;
+
+                if (FlippableHandler.disabled) {
+                    FlippableHandler._updateContainerHeight($newEl);
+                    return;
+                }
+
                 if (oldHash && newHash) {
-                    const $oldEl = document.querySelector(oldHash);
-                    const $newEl = document.querySelector(newHash);
                     if ($newEl && $oldEl
                         && $newEl.classList.contains(classname) !== $oldEl.classList.contains(classname)) {
                         $newEl.classList.add('display-flex');
@@ -35,10 +58,9 @@ class FlippableHandler {
                             FlippableHandler._updateContainerHeight($newEl);
                         }, 0);
                     } else {
-                        FlippableHandler._updateContainerHeight($newEl || undefined);
+                        FlippableHandler._updateContainerHeight($newEl);
                     }
                 } else if (newHash) {
-                    const $newEl = document.querySelector(newHash);
                     if ($newEl && $newEl.classList.contains(classname)) {
                         $rotationContainer.classList.add('disable-transition');
                         FlippableHandler._updateContainerHeight($newEl);
@@ -48,7 +70,7 @@ class FlippableHandler {
                         }, 0);
                     } else {
                         $rotationContainer.classList.add('disable-transition');
-                        FlippableHandler._updateContainerHeight($newEl || undefined);
+                        FlippableHandler._updateContainerHeight($newEl);
                         window.setTimeout(() => {
                             $rotationContainer.classList.remove('disable-transition');
                         }, 0);

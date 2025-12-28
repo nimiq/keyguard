@@ -181,6 +181,7 @@ class Create {
             }],
             fileExported: true,
             wordsExported: false,
+            backupCodesExported: false,
             bitcoinXPub: new BitcoinKey(key).deriveExtendedPublicKey(request.bitcoinXPubPath),
             polygonAddresses: [{
                 address: new PolygonKey(key).deriveAddress(polygonKeypath),

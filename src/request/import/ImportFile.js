@@ -223,9 +223,10 @@ class ImportFile {
             addresses,
 
             // Backup warnings should not be shown for imported accounts, only for newly created accounts.
-            // Therefore we set both flags to true.
+            // Therefore we set all flags to true.
             fileExported: true,
             wordsExported: true,
+            backupCodesExported: true,
             bitcoinXPub,
             polygonAddresses,
 

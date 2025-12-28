@@ -59,6 +59,14 @@ fi
 
 output "🎩  Using config file src/config/config.$BUILD.js"
 
+# replace Nimiq PoS import path in file $1
+replace_nimiq_import_path() {
+    OLD_PATH="\.\.\/\.\.\/node_modules\/@nimiq\/core"
+    NEW_PATH="\.\.\/assets\/nimiq-pos"
+
+    inplace_sed "s/$OLD_PATH/$NEW_PATH/g" $1
+}
+
 # replace icon sprite URL in file $1
 replace_icon_sprite_url() {
     OLD_PATH="\.\.\/\.\.\/\.\.\/node_modules\/@nimiq\/style\/nimiq-style.icons.svg"
@@ -243,6 +251,7 @@ for url in $LIST_JS_COMMON; do
     cat src/request/create/$url >> dist/request/$JS_COMMON_BUNDLE
 done
 
+replace_nimiq_import_path dist/request/$JS_COMMON_BUNDLE
 replace_icon_sprite_url dist/request/$JS_COMMON_BUNDLE
 
 for url in $LIST_JS_TOPLEVEL; do
@@ -283,7 +292,7 @@ NIMIQ_POW_LIB_HASH=$(make_file_hash node_modules/@nimiq/core-web/web-offline.js)
 
 # copy Nimiq PoS loader, replace import path and calculate the integrity hash
 cp -v src/lib/Nimiq.mjs dist/lib/
-inplace_sed 's/\.\.\/\.\.\/node_modules\/@nimiq\/core/\.\.\/assets\/nimiq-pos/' dist/lib/Nimiq.mjs
+replace_nimiq_import_path dist/lib/Nimiq.mjs
 NIMIQ_POS_LOADER_HASH=$(make_file_hash dist/lib/Nimiq.mjs)
 
 # process index.html scripts and links for each request

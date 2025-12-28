@@ -16,6 +16,7 @@
     pointer-events: none;
 }
 
+#rotation-container.disabled,
 #rotation-container.disable-transition {
     transition: none;
 }

@@ -202,9 +202,10 @@ class ImportWords {
                     addresses,
 
                     // Backup warnings should not be shown for imported accounts, only for newly created accounts.
-                    // Therefore we set both flags to true.
+                    // Therefore we set all flags to true.
                     fileExported: true,
                     wordsExported: true,
+                    backupCodesExported: true,
                     bitcoinXPub,
                     polygonAddresses,
 
@@ -240,6 +241,7 @@ class ImportWords {
                     }],
                     fileExported: false, // Legacy accounts do not get a LoginFile
                     wordsExported: true,
+                    backupCodesExported: true,
                 };
                 this._keyResults.push(result);
             } else {

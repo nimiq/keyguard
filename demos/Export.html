@@ -13,6 +13,34 @@
 <script src="../node_modules/@nimiq/rpc/dist/rpc.umd.js"></script>
 
 <div>
+    <div>
+        <label>
+            <input type="radio" name="rpc-type-selector" value="popup" checked>
+            Popup
+        </label>
+        <label>
+            <input type="radio" name="rpc-type-selector" value="redirect">
+            Redirect
+        </label>
+    </div>
+    <div>
+        <label>
+            <input type="radio" name="export-type-selector" value="file+words" checked>
+            file+words
+        </label>
+        <label>
+            <input type="radio" name="export-type-selector" value="fileOnly">
+            fileOnly
+        </label>
+        <label>
+            <input type="radio" name="export-type-selector" value="wordsOnly">
+            wordsOnly
+        </label>
+        <label>
+            <input type="radio" name="export-type-selector" value="backupCodesOnly">
+            backupCodesOnly
+        </label>
+    </div>
     <button class="bip39">Export (BIP39)</button>
     <button class="legacy">Export (Legacy)</button>
     <button class="unencrypted">Export (unencrypted)</button>
@@ -21,71 +49,109 @@
     <textarea id="result" rows=20 cols=60></textarea>
 </div>
 
-<script>
-    (async () => {
-        await Nimiq.WasmHelper.doImportBrowser();
-        Nimiq.GenesisConfig.test();
-    })();
+<script type="module">
+    const SESSION_STORAGE_TEMPORARY_KEY_ID = 'temporary-key-id';
 
-    document.querySelector('.bip39').addEventListener('click', async () => {
-        const entropy = Nimiq.Entropy.generate();
-        const key = new Key(entropy);
-        const password = Nimiq.BufferUtils.fromUtf8('1234567890');
-        const id = await KeyStore.instance.put(key, password);
+    const $result = document.getElementById('result');
 
-        const exportRequest = {
-            appName: 'Export Demo',
-            keyId: id,
-        };
+    await Nimiq.default();
+    const redirectClient = new Rpc.RedirectRpcClient(new URL('../src/request/export/', location.href).href, '*');
+    redirectClient.onResponse('request', onRequestResult, onRequestError);
+    await redirectClient.init();
 
-        exportPopup(exportRequest);
-    });
+    for (const keyType of ['bip39', 'legacy', 'unencrypted']) {
+        document.querySelector(`.${keyType}`).addEventListener('click', async () => {
+            const keyId = await createTemporaryKey(keyType);
+            await requestExport(keyId);
+        });
+    }
 
-    document.querySelector('.legacy').addEventListener('click', async () => {
-        const secret = Nimiq.PrivateKey.generate();
+    /**
+     * @param {'bip39' | 'legacy' | 'unencrypted'} type
+     * @returns {Promise<string>}
+     */
+    async function createTemporaryKey(type) {
+        await clearTemporaryKey();
+        $result.textContent = 'Generating test key...';
+        const secret = type !== 'legacy'
+            ? Nimiq.Entropy.generate()
+            : Nimiq.PrivateKey.generate();
+        const password = type !== 'unencrypted'
+            ? Nimiq.BufferUtils.fromUtf8('1234567890')
+            : undefined;
         const key = new Key(secret);
-        const password = Nimiq.BufferUtils.fromUtf8('1234567890');
-        const id = await KeyStore.instance.put(key, password);
+        const keyId = await KeyStore.instance.put(key, password);
+        sessionStorage.setItem(SESSION_STORAGE_TEMPORARY_KEY_ID, keyId);
+        $result.textContent = 'Test key generated';
+        return keyId;
+    }
 
-        const exportRequest = {
-            appName: 'Export Demo',
-            keyId: id,
-        };
+    async function clearTemporaryKey() {
+        const keyId = sessionStorage.getItem(SESSION_STORAGE_TEMPORARY_KEY_ID);
+        if (!keyId) return;
+        await KeyStore.instance.remove(keyId);
+        sessionStorage.removeItem(SESSION_STORAGE_TEMPORARY_KEY_ID);
+    }
 
-        exportPopup(exportRequest);
-    });
-
-    document.querySelector('.unencrypted').addEventListener('click', async () => {
-        const secret = Nimiq.Entropy.generate();
-        const key = new Key(secret);
-        const id = await KeyStore.instance.put(key);
-
-        const exportRequest = {
-            appName: 'Export Demo',
-            keyId: id,
-        };
-
-        exportPopup(exportRequest);
-    });
-
-
-    async function exportPopup(request) {
-        const keyguard = window.open('../src/request/export/', 'Export Demo',
-            `left=${window.innerWidth / 2 - 350},top=75,width=700,height=850,location=yes,dependent=yes`);
-        const rpc = new Rpc.PostMessageRpcClient(keyguard, '*');
-        await rpc.init();
-
-        try {
-            const result = await rpc.call('request', request);
-            console.log('Keyguard result:', result);
-            document.querySelector('#result').textContent = JSON.stringify(result);
-        } catch (e) {
-            console.error('Keyguard error', e);
-            document.querySelector('#result').textContent = `Error: ${e.message || e}`;
+    /**
+     * @param {string} keyId
+     * @returns {Promise<void>}
+     */
+    async function requestExport(keyId) {
+        const rpcType = document.querySelector('input[name="rpc-type-selector"]:checked').value;
+        let popup, rpc;
+        if (rpcType === 'popup') {
+            popup = window.open('../src/request/export/', 'Export Demo',
+                `left=${window.innerWidth / 2 - 350},top=75,width=700,height=850,location=yes,dependent=yes`);
+            rpc = new Rpc.PostMessageRpcClient(popup, '*');
+            await rpc.init();
+        } else {
+            rpc = redirectClient;
         }
 
-        keyguard.close();
-        await KeyStore.instance.remove(request.keyId);
+        const request = {
+            appName: 'Export Demo',
+            keyId,
+        };
+        const exportType = document.querySelector('input[name="export-type-selector"]:checked').value;
+        if (exportType !== 'file+words') {
+            request[exportType] = true;
+        }
+        try {
+            if (rpcType === 'popup') {
+                const result = await rpc.call('request', request);
+                await onRequestResult(result);
+            } else {
+                await rpc.call(location.href, 'request', /* handleHistoryBack */ true, request);
+                // result will be handled by redirectClient on return to this page
+            }
+        } catch (e) {
+            await onRequestError(e);
+        } finally {
+            if (popup) {
+                popup.close();
+            }
+        }
+    }
+
+    /**
+     * @param {unknown} result
+     * @returns {Promise<void>}
+     */
+    async function onRequestResult(result) {
+        console.log('Keyguard result:', result);
+        $result.textContent = JSON.stringify(result);
+        await clearTemporaryKey();
+    }
+
+    /**
+     * @param {unknown} error
+     * @returns {Promise<void>}
+     */
+    async function onRequestError(error) {
+        console.error('Keyguard error:', error);
+        $result.textContent = `Error: ${error.message || error}`;
+        await clearTemporaryKey();
     }
 </script>
 

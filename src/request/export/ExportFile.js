@@ -49,8 +49,6 @@ class ExportFile extends Observable {
             $setPasswordPage.querySelector('.login-file-icon'));
         const $passwordBox = /** @type {HTMLFormElement} */ (
             $unlockFilePage.querySelector('.password-box'));
-        this.$setPasswordBackButton = /** @type {HTMLLinkElement} */ (
-            $setPasswordPage.querySelector('a.page-header-back-button'));
         const $passwordSetterBox = /** @type {HTMLFormElement} */ (
             $setPasswordPage.querySelector('.password-setter-box'));
         const $downloadLoginFile = /** @type {HTMLDivElement} */ (
