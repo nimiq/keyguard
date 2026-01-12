@@ -212,7 +212,10 @@ class RequestParser { // eslint-disable-line no-unused-vars
                 );
             }
 
-            if (tx.sender.equals(tx.recipient)) {
+            // Allow sender=recipient for staking transactions (e.g., retire stake)
+            if (tx.sender.equals(tx.recipient)
+                && tx.senderType !== Nimiq.AccountType.Staking
+                && tx.recipientType !== Nimiq.AccountType.Staking) {
                 throw new Error('Sender and recipient must not match');
             }
 

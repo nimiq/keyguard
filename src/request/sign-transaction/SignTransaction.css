@@ -157,3 +157,109 @@ nothing breaks in SignMultisigTransaction. */
     max-width: 100%;
     overflow-wrap: break-word;
 }
+
+/* Multi-transaction styles */
+#confirm-transaction.multi .hide-multi {
+    display: none;
+}
+
+/* Show only in multi-transaction mode */
+#confirm-transaction .multi-only {
+    display: none;
+}
+
+#confirm-transaction.multi .multi-only {
+    display: block;
+}
+
+#confirm-transaction .multi-transaction {
+    padding: 2rem;
+}
+
+#confirm-transaction .multi-transaction .transaction-summary {
+    text-align: center;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(31, 35, 72, 0.1);
+}
+
+#confirm-transaction .multi-transaction .transaction-list {
+    max-height: 35rem; /* ~280px, allows ~4-5 compact cards */
+    overflow-y: auto;
+    margin: 0 -2rem;
+    padding: 0 2rem;
+}
+
+#confirm-transaction .transaction-card {
+    display: flex;
+    align-items: center;
+    padding: 1.5rem 0;
+    border-bottom: 1px solid rgba(31, 35, 72, 0.1);
+}
+
+#confirm-transaction .transaction-card:last-child {
+    border-bottom: none;
+}
+
+#confirm-transaction .transaction-card .identicon {
+    width: 5rem;
+    height: 5rem;
+    flex-shrink: 0;
+}
+
+#confirm-transaction .transaction-card .tx-details {
+    flex-grow: 1;
+    margin: 0 1.5rem;
+    overflow: hidden;
+    min-width: 0;
+}
+
+#confirm-transaction .transaction-card .tx-address {
+    font-size: 1.625rem;
+    font-family: 'Fira Mono', monospace;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    opacity: 0.6;
+}
+
+#confirm-transaction .transaction-card .tx-label {
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#confirm-transaction .transaction-card .tx-value {
+    font-weight: 600;
+    white-space: nowrap;
+    text-align: right;
+    color: var(--nimiq-light-blue);
+}
+
+#confirm-transaction .transaction-card .tx-fee {
+    font-size: 1.5rem;
+    opacity: 0.5;
+    text-align: right;
+    white-space: nowrap;
+}
+
+#confirm-transaction .multi-transaction .transaction-totals {
+    padding-top: 1.5rem;
+    text-align: center;
+    border-top: 1px solid rgba(31, 35, 72, 0.1);
+}
+
+#confirm-transaction .multi-transaction .total-value {
+    font-size: 4rem;
+    font-weight: bold;
+}
+
+#confirm-transaction .multi-transaction .total-value .nim-symbol {
+    margin-left: 1rem;
+    font-weight: 700;
+}
+
+#confirm-transaction .multi-transaction .total-fees {
+    opacity: 0.5;
+    margin-top: 0.5rem;
+}

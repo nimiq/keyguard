@@ -54,6 +54,9 @@ export type TransactionInfo = {
     flags?: number,
 };
 
+// TransactionInfo without keyPath (keyPath is at request level for multi-transaction support)
+export type TransactionData = Omit<TransactionInfo, 'keyPath'>;
+
 export enum BitcoinTransactionInputType {
     STANDARD = 'standard',
     HTLC_REDEEM = 'htlc-redeem',
@@ -164,10 +167,17 @@ export type ExportResult = {
 
 type SignTransactionRequestCommon = SimpleRequest & TransactionInfo;
 
-export type SignTransactionRequestStandard = SignTransactionRequestCommon & {
+// Standard layout supports both single and multiple transactions
+export type SignTransactionRequestStandard = SimpleRequest & {
+    keyPath: string,
     layout?: 'standard',
-    recipientLabel?: string,
-};
+    recipientLabel?: string, // Only used for single-tx display
+} & (
+    // Option A: Single transaction (backward compatible - fields directly on request)
+    TransactionData |
+    // Option B: Multiple transactions
+    { transactions: TransactionData[] | Uint8Array[] }
+);
 
 export type SignTransactionRequestCheckout = SignTransactionRequestCommon & {
     layout: 'checkout',
@@ -613,6 +623,8 @@ export type ListLegacyResult = LegacyKeyInfoObject[];
 export type SignTransactionResult = SignatureResult & {
     serializedTx: Uint8Array,
 };
+// Array result type for multi-transaction signing
+export type SignTransactionResults = SignTransactionResult[];
 export type SignStakingResult = SignatureResult & {
     transaction: Uint8Array,
 };
@@ -650,6 +662,7 @@ export type RedirectResult
     | SignatureResult
     | ConnectResult
     | SignTransactionResult
+    | SignTransactionResults
     | SignStakingResult[]
     | SignedBitcoinTransaction
     | SignedPolygonTransaction
@@ -664,7 +677,7 @@ export type Result = RedirectResult | IFrameResult;
 
 export type ResultType<T extends RedirectRequest> =
     T extends Is<T, SignMessageRequest> ? SignatureResult :
-    T extends Is<T, SignTransactionRequest> ? SignTransactionResult :
+    T extends Is<T, SignTransactionRequest> ? SignTransactionResult | SignTransactionResults :
     T extends Is<T, SignMultisigTransactionRequest> ? SignatureResult :
     T extends Is<T, SignStakingRequest> ? SignStakingResult[] :
     T extends Is<T, ConnectRequest> ? ConnectResult :
@@ -681,7 +694,7 @@ export type ResultType<T extends RedirectRequest> =
 
 export type ResultByCommand<T extends KeyguardCommand> =
     T extends KeyguardCommand.SIGN_MESSAGE ? SignatureResult :
-    T extends KeyguardCommand.SIGN_TRANSACTION ? SignTransactionResult :
+    T extends KeyguardCommand.SIGN_TRANSACTION ? SignTransactionResult | SignTransactionResults :
     T extends KeyguardCommand.SIGN_MULTISIG_TRANSACTION ? SignatureResult :
     T extends KeyguardCommand.SIGN_STAKING ? SignStakingResult[] :
     T extends KeyguardCommand.CONNECT_ACCOUNT ? ConnectResult :

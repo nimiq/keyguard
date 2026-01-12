@@ -94,12 +94,33 @@
                     <a tabindex="0" class="page-header-back-button hide-standard">
                         <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
                     </a>
-                    <h1 data-i18n="sign-tx-heading-checkout" class="nq-h1 hide-standard hide-cashlink">Verify Payment</h1>
-                    <h1 data-i18n="sign-tx-heading-tx" class="nq-h1 hide-checkout hide-cashlink">Confirm Transaction</h1>
-                    <h1 data-i18n="sign-tx-heading-cashlink" class="nq-h1 hide-checkout hide-standard ">Create a Cashlink</h1>
+                    <h1 data-i18n="sign-tx-heading-checkout" class="nq-h1 hide-standard hide-cashlink hide-multi">Verify Payment</h1>
+                    <h1 data-i18n="sign-tx-heading-tx" class="nq-h1 hide-checkout hide-cashlink hide-multi">Confirm Transaction</h1>
+                    <h1 data-i18n="sign-tx-heading-cashlink" class="nq-h1 hide-checkout hide-standard hide-multi">Create a Cashlink</h1>
+                    <h1 data-i18n="sign-tx-heading-multi" class="nq-h1 multi-only">Confirm Transactions</h1>
                 </div>
 
-                <div class="page-body nq-card-body transaction">
+                <!-- Multi-transaction view -->
+                <div class="page-body nq-card-body transaction multi-transaction display-none">
+                    <div class="transaction-summary">
+                        <span class="transaction-count nq-text"></span>
+                    </div>
+                    <div class="transaction-list">
+                        <!-- Transaction cards will be dynamically inserted here -->
+                    </div>
+                    <div class="transaction-totals">
+                        <div class="total-value nq-light-blue">
+                            <span class="total-value-amount"></span><span class="nim-symbol"></span>
+                        </div>
+                        <div class="total-fees nq-text-s">
+                            + <span class="total-fees-amount"></span> <span class="nim-symbol"></span>
+                            <span data-i18n="sign-tx-multi-total-fees">total fees</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Single-transaction view (existing) -->
+                <div class="page-body nq-card-body transaction single-transaction">
                     <div class="center accounts">
                         <div class="sender"></div>
                         <svg class="nq-icon arrow"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-right"/></svg>
