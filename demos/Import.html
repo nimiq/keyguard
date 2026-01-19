@@ -9,33 +9,96 @@
 <link href="../src/nimiq-style.css" rel="stylesheet">
 
 <div>
+    <label>
+        <input type="radio" name="rpc-type-selector" value="popup">
+        Popup
+    </label>
+    <label>
+        <input type="radio" name="rpc-type-selector" value="redirect" checked>
+        Redirect
+    </label>
+</div>
+<div>
+    <label>
+        <input type="checkbox" id="checkbox-isKeyLost">
+        isKeyLost
+    </label>
+    <label>
+        <input type="checkbox" id="checkbox-enableBackArrow">
+        enableBackArrow
+    </label>
+    <label>
+        <input type="checkbox" id="checkbox-wordsOnly">
+        wordsOnly
+    </label>
+</div>
+<div>
     <button id="import">Import</button>
     <br><br>
     <textarea id="result" rows=20 cols=60></textarea>
 </div>
 
-<script>
+<script type="module">
+    const $result = document.getElementById('result');
+
+    const redirectClient = new Rpc.RedirectRpcClient(new URL('../src/request/import/', location.href).href, '*');
+    redirectClient.onResponse('request', onRequestResult, onRequestError);
+    await redirectClient.init();
+
     document.querySelector('#import').addEventListener('click', () => requestImport());
 
     async function requestImport() {
-        const keyguard = window.open(`../src/request/import/`, 'Export Demo',
-            `left=${window.innerWidth / 2 - 350},top=75,width=700,height=850,location=yes,dependent=yes`);
-        const rpc = new Rpc.PostMessageRpcClient(keyguard, '*');
-        await rpc.init();
-
-        try {
-            const result = await rpc.call('request', {
-                appName: 'Import Demo',
-                defaultKeyPath: "m/44'/242'/0'/0'",
-                requestedKeyPaths: ["m/44'/242'/0'/0'"],
-            });
-            document.getElementById('result').value = 'Keyguard result: ' + JSON.stringify(result);
-            console.log('Keyguard result:', result);
-        } catch (e) {
-            console.error(e);
+        const rpcType = document.querySelector('input[name="rpc-type-selector"]:checked').value;
+        let popup, rpc;
+        if (rpcType === 'popup') {
+            popup = window.open('../src/request/import/', 'Import Demo',
+                `left=${window.innerWidth / 2 - 350},top=75,width=700,height=850,location=yes,dependent=yes`);
+            rpc = new Rpc.PostMessageRpcClient(popup, '*');
+            await rpc.init();
+        } else {
+            rpc = redirectClient;
         }
 
-        keyguard.close();
+        const request = {
+            appName: 'Import Demo',
+            requestedKeyPaths: ["m/44'/242'/0'/0'"],
+            bitcoinXPubPath: `m/84'/1'/0'`, // Bitcoin BIP84 Testnet
+            polygonAccountPath: `m/44'/699'/0'`, // Polygon Testnet
+            isKeyLost: document.getElementById('checkbox-isKeyLost').checked,
+            enableBackArrow: document.getElementById('checkbox-enableBackArrow').checked,
+            wordsOnly: document.getElementById('checkbox-wordsOnly').checked,
+        };
+        try {
+            if (rpcType === 'popup') {
+                const result = await rpc.call('request', request);
+                await onRequestResult(result);
+            } else {
+                await rpc.call(location.href, 'request', /* handleHistoryBack */ true, request);
+                // result will be handled by redirectClient on return to this page
+            }
+        } catch (e) {
+            await onRequestError(e);
+        } finally {
+            if (popup) {
+                popup.close();
+            }
+        }
+    }
+
+    /**
+     * @param {unknown} result
+     */
+    function onRequestResult(result) {
+        console.log('Keyguard result:', result);
+        $result.textContent = JSON.stringify(result);
+    }
+
+    /**
+     * @param {unknown} error
+     */
+    function onRequestError(error) {
+        console.error('Keyguard error:', error);
+        $result.textContent = `Error: ${error.message || error}`;
     }
 </script>
 
