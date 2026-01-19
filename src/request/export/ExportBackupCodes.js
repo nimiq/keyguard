@@ -4,6 +4,7 @@
 /* global ProgressIndicator */
 /* global BackupCodesIllustration */
 /* global BackupCodes */
+/* global ViewTransitionHandler */
 /* global KeyStore */
 /* global AccountStore */
 /* global Errors */
@@ -69,12 +70,6 @@ class ExportBackupCodes {
         this._passwordBox.on(PasswordBox.Events.SUBMIT, this._generateCodes.bind(this));
         TopLevelApi.focusPasswordBox();
 
-        // current view transition
-        /** @type {ExportBackupCodes.Pages | null} */
-        this._currentlyTransitioningNewPageId = null;
-        /** @type {ViewTransition | null} */
-        this._currentViewTransition = null;
-
         // Handle heading and continue button translation interpolations.
         for (const codeIndex of [/** @type {'1'} */('1'), /** @type {'2'} */('2')]) {
             const pageId = ExportBackupCodes.Pages[`SEND_CODE_${codeIndex}`];
@@ -139,15 +134,26 @@ class ExportBackupCodes {
             }
         }
 
+        // View transitions
+        this._viewTransitionHandler = new ViewTransitionHandler(
+            // Disable view transitions for the unlock page, as it has its own, separate transition effect.
+            /** @type {Array<Exclude<ExportBackupCodes.Pages, typeof ExportBackupCodes.Pages.UNLOCK>>} */ (
+                this._pageIds.filter(page => page !== ExportBackupCodes.Pages.UNLOCK)),
+            async (viewTransition, oldState, newState) => {
+                const $viewport = this._pagesById[newState];
+                await BackupCodesIllustration.customizeViewTransition(viewTransition, oldState, newState, $viewport);
+            },
+        );
+
         // Augment browser navigations with view transition animations.
         window.addEventListener('popstate', event => {
             const hasUAVisualTransition = 'hasUAVisualTransition' in event && !!event.hasUAVisualTransition;
             // At the time of a popstate event, location.hash is already updated, but the document / DOM not yet and the
             // hashchange event has not triggered yet.
             const oldTarget = document.querySelector(':target');
-            const oldPageId = oldTarget ? /** @type {ExportBackupCodes.Pages} */ (oldTarget.id) : null;
-            const newPageId = /** @type {ExportBackupCodes.Pages} */ (window.location.hash.replace(/^#/, ''));
-            if (!oldPageId || !newPageId || !this._shouldTransitionView(oldPageId, newPageId)
+            const oldPageId = oldTarget ? oldTarget.id : null;
+            const newPageId = window.location.hash.replace(/^#/, '');
+            if (!this._viewTransitionHandler.shouldTransitionView(oldPageId, newPageId)
                 // The user agent already provided a visual transition itself (e.g. swipe back).
                 || hasUAVisualTransition
             ) return;
@@ -165,7 +171,7 @@ class ExportBackupCodes {
                 }
             }
 
-            this._transitionView(() => {
+            this._viewTransitionHandler.transitionView(() => {
                 for (const $page of Object.values(this._pagesById)) {
                     $page.classList.remove(
                         'display-flex',
@@ -242,13 +248,8 @@ class ExportBackupCodes {
             // loading animation, such that the discrepancy between the length of the placeholders and unveiled code is
             // also rather unnoticeably. Code 2 even disappears into the faded background, such that it can be updated
             // unnoticed, too.
-            if (this._currentViewTransition) {
-                // Wait for current view transition to finish or be cancelled.
-                await this._currentViewTransition.finished.catch(() => {});
-                await new Promise(resolve => requestAnimationFrame(resolve));
-            }
-            const currentPageId = /** @type {ExportBackupCodes.Pages} */ (window.location.hash.replace(/^#/, ''));
-            this._transitionView(() => {
+            const currentPageId = window.location.hash.replace(/^#/, '');
+            this._viewTransitionHandler.transitionView(() => {
                 setGeneratingCodes(false);
                 for (const [step, illustration] of Object.entries(this._illustrationsByStep)) {
                     illustration.setCode(1, code1);
@@ -256,7 +257,7 @@ class ExportBackupCodes {
                     // Set code 2 only on other pages than INTRO, unless the user is not on INTRO anymore, see above.
                     illustration.setCode(2, code2);
                 }
-            }, currentPageId, currentPageId);
+            }, currentPageId, currentPageId, /* awaitPreviousTransitions */ true);
         });
 
         // Proceed to INTRO page.
@@ -273,7 +274,7 @@ class ExportBackupCodes {
         const oldPageIndex = this._pageIds.indexOf(oldPageId);
         const newPageId = this._pageIds[oldPageIndex + (direction === 'forward' ? 1 : -1)];
 
-        await this._transitionView(() => new Promise(resolve => {
+        await this._viewTransitionHandler.transitionView(() => new Promise(resolve => {
             // Let the domUpdateHandler resolve, once the DOM actually updated.
             window.addEventListener('hashchange', () => resolve(), { once: true });
             if (direction === 'forward') {
@@ -282,56 +283,6 @@ class ExportBackupCodes {
                 window.history.back();
             }
         }), oldPageId, newPageId);
-    }
-
-    /**
-     * @private
-     * @param {() => Promise<void> | void} domUpdateHandler
-     * @param {ExportBackupCodes.Pages} oldPageId
-     * @param {ExportBackupCodes.Pages} newPageId
-     */
-    async _transitionView(domUpdateHandler, oldPageId, newPageId) {
-        if (!this._shouldTransitionView(oldPageId, newPageId)) {
-            // Go to new page without a view transition.
-            await domUpdateHandler();
-            return;
-        }
-        this._currentlyTransitioningNewPageId = newPageId;
-        // Note that starting a new view transition cancels the animation of a previous one.
-        this._currentViewTransition = document.startViewTransition(domUpdateHandler);
-        // Customize view transition, without awaiting it.
-        Promise.all([
-            BackupCodesIllustration.customizeViewTransition(
-                this._currentViewTransition,
-                // oldPageId and newPageId are checked in _shouldTransitionView.
-                /** @type {BackupCodesIllustrationStep} */ (oldPageId),
-                /** @type {BackupCodesIllustrationStep} */ (newPageId),
-                this._pagesById[newPageId],
-            ),
-            this._currentViewTransition.finished,
-        ]).catch(() => {
-            // Catch exceptions to avoid unhandled promise rejections on view transition cancellation.
-        }).then(() => {
-            if (this._currentlyTransitioningNewPageId !== newPageId) return;
-            // Reached target page, and it hasn't changed in the meantime.
-            this._currentlyTransitioningNewPageId = null;
-            this._currentViewTransition = null;
-        });
-        // Await the actual DOM update (i.e. the important part), and throw if it fails.
-        await this._currentViewTransition.updateCallbackDone;
-    }
-
-    /**
-     * @param {ExportBackupCodes.Pages} oldPageId
-     * @param {ExportBackupCodes.Pages} newPageId
-     * @returns {boolean}
-     */
-    _shouldTransitionView(oldPageId, newPageId) {
-        return !!document.startViewTransition // view transitions supported
-            && newPageId !== this._currentlyTransitioningNewPageId // transition not already running or scheduled
-            && this._pageIds.includes(oldPageId) && this._pageIds.includes(newPageId) // part of ExportBackupCodes flow
-            // Disable view transitions for the unlock page, as it has its own, separate transition effect.
-            && oldPageId !== ExportBackupCodes.Pages.UNLOCK && newPageId !== ExportBackupCodes.Pages.UNLOCK;
     }
 }
 
