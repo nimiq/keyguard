@@ -27,6 +27,14 @@
     align-items: center;
 }
 
+.page#import-file #go-to-other-import-option {
+    margin-top: 3rem;
+}
+
+.page#import-file #go-to-create {
+    margin: 1.25rem 0;
+}
+
 .page#import-file .qr-video-button {
     position: absolute;
     right: 2.5rem;
@@ -177,7 +185,7 @@
 }
 
 .page#recovery-words .recovery-words,
-.words-container {
+.page#recovery-words .words-container {
     display: flex;
     flex-grow: 1;
     overflow: auto;
@@ -190,14 +198,6 @@
 
 .page#recovery-words .words-container input {
     height: 100%;
-}
-
-button#goto-words {
-    margin-top: 3rem;
-}
-
-a#goto-create {
-    margin: 1.25rem 0;
 }
 
 .page#set-password .page-body {
@@ -229,6 +229,10 @@ a#goto-create {
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
+}
+
+.page#download-file .skip {
+    margin-top: -3rem;
 }
 
 @media (max-width: 450px) {

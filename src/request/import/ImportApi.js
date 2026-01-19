@@ -1,8 +1,7 @@
 /* global BitcoinRequestParserMixin */
 /* global PolygonRequestParserMixin */
 /* global TopLevelApi */
-/* global ImportFile */
-/* global ImportWords */
+/* global Import */
 /* global Errors */
 
 class ImportApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(TopLevelApi)) {
@@ -27,13 +26,11 @@ class ImportApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(TopL
         parsedRequest.bitcoinXPubPath = this.parseBitcoinPath(request.bitcoinXPubPath, 'bitcoinXPubPath');
         parsedRequest.polygonAccountPath = this.parsePolygonPath(request.polygonAccountPath, 'polygonAccountPath');
 
-        this._handler = parsedRequest.wordsOnly ? ImportWords : ImportFile;
-
         return parsedRequest;
     }
 
     get Handler() {
-        return this._handler;
+        return Import;
     }
 }
 

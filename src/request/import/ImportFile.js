@@ -1,44 +1,27 @@
-/* global Constants */
+/* global Observable */
 /* global Nimiq */
 /* global NimiqPoW */
 /* global Key */
-/* global ImportWords */
 /* global FileImporter */
 /* global PasswordBox */
-/* global ImportApi */
-/* global Errors */
 /* global TopLevelApi */
 /* global Utf8Tools */
 /* global KeyStore */
-/* global BitcoinKey */
-/* global PolygonKey */
 /* global QrVideoScanner */
-/* global NonPartitionedSessionStorage */
 
-/**
- * @callback ImportFile.resolve
- * @param {KeyguardRequest.KeyResult} result
- */
-
-class ImportFile {
+class ImportFile extends Observable {
     /**
      * @param {Parsed<KeyguardRequest.ImportRequest>} request
-     * @param {ImportFile.resolve} resolve
-     * @param {reject} reject
      */
-    constructor(request, resolve, reject) {
-        this._request = request;
-        this._resolve = resolve;
-        this._reject = reject;
+    constructor(request) {
+        super();
 
         this._encryptedKey = new Nimiq.SerialBuffer(0);
-        /** @type {string | undefined} */
-        this._label = undefined;
+        /** @type {string?} */
+        this._label = null;
         this._flags = {
             hasPin: false,
         };
-
-        this.importWordsHandler = new ImportWords(request, resolve, reject);
 
         this.$importFilePage = /** @type {HTMLElement} */ (document.getElementById(ImportFile.Pages.IMPORT_FILE));
         this.$unlockAccountPage = /** @type {HTMLElement} */ (document.getElementById(ImportFile.Pages.UNLOCK_ACCOUNT));
@@ -57,13 +40,15 @@ class ImportFile {
         this.$qrVideoScanner = /** @type {HTMLDivElement} */ (this.$importFilePage.querySelector('.qr-video-scanner'));
         this.qrVideoScanner = new QrVideoScanner(this.$qrVideoScanner, FileImporter.isLoginFileData);
 
-        const $gotoWords = /** @type {HTMLElement} */ (this.$importFilePage.querySelector('#goto-words'));
-        $gotoWords.addEventListener('click', () => { this.importWordsHandler.run(); });
+        const $goToOtherImportOption = /** @type {HTMLElement} */ (
+            this.$importFilePage.querySelector('#go-to-other-import-option'));
+        $goToOtherImportOption.addEventListener('click', () => this.fire(ImportFile.Events.GO_TO_OTHER_IMPORT_OPTION));
 
-        const $gotoCreate = this.$importFilePage.querySelector('#goto-create');
-        if ($gotoCreate) {
-            $gotoCreate.addEventListener('click', this._goToCreate.bind(this));
-        }
+        const $goToCreate = /** @type {HTMLElement} */ (this.$importFilePage.querySelector('#go-to-create'));
+        $goToCreate.addEventListener('click', event => {
+            event.preventDefault();
+            this.fire(ImportFile.Events.GO_TO_CREATE);
+        });
 
         this.$loginFileImage = /** @type {HTMLImageElement} */ (
             this.$unlockAccountPage.querySelector('.loginfile-image'));
@@ -100,6 +85,7 @@ class ImportFile {
      * @param {string} [src]
      */
     _onFileImported(decoded, src) {
+        this.fire(ImportFile.Events.RESET);
         if (decoded.substr(0, 2) === '#2') {
             // Imported file is a PIN-encrypted account Access File
             decoded = decoded.substr(2);
@@ -153,98 +139,32 @@ class ImportFile {
      */
     async _onPasswordEntered(password) {
         /** @type {Key?} */
-        let key;
-
-        try {
-            key = await this._decryptAndStoreKey(password);
-        } catch (error) {
-            this.passwordBox.onPasswordIncorrect();
-            return;
-        }
-
+        const key = await this._decryptKey(password);
         if (!key) {
             this.passwordBox.onPasswordIncorrect();
             return;
         }
 
-        /** @type {{keyPath: string, address: Uint8Array}[]} */
-        const addresses = [];
-
-        /** @type {string | undefined} */
-        let bitcoinXPub;
-
-        /** @type {Array<{ address: string, keyPath: string }> | undefined} */
-        let polygonAddresses;
-
-        /** @type {Uint8Array | undefined} */
-        let tmpCookieEncryptionKey;
-
-        try {
-            if (key.secret instanceof Nimiq.PrivateKey) {
-                addresses.push({
-                    keyPath: Constants.LEGACY_DERIVATION_PATH,
-                    address: key.deriveAddress('').serialize(),
-                });
-            } else if (key.secret instanceof Nimiq.Entropy) {
-                /** @type {KeyguardRequest.ImportRequest} */
-                (this._request).requestedKeyPaths.forEach(keyPath => {
-                    addresses.push({
-                        keyPath,
-                        address: /** @type {Key} */(key).deriveAddress(keyPath).serialize(),
-                    });
-                });
-
-                bitcoinXPub = new BitcoinKey(key).deriveExtendedPublicKey(this._request.bitcoinXPubPath);
-
-                const polygonKeypath = `${this._request.polygonAccountPath}/0/0`;
-                polygonAddresses = [{
-                    address: new PolygonKey(key).deriveAddress(polygonKeypath),
-                    keyPath: polygonKeypath,
-                }];
-
-                // Store entropy in NonPartitionedSessionStorage so addresses can be derived in the KeyguardIframe
-                tmpCookieEncryptionKey = await NonPartitionedSessionStorage.set(
-                    ImportApi.SESSION_STORAGE_KEY_PREFIX + key.id,
-                    key.secret.serialize(),
-                ) || undefined;
-            } else {
-                throw new Error(`Unknown key type ${key.type}`);
-            }
-        } catch (error) {
-            this._reject(new Errors.KeyguardError(error instanceof Error ? error : String(error)));
-            return;
+        /** @type {{entropy: Key?, privateKey: Key?}} */
+        const keys = { entropy: null, privateKey: null };
+        /** @type {{entropy: string?, privateKey: string?}} */
+        const labels = { entropy: null, privateKey: null };
+        if (key.secret instanceof Nimiq.Entropy) {
+            keys.entropy = key;
+            labels.entropy = this._label;
+        } else if (key.secret instanceof Nimiq.PrivateKey) {
+            keys.privateKey = key;
+            labels.privateKey = this._label;
         }
 
-        /** @type {KeyguardRequest.KeyResult} */
-        const result = [{
-            keyId: key.id,
-            keyType: key.type,
-            ...(this._label ? { keyLabel: this._label } : {}),
-            addresses,
-
-            // Backup warnings should not be shown for imported accounts, only for newly created accounts.
-            // Therefore we set all flags to true.
-            fileExported: true,
-            wordsExported: true,
-            backupCodesExported: true,
-            bitcoinXPub,
-            polygonAddresses,
-
-            // The Hub will get access to the encryption key, but not the encrypted cookie. The server can potentially
-            // get access to the encrypted cookie, but not the encryption key (the result including the encryption key
-            // will be set as url fragment and thus not be sent to the server), as long as the Hub is not compromised.
-            // An attacker would need to get access to the Keyguard and Hub servers.
-            tmpCookieEncryptionKey,
-        }];
-
-        this._resolve(result);
+        this.fire(ImportFile.Events.IMPORT, keys, labels, password);
     }
 
     /**
      * @param {string} password
      * @returns {Promise<Key?>}
      */
-    async _decryptAndStoreKey(password) {
+    async _decryptKey(password) {
         TopLevelApi.setLoading(true);
         try {
             const encryptionKey = Utf8Tools.stringToUtf8ByteArray(password);
@@ -289,26 +209,24 @@ class ImportFile {
             (this.$unlockAccountPage.querySelector('.lock')).classList.add('unlocked');
 
             // TODO expectedKeyId check if it gets used in the future.
-            const key = new Key(secret, { hasPin: this._flags.hasPin });
-            await KeyStore.instance.put(key, encryptionKey);
-            return key;
+            return new Key(secret, { hasPin: this._flags.hasPin });
+            // We just keep the loading spinner spinning until the request is finished.
         } catch (event) {
             console.error(event);
             TopLevelApi.setLoading(false);
             return null; // Triggers onPasswordIncorrect above
         }
     }
-
-    /**
-     * @param {Event} event
-     */
-    _goToCreate(event) {
-        event.preventDefault();
-        this._reject(new Errors.GoToCreate());
-    }
 }
 
 ImportFile.Pages = {
     IMPORT_FILE: 'import-file',
     UNLOCK_ACCOUNT: 'unlock-account',
+};
+
+ImportFile.Events = {
+    IMPORT: 'import',
+    RESET: 'reset',
+    GO_TO_OTHER_IMPORT_OPTION: 'go-to-other-import-option',
+    GO_TO_CREATE: 'go-to-create',
 };
