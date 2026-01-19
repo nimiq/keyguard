@@ -186,15 +186,18 @@ class ImportFile extends Observable {
                 // So we need to temporarily set global `Nimiq` to the PoW library to load the worker correctly.
                 // @ts-expect-error window.Nimiq is not defined
                 const _Nimiq = window.Nimiq;
-                // @ts-expect-error window.Nimiq is not defined
-                window.Nimiq = NimiqPoW;
+                let _secret;
+                try {
+                    // @ts-expect-error window.Nimiq is not defined
+                    window.Nimiq = NimiqPoW;
 
-                await NimiqPoW.WasmHelper.doImport();
-                const _secret = await NimiqPoW.Secret.fromEncrypted(this._encryptedKey, encryptionKey);
-
-                // After the worker is done, we set the global `Nimiq` back to the PoS library
-                // @ts-expect-error window.Nimiq is not defined
-                window.Nimiq = _Nimiq;
+                    await NimiqPoW.WasmHelper.doImport();
+                    _secret = await NimiqPoW.Secret.fromEncrypted(this._encryptedKey, encryptionKey);
+                } finally {
+                    // After the worker is done, we set the global `Nimiq` back to the PoS library
+                    // @ts-expect-error window.Nimiq is not defined
+                    window.Nimiq = _Nimiq;
+                }
 
                 // Convert PoW Entropy/PrivateKey objects to their PoS equivalent
                 if (_secret instanceof NimiqPoW.Entropy) {
