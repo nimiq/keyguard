@@ -1,7 +1,7 @@
 {
     "_language": "Українська",
 
-    "language-changed": "Мову інтерфейсу змінено. Чи хочете ви обновити сторінку щоб замінити усі переклади? В інакшому випадку, деякі переклади можуть бути не оновлені.",
+    "language-changed": "Мову інтерфейсу змінено. Перезавантажити сторінку, щоб оновити всі переклади? Інакше деякі тексти можуть не оновитися.",
 
     "back-to-app": "Повернутися до {appName}",
     "back-to-accounts": "Повернутися до моїх рахунків",
@@ -14,10 +14,10 @@
     "back-to-cpl": "Повернутися до CryptoPayment.link",
 
     "tx-data-funding-cashlink": "Чек поповнюється",
-    "tx-data-contract-creation": "{contractType} creation",
-    "tx-data-contract-withdrawal": "{contractType} withdrawal",
-    "tx-data-staking": "Staking",
-    "tx-data-staking-update": "Staking update",
+    "tx-data-contract-creation": "{contractType} створення",
+    "tx-data-contract-withdrawal": "{contractType} виведення",
+    "tx-data-staking": "Стейкінг",
+    "tx-data-staking-update": "Оновлення стейкінгу",
     "label-unknown": "Невідомо",
 
     "recovery-words-title": "Напишіть ці 24 слова на папері",
@@ -39,29 +39,30 @@
     "create-heading-what-is-loginfile": "Що таке файлю-ключ?",
     "create-login-file-explainer-intro": "Файл-ключ, разом з паролем, надає доступ до вашого рахунку.",
     "create-login-file-paragraph-1": "Німік не зберігає ваших даних. Файлю-ключ заміщує емейл як засіб входу.",
-    "create-login-file-paragraph-2": "Файл-ключ зберігається у вашому веб-оглядачі. Використовуйте пароль, щоб отримати доступ.",
+    "create-login-file-paragraph-2": "Файл-ключ зберігається у вашому веб-оглядачі. Розблокуйте його за допомогою пароля.",
     "create-login-file-paragraph-3": "Ви можете випадково вийти з гаманця. Завантажте та зберігайте файл-ключ щоб не втратити доступ.",
     "create-login-file-return": "Зрозуміло",
 
-    "import-heading-enter-recovery-words": "Уведіть секретні слова",
-    "import-import-login-file": "Завантажте файл-ключ",
-    "import-login-to-continue": "Будь ласка, увійдіть ще раз, щоб продовжити.",
-    "import-unlock-account": "Розблокувати рахунок",
-    "import-create-account": "Створити новий рахунок",
-    "import-qr-video-tooltip": "Відскануйте свій файл-ключ за допомогою камери вашого пристрою",
-
-    "import-file-button-words": "Увійти за допомогою секретних слів",
-
-    "import-words-file-available": "Використання секретних слів створює новий файл-ключ. Створіть пароль щоб захистити його.",
-    "import-words-file-unavailable": "Створіть новий рахунок за допомогою секретних слів. Створіть пароль щоб захистити його.",
+    "import-words-heading": "Уведіть секретні слова",
     "import-words-hint": "Натисніть Tab, щоб перейти до наступного поля",
     "import-words-error": "Це невірний рахунок. Схибили?",
     "import-words-wrong-seed-phrase": "Ці секретні слова відповідають іншому рахунку",
-    "import-words-download-loginfile": "Завантажте Файл-ключ",
+
+    "import-set-password-file-available": "Using the Recovery Words creates a new Login File. Create a password to secure it.",
+    "import-set-password-file-unavailable": "Using the Recovery Words creates a new account. Create a password to secure it.",
+
+    "import-file-heading": "Завантажте файл-ключ",
+    "import-file-login-to-continue": "Будь ласка, увійдіть ще раз, щоб продовжити.",
+    "import-file-button-words": "Login with Recovery Words",
+    "import-file-create-account": "Створити новий рахунок",
+    "import-file-qr-tooltip": "Відскануйте свій файл-ключ за допомогою камери вашого пристрою",
+    "import-unlock-account": "Розблокувати рахунок",
 
     "file-import-prompt": "Перетягніть сюди або клацніть щоб завантажити",
     "file-import-error-could-not-read": "Неможливо прочитати файл-ключ.",
     "file-import-error-invalid": "Невірний файл-ключ.",
+
+    "backup-codes-illustration-label": "Nimiq Backup Code {n}/2",
 
     "qr-video-scanner-cancel": "Скасувати",
     "qr-video-scanner-no-camera": "Ваш пристрій не має доступної камери.",
@@ -74,12 +75,12 @@
     "sign-tx-cancel-payment": "Скасувати платіж",
 
     "sign-multisig-tx-heading-tx": "Схвалити Multisig переказ",
-    "sign-multisig-tx-approving-as-name-with-account": "Approving as {userName} with {accountName}",
-    "sign-multisig-tx-approving-with-account": "Approving with {accountName}",
+    "sign-multisig-tx-approving-as-name-with-account": "Схвалення від імені {userName} з {accountName}",
+    "sign-multisig-tx-approving-with-account": "Схвалення з {accountName}",
 
-    "sign-staking-heading-stake": "Stake NIM",
-    "sign-staking-heading-unstake": "Unstake NIM",
-    "sign-staking-heading-change": "Change Validator",
+    "sign-staking-heading-stake": "Застейкати NIM",
+    "sign-staking-heading-unstake": "Вивести NIM зі стейкінгу",
+    "sign-staking-heading-change": "Змінити валідатора",
 
     "sign-msg-heading": "Підписати повідомлення",
     "sign-msg-signer": "Підписант",
@@ -87,7 +88,7 @@
     "tab-width-selector-label": "Довжина вкладки",
 
     "address-info-new-cashlink": "Новий чек",
-    "address-info-multisig-badge": "{signerCount} of {totalParticipantCount}",
+    "address-info-multisig-badge": "{signerCount} з {totalParticipantCount}",
 
     "copyable-copied": "Скопійовано",
 
@@ -144,8 +145,9 @@
     "identicon-selector-avatars-hint-2": "Адреси це наче реквізити в банку.",
     "identicon-selector-generate-new": "Нові адреси",
 
+    "download-loginfile-heading": "Завантажте Файл-ключ",
+    "download-loginfile-heading-confirm-download": "Завантажено успішно?",
     "download-loginfile-download": "Завантажити",
-    "download-loginfile-successful": "Завантажено успішно?",
     "download-loginfile-tap-and-hold": "Натисніть і утримуйте на\nмалюнку щоб завантажити",
     "download-loginfile-continue": "Продовжити",
 
@@ -207,7 +209,6 @@
     "export-backup-codes-success-heading": "All set up?",
     "export-backup-codes-success-text": "You should now have both codes, stored as messages on two separate platforms.",
     "export-backup-codes-success-recovery": "If you lose your password or Login File, you can regain access by entering both codes in the login screen.",
-    "backup-codes-illustration-label": "Nimiq Backup Code {n}/2",
     "go-to-recovery-words": "Створити спосіб відновлення",
     "export-unlock-heading": "Розблокуйте рахунок",
     "export-heading-validate-backup": "Перевірте ключові слова",
@@ -259,7 +260,7 @@
     "derive-btc-xpub-text": "З легкістю обмінюйте NIM - ефективну платіжну монету та BTC - золотий стандарт криптовалюти.",
 
     "derive-polygon-address-heading": "Активувати USDC/USDT",
-    "derive-polygon-address-text": "USDC and USDT are stablecoins pegged to USD and now available in the wallet.",
+    "derive-polygon-address-text": "USDC та USDT - це стейблкоїни, привʼязані до долара США, які тепер доступні у гаманці.",
 
     "sign-swap-heading": "Підтвердити обмін",
     "sign-swap-fees": "комісія",
@@ -278,12 +279,12 @@
     "sign-swap-exchange-rate": "Курс обміну",
     "sign-swap-your-bank": "Ваш банк",
 
-    "connect-heading": "Log in to {appName}",
-    "connect-heading-description": "Connect and use your account to\napprove transactions.",
-    "connect-address-count-info": "{appName} is requesting access to {addressCount} addresses.",
-    "connect-bottom-explainer": "The connection is for approving only.\nYour funds remain unaffected.",
-    "connect-tooltip-multisig-1": "Your account will be used to verify your identity only.",
-    "connect-tooltip-multisig-2": "The shared wallet has its own address. It can receive transactions from anywhere just like a regular wallet.",
-    "connect-tooltip-address-info-first-address": "The first address of your account will be visible to all participants in your shared wallet.",
-    "connect-tooltip-address-info-multiple-addresses": "The addresses for the following derivation paths will be visible to all participants in your shared wallet: {paths}."
+    "connect-heading": "Увійти в {appName}",
+    "connect-heading-description": "Підключіть свій рахунок,\nщоб підтверджувати транзакції.",
+    "connect-address-count-info": "{appName} запитує доступ до {addressCount} адрес.",
+    "connect-bottom-explainer": "Підключення використовується лише для підтвердження.\nВаші кошти залишаються недоторканими.",
+    "connect-tooltip-multisig-1": "Ваш рахунок буде використано лише для підтвердження особи.",
+    "connect-tooltip-multisig-2": "Спільний гаманець має власну адресу. Він може отримувати транзакції, як і звичайний гаманець.",
+    "connect-tooltip-address-info-first-address": "Перша адреса вашого рахунку буде видима всім учасникам спільного гаманця.",
+    "connect-tooltip-address-info-multiple-addresses": "Адреси для наступних шляхів деривації будуть видимі всім учасникам спільного гаманця: {paths}."
 }

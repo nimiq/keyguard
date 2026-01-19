@@ -43,25 +43,26 @@
     "create-login-file-paragraph-3": "You might get logged out by accident. Download and store the Login File safely to stay in control.",
     "create-login-file-return": "Got it",
 
-    "import-heading-enter-recovery-words": "Enter Recovery Words",
-    "import-import-login-file": "Import your Login File",
-    "import-login-to-continue": "Please login again to continue.",
-    "import-unlock-account": "Unlock your Account",
-    "import-create-account": "Create new account",
-    "import-qr-video-tooltip": "Scan your Login File with your device's camera.",
-
-    "import-file-button-words": "Login with Recovery Words",
-
-    "import-words-file-available": "Using the Recovery Words creates a new Login File. Create a password to secure it.",
-    "import-words-file-unavailable": "Using the Recovery Words creates a new account. Create a password to secure it.",
+    "import-words-heading": "Enter Recovery Words",
     "import-words-hint": "Press Tab to Jump to the next field",
     "import-words-error": "This is not a valid account. Typo?",
     "import-words-wrong-seed-phrase": "These Recovery Words belong to a different account",
-    "import-words-download-loginfile": "Download your Login File",
+
+    "import-set-password-file-available": "Using the Recovery Words creates a new Login File. Create a password to secure it.",
+    "import-set-password-file-unavailable": "Using the Recovery Words creates a new account. Create a password to secure it.",
+
+    "import-file-heading": "Import your Login File",
+    "import-file-login-to-continue": "Please login again to continue.",
+    "import-file-button-words": "Login with Recovery Words",
+    "import-file-create-account": "Create new account",
+    "import-file-qr-tooltip": "Scan your Login File with your device's camera.",
+    "import-unlock-account": "Unlock your Account",
 
     "file-import-prompt": "Drag here or click to import",
     "file-import-error-could-not-read": "Could not read Login File.",
     "file-import-error-invalid": "Invalid Login File.",
+
+    "backup-codes-illustration-label": "Nimiq Backup Code {n}/2",
 
     "qr-video-scanner-cancel": "Cancel",
     "qr-video-scanner-no-camera": "Your device does not have an accessible camera.",
@@ -144,8 +145,9 @@
     "identicon-selector-avatars-hint-2": "Think of them as bank account numbers.",
     "identicon-selector-generate-new": "New avatars",
 
+    "download-loginfile-heading": "Download your Login File",
+    "download-loginfile-heading-confirm-download": "Download successful?",
     "download-loginfile-download": "Download",
-    "download-loginfile-successful": "Download successful?",
     "download-loginfile-tap-and-hold": "Tap and hold image\nto download",
     "download-loginfile-continue": "Continue",
 
@@ -207,7 +209,6 @@
     "export-backup-codes-success-heading": "All set up?",
     "export-backup-codes-success-text": "You should now have both codes, stored as messages on two separate platforms.",
     "export-backup-codes-success-recovery": "If you lose your password or Login File, you can regain access by entering both codes in the login screen.",
-    "backup-codes-illustration-label": "Nimiq Backup Code {n}/2",
     "go-to-recovery-words": "Create backup",
     "export-unlock-heading": "Unlock your Backup",
     "export-heading-validate-backup": "Validate your Backup",

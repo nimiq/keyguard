@@ -43,25 +43,26 @@
     "create-login-file-paragraph-3": "Podes ter feito encerrado a sessão por acidente. Faz download e guarda o Ficheiro de Login em segurança para manter o controlo.",
     "create-login-file-return": "Percebi",
 
-    "import-heading-enter-recovery-words": "Insire as Palavra de Recuperação",
-    "import-import-login-file": "Importa o teu Ficheiro de Login",
-    "import-login-to-continue": "Por favor faz login outra vez e continua.",
-    "import-unlock-account": "Desbloqueia a tua Conta",
-    "import-create-account": "Criar nova conta",
-    "import-qr-video-tooltip": "Digitalize o teu Ficheiro de Login com a câmara do teu dispositivo.",
-
-    "import-file-button-words": "Inicia sessão com as Palavra de Recuperação",
-
-    "import-words-file-available": "Usar as Palavra de Recuperação cria um novo Ficheiro de Login. Cria uma palavra passe para proteger o ficheiro.",
-    "import-words-file-unavailable": "Usar as Palavra de Recuperação cria uma nova conta. Cria uma palavra passe para protegê-la.",
+    "import-words-heading": "Insire as Palavra de Recuperação",
     "import-words-hint": "Clicar em Tab para saltar para o próximo campo",
     "import-words-error": "Isto não é uma conta válida. Erro de escrita?",
     "import-words-wrong-seed-phrase": "Estas Palavra de Recuperação pertencem a uma conta diferente",
-    "import-words-download-loginfile": "Faz download do teu Ficheiro de Login.",
+
+    "import-set-password-file-available": "Using the Recovery Words creates a new Login File. Create a password to secure it.",
+    "import-set-password-file-unavailable": "Using the Recovery Words creates a new account. Create a password to secure it.",
+
+    "import-file-heading": "Importa o teu Ficheiro de Login",
+    "import-file-login-to-continue": "Por favor faz login outra vez e continua.",
+    "import-file-button-words": "Login with Recovery Words",
+    "import-file-create-account": "Criar nova conta",
+    "import-file-qr-tooltip": "Digitalize o teu Ficheiro de Login com a câmara do teu dispositivo.",
+    "import-unlock-account": "Desbloqueia a tua Conta",
 
     "file-import-prompt": "Arrasta para aqui ou clica para importar",
     "file-import-error-could-not-read": "Não foi possível ler o Ficheiro de Login.",
     "file-import-error-invalid": "Ficheiro de Login inválido.",
+
+    "backup-codes-illustration-label": "Nimiq Backup Code {n}/2",
 
     "qr-video-scanner-cancel": "Cancelar",
     "qr-video-scanner-no-camera": "O teu dispositivo não tem uma câmara acessível.",
@@ -144,8 +145,9 @@
     "identicon-selector-avatars-hint-2": "Encara-os como números de conta de um banco.",
     "identicon-selector-generate-new": "Novos avatares",
 
+    "download-loginfile-heading": "Faz download do teu Ficheiro de Login.",
+    "download-loginfile-heading-confirm-download": "Download bem sucedido?",
     "download-loginfile-download": "Download",
-    "download-loginfile-successful": "Download bem sucedido?",
     "download-loginfile-tap-and-hold": "Clica e segura na imagem \npara fazer download",
     "download-loginfile-continue": "Continuar",
 
@@ -207,7 +209,6 @@
     "export-backup-codes-success-heading": "All set up?",
     "export-backup-codes-success-text": "You should now have both codes, stored as messages on two separate platforms.",
     "export-backup-codes-success-recovery": "If you lose your password or Login File, you can regain access by entering both codes in the login screen.",
-    "backup-codes-illustration-label": "Nimiq Backup Code {n}/2",
     "go-to-recovery-words": "Criar backup",
     "export-unlock-heading": "Desbloqueia o teu Backup",
     "export-heading-validate-backup": "Valida o teu Backup",

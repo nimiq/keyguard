@@ -43,25 +43,26 @@
     "create-login-file-paragraph-3": "Je kunt per ongeluk worden uitgelogd. Download en bewaar de Login File veilig om geen toegang te verliezen.",
     "create-login-file-return": "Begrepen",
 
-    "import-heading-enter-recovery-words": "Voer herstelwoorden in",
-    "import-import-login-file": "Importeer je Login File",
-    "import-login-to-continue": "Log opnieuw in om door te gaan.",
-    "import-unlock-account": "Ontgrendel je account",
-    "import-create-account": "Creëer nieuw account",
-    "import-qr-video-tooltip": "Scan je Login File met de camera.",
-
-    "import-file-button-words": "Inloggen met herstelwoorden",
-
-    "import-words-file-available": "Met behulp van de herstelwoorden wordt een nieuwe Login File gemaakt. Maak een wachtwoord om het te beveiligen.",
-    "import-words-file-unavailable": "Met behulp van de herstelwoorden maak je een nieuw account aan. Maak een wachtwoord om het te beveiligen.",
+    "import-words-heading": "Voer herstelwoorden in",
     "import-words-hint": "Druk op Tab om naar het volgende veld te springen",
     "import-words-error": "Dit is geen geldig account. Typfoutje?",
     "import-words-wrong-seed-phrase": "Deze herstelwoorden horen bij een ander account",
-    "import-words-download-loginfile": "Download jouw Login File",
+
+    "import-set-password-file-available": "Using the Recovery Words creates a new Login File. Create a password to secure it.",
+    "import-set-password-file-unavailable": "Using the Recovery Words creates a new account. Create a password to secure it.",
+
+    "import-file-heading": "Importeer je Login File",
+    "import-file-login-to-continue": "Log opnieuw in om door te gaan.",
+    "import-file-button-words": "Login with Recovery Words",
+    "import-file-create-account": "Creëer nieuw account",
+    "import-file-qr-tooltip": "Scan je Login File met de camera.",
+    "import-unlock-account": "Ontgrendel je account",
 
     "file-import-prompt": "Sleep hierheen of klik om te importeren",
     "file-import-error-could-not-read": "Kan Login File niet lezen.",
     "file-import-error-invalid": "Ongeldige Login File.",
+
+    "backup-codes-illustration-label": "Nimiq Backup Code {n}/2",
 
     "qr-video-scanner-cancel": "Annuleer",
     "qr-video-scanner-no-camera": "Je apparaat heeft geen toegankelijke camera.",
@@ -144,8 +145,9 @@
     "identicon-selector-avatars-hint-2": "Beschouw ze als bankrekeningnummers.",
     "identicon-selector-generate-new": "Nieuwe avatar",
 
+    "download-loginfile-heading": "Download jouw Login File",
+    "download-loginfile-heading-confirm-download": "Download succesvol?",
     "download-loginfile-download": "Downloaden",
-    "download-loginfile-successful": "Download succesvol?",
     "download-loginfile-tap-and-hold": "Tik en houd de afbeelding\nvast om te downloaden",
     "download-loginfile-continue": "Doorgaan",
 
@@ -207,7 +209,6 @@
     "export-backup-codes-success-heading": "All set up?",
     "export-backup-codes-success-text": "You should now have both codes, stored as messages on two separate platforms.",
     "export-backup-codes-success-recovery": "If you lose your password or Login File, you can regain access by entering both codes in the login screen.",
-    "backup-codes-illustration-label": "Nimiq Backup Code {n}/2",
     "go-to-recovery-words": "Back-up maken",
     "export-unlock-heading": "Back-up ontgrendelen",
     "export-heading-validate-backup": "Valideer je back-up",

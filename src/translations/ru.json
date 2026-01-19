@@ -43,25 +43,26 @@
     "create-login-file-paragraph-3": "Вы можете случайно выйти из системы. Скачайте и надёжно сохраните Файл Авторизации, чтобы не потерять доступ.",
     "create-login-file-return": "Понятно",
 
-    "import-heading-enter-recovery-words": "Введите Защитную Фразу",
-    "import-import-login-file": "Импортировать ваш Файл Авторизации",
-    "import-login-to-continue": "Войдите снова чтобы продолжить.",
-    "import-unlock-account": "Разблокировать ваш Аккаунт",
-    "import-create-account": "Создать новый аккаунт",
-    "import-qr-video-tooltip": "Отсканируйте Файл Авторизации камерой.",
-
-    "import-file-button-words": "Войти с помощью Защитной Фразы",
-
-    "import-words-file-available": "Каждый раз, когда вы используете для восстановления Защитную Фразу, создаётся новый Файл Авторизации. Чтобы обезопасить его, создайте пароль.",
-    "import-words-file-unavailable": "Каждый раз, когда вы используете для восстановления Защитную Фразу, создаётся новый Файл Авторизации. Чтобы обезопасить его, создайте пароль.",
+    "import-words-heading": "Введите Защитную Фразу",
     "import-words-hint": "Нажмите Tab для перехода к следующему полю",
     "import-words-error": "Это некорректный аккаунт. Опечатались?",
     "import-words-wrong-seed-phrase": "Эта Защитная Фраза принадлежит другому аккаунту",
-    "import-words-download-loginfile": "Download your Login File",
+
+    "import-set-password-file-available": "Using the Recovery Words creates a new Login File. Create a password to secure it.",
+    "import-set-password-file-unavailable": "Using the Recovery Words creates a new account. Create a password to secure it.",
+
+    "import-file-heading": "Импортировать ваш Файл Авторизации",
+    "import-file-login-to-continue": "Войдите снова чтобы продолжить.",
+    "import-file-button-words": "Login with Recovery Words",
+    "import-file-create-account": "Создать новый аккаунт",
+    "import-file-qr-tooltip": "Отсканируйте Файл Авторизации камерой.",
+    "import-unlock-account": "Разблокировать ваш Аккаунт",
 
     "file-import-prompt": "Перетащите сюда или кликните для импорта",
     "file-import-error-could-not-read": "Не прочитался Файл Авторизации.",
     "file-import-error-invalid": "Некорректный Файл Авторизации.",
+
+    "backup-codes-illustration-label": "Nimiq Backup Code {n}/2",
 
     "qr-video-scanner-cancel": "Отмена",
     "qr-video-scanner-no-camera": "Камера вашего устройства недоступна.",
@@ -144,8 +145,9 @@
     "identicon-selector-avatars-hint-2": "Представьте их как номера банковских счётов.",
     "identicon-selector-generate-new": "Новые аватары",
 
+    "download-loginfile-heading": "Download your Login File",
+    "download-loginfile-heading-confirm-download": "Скачивание прошло успешно?",
     "download-loginfile-download": "Скачать",
-    "download-loginfile-successful": "Скачивание прошло успешно?",
     "download-loginfile-tap-and-hold": "Удерживайте изображение\nчтобы скачать его",
     "download-loginfile-continue": "Продолжить",
 
@@ -207,7 +209,6 @@
     "export-backup-codes-success-heading": "All set up?",
     "export-backup-codes-success-text": "You should now have both codes, stored as messages on two separate platforms.",
     "export-backup-codes-success-recovery": "If you lose your password or Login File, you can regain access by entering both codes in the login screen.",
-    "backup-codes-illustration-label": "Nimiq Backup Code {n}/2",
     "go-to-recovery-words": "Создать резервную копию",
     "export-unlock-heading": "Разблокировать резервную копию",
     "export-heading-validate-backup": "Проверить вашу резервную копию",
