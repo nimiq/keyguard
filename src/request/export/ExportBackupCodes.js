@@ -45,7 +45,7 @@ class ExportBackupCodes {
         );
 
         // illustrations
-        /** @type {Record<BackupCodesIllustrationStep, BackupCodesIllustration>} */
+        /** @type {Record<BackupCodesIllustration.Steps, BackupCodesIllustration>} */
         this._illustrationsByStep = this._pageIds.reduce(
             (result, pageId) => {
                 if (pageId === ExportBackupCodes.Pages.UNLOCK) return result;
@@ -56,7 +56,7 @@ class ExportBackupCodes {
                     [pageId]: new BackupCodesIllustration(pageId, $illustration),
                 };
             },
-            /** @type {Record<BackupCodesIllustrationStep, BackupCodesIllustration>} */ ({}),
+            /** @type {Record<BackupCodesIllustration.Steps, BackupCodesIllustration>} */ ({}),
         );
 
         // password box
@@ -106,7 +106,7 @@ class ExportBackupCodes {
                         if (pageId === ExportBackupCodes.Pages.INTRO) {
                             // Set code 2 in the INTRO page's foreground message bubble when the page shouldn't be
                             // visible anymore, for if that was skipped in _generateCodes.
-                            setTimeout(() => this._illustrationsByStep[pageId].setCode(2, code2), 100);
+                            setTimeout(() => { this._illustrationsByStep[pageId].code2 = code2; }, 100);
                         }
                         if (pageId === ExportBackupCodes.Pages.SEND_CODE_1) {
                             ClipboardUtils.copy(code1);
@@ -229,7 +229,7 @@ class ExportBackupCodes {
             const $sendCode1Page = this._pagesById[ExportBackupCodes.Pages.SEND_CODE_1];
             const sendCode1Illustration = this._illustrationsByStep[ExportBackupCodes.Pages.SEND_CODE_1];
             $sendCode1Page.classList.toggle('loading', isGeneratingCodes);
-            sendCode1Illustration.setLoading(isGeneratingCodes);
+            sendCode1Illustration.loading = isGeneratingCodes;
         };
         setGeneratingCodes(true);
 
@@ -252,10 +252,10 @@ class ExportBackupCodes {
             this._viewTransitionHandler.transitionView(() => {
                 setGeneratingCodes(false);
                 for (const [step, illustration] of Object.entries(this._illustrationsByStep)) {
-                    illustration.setCode(1, code1);
+                    illustration.code1 = code1;
                     if (currentPageId === ExportBackupCodes.Pages.INTRO && step === currentPageId) continue;
                     // Set code 2 only on other pages than INTRO, unless the user is not on INTRO anymore, see above.
-                    illustration.setCode(2, code2);
+                    illustration.code2 = code2;
                 }
             }, currentPageId, currentPageId, /* awaitPreviousTransitions */ true);
         });
@@ -286,16 +286,8 @@ class ExportBackupCodes {
     }
 }
 
-/**
- * @enum {'backup-codes-unlock' | 'backup-codes-intro' | 'backup-codes-send-code-1' | 'backup-codes-send-code-1-confirm'
- *     | 'backup-codes-send-code-2' | 'backup-codes-send-code-2-confirm' | 'backup-codes-success'}
- */
+/** @enum {'backup-codes-unlock' | BackupCodesIllustration.Steps} */
 ExportBackupCodes.Pages = Object.freeze({
     UNLOCK: 'backup-codes-unlock',
-    INTRO: 'backup-codes-intro',
-    SEND_CODE_1: 'backup-codes-send-code-1',
-    SEND_CODE_1_CONFIRM: 'backup-codes-send-code-1-confirm',
-    SEND_CODE_2: 'backup-codes-send-code-2',
-    SEND_CODE_2_CONFIRM: 'backup-codes-send-code-2-confirm',
-    SUCCESS: 'backup-codes-success',
+    ...BackupCodesIllustration.Steps,
 });
