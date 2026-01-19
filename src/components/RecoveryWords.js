@@ -28,16 +28,23 @@ class RecoveryWords extends Observable {
     }
 
     /**
-     * Set the recovery words. Only works when `providesInput` is `false`.
+     * Set the recovery words.
      * @param {string[]} words
      */
     setWords(words) {
+        let providesInput = false;
         for (let i = 0; i < 24; i++) {
             const field = this.$fields[i];
-            if ('textContent' in field) {
-                field.textContent = words[i];
+            const word = words[i] || '';
+            if ('value' in field) {
+                field.value = word;
+                providesInput = true;
+            } else if ('textContent' in field) {
+                field.textContent = word;
             }
         }
+        if (!providesInput) return;
+        this._checkPhraseComplete();
     }
 
     /**
@@ -106,16 +113,13 @@ class RecoveryWords extends Observable {
         return this.$el;
     }
 
+    clear() {
+        this.setWords(new Array(24));
+    }
+
     wrongSeedPhrase() {
         this._animateError();
-        window.setTimeout(() => {
-            for (let i = 0; i < 24; i++) {
-                const field = this.$fields[i];
-                if ('value' in field) {
-                    field.value = '';
-                }
-            }
-        }, 500);
+        window.setTimeout(() => this.clear(), 500);
     }
 
     _onFieldComplete() {

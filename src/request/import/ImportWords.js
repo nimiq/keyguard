@@ -28,7 +28,10 @@ class ImportWords extends Observable {
             RecoveryWords.Events.COMPLETE,
             (mnemonic, mnemonicType) => this._onRecoveryWordsComplete(mnemonic, mnemonicType),
         );
-        this._recoveryWords.on(RecoveryWords.Events.INCOMPLETE, () => this.fire(ImportWords.Events.RESET));
+        this._recoveryWords.on(RecoveryWords.Events.INCOMPLETE, () => {
+            if (window.location.hash.replace(/^#/, '') !== ImportWords.Pages.ENTER_WORDS) return;
+            this.fire(ImportWords.Events.RESET);
+        });
         this._recoveryWords.on(RecoveryWords.Events.INVALID, () => this.$wordsPage.classList.add('invalid-words'));
         this.$wordsPage.querySelectorAll('input').forEach(
             el => el.addEventListener('focus',
@@ -43,7 +46,7 @@ class ImportWords extends Observable {
     }
 
     run() {
-        this._recoveryWords.setWords(new Array(24));
+        this._recoveryWords.clear();
         this.$wordsPage.classList.remove('invalid-words', 'wrong-seed-phrase');
         window.location.hash = ImportWords.Pages.ENTER_WORDS;
     }
@@ -81,6 +84,11 @@ class ImportWords extends Observable {
         }
 
         this.fire(ImportWords.Events.IMPORT, keys);
+
+        // Imported successfully. Reset view afterward. Delay the change for a small moment, to hopefully perform the
+        // change unnoticed in the background, while ImportWords should not be visible anymore.
+        await new Promise(resolve => setTimeout(resolve, 500));
+        this._recoveryWords.clear();
     }
 }
 

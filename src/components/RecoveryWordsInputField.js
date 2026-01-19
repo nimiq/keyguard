@@ -93,7 +93,7 @@ class RecoveryWordsInputField extends Observable {
 
     set value(value) {
         this.dom.input.value = value;
-        this._value = value;
+        this._onValueChanged();
     }
 
     get element() {
