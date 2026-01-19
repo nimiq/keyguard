@@ -198,6 +198,12 @@ class Import {
                 const key = this._importedKeys.entropy;
                 const keyLabel = labels && labels.entropy ? labels.entropy : undefined;
                 const { requestedKeyPaths, bitcoinXPubPath, polygonAccountPath } = this._request;
+
+                // Start encryption and storage of key in the background, which is quite expensive but luckily runs on a
+                // secondary thread, in parallel to the derivations on the main thread below, which are also expensive
+                // due to the involved mnemonicToSeed which runs a pbkdf2 on the main thread.
+                const keyStorePromise = KeyStore.instance.put(key, encryptionKey || undefined);
+
                 /** @type {{keyPath: string, address: Uint8Array}[]} */
                 const addresses = requestedKeyPaths.map(keyPath => ({
                     keyPath,
@@ -218,7 +224,7 @@ class Import {
                     key.secret.serialize(),
                 ) || undefined;
 
-                await KeyStore.instance.put(key, encryptionKey || undefined); // throws on error
+                await keyStorePromise; // throws on error
 
                 this._importResult.push({
                     keyId: key.id,
