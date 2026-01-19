@@ -142,6 +142,11 @@ class RecoveryWords extends Observable {
 
         try {
             const mnemonic = this.$fields.map(field => ('value' in field ? field.value : '-'));
+            if (this._mnemonic && this._mnemonic.words.join(' ') === mnemonic.join(' ')) {
+                // The words haven't changed and don't need to be processed again. This happens especially, when pasting
+                // multiple words at once, which triggers multiple _onFieldComplete and _checkPhaseComplete calls.
+                return;
+            }
             const type = Nimiq.MnemonicUtils.getMnemonicType(mnemonic); // throws on invalid mnemonic
             this._mnemonic = { words: mnemonic, type };
             this.fire(RecoveryWords.Events.COMPLETE, mnemonic, type);
