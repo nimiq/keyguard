@@ -70,7 +70,7 @@ class KeyStore {
      * @returns {Promise<Key?>}
      */
     async get(id, password) {
-        const keyRecord = await this._get(id);
+        const keyRecord = await this.getPlain(id);
         if (!keyRecord) {
             return null;
         }
@@ -115,7 +115,7 @@ class KeyStore {
      * @returns {Promise<KeyInfo?>}
      */
     async getInfo(id) {
-        const keyRecord = await this._get(id);
+        const keyRecord = await this.getPlain(id);
         return keyRecord
             ? KeyInfo.fromObject(keyRecord, KeyStore.isEncrypted(keyRecord), keyRecord.defaultAddress)
             : null;
@@ -124,9 +124,8 @@ class KeyStore {
     /**
      * @param {string} id
      * @returns {Promise<KeyRecord?>}
-     * @private
      */
-    async _get(id) {
+    async getPlain(id) {
         const db = await this.connect();
         const transaction = db.transaction([KeyStore.DB_KEY_STORE_NAME], 'readonly');
         const request = transaction.objectStore(KeyStore.DB_KEY_STORE_NAME).get(id);
@@ -200,7 +199,7 @@ class KeyStore {
      * @returns {Promise<string>}
      */
     async setRsaKeypair(key, rsaKeyPair) {
-        const record = await this._get(key.id);
+        const record = await this.getPlain(key.id);
         if (!record) throw new Error('Key does not exist');
         record.rsaKeyPair = await KeyStore._exportRsaKeyPair(rsaKeyPair, key);
         return this.putPlain(record);

@@ -104,8 +104,13 @@ class Import {
                 return;
             }
 
-            const entropy = /** @type {Nimiq.Entropy} */ (this._importedKeys.entropy.secret);
-            const encryptedSecret = await entropy.exportEncrypted(password);
+            // Set the encrypted secret of the Login File. Get it from the KeyStore, as re-encrypting is expensive.
+            const keyRecord = await KeyStore.instance.getPlain(this._importedKeys.entropy.id);
+            if (!keyRecord || !KeyStore.isEncrypted(keyRecord)) {
+                reject(new Errors.KeyguardError('Unexpected: key was not stored correctly'));
+                return;
+            }
+            const encryptedSecret = keyRecord.secret;
             downloadLoginFile.setEncryptedEntropy(encryptedSecret, this._importedKeys.entropy.defaultAddress);
 
             $downloadFilePage.classList.remove(DownloadLoginFile.Events.INITIATED);

@@ -24,8 +24,8 @@ describe('KeyStore', () => {
 
     it('can get plain keys', async () => {
         const [key1, key2] = await Promise.all([
-            KeyStore.instance['_get'](Dummy.keyInfos()[0].id),
-            KeyStore.instance['_get'](Dummy.keyInfos()[1].id),
+            KeyStore.instance.getPlain(Dummy.keyInfos()[0].id),
+            KeyStore.instance.getPlain(Dummy.keyInfos()[1].id),
         ]);
         expect(key1).toEqual(Dummy.keyRecords()[0]);
         expect(key2).toEqual(Dummy.keyRecords()[1]);
@@ -75,8 +75,8 @@ describe('KeyStore', () => {
 
         // check that we can't get a removed key by address
         const removedKeys = await Promise.all([
-            KeyStore.instance['_get'](Dummy.keyInfos()[0].id),
-            KeyStore.instance['_get'](Dummy.keyInfos()[1].id),
+            KeyStore.instance.getPlain(Dummy.keyInfos()[0].id),
+            KeyStore.instance.getPlain(Dummy.keyInfos()[1].id),
         ]);
         expect(removedKeys[0]).toBeUndefined();
         expect(removedKeys[1]).toBeUndefined();
@@ -139,7 +139,7 @@ describe('KeyStore', () => {
         await KeyStore.instance.migrateAccountsToKeys();
 
         expect(cookieSet).toBe(false);
-        const key1 = await KeyStore.instance['_get'](Dummy.keyInfos()[1].id);
+        const key1 = await KeyStore.instance.getPlain(Dummy.keyInfos()[1].id);
         expect(key1).toEqual(Dummy.keyRecords()[1]);
 
         const accountsDbAfter = await AccountStore.instance['connect']();
@@ -175,7 +175,7 @@ describe('KeyStore', () => {
         await KeyStore.instance.migrateAccountsToKeys();
 
         expect(migrationCookieDeleted && accountsCookieDeleted).toBe(true);
-        const key1 = await KeyStore.instance['_get'](Dummy.keyInfos()[1].id);
+        const key1 = await KeyStore.instance.getPlain(Dummy.keyInfos()[1].id);
         expect(key1).toEqual(Dummy.keyRecords()[1]);
 
         const accountsDb = await AccountStore.instance['connect']();
