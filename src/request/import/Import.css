@@ -225,6 +225,12 @@
     padding-bottom: 3rem;
 }
 
+.page#download-file.loginfile-download-initiated .page-header .nq-h1:not(.confirm-download),
+.page#download-file:not(.loginfile-download-initiated) .page-header .confirm-download,
+.page#download-file.loginfile-download-initiated .skip {
+    display: none;
+}
+
 .page#download-file .page-body {
     display: flex;
     flex-direction: column;

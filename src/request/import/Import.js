@@ -108,13 +108,20 @@ class Import {
             const encryptedSecret = await entropy.exportEncrypted(password);
             downloadLoginFile.setEncryptedEntropy(encryptedSecret, this._importedKeys.entropy.defaultAddress);
 
-            $skipDownloadButton.style.display = '';
+            $downloadFilePage.classList.remove(DownloadLoginFile.Events.INITIATED);
             window.location.hash = Import.Pages.DOWNLOAD_LOGINFILE;
         });
 
         // Events for DOWNLOAD_LOGINFILE page
 
-        downloadLoginFile.on(DownloadLoginFile.Events.INITIATED, () => { $skipDownloadButton.style.display = 'none'; });
+        downloadLoginFile.on(
+            DownloadLoginFile.Events.INITIATED,
+            () => $downloadFilePage.classList.add(DownloadLoginFile.Events.INITIATED),
+        );
+        downloadLoginFile.on(
+            DownloadLoginFile.Events.RESET,
+            () => $downloadFilePage.classList.remove(DownloadLoginFile.Events.INITIATED),
+        );
         downloadLoginFile.on(DownloadLoginFile.Events.DOWNLOADED, () => resolve(this._importResult));
 
         if (request.wordsOnly && 'expectedKeyId' in request) {
