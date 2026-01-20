@@ -1,0 +1,35 @@
+/* specific backup-codes-input styles */
+
+.backup-codes-input.disable-shake-animation .message-bubble {
+    animation: none !important;
+}
+
+.backup-codes-input .message-bubble .code {
+    appearance: unset;
+    display: block;
+    width: 100%;
+    max-height: 12rem;
+    padding: unset;
+    border: unset;
+    outline: unset;
+    resize: unset;
+    field-sizing: content;
+    background: unset;
+}
+
+.backup-codes-input .message-bubble .code::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+/* message-bubble positioning for individual steps */
+
+.backup-codes-input.backup-codes-enter-code-1 .message-bubble.code-2 {
+    transform: translate(12.5rem, 5.25rem);
+    transform: translate(round(12.5rem, 1px), round(5.25rem, 1px));
+    z-index: -1;
+}
+
+.backup-codes-input.backup-codes-enter-code-2 .message-bubble.code-1 {
+    transform: translate(-12.5rem, -5.25rem);
+    transform: translate(round(-12.5rem, 1px), round(-5.25rem, 1px));
+}

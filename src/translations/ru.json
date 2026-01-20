@@ -48,12 +48,12 @@
     "import-words-error": "Это некорректный аккаунт. Опечатались?",
     "import-words-wrong-seed-phrase": "Эта Защитная Фраза принадлежит другому аккаунту",
 
-    "import-set-password-file-available": "Using the Recovery Words creates a new Login File. Create a password to secure it.",
-    "import-set-password-file-unavailable": "Using the Recovery Words creates a new account. Create a password to secure it.",
+    "import-set-password-file-available": "Каждый раз, когда вы используете для восстановления Защитную Фразу, создаётся новый Файл Авторизации. Чтобы обезопасить его, создайте пароль.",
+    "import-set-password-file-unavailable": "Каждый раз, когда вы используете для восстановления Защитную Фразу, создаётся новый Файл Авторизации. Чтобы обезопасить его, создайте пароль.",
 
     "import-file-heading": "Импортировать ваш Файл Авторизации",
     "import-file-login-to-continue": "Войдите снова чтобы продолжить.",
-    "import-file-button-words": "Login with Recovery Words",
+    "import-file-button-words": "Войти с помощью Защитной Фразы",
     "import-file-create-account": "Создать новый аккаунт",
     "import-file-qr-tooltip": "Отсканируйте Файл Авторизации камерой.",
     "import-unlock-account": "Разблокировать ваш Аккаунт",
@@ -63,6 +63,7 @@
     "file-import-error-invalid": "Некорректный Файл Авторизации.",
 
     "backup-codes-illustration-label": "Nimiq Backup Code {n}/2",
+    "backup-codes-input-placeholder": "Enter code...",
 
     "qr-video-scanner-cancel": "Отмена",
     "qr-video-scanner-no-camera": "Камера вашего устройства недоступна.",

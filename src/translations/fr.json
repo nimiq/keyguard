@@ -48,12 +48,12 @@
     "import-words-error": "Ce n'est pas un compte valide. Faute de frappe ?",
     "import-words-wrong-seed-phrase": "Ces Mots de Récupération appartiennent à un autre compte",
 
-    "import-set-password-file-available": "Using the Recovery Words creates a new Login File. Create a password to secure it.",
-    "import-set-password-file-unavailable": "Using the Recovery Words creates a new account. Create a password to secure it.",
+    "import-set-password-file-available": "L'utilisation des Mots de Récupération crée un nouveau Fichier de Connexion. Créez un mot de passe pour le sécuriser.",
+    "import-set-password-file-unavailable": "L'utilisation des Mots de Récupération crée un nouveau compte. Créez un mot de passe pour le sécuriser.",
 
     "import-file-heading": "Importez votre Fichier de Connexion",
     "import-file-login-to-continue": "Veuillez vous reconnecter pour continuer.",
-    "import-file-button-words": "Login with Recovery Words",
+    "import-file-button-words": "Se connecter avec les Mots de Récupération",
     "import-file-create-account": "Créer un nouveau compte",
     "import-file-qr-tooltip": "Scannez votre Fichier de Connexion avec la caméra de votre appareil.",
     "import-unlock-account": "Déverrouiller votre Compte",
@@ -63,6 +63,7 @@
     "file-import-error-invalid": "Fichier de connexion invalide.",
 
     "backup-codes-illustration-label": "Code de récupération Nimiq {n}/2",
+    "backup-codes-input-placeholder": "Enter code...",
 
     "qr-video-scanner-cancel": "Annuler",
     "qr-video-scanner-no-camera": "Votre appareil n'a pas de caméra accessible.",

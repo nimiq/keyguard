@@ -48,12 +48,12 @@
     "import-words-error": "Dit is geen geldig account. Typfoutje?",
     "import-words-wrong-seed-phrase": "Deze herstelwoorden horen bij een ander account",
 
-    "import-set-password-file-available": "Using the Recovery Words creates a new Login File. Create a password to secure it.",
-    "import-set-password-file-unavailable": "Using the Recovery Words creates a new account. Create a password to secure it.",
+    "import-set-password-file-available": "Met behulp van de herstelwoorden wordt een nieuwe Login File gemaakt. Maak een wachtwoord om het te beveiligen.",
+    "import-set-password-file-unavailable": "Met behulp van de herstelwoorden maak je een nieuw account aan. Maak een wachtwoord om het te beveiligen.",
 
     "import-file-heading": "Importeer je Login File",
     "import-file-login-to-continue": "Log opnieuw in om door te gaan.",
-    "import-file-button-words": "Login with Recovery Words",
+    "import-file-button-words": "Inloggen met herstelwoorden",
     "import-file-create-account": "Creëer nieuw account",
     "import-file-qr-tooltip": "Scan je Login File met de camera.",
     "import-unlock-account": "Ontgrendel je account",
@@ -63,6 +63,7 @@
     "file-import-error-invalid": "Ongeldige Login File.",
 
     "backup-codes-illustration-label": "Nimiq Backup Code {n}/2",
+    "backup-codes-input-placeholder": "Enter code...",
 
     "qr-video-scanner-cancel": "Annuleer",
     "qr-video-scanner-no-camera": "Je apparaat heeft geen toegankelijke camera.",

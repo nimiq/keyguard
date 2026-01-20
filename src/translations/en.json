@@ -63,6 +63,7 @@
     "file-import-error-invalid": "Invalid Login File.",
 
     "backup-codes-illustration-label": "Nimiq Backup Code {n}/2",
+    "backup-codes-input-placeholder": "Enter code...",
 
     "qr-video-scanner-cancel": "Cancel",
     "qr-video-scanner-no-camera": "Your device does not have an accessible camera.",

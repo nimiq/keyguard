@@ -48,12 +48,12 @@
     "import-words-error": "Das ist kein gültiges Konto. Schreibfehler?",
     "import-words-wrong-seed-phrase": "Diese Wiederherstellungswörter gehören zu einem anderen Konto",
 
-    "import-set-password-file-available": "Using the Recovery Words creates a new Login File. Create a password to secure it.",
-    "import-set-password-file-unavailable": "Using the Recovery Words creates a new account. Create a password to secure it.",
+    "import-set-password-file-available": "Die Wiederherstellungswörter erzeugen eine neue Login‑Datei. Setze ein Passwort, um sie zu schützen.",
+    "import-set-password-file-unavailable": "Die Wiederherstellungswörter erzeugen ein neues Konto. Setze ein Passwort, um es zu schützen.",
 
     "import-file-heading": "Mit Login-Datei einloggen",
     "import-file-login-to-continue": "Bitte logge dich neu ein, um fortzufahren.",
-    "import-file-button-words": "Login with Recovery Words",
+    "import-file-button-words": "Mit Wiederherstellungswörtern einloggen",
     "import-file-create-account": "Erstelle ein neues Konto",
     "import-file-qr-tooltip": "Scanne deine Login‑Datei mit der Kamera deines Geräts.",
     "import-unlock-account": "Entsperre dein Konto",
@@ -63,6 +63,7 @@
     "file-import-error-invalid": "Ungültige Login‑Datei.",
 
     "backup-codes-illustration-label": "Nimiq Backup Code {n}/2",
+    "backup-codes-input-placeholder": "Enter code...",
 
     "qr-video-scanner-cancel": "Abbrechen",
     "qr-video-scanner-no-camera": "Dein Endgerät verfügt über keine verwendbare Kamera.",

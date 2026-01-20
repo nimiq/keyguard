@@ -48,12 +48,12 @@
     "import-words-error": "这不是有效的帐户，是否有错别字？",
     "import-words-wrong-seed-phrase": "这些助记词属于另一个帐户",
 
-    "import-set-password-file-available": "Using the Recovery Words creates a new Login File. Create a password to secure it.",
-    "import-set-password-file-unavailable": "Using the Recovery Words creates a new account. Create a password to secure it.",
+    "import-set-password-file-available": "使用助记词创建一个新的登录文件，并设置密码保护",
+    "import-set-password-file-unavailable": "使用助记词创建一个新的登录文件，并设置密码保护",
 
     "import-file-heading": "导入你的登录文件",
     "import-file-login-to-continue": "请再次登录以继续",
-    "import-file-button-words": "Login with Recovery Words",
+    "import-file-button-words": "使用助记词登录",
     "import-file-create-account": "建立新帐户",
     "import-file-qr-tooltip": "使用设备的相机扫描你的登录文件",
     "import-unlock-account": "解锁你的账户",
@@ -63,6 +63,7 @@
     "file-import-error-invalid": "无效的登录文件",
 
     "backup-codes-illustration-label": "Nimiq Backup Code {n}/2",
+    "backup-codes-input-placeholder": "Enter code...",
 
     "qr-video-scanner-cancel": "取消",
     "qr-video-scanner-no-camera": "你的设备没有可访问的相机",

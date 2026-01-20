@@ -64,9 +64,26 @@ class BackupCodes {
 
         // Check whether our recovered key would derive the same codes, as a checksum check.
         const [checksum1, checksum2] = await BackupCodes.generate(key);
-        if (checksum1 !== code1 || checksum2 !== code2) throw new Error('Invalid Backup Codes: checksum mismatch');
+        if ((checksum1 !== code1 || checksum2 !== code2)
+            && (checksum1 !== code2 || checksum2 !== code1)) throw new Error('Invalid Backup Codes: checksum mismatch');
 
         return key;
+    }
+
+    /**
+     * @param {string} char
+     * @returns {boolean}
+     */
+    static isValidCharacter(char) {
+        return BackupCodes.VALID_CHARACTER_REGEX.test(char);
+    }
+
+    /**
+     * @param {string} code
+     * @returns {boolean}
+     */
+    static isValidBackupCode(code) {
+        return BackupCodes.VALID_CODE_REGEX.test(code);
     }
 
     /**
@@ -102,5 +119,8 @@ BackupCodes.FLAGS_COUNT = 1;
 BackupCodes.FLAGS_BIT_SHIFT = 8 - BackupCodes.FLAGS_COUNT;
 BackupCodes.FLAGS_BIT_MASK = (0xff << BackupCodes.FLAGS_BIT_SHIFT) & 0xff;
 BackupCodes.VERSION_BIT_MASK = (~BackupCodes.FLAGS_BIT_MASK) & 0xff;
+
+BackupCodes.VALID_CHARACTER_REGEX = /^[A-Za-z0-9!;]$/u;
+BackupCodes.VALID_CODE_REGEX = /^[A-Za-z0-9!;]{44}$/u;
 
 /* eslint-enable no-bitwise */

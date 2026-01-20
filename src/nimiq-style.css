@@ -12,6 +12,10 @@
     to   { transform: none; }
 }
 
+.shake-only {
+    animation: shake .4s ease;
+}
+
 @keyframes shake-background {
     from { opacity: 0; }
 

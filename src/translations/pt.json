@@ -48,12 +48,12 @@
     "import-words-error": "Isto não é uma conta válida. Erro de escrita?",
     "import-words-wrong-seed-phrase": "Estas Palavra de Recuperação pertencem a uma conta diferente",
 
-    "import-set-password-file-available": "Using the Recovery Words creates a new Login File. Create a password to secure it.",
-    "import-set-password-file-unavailable": "Using the Recovery Words creates a new account. Create a password to secure it.",
+    "import-set-password-file-available": "Usar as Palavra de Recuperação cria um novo Ficheiro de Login. Cria uma palavra passe para proteger o ficheiro.",
+    "import-set-password-file-unavailable": "Usar as Palavra de Recuperação cria uma nova conta. Cria uma palavra passe para protegê-la.",
 
     "import-file-heading": "Importa o teu Ficheiro de Login",
     "import-file-login-to-continue": "Por favor faz login outra vez e continua.",
-    "import-file-button-words": "Login with Recovery Words",
+    "import-file-button-words": "Inicia sessão com as Palavra de Recuperação",
     "import-file-create-account": "Criar nova conta",
     "import-file-qr-tooltip": "Digitalize o teu Ficheiro de Login com a câmara do teu dispositivo.",
     "import-unlock-account": "Desbloqueia a tua Conta",
@@ -63,6 +63,7 @@
     "file-import-error-invalid": "Ficheiro de Login inválido.",
 
     "backup-codes-illustration-label": "Nimiq Backup Code {n}/2",
+    "backup-codes-input-placeholder": "Enter code...",
 
     "qr-video-scanner-cancel": "Cancelar",
     "qr-video-scanner-no-camera": "O teu dispositivo não tem uma câmara acessível.",

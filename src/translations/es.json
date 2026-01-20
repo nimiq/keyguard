@@ -48,12 +48,12 @@
     "import-words-error": "Esta no es una cuenta válida. Revise que escribió todos los caracteres.",
     "import-words-wrong-seed-phrase": "Estas Palabras de Recuperación le pertenecen a una cuenta diferente.",
 
-    "import-set-password-file-available": "Using the Recovery Words creates a new Login File. Create a password to secure it.",
-    "import-set-password-file-unavailable": "Using the Recovery Words creates a new account. Create a password to secure it.",
+    "import-set-password-file-available": "Usando las Palabras de Recuperación se crea una nueva un nuevo Archivo de Sesión. Cree una contraseña para asegurarlo.",
+    "import-set-password-file-unavailable": "Usando las Palabras de Recuperación se crea una nueva cuenta. Cree una contraseña para asegurarla.",
 
     "import-file-heading": "Importe su Archivo de Sesión",
     "import-file-login-to-continue": "Por favor inicie sesión de nuevo para continuar.",
-    "import-file-button-words": "Login with Recovery Words",
+    "import-file-button-words": "Inicie sesión con Palabras de Recuperación",
     "import-file-create-account": "Crear nueva cuenta",
     "import-file-qr-tooltip": "Escanee su Archivo de Sesión con la cámara de su dispositivo.",
     "import-unlock-account": "Desbloquear su Cuenta",
@@ -63,6 +63,7 @@
     "file-import-error-invalid": "Archivo de Sesión inválido.",
 
     "backup-codes-illustration-label": "Nimiq Backup Code {n}/2",
+    "backup-codes-input-placeholder": "Enter code...",
 
     "qr-video-scanner-cancel": "Cancelar",
     "qr-video-scanner-no-camera": "Su dispositivo no tiene una cámara accesible.",

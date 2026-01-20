@@ -48,12 +48,12 @@
     "import-words-error": "Це невірний рахунок. Схибили?",
     "import-words-wrong-seed-phrase": "Ці секретні слова відповідають іншому рахунку",
 
-    "import-set-password-file-available": "Using the Recovery Words creates a new Login File. Create a password to secure it.",
-    "import-set-password-file-unavailable": "Using the Recovery Words creates a new account. Create a password to secure it.",
+    "import-set-password-file-available": "Використання секретних слів створює новий файл-ключ. Створіть пароль щоб захистити його.",
+    "import-set-password-file-unavailable": "Створіть новий рахунок за допомогою секретних слів. Створіть пароль щоб захистити його.",
 
     "import-file-heading": "Завантажте файл-ключ",
     "import-file-login-to-continue": "Будь ласка, увійдіть ще раз, щоб продовжити.",
-    "import-file-button-words": "Login with Recovery Words",
+    "import-file-button-words": "Увійти за допомогою секретних слів",
     "import-file-create-account": "Створити новий рахунок",
     "import-file-qr-tooltip": "Відскануйте свій файл-ключ за допомогою камери вашого пристрою",
     "import-unlock-account": "Розблокувати рахунок",
@@ -63,6 +63,7 @@
     "file-import-error-invalid": "Невірний файл-ключ.",
 
     "backup-codes-illustration-label": "Nimiq Backup Code {n}/2",
+    "backup-codes-input-placeholder": "Enter code...",
 
     "qr-video-scanner-cancel": "Скасувати",
     "qr-video-scanner-no-camera": "Ваш пристрій не має доступної камери.",
