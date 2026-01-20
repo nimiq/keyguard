@@ -155,6 +155,51 @@
     z-index: 3;
 }
 
+.page#select .page-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-top: 0;
+    gap: 2.5rem;
+}
+
+.page#select .import-selector-option {
+    contain: layout paint style;
+    apprearance: none;
+    padding: 2.5rem;
+    border: none;
+    border-radius: 1.25rem;
+    font-family: inherit;
+    cursor: pointer;
+    text-align: left;
+    color: inherit;
+    background-color: rgba(255, 255, 255, .12);
+    transition: background-color .3s var(--nimiq-ease);
+}
+
+.page#select .import-selector-option:hover {
+    background-color: rgba(255, 255, 255, .2);
+}
+
+.page#select .import-selector-option img.icon-backup-codes {
+    content: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="38" height="32" viewBox="0 0 38 33"><path fill="white" opacity=".3" d="M8 21v4.9c0 1 .9 2 2 2h19.5q1.5 0 2.6 1l3.4 3c1 .8 2.5 0 2.5-1.2V9a2 2 0 0 0-2-2h-6v11.9a2 2 0 0 1-2 2H8"/><path fill="url(%23a)" d="M0 2Q.2.2 2 0h26a2 2 0 0 1 2 2v16.9a2 2 0 0 1-2 2H8.5a4 4 0 0 0-2.6 1l-3.4 3c-1 .8-2.5 0-2.5-1.2z"/><defs><radialGradient id="a" cx="0" cy="0" r="1" gradientTransform="matrix(17 20 -24 10 3.8 4)" gradientUnits="userSpaceOnUse"><stop stop-color="white"/><stop offset="1" stop-color="white" stop-opacity=".6"/></radialGradient></defs></svg>');
+}
+
+.page#select .import-selector-option img.icon-recovery-words {
+    content: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><path fill="white" opacity=".3" d="M6 28v2q.2 1.8 2 2h22a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-4v21a2 2 0 0 1-2 2z"/><path fill="url(%23a)" fill-rule="evenodd" d="M0 2Q.2.2 2 0h22a2 2 0 0 1 2 2v24a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm4 3q0-1 1-1h8a1 1 0 1 1 0 2H5a1 1 0 0 1-1-1m1 4a1 1 0 1 0 0 2h10a1 1 0 1 0 0-2zm-1 6q0-1 1-1h7a1 1 0 1 1 0 2H5a1 1 0 0 1-1-1m1 4a1 1 0 1 0 0 2h8a1 1 0 1 0 0-2z"/><defs><radialGradient id="a" cx="0" cy="0" r="1" gradientTransform="matrix(11 18 -15 9 2.4 3.5)" gradientUnits="userSpaceOnUse"><stop stop-color="white"/><stop offset="1" stop-color="white" stop-opacity=".6"/></radialGradient></defs></svg>');
+}
+
+.page#select .import-selector-option h2 {
+    margin: 2.25rem 0 1.5rem;
+}
+
+.page#select .import-selector-option p {
+    margin: 0;
+    font-size: 2rem;
+    line-height: 130%;
+    color: rgba(255, 255, 255, .7);
+}
+
 .page#recovery-words .nq-label {
     font-weight: bold;
     margin-top: 4rem;
@@ -198,6 +243,56 @@
 
 .page#recovery-words .words-container input {
     height: 100%;
+}
+
+.page#backup-codes .page-header {
+    padding-top: 3rem;
+    padding-bottom: 1.5rem;
+}
+
+.page#backup-codes .page-header .nq-notice {
+    margin-top: 1.75rem;
+    line-height: 1.4;
+    color: rgba(255, 255, 255, .6);
+}
+
+.page#backup-codes .page-body {
+    position: relative;
+    padding-top: 1rem;
+}
+
+.page#backup-codes .page-body .backup-codes-input {
+    position: absolute;
+    height: 100%;
+    transition: filter .6s var(--nimiq-ease), opacity .6s var(--nimiq-ease);
+}
+
+.page#backup-codes .page-body .backup-codes-input.backup-codes-enter-code-2 {
+    padding-top: 6rem;
+}
+
+.page#backup-codes .page-body .loading-spinner {
+    display: none;
+}
+
+body.loading .page#backup-codes .page-body .backup-codes-input {
+    filter: blur(20px);
+    opacity: .4;
+}
+
+body.loading .page#backup-codes .page-body .loading-spinner {
+    display: block;
+    position: absolute;
+    top: calc(50% - 1rem);
+    left: calc(50% - 3.375rem);
+}
+
+.page#backup-codes .page-footer .nq-notice {
+    margin: 0 3rem 7rem;
+    font-size: 2.5rem;
+    font-weight: 500;
+    text-align: center;
+    view-transition-name: backup-codes-warning;
 }
 
 .page#set-password .page-body {

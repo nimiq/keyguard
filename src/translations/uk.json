@@ -43,17 +43,29 @@
     "create-login-file-paragraph-3": "Ви можете випадково вийти з гаманця. Завантажте та зберігайте файл-ключ щоб не втратити доступ.",
     "create-login-file-return": "Зрозуміло",
 
+    "import-selector-heading": "Choose your backup",
+    "import-selector-title-backup-codes": "Backup Codes",
+    "import-selector-description-backup-codes": "Requires the two codes you have sent to yourself.",
+    "import-selector-title-recovery-words": "24 Recovery Words",
+    "import-selector-description-recovery-words": "Requires your written down recovery words.",
+
     "import-words-heading": "Уведіть секретні слова",
     "import-words-hint": "Натисніть Tab, щоб перейти до наступного поля",
     "import-words-error": "Це невірний рахунок. Схибили?",
     "import-words-wrong-seed-phrase": "Ці секретні слова відповідають іншому рахунку",
 
-    "import-set-password-file-available": "Використання секретних слів створює новий файл-ключ. Створіть пароль щоб захистити його.",
-    "import-set-password-file-unavailable": "Створіть новий рахунок за допомогою секретних слів. Створіть пароль щоб захистити його.",
+    "import-backup-codes-heading": "Enter the two codes",
+    "import-backup-codes-instructions": "You should have sent the codes to yourself using two different platforms.\nSearch for the codes using \"Nimiq Backup Code\".",
+    "import-backup-codes-warning-invalid": "Your backup is invalid. Try again",
+    "import-backup-codes-warning-invalid-characters": "Valid codes consist of only A-Z, a-z, 0-9, symbols ; and !, and are 44 characters long.",
+    "import-backup-codes-warning-different-account": "These Backup Codes belong to a different account",
+
+    "import-set-password-file-available": "Using a recovery creates a new Login File. Create a password to secure it.",
+    "import-set-password-file-unavailable": "Using a recovery creates a new account. Create a password to secure it.",
 
     "import-file-heading": "Завантажте файл-ключ",
     "import-file-login-to-continue": "Будь ласка, увійдіть ще раз, щоб продовжити.",
-    "import-file-button-words": "Увійти за допомогою секретних слів",
+    "import-file-login-with-backup": "Login with backup",
     "import-file-create-account": "Створити новий рахунок",
     "import-file-qr-tooltip": "Відскануйте свій файл-ключ за допомогою камери вашого пристрою",
     "import-unlock-account": "Розблокувати рахунок",

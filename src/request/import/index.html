@@ -62,8 +62,11 @@
     <script defer src="../../lib/QrScanner.js"></script>
     <script defer src="../../lib/LoginFileConfig.js"></script>
     <script defer src="../../lib/LoginFile.js"></script>
+    <script defer src="../../lib/BackupCodes.js"></script>
+    <script defer src="../../lib/ViewTransitionHandler.js"></script>
     <script defer src="../../lib/PasswordStrength.js"></script>
     <script defer src="../../lib/QrEncoder.js"></script>
+    <script defer src="../../components/ProgressIndicator.js"></script>
     <script defer src="../../components/DownloadLoginFile.js"></script>
     <script defer src="../../components/FileImporter.js"></script>
     <script defer src="../../components/QrVideoScanner.js"></script>
@@ -72,9 +75,12 @@
     <script defer src="../../components/PasswordSetterBox.js"></script>
     <script defer src="../../components/RecoveryWords.js"></script>
     <script defer src="../../components/RecoveryWordsInputField.js"></script>
+    <script defer src="../../components/BackupCodesIllustrationBase.js"></script>
+    <script defer src="../../components/BackupCodesInput.js"></script>
     <script defer src="Import.js"></script>
     <script defer src="ImportFile.js"></script>
     <script defer src="ImportWords.js"></script>
+    <script defer src="ImportBackupCodes.js"></script>
     <script defer src="ImportApi.js"></script>
     <script defer src="index.js"></script>
 
@@ -84,12 +90,15 @@
     <link rel="stylesheet" bundle-toplevel href="../../components/PasswordInput.css">
     <link rel="stylesheet" bundle-toplevel href="../../components/PasswordBox.css">
 
+    <link rel="stylesheet" href="../../components/ProgressIndicator.css">
     <link rel="stylesheet" href="../../components/FileImporter.css">
     <link rel="stylesheet" href="../../components/Tooltip.css">
     <link rel="stylesheet" href="../../components/QrVideoScanner.css">
     <link rel="stylesheet" href="../../components/FlippableHandler.css">
     <link rel="stylesheet" href="../../components/LoginFileIcon.css">
     <link rel="stylesheet" href="../../components/RecoveryWords.css">
+    <link rel="stylesheet" href="../../components/BackupCodesIllustrationBase.css">
+    <link rel="stylesheet" href="../../components/BackupCodesInput.css">
     <link rel="stylesheet" href="../../components/DownloadLoginFile.css">
     <link rel="stylesheet" href="./Import.css">
 
@@ -104,6 +113,37 @@
 
     <div id="app">
         <div id="rotation-container">
+            <!-- Import type selector for alternative backup options (recovery words and backup codes) -->
+            <div id="select" class="page nq-card flipped nq-blue-bg">
+                <div class="page-header nq-card-header">
+                    <a tabindex="0" class="page-header-back-button">
+                        <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
+                    </a>
+                    <h1 data-i18n="import-selector-heading" class="nq-h1">Choose your backup</h1>
+                </div>
+
+                <div class="page-body nq-card-body">
+                    <button class="import-selector-option option-backup-codes">
+                        <img class="icon-backup-codes" alt="Backup codes icon" />
+                        <h2 class="nq-h2 import-selector-title" data-i18n="import-selector-title-backup-codes">
+                            Backup Codes
+                        </h2>
+                        <p data-i18n="import-selector-description-backup-codes">
+                            Requires the two codes you have sent to yourself.
+                        </p>
+                    </button>
+                    <button class="import-selector-option option-recovery-words">
+                        <img class="icon-recovery-words" alt="Recovery words icon" />
+                        <h2 class="nq-h2 import-selector-title" data-i18n="import-selector-title-recovery-words">
+                            24 Recovery Words
+                        </h2>
+                        <p data-i18n="import-selector-description-recovery-words">
+                            Requires your written down recovery words.
+                        </p>
+                    </button>
+                </div>
+            </div>
+
             <!-- enter recovery words -->
             <form id="recovery-words" class="page nq-card flipped nq-blue-bg">
                 <div class="page-header nq-card-header">
@@ -121,6 +161,34 @@
                 </div>
             </form>
 
+            <!-- enter backup codes -->
+            <div id="backup-codes" class="page nq-card flipped nq-blue-bg">
+                <div class="page-header nq-card-header">
+                    <div class="progress-indicator"></div>
+                    <a tabindex="0" class="page-header-back-button">
+                        <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
+                    </a>
+                    <h1 data-i18n="import-backup-codes-heading" class="nq-h1">Enter the two codes</h1>
+                    <p class="nq-notice" data-i18n="import-backup-codes-instructions">
+                        You should have sent the codes to yourself using two different platforms.
+                        Search for the codes using "Nimiq Backup Code".
+                    </p>
+                </div>
+
+                <div class="page-body">
+                    <form class="backup-codes-input"></form>
+                    <!-- Loading spinner SVG -->
+                    <svg height="48" width="54" color="inherit" class="loading-spinner"><g stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round">
+                        <path class="big-hex" d="M51.9,21.9L41.3,3.6c-0.8-1.3-2.2-2.1-3.7-2.1H16.4c-1.5,0-2.9,0.8-3.7,2.1L2.1,21.9c-0.8,1.3-0.8,2.9,0,4.2 l10.6,18.3c0.8,1.3,2.2,2.1,3.7,2.1h21.3c1.5,0,2.9-0.8,3.7-2.1l10.6-18.3C52.7,24.8,52.7,23.2,51.9,21.9z" opacity="0.4" stroke-dasharray="92.5 60"/>
+                        <path class="small-hex" d="M51.9,21.9L41.3,3.6c-0.8-1.3-2.2-2.1-3.7-2.1H16.4c-1.5,0-2.9,0.8-3.7,2.1L2.1,21.9c-0.8,1.3-0.8,2.9,0,4.2 l10.6,18.3c0.8,1.3,2.2,2.1,3.7,2.1h21.3c1.5,0,2.9-0.8,3.7-2.1l10.6-18.3C52.7,24.8,52.7,23.2,51.9,21.9z" stroke-dasharray="47.5 105"/>
+                    </g></svg>
+                </div>
+
+                <div class="page-footer nq-card-footer">
+                    <p class="nq-notice warning"></p>
+                </div>
+            </div>
+
             <!-- Set Password -->
             <div id="set-password" class="page nq-card">
                 <div class="page-header nq-card-header">
@@ -131,8 +199,8 @@
                 </div>
 
                 <div class="page-body nq-card-body">
-                    <p data-i18n="import-set-password-file-available" class="nq-light-blue nq-text login-file-available">Using the Recovery Words creates a new Login File. Create a password to secure it.</p>
-                    <p data-i18n="import-set-password-file-unavailable" class="nq-light-blue nq-text login-file-unavailable">Using the Recovery Words creates a new account. Create a password to secure it.</p>
+                    <p data-i18n="import-set-password-file-available" class="nq-light-blue nq-text login-file-available">Using a recovery creates a new Login File. Create a password to secure it.</p>
+                    <p data-i18n="import-set-password-file-unavailable" class="nq-light-blue nq-text login-file-unavailable">Using a recovery creates a new account. Create a password to secure it.</p>
                     <div class="login-file-icon"></div>
                 </div>
 
@@ -176,8 +244,8 @@
                 </div>
 
                 <div class="page-footer nq-card-footer">
-                    <button id="go-to-other-import-option" data-i18n="import-file-button-words" class="nq-button-s">
-                        Login with Recovery Words
+                    <button id="go-to-other-import-option" data-i18n="import-file-login-with-backup" class="nq-button-s">
+                        Login with backup
                     </button>
                     <a id="go-to-create" class="skip nq-link" href="#">
                         <span data-i18n="import-file-create-account">Create new account</span>

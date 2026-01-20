@@ -9,6 +9,7 @@
 /* global ImportApi */
 /* global ImportFile */
 /* global ImportWords */
+/* global ImportBackupCodes */
 /* global FlippableHandler */
 /* global DownloadLoginFile */
 /* global LoginFileIcon */
@@ -41,15 +42,21 @@ class Import {
 
         const importFileHandler = new ImportFile(request);
         const importWordsHandler = new ImportWords(request);
+        const importBackupCodesHandler = new ImportBackupCodes(request);
         this._initialHandler = request.wordsOnly ? importWordsHandler : importFileHandler;
 
         // Pages
+        const $selectPage = /** @type {HTMLDivElement} */ (document.getElementById(Import.Pages.SELECT));
         this.$setPasswordPage = /** @type {HTMLFormElement} */ (
             document.getElementById(Import.Pages.SET_PASSWORD));
         const $downloadFilePage = /** @type {HTMLFormElement} */ (
             document.getElementById(Import.Pages.DOWNLOAD_LOGINFILE));
 
         // Elements
+        const $optionRecoveryWordsButton = /** @type {HTMLButtonElement} */ (
+            $selectPage.querySelector('.option-recovery-words'));
+        const $optionBackupCodesButton = /** @type {HTMLButtonElement} */ (
+            $selectPage.querySelector('.option-backup-codes'));
         const $passwordSetter = /** @type {HTMLFormElement} */ (
             this.$setPasswordPage.querySelector('.password-setter-box'));
         const $loginFileIcon = /** @type {HTMLDivElement} */ (
@@ -73,9 +80,19 @@ class Import {
         importFileHandler.on(ImportFile.Events.RESET, () => this._resetKeys());
         importWordsHandler.on(ImportWords.Events.IMPORT, keys => this._importKeys(keys));
         importWordsHandler.on(ImportWords.Events.RESET, () => this._resetKeys());
+        importBackupCodesHandler.on(ImportBackupCodes.Events.IMPORT, keys => this._importKeys(keys));
+        importBackupCodesHandler.on(ImportBackupCodes.Events.RESET, () => this._resetKeys());
 
-        importFileHandler.on(ImportFile.Events.GO_TO_OTHER_IMPORT_OPTION, () => importWordsHandler.run());
+        importFileHandler.on(
+            ImportFile.Events.GO_TO_OTHER_IMPORT_OPTION,
+            () => { window.location.hash = Import.Pages.SELECT; },
+        );
         importFileHandler.on(ImportFile.Events.GO_TO_CREATE, () => reject(new Errors.GoToCreate()));
+
+        // Events for SELECT page
+
+        $optionRecoveryWordsButton.addEventListener('click', () => importWordsHandler.run());
+        $optionBackupCodesButton.addEventListener('click', () => importBackupCodesHandler.run());
 
         // Events for SET_PASSWORD page
 
@@ -281,8 +298,9 @@ class Import {
 }
 
 Import.Pages = {
-    // On import of a non-encrypted backup (recovery words), the user is asked to set a password and offered to download
-    // a new Login File.
+    SELECT: 'select',
+    // On import of a non-encrypted backup (recovery words or backup codes), the user is asked to set a password and
+    // offered to download a new Login File.
     SET_PASSWORD: 'set-password',
     DOWNLOAD_LOGINFILE: 'download-file',
 };
