@@ -103,6 +103,7 @@
     line-height: 1.2;
     letter-spacing: -.0095em; /* best effort to limit the code to two lines of text, which works for most codes */
     word-break: break-all;
+    overflow-wrap: anywhere;
     color: white;
 }
 
@@ -175,8 +176,17 @@
 }
 
 .backup-codes-illustration-base .message-bubble.faded {
-    /* Remove drop shadow and make the message-bubble transparent white. */
-    filter: brightness(255) opacity(.1);
+    filter: none;
+    opacity: .1;
+}
+.backup-codes-illustration-base .message-bubble.faded .background {
+    background: white !important;
+}
+.backup-codes-illustration-base .message-bubble.faded::after,
+.backup-codes-illustration-base .message-bubble.faded .background::after {
+    content: '' !important;
+    background-image: none !important;
+    filter: none;
 }
 
 .backup-codes-illustration-base .message-bubble.zoomed {

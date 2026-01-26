@@ -146,13 +146,15 @@ class ExportBackupCodes {
         );
 
         // Augment browser navigations with view transition animations.
+        let currentPageId = window.location.hash.replace(/^#/, '');
         window.addEventListener('popstate', event => {
             const hasUAVisualTransition = 'hasUAVisualTransition' in event && !!event.hasUAVisualTransition;
-            // At the time of a popstate event, location.hash is already updated, but the document / DOM not yet and the
-            // hashchange event has not triggered yet.
-            const oldTarget = document.querySelector(':target');
-            const oldPageId = oldTarget ? oldTarget.id : null;
+            const oldPageId = currentPageId;
+            // At the time of a popstate event, location.hash is already updated, even if the document / DOM might not
+            // yet, and the hashchange event has not fired yet.
             const newPageId = window.location.hash.replace(/^#/, '');
+            currentPageId = newPageId;
+
             if (!this._viewTransitionHandler.shouldTransitionView(oldPageId, newPageId)
                 // The user agent already provided a visual transition itself (e.g. swipe back).
                 || hasUAVisualTransition
@@ -162,8 +164,8 @@ class ExportBackupCodes {
             // instead of on the new :target for the View Transition API to be able to capture snapshots of it. Note
             // that this would not be necessary when using the Navigation API as it can detect and intercept navigations
             // before they happen, but unfortunately it is not widely supported yet.
-            for (const $page of Object.values(this._pagesById)) {
-                if ($page === oldTarget) {
+            for (const [pageId, $page] of Object.entries(this._pagesById)) {
+                if (pageId === oldPageId) {
                     $page.classList.add('display-flex', 'enforce-view-transition-names');
                     $page.style.zIndex = '99'; // cover new page to avoid it being visible to the user already
                 } else {

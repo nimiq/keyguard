@@ -101,6 +101,7 @@ class ViewTransitionHandler { // eslint-disable-line no-unused-vars
         // it should be transitioned), customization of the view transition, and cleanup in the end.
         const pendingViewTransitionPromise = initializationAndDomUpdatePromise
             .then(([, viewTransitionFinishAndCleanupPromise]) => viewTransitionFinishAndCleanupPromise)
+            .catch(() => {})
             .then(() => {
                 // While _pendingViewTransitions pretty much works like a queue, we can not simply assume that we can
                 // remove the first/oldest entry, because calls with awaitPreviousTransitions === false can execute out

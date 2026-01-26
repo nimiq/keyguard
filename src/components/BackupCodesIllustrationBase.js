@@ -170,6 +170,8 @@ class BackupCodesIllustrationBase extends Observable { // eslint-disable-line no
 
         await viewTransition.ready;
         const viewport = $viewport.getBoundingClientRect();
+        /** @type {Animation[]} */
+        const animations = [];
         for (let codeIndex = 1; codeIndex <= 2; codeIndex++) {
             const transitionName = `backup-codes-illustration-base-code-${codeIndex}`;
 
@@ -184,8 +186,8 @@ class BackupCodesIllustrationBase extends Observable { // eslint-disable-line no
                 const width = Number.parseFloat(String(keyframe.width));
                 const height = Number.parseFloat(String(keyframe.height));
                 const [translateX, translateY] = [
-                    /(?<=matrix\((?:[^,]+,\s*){4}|translateX?\()(\d+(?:.\d+)?)/,
-                    /(?<=matrix\((?:[^,]+,\s*){5}|translateY\(|translate\([^,]+,\s*)(\d+(?:.\d+)?)/,
+                    /(?<=matrix\((?:[^,]+,){4}|matrix3d\((?:[^,]+,){12}|translateX?\()([^,]+)/,
+                    /(?<=matrix\((?:[^,]+,){5}|matrix3d\((?:[^,]+,){13}|translate\([^,]+,|translateY\()([^,]+)/,
                 ].map(regex => {
                     const regexMatch = String(keyframe.transform).match(regex);
                     if (!regexMatch || !regexMatch[1]) return 0;
@@ -206,7 +208,7 @@ class BackupCodesIllustrationBase extends Observable { // eslint-disable-line no
                 transform: 'none', // disable default positioning by browser
             };
             transitionGroupSizeAndPositionAnimation.cancel(); // cancel default animation of browser
-            document.documentElement.animate([{
+            animations.push(document.documentElement.animate([{
                 ...transitionGroupConstantStyles,
                 zIndex: codeIndex === oldTopMessageBubble ? 1 : 0,
             }, {
@@ -215,7 +217,7 @@ class BackupCodesIllustrationBase extends Observable { // eslint-disable-line no
             }], {
                 ...transitionOptions,
                 pseudoElement: transitionGroup,
-            });
+            }));
 
             // Instead of the default transition of the size and position on ::view-transition-group, we transition them
             // on the ::view-transition-image-pair, also further customizing the transition. Additionally, instead of
@@ -247,13 +249,13 @@ class BackupCodesIllustrationBase extends Observable { // eslint-disable-line no
             };
             if (oldTopMessageBubble === newTopMessageBubble) {
                 // No switch of which message bubble is on top.
-                document.documentElement.animate(
+                animations.push(document.documentElement.animate(
                     [transitionImagePairKeyframeStart, transitionImagePairKeyframeEnd],
                     {
                         ...transitionOptions,
                         pseudoElement: transitionImagePair,
                     },
-                );
+                ));
                 // In this case, let ::view-transition-old and ::view-transition-new animate with the browser's default
                 // transition of fading between the two.
             } else {
@@ -276,7 +278,7 @@ class BackupCodesIllustrationBase extends Observable { // eslint-disable-line no
                     transform: `translate(${translateXMid}px, ${translateYMid}px) `
                         + `scale(${scaleXMid}, ${scaleYMid})`,
                 };
-                document.documentElement.animate(
+                animations.push(document.documentElement.animate(
                     [
                         transitionImagePairKeyframeStart,
                         transitionImagePairKeyframeMid,
@@ -287,7 +289,7 @@ class BackupCodesIllustrationBase extends Observable { // eslint-disable-line no
                         ...transitionOptions,
                         pseudoElement: transitionImagePair,
                     },
-                );
+                ));
 
                 for (const image of ['old', 'new']) {
                     const opacityStart = image === 'old' ? 1 : 0;
@@ -298,16 +300,24 @@ class BackupCodesIllustrationBase extends Observable { // eslint-disable-line no
                     const isZoomingIn = scaleXStart < scaleXEnd;
                     const isStartingInForeground = codeIndex === oldTopMessageBubble;
                     const opacityMid = (isZooming ? isZoomingIn : isStartingInForeground) ? opacityStart : opacityEnd;
-                    document.documentElement.animate(
+                    animations.push(document.documentElement.animate(
                         {
                             opacity: [opacityStart, opacityMid, opacityMid, opacityEnd],
                         }, {
                             ...transitionOptions,
                             pseudoElement: `::view-transition-${image}(${transitionName})`,
                         },
-                    );
+                    ));
                 }
             }
         }
+
+        // Clear all applied animations manually after transition end (without awaiting it), because Firefox doesn't do
+        // it properly itself.
+        viewTransition.finished.finally(() => {
+            for (const animation of animations) {
+                animation.cancel();
+            }
+        });
     }
 }
