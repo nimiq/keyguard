@@ -1,5 +1,6 @@
 /* global Constants */
 /* global I18n */
+/* global HistoryState */
 /* global Observable */
 /* global Nimiq */
 /* global TopLevelApi */
@@ -49,6 +50,7 @@ class ImportBackupCodes extends Observable {
             if (codeIndex !== 1) return;
             await new Promise(resolve => requestAnimationFrame(resolve));
             this._changeStep(BackupCodesInput.Steps.ENTER_CODE_2);
+            HistoryState.push('step', BackupCodesInput.Steps.ENTER_CODE_2);
         });
         this._backupCodesInput.on(
             BackupCodesInput.Events.CODES_COMPLETE,
@@ -62,13 +64,28 @@ class ImportBackupCodes extends Observable {
                 await BackupCodesInput.customizeViewTransition(viewTransition, oldState, newState, this.$codesPage);
             },
         );
+        // View transitions on browser navigations.
+        // Note that in contrast to ExportBackupCodes, individual BackupCodeInput.Steps are not represented as separate
+        // pages / location.hashes. Instead, the steps are represented as history states.
+        window.addEventListener('popstate', () => {
+            if (window.location.hash.replace(/^#/, '') !== ImportBackupCodes.Pages.ENTER_CODES) return;
+            const newStep = HistoryState.get('step');
+            if ((newStep !== BackupCodesInput.Steps.ENTER_CODE_1 && newStep !== BackupCodesInput.Steps.ENTER_CODE_2)
+                || this._backupCodesInput.step === newStep) return;
+            this._changeStep(newStep);
+        });
     }
 
     run() {
         window.location.hash = ImportBackupCodes.Pages.ENTER_CODES;
         this._codesComplete = false;
         this._setWarning('');
-        this._changeStep(BackupCodesInput.Steps.ENTER_CODE_1, /* transition */ false);
+        if (HistoryState.get('step') === BackupCodesInput.Steps.ENTER_CODE_2) {
+            window.history.back();
+        } else {
+            this._changeStep(BackupCodesInput.Steps.ENTER_CODE_1, /* transition */ false);
+            HistoryState.set('step', BackupCodesInput.Steps.ENTER_CODE_1);
+        }
     }
 
     /**
@@ -96,7 +113,8 @@ class ImportBackupCodes extends Observable {
             }
             this.fire(ImportBackupCodes.Events.IMPORT, keys);
             // Imported successfully. Reset view afterward. Delay the change for a small moment, to hopefully perform
-            // the change unnoticed in the background, while ImportBackupCodes should not be visible anymore.
+            // the change unnoticed in the background, while the Keyguard should be on a different page already and
+            // ImportBackupCodes should not be visible anymore.
             await new Promise(resolve => setTimeout(resolve, 200));
             this._changeStep(BackupCodesInput.Steps.ENTER_CODE_1, /* transition */ false);
         } catch (error) {
@@ -106,7 +124,7 @@ class ImportBackupCodes extends Observable {
             } else {
                 this._setWarning(I18n.translatePhrase('import-backup-codes-warning-invalid'));
             }
-            this._changeStep(BackupCodesInput.Steps.ENTER_CODE_1);
+            window.history.back(); // go back to code 1
         } finally {
             TopLevelApi.setLoading(false);
         }

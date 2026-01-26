@@ -1,5 +1,6 @@
 /* global Observable */
 /* global I18n */
+/* global HistoryState */
 /* global PasswordInput */
 /* global AnimationUtils */
 /* global PasswordStrength */
@@ -42,12 +43,12 @@ class PasswordSetterBox extends Observable {
 
         this._onInputChangeValidity(false);
 
-        window.onpopstate = /** @param {PopStateEvent} ev */ ev => {
-            if (ev.state && ev.state.isPasswordBoxInitialStep === true) {
-                this.fire(PasswordSetterBox.Events.RESET);
-                this.$el.classList.remove('repeat-short', 'repeat-long');
-            }
-        };
+        window.addEventListener('popstate', () => {
+            const isPasswordBoxInitialStep = HistoryState.get('isPasswordBoxInitialStep');
+            if (!isPasswordBoxInitialStep) return;
+            this.fire(PasswordSetterBox.Events.RESET);
+            this.$el.classList.remove('repeat-short', 'repeat-long');
+        });
     }
 
     /**
@@ -198,8 +199,8 @@ class PasswordSetterBox extends Observable {
             this._passwordInput.reset();
             this.$el.classList.add('repeat');
             this.fire(PasswordSetterBox.Events.ENTERED);
-            window.history.replaceState({ isPasswordBoxInitialStep: true }, 'Keyguard');
-            window.history.pushState({ isPasswordBoxRepeatStep: true }, 'Keyguard');
+            HistoryState.set('isPasswordBoxInitialStep', true);
+            HistoryState.push('isPasswordBoxRepeatStep', true);
             this._passwordInput.focus();
             return;
         }
