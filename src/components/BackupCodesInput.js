@@ -100,6 +100,12 @@ class BackupCodesInput extends BackupCodesIllustrationBase {
         $codeToFocus.focus();
     }
 
+    blur() {
+        const $codeToBlur = this._codes.find($code => !$code.disabled);
+        if (!$codeToBlur) return;
+        $codeToBlur.blur();
+    }
+
     /**
      * @override
      * @protected

@@ -1,3 +1,4 @@
+/* global Constants */
 /* global I18n */
 /* global Observable */
 /* global Nimiq */
@@ -43,8 +44,10 @@ class ImportBackupCodes extends Observable {
             BackupCodesInput.Events.INVALID_EDIT,
             () => this._setWarning(I18n.translatePhrase('import-backup-codes-warning-invalid-characters')),
         );
-        this._backupCodesInput.on(BackupCodesInput.Events.CODE_COMPLETE, codeIndex => {
+        this._backupCodesInput.on(BackupCodesInput.Events.CODE_COMPLETE, async codeIndex => {
+            this._backupCodesInput.blur();
             if (codeIndex !== 1) return;
+            await new Promise(resolve => requestAnimationFrame(resolve));
             this._changeStep(BackupCodesInput.Steps.ENTER_CODE_2);
         });
         this._backupCodesInput.on(
@@ -139,7 +142,9 @@ class ImportBackupCodes extends Observable {
         } else {
             domUpdateHandler();
         }
-        this._backupCodesInput.focus();
+        if (TopLevelApi.getDocumentWidth() > Constants.MIN_WIDTH_FOR_AUTOFOCUS) {
+            this._backupCodesInput.focus();
+        }
     }
 
     /**
