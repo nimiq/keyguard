@@ -44,6 +44,14 @@
     }
 }
 
+/* Code font sizes are optimized for the zoomed state to not break into three lines in most cases. For some codes with
+many wide characters the non zoomed code might break into three lines though, because of different rounding of paddings
+etc. To avoid this, we slightly reduce the non-zoomed font-size. This might lead to the code breaking at different spots
+though, compared to the zoomed state. */
+.backup-codes-illustration-base .message-bubble:not(.zoomed) {
+    --code-font-size: calc(1.75rem * var(--zoom) * .995); /* no rounding on purpose */
+}
+
 /* common message-bubble styles */
 
 .backup-codes-illustration-base .message-bubble {
