@@ -175,14 +175,14 @@ class Key {
      * the high entropy of the seed.
      * @param {string} useCase - Allows to generate a separate secret per use case.
      * @param {number} derivedSecretLength - Size in bytes.
-     * @param {'PBKDF2-SHA512' | 'Argon2d' | 'Argon2id'} additionalKdfAlgorithm
+     * @param {'PBKDF2-SHA512'} additionalKdfAlgorithm
      * @param {number} additionalKdfIterations
      * @returns {Promise<Uint8Array>}
      */
     /**
      * @param {string} useCase
      * @param {number} derivedSecretLength
-     * @param {'PBKDF2-SHA512' | 'Argon2d' | 'Argon2id'} [additionalKdfAlgorithm]
+     * @param {'PBKDF2-SHA512'} [additionalKdfAlgorithm]
      * @param {number} [additionalKdfIterations]
      * @returns {Promise<Uint8Array>}
      */
@@ -262,13 +262,14 @@ class Key {
                 ));
                 break;
             }
+            /* Currently unused key derivation functions:
             case 'Argon2d': {
                 // Argon2d isn't supported by the browser's subtle crypto APIs and Nimiq PoS only provides a synchronous
                 // method for Argon2d, but we can get away with not having to run a web worker by using the asynchronous
                 // otpKdf, from which the Argon2d hash can be reconstructed by canceling out the dummy data via a second
                 // xor.
                 const dummyData = new Uint8Array(finalKeyMaterialLength);
-                const iterations = /** @type {number} */ (additionalKdfIterations);
+                const iterations = /** @type {number} * / (additionalKdfIterations);
                 finalKeyMaterial = Nimiq.BufferUtils.xor(
                     await Nimiq.CryptoUtils.otpKdf(dummyData, seedBytes, salt, iterations),
                     dummyData,
@@ -333,6 +334,7 @@ class Key {
                 }
                 break;
             }
+            */
             default:
                 throw new Error(`Unsupported KDF algorithm: ${additionalKdfAlgorithm}`);
         }
