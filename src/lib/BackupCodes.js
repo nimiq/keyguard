@@ -20,7 +20,14 @@ class BackupCodes {
         const secretBytes = key.secret.serialize();
 
         // Note that we don't need to include a checksum, because the codes themselves can serve as that as they're
-        // basically derived from the secret and metadata by hashing.
+        // basically derived from the secret and metadata by hashing. Also note that the deterministic nature of the
+        // codes has the side effect that codes leak equality: a matching code can be unambiguously identified given the
+        // other code, and backup codes of a different key can be identified as belonging to a different key, which is
+        // strictly more information than would be available with random codes. For example, if a user leaks a code in
+        // one email account, a potential second hacked email account can be identified as belonging to the same user if
+        // two Backup Codes can be matched. However, this is as consequence of the deterministic codes, which are chosen
+        // by design, and is not considered an issue. The situation would also be the same, if using random codes, but
+        // including a checksum.
         const plainText = new Nimiq.SerialBuffer(/* versionAndFlags */ 1 + secretBytes.length);
         plainText.writeUint8(versionAndFlags);
         plainText.write(secretBytes);
