@@ -68,10 +68,16 @@ class BackupCodes {
         const secret = isLegacyPrivateKey ? new Nimiq.PrivateKey(secretBytes) : new Nimiq.Entropy(secretBytes);
         const key = new Key(secret);
 
-        // Check whether our recovered key would derive the same codes, as a checksum check.
+        // Check whether our recovered key would derive the same codes, as a checksum check. Do a constant time check,
+        // to avoid side-channel attacks, although unlikely that exploitable here.
         const [checksum1, checksum2] = await BackupCodes.generate(key);
-        if ((checksum1 !== code1 || checksum2 !== code2)
-            && (checksum1 !== code2 || checksum2 !== code1)) throw new Error('Invalid Backup Codes: checksum mismatch');
+        const checksum1EqualsCode1 = BackupCodes._constantTimeEqualityCheck(checksum1, code1);
+        const checksum2EqualsCode2 = BackupCodes._constantTimeEqualityCheck(checksum2, code2);
+        const checksum1EqualsCode2 = BackupCodes._constantTimeEqualityCheck(checksum1, code2);
+        const checksum2EqualsCode1 = BackupCodes._constantTimeEqualityCheck(checksum2, code1);
+        if ((!checksum1EqualsCode1 || !checksum2EqualsCode2) && (!checksum1EqualsCode2 || !checksum2EqualsCode1)) {
+            throw new Error('Invalid Backup Codes: checksum mismatch');
+        }
 
         return key;
     }
@@ -112,6 +118,33 @@ class BackupCodes {
      */
     static _parseCode(code) {
         return Nimiq.BufferUtils.fromBase64(code.replace(/!/g, '/').replace(/;/g, '+'));
+    }
+
+    /**
+     * @private
+     * @param {string} a
+     * @param {string} b
+     * @returns {boolean}
+     */
+    static _constantTimeEqualityCheck(a, b) {
+        const lenA = a.length;
+        const lenB = b.length;
+        const maxLen = Math.max(lenA, lenB);
+        let result = 0;
+
+        if (lenA !== lenB) {
+            result |= 1;
+        }
+
+        for (let i = 0; i < maxLen; i++) {
+            const charCodeA = a.charCodeAt(i) || 0;
+            const charCodeB = b.charCodeAt(i) || 0;
+
+            // XOR is 0 if the char codes are identical.
+            result |= (charCodeA ^ charCodeB);
+        }
+
+        return result === 0;
     }
 }
 
