@@ -16,11 +16,12 @@ module.exports = function (/** @type {any} */ config) {
         files: [
             {pattern: 'src/lib/Nimiq.mjs', type: 'module'},
             {pattern: 'node_modules/@nimiq/core/**/*', included: false},
-            'src/lib/Observable.js',
+            'src/lib/Observable.js', // Force load of Observable before global use in I18n.
             'src/lib/*.js', // Force load of lib files before components and common.js
             'src/request/TopLevelApi.js', // Force load of TopLevelApi before BitcoinEnabledTopLevelApi
             'src/lib/bitcoin/*.js',
             'node_modules/ethers/dist/ethers.umd.js',
+            'src/components/BackupCodesIllustrationBase.js', // Force load of parent class before others that extend it
             'src/**/*.js',
             'tests/**/*.spec.js',
         ],
