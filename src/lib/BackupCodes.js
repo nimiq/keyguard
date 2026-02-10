@@ -29,7 +29,7 @@ class BackupCodes {
         // as a one-time-pad (otp) to yield the second code. We use Argon2id as kdf (as opposed to, for example, pbkdf2)
         // due to its memory-hardness.
         const derivationUseCase = `BackupCodes - ${versionAndFlags}`; // include metadata in derivation / checksum
-        const code1Bytes = await key.deriveSecret(derivationUseCase, 'Argon2id', 8, plainText.length);
+        const code1Bytes = await key.deriveSecret(derivationUseCase, plainText.length, 'Argon2id', 8);
         const code2Bytes = Nimiq.BufferUtils.xor(plainText, code1Bytes);
 
         const code1 = BackupCodes._renderCode(code1Bytes);
