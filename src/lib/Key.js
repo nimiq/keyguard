@@ -216,43 +216,20 @@ class Key {
             ));
         }
 
-        // As we want to deterministically derive secrets, we have to use a deterministic salt too, instead of a random
-        // salt. This leverages the fact that the underlying seed is already a very high entropy input, and thus no
-        // random salt is required for additional entropy, rainbow table resistance or resilience to reused input
-        // (typically password reuse).
-        // We generate a salt specific to the kdf parameters. We do not, however, include the useCase in the salt, as
-        // the salt should not be controllable by an attacker, see datatracker.ietf.org/doc/html/rfc5869#section-3.4,
-        // eprint.iacr.org/2010/264.pdf#page=10.33 and blog.trailofbits.com/2025/01/28/best-practices-for-key-derivation
-        // Instead, it's applied via HKDF's info parameter during the final key expansion phase.
-        const saltCustomization = Utf8Tools.stringToUtf8ByteArray([
-            derivedSecretLength,
-            ...(additionalKdfAlgorithm ? [additionalKdfAlgorithm, additionalKdfIterations] : []),
-        ].join());
-        // We use HKDF to derive the salt. This will likely not add much to the security of the final derived secret
-        // compared to simply using just saltCustomization as salt directly, as it is still just derived from the seed
-        // and the kdf parameters, but it shouldn't hurt either, and HKDF is cheap. Notably though, by doing this, the
-        // salt isn't independent of the key material anymore, which requires special care, especially avoiding creation
-        // of attacker controllable salts.
-        const saltHkdfParams = {
-            name: 'HKDF',
-            hash: 'SHA-512', // use a long hash, as we're creating a long salt
-            salt: saltCustomization,
-            info: saltCustomization,
-        };
-        const saltHkdfKeyMaterial = await window.crypto.subtle.importKey(
-            /* format */ 'raw',
-            /* keyData */ seedBytes,
-            /* algorithm */ saltHkdfParams, // The key material is to be used in a HKDF derivation.
-            /* extractable */ false,
-            /* keyUsages */ ['deriveBits'],
-        );
-        const salt = new Uint8Array(await window.crypto.subtle.deriveBits(
-            /* algorithm */ saltHkdfParams,
-            /* baseKey */ saltHkdfKeyMaterial,
-            // For HKDF, the salt should ideally be as long as the output of the used Hash function, see
-            // https://datatracker.ietf.org/doc/html/rfc5869#section-3.1, and we'll use SHA-512 in the final HKDF.
-            /* length */ 512,
-        ));
+        // As we want to deterministically derive secrets, we can not use a random salt. We could derive a salt from
+        // the seed, which might work out here as the underlying seed is already a very high entropy input, and thus no
+        // random salt is required for additional entropy, rainbow table resistance or resilience to reused input (like
+        // typically password reuse). However, a dependence between the salt and key material is generally not desirable
+        // for key derivation functions, requiring extra care to not make the salt attacker controllable (for example
+        // the useCase must not be part of the salt), and can be harmful while not really providing any benefits. On the
+        // other hand, the HKDF specification (RFC 5869) was specifically designed to handle cases where a random salt
+        // is unavailable, and can still derive strong secrets even in the absence of a salt.
+        // See datatracker.ietf.org/doc/html/rfc5869#section-3.4, eprint.iacr.org/2010/264.pdf#page=10.33 and
+        // blog.trailofbits.com/2025/01/28/best-practices-for-key-derivation.
+        // However, as some salt is still required, we pass a fixed dummy salt, which we can get away with as our seed
+        // is already of high entropy. We go with HKDF's default of HashLen (i.e. 64 for our used SHA-512) 0 bytes, see
+        // datatracker.ietf.org/doc/html/rfc5869#section-2.2.
+        const salt = new Uint8Array(64);
 
         let finalKeyMaterial;
         // length in bytes
@@ -368,6 +345,8 @@ class Key {
             salt,
             info: Utf8Tools.stringToUtf8ByteArray([
                 useCase,
+                derivedSecretLength,
+                ...(additionalKdfAlgorithm ? [additionalKdfAlgorithm, additionalKdfIterations] : []),
                 // Derive different secrets for legacy PrivateKey based accounts and modern Entropy based accounts, even
                 // if their underlying secret bytes are the same.
                 this.secret instanceof Nimiq.PrivateKey ? 'PrivateKey' : 'Entropy',
