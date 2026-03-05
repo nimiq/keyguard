@@ -189,18 +189,22 @@ class SignTransaction {
             return;
         }
 
-        const publicKey = key.derivePublicKey(request.keyPath);
-        const signature = key.sign(request.keyPath, request.transaction.serializeContent());
+        try {
+            const publicKey = key.derivePublicKey(request.keyPath);
+            const signature = key.sign(request.keyPath, request.transaction.serializeContent());
 
-        request.transaction.proof = Nimiq.SignatureProof.singleSig(publicKey, signature).serialize();
+            request.transaction.proof = Nimiq.SignatureProof.singleSig(publicKey, signature).serialize();
 
-        /** @type {KeyguardRequest.SignTransactionResult} */
-        const result = {
-            publicKey: publicKey.serialize(),
-            signature: signature.serialize(),
-            serializedTx: request.transaction.serialize(),
-        };
-        resolve(result);
+            /** @type {KeyguardRequest.SignTransactionResult} */
+            const result = {
+                publicKey: publicKey.serialize(),
+                signature: signature.serialize(),
+                serializedTx: request.transaction.serialize(),
+            };
+            resolve(result);
+        } finally {
+            key.destroy();
+        }
     }
 
     run() {

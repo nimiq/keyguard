@@ -236,66 +236,72 @@ class SignMultisigTransaction {
             return;
         }
 
-        const publicKey = key.derivePublicKey(request.keyPath);
+        try {
+            const publicKey = key.derivePublicKey(request.keyPath);
 
-        // Verify publicKey is part of the signing public keys
-        const ownSigner = request.multisigConfig.signers.find(signer => signer.publicKey.equals(publicKey));
-        if (!ownSigner) {
-            reject(new Errors.InvalidRequestError('Selected key is not part of the multisig transaction signers'));
-            return;
-        }
-        // Get a list of other signers, excluding the own signer. This works because `ownSigner` is a reference into
-        // the `signers` array, so we can use object-equality.
-        const otherSigners = request.multisigConfig.signers.filter(signer => signer !== ownSigner);
-
-        /** @type {Nimiq.RandomSecret[]} */
-        let ownCommitmentSecrets;
-        if (Array.isArray(request.multisigConfig.secrets)) {
-            ownCommitmentSecrets = request.multisigConfig.secrets;
-        } else {
-            // If we only have encrypted secrets, decrypt them first
-            const rsaKey = await key.getRsaPrivateKey(request.multisigConfig.secrets.keyParams);
-
-            try {
-                ownCommitmentSecrets = await Promise.all(request.multisigConfig.secrets.encrypted.map(
-                    async encrypted => new Nimiq.RandomSecret(new Uint8Array(
-                        await window.crypto.subtle.decrypt(rsaKey.algorithm, rsaKey, encrypted),
-                    )),
+            // Verify publicKey is part of the signing public keys
+            const ownSigner = request.multisigConfig.signers.find(signer => signer.publicKey.equals(publicKey));
+            if (!ownSigner) {
+                reject(new Errors.InvalidRequestError(
+                    'Selected key is not part of the multisig transaction signers',
                 ));
-            } catch (error) {
-                const errorMessage = error instanceof Error ? error.message : String(error);
-                reject(new Errors.InvalidRequestError(`Cannot decrypt secrets: ${errorMessage}`));
                 return;
             }
-        }
-        if (ownCommitmentSecrets.length !== ownSigner.commitments.length) {
-            reject(new Errors.InvalidRequestError(
-                'The number of secrets does not match the number of this signer\'s commitments',
-            ));
-            return;
-        }
-        /** @type {Nimiq.CommitmentPair[]} */
-        const ownCommitmentPairs = [];
-        for (let i = 0; i < ownCommitmentSecrets.length; i++) {
-            ownCommitmentPairs.push(new Nimiq.CommitmentPair(
-                ownCommitmentSecrets[i],
-                ownSigner.commitments[i],
-            ));
-        }
+            // Get a list of other signers, excluding the own signer. This works because `ownSigner` is a reference
+            // into the `signers` array, so we can use object-equality.
+            const otherSigners = request.multisigConfig.signers.filter(signer => signer !== ownSigner);
 
-        const signature = key.signPartially(
-            request.keyPath,
-            request.transaction.serializeContent(),
-            ownCommitmentPairs,
-            otherSigners,
-        );
+            /** @type {Nimiq.RandomSecret[]} */
+            let ownCommitmentSecrets;
+            if (Array.isArray(request.multisigConfig.secrets)) {
+                ownCommitmentSecrets = request.multisigConfig.secrets;
+            } else {
+                // If we only have encrypted secrets, decrypt them first
+                const rsaKey = await key.getRsaPrivateKey(request.multisigConfig.secrets.keyParams);
 
-        /** @type {KeyguardRequest.SignatureResult} */
-        const result = {
-            publicKey: publicKey.serialize(),
-            signature: signature.serialize(),
-        };
-        resolve(result);
+                try {
+                    ownCommitmentSecrets = await Promise.all(request.multisigConfig.secrets.encrypted.map(
+                        async encrypted => new Nimiq.RandomSecret(new Uint8Array(
+                            await window.crypto.subtle.decrypt(rsaKey.algorithm, rsaKey, encrypted),
+                        )),
+                    ));
+                } catch (error) {
+                    const errorMessage = error instanceof Error ? error.message : String(error);
+                    reject(new Errors.InvalidRequestError(`Cannot decrypt secrets: ${errorMessage}`));
+                    return;
+                }
+            }
+            if (ownCommitmentSecrets.length !== ownSigner.commitments.length) {
+                reject(new Errors.InvalidRequestError(
+                    'The number of secrets does not match the number of this signer\'s commitments',
+                ));
+                return;
+            }
+            /** @type {Nimiq.CommitmentPair[]} */
+            const ownCommitmentPairs = [];
+            for (let i = 0; i < ownCommitmentSecrets.length; i++) {
+                ownCommitmentPairs.push(new Nimiq.CommitmentPair(
+                    ownCommitmentSecrets[i],
+                    ownSigner.commitments[i],
+                ));
+            }
+
+            const signature = key.signPartially(
+                request.keyPath,
+                request.transaction.serializeContent(),
+                ownCommitmentPairs,
+                otherSigners,
+            );
+
+            /** @type {KeyguardRequest.SignatureResult} */
+            const result = {
+                publicKey: publicKey.serialize(),
+                signature: signature.serialize(),
+            };
+            resolve(result);
+        } finally {
+            key.destroy();
+        }
     }
 
     run() {

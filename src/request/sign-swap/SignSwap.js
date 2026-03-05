@@ -534,11 +534,14 @@ class SignSwap {
             return;
         }
 
-        const bitcoinKey = new BitcoinKey(key);
-        const polygonKey = new PolygonKey(key);
-
         /** @type {{nim: string, btc: string[], usdc: string, usdt: string, eur: string, btc_refund?: string}} */
         const privateKeys = {};
+        /** @type {string | undefined} */
+        let eurPubKey;
+
+        try {
+        const bitcoinKey = new BitcoinKey(key);
+        const polygonKey = new PolygonKey(key);
 
         if (request.fund.type === 'NIM') {
             const privateKey = key.derivePrivateKey(request.fund.keyPath);
@@ -686,9 +689,6 @@ class SignSwap {
             privateKeys.usdt = wallet.privateKey;
         }
 
-        /** @type {string | undefined} */
-        let eurPubKey;
-
         if (request.redeem.type === 'EUR') {
             const privateKey = key.derivePrivateKey(request.redeem.keyPath);
             privateKeys.eur = privateKey.toHex();
@@ -696,6 +696,10 @@ class SignSwap {
             // Public key of EUR signing key is required as the contract recipient
             // when confirming a swap to Fastspot from the Hub.
             eurPubKey = Nimiq.PublicKey.derive(privateKey).toHex();
+        }
+
+        } finally {
+            key.destroy();
         }
 
         try {

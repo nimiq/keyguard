@@ -121,43 +121,47 @@ class Connect {
             return;
         }
 
-        /** @type {KeyguardRequest.SignatureResult[]} */
-        const signatures = [];
+        try {
+            /** @type {KeyguardRequest.SignatureResult[]} */
+            const signatures = [];
 
-        for (const keyPath of request.requestedKeyPaths) {
-            const publicKey = key.derivePublicKey(keyPath);
+            for (const keyPath of request.requestedKeyPaths) {
+                const publicKey = key.derivePublicKey(keyPath);
 
-            /** @type {Uint8Array} */
-            const messageBytes = Utf8Tools.stringToUtf8ByteArray(request.challenge);
-            // Sign the challenge with a distinct prefix, to avoid blind signing as a regular Nimiq message, which could
-            // be used to impersonate the user.
-            const signature = key.signMessage(keyPath, messageBytes, SignMessagePrefix.CONNECT_CHALLENGE);
+                /** @type {Uint8Array} */
+                const messageBytes = Utf8Tools.stringToUtf8ByteArray(request.challenge);
+                // Sign the challenge with a distinct prefix, to avoid blind signing as a regular Nimiq message, which
+                // could be used to impersonate the user.
+                const signature = key.signMessage(keyPath, messageBytes, SignMessagePrefix.CONNECT_CHALLENGE);
 
-            signatures.push({
-                publicKey: publicKey.serialize(),
-                signature: signature.serialize(),
-            });
-        }
+                signatures.push({
+                    publicKey: publicKey.serialize(),
+                    signature: signature.serialize(),
+                });
+            }
 
-        const keyParams = Key.defaultRsaKeyParams;
-        const rsaPublicCryptoKey = await key.getRsaPublicKey(keyParams);
+            const keyParams = Key.defaultRsaKeyParams;
+            const rsaPublicCryptoKey = await key.getRsaPublicKey(keyParams);
 
-        /** @type {KeyguardRequest.ConnectResult} */
-        const result = {
-            signatures,
-            encryptionKey: {
-                format: 'spki',
-                keyData: new Uint8Array(await window.crypto.subtle.exportKey('spki', rsaPublicCryptoKey)),
-                algorithm: {
-                    name: rsaPublicCryptoKey.algorithm.name,
-                    hash: (/** @type {RsaHashedKeyAlgorithm} */ (rsaPublicCryptoKey.algorithm)).hash.name,
+            /** @type {KeyguardRequest.ConnectResult} */
+            const result = {
+                signatures,
+                encryptionKey: {
+                    format: 'spki',
+                    keyData: new Uint8Array(await window.crypto.subtle.exportKey('spki', rsaPublicCryptoKey)),
+                    algorithm: {
+                        name: rsaPublicCryptoKey.algorithm.name,
+                        hash: (/** @type {RsaHashedKeyAlgorithm} */ (rsaPublicCryptoKey.algorithm)).hash.name,
+                    },
+                    keyUsages: ['encrypt'],
+                    keyParams,
                 },
-                keyUsages: ['encrypt'],
-                keyParams,
-            },
-        };
+            };
 
-        resolve(result);
+            resolve(result);
+        } finally {
+            key.destroy();
+        }
     }
 
     run() {

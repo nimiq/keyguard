@@ -188,6 +188,10 @@ class Key {
      */
     async deriveSecret(useCase, derivedSecretLength, additionalKdfAlgorithm, additionalKdfIterations) {
         const seedBytes = this.secret.serialize();
+        /** @type {Uint8Array | undefined} */
+        let finalKeyMaterial;
+
+        try {
 
         if (!!additionalKdfAlgorithm && !additionalKdfIterations) {
             throw new Error('additionalKdfIterations must be specified if specifying additionalKdfAlgorithm');
@@ -231,7 +235,6 @@ class Key {
         // datatracker.ietf.org/doc/html/rfc5869#section-2.2.
         const salt = new Uint8Array(64);
 
-        let finalKeyMaterial;
         // length in bytes
         const finalKeyMaterialLength = additionalKdfAlgorithm
             ? 64 // if we apply an additional kdf, we might as well stretch the key material
@@ -366,6 +369,12 @@ class Key {
             /* baseKey */ finalHkdfKeyMaterial,
             /* length */ derivedSecretLength * 8,
         ));
+
+        } finally {
+            // Zero intermediate key material
+            seedBytes.fill(0);
+            if (finalKeyMaterial && finalKeyMaterial !== seedBytes) finalKeyMaterial.fill(0);
+        }
     }
 
     /**
@@ -386,13 +395,15 @@ class Key {
             salt: hkdfSalt,
             info: Utf8Tools.stringToUtf8ByteArray(useCase),
         };
+        const secretBytes = this.secret.serialize();
         const hkdfKeyMaterial = await window.crypto.subtle.importKey(
             /* format */ 'raw',
-            /* keyData */ this.secret.serialize(),
+            /* keyData */ secretBytes,
             /* algorithm */ hkdfParams, // The key material is to be used in a HKDF derivation.
             /* extractable */ false,
             /* keyUsages */ ['deriveKey'],
         );
+        secretBytes.fill(0);
 
         /** @type {AesKeyGenParams} */
         const aesEffectiveParams = {
@@ -643,6 +654,23 @@ class Key {
             && this.hasPin === other.hasPin
             && this.secret.equals(/** @type {Nimiq.PrivateKey} */ (other.secret))
             && this.defaultAddress.equals(other.defaultAddress);
+    }
+
+    /**
+     * Zeros out sensitive key material to reduce the window during which secrets
+     * persist in memory. Calls free() on the underlying WASM-backed secret to
+     * release its memory, and nullifies JavaScript references.
+     *
+     * Must be called when the key is no longer needed.
+     */
+    destroy() {
+        if (this._secret && typeof this._secret.free === 'function') {
+            this._secret.free();
+        }
+        this._secret = null;
+        this._rsaKeyPair = undefined;
+        this._id = null;
+        this._defaultAddress = null;
     }
 }
 

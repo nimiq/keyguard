@@ -318,6 +318,8 @@ class SignBtcTransaction {
             TopLevelApi.setLoading(false);
             console.error(error);
             alert(`ERROR: ${errorMessage}`); // eslint-disable-line no-alert
+        } finally {
+            key.destroy();
         }
     }
 

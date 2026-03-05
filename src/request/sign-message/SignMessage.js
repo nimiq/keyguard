@@ -104,31 +104,35 @@ class SignMessage {
             return;
         }
 
-        const publicKey = key.derivePublicKey(request.keyPath);
+        try {
+            const publicKey = key.derivePublicKey(request.keyPath);
 
-        // Validate that the derived address is the same as the request's 'signer' address
-        const derivedAddress = publicKey.toAddress();
-        if (!derivedAddress.equals(request.signer)) {
-            reject(new Errors.KeyguardError('Provided keyPath does not derive provided signer address'));
-            return;
+            // Validate that the derived address is the same as the request's 'signer' address
+            const derivedAddress = publicKey.toAddress();
+            if (!derivedAddress.equals(request.signer)) {
+                reject(new Errors.KeyguardError('Provided keyPath does not derive provided signer address'));
+                return;
+            }
+
+            /** @type {Uint8Array} */
+            let messageBytes;
+            if (typeof request.message === 'string') {
+                messageBytes = Utf8Tools.stringToUtf8ByteArray(request.message);
+            } else {
+                messageBytes = request.message;
+            }
+
+            const signature = key.signMessage(request.keyPath, messageBytes);
+
+            /** @type {KeyguardRequest.SignatureResult} */
+            const result = {
+                publicKey: publicKey.serialize(),
+                signature: signature.serialize(),
+            };
+            resolve(result);
+        } finally {
+            key.destroy();
         }
-
-        /** @type {Uint8Array} */
-        let messageBytes;
-        if (typeof request.message === 'string') {
-            messageBytes = Utf8Tools.stringToUtf8ByteArray(request.message);
-        } else {
-            messageBytes = request.message;
-        }
-
-        const signature = key.signMessage(request.keyPath, messageBytes);
-
-        /** @type {KeyguardRequest.SignatureResult} */
-        const result = {
-            publicKey: publicKey.serialize(),
-            signature: signature.serialize(),
-        };
-        resolve(result);
     }
 
     run() {

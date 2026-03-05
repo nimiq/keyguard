@@ -930,18 +930,22 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
             const privateKey = new Nimiq.PrivateKey(Nimiq.BufferUtils.fromHex(privateKeys.eur));
             const key = new Key(privateKey);
 
-            /** @type {KeyguardRequest.SettlementInstruction} */
-            const settlement = {
-                ...storedRequest.redeem.settlement,
-                contractId: parsedRequest.redeem.htlcId,
-            };
+            try {
+                /** @type {KeyguardRequest.SettlementInstruction} */
+                const settlement = {
+                    ...storedRequest.redeem.settlement,
+                    contractId: parsedRequest.redeem.htlcId,
+                };
 
-            if (settlement.type === 'sepa') {
-                // Remove spaces from IBAN
-                settlement.recipient.iban = settlement.recipient.iban.replace(/\s/g, '');
+                if (settlement.type === 'sepa') {
+                    // Remove spaces from IBAN
+                    settlement.recipient.iban = settlement.recipient.iban.replace(/\s/g, '');
+                }
+
+                result.eur = OasisSettlementInstructionUtils.signSettlementInstruction(key, 'm', settlement);
+            } finally {
+                key.destroy();
             }
-
-            result.eur = OasisSettlementInstructionUtils.signSettlementInstruction(key, 'm', settlement);
         }
 
         return result;

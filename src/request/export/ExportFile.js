@@ -133,6 +133,7 @@ class ExportFile extends Observable {
         });
 
         this._downloadLoginFile.on(DownloadLoginFile.Events.DOWNLOADED, () => {
+            if (this._key) this._key.destroy();
             this._resolve({ success: true });
         });
     }

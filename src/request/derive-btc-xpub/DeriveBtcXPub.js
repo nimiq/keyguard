@@ -67,14 +67,18 @@ class DeriveBtcXPub {
             return;
         }
 
-        const bitcoinXPub = new BitcoinKey(key).deriveExtendedPublicKey(this._request.bitcoinXPubPath);
+        try {
+            const bitcoinXPub = new BitcoinKey(key).deriveExtendedPublicKey(this._request.bitcoinXPubPath);
 
-        /** @type {KeyguardRequest.DeriveBtcXPubResult} */
-        const result = {
-            bitcoinXPub,
-        };
+            /** @type {KeyguardRequest.DeriveBtcXPubResult} */
+            const result = {
+                bitcoinXPub,
+            };
 
-        this._resolve(result);
+            this._resolve(result);
+        } finally {
+            key.destroy();
+        }
     }
 
     async run() {

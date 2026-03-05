@@ -236,6 +236,7 @@ class ExportBackupCodes {
         setGeneratingCodes(true);
 
         this._backupCodesPromise = BackupCodes.generate(key); // generate codes in background
+        this._backupCodesPromise.finally(() => key.destroy());
         this._backupCodesPromise.then(async ([code1, code2]) => {
             // Set the codes with a view transition.
             // If the user is still on the INTRO page, where the codes are masked, the change is not super noticeable

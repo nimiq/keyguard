@@ -91,7 +91,10 @@ class ExportWords extends Observable {
             window.location.hash = ExportWords.Pages.VALIDATE_WORDS;
         });
 
-        this._validateWords.on(ValidateWords.Events.VALIDATED, () => this._resolve({ success: true }));
+        this._validateWords.on(ValidateWords.Events.VALIDATED, () => {
+            if (this._key) this._key.destroy();
+            this._resolve({ success: true });
+        });
     }
 
     run() {

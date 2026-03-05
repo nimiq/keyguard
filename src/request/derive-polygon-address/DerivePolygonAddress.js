@@ -65,17 +65,21 @@ class DerivePolygonAddress {
             return;
         }
 
-        const keyPath = `${this._request.polygonAccountPath}/0/0`;
+        try {
+            const keyPath = `${this._request.polygonAccountPath}/0/0`;
 
-        /** @type {KeyguardRequest.DerivePolygonAddressResult} */
-        const result = {
-            polygonAddresses: [{
-                address: new PolygonKey(key).deriveAddress(keyPath),
-                keyPath,
-            }],
-        };
+            /** @type {KeyguardRequest.DerivePolygonAddressResult} */
+            const result = {
+                polygonAddresses: [{
+                    address: new PolygonKey(key).deriveAddress(keyPath),
+                    keyPath,
+                }],
+            };
 
-        this._resolve(result);
+            this._resolve(result);
+        } finally {
+            key.destroy();
+        }
     }
 
     async run() {

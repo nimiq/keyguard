@@ -149,6 +149,7 @@ class SignPolygonTransaction {
             return;
         }
 
+        try {
         const polygonKey = new PolygonKey(key);
 
         // Has been validated to be an approved transfer contract address
@@ -278,6 +279,9 @@ class SignPolygonTransaction {
             signature,
         };
         resolve(result);
+        } finally {
+            key.destroy();
+        }
     }
 
     run() {

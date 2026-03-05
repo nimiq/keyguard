@@ -124,14 +124,18 @@ class Create {
 
             // Set up LoginFile
             const key = new Key(this._entropy);
-            const passwordBuffer = Utf8Tools.stringToUtf8ByteArray(password);
-            const encryptedSecret = await Nimiq.Secret.exportEncrypted(key.secret, passwordBuffer);
+            try {
+                const passwordBuffer = Utf8Tools.stringToUtf8ByteArray(password);
+                const encryptedSecret = await Nimiq.Secret.exportEncrypted(key.secret, passwordBuffer);
 
-            this._downloadLoginFile.setEncryptedEntropy(encryptedSecret, key.defaultAddress);
-            // Reset to initial state
-            $downloadFilePage.classList.remove(DownloadLoginFile.Events.INITIATED);
+                this._downloadLoginFile.setEncryptedEntropy(encryptedSecret, key.defaultAddress);
+                // Reset to initial state
+                $downloadFilePage.classList.remove(DownloadLoginFile.Events.INITIATED);
 
-            window.location.hash = Create.Pages.LOGIN_FILE_DOWNLOAD;
+                window.location.hash = Create.Pages.LOGIN_FILE_DOWNLOAD;
+            } finally {
+                key.destroy();
+            }
         });
 
         this._passwordSetter.on(PasswordSetterBox.Events.ENTERED, () => {
@@ -165,31 +169,35 @@ class Create {
     async finish(request) {
         TopLevelApi.setLoading(true);
         const key = new Key(this._entropy);
-        const password = this._password.length > 0 ? Utf8Tools.stringToUtf8ByteArray(this._password) : undefined;
-        await KeyStore.instance.put(key, password);
+        try {
+            const password = this._password.length > 0 ? Utf8Tools.stringToUtf8ByteArray(this._password) : undefined;
+            await KeyStore.instance.put(key, password);
 
-        const keyPath = request.defaultKeyPath;
-        const polygonKeypath = `${request.polygonAccountPath}/0/0`;
+            const keyPath = request.defaultKeyPath;
+            const polygonKeypath = `${request.polygonAccountPath}/0/0`;
 
-        /** @type {KeyguardRequest.KeyResult} */
-        const result = [{
-            keyId: key.id,
-            keyType: key.type,
-            addresses: [{
-                address: key.deriveAddress(keyPath).serialize(),
-                keyPath,
-            }],
-            fileExported: true,
-            wordsExported: false,
-            backupCodesExported: false,
-            bitcoinXPub: new BitcoinKey(key).deriveExtendedPublicKey(request.bitcoinXPubPath),
-            polygonAddresses: [{
-                address: new PolygonKey(key).deriveAddress(polygonKeypath),
-                keyPath: polygonKeypath,
-            }],
-        }];
+            /** @type {KeyguardRequest.KeyResult} */
+            const result = [{
+                keyId: key.id,
+                keyType: key.type,
+                addresses: [{
+                    address: key.deriveAddress(keyPath).serialize(),
+                    keyPath,
+                }],
+                fileExported: true,
+                wordsExported: false,
+                backupCodesExported: false,
+                bitcoinXPub: new BitcoinKey(key).deriveExtendedPublicKey(request.bitcoinXPubPath),
+                polygonAddresses: [{
+                    address: new PolygonKey(key).deriveAddress(polygonKeypath),
+                    keyPath: polygonKeypath,
+                }],
+            }];
 
-        this._resolve(result);
+            this._resolve(result);
+        } finally {
+            key.destroy();
+        }
     }
 
     run() {

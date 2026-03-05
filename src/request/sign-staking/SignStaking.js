@@ -275,23 +275,27 @@ class SignStaking {
             return;
         }
 
-        const privateKey = key.derivePrivateKey(request.keyPath);
-        const keyPair = Nimiq.KeyPair.derive(privateKey);
+        try {
+            const privateKey = key.derivePrivateKey(request.keyPath);
+            const keyPair = Nimiq.KeyPair.derive(privateKey);
 
-        const results = request.transactions.map(transaction => {
-            transaction.sign(keyPair);
+            const results = request.transactions.map(transaction => {
+                transaction.sign(keyPair);
 
-            /** @type {KeyguardRequest.SignStakingResult} */
-            const result = {
-                publicKey: keyPair.publicKey.serialize(),
-                signature: transaction.proof.subarray(transaction.proof.length - 64),
-                transaction: transaction.serialize(),
-            };
+                /** @type {KeyguardRequest.SignStakingResult} */
+                const result = {
+                    publicKey: keyPair.publicKey.serialize(),
+                    signature: transaction.proof.subarray(transaction.proof.length - 64),
+                    transaction: transaction.serialize(),
+                };
 
-            return result;
-        });
+                return result;
+            });
 
-        resolve(results);
+            resolve(results);
+        } finally {
+            key.destroy();
+        }
     }
 
     run() {

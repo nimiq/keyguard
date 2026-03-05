@@ -107,10 +107,12 @@ class ChangePassword {
             () => this.$downloadFile.classList.remove(DownloadLoginFile.Events.INITIATED),
         );
         this._downloadLoginFile.on(DownloadLoginFile.Events.DOWNLOADED, () => {
+            if (this._key) this._key.destroy();
             this._resolve({ success: true });
         });
         $skipDownloadButton.addEventListener('click', e => {
             e.preventDefault();
+            if (this._key) this._key.destroy();
             this._resolve({ success: true });
         });
     }
@@ -189,6 +191,7 @@ class ChangePassword {
 
         if (this.key.secret instanceof Nimiq.PrivateKey || !passwordBytes) {
             // Login File not available for legacy accounts or unencrypted entropies
+            this._key.destroy();
             this._resolve({ success: true });
             return;
         }

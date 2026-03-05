@@ -292,6 +292,8 @@ class Import {
             this._reject(error instanceof Error ? error : new Error(String(error)));
             return false;
         } finally {
+            if (this._importedKeys.entropy) this._importedKeys.entropy.destroy();
+            if (this._importedKeys.privateKey) this._importedKeys.privateKey.destroy();
             TopLevelApi.setLoading(false);
         }
     }
