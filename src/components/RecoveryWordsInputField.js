@@ -48,6 +48,7 @@ class RecoveryWordsInputField extends Observable {
         const input = document.createElement('input');
         input.classList.add('nq-input');
         input.setAttribute('type', 'text');
+        input.setAttribute('autocomplete', 'off');
         input.setAttribute('autocorrect', 'off');
         input.setAttribute('autocapitalize', 'none');
         input.setAttribute('spellcheck', 'false');
