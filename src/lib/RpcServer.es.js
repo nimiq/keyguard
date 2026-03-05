@@ -148,9 +148,9 @@ class RpcState {
     reply(status, result) {
         console.debug('RpcServer REPLY', result);
         if (status === ResponseStatus.ERROR) {
-            // serialize error objects
+            // serialize error objects, omitting stack traces to avoid leaking internal details
             result = typeof result === 'object'
-                ? { message: result.message, stack: result.stack, name: result.name }
+                ? { message: result.message, name: result.name }
                 : { message: result };
         }
         if (this._postMessage) {
