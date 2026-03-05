@@ -33,6 +33,21 @@ class IFrameApi {
      * @returns {Promise<KeyguardRequest.DerivedAddress[]>}
      */
     async deriveAddresses(state, request) {
+        if (!request.keyId || typeof request.keyId !== 'string') {
+            throw new Errors.InvalidRequestError('keyId must be a string');
+        }
+        if (!request.paths || !Array.isArray(request.paths)) {
+            throw new Errors.InvalidRequestError('paths must be an array');
+        }
+        if (request.paths.length === 0) {
+            throw new Errors.InvalidRequestError('paths must not be empty');
+        }
+        request.paths.forEach((path, i) => {
+            if (!path || typeof path !== 'string' || !Nimiq.ExtendedPrivateKey.isValidPath(path)) {
+                throw new Errors.InvalidRequestError(`paths[${i}]: Invalid path`);
+            }
+        });
+
         const storedEntropy = await NonPartitionedSessionStorage.get(
             IFrameApi.SESSION_STORAGE_KEY_PREFIX + request.keyId,
             request.tmpCookieEncryptionKey,
@@ -59,6 +74,11 @@ class IFrameApi {
      * @returns {Promise<KeyguardRequest.SimpleResult>}
      */
     async releaseKey(state, request) {
+        if (!request.keyId || typeof request.keyId !== 'string') {
+            throw new Errors.InvalidRequestError('keyId must be a string');
+        }
+        request.shouldBeRemoved = !!request.shouldBeRemoved;
+
         if (request.shouldBeRemoved
             && NonPartitionedSessionStorage.has(IFrameApi.SESSION_STORAGE_KEY_PREFIX + request.keyId)) {
             if (BrowserDetection.isIOS() || BrowserDetection.isSafari()) {
