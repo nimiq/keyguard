@@ -319,11 +319,15 @@ type Parsed<T extends KeyguardRequest.Request> =
     T extends Is<T, KeyguardRequest.SignTransactionRequestCheckout> ?
         Transform<
             ConstructTransaction<KeyId2KeyInfo<KeyguardRequest.SignTransactionRequestCheckout>>,
-            'shopLogoUrl',
-            { shopLogoUrl?: URL }
+            'shopLogoUrl' | 'transaction',
+            { shopLogoUrl?: URL, transactions: Nimiq.Transaction[] }
         > :
     T extends Is<T, KeyguardRequest.SignTransactionRequestCashlink> ?
-        ConstructTransaction<KeyId2KeyInfo<KeyguardRequest.SignTransactionRequestCashlink>> :
+        Transform<
+            ConstructTransaction<KeyId2KeyInfo<KeyguardRequest.SignTransactionRequestCashlink>>,
+            'transaction',
+            { transactions: Nimiq.Transaction[] }
+        > :
     T extends Is<T, KeyguardRequest.SignMultisigTransactionRequestStandard> ?
         ConstructMultisigTransaction<KeyId2KeyInfo<KeyguardRequest.SignMultisigTransactionRequestStandard>>
         & { layout: KeyguardRequest.SignMultisigTransactionRequestLayout } :

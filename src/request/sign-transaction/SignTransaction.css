@@ -222,13 +222,6 @@ nothing breaks in SignMultisigTransaction. */
     opacity: 0.6;
 }
 
-#confirm-transaction .transaction-card .tx-label {
-    font-weight: 600;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
 #confirm-transaction .transaction-card .tx-value {
     font-weight: 600;
     white-space: nowrap;

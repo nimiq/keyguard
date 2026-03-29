@@ -74,9 +74,6 @@ class SignTransactionApi extends TopLevelApi {
                     },
                 );
 
-                // Store plain representations for UI display
-                parsedRequest.plain = parsedRequest.transactions.map(tx => tx.toPlain());
-
                 // For single-item arrays, extract senderLabel for backward compatibility
                 if (request.transactions.length === 1) {
                     parsedRequest.senderLabel = this.parseLabel(request.senderLabel);
@@ -133,22 +130,6 @@ class SignTransactionApi extends TopLevelApi {
             && request.cashlinkMessage) {
             parsedRequest.cashlinkMessage = /** @type {string} */(this.parseMessage(request.cashlinkMessage));
         }
-
-        // Parse staking-specific fields (like SignStaking does)
-        if (request.validatorAddress) {
-            parsedRequest.validatorAddress = this.parseAddress(request.validatorAddress, 'validatorAddress', false);
-        }
-
-        if (request.validatorImageUrl) {
-            parsedRequest.validatorImageUrl = this._parseUrl(request.validatorImageUrl, 'validatorImageUrl');
-        }
-
-        if (request.amount) {
-            parsedRequest.amount = this.parseNonNegativeFiniteNumber(request.amount, true, 'amount');
-        }
-
-        // Note: Staking transactions are now supported in multi-transaction signing
-        // The dedicated sign-staking endpoint is still available for backward compatibility
 
         return parsedRequest;
     }
