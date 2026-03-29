@@ -9,3 +9,4 @@ deployment-keyguard-next
 dist
 .ts-out
 src/translations/index.js
+CLAUDE.md

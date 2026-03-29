@@ -311,8 +311,11 @@ type Is<T, B> = KeyguardRequest.Is<T, B>;
 
 type Parsed<T extends KeyguardRequest.Request> =
     T extends Is<T, KeyguardRequest.SignTransactionRequestStandard> ?
-        ConstructTransaction<KeyId2KeyInfo<KeyguardRequest.SignTransactionRequestStandard>>
-        & { layout: KeyguardRequest.SignTransactionRequestLayout } :
+        KeyId2KeyInfo<KeyguardRequest.SignTransactionRequestStandard>
+        & {
+            layout: KeyguardRequest.SignTransactionRequestLayout,
+            transactions: Nimiq.Transaction[], // Always an array internally (even for single tx)
+        } :
     T extends Is<T, KeyguardRequest.SignTransactionRequestCheckout> ?
         Transform<
             ConstructTransaction<KeyId2KeyInfo<KeyguardRequest.SignTransactionRequestCheckout>>,
