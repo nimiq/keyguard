@@ -21,9 +21,85 @@ class SignTransactionApi extends TopLevelApi {
         parsedRequest.keyInfo = await this.parseKeyId(request.keyId);
         parsedRequest.keyLabel = this.parseLabel(request.keyLabel);
         parsedRequest.keyPath = this.parsePath(request.keyPath, 'keyPath');
-        parsedRequest.senderLabel = this.parseLabel(request.senderLabel);
-        parsedRequest.transaction = this.parseTransaction(request);
         parsedRequest.layout = this.parseLayout(request.layout);
+
+        // Parse transactions - either from array or from single-tx fields
+        if ('transactions' in request && Array.isArray(request.transactions)) {
+            // Multi-transaction mode - only allowed for standard layout
+            if (parsedRequest.layout !== SignTransactionApi.Layouts.STANDARD) {
+                throw new Errors.InvalidRequestError(
+                    'Multiple transactions are only supported with standard layout',
+                );
+            }
+            if (request.transactions.length === 0) {
+                throw new Errors.InvalidRequestError('transactions array must not be empty');
+            }
+
+            const firstTx = request.transactions[0];
+
+            // Check if transactions are serialized (Uint8Array[]) or data objects (TransactionData[])
+            // TransactionData objects have specific fields like 'recipient', 'value', 'fee'
+            // Serialized transactions are Uint8Array or plain objects with numeric keys
+            const isTransactionDataFormat = firstTx && typeof firstTx === 'object'
+                && ('recipient' in firstTx || 'value' in firstTx || 'fee' in firstTx);
+
+            if (!isTransactionDataFormat) {
+                // Serialized transaction path (like signStaking)
+                parsedRequest.transactions = request.transactions.map(
+                    /** @param {Uint8Array} serializedTx */
+                    serializedTx => {
+                        // Validate that all transactions are in the same serialized format (not TransactionData)
+                        if (!serializedTx || typeof serializedTx !== 'object') {
+                            throw new Errors.InvalidRequestError('All transactions must be Uint8Array');
+                        }
+                        if ('recipient' in serializedTx || 'value' in serializedTx || 'fee' in serializedTx) {
+                            throw new Errors.InvalidRequestError('Mixed transaction formats not allowed');
+                        }
+                        // Ensure we have a proper Uint8Array (postMessage can convert it to plain object)
+                        const txBytes = serializedTx instanceof Uint8Array
+                            ? serializedTx
+                            : new Uint8Array(Object.values(serializedTx));
+
+                        // Deserialize using Nimiq's fromAny method
+                        const tx = Nimiq.Transaction.fromAny(Nimiq.BufferUtils.toHex(txBytes));
+
+                        // Validate transaction constraints (same as parseTransaction)
+                        if (tx.sender.equals(tx.recipient)
+                            && tx.senderType !== Nimiq.AccountType.Staking
+                            && tx.recipientType !== Nimiq.AccountType.Staking) {
+                            throw new Errors.InvalidRequestError('Sender and recipient must not match');
+                        }
+
+                        return tx;
+                    },
+                );
+
+                // Store plain representations for UI display
+                parsedRequest.plain = parsedRequest.transactions.map(tx => tx.toPlain());
+
+                // For single-item arrays, extract senderLabel for backward compatibility
+                if (request.transactions.length === 1) {
+                    parsedRequest.senderLabel = this.parseLabel(request.senderLabel);
+                }
+            } else {
+                // EXISTING: TransactionData object path
+                parsedRequest.transactions = request.transactions.map(
+                    /** @param {KeyguardRequest.TransactionData} tx */
+                    tx => this.parseTransaction(tx),
+                );
+
+                // For single-item transactions array, extract senderLabel for single-tx view compatibility
+                if (request.transactions.length === 1) {
+                    parsedRequest.senderLabel = this.parseLabel(request.transactions[0].senderLabel);
+                }
+            }
+        } else {
+            // Single transaction mode (backward compatible)
+            parsedRequest.senderLabel = this.parseLabel(request.senderLabel);
+            parsedRequest.transactions = [this.parseTransaction(request)];
+        }
+
+        // Parse layout-specific fields
         if ((!request.layout || request.layout === SignTransactionApi.Layouts.STANDARD)
             && parsedRequest.layout === SignTransactionApi.Layouts.STANDARD) {
             parsedRequest.recipientLabel = this.parseLabel(request.recipientLabel);
@@ -58,10 +134,21 @@ class SignTransactionApi extends TopLevelApi {
             parsedRequest.cashlinkMessage = /** @type {string} */(this.parseMessage(request.cashlinkMessage));
         }
 
-        if (parsedRequest.transaction.senderType === Nimiq.AccountType.Staking
-            || parsedRequest.transaction.recipientType === Nimiq.AccountType.Staking) {
-            throw new Errors.InvalidRequestError('For staking transactions, use the Keyguard request "sign-staking"');
+        // Parse staking-specific fields (like SignStaking does)
+        if (request.validatorAddress) {
+            parsedRequest.validatorAddress = this.parseAddress(request.validatorAddress, 'validatorAddress', false);
         }
+
+        if (request.validatorImageUrl) {
+            parsedRequest.validatorImageUrl = this._parseUrl(request.validatorImageUrl, 'validatorImageUrl');
+        }
+
+        if (request.amount) {
+            parsedRequest.amount = this.parseNonNegativeFiniteNumber(request.amount, true, 'amount');
+        }
+
+        // Note: Staking transactions are now supported in multi-transaction signing
+        // The dedicated sign-staking endpoint is still available for backward compatibility
 
         return parsedRequest;
     }
