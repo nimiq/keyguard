@@ -208,9 +208,7 @@ class SignTransaction {
 
         // Sender identicon
         const senderIdenticon = new Identicon(senderAddress);
-        const $senderIcon = senderIdenticon.getElement();
-        $senderIcon.classList.add('sender-icon');
-        $entry.appendChild($senderIcon);
+        $entry.appendChild(senderIdenticon.getElement());
 
         // Arrow
         const $arrow = document.createElement('span');
