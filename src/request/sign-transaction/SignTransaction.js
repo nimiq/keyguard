@@ -196,32 +196,74 @@ class SignTransaction {
     }
 
     /**
-     * Creates a transaction list entry element for the multi-transaction list
      * @param {Nimiq.Transaction} tx
      * @returns {HTMLElement}
-     * @private
      */
     _createTransactionListEntry(tx) {
-        const $card = document.createElement('div');
-        $card.className = 'transaction-list-entry';
+        const $entry = document.createElement('div');
+        $entry.className = 'transaction-list-entry';
 
+        const senderAddress = tx.sender.toUserFriendlyAddress();
         const recipientAddress = tx.recipient.toUserFriendlyAddress();
 
-        // Identicon
-        const identicon = new Identicon(recipientAddress);
-        $card.appendChild(identicon.getElement());
+        // Sender identicon
+        const senderIdenticon = new Identicon(senderAddress);
+        const $senderIcon = senderIdenticon.getElement();
+        $senderIcon.classList.add('sender-icon');
+        $entry.appendChild($senderIcon);
+
+        // Arrow
+        const $arrow = document.createElement('span');
+        $arrow.className = 'tx-arrow';
+        $arrow.textContent = '\u2192'; // →
+        $entry.appendChild($arrow);
+
+        // Recipient identicon
+        const recipientIdenticon = new Identicon(recipientAddress);
+        $entry.appendChild(recipientIdenticon.getElement());
 
         // Details container
         const $details = document.createElement('div');
         $details.className = 'tx-details';
 
-        // Address (short form)
-        const $address = document.createElement('div');
-        $address.className = 'tx-address address';
-        $address.textContent = recipientAddress;
-        $details.appendChild($address);
+        // Sender address
+        const $senderAddr = document.createElement('div');
+        $senderAddr.className = 'tx-address address tx-sender-address';
+        $senderAddr.textContent = senderAddress;
+        $details.appendChild($senderAddr);
 
-        $card.appendChild($details);
+        // Recipient address
+        const $recipientAddr = document.createElement('div');
+        $recipientAddr.className = 'tx-address address tx-recipient-address';
+        $recipientAddr.textContent = recipientAddress;
+        $details.appendChild($recipientAddr);
+
+        // Transaction data (contract creation, staking info, etc.)
+        const formattedData = TransactionDataFormatting.formatTransactionData(tx);
+        if (formattedData) {
+            const $txData = document.createElement('div');
+            $txData.className = 'tx-data nq-text-s';
+            $txData.textContent = formattedData;
+            $details.appendChild($txData);
+            I18n.observer.on(
+                I18n.Events.LANGUAGE_CHANGED,
+                () => { $txData.textContent = TransactionDataFormatting.formatTransactionData(tx); },
+            );
+        }
+
+        $entry.appendChild($details);
+
+        // Make the entry clickable to show full address details
+        $entry.style.cursor = 'pointer';
+        $entry.addEventListener('click', () => {
+            const addressInfo = new AddressInfo({
+                userFriendlyAddress: recipientAddress,
+                label: null,
+                imageUrl: null,
+                accountLabel: null,
+            });
+            this._openDetails(addressInfo);
+        });
 
         // Value and fee container
         const $amounts = document.createElement('div');
@@ -243,9 +285,9 @@ class SignTransaction {
             $amounts.appendChild($fee);
         }
 
-        $card.appendChild($amounts);
+        $entry.appendChild($amounts);
 
-        return $card;
+        return $entry;
     }
 
     /**

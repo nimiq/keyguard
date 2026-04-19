@@ -216,22 +216,42 @@ nothing breaks in SignMultisigTransaction. */
 }
 
 #confirm-transaction .transaction-list-entry .identicon {
-    width: 5rem;
-    height: 5rem;
+    width: 4rem;
+    height: 4rem;
+    flex-shrink: 0;
+}
+
+#confirm-transaction .transaction-list-entry .tx-arrow {
+    margin: 0 0.5rem;
+    opacity: 0.3;
+    font-size: 1.5rem;
     flex-shrink: 0;
 }
 
 #confirm-transaction .transaction-list-entry .tx-details {
     flex-grow: 1;
-    margin: 0 1.5rem;
+    margin: 0 1rem;
     /* overflow:hidden clips the text-overflow ellipsis; min-width:0 allows
        the flex item to shrink below its intrinsic content width */
     overflow: hidden;
     min-width: 0;
 }
 
-#confirm-transaction .transaction-list-entry .tx-address {
+#confirm-transaction .transaction-list-entry .tx-sender-address {
+    opacity: 0.5;
+    font-size: 1.375rem;
+}
+
+#confirm-transaction .transaction-list-entry .tx-recipient-address {
+    opacity: 0.7;
+}
+
+#confirm-transaction .transaction-list-entry .tx-data {
     opacity: 0.6;
+    color: var(--nimiq-blue);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 #confirm-transaction .transaction-list-entry .tx-value {
