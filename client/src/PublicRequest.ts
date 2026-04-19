@@ -41,7 +41,6 @@ export type SingleKeyResult = {
 };
 
 export type TransactionInfo = {
-    keyPath: string,
     senderLabel?: string,
     sender: Uint8Array,
     senderType: Nimiq.AccountType,
@@ -55,8 +54,7 @@ export type TransactionInfo = {
     flags?: number,
 };
 
-// TransactionInfo without keyPath (keyPath is at request level for multi-transaction support)
-export type TransactionData = Omit<TransactionInfo, 'keyPath'>;
+export type TransactionInfoWithKeyPath = TransactionInfo & { keyPath: string };
 
 export enum BitcoinTransactionInputType {
     STANDARD = 'standard',
@@ -168,7 +166,7 @@ export type ExportResult = {
     backupCodesExported: boolean,
 };
 
-type SignTransactionRequestCommon = SimpleRequest & TransactionInfo;
+type SignTransactionRequestCommon = SimpleRequest & TransactionInfoWithKeyPath;
 
 // Standard layout supports both single and multiple transactions
 export type SignTransactionRequestStandard = SimpleRequest & {
@@ -177,9 +175,9 @@ export type SignTransactionRequestStandard = SimpleRequest & {
     recipientLabel?: string, // Only used for single-tx display
 } & (
     // Option A: Single transaction (backward compatible - fields directly on request)
-    TransactionData |
+    TransactionInfo |
     // Option B: Multiple transactions
-    { transactions: TransactionData[] | Uint8Array[] }
+    { transactions: TransactionInfo[] | Uint8Array[] }
 );
 
 export type SignTransactionRequestCheckout = SignTransactionRequestCommon & {
@@ -346,7 +344,7 @@ export type SignSwapRequestCommon = SimpleRequest & {
     swapId: string,
     fund: (
         {type: 'NIM'}
-        & Omit<TransactionInfo,
+        & Omit<TransactionInfoWithKeyPath,
             | 'recipient' // Only known in second step (in swap-iframe), derived from htlcData
             | 'recipientType' // Must be HTLC
             | 'recipientLabel' // Not used
@@ -387,7 +385,7 @@ export type SignSwapRequestCommon = SimpleRequest & {
     ),
     redeem: (
         {type: 'NIM'}
-        & Omit<TransactionInfo,
+        & Omit<TransactionInfoWithKeyPath,
             | 'sender' // Only known in second step (in swap-iframe)
             | 'senderType' // Must be HTLC
             | 'senderLabel' // Not used

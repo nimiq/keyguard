@@ -81,7 +81,7 @@ class SignTransactionApi extends TopLevelApi {
             } else {
                 // EXISTING: TransactionData object path
                 parsedRequest.transactions = request.transactions.map(
-                    /** @param {KeyguardRequest.TransactionData} tx */
+                    /** @param {KeyguardRequest.TransactionInfo} tx */
                     tx => this.parseTransaction(tx),
                 );
 
