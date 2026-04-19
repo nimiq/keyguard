@@ -17,7 +17,7 @@
 
 /**
  * @callback SignTransaction.resolve
- * @param {KeyguardRequest.SignTransactionResult | KeyguardRequest.SignTransactionResults} result
+ * @param {KeyguardRequest.SignTransactionResult | KeyguardRequest.SignTransactionResult[]} result
  */
 
 class SignTransaction {
@@ -320,7 +320,7 @@ class SignTransaction {
             const privateKey = key.derivePrivateKey(request.keyPath);
             const keyPair = Nimiq.KeyPair.derive(privateKey);
 
-            /** @type {KeyguardRequest.SignTransactionResults} */
+            /** @type {KeyguardRequest.SignTransactionResult[]} */
             const results = request.transactions.map(transaction => {
                 transaction.sign(keyPair);
 
@@ -338,7 +338,7 @@ class SignTransaction {
             const publicKey = key.derivePublicKey(request.keyPath);
 
             // Sign all transactions
-            /** @type {KeyguardRequest.SignTransactionResults} */
+            /** @type {KeyguardRequest.SignTransactionResult[]} */
             const results = request.transactions.map(transaction => {
                 const signature = key.sign(request.keyPath, transaction.serializeContent());
                 transaction.proof = Nimiq.SignatureProof.singleSig(publicKey, signature).serialize();
