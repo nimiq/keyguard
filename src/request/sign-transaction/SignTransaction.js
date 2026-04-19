@@ -335,49 +335,52 @@ class SignTransaction {
             return;
         }
 
-        // Check if any transaction is a staking transaction
-        const hasStakingTx = request.transactions.some(tx =>
-            tx.senderType === Nimiq.AccountType.Staking || tx.recipientType === Nimiq.AccountType.Staking);
+        const privateKey = key.derivePrivateKey(request.keyPath);
+        const keyPair = Nimiq.KeyPair.derive(privateKey);
+        const publicKey = keyPair.publicKey;
 
-        if (hasStakingTx) {
-            // For staking transactions, use the same approach as SignStaking:
-            // Derive a KeyPair and call transaction.sign()
-            const privateKey = key.derivePrivateKey(request.keyPath);
-            const keyPair = Nimiq.KeyPair.derive(privateKey);
+        /** @type {KeyguardRequest.SignTransactionResult[]} */
+        const results = request.transactions.map(transaction => {
+            const isStakingTx = transaction.senderType === Nimiq.AccountType.Staking
+                || transaction.recipientType === Nimiq.AccountType.Staking;
 
-            /** @type {KeyguardRequest.SignTransactionResult[]} */
-            const results = request.transactions.map(transaction => {
+            // Check if a staking transaction already has a user-provided signature proof
+            // in the recipient data (non-zero bytes after the staking data header).
+            const hasUserProvidedProof = isStakingTx && transaction.data.length > 0
+                && transaction.data.some(b => b !== 0);
+
+            if (isStakingTx && !hasUserProvidedProof) {
+                // For staking transactions, use `transaction.sign()` for automatically generating
+                // the staker / validator signature proof in the recipient data. The same keypair as
+                // for signing the transaction will be used for this. Arbitrary signature proofs for
+                // a different staker or validator address are not supported.
                 transaction.sign(keyPair);
 
                 return {
-                    publicKey: keyPair.publicKey.serialize(),
+                    publicKey: publicKey.serialize(),
                     signature: transaction.proof.subarray(transaction.proof.length - 64),
                     serializedTx: transaction.serialize(),
                 };
-            });
+            }
 
-            // Backward compatible: return single result for single tx, array for multiple
-            resolve(results.length === 1 ? results[0] : results);
-        } else {
-            // For non-staking transactions, use the existing manual signing approach
-            const publicKey = key.derivePublicKey(request.keyPath);
+            // For incoming staking transactions with user-provided staker / validator signature
+            // proof and non-staking transactions, use the manual signing approach.
+            // `transaction.sign()` does not currently support user-provided staker / validator
+            // signature proofs or HTLC redemptions.
+            // Note however, that this will not return a valid HTLC redemption signature proof.
+            // It has to be built manually from the signature.
+            const signature = key.sign(request.keyPath, transaction.serializeContent());
+            transaction.proof = Nimiq.SignatureProof.singleSig(publicKey, signature).serialize();
 
-            // Sign all transactions
-            /** @type {KeyguardRequest.SignTransactionResult[]} */
-            const results = request.transactions.map(transaction => {
-                const signature = key.sign(request.keyPath, transaction.serializeContent());
-                transaction.proof = Nimiq.SignatureProof.singleSig(publicKey, signature).serialize();
+            return {
+                publicKey: publicKey.serialize(),
+                signature: signature.serialize(),
+                serializedTx: transaction.serialize(),
+            };
+        });
 
-                return {
-                    publicKey: publicKey.serialize(),
-                    signature: signature.serialize(),
-                    serializedTx: transaction.serialize(),
-                };
-            });
-
-            // Backward compatible: return single result for single tx, array for multiple
-            resolve(results.length === 1 ? results[0] : results);
-        }
+        // Backward compatible: return single result for single tx, array for multiple
+        resolve(results.length === 1 ? results[0] : results);
     }
 
     run() {
