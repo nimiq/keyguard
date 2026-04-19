@@ -195,31 +195,31 @@ nothing breaks in SignMultisigTransaction. */
     );
 }
 
-#confirm-transaction .transaction-card {
+#confirm-transaction .transaction-list-entry {
     display: flex;
     align-items: center;
     padding: 1.5rem 0;
     border-bottom: 1px solid rgba(31, 35, 72, 0.1);
 }
 
-#confirm-transaction .transaction-card:last-child {
+#confirm-transaction .transaction-list-entry:last-child {
     border-bottom: none;
 }
 
-#confirm-transaction .transaction-card .identicon {
+#confirm-transaction .transaction-list-entry .identicon {
     width: 5rem;
     height: 5rem;
     flex-shrink: 0;
 }
 
-#confirm-transaction .transaction-card .tx-details {
+#confirm-transaction .transaction-list-entry .tx-details {
     flex-grow: 1;
     margin: 0 1.5rem;
     overflow: hidden;
     min-width: 0;
 }
 
-#confirm-transaction .transaction-card .tx-address {
+#confirm-transaction .transaction-list-entry .tx-address {
     font-size: 1.625rem;
     font-family: 'Fira Mono', monospace;
     white-space: nowrap;
@@ -228,14 +228,14 @@ nothing breaks in SignMultisigTransaction. */
     opacity: 0.6;
 }
 
-#confirm-transaction .transaction-card .tx-value {
+#confirm-transaction .transaction-list-entry .tx-value {
     font-weight: 600;
     white-space: nowrap;
     text-align: right;
     color: var(--nimiq-light-blue);
 }
 
-#confirm-transaction .transaction-card .tx-fee {
+#confirm-transaction .transaction-list-entry .tx-fee {
     font-size: 1.5rem;
     opacity: 0.5;
     text-align: right;

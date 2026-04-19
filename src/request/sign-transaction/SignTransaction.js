@@ -200,7 +200,7 @@ class SignTransaction {
         // Render transaction list
         const $list = /** @type {HTMLElement} */ ($multiTx.querySelector('#transaction-list'));
         for (const tx of request.transactions) {
-            const $card = this._createTransactionCard(tx);
+            const $card = this._createTransactionListEntry(tx);
             $list.appendChild($card);
         }
 
@@ -213,14 +213,14 @@ class SignTransaction {
     }
 
     /**
-     * Creates a transaction card element for the multi-transaction list
+     * Creates a transaction list entry element for the multi-transaction list
      * @param {Nimiq.Transaction} tx
      * @returns {HTMLElement}
      * @private
      */
-    _createTransactionCard(tx) {
+    _createTransactionListEntry(tx) {
         const $card = document.createElement('div');
-        $card.className = 'transaction-card';
+        $card.className = 'transaction-list-entry';
 
         const recipientAddress = tx.recipient.toUserFriendlyAddress();
 
