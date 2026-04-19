@@ -205,10 +205,24 @@ class SignTransaction {
 
         const senderAddress = tx.sender.toUserFriendlyAddress();
         const recipientAddress = tx.recipient.toUserFriendlyAddress();
+        const senderAddressInfo = new AddressInfo({
+            userFriendlyAddress: senderAddress,
+            label: null,
+            imageUrl: null,
+            accountLabel: null,
+        });
+        const recipientAddressInfo = new AddressInfo({
+            userFriendlyAddress: recipientAddress,
+            label: null,
+            imageUrl: null,
+            accountLabel: null,
+        });
 
-        // Sender identicon
-        const senderIdenticon = new Identicon(senderAddress);
-        $entry.appendChild(senderIdenticon.getElement());
+        // Sender identicon (clickable → opens sender details)
+        const $senderIcon = new Identicon(senderAddress).getElement();
+        $senderIcon.classList.add('tx-sender');
+        $senderIcon.addEventListener('click', () => this._openDetails(senderAddressInfo));
+        $entry.appendChild($senderIcon);
 
         // Arrow
         const $arrow = document.createElement('span');
@@ -216,24 +230,28 @@ class SignTransaction {
         $arrow.textContent = '\u2192'; // →
         $entry.appendChild($arrow);
 
-        // Recipient identicon
-        const recipientIdenticon = new Identicon(recipientAddress);
-        $entry.appendChild(recipientIdenticon.getElement());
+        // Recipient identicon (clickable → opens recipient details)
+        const $recipientIcon = new Identicon(recipientAddress).getElement();
+        $recipientIcon.classList.add('tx-recipient');
+        $recipientIcon.addEventListener('click', () => this._openDetails(recipientAddressInfo));
+        $entry.appendChild($recipientIcon);
 
         // Details container
         const $details = document.createElement('div');
         $details.className = 'tx-details';
 
-        // Sender address
+        // Sender address (clickable → opens sender details)
         const $senderAddr = document.createElement('div');
-        $senderAddr.className = 'tx-address address tx-sender-address';
+        $senderAddr.className = 'tx-address address tx-sender-address tx-sender';
         $senderAddr.textContent = senderAddress;
+        $senderAddr.addEventListener('click', () => this._openDetails(senderAddressInfo));
         $details.appendChild($senderAddr);
 
-        // Recipient address
+        // Recipient address (clickable → opens recipient details)
         const $recipientAddr = document.createElement('div');
-        $recipientAddr.className = 'tx-address address tx-recipient-address';
+        $recipientAddr.className = 'tx-address address tx-recipient-address tx-recipient';
         $recipientAddr.textContent = recipientAddress;
+        $recipientAddr.addEventListener('click', () => this._openDetails(recipientAddressInfo));
         $details.appendChild($recipientAddr);
 
         // Transaction data (contract creation, staking info, etc.)
@@ -250,18 +268,6 @@ class SignTransaction {
         }
 
         $entry.appendChild($details);
-
-        // Make the entry clickable to show full address details
-        $entry.style.cursor = 'pointer';
-        $entry.addEventListener('click', () => {
-            const addressInfo = new AddressInfo({
-                userFriendlyAddress: recipientAddress,
-                label: null,
-                imageUrl: null,
-                accountLabel: null,
-            });
-            this._openDetails(addressInfo);
-        });
 
         // Value and fee container
         const $amounts = document.createElement('div');
