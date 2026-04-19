@@ -159,14 +159,10 @@ class SignTransaction {
 
     /** @param {Parsed<KeyguardRequest.SignTransactionRequest>} request */
     _renderMultiTransactionView(request) {
-        // Add 'multi' class to show multi-transaction heading
+        // Add 'multi' class — controls heading visibility via hide-* and shows multi-transaction view
         this.$el.classList.add('multi');
 
-        // Hide single-transaction view, show multi-transaction view
-        const $singleTx = /** @type {HTMLElement} */ (this.$el.querySelector('.single-transaction'));
         const $multiTx = /** @type {HTMLElement} */ (this.$el.querySelector('.multi-transaction'));
-        $singleTx.classList.add('display-none');
-        $multiTx.classList.remove('display-none');
 
         // Remove payment info line (not used in multi-tx mode)
         const $paymentInfoLine = /** @type {HTMLElement} */ (this.$el.querySelector('.payment-info-line'));
