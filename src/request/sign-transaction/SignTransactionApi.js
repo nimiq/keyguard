@@ -47,6 +47,18 @@ class SignTransactionApi extends TopLevelApi {
                             throw new Errors.InvalidRequestError('Sender and recipient must not match');
                         }
 
+                        // Reject incoming staking transactions that carry a user-provided
+                        // staker / validator signature proof: transaction.sign() would
+                        // overwrite it with a proof from the keyPath's keypair. See
+                        // Transaction.sign() docs: "both signatures are made with the same
+                        // keypair". If support for different staker/validator keys is added
+                        // later, this rejection can be relaxed to defer to manual signing.
+                        if (SignTransactionApi._hasStakerOrValidatorProof(tx)) {
+                            throw new Errors.InvalidRequestError(
+                                'Staking transactions with a user-provided signature proof are not supported',
+                            );
+                        }
+
                         return tx;
                     }
 
@@ -143,6 +155,40 @@ class SignTransactionApi extends TopLevelApi {
             throw new Errors.InvalidRequestError('Invalid selected layout');
         }
         return /** @type KeyguardRequest.SignTransactionRequestLayout */ (layout);
+    }
+
+    /**
+     * Detects whether an incoming staking transaction carries a filled-in staker / validator
+     * SignatureProof at the end of its recipient data. TransactionBuilder produces these
+     * transactions with a zero-filled placeholder proof that `transaction.sign()` later fills
+     * in using the outer keypair. If the trailing bytes already contain a non-zero proof, we
+     * treat it as user-provided.
+     *
+     * Operations without an embedded proof (outgoing staking, `add-stake`) return false.
+     *
+     * @param {Nimiq.Transaction} tx
+     * @returns {boolean}
+     */
+    static _hasStakerOrValidatorProof(tx) {
+        if (tx.recipientType !== Nimiq.AccountType.Staking) return false;
+        if (tx.data.length < Nimiq.SignatureProof.SINGLE_SIG_SIZE) return false;
+
+        let dataType;
+        try {
+            dataType = Nimiq.StakingContract.dataToPlain(tx.data).type;
+        } catch (e) {
+            // If the data cannot be parsed as staking data, let the tx reach signing where
+            // the core's own validation will surface the error.
+            return false;
+        }
+        // `add-stake` is the only incoming staking operation without an embedded proof.
+        if (dataType === 'add-stake') return false;
+
+        const proofStart = tx.data.length - Nimiq.SignatureProof.SINGLE_SIG_SIZE;
+        for (let i = proofStart; i < tx.data.length; i++) {
+            if (tx.data[i] !== 0) return true;
+        }
+        return false;
     }
 
     get Handler() {
