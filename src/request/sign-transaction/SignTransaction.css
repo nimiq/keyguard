@@ -221,6 +221,11 @@ nothing breaks in SignMultisigTransaction. */
     flex-shrink: 0;
 }
 
+#confirm-transaction .transaction-list-entry .tx-sender,
+#confirm-transaction .transaction-list-entry .tx-recipient {
+    cursor: pointer;
+}
+
 #confirm-transaction .transaction-list-entry .tx-arrow {
     margin: 0 0.5rem;
     opacity: 0.3;
