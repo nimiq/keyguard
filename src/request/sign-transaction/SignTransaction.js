@@ -344,16 +344,12 @@ class SignTransaction {
             const isStakingTx = transaction.senderType === Nimiq.AccountType.Staking
                 || transaction.recipientType === Nimiq.AccountType.Staking;
 
-            // Check if a staking transaction already has a user-provided signature proof
-            // in the recipient data (non-zero bytes after the staking data header).
-            const hasUserProvidedProof = isStakingTx && transaction.data.length > 0
-                && transaction.data.some(b => b !== 0);
-
-            if (isStakingTx && !hasUserProvidedProof) {
+            if (isStakingTx) {
                 // For staking transactions, use `transaction.sign()` for automatically generating
                 // the staker / validator signature proof in the recipient data. The same keypair as
                 // for signing the transaction will be used for this. Arbitrary signature proofs for
-                // a different staker or validator address are not supported.
+                // a different staker or validator address are not supported — the request parser
+                // rejects incoming staking transactions that carry a user-provided proof.
                 transaction.sign(keyPair);
 
                 return {
@@ -363,10 +359,7 @@ class SignTransaction {
                 };
             }
 
-            // For incoming staking transactions with user-provided staker / validator signature
-            // proof and non-staking transactions, use the manual signing approach.
-            // `transaction.sign()` does not currently support user-provided staker / validator
-            // signature proofs or HTLC redemptions.
+            // For non-staking transactions, use the manual signing approach.
             // Note however, that this will not return a valid HTLC redemption signature proof.
             // It has to be built manually from the signature.
             const signature = key.sign(request.keyPath, transaction.serializeContent());
