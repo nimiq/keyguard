@@ -161,7 +161,16 @@ nothing breaks in SignMultisigTransaction. */
 
 /* Multi-transaction styles */
 #confirm-transaction .multi-transaction {
+    display: none;
     padding: 2rem;
+}
+
+#confirm-transaction.multi .single-transaction {
+    display: none;
+}
+
+#confirm-transaction.multi .multi-transaction {
+    display: flex;
 }
 
 #confirm-transaction .multi-transaction #transaction-count {
