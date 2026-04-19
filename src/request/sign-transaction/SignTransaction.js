@@ -234,7 +234,7 @@ class SignTransaction {
 
         // Address (short form)
         const $address = document.createElement('div');
-        $address.className = 'tx-address';
+        $address.className = 'tx-address address';
         $address.textContent = recipientAddress;
         $details.appendChild($address);
 
