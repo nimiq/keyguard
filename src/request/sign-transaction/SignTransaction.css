@@ -172,10 +172,27 @@ nothing breaks in SignMultisigTransaction. */
 }
 
 #confirm-transaction .multi-transaction #transaction-list {
+    position: relative;
     max-height: 35rem; /* ~280px, allows ~4-5 compact cards */
     overflow-y: auto;
+    /* Extend to card edges so the scrollbar sits flush, then restore content alignment */
     margin: 0 -2rem;
     padding: 0 2rem;
+    /* Scroll indicators: fade-out gradients at top and bottom edges */
+    mask-image: linear-gradient(
+        to bottom,
+        transparent,
+        black 1.5rem,
+        black calc(100% - 1.5rem),
+        transparent
+    );
+    -webkit-mask-image: linear-gradient(
+        to bottom,
+        transparent,
+        black 1.5rem,
+        black calc(100% - 1.5rem),
+        transparent
+    );
 }
 
 #confirm-transaction .transaction-card {
