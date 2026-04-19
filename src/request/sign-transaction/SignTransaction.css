@@ -242,10 +242,6 @@ nothing breaks in SignMultisigTransaction. */
     font-size: 1.375rem;
 }
 
-#confirm-transaction .transaction-list-entry .tx-recipient-address {
-    opacity: 0.7;
-}
-
 #confirm-transaction .transaction-list-entry .tx-data {
     opacity: 0.6;
     color: var(--nimiq-blue);
