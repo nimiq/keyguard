@@ -35,56 +35,38 @@ class SignTransactionApi extends TopLevelApi {
                 throw new Errors.InvalidRequestError('transactions array must not be empty');
             }
 
-            const firstTx = request.transactions[0];
-
-            // Check if transactions are serialized (Uint8Array[]) or data objects (TransactionData[])
-            // TransactionData objects have specific fields like 'recipient', 'value', 'fee'
-            // Serialized transactions are Uint8Array or plain objects with numeric keys
-            const isTransactionDataFormat = firstTx && typeof firstTx === 'object'
-                && ('recipient' in firstTx || 'value' in firstTx || 'fee' in firstTx);
-
-            if (!isTransactionDataFormat) {
-                // Serialized transaction path (like signStaking)
-                parsedRequest.transactions = request.transactions.map(
-                    /** @param {Uint8Array} serializedTx */
-                    serializedTx => {
-                        // Validate that all transactions are in the same serialized format (not TransactionData)
-                        if (!serializedTx || typeof serializedTx !== 'object') {
-                            throw new Errors.InvalidRequestError('All transactions must be Uint8Array');
-                        }
-                        if ('recipient' in serializedTx || 'value' in serializedTx || 'fee' in serializedTx) {
-                            throw new Errors.InvalidRequestError('Mixed transaction formats not allowed');
-                        }
-                        // Ensure we have a proper Uint8Array (postMessage can convert it to plain object)
-                        const txBytes = serializedTx instanceof Uint8Array
-                            ? serializedTx
-                            : new Uint8Array(Object.values(serializedTx));
-
-                        // Deserialize using Nimiq's fromAny method
-                        const tx = Nimiq.Transaction.fromAny(Nimiq.BufferUtils.toHex(txBytes));
+            // Parse each entry individually — mixed formats (TransactionInfo | Uint8Array) are allowed
+            parsedRequest.transactions = request.transactions.map(
+                /** @param {KeyguardRequest.TransactionInfo | Uint8Array} entry */
+                entry => {
+                    if (entry instanceof Uint8Array) {
+                        // Serialized transaction
+                        const tx = Nimiq.Transaction.fromAny(Nimiq.BufferUtils.toHex(entry));
 
                         if (tx.sender.equals(tx.recipient)) {
                             throw new Errors.InvalidRequestError('Sender and recipient must not match');
                         }
 
                         return tx;
-                    },
-                );
+                    }
 
-                // For single-item arrays, extract senderLabel for backward compatibility
-                if (request.transactions.length === 1) {
-                    parsedRequest.senderLabel = this.parseLabel(request.senderLabel);
-                }
-            } else {
-                // EXISTING: TransactionData object path
-                parsedRequest.transactions = request.transactions.map(
-                    /** @param {KeyguardRequest.TransactionInfo} tx */
-                    tx => this.parseTransaction(tx),
-                );
+                    if (entry && typeof entry === 'object'
+                        && ('recipient' in entry || 'value' in entry || 'fee' in entry)) {
+                        // TransactionInfo object
+                        return this.parseTransaction(entry);
+                    }
 
-                // For single-item transactions array, extract senderLabel for single-tx view compatibility
-                if (request.transactions.length === 1) {
-                    parsedRequest.senderLabel = this.parseLabel(request.transactions[0].senderLabel);
+                    throw new Errors.InvalidRequestError(
+                        'Invalid transaction entry. Expected TransactionInfo object or Uint8Array.',
+                    );
+                },
+            );
+
+            // For single-item arrays, extract senderLabel for single-tx view
+            if (request.transactions.length === 1) {
+                const firstEntry = request.transactions[0];
+                if (firstEntry && typeof firstEntry === 'object' && 'senderLabel' in firstEntry) {
+                    parsedRequest.senderLabel = this.parseLabel(firstEntry.senderLabel);
                 }
             }
         } else {
