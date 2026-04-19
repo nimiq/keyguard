@@ -178,12 +178,7 @@ class SignTransaction {
 
         // Render transaction count
         const $count = /** @type {HTMLElement} */ ($multiTx.querySelector('#transaction-count'));
-        const txCount = String(request.transactions.length);
-        const updateCount = () => {
-            $count.textContent = I18n.translatePhrase('sign-tx-multi-count').replace('{count}', txCount);
-        };
-        updateCount();
-        I18n.observer.on(I18n.Events.LANGUAGE_CHANGED, updateCount);
+        I18n.translateToHtmlContent($count, 'sign-tx-multi-count', { count: String(request.transactions.length) });
 
         // Render transaction list
         const $list = /** @type {HTMLElement} */ ($multiTx.querySelector('#transaction-list'));
