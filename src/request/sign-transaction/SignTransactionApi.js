@@ -35,9 +35,11 @@ class SignTransactionApi extends TopLevelApi {
                 throw new Errors.InvalidRequestError('transactions array must not be empty');
             }
 
-            // Parse each entry individually — mixed formats (TransactionInfo | Uint8Array) are allowed
+            // Parse each entry individually — mixed formats (TransactionInfo | Uint8Array) are allowed.
+            // `senderLabel` is excluded because it's not displayed in the multi-tx view; for the
+            // single-item-array case, `senderLabel` is still read from the raw request below.
             parsedRequest.transactions = request.transactions.map(
-                /** @param {KeyguardRequest.TransactionInfo | Uint8Array} entry */
+                /** @param {Omit<KeyguardRequest.TransactionInfo, 'senderLabel'> | Uint8Array} entry */
                 entry => {
                     if (entry instanceof Uint8Array) {
                         // Serialized transaction
