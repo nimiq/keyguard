@@ -67,11 +67,7 @@ class SignTransaction {
         }
     }
 
-    /**
-     * Renders the single transaction view (existing behavior)
-     * @param {Parsed<KeyguardRequest.SignTransactionRequest>} request
-     * @private
-     */
+    /** @param {Parsed<KeyguardRequest.SignTransactionRequest>} request */
     _renderSingleTransactionView(request) {
         const transaction = request.transactions[0];
 
@@ -161,11 +157,7 @@ class SignTransaction {
         }
     }
 
-    /**
-     * Renders the multi-transaction view
-     * @param {Parsed<KeyguardRequest.SignTransactionRequest>} request
-     * @private
-     */
+    /** @param {Parsed<KeyguardRequest.SignTransactionRequest>} request */
     _renderMultiTransactionView(request) {
         // Add 'multi' class to show multi-transaction heading
         this.$el.classList.add('multi');
