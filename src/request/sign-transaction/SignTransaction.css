@@ -215,6 +215,8 @@ nothing breaks in SignMultisigTransaction. */
 #confirm-transaction .transaction-list-entry .tx-details {
     flex-grow: 1;
     margin: 0 1.5rem;
+    /* overflow:hidden clips the text-overflow ellipsis; min-width:0 allows
+       the flex item to shrink below its intrinsic content width */
     overflow: hidden;
     min-width: 0;
 }
