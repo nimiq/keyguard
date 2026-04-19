@@ -62,6 +62,23 @@ class SignTransactionApi extends TopLevelApi {
                 },
             );
 
+            // Reject requests where aggregated values would exceed Number.MAX_SAFE_INTEGER,
+            // as the conversion to Number for display would lose precision.
+            if (parsedRequest.transactions.length > 1) {
+                let totalValue = 0n;
+                let totalFee = 0n;
+                for (const tx of parsedRequest.transactions) {
+                    totalValue += tx.value;
+                    totalFee += tx.fee;
+                }
+                if (totalValue > BigInt(Number.MAX_SAFE_INTEGER)
+                    || totalFee > BigInt(Number.MAX_SAFE_INTEGER)) {
+                    throw new Errors.InvalidRequestError(
+                        'Total value or fee across transactions exceeds safe integer limit',
+                    );
+                }
+            }
+
             // For single-item arrays, extract senderLabel for single-tx view
             if (request.transactions.length === 1) {
                 const firstEntry = request.transactions[0];
