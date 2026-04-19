@@ -250,11 +250,6 @@ nothing breaks in SignMultisigTransaction. */
     font-weight: bold;
 }
 
-#confirm-transaction .multi-transaction .total-value .nim-symbol {
-    margin-left: 1rem;
-    font-weight: 700;
-}
-
 #confirm-transaction .multi-transaction .total-fees {
     opacity: 0.5;
     margin-top: 0.5rem;
