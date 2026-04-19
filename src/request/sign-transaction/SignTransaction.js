@@ -31,10 +31,10 @@ class SignTransaction {
         this.$el = /** @type {HTMLElement} */ (document.getElementById(SignTransaction.Pages.CONFIRM_TRANSACTION));
         this.$el.classList.add(request.layout);
 
-        this._isMultiTransaction = request.transactions.length > 1;
+        const isMultiTransaction = request.transactions.length > 1;
         this.$accountDetails = /** @type {HTMLElement} */ (this.$el.querySelector('#account-details'));
 
-        if (this._isMultiTransaction) {
+        if (isMultiTransaction) {
             this._renderMultiTransactionView(request);
         } else {
             this._renderSingleTransactionView(request);
@@ -49,7 +49,7 @@ class SignTransaction {
             hideInput: !request.keyInfo.encrypted,
             buttonI18nTag: request.layout === SignTransactionApi.Layouts.CASHLINK
                 ? 'passwordbox-create-cashlink'
-                : this._isMultiTransaction
+                : isMultiTransaction
                     ? 'passwordbox-confirm-txs'
                     : 'passwordbox-confirm-tx',
             minLength: request.keyInfo.hasPin ? Key.PIN_LENGTH : undefined,
