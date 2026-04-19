@@ -189,7 +189,7 @@ class SignTransaction {
         }
 
         // Render transaction count
-        const $count = /** @type {HTMLElement} */ ($multiTx.querySelector('.transaction-count'));
+        const $count = /** @type {HTMLElement} */ ($multiTx.querySelector('#transaction-count'));
         const txCount = String(request.transactions.length);
         const updateCount = () => {
             $count.textContent = I18n.translatePhrase('sign-tx-multi-count').replace('{count}', txCount);
@@ -198,17 +198,17 @@ class SignTransaction {
         I18n.observer.on(I18n.Events.LANGUAGE_CHANGED, updateCount);
 
         // Render transaction list
-        const $list = /** @type {HTMLElement} */ ($multiTx.querySelector('.transaction-list'));
+        const $list = /** @type {HTMLElement} */ ($multiTx.querySelector('#transaction-list'));
         for (const tx of request.transactions) {
             const $card = this._createTransactionCard(tx);
             $list.appendChild($card);
         }
 
         // Render totals
-        const $totalValue = /** @type {HTMLElement} */ ($multiTx.querySelector('.total-value-amount'));
+        const $totalValue = /** @type {HTMLElement} */ ($multiTx.querySelector('#total-value-amount'));
         $totalValue.textContent = NumberFormatting.formatNumber(lunasToCoins(Number(totalValue)));
 
-        const $totalFees = /** @type {HTMLElement} */ ($multiTx.querySelector('.total-fees-amount'));
+        const $totalFees = /** @type {HTMLElement} */ ($multiTx.querySelector('#total-fees-amount'));
         $totalFees.textContent = NumberFormatting.formatNumber(lunasToCoins(Number(totalFee)));
     }
 

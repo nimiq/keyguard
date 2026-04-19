@@ -123,18 +123,16 @@
 
                 <!-- Multi-transaction view -->
                 <div class="page-body nq-card-body transaction multi-transaction display-none">
-                    <div class="transaction-summary">
-                        <span class="transaction-count nq-text"></span>
-                    </div>
-                    <div class="transaction-list">
-                        <!-- Transaction cards will be dynamically inserted here -->
+                    <span id="transaction-count" class="nq-text"></span>
+                    <div id="transaction-list">
+                        <!-- Transaction list entries will be dynamically inserted here -->
                     </div>
                     <div class="transaction-totals">
                         <div class="total-value nq-light-blue">
-                            <span class="total-value-amount"></span><span class="nim-symbol"></span>
+                            <span id="total-value-amount"></span><span class="nim-symbol"></span>
                         </div>
                         <div class="total-fees nq-text-s">
-                            + <span class="total-fees-amount"></span> <span class="nim-symbol"></span>
+                            + <span id="total-fees-amount"></span> <span class="nim-symbol"></span>
                             <span data-i18n="sign-tx-multi-total-fees">total fees</span>
                         </div>
                     </div>

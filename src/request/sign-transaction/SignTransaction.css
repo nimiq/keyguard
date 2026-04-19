@@ -167,13 +167,14 @@ nothing breaks in SignMultisigTransaction. */
     padding: 2rem;
 }
 
-#confirm-transaction .multi-transaction .transaction-summary {
+#confirm-transaction .multi-transaction #transaction-count {
+    display: block;
     text-align: center;
     padding-bottom: 1.5rem;
     border-bottom: 1px solid rgba(31, 35, 72, 0.1);
 }
 
-#confirm-transaction .multi-transaction .transaction-list {
+#confirm-transaction .multi-transaction #transaction-list {
     max-height: 35rem; /* ~280px, allows ~4-5 compact cards */
     overflow-y: auto;
     margin: 0 -2rem;
