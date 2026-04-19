@@ -8,7 +8,8 @@ nothing breaks in SignMultisigTransaction. */
 
 #confirm-transaction.standard .hide-standard,
 #confirm-transaction.checkout .hide-checkout,
-#confirm-transaction.cashlink .hide-cashlink {
+#confirm-transaction.cashlink .hide-cashlink,
+#confirm-transaction.multi .hide-multi {
     display: none;
 }
 
@@ -159,10 +160,6 @@ nothing breaks in SignMultisigTransaction. */
 }
 
 /* Multi-transaction styles */
-#confirm-transaction.multi .hide-multi {
-    display: none;
-}
-
 #confirm-transaction .multi-transaction {
     padding: 2rem;
 }
