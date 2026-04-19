@@ -100,25 +100,6 @@
                     <h1 data-i18n="sign-tx-heading-multi" class="nq-h1 multi-only">Confirm Transactions</h1>
                 </div>
 
-                <!-- Multi-transaction view -->
-                <div class="page-body nq-card-body transaction multi-transaction display-none">
-                    <div class="transaction-summary">
-                        <span class="transaction-count nq-text"></span>
-                    </div>
-                    <div class="transaction-list">
-                        <!-- Transaction cards will be dynamically inserted here -->
-                    </div>
-                    <div class="transaction-totals">
-                        <div class="total-value nq-light-blue">
-                            <span class="total-value-amount"></span><span class="nim-symbol"></span>
-                        </div>
-                        <div class="total-fees nq-text-s">
-                            + <span class="total-fees-amount"></span> <span class="nim-symbol"></span>
-                            <span data-i18n="sign-tx-multi-total-fees">total fees</span>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Single-transaction view (existing) -->
                 <div class="page-body nq-card-body transaction single-transaction">
                     <div class="center accounts">
@@ -137,6 +118,25 @@
                         </div>
 
                         <div class="data-section display-none nq-text nq-blue" id="data"></div>
+                    </div>
+                </div>
+
+                <!-- Multi-transaction view -->
+                <div class="page-body nq-card-body transaction multi-transaction display-none">
+                    <div class="transaction-summary">
+                        <span class="transaction-count nq-text"></span>
+                    </div>
+                    <div class="transaction-list">
+                        <!-- Transaction cards will be dynamically inserted here -->
+                    </div>
+                    <div class="transaction-totals">
+                        <div class="total-value nq-light-blue">
+                            <span class="total-value-amount"></span><span class="nim-symbol"></span>
+                        </div>
+                        <div class="total-fees nq-text-s">
+                            + <span class="total-fees-amount"></span> <span class="nim-symbol"></span>
+                            <span data-i18n="sign-tx-multi-total-fees">total fees</span>
+                        </div>
                     </div>
                 </div>
 
