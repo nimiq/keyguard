@@ -63,10 +63,7 @@ class SignTransactionApi extends TopLevelApi {
                         // Deserialize using Nimiq's fromAny method
                         const tx = Nimiq.Transaction.fromAny(Nimiq.BufferUtils.toHex(txBytes));
 
-                        // Validate transaction constraints (same as parseTransaction)
-                        if (tx.sender.equals(tx.recipient)
-                            && tx.senderType !== Nimiq.AccountType.Staking
-                            && tx.recipientType !== Nimiq.AccountType.Staking) {
+                        if (tx.sender.equals(tx.recipient)) {
                             throw new Errors.InvalidRequestError('Sender and recipient must not match');
                         }
 
