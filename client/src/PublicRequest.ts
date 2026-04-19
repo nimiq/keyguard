@@ -169,16 +169,27 @@ export type ExportResult = {
 type SignTransactionRequestCommon = SimpleRequest & TransactionInfoWithKeyPath;
 
 // Standard layout supports both single and multiple transactions
-export type SignTransactionRequestStandard = SimpleRequest & {
-    keyPath: string,
+export type SignTransactionRequestStandard = ((
+    // Legacy request type for a single transaction
+    SignTransactionRequestCommon & {
+        recipientLabel?: string,
+    }
+) | (
+    // New request type for a single transaction. senderLabel and recipientLabel are supported.
+    SimpleRequest & {
+        keyPath: string,
+        recipientLabel?: string,
+        transactions: [TransactionInfo] | [Uint8Array],
+    }
+) | (
+    // New request type for multiple transactions. senderLabel and recipientLabel are not supported.
+    SimpleRequest & {
+        keyPath: string,
+        transactions: TransactionInfo[] | Uint8Array[],
+    }
+)) & {
     layout?: 'standard',
-    recipientLabel?: string, // Only used for single-tx display
-} & (
-    // Option A: Single transaction (backward compatible - fields directly on request)
-    TransactionInfo |
-    // Option B: Multiple transactions
-    { transactions: TransactionInfo[] | Uint8Array[] }
-);
+};
 
 export type SignTransactionRequestCheckout = SignTransactionRequestCommon & {
     layout: 'checkout',
