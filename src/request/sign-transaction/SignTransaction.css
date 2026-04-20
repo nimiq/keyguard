@@ -177,7 +177,7 @@ nothing breaks in SignMultisigTransaction. */
     display: block;
     text-align: center;
     padding-bottom: 1.5rem;
-    border-bottom: 1px solid rgba(31, 35, 72, 0.1);
+    margin: 0;
 }
 
 #confirm-transaction .multi-transaction #transaction-list {
@@ -186,7 +186,7 @@ nothing breaks in SignMultisigTransaction. */
     overflow-y: auto;
     /* Extend to card edges so the scrollbar sits flush, then restore content alignment */
     margin: 0 -2rem;
-    padding: 0 2rem;
+    padding: 1rem 2rem;
     /* Scroll indicators: fade-out gradients at top and bottom edges */
     mask-image: linear-gradient(
         to bottom,
@@ -211,8 +211,8 @@ nothing breaks in SignMultisigTransaction. */
     border-bottom: 1px solid rgba(31, 35, 72, 0.1);
 }
 
-#confirm-transaction .transaction-list-entry:last-child {
-    border-bottom: none;
+#confirm-transaction .transaction-list-entry:first-child {
+    border-top: 1px solid rgba(31, 35, 72, 0.1);
 }
 
 #confirm-transaction .transaction-list-entry .identicon {
@@ -272,7 +272,6 @@ nothing breaks in SignMultisigTransaction. */
 #confirm-transaction .multi-transaction .transaction-totals {
     padding-top: 1.5rem;
     text-align: center;
-    border-top: 1px solid rgba(31, 35, 72, 0.1);
 }
 
 #confirm-transaction .multi-transaction .total-value {

@@ -29,9 +29,9 @@ class SignTransaction {
     constructor(request, resolve, reject) {
         this._request = request;
         this.$el = /** @type {HTMLElement} */ (document.getElementById(SignTransaction.Pages.CONFIRM_TRANSACTION));
-        this.$el.classList.add(request.layout);
 
         const isMultiTransaction = request.transactions.length > 1;
+        this.$el.classList.add(isMultiTransaction ? 'multi' : request.layout);
         this.$accountDetails = /** @type {HTMLElement} */ (this.$el.querySelector('#account-details'));
 
         if (isMultiTransaction) {
@@ -159,9 +159,6 @@ class SignTransaction {
 
     /** @param {Parsed<KeyguardRequest.SignTransactionRequest>} request */
     _renderMultiTransactionView(request) {
-        // Add 'multi' class — controls heading visibility via hide-* and shows multi-transaction view
-        this.$el.classList.add('multi');
-
         const $multiTx = /** @type {HTMLElement} */ (this.$el.querySelector('.multi-transaction'));
 
         // Remove payment info line (not used in multi-tx mode)
