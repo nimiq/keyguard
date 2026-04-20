@@ -72,15 +72,15 @@ class SignTransaction {
         const transaction = request.transactions[0];
 
         const $sender = /** @type {HTMLLinkElement} */ (this.$el.querySelector('.single-transaction .sender'));
-        this._senderAddressInfo = new AddressInfo({
+        const senderAddressInfo = new AddressInfo({
             userFriendlyAddress: transaction.sender.toUserFriendlyAddress(),
             label: request.senderLabel || null,
             imageUrl: null,
             accountLabel: request.keyLabel || null,
         });
-        this._senderAddressInfo.renderTo($sender);
+        senderAddressInfo.renderTo($sender);
         $sender.addEventListener('click', () => {
-            this._openDetails(this._senderAddressInfo);
+            this._openDetails(senderAddressInfo);
         });
 
         const $recipient = /** @type {HTMLLinkElement} */ (this.$el.querySelector('.single-transaction .recipient'));
@@ -95,16 +95,16 @@ class SignTransaction {
         const recipientImage = 'shopLogoUrl' in request && !!request.shopLogoUrl
             ? request.shopLogoUrl
             : null;
-        this._recipientAddressInfo = new AddressInfo({
+        const recipientAddressInfo = new AddressInfo({
             userFriendlyAddress: recipientAddress,
             label: recipientLabel,
             imageUrl: recipientImage,
             accountLabel: null,
         }, request.layout === SignTransactionApi.Layouts.CASHLINK);
-        this._recipientAddressInfo.renderTo($recipient);
+        recipientAddressInfo.renderTo($recipient);
         if (request.layout !== SignTransactionApi.Layouts.CASHLINK) {
             $recipient.addEventListener('click', () => {
-                this._openDetails(this._recipientAddressInfo);
+                this._openDetails(recipientAddressInfo);
             });
         }
 

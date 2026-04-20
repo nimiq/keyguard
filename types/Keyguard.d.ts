@@ -310,14 +310,28 @@ type ConstructSwap<T extends KeyguardRequest.SignSwapRequestCommon> = Transform<
 type Is<T, B> = KeyguardRequest.Is<T, B>;
 
 type Parsed<T extends KeyguardRequest.Request> =
-    T extends Is<T, KeyguardRequest.SignTransactionRequestStandard> ?
-        Transform<
-            KeyId2KeyInfo<KeyguardRequest.SignTransactionRequestStandard>,
-            'sender' | 'senderType' | 'senderData' | 'recipient' | 'recipientType' | 'recipientData'
-            | 'value' | 'fee' | 'validityStartHeight' | 'flags' | 'transactions',
-            { transactions: Nimiq.Transaction[] }
-        > & {
-            layout: KeyguardRequest.SignTransactionRequestLayout,
+    // Checked before `SignTransactionRequestStandard` because multisig requests structurally
+    // extend its legacy single-tx branch (they include `multisigConfig` on top of the same
+    // transaction fields). An `Is<T, X>` keyof-equality check would normally disambiguate, but
+    // that predicate fails on the three-branch `Standard` union, so we use plain `extends`
+    // below and must filter multisig first.
+    T extends Is<T, KeyguardRequest.SignMultisigTransactionRequestStandard> ?
+        ConstructMultisigTransaction<KeyId2KeyInfo<KeyguardRequest.SignMultisigTransactionRequestStandard>>
+        & { layout: KeyguardRequest.SignMultisigTransactionRequestLayout } :
+    T extends KeyguardRequest.SignTransactionRequestStandard ?
+        // `SignTransactionRequestStandard` is a three-branch union (legacy single-tx, new
+        // single-tx tuple, multi-tx). Wrapping it in `Transform<Omit<...>>` collapses to the
+        // intersection of keys and loses per-branch info, and `Is<T, X>` fails because
+        // `keyof Union` is the narrow intersection. The parsed object is structurally the same
+        // across all three branches (always `transactions: Transaction[]`), so we spell it out.
+        KeyguardRequest.BasicRequest & {
+            keyInfo: KeyInfo,
+            keyLabel?: string,
+            keyPath: string,
+            senderLabel?: string,
+            recipientLabel?: string,
+            transactions: Nimiq.Transaction[],
+            layout: 'standard',
         } :
     T extends Is<T, KeyguardRequest.SignTransactionRequestCheckout> ?
         Transform<
@@ -331,9 +345,6 @@ type Parsed<T extends KeyguardRequest.Request> =
             'transaction',
             { transactions: Nimiq.Transaction[] }
         > :
-    T extends Is<T, KeyguardRequest.SignMultisigTransactionRequestStandard> ?
-        ConstructMultisigTransaction<KeyId2KeyInfo<KeyguardRequest.SignMultisigTransactionRequestStandard>>
-        & { layout: KeyguardRequest.SignMultisigTransactionRequestLayout } :
     T extends Is<T, KeyguardRequest.SignStakingRequest> ?
         Transform<KeyId2KeyInfo<KeyguardRequest.SignStakingRequest> & {
             plain: Nimiq.PlainTransaction[],
