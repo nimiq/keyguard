@@ -102,14 +102,18 @@ class SignTransactionApi extends TopLevelApi {
             }
         } else {
             // Single transaction mode (backward compatible)
-            parsedRequest.senderLabel = this.parseLabel(request.senderLabel);
+            if ('senderLabel' in request) {
+                parsedRequest.senderLabel = this.parseLabel(request.senderLabel);
+            }
             parsedRequest.transactions = [this.parseTransaction(request)];
         }
 
         // Parse layout-specific fields
         if ((!request.layout || request.layout === SignTransactionApi.Layouts.STANDARD)
             && parsedRequest.layout === SignTransactionApi.Layouts.STANDARD) {
-            parsedRequest.recipientLabel = this.parseLabel(request.recipientLabel);
+            if ('recipientLabel' in request) {
+                parsedRequest.recipientLabel = this.parseLabel(request.recipientLabel);
+            }
         } else if (request.layout === SignTransactionApi.Layouts.CHECKOUT
             && parsedRequest.layout === SignTransactionApi.Layouts.CHECKOUT) {
             parsedRequest.shopOrigin = this.parseShopOrigin(request.shopOrigin);
