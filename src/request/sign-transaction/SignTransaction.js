@@ -30,11 +30,22 @@ class SignTransaction {
         this._request = request;
         this.$el = /** @type {HTMLElement} */ (document.getElementById(SignTransaction.Pages.CONFIRM_TRANSACTION));
 
-        const isMultiTransaction = request.transactions.length > 1;
-        this.$el.classList.add(isMultiTransaction ? 'multi' : request.layout);
+        const isSwitchValidator = request.layout === SignTransactionApi.Layouts.SWITCH_VALIDATOR;
+        const isMultiTransaction = !isSwitchValidator && request.transactions.length > 1;
+
+        /** @type {string} */
+        let viewClass = request.layout;
+        if (isSwitchValidator) viewClass = 'switch-validator';
+        else if (isMultiTransaction) viewClass = 'multi';
+        this.$el.classList.add(viewClass);
+
         this.$accountDetails = /** @type {HTMLElement} */ (this.$el.querySelector('#account-details'));
 
-        if (isMultiTransaction) {
+        if (isSwitchValidator) {
+            this._renderSwitchValidatorView(
+                /** @type {Parsed<KeyguardRequest.SignTransactionRequestSwitchValidator>} */ (request),
+            );
+        } else if (isMultiTransaction) {
             this._renderMultiTransactionView(request);
         } else {
             this._renderSingleTransactionView(request);
@@ -43,15 +54,14 @@ class SignTransaction {
         const $closeDetails = /** @type {HTMLButtonElement} */ (this.$accountDetails.querySelector('#close-details'));
         $closeDetails.addEventListener('click', this._closeDetails.bind(this));
 
-        // Set up password box.
+        let buttonI18nTag = 'passwordbox-confirm-tx';
+        if (request.layout === SignTransactionApi.Layouts.CASHLINK) buttonI18nTag = 'passwordbox-create-cashlink';
+        else if (isMultiTransaction) buttonI18nTag = 'passwordbox-confirm-txs';
+
         const $passwordBox = /** @type {HTMLFormElement} */ (document.querySelector('#password-box'));
         this._passwordBox = new PasswordBox($passwordBox, {
             hideInput: !request.keyInfo.encrypted,
-            buttonI18nTag: request.layout === SignTransactionApi.Layouts.CASHLINK
-                ? 'passwordbox-create-cashlink'
-                : isMultiTransaction
-                    ? 'passwordbox-confirm-txs'
-                    : 'passwordbox-confirm-tx',
+            buttonI18nTag,
             minLength: request.keyInfo.hasPin ? Key.PIN_LENGTH : undefined,
         });
 
@@ -289,6 +299,73 @@ class SignTransaction {
         $entry.appendChild($amounts);
 
         return $entry;
+    }
+
+    /** @param {Parsed<KeyguardRequest.SignTransactionRequestSwitchValidator>} request */
+    _renderSwitchValidatorView(request) {
+        const $paymentInfoLine = /** @type {HTMLElement} */ (this.$el.querySelector('.payment-info-line'));
+        $paymentInfoLine.remove();
+
+        const $switchView = /** @type {HTMLElement} */ (this.$el.querySelector('.switch-validator-view'));
+        const $description = /** @type {HTMLElement} */ ($switchView.querySelector('.switch-subtitle-description'));
+        $description.textContent = I18n.translatePhrase('sign-tx-switch-deferred-description');
+        const $duration = /** @type {HTMLElement} */ ($switchView.querySelector('.switch-subtitle-duration'));
+        $duration.textContent = I18n.translatePhrase('sign-tx-switch-deferred-duration');
+
+        this._renderValidatorCard(
+            /** @type {HTMLElement} */ ($switchView.querySelector('.accounts .sender')),
+            request.fromValidatorAddress.toUserFriendlyAddress(),
+            request.senderLabel || null,
+            request.fromValidatorImageUrl || null,
+            true,
+        );
+        this._renderValidatorCard(
+            /** @type {HTMLElement} */ ($switchView.querySelector('.accounts .recipient')),
+            request.validatorAddress.toUserFriendlyAddress(),
+            request.recipientLabel || null,
+            request.validatorImageUrl || null,
+            false,
+        );
+    }
+
+    /**
+     * @param {HTMLElement} $el
+     * @param {string} userFriendlyAddress
+     * @param {string?} label
+     * @param {URL?} imageUrl
+     * @param {boolean} isCurrent - true for the "from" card (dashed), false for the "to" card.
+     */
+    _renderValidatorCard($el, userFriendlyAddress, label, imageUrl, isCurrent) {
+        $el.textContent = '';
+        $el.classList.add('validator-card');
+        $el.classList.toggle('current', isCurrent);
+
+        const $icon = document.createElement('div');
+        $icon.classList.add('icon');
+        if (imageUrl) {
+            const $img = document.createElement('img');
+            $img.src = imageUrl.href;
+            $icon.appendChild($img);
+            $img.addEventListener('error', () => {
+                $img.remove();
+                // eslint-disable-next-line no-new
+                new Identicon(userFriendlyAddress, $icon);
+            }, { once: true });
+        } else {
+            // eslint-disable-next-line no-new
+            new Identicon(userFriendlyAddress, $icon);
+        }
+        $el.appendChild($icon);
+
+        const $name = document.createElement('div');
+        $name.classList.add('name');
+        if (label) {
+            $name.textContent = label;
+        } else {
+            $name.textContent = userFriendlyAddress;
+            $name.classList.add('mono');
+        }
+        $el.appendChild($name);
     }
 
     /**

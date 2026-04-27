@@ -25,10 +25,11 @@ class SignTransactionApi extends TopLevelApi {
 
         // Parse transactions - either from array or from single-tx fields
         if ('transactions' in request && Array.isArray(request.transactions)) {
-            // Multi-transaction mode - only allowed for standard layout
-            if (parsedRequest.layout !== SignTransactionApi.Layouts.STANDARD) {
+            // Multi-transaction mode - only allowed for standard and switch-validator layouts
+            if (parsedRequest.layout !== SignTransactionApi.Layouts.STANDARD
+                && parsedRequest.layout !== SignTransactionApi.Layouts.SWITCH_VALIDATOR) {
                 throw new Errors.InvalidRequestError(
-                    'Multiple transactions are only supported with standard layout',
+                    'Multiple transactions are only supported with standard or switch-validator layout',
                 );
             }
             if (request.transactions.length === 0) {
@@ -143,6 +144,40 @@ class SignTransactionApi extends TopLevelApi {
             && parsedRequest.layout === SignTransactionApi.Layouts.CASHLINK
             && request.cashlinkMessage) {
             parsedRequest.cashlinkMessage = /** @type {string} */(this.parseMessage(request.cashlinkMessage));
+        } else if (request.layout === SignTransactionApi.Layouts.SWITCH_VALIDATOR
+            && parsedRequest.layout === SignTransactionApi.Layouts.SWITCH_VALIDATOR) {
+            if (parsedRequest.transactions.length !== 2) {
+                throw new Errors.InvalidRequestError(
+                    'switch-validator layout requires exactly two transactions',
+                );
+            }
+            const firstType = SignTransactionApi._stakingDataType(parsedRequest.transactions[0]);
+            const secondType = SignTransactionApi._stakingDataType(parsedRequest.transactions[1]);
+            if (firstType !== 'set-active-stake' || secondType !== 'update-staker') {
+                throw new Errors.InvalidRequestError(
+                    'switch-validator transactions must be set-active-stake followed by update-staker',
+                );
+            }
+
+            parsedRequest.senderLabel = this.parseLabel(request.senderLabel);
+            parsedRequest.recipientLabel = this.parseLabel(request.recipientLabel);
+            parsedRequest.validatorAddress = this.parseAddress(
+                request.validatorAddress, 'validatorAddress', false,
+            );
+            parsedRequest.fromValidatorAddress = this.parseAddress(
+                request.fromValidatorAddress, 'fromValidatorAddress', false,
+            );
+            if (request.validatorImageUrl) {
+                parsedRequest.validatorImageUrl = this._parseUrl(request.validatorImageUrl, 'validatorImageUrl');
+            }
+            if (request.fromValidatorImageUrl) {
+                parsedRequest.fromValidatorImageUrl = this._parseUrl(
+                    request.fromValidatorImageUrl, 'fromValidatorImageUrl',
+                );
+            }
+            parsedRequest.amount = /** @type {number} */ (
+                this.parseNonNegativeFiniteNumber(request.amount, false, 'amount')
+            );
         }
 
         return parsedRequest;
@@ -161,6 +196,22 @@ class SignTransactionApi extends TopLevelApi {
             throw new Errors.InvalidRequestError('Invalid selected layout');
         }
         return /** @type KeyguardRequest.SignTransactionRequestLayout */ (layout);
+    }
+
+    /**
+     * Returns the staking data `type` for an incoming staking transaction, or `undefined` if
+     * the transaction isn't an incoming staking transaction with parseable data.
+     *
+     * @param {Nimiq.Transaction} tx
+     * @returns {string | undefined}
+     */
+    static _stakingDataType(tx) {
+        if (tx.recipientType !== Nimiq.AccountType.Staking) return undefined;
+        try {
+            return Nimiq.StakingContract.dataToPlain(tx.data).type;
+        } catch (e) {
+            return undefined;
+        }
     }
 
     /**
@@ -218,4 +269,5 @@ SignTransactionApi.Layouts = Object.freeze({
     STANDARD: /** @type {'standard'} */ ('standard'),
     CHECKOUT: /** @type {'checkout'} */ ('checkout'),
     CASHLINK: /** @type {'cashlink'} */ ('cashlink'),
+    SWITCH_VALIDATOR: /** @type {'switch-validator'} */ ('switch-validator'),
 });
