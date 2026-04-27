@@ -31,12 +31,16 @@ class SignStakingApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         }
 
         if (parsedRequest.plain.length === 2) {
-            // Ensure the transactions are for stake retiring and removal, in this order
-            if (parsedRequest.plain[0].data.type !== 'retire-stake') {
-                throw new Errors.InvalidRequestError('First transaction must be a retire stake transaction');
-            }
-            if (parsedRequest.plain[1].senderData && parsedRequest.plain[1].senderData.type !== 'remove-stake') {
-                throw new Errors.InvalidRequestError('Second transaction must be a remove stake transaction');
+            const firstType = parsedRequest.plain[0].data && parsedRequest.plain[0].data.type;
+            const secondSenderType = parsedRequest.plain[1].senderData && parsedRequest.plain[1].senderData.type;
+
+            const isUnstakeFlow = firstType === 'retire-stake'
+                && (!secondSenderType || secondSenderType === 'remove-stake');
+
+            if (!isUnstakeFlow) {
+                throw new Errors.InvalidRequestError(
+                    'Two-transaction requests must be retire-stake + remove-stake',
+                );
             }
         }
 
@@ -49,7 +53,7 @@ class SignStakingApi extends TopLevelApi { // eslint-disable-line no-unused-vars
         }
 
         if (request.fromValidatorAddress) {
-            parsedRequest.validatorAddress = this.parseAddress(
+            parsedRequest.fromValidatorAddress = this.parseAddress(
                 request.fromValidatorAddress,
                 'fromValidatorAddress',
                 false,

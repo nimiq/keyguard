@@ -95,7 +95,7 @@ export type BitcoinTransactionInfo = {
     locktime?: number,
 };
 
-export type SignTransactionRequestLayout = 'standard' | 'checkout' | 'cashlink';
+export type SignTransactionRequestLayout = 'standard' | 'checkout' | 'cashlink' | 'switch-validator';
 export type SignMultisigTransactionRequestLayout = 'standard';
 export type SignBtcTransactionRequestLayout = 'standard' | 'checkout';
 
@@ -207,10 +207,26 @@ export type SignTransactionRequestCashlink = SignTransactionRequestCommon & {
     cashlinkMessage?: string,
 };
 
+export type SignTransactionRequestSwitchValidator = SimpleRequest & {
+    layout: 'switch-validator',
+    keyPath: string,
+    // Exactly two serialized transactions: set-active-stake then update-staker. Enforced by
+    // the Keyguard at parse time (a strict tuple here is too narrow for dynamic callers).
+    transactions: Uint8Array[],
+    senderLabel?: string,
+    recipientLabel?: string,
+    validatorAddress: string,
+    validatorImageUrl?: string,
+    fromValidatorAddress: string,
+    fromValidatorImageUrl?: string,
+    amount: number,
+};
+
 export type SignTransactionRequest
     = SignTransactionRequestStandard
     | SignTransactionRequestCheckout
-    | SignTransactionRequestCashlink;
+    | SignTransactionRequestCashlink
+    | SignTransactionRequestSwitchValidator;
 
 export type RsaKeyParams = {
     kdf: string,

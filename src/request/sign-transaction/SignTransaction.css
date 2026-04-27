@@ -9,7 +9,8 @@ nothing breaks in SignMultisigTransaction. */
 #confirm-transaction.standard .hide-standard,
 #confirm-transaction.checkout .hide-checkout,
 #confirm-transaction.cashlink .hide-cashlink,
-#confirm-transaction.multi .hide-multi {
+#confirm-transaction.multi .hide-multi,
+#confirm-transaction.switch-validator .hide-switch-validator {
     display: none;
 }
 
@@ -282,4 +283,106 @@ nothing breaks in SignMultisigTransaction. */
 #confirm-transaction .multi-transaction .total-fees {
     opacity: 0.5;
     margin-top: 0.5rem;
+}
+
+#confirm-transaction .switch-validator-view {
+    display: none;
+}
+
+#confirm-transaction.switch-validator .single-transaction,
+#confirm-transaction.switch-validator .multi-transaction {
+    display: none;
+}
+
+#confirm-transaction.switch-validator .switch-validator-view {
+    display: flex;
+    flex-direction: column;
+}
+
+#confirm-transaction.switch-validator .nq-card-header {
+    padding-bottom: 1rem;
+}
+
+#confirm-transaction .switch-validator-view .switch-subtitle-description,
+#confirm-transaction .switch-validator-view .switch-subtitle-duration {
+    font-size: 2rem;
+    text-align: center;
+    margin: 0 3rem;
+    line-height: 1.4;
+}
+
+#confirm-transaction .switch-validator-view .switch-subtitle-description {
+    color: var(--nimiq-blue);
+    margin-top: 2rem;
+}
+
+#confirm-transaction .switch-validator-view .switch-subtitle-duration {
+    color: var(--nimiq-light-blue);
+    font-weight: 600;
+    margin-bottom: 2rem;
+}
+
+#confirm-transaction .switch-validator-view .accounts {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+#confirm-transaction .switch-validator-view .accounts .arrow {
+    transform: rotate(90deg);
+    margin: 0 auto;
+    height: 1.5rem;
+    width: 1.5rem;
+    color: rgba(31, 35, 72, 0.4);
+}
+
+#confirm-transaction .validator-card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 2rem;
+    width: 100%;
+    height: 9rem;
+    padding: 1.875rem 2.25rem;
+    border: 0.1875rem solid rgba(31, 35, 72, 0.12);
+    border-radius: 0.75rem;
+    box-sizing: border-box;
+}
+
+#confirm-transaction .validator-card.current {
+    border-style: dashed;
+    border-color: rgba(31, 35, 72, 0.16);
+}
+
+#confirm-transaction .validator-card .icon {
+    flex-shrink: 0;
+    width: 5.25rem;
+    height: 5.25rem;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    position: relative;
+}
+
+#confirm-transaction .validator-card .icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+#confirm-transaction .validator-card .name {
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--nimiq-blue);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+}
+
+#confirm-transaction .validator-card .name.mono {
+    font-family: "Fira Mono", "Andale Mono", monospace;
+    font-size: 1.75rem;
 }

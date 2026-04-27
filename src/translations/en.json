@@ -85,10 +85,13 @@
     "sign-tx-heading-checkout": "Verify Payment",
     "sign-tx-heading-cashlink": "Create a Cashlink",
     "sign-tx-heading-multi": "Confirm Transactions",
+    "sign-tx-heading-switch-validator": "Switch Validator",
     "sign-tx-fee": "fee",
     "sign-tx-cancel-payment": "Cancel payment",
     "sign-tx-multi-count": "{count} transactions",
     "sign-tx-multi-total-fees": "total fees",
+    "sign-tx-switch-deferred-description": "Your NIM will be unstaked from your current validator and locked with the new one.",
+    "sign-tx-switch-deferred-duration": "This can take up to 24h.",
 
     "sign-multisig-tx-heading-tx": "Approve Multisig Transaction",
     "sign-multisig-tx-approving-as-name-with-account": "Approving as {userName} with {accountName}",
@@ -96,7 +99,8 @@
 
     "sign-staking-heading-stake": "Stake NIM",
     "sign-staking-heading-unstake": "Unstake NIM",
-    "sign-staking-heading-change": "Change Validator",
+    "sign-staking-heading-change": "Confirm Validator change",
+    "sign-staking-switch-immediate": "You'll stake with the new validator right away",
 
     "sign-msg-heading": "Sign Message",
     "sign-msg-signer": "Signer",
