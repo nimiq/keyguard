@@ -95,7 +95,7 @@ export type BitcoinTransactionInfo = {
     locktime?: number,
 };
 
-export type SignTransactionRequestLayout = 'standard' | 'checkout' | 'cashlink' | 'switch-validator';
+export type SignTransactionRequestLayout = 'standard' | 'checkout' | 'cashlink' | 'switch-validator' | 'unstaking';
 export type SignMultisigTransactionRequestLayout = 'standard';
 export type SignBtcTransactionRequestLayout = 'standard' | 'checkout';
 
@@ -222,11 +222,24 @@ export type SignTransactionRequestSwitchValidator = SimpleRequest & {
     amount: number,
 };
 
+export type SignTransactionRequestUnstaking = SimpleRequest & {
+    layout: 'unstaking',
+    keyPath: string,
+    // Exactly three serialized transactions in order: set-active-stake, retire-stake, remove-stake.
+    // Enforced by the Keyguard at parse time.
+    transactions: Uint8Array[],
+    senderLabel?: string,
+    recipientLabel?: string,
+    validatorAddress: string,
+    validatorImageUrl?: string,
+};
+
 export type SignTransactionRequest
     = SignTransactionRequestStandard
     | SignTransactionRequestCheckout
     | SignTransactionRequestCashlink
-    | SignTransactionRequestSwitchValidator;
+    | SignTransactionRequestSwitchValidator
+    | SignTransactionRequestUnstaking;
 
 export type RsaKeyParams = {
     kdf: string,

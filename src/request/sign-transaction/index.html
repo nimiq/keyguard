@@ -97,14 +97,15 @@
             <div id="effect-container">
                 <div class="payment-info-line"></div>
                 <div class="page-header nq-card-header">
-                    <a tabindex="0" class="page-header-back-button hide-standard hide-multi hide-switch-validator">
+                    <a tabindex="0" class="page-header-back-button hide-standard hide-multi hide-switch-validator hide-unstaking">
                         <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-left"/></svg>
                     </a>
-                    <h1 data-i18n="sign-tx-heading-checkout" class="nq-h1 hide-standard hide-cashlink hide-multi hide-switch-validator">Verify Payment</h1>
-                    <h1 data-i18n="sign-tx-heading-tx" class="nq-h1 hide-checkout hide-cashlink hide-multi hide-switch-validator">Confirm Transaction</h1>
-                    <h1 data-i18n="sign-tx-heading-cashlink" class="nq-h1 hide-checkout hide-standard hide-multi hide-switch-validator">Create a Cashlink</h1>
-                    <h1 data-i18n="sign-tx-heading-multi" class="nq-h1 hide-standard hide-cashlink hide-checkout hide-switch-validator">Confirm Transactions</h1>
-                    <h1 data-i18n="sign-tx-heading-switch-validator" class="nq-h1 hide-standard hide-cashlink hide-checkout hide-multi">Switch Validator</h1>
+                    <h1 data-i18n="sign-tx-heading-checkout" class="nq-h1 hide-standard hide-cashlink hide-multi hide-switch-validator hide-unstaking">Verify Payment</h1>
+                    <h1 data-i18n="sign-tx-heading-tx" class="nq-h1 hide-checkout hide-cashlink hide-multi hide-switch-validator hide-unstaking">Confirm Transaction</h1>
+                    <h1 data-i18n="sign-tx-heading-cashlink" class="nq-h1 hide-checkout hide-standard hide-multi hide-switch-validator hide-unstaking">Create a Cashlink</h1>
+                    <h1 data-i18n="sign-tx-heading-multi" class="nq-h1 hide-standard hide-cashlink hide-checkout hide-switch-validator hide-unstaking">Confirm Transactions</h1>
+                    <h1 data-i18n="sign-tx-heading-switch-validator" class="nq-h1 hide-standard hide-cashlink hide-checkout hide-multi hide-unstaking">Switch Validator</h1>
+                    <h1 data-i18n="sign-tx-heading-unstaking" class="nq-h1 hide-standard hide-cashlink hide-checkout hide-multi hide-switch-validator">Unstake NIM</h1>
                 </div>
 
                 <!-- Single-transaction view -->
@@ -153,6 +154,29 @@
                         <div class="sender"></div>
                         <svg class="nq-icon arrow"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-right"/></svg>
                         <div class="recipient"></div>
+                    </div>
+                </div>
+
+                <!-- Unstaking view -->
+                <div class="page-body nq-card-body transaction unstaking-view">
+                    <div class="center accounts">
+                        <div class="sender"></div>
+                        <svg class="nq-icon arrow"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-right"/></svg>
+                        <div class="recipient"></div>
+                    </div>
+
+                    <div class="value-fee-data">
+                        <div class="total nq-light-blue">
+                            <span class="unstake-amount-value"></span><span class="nim-symbol"></span>
+                        </div>
+
+                        <div class="unstake-fee-section nq-text-s display-none">
+                            + <span class="unstake-fee-value"></span> <span class="nim-symbol"></span> <span data-i18n="sign-tx-fee">fee</span>
+                        </div>
+
+                        <div class="unstake-duration-note nq-text-s">
+                            <span data-i18n="sign-tx-unstake-deferred-duration">This can take up to 24h.</span>
+                        </div>
                     </div>
                 </div>
 
