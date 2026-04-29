@@ -10,7 +10,8 @@ nothing breaks in SignMultisigTransaction. */
 #confirm-transaction.checkout .hide-checkout,
 #confirm-transaction.cashlink .hide-cashlink,
 #confirm-transaction.multi .hide-multi,
-#confirm-transaction.switch-validator .hide-switch-validator {
+#confirm-transaction.switch-validator .hide-switch-validator,
+#confirm-transaction.unstaking .hide-unstaking {
     display: none;
 }
 
@@ -308,16 +309,20 @@ nothing breaks in SignMultisigTransaction. */
     margin-top: 0.5rem;
 }
 
-#confirm-transaction .switch-validator-view {
+#confirm-transaction .switch-validator-view,
+#confirm-transaction .unstaking-view {
     display: none;
 }
 
 #confirm-transaction.switch-validator .single-transaction,
-#confirm-transaction.switch-validator .multi-transaction {
+#confirm-transaction.switch-validator .multi-transaction,
+#confirm-transaction.unstaking .single-transaction,
+#confirm-transaction.unstaking .multi-transaction {
     display: none;
 }
 
-#confirm-transaction.switch-validator .switch-validator-view {
+#confirm-transaction.switch-validator .switch-validator-view,
+#confirm-transaction.unstaking .unstaking-view {
     display: flex;
     flex-direction: column;
 }
@@ -411,6 +416,24 @@ nothing breaks in SignMultisigTransaction. */
 #confirm-transaction .validator-card .name.mono {
     font-family: "Fira Mono", "Andale Mono", monospace;
     font-size: 1.75rem;
+}
+
+/* Unstaking view reuses the standard single-tx layout (.accounts row, .total light-blue) and adds
+   only a fee/duration note pair below the value. */
+#confirm-transaction .unstaking-view .total .unstake-amount-value {
+    font-size: 5rem;
+}
+
+#confirm-transaction .unstaking-view .unstake-fee-section {
+    opacity: 0.5;
+    margin-bottom: 0.25rem;
+}
+
+#confirm-transaction .unstaking-view .unstake-duration-note {
+    color: var(--nimiq-light-blue);
+    font-weight: 600;
+    margin-top: 0.5rem;
+    text-align: center;
 }
 
 /* Transaction-list overlay (info-icon-triggered, used by simplified custom layouts).

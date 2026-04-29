@@ -25,11 +25,12 @@ class SignTransactionApi extends TopLevelApi {
 
         // Parse transactions - either from array or from single-tx fields
         if ('transactions' in request && Array.isArray(request.transactions)) {
-            // Multi-transaction mode - only allowed for standard and switch-validator layouts
+            // Multi-transaction mode - only allowed for standard, switch-validator and unstaking layouts
             if (parsedRequest.layout !== SignTransactionApi.Layouts.STANDARD
-                && parsedRequest.layout !== SignTransactionApi.Layouts.SWITCH_VALIDATOR) {
+                && parsedRequest.layout !== SignTransactionApi.Layouts.SWITCH_VALIDATOR
+                && parsedRequest.layout !== SignTransactionApi.Layouts.UNSTAKING) {
                 throw new Errors.InvalidRequestError(
-                    'Multiple transactions are only supported with standard or switch-validator layout',
+                    'Multiple transactions are only supported with standard, switch-validator or unstaking layout',
                 );
             }
             if (request.transactions.length === 0) {
@@ -178,6 +179,35 @@ class SignTransactionApi extends TopLevelApi {
             parsedRequest.amount = /** @type {number} */ (
                 this.parseNonNegativeFiniteNumber(request.amount, false, 'amount')
             );
+        } else if (request.layout === SignTransactionApi.Layouts.UNSTAKING
+            && parsedRequest.layout === SignTransactionApi.Layouts.UNSTAKING) {
+            if (parsedRequest.transactions.length !== 3) {
+                throw new Errors.InvalidRequestError(
+                    'unstaking layout requires exactly three transactions',
+                );
+            }
+            const t0 = SignTransactionApi._stakingDataType(parsedRequest.transactions[0]);
+            const t1 = SignTransactionApi._stakingDataType(parsedRequest.transactions[1]);
+            // The third transaction is `remove-stake`, which is OUTGOING-staking (sender = staking
+            // contract, recipient = user wallet). _stakingDataType only inspects incoming-staking
+            // data, so check sender/recipient types directly.
+            const tx2 = parsedRequest.transactions[2];
+            const t2IsRemoveStake = tx2.senderType === Nimiq.AccountType.Staking
+                && tx2.recipientType === Nimiq.AccountType.Basic;
+            if (t0 !== 'set-active-stake' || t1 !== 'retire-stake' || !t2IsRemoveStake) {
+                throw new Errors.InvalidRequestError(
+                    'unstaking transactions must be set-active-stake, retire-stake, remove-stake (in order)',
+                );
+            }
+
+            parsedRequest.senderLabel = this.parseLabel(request.senderLabel);
+            parsedRequest.recipientLabel = this.parseLabel(request.recipientLabel);
+            parsedRequest.validatorAddress = this.parseAddress(
+                request.validatorAddress, 'validatorAddress', false,
+            );
+            if (request.validatorImageUrl) {
+                parsedRequest.validatorImageUrl = this._parseUrl(request.validatorImageUrl, 'validatorImageUrl');
+            }
         }
 
         return parsedRequest;
@@ -270,4 +300,5 @@ SignTransactionApi.Layouts = Object.freeze({
     CHECKOUT: /** @type {'checkout'} */ ('checkout'),
     CASHLINK: /** @type {'cashlink'} */ ('cashlink'),
     SWITCH_VALIDATOR: /** @type {'switch-validator'} */ ('switch-validator'),
+    UNSTAKING: /** @type {'unstaking'} */ ('unstaking'),
 });

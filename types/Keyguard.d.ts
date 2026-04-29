@@ -358,6 +358,16 @@ type Parsed<T extends KeyguardRequest.Request> =
                 fromValidatorImageUrl?: URL,
             }
         > :
+    T extends Is<T, KeyguardRequest.SignTransactionRequestUnstaking> ?
+        Transform<
+            KeyId2KeyInfo<KeyguardRequest.SignTransactionRequestUnstaking>,
+            'transactions' | 'validatorAddress' | 'validatorImageUrl',
+            {
+                transactions: Nimiq.Transaction[],
+                validatorAddress: Nimiq.Address,
+                validatorImageUrl?: URL,
+            }
+        > :
     T extends Is<T, KeyguardRequest.SignStakingRequest> ?
         Transform<KeyId2KeyInfo<KeyguardRequest.SignStakingRequest> & {
             plain: Nimiq.PlainTransaction[],

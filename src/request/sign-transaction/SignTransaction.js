@@ -31,11 +31,14 @@ class SignTransaction {
         this.$el = /** @type {HTMLElement} */ (document.getElementById(SignTransaction.Pages.CONFIRM_TRANSACTION));
 
         const isSwitchValidator = request.layout === SignTransactionApi.Layouts.SWITCH_VALIDATOR;
-        const isMultiTransaction = !isSwitchValidator && request.transactions.length > 1;
+        const isUnstaking = request.layout === SignTransactionApi.Layouts.UNSTAKING;
+        const isCustomMultiTx = isSwitchValidator || isUnstaking;
+        const isMultiTransaction = !isCustomMultiTx && request.transactions.length > 1;
 
         /** @type {string} */
         let viewClass = request.layout;
         if (isSwitchValidator) viewClass = 'switch-validator';
+        else if (isUnstaking) viewClass = 'unstaking';
         else if (isMultiTransaction) viewClass = 'multi';
         this.$el.classList.add(viewClass);
 
@@ -46,15 +49,19 @@ class SignTransaction {
             this._renderSwitchValidatorView(
                 /** @type {Parsed<KeyguardRequest.SignTransactionRequestSwitchValidator>} */ (request),
             );
+        } else if (isUnstaking) {
+            this._renderUnstakingView(
+                /** @type {Parsed<KeyguardRequest.SignTransactionRequestUnstaking>} */ (request),
+            );
         } else if (isMultiTransaction) {
             this._renderMultiTransactionView(request);
         } else {
             this._renderSingleTransactionView(request);
         }
 
-        // Custom simplified layouts (e.g. switch-validator) hide per-tx detail. For those, expose the
-        // multi-tx list as an overlay accessible via an info icon on the page header.
-        if (isSwitchValidator) {
+        // Custom simplified layouts (e.g. switch-validator, unstaking) hide per-tx detail. For those,
+        // expose the multi-tx list as an overlay accessible via an info icon on the page header.
+        if (isCustomMultiTx) {
             this._setupTxListOverlay(request);
         }
 
@@ -325,6 +332,54 @@ class SignTransaction {
             request.validatorImageUrl || null,
             false,
         );
+    }
+
+    /** @param {Parsed<KeyguardRequest.SignTransactionRequestUnstaking>} request */
+    _renderUnstakingView(request) {
+        const $paymentInfoLine = /** @type {HTMLElement} */ (this.$el.querySelector('.payment-info-line'));
+        $paymentInfoLine.remove();
+
+        const $view = /** @type {HTMLElement} */ (this.$el.querySelector('.unstaking-view'));
+
+        // FROM: the validator the user is leaving.
+        const $sender = /** @type {HTMLElement} */ ($view.querySelector('.accounts .sender'));
+        const senderAddressInfo = new AddressInfo({
+            userFriendlyAddress: request.validatorAddress.toUserFriendlyAddress(),
+            label: request.senderLabel || null,
+            imageUrl: request.validatorImageUrl || null,
+            accountLabel: null,
+        });
+        senderAddressInfo.renderTo($sender);
+        $sender.addEventListener('click', () => this._openDetails(senderAddressInfo));
+
+        // TO: the user's wallet. The recipient of the third (remove-stake) transaction is the user's
+        // own basic address — the parser validates this.
+        const removeStakeTx = request.transactions[2];
+        const $recipient = /** @type {HTMLElement} */ ($view.querySelector('.accounts .recipient'));
+        const recipientAddressInfo = new AddressInfo({
+            userFriendlyAddress: removeStakeTx.recipient.toUserFriendlyAddress(),
+            label: request.recipientLabel || null,
+            imageUrl: null,
+            accountLabel: request.keyLabel || null,
+        });
+        recipientAddressInfo.renderTo($recipient);
+        $recipient.addEventListener('click', () => this._openDetails(recipientAddressInfo));
+
+        // Headline amount = value of the remove-stake tx (NIM returned to the user).
+        const $amount = /** @type {HTMLElement} */ ($view.querySelector('.unstake-amount-value'));
+        $amount.textContent = NumberFormatting.formatNumber(lunasToCoins(Number(removeStakeTx.value)));
+
+        // Total fee across all 3 transactions; hidden when zero.
+        let totalFee = 0n;
+        for (const tx of request.transactions) {
+            totalFee += tx.fee;
+        }
+        if (totalFee > 0n) {
+            const $feeValue = /** @type {HTMLElement} */ ($view.querySelector('.unstake-fee-value'));
+            $feeValue.textContent = NumberFormatting.formatNumber(lunasToCoins(Number(totalFee)));
+            const $feeSection = /** @type {HTMLElement} */ ($view.querySelector('.unstake-fee-section'));
+            $feeSection.classList.remove('display-none');
+        }
     }
 
     /**
