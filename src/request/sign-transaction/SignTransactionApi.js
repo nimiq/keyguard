@@ -153,8 +153,8 @@ class SignTransactionApi extends TopLevelApi {
                 );
             }
             const firstType = SignTransactionApi._stakingDataType(parsedRequest.transactions[0]);
-            const secondType = SignTransactionApi._stakingDataType(parsedRequest.transactions[1]);
-            if (firstType !== 'set-active-stake' || secondType !== 'update-staker') {
+            const secondData = SignTransactionApi._stakingData(parsedRequest.transactions[1]);
+            if (firstType !== 'set-active-stake' || secondData?.type !== 'update-staker') {
                 throw new Errors.InvalidRequestError(
                     'switch-validator transactions must be set-active-stake followed by update-staker',
                 );
@@ -162,6 +162,11 @@ class SignTransactionApi extends TopLevelApi {
             if (!parsedRequest.transactions[0].sender.equals(parsedRequest.transactions[1].sender)) {
                 throw new Errors.InvalidRequestError(
                     'switch-validator transactions must share the same staker',
+                );
+            }
+            if (!secondData.newDelegation) {
+                throw new Errors.InvalidRequestError(
+                    'switch-validator update-staker must include a newDelegation',
                 );
             }
 
@@ -173,6 +178,14 @@ class SignTransactionApi extends TopLevelApi {
             parsedRequest.fromValidatorAddress = this.parseAddress(
                 request.fromValidatorAddress, 'fromValidatorAddress', false,
             );
+
+            // Assert the update-staker actually re-delegates to the address the user consented to.
+            const txDelegation = this.parseAddress(secondData.newDelegation, 'newDelegation', false);
+            if (!txDelegation.equals(parsedRequest.validatorAddress)) {
+                throw new Errors.InvalidRequestError(
+                    'switch-validator validatorAddress does not match update-staker newDelegation',
+                );
+            }
             if (request.validatorImageUrl) {
                 parsedRequest.validatorImageUrl = this._parseUrl(request.validatorImageUrl, 'validatorImageUrl');
             }
@@ -234,19 +247,28 @@ class SignTransactionApi extends TopLevelApi {
     }
 
     /**
-     * Returns the staking data `type` for an incoming staking transaction, or `undefined` if
+     * Returns the parsed staking data for an incoming staking transaction, or `undefined` if
      * the transaction isn't an incoming staking transaction with parseable data.
      *
+     * @param {Nimiq.Transaction} tx
+     * @returns {Nimiq.PlainTransactionRecipientData | undefined}
+     */
+    static _stakingData(tx) {
+        if (tx.recipientType !== Nimiq.AccountType.Staking) return undefined;
+        try {
+            return Nimiq.StakingContract.dataToPlain(tx.data);
+        } catch (e) {
+            return undefined;
+        }
+    }
+
+    /**
      * @param {Nimiq.Transaction} tx
      * @returns {string | undefined}
      */
     static _stakingDataType(tx) {
-        if (tx.recipientType !== Nimiq.AccountType.Staking) return undefined;
-        try {
-            return Nimiq.StakingContract.dataToPlain(tx.data).type;
-        } catch (e) {
-            return undefined;
-        }
+        const data = SignTransactionApi._stakingData(tx);
+        return data ? data.type : undefined;
     }
 
     /**
