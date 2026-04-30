@@ -207,6 +207,7 @@ class SignTransaction {
             const $card = this._createTransactionListEntry(tx);
             $list.appendChild($card);
         }
+        I18n.translateDom($list);
 
         // Render totals
         const $totalValue = /** @type {HTMLElement} */ ($multiTx.querySelector('#total-value-amount'));
@@ -315,7 +316,6 @@ class SignTransaction {
             $fee.innerHTML = `+ ${NumberFormatting.formatNumber(lunasToCoins(Number(tx.fee)))}`
                 + ' <span class="nim-symbol"></span> '
                 + '<span data-i18n="sign-tx-fee">fee</span>';
-            I18n.translateDom($fee);
             $amounts.appendChild($fee);
         }
 
