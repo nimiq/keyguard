@@ -96,7 +96,7 @@ class SignStaking {
                         userFriendlyAddress: fromValidatorAddress.toUserFriendlyAddress(),
                         label: request.senderLabel || null,
                         imageUrl: request.fromValidatorImageUrl || null,
-                        accountLabel: request.keyLabel || null,
+                        accountLabel: null,
                     });
                     this._recipientAddressInfo = new AddressInfo({ // To new validator
                         userFriendlyAddress: validatorAddress.toUserFriendlyAddress(),
