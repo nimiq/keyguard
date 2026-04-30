@@ -239,17 +239,21 @@ class SignTransaction {
             accountLabel: null,
         });
 
-        $entry.appendChild(this._createTransactionAddressRow(senderAddress, senderAddressInfo));
+        const $main = document.createElement('div');
+        $main.className = 'tx-main';
+
+        $main.appendChild(this._createTransactionAddressRow(senderAddress, senderAddressInfo));
 
         const $arrow = document.createElement('div');
         $arrow.className = 'tx-arrow';
-        $arrow.textContent = '\u2193'; // ↓
-        $entry.appendChild($arrow);
+        $arrow.innerHTML = '<svg class="nq-icon"><use xlink:href="../../../node_modules/'
+            + '@nimiq/style/nimiq-style.icons.svg#nq-arrow-right"/></svg>';
+        $main.appendChild($arrow);
 
-        $entry.appendChild(this._createTransactionAddressRow(recipientAddress, recipientAddressInfo));
+        $main.appendChild(this._createTransactionAddressRow(recipientAddress, recipientAddressInfo));
 
-        const $footer = document.createElement('div');
-        $footer.className = 'tx-footer';
+        $main.appendChild(this._createTransactionAmounts(tx));
+        $entry.appendChild($main);
 
         const formattedData = TransactionDataFormatting.formatTransactionData(tx);
         if (formattedData) {
@@ -260,9 +264,38 @@ class SignTransaction {
                 I18n.Events.LANGUAGE_CHANGED,
                 () => { $txData.textContent = TransactionDataFormatting.formatTransactionData(tx); },
             );
-            $footer.appendChild($txData);
+            $entry.appendChild($txData);
         }
 
+        return $entry;
+    }
+
+    /**
+     * @param {string} userFriendlyAddress
+     * @param {AddressInfo} addressInfo
+     * @returns {HTMLElement}
+     */
+    _createTransactionAddressRow(userFriendlyAddress, addressInfo) {
+        const $row = document.createElement('div');
+        $row.className = 'tx-row';
+
+        $row.appendChild(new Identicon(userFriendlyAddress).getElement());
+
+        const $address = document.createElement('div');
+        $address.className = 'tx-address address';
+        $address.textContent = userFriendlyAddress;
+        $row.appendChild($address);
+
+        $row.addEventListener('click', () => this._openDetails(addressInfo));
+
+        return $row;
+    }
+
+    /**
+     * @param {Nimiq.Transaction} tx
+     * @returns {HTMLElement}
+     */
+    _createTransactionAmounts(tx) {
         const $amounts = document.createElement('div');
         $amounts.className = 'tx-amounts';
 
@@ -280,31 +313,7 @@ class SignTransaction {
             $amounts.appendChild($fee);
         }
 
-        $footer.appendChild($amounts);
-        $entry.appendChild($footer);
-
-        return $entry;
-    }
-
-    /**
-     * @param {string} userFriendlyAddress
-     * @param {AddressInfo} addressInfo
-     * @returns {HTMLElement}
-     */
-    _createTransactionAddressRow(userFriendlyAddress, addressInfo) {
-        const $row = document.createElement('div');
-        $row.className = 'tx-row';
-
-        $row.appendChild(new Identicon(userFriendlyAddress).getElement());
-
-        const $address = document.createElement('div');
-        $address.className = 'tx-address';
-        $address.textContent = userFriendlyAddress;
-        $row.appendChild($address);
-
-        $row.addEventListener('click', () => this._openDetails(addressInfo));
-
-        return $row;
+        return $amounts;
     }
 
     /** @param {Parsed<KeyguardRequest.SignTransactionRequestSwitchValidator>} request */

@@ -209,7 +209,8 @@ nothing breaks in SignMultisigTransaction. */
 #confirm-transaction .transaction-list-entry {
     display: flex;
     flex-direction: column;
-    padding: 2rem 0;
+    gap: 0.5rem;
+    padding: 1.25rem 0;
     border-bottom: 1px solid rgba(31, 35, 72, 0.1);
 }
 
@@ -217,13 +218,21 @@ nothing breaks in SignMultisigTransaction. */
     border-top: 1px solid rgba(31, 35, 72, 0.1);
 }
 
+#confirm-transaction .transaction-list-entry .tx-main {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
 #confirm-transaction .transaction-list-entry .tx-row {
     display: flex;
     align-items: center;
-    gap: 1.5rem;
+    gap: 0.75rem;
+    flex: 1;
+    min-width: 0;
     cursor: pointer;
-    padding: 0.5rem 0.75rem;
-    margin: 0 -0.75rem;
+    padding: 0.25rem 0.5rem;
+    margin: 0 -0.5rem;
     border-radius: 0.5rem;
     transition: background-color .2s var(--nimiq-ease);
 }
@@ -233,52 +242,35 @@ nothing breaks in SignMultisigTransaction. */
 }
 
 #confirm-transaction .transaction-list-entry .identicon {
-    width: 4rem;
-    height: 4rem;
+    width: 3rem;
+    height: 3rem;
     flex-shrink: 0;
 }
 
-#confirm-transaction .transaction-list-entry .tx-address,
-#confirm-transaction .transaction-list-entry .tx-data {
-    font-size: 1.625rem;
-    color: var(--nimiq-blue);
-    line-height: 1.4;
-    overflow-wrap: break-word;
-    word-break: break-word;
-    min-width: 0;
-    flex: 1;
-}
-
 #confirm-transaction .transaction-list-entry .tx-address {
-    font-family: "Fira Mono", "Andale Mono", monospace;
+    /* font, nowrap, ellipsis, overflow-x come from the .address utility in common.css */
+    color: var(--nimiq-blue);
+    flex: 1;
+    min-width: 0; /* allow .tx-address to shrink and ellipsize */
 }
 
 #confirm-transaction .transaction-list-entry .tx-arrow {
-    width: 4rem; /* match identicon column so the ↓ centers on the identicon */
-    text-align: center;
+    flex-shrink: 0;
+    width: 1.5rem;
+    height: 1.5rem;
     color: rgba(31, 35, 72, 0.3);
-    font-size: 1.75rem;
-    line-height: 1;
-    padding: 0.25rem 0;
 }
 
-#confirm-transaction .transaction-list-entry .tx-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    gap: 1.5rem;
-    margin-top: 1.25rem;
-    padding-left: 5.5rem; /* align with addresses, past the identicon column (4rem icon + 1.5rem gap) */
-}
-
-#confirm-transaction .transaction-list-entry .tx-data {
-    opacity: 0.6;
+#confirm-transaction .transaction-list-entry .tx-arrow .nq-icon {
+    display: block;
+    width: 100%;
+    height: 100%;
 }
 
 #confirm-transaction .transaction-list-entry .tx-amounts {
     flex-shrink: 0;
     text-align: right;
-    margin-left: auto;
+    margin-left: 0.5rem;
 }
 
 #confirm-transaction .transaction-list-entry .tx-value {
@@ -288,10 +280,19 @@ nothing breaks in SignMultisigTransaction. */
 }
 
 #confirm-transaction .transaction-list-entry .tx-fee {
-    font-size: 1.5rem;
+    font-size: 1.375rem;
     opacity: 0.5;
     white-space: nowrap;
-    margin-top: 0.25rem;
+    margin-top: 0.125rem;
+}
+
+#confirm-transaction .transaction-list-entry .tx-data {
+    color: var(--nimiq-blue);
+    opacity: 0.6;
+    font-size: 1.5rem;
+    line-height: 1.4;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 #confirm-transaction .multi-transaction .transaction-totals {
