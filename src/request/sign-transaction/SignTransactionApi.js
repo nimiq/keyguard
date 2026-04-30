@@ -159,6 +159,11 @@ class SignTransactionApi extends TopLevelApi {
                     'switch-validator transactions must be set-active-stake followed by update-staker',
                 );
             }
+            if (!parsedRequest.transactions[0].sender.equals(parsedRequest.transactions[1].sender)) {
+                throw new Errors.InvalidRequestError(
+                    'switch-validator transactions must share the same staker',
+                );
+            }
 
             parsedRequest.senderLabel = this.parseLabel(request.senderLabel);
             parsedRequest.recipientLabel = this.parseLabel(request.recipientLabel);
