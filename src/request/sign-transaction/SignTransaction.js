@@ -40,6 +40,7 @@ class SignTransaction {
         this.$el.classList.add(viewClass);
 
         this.$accountDetails = /** @type {HTMLElement} */ (this.$el.querySelector('#account-details'));
+        this.$txListDetails = /** @type {HTMLElement} */ (this.$el.querySelector('#tx-list-details'));
 
         if (isSwitchValidator) {
             this._renderSwitchValidatorView(
@@ -49,6 +50,12 @@ class SignTransaction {
             this._renderMultiTransactionView(request);
         } else {
             this._renderSingleTransactionView(request);
+        }
+
+        // Custom simplified layouts (e.g. switch-validator) hide per-tx detail. For those, expose the
+        // multi-tx list as an overlay accessible via an info icon on the page header.
+        if (isSwitchValidator) {
+            this._setupTxListOverlay(request);
         }
 
         const $closeDetails = /** @type {HTMLButtonElement} */ (this.$accountDetails.querySelector('#close-details'));
@@ -225,69 +232,39 @@ class SignTransaction {
             accountLabel: null,
         });
 
-        // Sender identicon (clickable → opens sender details)
-        const $senderIcon = new Identicon(senderAddress).getElement();
-        $senderIcon.classList.add('tx-sender');
-        $senderIcon.addEventListener('click', () => this._openDetails(senderAddressInfo));
-        $entry.appendChild($senderIcon);
+        $entry.appendChild(this._createTransactionAddressRow(senderAddress, senderAddressInfo));
 
-        // Arrow
-        const $arrow = document.createElement('span');
+        const $arrow = document.createElement('div');
         $arrow.className = 'tx-arrow';
-        $arrow.textContent = '\u2192'; // →
+        $arrow.textContent = '\u2193'; // ↓
         $entry.appendChild($arrow);
 
-        // Recipient identicon (clickable → opens recipient details)
-        const $recipientIcon = new Identicon(recipientAddress).getElement();
-        $recipientIcon.classList.add('tx-recipient');
-        $recipientIcon.addEventListener('click', () => this._openDetails(recipientAddressInfo));
-        $entry.appendChild($recipientIcon);
+        $entry.appendChild(this._createTransactionAddressRow(recipientAddress, recipientAddressInfo));
 
-        // Details container
-        const $details = document.createElement('div');
-        $details.className = 'tx-details';
+        const $footer = document.createElement('div');
+        $footer.className = 'tx-footer';
 
-        // Sender address (clickable → opens sender details)
-        const $senderAddr = document.createElement('div');
-        $senderAddr.className = 'tx-address address tx-sender-address tx-sender';
-        $senderAddr.textContent = senderAddress;
-        $senderAddr.addEventListener('click', () => this._openDetails(senderAddressInfo));
-        $details.appendChild($senderAddr);
-
-        // Recipient address (clickable → opens recipient details)
-        const $recipientAddr = document.createElement('div');
-        $recipientAddr.className = 'tx-address address tx-recipient-address tx-recipient';
-        $recipientAddr.textContent = recipientAddress;
-        $recipientAddr.addEventListener('click', () => this._openDetails(recipientAddressInfo));
-        $details.appendChild($recipientAddr);
-
-        // Transaction data (contract creation, staking info, etc.)
         const formattedData = TransactionDataFormatting.formatTransactionData(tx);
         if (formattedData) {
             const $txData = document.createElement('div');
-            $txData.className = 'tx-data nq-text-s';
+            $txData.className = 'tx-data';
             $txData.textContent = formattedData;
-            $details.appendChild($txData);
             I18n.observer.on(
                 I18n.Events.LANGUAGE_CHANGED,
                 () => { $txData.textContent = TransactionDataFormatting.formatTransactionData(tx); },
             );
+            $footer.appendChild($txData);
         }
 
-        $entry.appendChild($details);
-
-        // Value and fee container
         const $amounts = document.createElement('div');
         $amounts.className = 'tx-amounts';
 
-        // Value
         const $value = document.createElement('div');
         $value.className = 'tx-value';
         $value.innerHTML = `${NumberFormatting.formatNumber(lunasToCoins(Number(tx.value)))}`
             + '<span class="nim-symbol"></span>';
         $amounts.appendChild($value);
 
-        // Fee
         if (tx.fee > 0) {
             const $fee = document.createElement('div');
             $fee.className = 'tx-fee';
@@ -296,9 +273,31 @@ class SignTransaction {
             $amounts.appendChild($fee);
         }
 
-        $entry.appendChild($amounts);
+        $footer.appendChild($amounts);
+        $entry.appendChild($footer);
 
         return $entry;
+    }
+
+    /**
+     * @param {string} userFriendlyAddress
+     * @param {AddressInfo} addressInfo
+     * @returns {HTMLElement}
+     */
+    _createTransactionAddressRow(userFriendlyAddress, addressInfo) {
+        const $row = document.createElement('div');
+        $row.className = 'tx-row';
+
+        $row.appendChild(new Identicon(userFriendlyAddress).getElement());
+
+        const $address = document.createElement('div');
+        $address.className = 'tx-address';
+        $address.textContent = userFriendlyAddress;
+        $row.appendChild($address);
+
+        $row.addEventListener('click', () => this._openDetails(addressInfo));
+
+        return $row;
     }
 
     /** @param {Parsed<KeyguardRequest.SignTransactionRequestSwitchValidator>} request */
@@ -381,6 +380,120 @@ class SignTransaction {
 
     _closeDetails() {
         this.$el.classList.remove('account-details-open');
+    }
+
+    /** @param {Parsed<KeyguardRequest.SignTransactionRequest>} request */
+    _setupTxListOverlay(request) {
+        const $pageHeader = /** @type {HTMLElement} */ (this.$el.querySelector('.page-header'));
+
+        const $infoIcon = document.createElement('button');
+        $infoIcon.type = 'button';
+        $infoIcon.className = 'info-icon';
+        $infoIcon.setAttribute('aria-expanded', 'false');
+        $infoIcon.setAttribute('aria-label', I18n.translatePhrase('sign-tx-info-icon-label'));
+        $infoIcon.innerHTML = '<svg class="nq-icon"><use xlink:href="../../../node_modules/'
+            + '@nimiq/style/nimiq-style.icons.svg#nq-info-circle-small"/></svg>';
+        $pageHeader.appendChild($infoIcon);
+        $pageHeader.classList.add('has-info-icon');
+
+        I18n.observer.on(I18n.Events.LANGUAGE_CHANGED, () => {
+            $infoIcon.setAttribute('aria-label', I18n.translatePhrase('sign-tx-info-icon-label'));
+        });
+
+        const $closeTxList = /** @type {HTMLButtonElement} */
+            (this.$txListDetails.querySelector('#close-tx-list-details'));
+        const $content = /** @type {HTMLElement} */
+            (this.$txListDetails.querySelector('#tx-list-details-content'));
+
+        $infoIcon.addEventListener('click', this._openTxList.bind(this, $infoIcon, $closeTxList, $content));
+        $closeTxList.addEventListener('click', this._closeTxList.bind(this, $infoIcon));
+
+        window.addEventListener('keydown', event => {
+            if (event.key !== 'Escape') return;
+            // Close in reverse layering order: address-details sits above tx-list when both are open.
+            if (this.$el.classList.contains('account-details-open')) {
+                this._closeDetails();
+            } else if (this.$el.classList.contains('tx-list-details-open')) {
+                this._closeTxList($infoIcon);
+            }
+        });
+    }
+
+    /**
+     * @param {HTMLButtonElement} $infoIcon
+     * @param {HTMLButtonElement} $closeTxList
+     * @param {HTMLElement} $content
+     */
+    _openTxList($infoIcon, $closeTxList, $content) {
+        // Defer building the list until first open — saves Identicon/AddressInfo work if the user
+        // only confirms the simplified view.
+        if (!$content.firstChild) {
+            this._buildTxListInto($content, this._request);
+        }
+        this.$el.classList.add('tx-list-details-open');
+        $infoIcon.setAttribute('aria-expanded', 'true');
+        this.$txListDetails.setAttribute('aria-hidden', 'false');
+        $closeTxList.focus();
+    }
+
+    /** @param {HTMLButtonElement} $infoIcon */
+    _closeTxList($infoIcon) {
+        this.$el.classList.remove('tx-list-details-open');
+        $infoIcon.setAttribute('aria-expanded', 'false');
+        this.$txListDetails.setAttribute('aria-hidden', 'true');
+        $infoIcon.focus();
+    }
+
+    /**
+     * Build count + entries + totals into a container. Uses class selectors only to avoid id
+     * collision with the standalone `.multi-transaction` template, which coexists in the DOM.
+     * @param {HTMLElement} $container
+     * @param {Parsed<KeyguardRequest.SignTransactionRequest>} request
+     */
+    _buildTxListInto($container, request) {
+        $container.textContent = '';
+
+        let totalValue = 0n;
+        let totalFee = 0n;
+        for (const tx of request.transactions) {
+            totalValue += tx.value;
+            totalFee += tx.fee;
+        }
+
+        const $count = document.createElement('span');
+        $count.className = 'tx-count nq-text';
+        I18n.translateToHtmlContent($count, 'sign-tx-multi-count', {
+            count: String(request.transactions.length),
+        });
+        $container.appendChild($count);
+
+        const $list = document.createElement('div');
+        $list.className = 'tx-list';
+        for (const tx of request.transactions) {
+            $list.appendChild(this._createTransactionListEntry(tx));
+        }
+        $container.appendChild($list);
+
+        const $totals = document.createElement('div');
+        $totals.className = 'tx-totals';
+
+        const $totalValue = document.createElement('div');
+        $totalValue.className = 'tx-total-value nq-light-blue';
+        $totalValue.innerHTML = `${NumberFormatting.formatNumber(lunasToCoins(Number(totalValue)))}`
+            + '<span class="nim-symbol"></span>';
+        $totals.appendChild($totalValue);
+
+        if (totalFee > 0n) {
+            const $totalFees = document.createElement('div');
+            $totalFees.className = 'tx-total-fees nq-text-s';
+            $totalFees.innerHTML = `+ ${NumberFormatting.formatNumber(lunasToCoins(Number(totalFee)))}`
+                + ' <span class="nim-symbol"></span> '
+                + '<span data-i18n="sign-tx-multi-total-fees">total fees</span>';
+            I18n.translateDom($totalFees);
+            $totals.appendChild($totalFees);
+        }
+
+        $container.appendChild($totals);
     }
 
     /**

@@ -207,13 +207,28 @@ nothing breaks in SignMultisigTransaction. */
 
 #confirm-transaction .transaction-list-entry {
     display: flex;
-    align-items: center;
-    padding: 1.5rem 0;
+    flex-direction: column;
+    padding: 2rem 0;
     border-bottom: 1px solid rgba(31, 35, 72, 0.1);
 }
 
 #confirm-transaction .transaction-list-entry:first-child {
     border-top: 1px solid rgba(31, 35, 72, 0.1);
+}
+
+#confirm-transaction .transaction-list-entry .tx-row {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    cursor: pointer;
+    padding: 0.5rem 0.75rem;
+    margin: 0 -0.75rem;
+    border-radius: 0.5rem;
+    transition: background-color .2s var(--nimiq-ease);
+}
+
+#confirm-transaction .transaction-list-entry .tx-row:hover {
+    background-color: rgba(31, 35, 72, 0.04);
 }
 
 #confirm-transaction .transaction-list-entry .identicon {
@@ -222,52 +237,60 @@ nothing breaks in SignMultisigTransaction. */
     flex-shrink: 0;
 }
 
-#confirm-transaction .transaction-list-entry .tx-sender,
-#confirm-transaction .transaction-list-entry .tx-recipient {
-    cursor: pointer;
+#confirm-transaction .transaction-list-entry .tx-address,
+#confirm-transaction .transaction-list-entry .tx-data {
+    font-size: 1.625rem;
+    color: var(--nimiq-blue);
+    line-height: 1.4;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    min-width: 0;
+    flex: 1;
+}
+
+#confirm-transaction .transaction-list-entry .tx-address {
+    font-family: "Fira Mono", "Andale Mono", monospace;
 }
 
 #confirm-transaction .transaction-list-entry .tx-arrow {
-    margin: 0 0.5rem;
-    opacity: 0.3;
-    font-size: 1.5rem;
-    flex-shrink: 0;
+    width: 4rem; /* match identicon column so the ↓ centers on the identicon */
+    text-align: center;
+    color: rgba(31, 35, 72, 0.3);
+    font-size: 1.75rem;
+    line-height: 1;
+    padding: 0.25rem 0;
 }
 
-#confirm-transaction .transaction-list-entry .tx-details {
-    flex-grow: 1;
-    margin: 0 1rem;
-    /* overflow:hidden clips the text-overflow ellipsis; min-width:0 allows
-       the flex item to shrink below its intrinsic content width */
-    overflow: hidden;
-    min-width: 0;
-}
-
-#confirm-transaction .transaction-list-entry .tx-sender-address {
-    opacity: 0.5;
-    font-size: 1.375rem;
+#confirm-transaction .transaction-list-entry .tx-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1.5rem;
+    margin-top: 1.25rem;
+    padding-left: 5.5rem; /* align with addresses, past the identicon column (4rem icon + 1.5rem gap) */
 }
 
 #confirm-transaction .transaction-list-entry .tx-data {
     opacity: 0.6;
-    color: var(--nimiq-blue);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+}
+
+#confirm-transaction .transaction-list-entry .tx-amounts {
+    flex-shrink: 0;
+    text-align: right;
+    margin-left: auto;
 }
 
 #confirm-transaction .transaction-list-entry .tx-value {
     font-weight: 600;
     white-space: nowrap;
-    text-align: right;
     color: var(--nimiq-light-blue);
 }
 
 #confirm-transaction .transaction-list-entry .tx-fee {
     font-size: 1.5rem;
     opacity: 0.5;
-    text-align: right;
     white-space: nowrap;
+    margin-top: 0.25rem;
 }
 
 #confirm-transaction .multi-transaction .transaction-totals {
@@ -300,34 +323,37 @@ nothing breaks in SignMultisigTransaction. */
 }
 
 #confirm-transaction.switch-validator .nq-card-header {
-    padding-bottom: 1rem;
+    padding-bottom: 0;
+}
+
+#confirm-transaction.switch-validator .nq-card-body {
+    padding: 1.25rem 2rem 2rem;
 }
 
 #confirm-transaction .switch-validator-view .switch-subtitle-description,
 #confirm-transaction .switch-validator-view .switch-subtitle-duration {
     font-size: 2rem;
     text-align: center;
-    margin: 0 3rem;
+    margin: 0;
     line-height: 1.4;
 }
 
 #confirm-transaction .switch-validator-view .switch-subtitle-description {
     color: var(--nimiq-blue);
-    margin-top: 2rem;
 }
 
 #confirm-transaction .switch-validator-view .switch-subtitle-duration {
     color: var(--nimiq-light-blue);
     font-weight: 600;
-    margin-bottom: 2rem;
 }
 
 #confirm-transaction .switch-validator-view .accounts {
     flex-direction: column;
     align-items: stretch;
     gap: 1rem;
-    border-bottom: none;
+    padding-top: 4rem; /* 32px */
     padding-bottom: 0;
+    border-bottom: none;
 }
 
 #confirm-transaction .switch-validator-view .accounts .arrow {
@@ -385,4 +411,174 @@ nothing breaks in SignMultisigTransaction. */
 #confirm-transaction .validator-card .name.mono {
     font-family: "Fira Mono", "Andale Mono", monospace;
     font-size: 1.75rem;
+}
+
+/* Transaction-list overlay (info-icon-triggered, used by simplified custom layouts).
+   Mirrors the #account-details overlay pattern so address-details can layer above it. */
+
+#confirm-transaction > #tx-list-details {
+    position: absolute;
+    overflow: hidden;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    border-radius: 1rem;
+    background-color: rgba(255, 255, 255, 0.75);
+    z-index: -1;
+    opacity: 0;
+    padding: 4rem 2rem 2rem;
+    display: flex;
+    flex-direction: column;
+    transition: opacity .4s 0s, z-index 0s .4s;
+    box-sizing: border-box;
+}
+
+#confirm-transaction.tx-list-details-open > #tx-list-details {
+    z-index: 3;
+    transition-delay: 0s;
+    opacity: 1;
+}
+
+#confirm-transaction.tx-list-details-open > #effect-container > .page-header,
+#confirm-transaction.tx-list-details-open > #effect-container > .payment-info-line,
+#confirm-transaction.tx-list-details-open > #effect-container > .page-body {
+    -webkit-filter: blur(20px);
+    -moz-filter: blur(20px);
+    -o-filter: blur(20px);
+    -ms-filter: blur(20px);
+    filter: blur(20px);
+    opacity: 0.5;
+}
+
+#confirm-transaction.tx-list-details-open > #effect-container > .page-footer {
+    -webkit-filter: blur(35px);
+    -moz-filter: blur(35px);
+    -o-filter: blur(35px);
+    -ms-filter: blur(35px);
+    filter: blur(35px);
+    opacity: 0.5;
+}
+
+/* When address-details is opened from within the tx-list overlay, blur the tx-list too
+   so the address-details modal reads cleanly above it. */
+#confirm-transaction.account-details-open > #tx-list-details {
+    -webkit-filter: blur(20px);
+    -moz-filter: blur(20px);
+    -o-filter: blur(20px);
+    -ms-filter: blur(20px);
+    filter: blur(20px);
+    opacity: 0.5;
+    transition: filter .4s, opacity .4s;
+}
+
+#confirm-transaction #tx-list-details #close-tx-list-details {
+    position: absolute;
+    right: 2rem;
+    top: 2rem;
+    border: 0;
+    padding: 0;
+    height: 3rem;
+    font-size: 3rem;
+    background-color: unset;
+}
+
+#confirm-transaction #tx-list-details #close-tx-list-details .nq-icon {
+    opacity: .2;
+    transition: opacity .3s var(--nimiq-ease);
+}
+
+#confirm-transaction #tx-list-details #close-tx-list-details:hover .nq-icon,
+#confirm-transaction #tx-list-details #close-tx-list-details:active .nq-icon,
+#confirm-transaction #tx-list-details #close-tx-list-details:focus .nq-icon {
+    opacity: .4;
+}
+
+/* Tx-list-details inner content: count header, scrollable list, totals footer. */
+#confirm-transaction #tx-list-details-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0; /* allow .tx-list to actually shrink and scroll */
+}
+
+#confirm-transaction #tx-list-details-content .tx-count {
+    display: block;
+    text-align: center;
+    padding-bottom: 1.5rem;
+    margin: 0;
+    flex-shrink: 0;
+}
+
+#confirm-transaction #tx-list-details-content .tx-list {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    /* Extend to overlay edges so the scrollbar sits flush, then restore content alignment. */
+    margin: 0 -2rem;
+    padding: 0 2rem;
+    /* Scroll indicators: fade-out gradients at top and bottom edges. */
+    mask-image: linear-gradient(
+        to bottom,
+        transparent,
+        black 1.5rem,
+        black calc(100% - 1.5rem),
+        transparent
+    );
+    -webkit-mask-image: linear-gradient(
+        to bottom,
+        transparent,
+        black 1.5rem,
+        black calc(100% - 1.5rem),
+        transparent
+    );
+}
+
+#confirm-transaction #tx-list-details-content .tx-totals {
+    padding-top: 1.5rem;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+#confirm-transaction #tx-list-details-content .tx-total-value {
+    font-size: 4rem;
+    font-weight: bold;
+}
+
+#confirm-transaction #tx-list-details-content .tx-total-value .nim-symbol {
+    margin-left: 0.5rem;
+}
+
+#confirm-transaction #tx-list-details-content .tx-total-fees {
+    opacity: 0.5;
+    margin-top: 0.5rem;
+}
+
+/* Info icon (top-right of page header) — only present when JS adds it for custom layouts.
+   Small visual size (1.75rem) inside a larger padded hit area for comfortable tapping. */
+.page-header .info-icon {
+    position: absolute;
+    right: 2.25rem;
+    top: 2.25rem;
+    width: 1.75rem;
+    height: 1.75rem;
+    box-sizing: content-box;
+    padding: 0.75rem;
+    cursor: pointer;
+    opacity: 0.2;
+    transition: opacity .3s var(--nimiq-ease);
+    color: inherit;
+    background: transparent;
+    border: 0;
+}
+
+.page-header .info-icon .nq-icon {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.page-header .info-icon:hover,
+.page-header .info-icon:focus {
+    opacity: 0.6;
+    outline: none;
 }
