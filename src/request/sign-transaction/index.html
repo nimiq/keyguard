@@ -82,6 +82,12 @@
 
     <div id="app">
         <div id="confirm-transaction" class="page nq-card">
+            <div id="tx-list-details" role="dialog" aria-modal="true" aria-hidden="true">
+                <button id="close-tx-list-details" class="nq-button-s">
+                    <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-close"/></svg>
+                </button>
+                <div id="tx-list-details-content"></div>
+            </div>
             <div id="account-details">
                 <button id="close-details" class="nq-button-s">
                     <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-close"/></svg>
