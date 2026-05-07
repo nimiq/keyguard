@@ -361,8 +361,8 @@ class SignTransaction {
         senderAddressInfo.renderTo($sender);
         $sender.addEventListener('click', () => this._openDetails(senderAddressInfo));
 
-        // TO: the user's wallet. The recipient of the third (remove-stake) transaction is the user's
-        // own basic address — the parser validates this.
+        // TO: the user's wallet. The parser binds the recipient of the third (remove-stake)
+        // transaction to the staker that signs tx0/tx1 — see SignTransactionApi.parseRequest.
         const removeStakeTx = request.transactions[2];
         const $recipient = /** @type {HTMLElement} */ ($view.querySelector('.accounts .recipient'));
         const recipientAddressInfo = new AddressInfo({

@@ -204,17 +204,27 @@ class SignTransactionApi extends TopLevelApi {
                     'unstaking layout requires exactly three transactions',
                 );
             }
-            const t0 = SignTransactionApi._stakingDataType(parsedRequest.transactions[0]);
-            const t1 = SignTransactionApi._stakingDataType(parsedRequest.transactions[1]);
-            // The third transaction is `remove-stake`, which is OUTGOING-staking (sender = staking
-            // contract, recipient = user wallet). _stakingDataType only inspects incoming-staking
-            // data, so check sender/recipient types directly.
+            const tx0 = parsedRequest.transactions[0];
+            const tx1 = parsedRequest.transactions[1];
             const tx2 = parsedRequest.transactions[2];
-            const t2IsRemoveStake = tx2.senderType === Nimiq.AccountType.Staking
-                && tx2.recipientType === Nimiq.AccountType.Basic;
-            if (t0 !== 'set-active-stake' || t1 !== 'retire-stake' || !t2IsRemoveStake) {
+            const t0 = SignTransactionApi._stakingDataType(tx0);
+            const t1 = SignTransactionApi._stakingDataType(tx1);
+            // The third transaction is `remove-stake`, which is OUTGOING-staking. Inspect the
+            // parsed sender data to distinguish it from `delete-validator` (both share the same
+            // sender/recipient account types).
+            const t2 = SignTransactionApi._stakingSenderDataType(tx2);
+            if (t0 !== 'set-active-stake' || t1 !== 'retire-stake' || t2 !== 'remove-stake') {
                 throw new Errors.InvalidRequestError(
                     'unstaking transactions must be set-active-stake, retire-stake, remove-stake (in order)',
+                );
+            }
+
+            // Bind all three transactions to the same staker. Without this, a caller could route
+            // the unbonded NIM to an attacker by setting `tx2.recipient` to an arbitrary address
+            // while `senderLabel`/`recipientLabel` keep the UI looking benign.
+            if (!tx0.sender.equals(tx1.sender) || !tx2.recipient.equals(tx0.sender)) {
+                throw new Errors.InvalidRequestError(
+                    'unstaking transactions must be bound to the same staker',
                 );
             }
 
@@ -269,6 +279,24 @@ class SignTransactionApi extends TopLevelApi {
     static _stakingDataType(tx) {
         const data = SignTransactionApi._stakingData(tx);
         return data ? data.type : undefined;
+    }
+
+    /**
+     * Returns the parsed sender-data type for an outgoing staking transaction (e.g.
+     * `remove-stake`, `delete-validator`), or `undefined` if the transaction isn't an
+     * outgoing staking transaction with parseable sender data.
+     *
+     * @param {Nimiq.Transaction} tx
+     * @returns {string | undefined}
+     */
+    static _stakingSenderDataType(tx) {
+        if (tx.senderType !== Nimiq.AccountType.Staking) return undefined;
+        try {
+            const senderData = tx.toPlain().senderData;
+            return senderData ? senderData.type : undefined;
+        } catch (e) {
+            return undefined;
+        }
     }
 
     /**
