@@ -85,12 +85,8 @@ class SignStaking {
                     }
 
                     this.$headline.textContent = I18n.translatePhrase('sign-staking-heading-change');
-                    const $subtitleImm = document.createElement('p');
-                    $subtitleImm.className = 'nq-notice info switch-subtitle';
-                    $subtitleImm.textContent = I18n.translatePhrase('sign-staking-switch-immediate');
-                    if (this.$headline.parentNode) {
-                        this.$headline.parentNode.insertBefore($subtitleImm, this.$headline.nextSibling);
-                    }
+                    /** @type {HTMLElement} */
+                    (this.$el.querySelector('#switch-subtitle')).classList.remove('display-none');
 
                     this._senderAddressInfo = new AddressInfo({ // From previous validator
                         userFriendlyAddress: fromValidatorAddress.toUserFriendlyAddress(),
