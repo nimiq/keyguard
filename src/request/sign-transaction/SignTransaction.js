@@ -212,8 +212,12 @@ class SignTransaction {
         const $totalValue = /** @type {HTMLElement} */ ($multiTx.querySelector('#total-value-amount'));
         $totalValue.textContent = NumberFormatting.formatNumber(lunasToCoins(Number(totalValue)));
 
-        const $totalFees = /** @type {HTMLElement} */ ($multiTx.querySelector('#total-fees-amount'));
-        $totalFees.textContent = NumberFormatting.formatNumber(lunasToCoins(Number(totalFee)));
+        if (totalFee > 0n) {
+            const $totalFees = /** @type {HTMLElement} */ ($multiTx.querySelector('#total-fees-amount'));
+            $totalFees.textContent = NumberFormatting.formatNumber(lunasToCoins(Number(totalFee)));
+            const $totalFeesRow = /** @type {HTMLElement} */ ($multiTx.querySelector('.total-fees'));
+            $totalFeesRow.classList.remove('display-none');
+        }
     }
 
     /**
