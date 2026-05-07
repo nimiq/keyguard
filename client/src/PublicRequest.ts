@@ -219,7 +219,6 @@ export type SignTransactionRequestSwitchValidator = SimpleRequest & {
     validatorImageUrl?: string,
     fromValidatorAddress: string,
     fromValidatorImageUrl?: string,
-    amount: number,
 };
 
 export type SignTransactionRequestUnstaking = SimpleRequest & {
