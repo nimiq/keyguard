@@ -313,7 +313,9 @@ class SignTransaction {
             const $fee = document.createElement('div');
             $fee.className = 'tx-fee';
             $fee.innerHTML = `+ ${NumberFormatting.formatNumber(lunasToCoins(Number(tx.fee)))}`
-                + ` <span class="nim-symbol"></span> ${I18n.translatePhrase('sign-tx-fee')}`;
+                + ' <span class="nim-symbol"></span> '
+                + '<span data-i18n="sign-tx-fee">fee</span>';
+            I18n.translateDom($fee);
             $amounts.appendChild($fee);
         }
 
@@ -326,10 +328,6 @@ class SignTransaction {
         $paymentInfoLine.remove();
 
         const $switchView = /** @type {HTMLElement} */ (this.$el.querySelector('.switch-validator-view'));
-        const $description = /** @type {HTMLElement} */ ($switchView.querySelector('.switch-subtitle-description'));
-        $description.textContent = I18n.translatePhrase('sign-tx-switch-deferred-description');
-        const $duration = /** @type {HTMLElement} */ ($switchView.querySelector('.switch-subtitle-duration'));
-        $duration.textContent = I18n.translatePhrase('sign-tx-switch-deferred-duration');
 
         this._renderValidatorCard(
             /** @type {HTMLElement} */ ($switchView.querySelector('.accounts .sender')),
