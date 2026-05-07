@@ -194,9 +194,6 @@ class SignTransactionApi extends TopLevelApi {
                     request.fromValidatorImageUrl, 'fromValidatorImageUrl',
                 );
             }
-            parsedRequest.amount = /** @type {number} */ (
-                this.parseNonNegativeFiniteNumber(request.amount, false, 'amount')
-            );
         } else if (request.layout === SignTransactionApi.Layouts.UNSTAKING
             && parsedRequest.layout === SignTransactionApi.Layouts.UNSTAKING) {
             if (parsedRequest.transactions.length !== 3) {
