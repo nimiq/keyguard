@@ -104,9 +104,7 @@ class SignTransactionApi extends TopLevelApi {
             }
         } else {
             // Single transaction mode (backward compatible)
-            if ('senderLabel' in request) {
-                parsedRequest.senderLabel = this.parseLabel(request.senderLabel);
-            }
+            parsedRequest.senderLabel = this.parseLabel(request.senderLabel);
             parsedRequest.transactions = [this.parseTransaction(request)];
         }
 
