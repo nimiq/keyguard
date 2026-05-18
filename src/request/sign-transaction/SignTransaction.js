@@ -343,6 +343,18 @@ class SignTransaction {
             request.validatorImageUrl || null,
             false,
         );
+
+        let totalFee = 0n;
+        for (const tx of request.transactions) {
+            totalFee += tx.fee;
+        }
+        if (totalFee > 0n) {
+            const $feeValue = /** @type {HTMLElement} */ ($switchView.querySelector('#switch-validator-fee'));
+            $feeValue.textContent = NumberFormatting.formatNumber(lunasToCoins(Number(totalFee)));
+            const $feeSection = /** @type {HTMLElement} */
+                ($switchView.querySelector('#switch-validator-fee-section'));
+            $feeSection.classList.remove('display-none');
+        }
     }
 
     /** @param {Parsed<KeyguardRequest.SignTransactionRequestUnstaking>} request */
