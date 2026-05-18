@@ -43,9 +43,8 @@ class SignTransactionApi extends TopLevelApi {
             parsedRequest.transactions = request.transactions.map(
                 /** @param {Omit<KeyguardRequest.TransactionInfo, 'senderLabel'> | Uint8Array} entry */
                 entry => {
+                    let tx;
                     if (entry instanceof Uint8Array) {
-                        // Serialized transaction
-                        let tx;
                         try {
                             tx = Nimiq.Transaction.deserialize(entry);
                         } catch (error) {
@@ -53,27 +52,24 @@ class SignTransactionApi extends TopLevelApi {
                                 error instanceof Error ? error : String(error),
                             );
                         }
-
                         if (tx.sender.equals(tx.recipient)) {
                             throw new Errors.InvalidRequestError('Sender and recipient must not match');
                         }
-
-                        // Reject incoming staking transactions that carry a user-provided
-                        // staker / validator signature proof: transaction.sign() would
-                        // overwrite it with a proof from the keyPath's keypair. See
-                        // Transaction.sign() docs: "both signatures are made with the same
-                        // keypair". If support for different staker/validator keys is added
-                        // later, this rejection can be relaxed to defer to manual signing.
-                        if (SignTransactionApi._hasStakerOrValidatorProof(tx)) {
-                            throw new Errors.InvalidRequestError(
-                                'Staking transactions with a user-provided signature proof are not supported',
-                            );
-                        }
-
-                        return tx;
+                    } else {
+                        tx = this.parseTransaction(entry);
                     }
 
-                    return this.parseTransaction(entry);
+                    // Reject incoming staking transactions that carry a user-provided staker / validator
+                    // signature proof. transaction.sign() will overwrite it with a proof from the keyPath's
+                    // keypair, silently discarding the user's input — better to fail loudly. If multi-key
+                    // staker support is added later, this rejection can be relaxed.
+                    if (SignTransactionApi._hasStakerOrValidatorProof(tx)) {
+                        throw new Errors.InvalidRequestError(
+                            'Staking transactions with a user-provided signature proof are not supported',
+                        );
+                    }
+
+                    return tx;
                 },
             );
 
@@ -145,46 +141,69 @@ class SignTransactionApi extends TopLevelApi {
                     'switch-validator layout requires exactly two transactions',
                 );
             }
-            const firstType = SignTransactionApi._stakingDataType(parsedRequest.transactions[0]);
-            const secondData = SignTransactionApi._stakingData(parsedRequest.transactions[1]);
-            if (firstType !== 'set-active-stake' || secondData?.type !== 'update-staker') {
+
+            const [setActiveStakeTx, updateStakerTx] = parsedRequest.transactions;
+            const [setActiveStakeData, updateStakerData] = parsedRequest.transactions
+                .map(tx => SignTransactionApi._stakingData(tx));
+
+            if (!setActiveStakeData || setActiveStakeData.type !== 'set-active-stake'
+                || !updateStakerData || updateStakerData.type !== 'update-staker') {
                 throw new Errors.InvalidRequestError(
                     'switch-validator transactions must be set-active-stake followed by update-staker',
                 );
             }
-            if (!parsedRequest.transactions[0].sender.equals(parsedRequest.transactions[1].sender)) {
-                throw new Errors.InvalidRequestError(
-                    'switch-validator transactions must share the same staker',
-                );
-            }
-            if (!secondData.newDelegation) {
+            if (!updateStakerData.newDelegation) {
                 throw new Errors.InvalidRequestError(
                     'switch-validator update-staker must include a newDelegation',
                 );
             }
 
-            parsedRequest.senderLabel = this.parseLabel(request.senderLabel);
-            parsedRequest.recipientLabel = this.parseLabel(request.recipientLabel);
-            parsedRequest.validatorAddress = this.parseAddress(
-                request.validatorAddress, 'validatorAddress', false,
-            );
-            parsedRequest.fromValidatorAddress = this.parseAddress(
-                request.fromValidatorAddress, 'fromValidatorAddress', false,
-            );
-
-            // Assert the update-staker actually re-delegates to the address the user consented to.
-            const txDelegation = this.parseAddress(secondData.newDelegation, 'newDelegation', false);
-            if (!txDelegation.equals(parsedRequest.validatorAddress)) {
+            // Same fee-payer, not same staker — staker is identified by the staking proof, which
+            // can differ from the tx sender. Staker equality holds because _hasStakerOrValidatorProof
+            // rejects user-provided proofs, forcing both proofs to use the request's keyPath.
+            if (!setActiveStakeTx.sender.equals(updateStakerTx.sender)) {
                 throw new Errors.InvalidRequestError(
-                    'switch-validator validatorAddress does not match update-staker newDelegation',
+                    'switch-validator transactions must share the same fee-paying sender',
                 );
             }
+
+            if (setActiveStakeData.newActiveBalance !== 0) {
+                throw new Errors.InvalidRequestError(
+                    'switch-validator set-active-stake must deactivate all stake (newActiveBalance must be 0)',
+                );
+            }
+            if (!updateStakerData.reactivateAllStake) {
+                throw new Errors.InvalidRequestError(
+                    'switch-validator update-staker must have reactivateAllStake set',
+                );
+            }
+            if (setActiveStakeTx.validityStartHeight > updateStakerTx.validityStartHeight) {
+                throw new Errors.InvalidRequestError(
+                    'switch-validator set-active-stake must not be valid after update-staker',
+                );
+            }
+
+            parsedRequest.senderLabel = this.parseLabel(request.senderLabel);
+            parsedRequest.recipientLabel = this.parseLabel(request.recipientLabel);
+            parsedRequest.fromValidatorAddress = this.parseAddress(
+                request.fromValidatorAddress,
+                'fromValidatorAddress',
+                false,
+            );
+            // The signed delegation is authoritative — request data must not influence this.
+            parsedRequest.validatorAddress = this.parseAddress(
+                updateStakerData.newDelegation,
+                'update-staker newDelegation',
+                false,
+            );
+
             if (request.validatorImageUrl) {
                 parsedRequest.validatorImageUrl = this._parseUrl(request.validatorImageUrl, 'validatorImageUrl');
             }
             if (request.fromValidatorImageUrl) {
                 parsedRequest.fromValidatorImageUrl = this._parseUrl(
-                    request.fromValidatorImageUrl, 'fromValidatorImageUrl',
+                    request.fromValidatorImageUrl,
+                    'fromValidatorImageUrl',
                 );
             }
         } else if (request.layout === SignTransactionApi.Layouts.UNSTAKING
