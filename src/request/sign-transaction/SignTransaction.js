@@ -389,7 +389,7 @@ class SignTransaction {
         $recipient.addEventListener('click', () => this._openDetails(recipientAddressInfo));
 
         // Headline amount = value of the remove-stake tx (NIM returned to the user).
-        const $amount = /** @type {HTMLElement} */ ($view.querySelector('.unstake-amount-value'));
+        const $amount = /** @type {HTMLElement} */ ($view.querySelector('#unstake-value'));
         $amount.textContent = NumberFormatting.formatNumber(lunasToCoins(Number(removeStakeTx.value)));
 
         // Total fee across all 3 transactions; hidden when zero.
@@ -398,9 +398,9 @@ class SignTransaction {
             totalFee += tx.fee;
         }
         if (totalFee > 0n) {
-            const $feeValue = /** @type {HTMLElement} */ ($view.querySelector('.unstake-fee-value'));
+            const $feeValue = /** @type {HTMLElement} */ ($view.querySelector('#unstake-fee'));
             $feeValue.textContent = NumberFormatting.formatNumber(lunasToCoins(Number(totalFee)));
-            const $feeSection = /** @type {HTMLElement} */ ($view.querySelector('.unstake-fee-section'));
+            const $feeSection = /** @type {HTMLElement} */ ($view.querySelector('#unstake-fee-section'));
             $feeSection.classList.remove('display-none');
         }
     }
