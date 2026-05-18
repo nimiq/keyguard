@@ -76,15 +76,7 @@ class SignTransactionApi extends TopLevelApi {
                         return tx;
                     }
 
-                    if (entry && typeof entry === 'object'
-                        && ('recipient' in entry || 'value' in entry || 'fee' in entry)) {
-                        // TransactionInfo object
-                        return this.parseTransaction(entry);
-                    }
-
-                    throw new Errors.InvalidRequestError(
-                        'Invalid transaction entry. Expected TransactionInfo object or Uint8Array.',
-                    );
+                    return this.parseTransaction(entry);
                 },
             );
 
