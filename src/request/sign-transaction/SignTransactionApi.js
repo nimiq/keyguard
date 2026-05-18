@@ -100,10 +100,10 @@ class SignTransactionApi extends TopLevelApi {
         // Parse layout-specific fields
         if ((!request.layout || request.layout === SignTransactionApi.Layouts.STANDARD)
             && parsedRequest.layout === SignTransactionApi.Layouts.STANDARD) {
-            if ('senderLabel' in request) {
+            if ('senderLabel' in request && parsedRequest.transactions.length === 1) {
                 parsedRequest.senderLabel = this.parseLabel(request.senderLabel);
             }
-            if ('recipientLabel' in request) {
+            if ('recipientLabel' in request && parsedRequest.transactions.length === 1) {
                 parsedRequest.recipientLabel = this.parseLabel(request.recipientLabel);
             }
         } else if (request.layout === SignTransactionApi.Layouts.CHECKOUT
