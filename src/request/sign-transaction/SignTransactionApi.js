@@ -213,34 +213,38 @@ class SignTransactionApi extends TopLevelApi {
                     'unstaking layout requires exactly three transactions',
                 );
             }
-            const tx0 = parsedRequest.transactions[0];
-            const tx1 = parsedRequest.transactions[1];
-            const tx2 = parsedRequest.transactions[2];
-            const t0 = SignTransactionApi._stakingDataType(tx0);
-            const t1 = SignTransactionApi._stakingDataType(tx1);
-            // The third transaction is `remove-stake`, which is OUTGOING-staking. Inspect the
-            // parsed sender data to distinguish it from `delete-validator` (both share the same
-            // sender/recipient account types).
-            const t2 = SignTransactionApi._stakingSenderDataType(tx2);
-            if (t0 !== 'set-active-stake' || t1 !== 'retire-stake' || t2 !== 'remove-stake') {
+
+            const [setActiveStakeTx, retireStakeTx, removeStakeTx] = parsedRequest.transactions;
+            const setActiveStakeType = SignTransactionApi._stakingDataType(setActiveStakeTx);
+            const retireStakeType = SignTransactionApi._stakingDataType(retireStakeTx);
+            // remove-stake is outgoing-staking; inspect senderData to distinguish from
+            // delete-validator (both share the same sender/recipient account types).
+            const removeStakeType = SignTransactionApi._stakingSenderDataType(removeStakeTx);
+
+            if (setActiveStakeType !== 'set-active-stake'
+                || retireStakeType !== 'retire-stake'
+                || removeStakeType !== 'remove-stake') {
                 throw new Errors.InvalidRequestError(
                     'unstaking transactions must be set-active-stake, retire-stake, remove-stake (in order)',
                 );
             }
 
-            // Bind all three transactions to the same staker. Without this, a caller could route
-            // the unbonded NIM to an attacker by setting `tx2.recipient` to an arbitrary address
-            // while `senderLabel`/`recipientLabel` keep the UI looking benign.
-            if (!tx0.sender.equals(tx1.sender) || !tx2.recipient.equals(tx0.sender)) {
+            // Fee-payer for the first two, payout address for the third — not a staker-equality
+            // check (see switch-validator). Binding removeStakeTx.recipient to the staker prevents
+            // redirecting unbonded NIM to an attacker via benign-looking labels.
+            if (!setActiveStakeTx.sender.equals(retireStakeTx.sender)
+                || !removeStakeTx.recipient.equals(setActiveStakeTx.sender)) {
                 throw new Errors.InvalidRequestError(
-                    'unstaking transactions must be bound to the same staker',
+                    'unstaking transactions must share the same fee-paying sender and payout address',
                 );
             }
 
             parsedRequest.senderLabel = this.parseLabel(request.senderLabel);
             parsedRequest.recipientLabel = this.parseLabel(request.recipientLabel);
             parsedRequest.validatorAddress = this.parseAddress(
-                request.validatorAddress, 'validatorAddress', false,
+                request.validatorAddress,
+                'validatorAddress',
+                false,
             );
             if (request.validatorImageUrl) {
                 parsedRequest.validatorImageUrl = this._parseUrl(request.validatorImageUrl, 'validatorImageUrl');
