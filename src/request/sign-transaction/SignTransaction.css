@@ -15,6 +15,21 @@ nothing breaks in SignMultisigTransaction. */
     display: none;
 }
 
+/* Headings: hide all, opt the active layout's heading back in. */
+#confirm-transaction .page-header > h1 { display: none; }
+#confirm-transaction.standard         .heading-standard,
+#confirm-transaction.checkout         .heading-checkout,
+#confirm-transaction.cashlink         .heading-cashlink,
+#confirm-transaction.multi            .heading-multi,
+#confirm-transaction.switch-validator .heading-switch-validator,
+#confirm-transaction.unstaking        .heading-unstaking { display: block; }
+
+/* Back button is shown only on checkout and cashlink. */
+#confirm-transaction.standard         .page-header-back-button,
+#confirm-transaction.multi            .page-header-back-button,
+#confirm-transaction.switch-validator .page-header-back-button,
+#confirm-transaction.unstaking        .page-header-back-button { display: none; }
+
 #confirm-transaction .payment-info-line + .nq-card-header {
     padding-top: 2rem;
 }
