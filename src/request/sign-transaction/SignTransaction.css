@@ -385,6 +385,12 @@ nothing breaks in SignMultisigTransaction. */
     color: rgba(31, 35, 72, 0.4);
 }
 
+#confirm-transaction .switch-validator-view #switch-validator-fee-section {
+    opacity: 0.5;
+    margin-top: 1.5rem;
+    text-align: center;
+}
+
 #confirm-transaction .validator-card {
     display: flex;
     flex-direction: row;
