@@ -48,7 +48,14 @@ class SignTransactionApi extends TopLevelApi {
                 entry => {
                     if (entry instanceof Uint8Array) {
                         // Serialized transaction
-                        const tx = Nimiq.Transaction.fromAny(Nimiq.BufferUtils.toHex(entry));
+                        let tx;
+                        try {
+                            tx = Nimiq.Transaction.deserialize(entry);
+                        } catch (error) {
+                            throw new Errors.InvalidRequestError(
+                                error instanceof Error ? error : String(error),
+                            );
+                        }
 
                         if (tx.sender.equals(tx.recipient)) {
                             throw new Errors.InvalidRequestError('Sender and recipient must not match');
