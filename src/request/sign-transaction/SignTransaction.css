@@ -442,11 +442,11 @@ nothing breaks in SignMultisigTransaction. */
 
 /* Unstaking view reuses the standard single-tx layout (.accounts row, .total light-blue) and adds
    only a fee/duration note pair below the value. */
-#confirm-transaction .unstaking-view .total .unstake-amount-value {
+#confirm-transaction .unstaking-view .total #unstake-value {
     font-size: 5rem;
 }
 
-#confirm-transaction .unstaking-view .unstake-fee-section {
+#confirm-transaction .unstaking-view #unstake-fee-section {
     opacity: 0.5;
     margin-bottom: 0.25rem;
 }
