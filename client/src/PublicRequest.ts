@@ -178,8 +178,9 @@ export type SignTransactionRequestStandard = ((
     // New request type for a single transaction. senderLabel and recipientLabel are supported.
     SimpleRequest & {
         keyPath: string,
+        senderLabel?: string,
         recipientLabel?: string,
-        transactions: [TransactionInfo] | [Uint8Array],
+        transactions: [Omit<TransactionInfo, 'senderLabel'> | Uint8Array],
     }
 ) | (
     // New request type for multiple transactions. senderLabel and recipientLabel are not supported.
