@@ -216,7 +216,6 @@ export type SignTransactionRequestSwitchValidator = SimpleRequest & {
     transactions: Array<Omit<TransactionInfo, 'senderLabel'> | Uint8Array>,
     senderLabel?: string,
     recipientLabel?: string,
-    validatorAddress: string,
     validatorImageUrl?: string,
     fromValidatorAddress: string,
     fromValidatorImageUrl?: string,
