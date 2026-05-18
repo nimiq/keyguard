@@ -40,9 +40,6 @@ class SignTransactionApi extends TopLevelApi {
                 );
             }
 
-            // Parse each entry individually — mixed formats (TransactionInfo | Uint8Array) are allowed.
-            // `senderLabel` is excluded because it's not displayed in the multi-tx view; for the
-            // single-item-array case, `senderLabel` is still read from the raw request below.
             parsedRequest.transactions = request.transactions.map(
                 /** @param {Omit<KeyguardRequest.TransactionInfo, 'senderLabel'> | Uint8Array} entry */
                 entry => {
@@ -95,27 +92,23 @@ class SignTransactionApi extends TopLevelApi {
                 );
             }
 
-            // For single-item arrays, extract senderLabel for single-tx view
-            if (request.transactions.length === 1) {
-                const firstEntry = request.transactions[0];
-                if (firstEntry && typeof firstEntry === 'object' && 'senderLabel' in firstEntry) {
-                    parsedRequest.senderLabel = this.parseLabel(firstEntry.senderLabel);
-                }
-            }
         } else {
             // Single transaction mode (backward compatible)
-            parsedRequest.senderLabel = this.parseLabel(request.senderLabel);
             parsedRequest.transactions = [this.parseTransaction(request)];
         }
 
         // Parse layout-specific fields
         if ((!request.layout || request.layout === SignTransactionApi.Layouts.STANDARD)
             && parsedRequest.layout === SignTransactionApi.Layouts.STANDARD) {
+            if ('senderLabel' in request) {
+                parsedRequest.senderLabel = this.parseLabel(request.senderLabel);
+            }
             if ('recipientLabel' in request) {
                 parsedRequest.recipientLabel = this.parseLabel(request.recipientLabel);
             }
         } else if (request.layout === SignTransactionApi.Layouts.CHECKOUT
             && parsedRequest.layout === SignTransactionApi.Layouts.CHECKOUT) {
+            parsedRequest.senderLabel = this.parseLabel(request.senderLabel);
             parsedRequest.shopOrigin = this.parseShopOrigin(request.shopOrigin);
             parsedRequest.shopLogoUrl = this.parseLogoUrl(request.shopLogoUrl, true, 'shopLogoUrl');
             if (parsedRequest.shopLogoUrl && parsedRequest.shopLogoUrl.origin !== parsedRequest.shopOrigin) {
@@ -140,9 +133,11 @@ class SignTransactionApi extends TopLevelApi {
                 }
             }
         } else if (request.layout === SignTransactionApi.Layouts.CASHLINK
-            && parsedRequest.layout === SignTransactionApi.Layouts.CASHLINK
-            && request.cashlinkMessage) {
-            parsedRequest.cashlinkMessage = /** @type {string} */(this.parseMessage(request.cashlinkMessage));
+            && parsedRequest.layout === SignTransactionApi.Layouts.CASHLINK) {
+            parsedRequest.senderLabel = this.parseLabel(request.senderLabel);
+            if (request.cashlinkMessage) {
+                parsedRequest.cashlinkMessage = /** @type {string} */(this.parseMessage(request.cashlinkMessage));
+            }
         } else if (request.layout === SignTransactionApi.Layouts.SWITCH_VALIDATOR
             && parsedRequest.layout === SignTransactionApi.Layouts.SWITCH_VALIDATOR) {
             if (parsedRequest.transactions.length !== 2) {
