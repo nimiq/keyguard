@@ -24,7 +24,13 @@ class SignTransactionApi extends TopLevelApi {
         parsedRequest.layout = this.parseLayout(request.layout);
 
         // Parse transactions - either from array or from single-tx fields
-        if ('transactions' in request && Array.isArray(request.transactions)) {
+        if ('transactions' in request) {
+            if (!Array.isArray(request.transactions)) {
+                throw new Errors.InvalidRequestError('transactions must be an array');
+            }
+            if (request.transactions.length === 0) {
+                throw new Errors.InvalidRequestError('transactions array must not be empty');
+            }
             // Multi-transaction mode - only allowed for standard, switch-validator and unstaking layouts
             if (parsedRequest.layout !== SignTransactionApi.Layouts.STANDARD
                 && parsedRequest.layout !== SignTransactionApi.Layouts.SWITCH_VALIDATOR
@@ -32,9 +38,6 @@ class SignTransactionApi extends TopLevelApi {
                 throw new Errors.InvalidRequestError(
                     'Multiple transactions are only supported with standard, switch-validator or unstaking layout',
                 );
-            }
-            if (request.transactions.length === 0) {
-                throw new Errors.InvalidRequestError('transactions array must not be empty');
             }
 
             // Parse each entry individually — mixed formats (TransactionInfo | Uint8Array) are allowed.
