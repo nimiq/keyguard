@@ -224,9 +224,9 @@ export type SignTransactionRequestSwitchValidator = SimpleRequest & {
 export type SignTransactionRequestUnstaking = SimpleRequest & {
     layout: 'unstaking',
     keyPath: string,
-    // Exactly three serialized transactions in order: set-active-stake, retire-stake, remove-stake.
-    // Enforced by the Keyguard at parse time.
-    transactions: Uint8Array[],
+    // Exactly three transactions in order: set-active-stake, retire-stake, remove-stake.
+    // Enforced by the Keyguard at parse time. Mixed TransactionInfo / Uint8Array entries are allowed.
+    transactions: Array<Omit<TransactionInfo, 'senderLabel'> | Uint8Array>,
     senderLabel?: string,
     recipientLabel?: string,
     validatorAddress: string,
