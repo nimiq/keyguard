@@ -211,9 +211,9 @@ export type SignTransactionRequestCashlink = SignTransactionRequestCommon & {
 export type SignTransactionRequestSwitchValidator = SimpleRequest & {
     layout: 'switch-validator',
     keyPath: string,
-    // Exactly two serialized transactions: set-active-stake then update-staker. Enforced by
-    // the Keyguard at parse time (a strict tuple here is too narrow for dynamic callers).
-    transactions: Uint8Array[],
+    // Exactly two transactions in order: set-active-stake then update-staker. Enforced by
+    // the Keyguard at parse time. Mixed TransactionInfo / Uint8Array entries are allowed.
+    transactions: Array<Omit<TransactionInfo, 'senderLabel'> | Uint8Array>,
     senderLabel?: string,
     recipientLabel?: string,
     validatorAddress: string,
