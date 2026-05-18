@@ -62,7 +62,7 @@ class SignTransaction {
         // Custom simplified layouts (e.g. switch-validator, unstaking) hide per-tx detail. For those,
         // expose the multi-tx list as an overlay accessible via an info icon on the page header.
         if (isCustomMultiTx) {
-            this._setupTxListOverlay(request);
+            this._setupTxListOverlay();
         }
 
         const $closeDetails = /** @type {HTMLButtonElement} */ (this.$accountDetails.querySelector('#close-details'));
@@ -190,8 +190,8 @@ class SignTransaction {
         $paymentInfoLine.remove();
 
         // Calculate totals
-        let totalValue = 0n;
-        let totalFee = 0n;
+        let totalValue = BigInt(0);
+        let totalFee = BigInt(0);
         for (const tx of request.transactions) {
             totalValue += tx.value;
             totalFee += tx.fee;
@@ -213,7 +213,7 @@ class SignTransaction {
         const $totalValue = /** @type {HTMLElement} */ ($multiTx.querySelector('#total-value-amount'));
         $totalValue.textContent = NumberFormatting.formatNumber(lunasToCoins(Number(totalValue)));
 
-        if (totalFee > 0n) {
+        if (totalFee > BigInt(0)) {
             const $totalFees = /** @type {HTMLElement} */ ($multiTx.querySelector('#total-fees-amount'));
             $totalFees.textContent = NumberFormatting.formatNumber(lunasToCoins(Number(totalFee)));
             const $totalFeesRow = /** @type {HTMLElement} */ ($multiTx.querySelector('.total-fees'));
@@ -344,15 +344,16 @@ class SignTransaction {
             false,
         );
 
-        let totalFee = 0n;
+        let totalFee = BigInt(0);
         for (const tx of request.transactions) {
             totalFee += tx.fee;
         }
-        if (totalFee > 0n) {
+        if (totalFee > BigInt(0)) {
             const $feeValue = /** @type {HTMLElement} */ ($switchView.querySelector('#switch-validator-fee'));
             $feeValue.textContent = NumberFormatting.formatNumber(lunasToCoins(Number(totalFee)));
-            const $feeSection = /** @type {HTMLElement} */
-                ($switchView.querySelector('#switch-validator-fee-section'));
+            const $feeSection = /** @type {HTMLElement} */ (
+                $switchView.querySelector('#switch-validator-fee-section')
+            );
             $feeSection.classList.remove('display-none');
         }
     }
@@ -393,11 +394,11 @@ class SignTransaction {
         $amount.textContent = NumberFormatting.formatNumber(lunasToCoins(Number(removeStakeTx.value)));
 
         // Total fee across all 3 transactions; hidden when zero.
-        let totalFee = 0n;
+        let totalFee = BigInt(0);
         for (const tx of request.transactions) {
             totalFee += tx.fee;
         }
-        if (totalFee > 0n) {
+        if (totalFee > BigInt(0)) {
             const $feeValue = /** @type {HTMLElement} */ ($view.querySelector('#unstake-fee'));
             $feeValue.textContent = NumberFormatting.formatNumber(lunasToCoins(Number(totalFee)));
             const $feeSection = /** @type {HTMLElement} */ ($view.querySelector('#unstake-fee-section'));
@@ -460,8 +461,7 @@ class SignTransaction {
         this.$el.classList.remove('account-details-open');
     }
 
-    /** @param {Parsed<KeyguardRequest.SignTransactionRequest>} request */
-    _setupTxListOverlay(request) {
+    _setupTxListOverlay() {
         const $pageHeader = /** @type {HTMLElement} */ (this.$el.querySelector('.page-header'));
 
         const $infoIcon = document.createElement('button');
@@ -478,10 +478,12 @@ class SignTransaction {
             $infoIcon.setAttribute('aria-label', I18n.translatePhrase('sign-tx-info-icon-label'));
         });
 
-        const $closeTxList = /** @type {HTMLButtonElement} */
-            (this.$txListDetails.querySelector('#close-tx-list-details'));
-        const $content = /** @type {HTMLElement} */
-            (this.$txListDetails.querySelector('#tx-list-details-content'));
+        const $closeTxList = /** @type {HTMLButtonElement} */ (
+            this.$txListDetails.querySelector('#close-tx-list-details')
+        );
+        const $content = /** @type {HTMLElement} */ (
+            this.$txListDetails.querySelector('#tx-list-details-content')
+        );
 
         $infoIcon.addEventListener('click', this._openTxList.bind(this, $infoIcon, $closeTxList, $content));
         $closeTxList.addEventListener('click', this._closeTxList.bind(this, $infoIcon));
@@ -531,8 +533,8 @@ class SignTransaction {
     _buildTxListInto($container, request) {
         $container.textContent = '';
 
-        let totalValue = 0n;
-        let totalFee = 0n;
+        let totalValue = BigInt(0);
+        let totalFee = BigInt(0);
         for (const tx of request.transactions) {
             totalValue += tx.value;
             totalFee += tx.fee;
@@ -561,7 +563,7 @@ class SignTransaction {
             + '<span class="nim-symbol"></span>';
         $totals.appendChild($totalValue);
 
-        if (totalFee > 0n) {
+        if (totalFee > BigInt(0)) {
             const $totalFees = document.createElement('div');
             $totalFees.className = 'tx-total-fees nq-text-s';
             $totalFees.innerHTML = `+ ${NumberFormatting.formatNumber(lunasToCoins(Number(totalFee)))}`
