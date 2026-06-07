@@ -232,8 +232,9 @@ class SignTransaction {
 
         const $arrow = document.createElement('div');
         $arrow.className = 'tx-arrow';
-        $arrow.innerHTML = '<svg class="nq-icon"><use xlink:href="../../../node_modules/'
-            + '@nimiq/style/nimiq-style.icons.svg#nq-arrow-right"/></svg>';
+        // Keep the icon string on one line so the build's icon-bundling scanner detects it.
+        // eslint-disable-next-line max-len
+        $arrow.innerHTML = '<svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-right"/></svg>';
         $main.appendChild($arrow);
 
         $main.appendChild(this._createTransactionAddressCell(tx.recipient.toUserFriendlyAddress()));
@@ -456,8 +457,9 @@ class SignTransaction {
         $infoIcon.className = 'info-icon';
         $infoIcon.setAttribute('aria-expanded', 'false');
         $infoIcon.setAttribute('aria-label', I18n.translatePhrase('sign-tx-info-icon-label'));
-        $infoIcon.innerHTML = '<svg class="nq-icon"><use xlink:href="../../../node_modules/'
-            + '@nimiq/style/nimiq-style.icons.svg#nq-info-circle-small"/></svg>';
+        // Keep the icon string on one line so the build's icon-bundling scanner detects it.
+        // eslint-disable-next-line max-len
+        $infoIcon.innerHTML = '<svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-info-circle-small"/></svg>';
         $pageHeader.appendChild($infoIcon);
         $pageHeader.classList.add('has-info-icon');
 
