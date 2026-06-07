@@ -199,7 +199,7 @@ nothing breaks in SignMultisigTransaction. */
 
 #confirm-transaction .multi-transaction #transaction-list {
     position: relative;
-    max-height: 35rem; /* ~280px, allows ~4-5 compact cards */
+    max-height: 35rem; /* ~280px, allows ~4-5 compact entries */
     overflow-y: auto;
     /* Extend to card edges so the scrollbar sits flush, then restore content alignment */
     margin: 0 -2rem;
