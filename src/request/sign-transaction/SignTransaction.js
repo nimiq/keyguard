@@ -200,8 +200,8 @@ class SignTransaction {
         // Render transaction list
         const $list = /** @type {HTMLElement} */ ($multiTx.querySelector('#transaction-list'));
         for (const tx of request.transactions) {
-            const $card = this._createTransactionListEntry(tx);
-            $list.appendChild($card);
+            const $entry = this._createTransactionListEntry(tx);
+            $list.appendChild($entry);
         }
         I18n.translateDom($list);
 
