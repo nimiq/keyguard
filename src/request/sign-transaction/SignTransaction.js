@@ -14,6 +14,7 @@
 /* global I18n */
 /* global Identicon */
 /* global lunasToCoins */
+/* global TemplateTags */
 
 /**
  * @callback SignTransaction.resolve
@@ -301,9 +302,8 @@ class SignTransaction {
         if (tx.fee > 0) {
             const $fee = document.createElement('div');
             $fee.className = 'tx-fee';
-            $fee.innerHTML = `+ ${NumberFormatting.formatNumber(lunasToCoins(Number(tx.fee)))}`
-                + ' <span class="nim-symbol"></span> '
-                + '<span data-i18n="sign-tx-fee">fee</span>';
+            // eslint-disable-next-line max-len
+            $fee.innerHTML = TemplateTags.hasVars(1)`+ ${NumberFormatting.formatNumber(lunasToCoins(Number(tx.fee)))} <span class="nim-symbol"></span> <span data-i18n="sign-tx-fee">fee</span>`;
             $amounts.appendChild($fee);
         }
 
@@ -555,9 +555,8 @@ class SignTransaction {
         if (totalFee > BigInt(0)) {
             const $totalFees = document.createElement('div');
             $totalFees.className = 'tx-total-fees nq-text-s';
-            $totalFees.innerHTML = `+ ${NumberFormatting.formatNumber(lunasToCoins(Number(totalFee)))}`
-                + ' <span class="nim-symbol"></span> '
-                + '<span data-i18n="sign-tx-multi-total-fees">total fees</span>';
+            // eslint-disable-next-line max-len
+            $totalFees.innerHTML = TemplateTags.hasVars(1)`+ ${NumberFormatting.formatNumber(lunasToCoins(Number(totalFee)))} <span class="nim-symbol"></span> <span data-i18n="sign-tx-multi-total-fees">total fees</span>`;
             I18n.translateDom($totalFees);
             $totals.appendChild($totalFees);
         }
