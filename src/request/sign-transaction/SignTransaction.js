@@ -35,11 +35,7 @@ class SignTransaction {
         const isCustomMultiTx = isSwitchValidator || isUnstaking;
         const isMultiTransaction = !isCustomMultiTx && request.transactions.length > 1;
 
-        /** @type {string} */
-        let viewClass = request.layout;
-        if (isSwitchValidator) viewClass = 'switch-validator';
-        else if (isUnstaking) viewClass = 'unstaking';
-        else if (isMultiTransaction) viewClass = 'multi';
+        const viewClass = isMultiTransaction ? 'multi' : request.layout;
         this.$el.classList.add(viewClass);
 
         this.$accountDetails = /** @type {HTMLElement} */ (this.$el.querySelector('#account-details'));
