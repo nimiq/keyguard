@@ -239,7 +239,7 @@ nothing breaks in SignMultisigTransaction. */
     gap: 0.75rem;
 }
 
-#confirm-transaction .transaction-list-entry .tx-row {
+#confirm-transaction .transaction-list-entry .tx-address-cell {
     display: flex;
     align-items: center;
     gap: 0.75rem;
@@ -252,7 +252,7 @@ nothing breaks in SignMultisigTransaction. */
     transition: background-color .2s var(--nimiq-ease);
 }
 
-#confirm-transaction .transaction-list-entry .tx-row:hover {
+#confirm-transaction .transaction-list-entry .tx-address-cell:hover {
     background-color: rgba(31, 35, 72, 0.04);
 }
 

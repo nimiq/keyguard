@@ -225,25 +225,10 @@ class SignTransaction {
         const $entry = document.createElement('div');
         $entry.className = 'transaction-list-entry';
 
-        const senderAddress = tx.sender.toUserFriendlyAddress();
-        const recipientAddress = tx.recipient.toUserFriendlyAddress();
-        const senderAddressInfo = new AddressInfo({
-            userFriendlyAddress: senderAddress,
-            label: null,
-            imageUrl: null,
-            accountLabel: null,
-        });
-        const recipientAddressInfo = new AddressInfo({
-            userFriendlyAddress: recipientAddress,
-            label: null,
-            imageUrl: null,
-            accountLabel: null,
-        });
-
         const $main = document.createElement('div');
         $main.className = 'tx-main';
 
-        $main.appendChild(this._createTransactionAddressRow(senderAddress, senderAddressInfo));
+        $main.appendChild(this._createTransactionAddressCell(tx.sender.toUserFriendlyAddress()));
 
         const $arrow = document.createElement('div');
         $arrow.className = 'tx-arrow';
@@ -251,7 +236,7 @@ class SignTransaction {
             + '@nimiq/style/nimiq-style.icons.svg#nq-arrow-right"/></svg>';
         $main.appendChild($arrow);
 
-        $main.appendChild(this._createTransactionAddressRow(recipientAddress, recipientAddressInfo));
+        $main.appendChild(this._createTransactionAddressCell(tx.recipient.toUserFriendlyAddress()));
 
         $main.appendChild(this._createTransactionAmounts(tx));
         $entry.appendChild($main);
@@ -272,24 +257,30 @@ class SignTransaction {
     }
 
     /**
+     * Builds a single sender- or recipient-side address cell (identicon + address, click-to-detail).
      * @param {string} userFriendlyAddress
-     * @param {AddressInfo} addressInfo
      * @returns {HTMLElement}
      */
-    _createTransactionAddressRow(userFriendlyAddress, addressInfo) {
-        const $row = document.createElement('div');
-        $row.className = 'tx-row';
+    _createTransactionAddressCell(userFriendlyAddress) {
+        const $cell = document.createElement('div');
+        $cell.className = 'tx-address-cell';
 
-        $row.appendChild(new Identicon(userFriendlyAddress).getElement());
+        $cell.appendChild(new Identicon(userFriendlyAddress).getElement());
 
         const $address = document.createElement('div');
         $address.className = 'tx-address address';
         $address.textContent = userFriendlyAddress;
-        $row.appendChild($address);
+        $cell.appendChild($address);
 
-        $row.addEventListener('click', () => this._openDetails(addressInfo));
+        const addressInfo = new AddressInfo({
+            userFriendlyAddress,
+            label: null,
+            imageUrl: null,
+            accountLabel: null,
+        });
+        $cell.addEventListener('click', () => this._openDetails(addressInfo));
 
-        return $row;
+        return $cell;
     }
 
     /**
