@@ -294,8 +294,8 @@ class SignTransaction {
 
         const $value = document.createElement('div');
         $value.className = 'tx-value';
-        $value.innerHTML = `${NumberFormatting.formatNumber(lunasToCoins(Number(tx.value)))}`
-            + '<span class="nim-symbol"></span>';
+        // eslint-disable-next-line max-len
+        $value.innerHTML = `${NumberFormatting.formatNumber(lunasToCoins(Number(tx.value)))}<span class="nim-symbol"></span>`;
         $amounts.appendChild($value);
 
         if (tx.fee > 0) {
@@ -548,8 +548,8 @@ class SignTransaction {
 
         const $totalValue = document.createElement('div');
         $totalValue.className = 'tx-total-value nq-light-blue';
-        $totalValue.innerHTML = `${NumberFormatting.formatNumber(lunasToCoins(Number(totalValue)))}`
-            + '<span class="nim-symbol"></span>';
+        // eslint-disable-next-line max-len
+        $totalValue.innerHTML = `${NumberFormatting.formatNumber(lunasToCoins(Number(totalValue)))}<span class="nim-symbol"></span>`;
         $totals.appendChild($totalValue);
 
         if (totalFee > BigInt(0)) {
