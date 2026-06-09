@@ -348,8 +348,7 @@ type Parsed<T extends KeyguardRequest.Request> =
     T extends Is<T, KeyguardRequest.SignTransactionRequestSwitchValidator> ?
         Transform<
             KeyId2KeyInfo<KeyguardRequest.SignTransactionRequestSwitchValidator>,
-            'transactions' | 'validatorImageUrl'
-                | 'fromValidatorAddress' | 'fromValidatorImageUrl',
+            'transactions' | 'validatorImageUrl' | 'fromValidatorAddress' | 'fromValidatorImageUrl',
             {
                 transactions: Nimiq.Transaction[],
                 validatorAddress: Nimiq.Address,
