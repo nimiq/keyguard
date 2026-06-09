@@ -186,36 +186,7 @@ class SignTransaction {
         const $paymentInfoLine = /** @type {HTMLElement} */ (this.$el.querySelector('.payment-info-line'));
         $paymentInfoLine.remove();
 
-        // Calculate totals
-        let totalValue = BigInt(0);
-        let totalFee = BigInt(0);
-        for (const tx of request.transactions) {
-            totalValue += tx.value;
-            totalFee += tx.fee;
-        }
-
-        // Render transaction count
-        const $count = /** @type {HTMLElement} */ ($multiTx.querySelector('#transaction-count'));
-        I18n.translateToHtmlContent($count, 'sign-tx-multi-count', { count: String(request.transactions.length) });
-
-        // Render transaction list
-        const $list = /** @type {HTMLElement} */ ($multiTx.querySelector('#transaction-list'));
-        for (const tx of request.transactions) {
-            const $entry = this._createTransactionListEntry(tx);
-            $list.appendChild($entry);
-        }
-        I18n.translateDom($list);
-
-        // Render totals
-        const $totalValue = /** @type {HTMLElement} */ ($multiTx.querySelector('#total-value-amount'));
-        $totalValue.textContent = NumberFormatting.formatNumber(lunasToCoins(Number(totalValue)));
-
-        if (totalFee > BigInt(0)) {
-            const $totalFees = /** @type {HTMLElement} */ ($multiTx.querySelector('#total-fees-amount'));
-            $totalFees.textContent = NumberFormatting.formatNumber(lunasToCoins(Number(totalFee)));
-            const $totalFeesRow = /** @type {HTMLElement} */ ($multiTx.querySelector('.total-fees'));
-            $totalFeesRow.classList.remove('display-none');
-        }
+        this._buildTxListInto($multiTx, request);
     }
 
     /**
@@ -527,8 +498,8 @@ class SignTransaction {
     }
 
     /**
-     * Build count + entries + totals into a container. Uses class selectors only to avoid id
-     * collision with the standalone `.multi-transaction` template, which coexists in the DOM.
+     * Build count + entries + totals into a container, using class-based nodes. Shared by the
+     * multi-transaction main view and the tx-list overlay.
      * @param {HTMLElement} $container
      * @param {Parsed<KeyguardRequest.SignTransactionRequest>} request
      */
@@ -555,6 +526,7 @@ class SignTransaction {
             $list.appendChild(this._createTransactionListEntry(tx));
         }
         $container.appendChild($list);
+        I18n.translateDom($list);
 
         const $totals = document.createElement('div');
         $totals.className = 'tx-totals';
