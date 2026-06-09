@@ -465,7 +465,9 @@ class SignTransaction {
         $infoIcon.type = 'button';
         $infoIcon.className = 'info-icon';
         $infoIcon.setAttribute('aria-expanded', 'false');
-        $infoIcon.setAttribute('aria-label', I18n.translatePhrase('sign-tx-info-icon-label'));
+        const infoIconLabel = I18n.translatePhrase('sign-tx-info-icon-label');
+        $infoIcon.setAttribute('aria-label', infoIconLabel);
+        $infoIcon.title = infoIconLabel;
         // Keep the icon string on one line so the build's icon-bundling scanner detects it.
         // eslint-disable-next-line max-len
         $infoIcon.innerHTML = '<svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-info-circle-small"/></svg>';
@@ -473,7 +475,9 @@ class SignTransaction {
         $pageHeader.classList.add('has-info-icon');
 
         I18n.observer.on(I18n.Events.LANGUAGE_CHANGED, () => {
-            $infoIcon.setAttribute('aria-label', I18n.translatePhrase('sign-tx-info-icon-label'));
+            const label = I18n.translatePhrase('sign-tx-info-icon-label');
+            $infoIcon.setAttribute('aria-label', label);
+            $infoIcon.title = label;
         });
 
         const $closeTxList = /** @type {HTMLButtonElement} */ (
