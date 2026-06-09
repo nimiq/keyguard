@@ -190,37 +190,6 @@ nothing breaks in SignMultisigTransaction. */
     display: flex;
 }
 
-#confirm-transaction .multi-transaction #transaction-count {
-    display: block;
-    text-align: center;
-    padding-bottom: 1.5rem;
-    margin: 0;
-}
-
-#confirm-transaction .multi-transaction #transaction-list {
-    position: relative;
-    max-height: 35rem; /* ~280px, allows ~4-5 compact entries */
-    overflow-y: auto;
-    /* Extend to card edges so the scrollbar sits flush, then restore content alignment */
-    margin: 0 -2rem;
-    padding: 1rem 2rem;
-    /* Scroll indicators: fade-out gradients at top and bottom edges */
-    mask-image: linear-gradient(
-        to bottom,
-        transparent,
-        black 1.5rem,
-        black calc(100% - 1.5rem),
-        transparent
-    );
-    -webkit-mask-image: linear-gradient(
-        to bottom,
-        transparent,
-        black 1.5rem,
-        black calc(100% - 1.5rem),
-        transparent
-    );
-}
-
 #confirm-transaction .transaction-list-entry {
     display: flex;
     flex-direction: column;
@@ -312,21 +281,6 @@ nothing breaks in SignMultisigTransaction. */
     line-height: 1.4;
     overflow-wrap: break-word;
     word-break: break-word;
-}
-
-#confirm-transaction .multi-transaction .transaction-totals {
-    padding-top: 1.5rem;
-    text-align: center;
-}
-
-#confirm-transaction .multi-transaction .total-value {
-    font-size: 4rem;
-    font-weight: bold;
-}
-
-#confirm-transaction .multi-transaction .total-fees {
-    opacity: 0.5;
-    margin-top: 0.5rem;
 }
 
 #confirm-transaction .switch-validator-view,
@@ -558,7 +512,9 @@ nothing breaks in SignMultisigTransaction. */
     opacity: .4;
 }
 
-/* Tx-list-details inner content: count header, scrollable list, totals footer. */
+/* Tx-list (count header, scrollable list, totals footer). Built by _buildTxListInto and shared by
+   the multi-transaction main view (.multi-transaction) and the tx-list overlay
+   (#tx-list-details-content). */
 #confirm-transaction #tx-list-details-content {
     display: flex;
     flex-direction: column;
@@ -566,7 +522,7 @@ nothing breaks in SignMultisigTransaction. */
     min-height: 0; /* allow .tx-list to actually shrink and scroll */
 }
 
-#confirm-transaction #tx-list-details-content .tx-count {
+#confirm-transaction .tx-count {
     display: block;
     text-align: center;
     padding-bottom: 1.5rem;
@@ -574,10 +530,9 @@ nothing breaks in SignMultisigTransaction. */
     flex-shrink: 0;
 }
 
-#confirm-transaction #tx-list-details-content .tx-list {
-    flex: 1 1 auto;
+#confirm-transaction .tx-list {
     overflow-y: auto;
-    /* Extend to overlay edges so the scrollbar sits flush, then restore content alignment. */
+    /* Extend to the container edges so the scrollbar sits flush, then restore content alignment. */
     margin: 0 -2rem;
     padding: 0 2rem;
     /* Scroll indicators: fade-out gradients at top and bottom edges. */
@@ -597,22 +552,34 @@ nothing breaks in SignMultisigTransaction. */
     );
 }
 
-#confirm-transaction #tx-list-details-content .tx-totals {
+/* Overlay: the list fills the available overlay height. */
+#confirm-transaction #tx-list-details-content .tx-list {
+    flex: 1 1 auto;
+}
+
+/* Main view: cap the list height (~280px, ~4-5 compact entries) and pad it vertically. */
+#confirm-transaction .multi-transaction .tx-list {
+    max-height: 35rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+#confirm-transaction .tx-totals {
     padding-top: 1.5rem;
     text-align: center;
     flex-shrink: 0;
 }
 
-#confirm-transaction #tx-list-details-content .tx-total-value {
+#confirm-transaction .tx-total-value {
     font-size: 4rem;
     font-weight: bold;
 }
 
-#confirm-transaction #tx-list-details-content .tx-total-value .nim-symbol {
+#confirm-transaction .tx-total-value .nim-symbol {
     margin-left: 0.5rem;
 }
 
-#confirm-transaction #tx-list-details-content .tx-total-fees {
+#confirm-transaction .tx-total-fees {
     opacity: 0.5;
     margin-top: 0.5rem;
 }
