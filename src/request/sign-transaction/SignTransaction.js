@@ -65,6 +65,8 @@ class SignTransaction {
         const $closeDetails = /** @type {HTMLButtonElement} */ (this.$accountDetails.querySelector('#close-details'));
         $closeDetails.addEventListener('click', this._closeDetails.bind(this));
 
+        window.addEventListener('keydown', this._onEscapeKeydown.bind(this));
+
         let buttonI18nTag = 'passwordbox-confirm-tx';
         if (request.layout === SignTransactionApi.Layouts.CASHLINK) buttonI18nTag = 'passwordbox-create-cashlink';
         else if (isMultiTransaction) buttonI18nTag = 'passwordbox-confirm-txs';
@@ -451,50 +453,48 @@ class SignTransaction {
             $infoIcon.title = label;
         });
 
+        this.$infoIcon = $infoIcon;
+        this.$txListContent = /** @type {HTMLElement} */ (
+            this.$txListDetails.querySelector('#tx-list-details-content')
+        );
         const $closeTxList = /** @type {HTMLButtonElement} */ (
             this.$txListDetails.querySelector('#close-tx-list-details')
         );
-        const $content = /** @type {HTMLElement} */ (
-            this.$txListDetails.querySelector('#tx-list-details-content')
-        );
 
-        $infoIcon.addEventListener('click', this._openTxList.bind(this, $infoIcon, $closeTxList, $content));
-        $closeTxList.addEventListener('click', this._closeTxList.bind(this, $infoIcon));
-
-        window.addEventListener('keydown', event => {
-            if (event.key !== 'Escape') return;
-            // Close in reverse layering order: address-details sits above tx-list when both are open.
-            if (this.$el.classList.contains('account-details-open')) {
-                this._closeDetails();
-            } else if (this.$el.classList.contains('tx-list-details-open')) {
-                this._closeTxList($infoIcon);
-            }
-        });
+        $infoIcon.addEventListener('click', this._openTxList.bind(this));
+        $closeTxList.addEventListener('click', this._closeTxList.bind(this));
     }
 
-    /**
-     * @param {HTMLButtonElement} $infoIcon
-     * @param {HTMLButtonElement} $closeTxList
-     * @param {HTMLElement} $content
-     */
-    _openTxList($infoIcon, $closeTxList, $content) {
+    /** @param {KeyboardEvent} event */
+    _onEscapeKeydown(event) {
+        if (event.key !== 'Escape') return;
+        // Close in reverse layering order: address-details sits above tx-list when both are open.
+        if (this.$el.classList.contains('account-details-open')) {
+            this._closeDetails();
+        } else if (this.$el.classList.contains('tx-list-details-open')) {
+            this._closeTxList();
+        }
+    }
+
+    _openTxList() {
+        const { $infoIcon, $txListContent } = this;
+        if (!$infoIcon || !$txListContent) return;
         // Defer building the list until first open — saves Identicon/AddressInfo work if the user
         // only confirms the simplified view.
-        if (!$content.firstChild) {
-            this._buildTxListInto($content, this._request);
+        if (!$txListContent.firstChild) {
+            this._buildTxListInto($txListContent, this._request);
         }
         this.$el.classList.add('tx-list-details-open');
         $infoIcon.setAttribute('aria-expanded', 'true');
         this.$txListDetails.setAttribute('aria-hidden', 'false');
-        $closeTxList.focus();
     }
 
-    /** @param {HTMLButtonElement} $infoIcon */
-    _closeTxList($infoIcon) {
+    _closeTxList() {
+        const { $infoIcon } = this;
+        if (!$infoIcon) return;
         this.$el.classList.remove('tx-list-details-open');
         $infoIcon.setAttribute('aria-expanded', 'false');
         this.$txListDetails.setAttribute('aria-hidden', 'true');
-        $infoIcon.focus();
     }
 
     /**
