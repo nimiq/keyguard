@@ -410,13 +410,13 @@ class SignTransaction {
         $icon.classList.add('icon');
         if (imageUrl) {
             const $img = document.createElement('img');
-            $img.src = imageUrl.href;
-            $icon.appendChild($img);
             $img.addEventListener('error', () => {
                 $img.remove();
                 // eslint-disable-next-line no-new
                 new Identicon(userFriendlyAddress, $icon);
             }, { once: true });
+            $img.src = imageUrl.href;
+            $icon.appendChild($img);
         } else {
             // eslint-disable-next-line no-new
             new Identicon(userFriendlyAddress, $icon);
