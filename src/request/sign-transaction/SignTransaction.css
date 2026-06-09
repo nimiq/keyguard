@@ -633,6 +633,7 @@ nothing breaks in SignMultisigTransaction. */
     color: inherit;
     background: transparent;
     border: 0;
+    border-radius: 50%;
 }
 
 .page-header .info-icon .nq-icon {
@@ -644,5 +645,4 @@ nothing breaks in SignMultisigTransaction. */
 .page-header .info-icon:hover,
 .page-header .info-icon:focus {
     opacity: 0.6;
-    outline: none;
 }
