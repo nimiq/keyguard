@@ -429,6 +429,13 @@ nothing breaks in SignMultisigTransaction. */
     display: block;
 }
 
+#confirm-transaction .validator-card .text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    text-align: left;
+}
+
 #confirm-transaction .validator-card .name {
     font-size: 2rem;
     font-weight: 600;
@@ -442,6 +449,14 @@ nothing breaks in SignMultisigTransaction. */
 #confirm-transaction .validator-card .name.mono {
     font-family: "Fira Mono", "Andale Mono", monospace;
     font-size: 1.75rem;
+}
+
+#confirm-transaction .validator-card .validator-address {
+    margin-top: 0.5rem;
+    font-size: 1.5rem;
+    color: var(--nimiq-blue);
+    opacity: 0.5;
+    min-width: 0;
 }
 
 /* Unstaking view reuses the standard single-tx layout (.accounts row, .total light-blue) and adds

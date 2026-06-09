@@ -423,15 +423,24 @@ class SignTransaction {
         }
         $el.appendChild($icon);
 
+        const $text = document.createElement('div');
+        $text.classList.add('text');
+        $el.appendChild($text);
+
         const $name = document.createElement('div');
         $name.classList.add('name');
+        $text.appendChild($name);
+
         if (label) {
             $name.textContent = label;
+            const $address = document.createElement('div');
+            $address.classList.add('validator-address', 'address');
+            $address.textContent = userFriendlyAddress;
+            $text.appendChild($address);
         } else {
             $name.textContent = userFriendlyAddress;
             $name.classList.add('mono');
         }
-        $el.appendChild($name);
     }
 
     /**
