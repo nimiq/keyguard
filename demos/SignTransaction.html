@@ -4,10 +4,6 @@
     <meta charset="UTF-8">
     <title>SignTransaction | Keyguard Demo</title>
     <link href="../src/nimiq-style.css" rel="stylesheet">
-    <script src="../src/lib/Nimiq.mjs" type="module"></script>
-    <script src="../src/lib/Constants.js"></script>
-    <script src="../src/lib/Key.js"></script>
-    <script src="../src/lib/KeyStore.js"></script>
     <script src="../node_modules/@nimiq/rpc/dist/rpc.umd.js"></script>
 
     <style>
@@ -15,7 +11,7 @@
             margin: 1rem 0;
         }
 
-        label, input {
+        label, input, select {
             display: block;
             margin: 5px;
         }
@@ -23,34 +19,82 @@
         #result {
             max-width: 900px;
             overflow-wrap: break-word;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+            background: #f5f5f5;
+            padding: 1rem;
+            border-radius: 4px;
+        }
+
+        .section-header {
+            font-weight: bold;
+            margin-top: 2rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .multi-tx-controls {
+            background: #f0f8ff;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .transaction-preview {
+            background: #fff;
+            border: 1px solid #ddd;
+            padding: 0.5rem;
+            margin: 0.5rem 0;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .transaction-preview .tx-number {
+            font-weight: bold;
+            color: #1f2348;
+        }
+
+        .inline-row {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .inline-row input {
+            width: 150px;
+        }
+
+        .button-row {
+            margin-top: 2rem;
+        }
+
+        .button-row button {
+            margin: 0.5rem;
         }
     </style>
 </head>
 <body>
 
 <form class="center">
+    <h2>SignTransaction Demo</h2>
+
     <div class="row">
         <label>Layout</label>
         <select id="layout">
-            <option>standard</option>
-            <option>checkout</option>
-            <option>cashlink</option>
+            <option value="standard">standard</option>
+            <option value="checkout">checkout</option>
+            <option value="cashlink">cashlink</option>
         </select>
     </div>
 
     <div class="row">
-        <label>Transaction amount (luna)</label>
-        <input id="amount" value="200000000" type="number">
-    </div>
-
-    <div class="row">
-        <label>Transaction fee (luna)</label>
-        <input id="fee" value="0" type="number">
-    </div>
-
-    <div class="row">
-        <label>Transaction data (ascii)</label>
-        <input id="data" value="">
+        <label>Request Format</label>
+        <select id="request-format">
+            <option value="inline">Inline (single tx fields on request)</option>
+            <option value="array-single">Array with 1 transaction</option>
+            <option value="array-multi">Array with multiple transactions</option>
+        </select>
     </div>
 
     <div class="row">
@@ -58,54 +102,186 @@
         <input id="password" value="1234567890">
     </div>
 
-    <div class="row checkout-only">
-        <label>Fiat Amount (optional)</label>
-        <input id="fiat-amount" type="number">
+    <!-- Single transaction controls -->
+    <div id="single-tx-controls">
+        <div class="section-header">Transaction Details</div>
+
+        <div class="row">
+            <label>Sender Label</label>
+            <input id="sender-label" value="Spending Account">
+        </div>
+
+        <div class="row">
+            <label>Recipient Label</label>
+            <input id="recipient-label" value="Best Friend">
+        </div>
+
+        <div class="row">
+            <label>Transaction amount (luna)</label>
+            <input id="amount" value="200000000" type="number">
+        </div>
+
+        <div class="row">
+            <label>Transaction fee (luna)</label>
+            <input id="fee" value="0" type="number">
+        </div>
+
+        <div class="row">
+            <label>Transaction data (ascii)</label>
+            <input id="data" value="">
+        </div>
     </div>
 
-    <div class="row checkout-only">
-        <label>Fiat Currency Code (optional)</label>
-        <input id="fiat-currency">
+    <!-- Multi-transaction controls -->
+    <div id="multi-tx-controls" class="multi-tx-controls" style="display: none;">
+        <div class="section-header">Multi-Transaction Settings</div>
+
+        <div class="row">
+            <label>Number of transactions</label>
+            <input id="tx-count" value="3" type="number" min="2" max="20">
+        </div>
+
+        <div class="row inline-row">
+            <div>
+                <label>Base amount (luna)</label>
+                <input id="multi-base-amount" value="100000000" type="number">
+            </div>
+            <div>
+                <label>Amount variance</label>
+                <input id="multi-amount-variance" value="50000000" type="number">
+            </div>
+        </div>
+
+        <div class="row inline-row">
+            <div>
+                <label>Base fee (luna)</label>
+                <input id="multi-base-fee" value="1000" type="number">
+            </div>
+            <div>
+                <label>Fee variance</label>
+                <input id="multi-fee-variance" value="500" type="number">
+            </div>
+        </div>
+
+        <div class="row">
+            <button type="button" id="preview-multi-tx">Preview Transactions</button>
+        </div>
+
+        <div id="tx-preview-container"></div>
     </div>
 
-    <div class="row checkout-only">
-        <label>Vendor Markup (optional)</label>
-        <input id="vendor-markup" type="number">
+    <!-- Checkout-only options -->
+    <div id="checkout-options" style="display: none;">
+        <div class="section-header">Checkout Options</div>
+
+        <div class="row">
+            <label>Fiat Amount (optional)</label>
+            <input id="fiat-amount" type="number">
+        </div>
+
+        <div class="row">
+            <label>Fiat Currency Code (optional)</label>
+            <input id="fiat-currency">
+        </div>
+
+        <div class="row">
+            <label>Vendor Markup (optional)</label>
+            <input id="vendor-markup" type="number">
+        </div>
+
+        <div class="row">
+            <label>Request Time (optional)</label>
+            <input id="time" type="number">
+            <button id="set-current-time" type="button">Current time</button>
+        </div>
+
+        <div class="row">
+            <label>Expiry Time (optional)</label>
+            <input id="expires" type="number">
+            <button id="set-expiry-time" type="button">2 Minutes</button>
+        </div>
     </div>
 
-    <div class="row checkout-only">
-        <label>Request Time (optional)</label>
-        <input id="time" type="number">
-        <button id="set-current-time" type="button">Current time</button>
+    <div class="button-row">
+        <button id="popup" type="button" class="small">Sign transaction(s) (popup)</button>
     </div>
 
-    <div class="row checkout-only">
-        <label>Expiry Time (optional)</label>
-        <input id="expires" type="number">
-        <button id="set-expiry-time" type="button">2 Minutes</button>
-    </div>
-
-    <br><button id="redirect" type="button" class="small" disabled>Sign transaction (redirect)</button>
-    <br><button id="popup" type="button" class="small">Sign transaction (popup)</button>
-
-    <p id="result"></p>
+    <div class="section-header">Result</div>
+    <pre id="result">No result yet</pre>
 </form>
 
-<script>
-    (async () => {
-        await Nimiq.WasmHelper.doImport();
-        Nimiq.GenesisConfig.test();
-        Nimiq.CryptoWorker.getInstanceAsync();
-    })();
-
-    const layoutSelector = document.querySelector('#layout');
-    const checkoutOnlyOptions = document.querySelectorAll('.checkout-only');
-    function updateOptions() {
-        checkoutOnlyOptions.forEach((el) => el.style.display = layoutSelector.value === 'checkout' ? '' : 'none');
+<script type="module">
+    // Helper to load a script and wait for it to execute
+    function loadScript(src) {
+        return new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = src;
+            script.onload = resolve;
+            script.onerror = reject;
+            document.head.appendChild(script);
+        });
     }
 
-    layoutSelector.addEventListener('change', updateOptions);
-    updateOptions();
+    // Import Nimiq module (sets window.Nimiq)
+    await import('../src/lib/Nimiq.mjs');
+
+    // Initialize Nimiq WASM (PoS library uses default() for init)
+    await Nimiq.default();
+
+    // Load dependencies that use Nimiq global (sequential to maintain order)
+    await loadScript('../src/lib/Constants.js');
+    await loadScript('../src/lib/Key.js');
+    await loadScript('../src/lib/KeyStore.js');
+
+    // Sample recipient addresses for multi-tx testing (valid addresses from tests)
+    const SAMPLE_RECIPIENTS = [
+        'NQ71 CT4K 7R9R EHSB 7HY9 TSTP XNRQ L2RK 8U4U',
+        'NQ46 2RM7 QE4T 82KR 61Q9 9B7E R38G LBVM N6KY',
+        'NQ70 APBA 9GCC FL44 D82R UJCD DS4B Y824 3LYJ',
+        'NQ56 VE9K PV0Y TK4T QBMY 8E9G B85J QR6M MSHL',
+        'NQ84 TULM 6HCT N66A AH9P UMFX X80L 9F1M G5H8',
+        'NQ70 21SY 835N V68Y Q2AH K64A UA7G BJBC DB70',
+        'NQ92 EED8 CLJB 0GRL 6RR5 9TXG 7R75 KF07 PU3J',
+    ];
+
+    const SAMPLE_LABELS = [
+        'Alice', 'Bob', 'Charlie', 'Dave', 'Eve', 'Friend', 'Merchant',
+    ];
+
+    const layoutSelector = document.querySelector('#layout');
+    const formatSelector = document.querySelector('#request-format');
+    const singleTxControls = document.querySelector('#single-tx-controls');
+    const multiTxControls = document.querySelector('#multi-tx-controls');
+    const checkoutOptions = document.querySelector('#checkout-options');
+
+    function updateVisibility() {
+        const layout = layoutSelector.value;
+        const format = formatSelector.value;
+
+        // Multi-tx only allowed for standard layout
+        if (layout !== 'standard' && format === 'array-multi') {
+            formatSelector.value = 'inline';
+        }
+
+        // Disable multi-tx option for non-standard layouts
+        formatSelector.querySelectorAll('option').forEach(opt => {
+            if (opt.value === 'array-multi') {
+                opt.disabled = layout !== 'standard';
+            }
+        });
+
+        // Show/hide sections based on format
+        const isMulti = formatSelector.value === 'array-multi';
+        singleTxControls.style.display = isMulti ? 'none' : '';
+        multiTxControls.style.display = isMulti ? '' : 'none';
+
+        // Show checkout options only for checkout layout
+        checkoutOptions.style.display = layout === 'checkout' ? '' : 'none';
+    }
+
+    layoutSelector.addEventListener('change', updateVisibility);
+    formatSelector.addEventListener('change', updateVisibility);
+    updateVisibility();
 
     const timeInput = document.querySelector('#time');
     document.querySelector('button#set-current-time').addEventListener('click', () => {
@@ -114,22 +290,45 @@
 
     const expiresInput = document.querySelector('#expires');
     document.querySelector('button#set-expiry-time').addEventListener('click', () => {
-        expiresInput.value = (parseFloat(timeInput.value) || Date.now()) + 2 * 60 * 1000; // set default of 2 minutes
+        expiresInput.value = (parseFloat(timeInput.value) || Date.now()) + 2 * 60 * 1000;
     });
 
-    // document.querySelector('button#redirect').addEventListener('click', async () => {
-    //     signTransactionRedirect(await generateRequest());
-    // });
+    // Preview multi-tx
+    document.querySelector('#preview-multi-tx').addEventListener('click', () => {
+        const txCount = parseInt(document.querySelector('#tx-count').value) || 3;
+        const baseAmount = parseInt(document.querySelector('#multi-base-amount').value) || 100000000;
+        const amountVariance = parseInt(document.querySelector('#multi-amount-variance').value) || 0;
+        const baseFee = parseInt(document.querySelector('#multi-base-fee').value) || 1000;
+        const feeVariance = parseInt(document.querySelector('#multi-fee-variance').value) || 0;
+
+        const container = document.querySelector('#tx-preview-container');
+        container.innerHTML = '';
+
+        for (let i = 0; i < txCount; i++) {
+            const amount = baseAmount + Math.floor(Math.random() * amountVariance * 2) - amountVariance;
+            const fee = baseFee + Math.floor(Math.random() * feeVariance * 2) - feeVariance;
+            const recipient = SAMPLE_RECIPIENTS[i % SAMPLE_RECIPIENTS.length];
+            const label = SAMPLE_LABELS[i % SAMPLE_LABELS.length];
+
+            const preview = document.createElement('div');
+            preview.className = 'transaction-preview';
+            preview.innerHTML = `
+                <span class="tx-number">TX #${i + 1}</span>:
+                To: ${label} (${recipient.substring(0, 14)}...)
+                | Amount: ${(amount / 1e5).toFixed(5)} NIM
+                | Fee: ${(fee / 1e5).toFixed(5)} NIM
+            `;
+            container.appendChild(preview);
+        }
+    });
 
     document.querySelector('button#popup').addEventListener('click', async () => {
         signTransactionPopup(await generateRequest());
     });
 
     async function generateRequest() {
-        const layout = document.querySelector('#layout').value;
-        const txAmount = parseInt(document.querySelector('#amount').value) || 0;
-        const txFee = parseInt(document.querySelector('#fee').value) || 0;
-        const txData = document.querySelector('#data').value || '';
+        const layout = layoutSelector.value;
+        const format = formatSelector.value;
         const keyPassword = document.querySelector('#password').value || '';
 
         // Generate a random key and put it into the KeyStore.
@@ -139,24 +338,78 @@
         const id = await KeyStore.instance.put(key, password);
 
         const path = "m/0'/0'";
+        const senderAddress = key.deriveAddress(path).serialize();
+
+        // Base request
         const request = {
             appName: 'SignTX Demo',
-
             layout,
-
             keyId: id,
             keyPath: path,
-
-            sender: key.deriveAddress(path).serialize(),
-            senderLabel: 'Spending Account',
-            recipient: Nimiq.Address.fromUserFriendlyAddress('NQ82 HP54 C9D4 2FAG 69QD 6Q71 LURR 5187 0V3X').serialize(),
-            recipientLabel: 'Best Friend',
-            value: txAmount,
-            fee: txFee,
-            data: Nimiq.BufferUtils.fromUtf8(txData),
-            validityStartHeight: 0,
         };
 
+        if (format === 'inline') {
+            // Inline single transaction (original format)
+            const txAmount = parseInt(document.querySelector('#amount').value) || 0;
+            const txFee = parseInt(document.querySelector('#fee').value) || 0;
+            const txData = document.querySelector('#data').value || '';
+            const senderLabel = document.querySelector('#sender-label').value || '';
+            const recipientLabel = document.querySelector('#recipient-label').value || '';
+
+            Object.assign(request, {
+                sender: senderAddress,
+                senderLabel: senderLabel,
+                recipient: Nimiq.Address.fromUserFriendlyAddress(SAMPLE_RECIPIENTS[0]).serialize(),
+                recipientLabel: recipientLabel,
+                value: txAmount,
+                fee: txFee,
+                data: Nimiq.BufferUtils.fromUtf8(txData),
+                validityStartHeight: 0,
+            });
+        } else if (format === 'array-single') {
+            // Array format with single transaction
+            const txAmount = parseInt(document.querySelector('#amount').value) || 0;
+            const txFee = parseInt(document.querySelector('#fee').value) || 0;
+            const txData = document.querySelector('#data').value || '';
+            const senderLabel = document.querySelector('#sender-label').value || '';
+            const recipientLabel = document.querySelector('#recipient-label').value || '';
+
+            request.recipientLabel = recipientLabel;
+            request.transactions = [{
+                sender: senderAddress,
+                senderLabel: senderLabel,
+                recipient: Nimiq.Address.fromUserFriendlyAddress(SAMPLE_RECIPIENTS[0]).serialize(),
+                value: txAmount,
+                fee: txFee,
+                data: Nimiq.BufferUtils.fromUtf8(txData),
+                validityStartHeight: 0,
+            }];
+        } else if (format === 'array-multi') {
+            // Array format with multiple transactions
+            const txCount = parseInt(document.querySelector('#tx-count').value) || 3;
+            const baseAmount = parseInt(document.querySelector('#multi-base-amount').value) || 100000000;
+            const amountVariance = parseInt(document.querySelector('#multi-amount-variance').value) || 0;
+            const baseFee = parseInt(document.querySelector('#multi-base-fee').value) || 1000;
+            const feeVariance = parseInt(document.querySelector('#multi-fee-variance').value) || 0;
+
+            request.transactions = [];
+            for (let i = 0; i < txCount; i++) {
+                const amount = baseAmount + Math.floor(Math.random() * amountVariance * 2) - amountVariance;
+                const fee = Math.max(0, baseFee + Math.floor(Math.random() * feeVariance * 2) - feeVariance);
+                const recipientAddr = SAMPLE_RECIPIENTS[i % SAMPLE_RECIPIENTS.length];
+
+                request.transactions.push({
+                    sender: senderAddress,
+                    senderLabel: 'My Account',
+                    recipient: Nimiq.Address.fromUserFriendlyAddress(recipientAddr).serialize(),
+                    value: Math.max(0, amount),
+                    fee: fee,
+                    validityStartHeight: i, // Different validity heights for variety
+                });
+            }
+        }
+
+        // Checkout-specific options
         if (layout === 'checkout') {
             request.shopOrigin = location.origin;
 
@@ -186,12 +439,9 @@
             }
         }
 
+        console.log('Request:', request);
         return request;
     }
-
-    // function signTransactionRedirect(txRequest) {
-    //     return client.signTransaction(txRequest, RedirectRequestBehavior.withLocalState({ keyId: txRequest.keyId }));
-    // }
 
     async function signTransactionPopup(txRequest) {
         const keyguard = window.open('../src/request/sign-transaction/', 'SignTx Demo',
@@ -202,7 +452,25 @@
         try {
             const result = await rpc.call('request', txRequest);
             console.log('Keyguard result:', result);
-            document.querySelector('#result').textContent = 'TX signed: ' + JSON.stringify(result);
+
+            // Format result for display
+            let resultText;
+            if (Array.isArray(result)) {
+                resultText = `Signed ${result.length} transactions:\n\n`;
+                result.forEach((tx, i) => {
+                    resultText += `TX #${i + 1}:\n`;
+                    resultText += `  publicKey: ${bufferToHex(tx.publicKey)}\n`;
+                    resultText += `  signature: ${bufferToHex(tx.signature)}\n`;
+                    resultText += `  serializedTx: ${bufferToHex(tx.serializedTx).substring(0, 60)}...\n\n`;
+                });
+            } else {
+                resultText = `Signed 1 transaction:\n\n`;
+                resultText += `publicKey: ${bufferToHex(result.publicKey)}\n`;
+                resultText += `signature: ${bufferToHex(result.signature)}\n`;
+                resultText += `serializedTx: ${bufferToHex(result.serializedTx)}`;
+            }
+
+            document.querySelector('#result').textContent = resultText;
         } catch (e) {
             console.error('Keyguard error', e);
             document.querySelector('#result').textContent = `Error: ${e.message || e}`;
@@ -210,6 +478,13 @@
 
         keyguard.close();
         await KeyStore.instance.remove(txRequest.keyId);
+    }
+
+    function bufferToHex(buffer) {
+        if (buffer instanceof Uint8Array) {
+            return Array.from(buffer).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+        return String(buffer);
     }
 </script>
 
