@@ -279,7 +279,7 @@ class SignStaking {
         const keyPair = Nimiq.KeyPair.derive(privateKey);
 
         const results = request.transactions.map(transaction => {
-            transaction.sign(keyPair);
+            transaction.sign(keyPair, /* inner key pair for staking signature proof */ keyPair);
 
             /** @type {KeyguardRequest.SignStakingResult} */
             const result = {
