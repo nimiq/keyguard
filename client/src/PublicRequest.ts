@@ -41,7 +41,6 @@ export type SingleKeyResult = {
 };
 
 export type TransactionInfo = {
-    keyPath: string,
     senderLabel?: string,
     sender: Uint8Array,
     senderType: Nimiq.AccountType,
@@ -54,6 +53,8 @@ export type TransactionInfo = {
     validityStartHeight: number,
     flags?: number,
 };
+
+export type TransactionInfoWithKeyPath = TransactionInfo & { keyPath: string };
 
 export enum BitcoinTransactionInputType {
     STANDARD = 'standard',
@@ -94,7 +95,7 @@ export type BitcoinTransactionInfo = {
     locktime?: number,
 };
 
-export type SignTransactionRequestLayout = 'standard' | 'checkout' | 'cashlink';
+export type SignTransactionRequestLayout = 'standard' | 'checkout' | 'cashlink' | 'switch-validator' | 'unstaking';
 export type SignMultisigTransactionRequestLayout = 'standard';
 export type SignBtcTransactionRequestLayout = 'standard' | 'checkout';
 
@@ -165,11 +166,30 @@ export type ExportResult = {
     backupCodesExported: boolean,
 };
 
-type SignTransactionRequestCommon = SimpleRequest & TransactionInfo;
+type SignTransactionRequestCommon = SimpleRequest & TransactionInfoWithKeyPath;
 
-export type SignTransactionRequestStandard = SignTransactionRequestCommon & {
+// Standard layout supports both single and multiple transactions
+export type SignTransactionRequestStandard = ((
+    // Legacy request type for a single transaction
+    SignTransactionRequestCommon & {
+        recipientLabel?: string,
+    }
+) | (
+    // New request type for a single transaction. senderLabel and recipientLabel are supported.
+    SimpleRequest & {
+        keyPath: string,
+        senderLabel?: string,
+        recipientLabel?: string,
+        transactions: [Omit<TransactionInfo, 'senderLabel'> | Uint8Array],
+    }
+) | (
+    // New request type for multiple transactions. senderLabel and recipientLabel are not supported.
+    SimpleRequest & {
+        keyPath: string,
+        transactions: Array<Omit<TransactionInfo, 'senderLabel'> | Uint8Array>,
+    }
+)) & {
     layout?: 'standard',
-    recipientLabel?: string,
 };
 
 export type SignTransactionRequestCheckout = SignTransactionRequestCommon & {
@@ -188,10 +208,37 @@ export type SignTransactionRequestCashlink = SignTransactionRequestCommon & {
     cashlinkMessage?: string,
 };
 
+export type SignTransactionRequestSwitchValidator = SimpleRequest & {
+    layout: 'switch-validator',
+    keyPath: string,
+    // Exactly two transactions in order: set-active-stake then update-staker. Enforced by
+    // the Keyguard at parse time. Mixed TransactionInfo / Uint8Array entries are allowed.
+    transactions: Array<Omit<TransactionInfo, 'senderLabel'> | Uint8Array>,
+    senderLabel?: string,
+    recipientLabel?: string,
+    validatorImageUrl?: string,
+    fromValidatorAddress: string,
+    fromValidatorImageUrl?: string,
+};
+
+export type SignTransactionRequestUnstaking = SimpleRequest & {
+    layout: 'unstaking',
+    keyPath: string,
+    // Exactly three transactions in order: set-active-stake, retire-stake, remove-stake.
+    // Enforced by the Keyguard at parse time. Mixed TransactionInfo / Uint8Array entries are allowed.
+    transactions: Array<Omit<TransactionInfo, 'senderLabel'> | Uint8Array>,
+    senderLabel?: string,
+    recipientLabel?: string,
+    validatorAddress: string,
+    validatorImageUrl?: string,
+};
+
 export type SignTransactionRequest
     = SignTransactionRequestStandard
     | SignTransactionRequestCheckout
-    | SignTransactionRequestCashlink;
+    | SignTransactionRequestCashlink
+    | SignTransactionRequestSwitchValidator
+    | SignTransactionRequestUnstaking;
 
 export type RsaKeyParams = {
     kdf: string,
@@ -336,7 +383,7 @@ export type SignSwapRequestCommon = SimpleRequest & {
     swapId: string,
     fund: (
         {type: 'NIM'}
-        & Omit<TransactionInfo,
+        & Omit<TransactionInfoWithKeyPath,
             | 'recipient' // Only known in second step (in swap-iframe), derived from htlcData
             | 'recipientType' // Must be HTLC
             | 'recipientLabel' // Not used
@@ -377,7 +424,7 @@ export type SignSwapRequestCommon = SimpleRequest & {
     ),
     redeem: (
         {type: 'NIM'}
-        & Omit<TransactionInfo,
+        & Omit<TransactionInfoWithKeyPath,
             | 'sender' // Only known in second step (in swap-iframe)
             | 'senderType' // Must be HTLC
             | 'senderLabel' // Not used
@@ -653,6 +700,7 @@ export type RedirectResult
     | SignatureResult
     | ConnectResult
     | SignTransactionResult
+    | SignTransactionResult[]
     | SignStakingResult[]
     | SignedBitcoinTransaction
     | SignedPolygonTransaction
@@ -667,7 +715,7 @@ export type Result = RedirectResult | IFrameResult;
 
 export type ResultType<T extends RedirectRequest> =
     T extends Is<T, SignMessageRequest> ? SignatureResult :
-    T extends Is<T, SignTransactionRequest> ? SignTransactionResult :
+    T extends Is<T, SignTransactionRequest> ? SignTransactionResult | SignTransactionResult[] :
     T extends Is<T, SignMultisigTransactionRequest> ? SignatureResult :
     T extends Is<T, SignStakingRequest> ? SignStakingResult[] :
     T extends Is<T, ConnectRequest> ? ConnectResult :
@@ -684,7 +732,7 @@ export type ResultType<T extends RedirectRequest> =
 
 export type ResultByCommand<T extends KeyguardCommand> =
     T extends KeyguardCommand.SIGN_MESSAGE ? SignatureResult :
-    T extends KeyguardCommand.SIGN_TRANSACTION ? SignTransactionResult :
+    T extends KeyguardCommand.SIGN_TRANSACTION ? SignTransactionResult | SignTransactionResult[] :
     T extends KeyguardCommand.SIGN_MULTISIG_TRANSACTION ? SignatureResult :
     T extends KeyguardCommand.SIGN_STAKING ? SignStakingResult[] :
     T extends KeyguardCommand.CONNECT_ACCOUNT ? ConnectResult :

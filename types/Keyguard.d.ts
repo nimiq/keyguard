@@ -310,20 +310,64 @@ type ConstructSwap<T extends KeyguardRequest.SignSwapRequestCommon> = Transform<
 type Is<T, B> = KeyguardRequest.Is<T, B>;
 
 type Parsed<T extends KeyguardRequest.Request> =
-    T extends Is<T, KeyguardRequest.SignTransactionRequestStandard> ?
-        ConstructTransaction<KeyId2KeyInfo<KeyguardRequest.SignTransactionRequestStandard>>
-        & { layout: KeyguardRequest.SignTransactionRequestLayout } :
-    T extends Is<T, KeyguardRequest.SignTransactionRequestCheckout> ?
-        Transform<
-            ConstructTransaction<KeyId2KeyInfo<KeyguardRequest.SignTransactionRequestCheckout>>,
-            'shopLogoUrl',
-            { shopLogoUrl?: URL }
-        > :
-    T extends Is<T, KeyguardRequest.SignTransactionRequestCashlink> ?
-        ConstructTransaction<KeyId2KeyInfo<KeyguardRequest.SignTransactionRequestCashlink>> :
+    // Checked before `SignTransactionRequestStandard` because multisig requests structurally
+    // extend its legacy single-tx branch (they include `multisigConfig` on top of the same
+    // transaction fields). An `Is<T, X>` keyof-equality check would normally disambiguate, but
+    // that predicate fails on the three-branch `Standard` union, so we use plain `extends`
+    // below and must filter multisig first.
     T extends Is<T, KeyguardRequest.SignMultisigTransactionRequestStandard> ?
         ConstructMultisigTransaction<KeyId2KeyInfo<KeyguardRequest.SignMultisigTransactionRequestStandard>>
         & { layout: KeyguardRequest.SignMultisigTransactionRequestLayout } :
+    T extends KeyguardRequest.SignTransactionRequestStandard ?
+        // `SignTransactionRequestStandard` is a three-branch union (legacy single-tx, new
+        // single-tx tuple, multi-tx). Wrapping it in `Transform<Omit<...>>` collapses to the
+        // intersection of keys and loses per-branch info, and `Is<T, X>` fails because
+        // `keyof Union` is the narrow intersection. The parsed object is structurally the same
+        // across all three branches (always `transactions: Transaction[]`), so we spell it out.
+        KeyguardRequest.BasicRequest & {
+            keyInfo: KeyInfo,
+            keyLabel?: string,
+            keyPath: string,
+            senderLabel?: string,
+            recipientLabel?: string,
+            transactions: Nimiq.Transaction[],
+            layout: 'standard',
+        } :
+    T extends Is<T, KeyguardRequest.SignTransactionRequestCheckout> ?
+        Transform<
+            ConstructTransaction<KeyId2KeyInfo<KeyguardRequest.SignTransactionRequestCheckout>>,
+            'shopLogoUrl' | 'transaction',
+            { shopLogoUrl?: URL, transactions: Nimiq.Transaction[] }
+        > :
+    T extends Is<T, KeyguardRequest.SignTransactionRequestCashlink> ?
+        Transform<
+            ConstructTransaction<KeyId2KeyInfo<KeyguardRequest.SignTransactionRequestCashlink>>,
+            'transaction',
+            { transactions: Nimiq.Transaction[] }
+        > :
+    T extends Is<T, KeyguardRequest.SignTransactionRequestSwitchValidator> ?
+        Transform<
+            KeyId2KeyInfo<KeyguardRequest.SignTransactionRequestSwitchValidator>,
+            'transactions' | 'validatorImageUrl'
+                | 'fromValidatorAddress' | 'fromValidatorImageUrl',
+            {
+                transactions: Nimiq.Transaction[],
+                validatorAddress: Nimiq.Address,
+                validatorImageUrl?: URL,
+                fromValidatorAddress: Nimiq.Address,
+                fromValidatorImageUrl?: URL,
+            }
+        > :
+    T extends Is<T, KeyguardRequest.SignTransactionRequestUnstaking> ?
+        Transform<
+            KeyId2KeyInfo<KeyguardRequest.SignTransactionRequestUnstaking>,
+            'transactions' | 'validatorAddress' | 'validatorImageUrl',
+            {
+                transactions: Nimiq.Transaction[],
+                validatorAddress: Nimiq.Address,
+                validatorImageUrl?: URL,
+            }
+        > :
     T extends Is<T, KeyguardRequest.SignStakingRequest> ?
         Transform<KeyId2KeyInfo<KeyguardRequest.SignStakingRequest> & {
             plain: Nimiq.PlainTransaction[],

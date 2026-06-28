@@ -65,7 +65,7 @@ class SignStaking {
                         accountLabel: null,
                     });
                     break;
-                case 'update-staker': { // Change validator
+                case 'update-staker': { // Immediate switch validator (single update-staker tx)
                     if (transaction.data.newDelegation) {
                         validatorAddress = Nimiq.Address.fromUserFriendlyAddress(transaction.data.newDelegation);
                     }
@@ -79,17 +79,20 @@ class SignStaking {
                     }
                     displayValue = request.amount;
 
-                    const fromValidatorAddress = request.validatorAddress;
+                    const fromValidatorAddress = request.fromValidatorAddress || request.validatorAddress;
                     if (!fromValidatorAddress) {
                         throw new Errors.InvalidRequestError('No fromValidatorAddress provided');
                     }
 
                     this.$headline.textContent = I18n.translatePhrase('sign-staking-heading-change');
+                    /** @type {HTMLElement} */
+                    (this.$el.querySelector('#switch-subtitle')).classList.remove('display-none');
+
                     this._senderAddressInfo = new AddressInfo({ // From previous validator
                         userFriendlyAddress: fromValidatorAddress.toUserFriendlyAddress(),
                         label: request.senderLabel || null,
                         imageUrl: request.fromValidatorImageUrl || null,
-                        accountLabel: request.keyLabel || null,
+                        accountLabel: null,
                     });
                     this._recipientAddressInfo = new AddressInfo({ // To new validator
                         userFriendlyAddress: validatorAddress.toUserFriendlyAddress(),

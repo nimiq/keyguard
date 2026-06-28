@@ -21,14 +21,89 @@ class SignTransactionApi extends TopLevelApi {
         parsedRequest.keyInfo = await this.parseKeyId(request.keyId);
         parsedRequest.keyLabel = this.parseLabel(request.keyLabel);
         parsedRequest.keyPath = this.parsePath(request.keyPath, 'keyPath');
-        parsedRequest.senderLabel = this.parseLabel(request.senderLabel);
-        parsedRequest.transaction = this.parseTransaction(request);
         parsedRequest.layout = this.parseLayout(request.layout);
+
+        // Parse transactions - either from array or from single-tx fields
+        if ('transactions' in request) {
+            if (!Array.isArray(request.transactions)) {
+                throw new Errors.InvalidRequestError('transactions must be an array');
+            }
+            if (request.transactions.length === 0) {
+                throw new Errors.InvalidRequestError('transactions array must not be empty');
+            }
+            // Multi-transaction mode - only allowed for standard, switch-validator and unstaking layouts
+            if (parsedRequest.layout !== SignTransactionApi.Layouts.STANDARD
+                && parsedRequest.layout !== SignTransactionApi.Layouts.SWITCH_VALIDATOR
+                && parsedRequest.layout !== SignTransactionApi.Layouts.UNSTAKING) {
+                throw new Errors.InvalidRequestError(
+                    'Multiple transactions are only supported with standard, switch-validator or unstaking layout',
+                );
+            }
+
+            parsedRequest.transactions = request.transactions.map(
+                /** @param {Omit<KeyguardRequest.TransactionInfo, 'senderLabel'> | Uint8Array} entry */
+                entry => {
+                    let tx;
+                    if (entry instanceof Uint8Array) {
+                        try {
+                            tx = Nimiq.Transaction.deserialize(entry);
+                        } catch (error) {
+                            throw new Errors.InvalidRequestError(
+                                error instanceof Error ? error : String(error),
+                            );
+                        }
+                        if (tx.sender.equals(tx.recipient)) {
+                            throw new Errors.InvalidRequestError('Sender and recipient must not match');
+                        }
+                    } else {
+                        tx = this.parseTransaction(entry);
+                    }
+
+                    // Reject incoming staking transactions that carry a user-provided staker / validator
+                    // signature proof. transaction.sign() will overwrite it with a proof from the keyPath's
+                    // keypair, silently discarding the user's input — better to fail loudly. If multi-key
+                    // staker support is added later, this rejection can be relaxed.
+                    if (SignTransactionApi._hasStakerOrValidatorProof(tx)) {
+                        throw new Errors.InvalidRequestError(
+                            'Staking transactions with a user-provided signature proof are not supported',
+                        );
+                    }
+
+                    return tx;
+                },
+            );
+
+            // Reject requests where aggregated values would exceed Number.MAX_SAFE_INTEGER,
+            // as the conversion to Number for display would lose precision.
+            let totalValue = BigInt(0);
+            let totalFee = BigInt(0);
+            for (const tx of parsedRequest.transactions) {
+                totalValue += tx.value;
+                totalFee += tx.fee;
+            }
+            if (totalValue > BigInt(Number.MAX_SAFE_INTEGER)
+                || totalFee > BigInt(Number.MAX_SAFE_INTEGER)) {
+                throw new Errors.InvalidRequestError(
+                    'Total value or fee across transactions exceeds safe integer limit',
+                );
+            }
+        } else {
+            // Single transaction mode (backward compatible)
+            parsedRequest.transactions = [this.parseTransaction(request)];
+        }
+
+        // Parse layout-specific fields
         if ((!request.layout || request.layout === SignTransactionApi.Layouts.STANDARD)
             && parsedRequest.layout === SignTransactionApi.Layouts.STANDARD) {
-            parsedRequest.recipientLabel = this.parseLabel(request.recipientLabel);
+            if ('senderLabel' in request && parsedRequest.transactions.length === 1) {
+                parsedRequest.senderLabel = this.parseLabel(request.senderLabel);
+            }
+            if ('recipientLabel' in request && parsedRequest.transactions.length === 1) {
+                parsedRequest.recipientLabel = this.parseLabel(request.recipientLabel);
+            }
         } else if (request.layout === SignTransactionApi.Layouts.CHECKOUT
             && parsedRequest.layout === SignTransactionApi.Layouts.CHECKOUT) {
+            parsedRequest.senderLabel = this.parseLabel(request.senderLabel);
             parsedRequest.shopOrigin = this.parseShopOrigin(request.shopOrigin);
             parsedRequest.shopLogoUrl = this.parseLogoUrl(request.shopLogoUrl, true, 'shopLogoUrl');
             if (parsedRequest.shopLogoUrl && parsedRequest.shopLogoUrl.origin !== parsedRequest.shopOrigin) {
@@ -53,14 +128,126 @@ class SignTransactionApi extends TopLevelApi {
                 }
             }
         } else if (request.layout === SignTransactionApi.Layouts.CASHLINK
-            && parsedRequest.layout === SignTransactionApi.Layouts.CASHLINK
-            && request.cashlinkMessage) {
-            parsedRequest.cashlinkMessage = /** @type {string} */(this.parseMessage(request.cashlinkMessage));
-        }
+            && parsedRequest.layout === SignTransactionApi.Layouts.CASHLINK) {
+            parsedRequest.senderLabel = this.parseLabel(request.senderLabel);
+            if (request.cashlinkMessage) {
+                parsedRequest.cashlinkMessage = /** @type {string} */(this.parseMessage(request.cashlinkMessage));
+            }
+        } else if (request.layout === SignTransactionApi.Layouts.SWITCH_VALIDATOR
+            && parsedRequest.layout === SignTransactionApi.Layouts.SWITCH_VALIDATOR) {
+            if (parsedRequest.transactions.length !== 2) {
+                throw new Errors.InvalidRequestError(
+                    'switch-validator layout requires exactly two transactions',
+                );
+            }
 
-        if (parsedRequest.transaction.senderType === Nimiq.AccountType.Staking
-            || parsedRequest.transaction.recipientType === Nimiq.AccountType.Staking) {
-            throw new Errors.InvalidRequestError('For staking transactions, use the Keyguard request "sign-staking"');
+            const [setActiveStakeTx, updateStakerTx] = parsedRequest.transactions;
+            const [setActiveStakeData, updateStakerData] = parsedRequest.transactions
+                .map(tx => SignTransactionApi._stakingData(tx));
+
+            if (!setActiveStakeData || setActiveStakeData.type !== 'set-active-stake'
+                || !updateStakerData || updateStakerData.type !== 'update-staker') {
+                throw new Errors.InvalidRequestError(
+                    'switch-validator transactions must be set-active-stake followed by update-staker',
+                );
+            }
+            if (!updateStakerData.newDelegation) {
+                throw new Errors.InvalidRequestError(
+                    'switch-validator update-staker must include a newDelegation',
+                );
+            }
+
+            // Same fee-payer, not same staker — staker is identified by the staking proof, which
+            // can differ from the tx sender. Staker equality holds because _hasStakerOrValidatorProof
+            // rejects user-provided proofs, forcing both proofs to use the request's keyPath.
+            if (!setActiveStakeTx.sender.equals(updateStakerTx.sender)) {
+                throw new Errors.InvalidRequestError(
+                    'switch-validator transactions must share the same fee-paying sender',
+                );
+            }
+
+            if (setActiveStakeData.newActiveBalance !== 0) {
+                throw new Errors.InvalidRequestError(
+                    'switch-validator set-active-stake must deactivate all stake (newActiveBalance must be 0)',
+                );
+            }
+            if (!updateStakerData.reactivateAllStake) {
+                throw new Errors.InvalidRequestError(
+                    'switch-validator update-staker must have reactivateAllStake set',
+                );
+            }
+            if (setActiveStakeTx.validityStartHeight > updateStakerTx.validityStartHeight) {
+                throw new Errors.InvalidRequestError(
+                    'switch-validator set-active-stake must not be valid after update-staker',
+                );
+            }
+
+            parsedRequest.senderLabel = this.parseLabel(request.senderLabel);
+            parsedRequest.recipientLabel = this.parseLabel(request.recipientLabel);
+            parsedRequest.fromValidatorAddress = this.parseAddress(
+                request.fromValidatorAddress,
+                'fromValidatorAddress',
+                false,
+            );
+            // The signed delegation is authoritative — request data must not influence this.
+            parsedRequest.validatorAddress = this.parseAddress(
+                updateStakerData.newDelegation,
+                'update-staker newDelegation',
+                false,
+            );
+
+            if (request.validatorImageUrl) {
+                parsedRequest.validatorImageUrl = this._parseUrl(request.validatorImageUrl, 'validatorImageUrl');
+            }
+            if (request.fromValidatorImageUrl) {
+                parsedRequest.fromValidatorImageUrl = this._parseUrl(
+                    request.fromValidatorImageUrl,
+                    'fromValidatorImageUrl',
+                );
+            }
+        } else if (request.layout === SignTransactionApi.Layouts.UNSTAKING
+            && parsedRequest.layout === SignTransactionApi.Layouts.UNSTAKING) {
+            if (parsedRequest.transactions.length !== 3) {
+                throw new Errors.InvalidRequestError(
+                    'unstaking layout requires exactly three transactions',
+                );
+            }
+
+            const [setActiveStakeTx, retireStakeTx, removeStakeTx] = parsedRequest.transactions;
+            const setActiveStakeType = SignTransactionApi._stakingDataType(setActiveStakeTx);
+            const retireStakeType = SignTransactionApi._stakingDataType(retireStakeTx);
+            // remove-stake is outgoing-staking; inspect senderData to distinguish from
+            // delete-validator (both share the same sender/recipient account types).
+            const removeStakeType = SignTransactionApi._stakingSenderDataType(removeStakeTx);
+
+            if (setActiveStakeType !== 'set-active-stake'
+                || retireStakeType !== 'retire-stake'
+                || removeStakeType !== 'remove-stake') {
+                throw new Errors.InvalidRequestError(
+                    'unstaking transactions must be set-active-stake, retire-stake, remove-stake (in order)',
+                );
+            }
+
+            // Fee-payer for the first two, payout address for the third — not a staker-equality
+            // check (see switch-validator). Binding removeStakeTx.recipient to the staker prevents
+            // redirecting unbonded NIM to an attacker via benign-looking labels.
+            if (!setActiveStakeTx.sender.equals(retireStakeTx.sender)
+                || !removeStakeTx.recipient.equals(setActiveStakeTx.sender)) {
+                throw new Errors.InvalidRequestError(
+                    'unstaking transactions must share the same fee-paying sender and payout address',
+                );
+            }
+
+            parsedRequest.senderLabel = this.parseLabel(request.senderLabel);
+            parsedRequest.recipientLabel = this.parseLabel(request.recipientLabel);
+            parsedRequest.validatorAddress = this.parseAddress(
+                request.validatorAddress,
+                'validatorAddress',
+                false,
+            );
+            if (request.validatorImageUrl) {
+                parsedRequest.validatorImageUrl = this._parseUrl(request.validatorImageUrl, 'validatorImageUrl');
+            }
         }
 
         return parsedRequest;
@@ -79,6 +266,83 @@ class SignTransactionApi extends TopLevelApi {
             throw new Errors.InvalidRequestError('Invalid selected layout');
         }
         return /** @type KeyguardRequest.SignTransactionRequestLayout */ (layout);
+    }
+
+    /**
+     * Returns the parsed staking data for an incoming staking transaction, or `undefined` if
+     * the transaction isn't an incoming staking transaction with parseable data.
+     *
+     * @param {Nimiq.Transaction} tx
+     * @returns {Nimiq.PlainTransactionRecipientData | undefined}
+     */
+    static _stakingData(tx) {
+        if (tx.recipientType !== Nimiq.AccountType.Staking) return undefined;
+        try {
+            return Nimiq.StakingContract.dataToPlain(tx.data);
+        } catch (e) {
+            return undefined;
+        }
+    }
+
+    /**
+     * @param {Nimiq.Transaction} tx
+     * @returns {string | undefined}
+     */
+    static _stakingDataType(tx) {
+        const data = SignTransactionApi._stakingData(tx);
+        return data ? data.type : undefined;
+    }
+
+    /**
+     * Returns the parsed sender-data type for an outgoing staking transaction (e.g.
+     * `remove-stake`, `delete-validator`), or `undefined` if the transaction isn't an
+     * outgoing staking transaction with parseable sender data.
+     *
+     * @param {Nimiq.Transaction} tx
+     * @returns {string | undefined}
+     */
+    static _stakingSenderDataType(tx) {
+        if (tx.senderType !== Nimiq.AccountType.Staking) return undefined;
+        try {
+            const senderData = tx.toPlain().senderData;
+            return senderData ? senderData.type : undefined;
+        } catch (e) {
+            return undefined;
+        }
+    }
+
+    /**
+     * Detects whether an incoming staking transaction carries a filled-in staker / validator
+     * SignatureProof at the end of its recipient data. TransactionBuilder produces these
+     * transactions with a zero-filled placeholder proof that `transaction.sign()` later fills
+     * in using the outer keypair. If the trailing bytes already contain a non-zero proof, we
+     * treat it as user-provided.
+     *
+     * Operations without an embedded proof (outgoing staking, `add-stake`) return false.
+     *
+     * @param {Nimiq.Transaction} tx
+     * @returns {boolean}
+     */
+    static _hasStakerOrValidatorProof(tx) {
+        if (tx.recipientType !== Nimiq.AccountType.Staking) return false;
+        if (tx.data.length < Nimiq.SignatureProof.SINGLE_SIG_SIZE) return false;
+
+        let dataType;
+        try {
+            dataType = Nimiq.StakingContract.dataToPlain(tx.data).type;
+        } catch (e) {
+            // If the data cannot be parsed as staking data, let the tx reach signing where
+            // the core's own validation will surface the error.
+            return false;
+        }
+        // `add-stake` is the only incoming staking operation without an embedded proof.
+        if (dataType === 'add-stake') return false;
+
+        const proofStart = tx.data.length - Nimiq.SignatureProof.SINGLE_SIG_SIZE;
+        for (let i = proofStart; i < tx.data.length; i++) {
+            if (tx.data[i] !== 0) return true;
+        }
+        return false;
     }
 
     get Handler() {
@@ -102,4 +366,6 @@ SignTransactionApi.Layouts = Object.freeze({
     STANDARD: /** @type {'standard'} */ ('standard'),
     CHECKOUT: /** @type {'checkout'} */ ('checkout'),
     CASHLINK: /** @type {'cashlink'} */ ('cashlink'),
+    SWITCH_VALIDATOR: /** @type {'switch-validator'} */ ('switch-validator'),
+    UNSTAKING: /** @type {'unstaking'} */ ('unstaking'),
 });
