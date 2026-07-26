@@ -420,6 +420,7 @@ class SignTransaction {
      * @param {AddressInfo} which
      */
     _openDetails(which) {
+        this._blurFocusedElement();
         which.renderTo(
             /** @type {HTMLElement} */(this.$accountDetails.querySelector('#details')),
             true,
@@ -428,6 +429,7 @@ class SignTransaction {
     }
 
     _closeDetails() {
+        this._blurFocusedElement();
         this.$el.classList.remove('account-details-open');
     }
 
@@ -479,6 +481,7 @@ class SignTransaction {
     _openTxList() {
         const { $infoIcon, $txListContent } = this;
         if (!$infoIcon || !$txListContent) return;
+        this._blurFocusedElement();
         // Defer building the list until first open — saves Identicon/AddressInfo work if the user
         // only confirms the simplified view.
         if (!$txListContent.firstChild) {
@@ -492,6 +495,7 @@ class SignTransaction {
     _closeTxList() {
         const { $infoIcon } = this;
         if (!$infoIcon) return;
+        this._blurFocusedElement();
         this.$el.classList.remove('tx-list-details-open');
         $infoIcon.setAttribute('aria-expanded', 'false');
         this.$txListDetails.setAttribute('aria-hidden', 'true');
@@ -547,6 +551,15 @@ class SignTransaction {
         }
 
         $container.appendChild($totals);
+    }
+
+    _blurFocusedElement() {
+        const focusedElement = document.activeElement;
+        if (focusedElement instanceof HTMLElement) {
+            focusedElement.blur();
+        } else {
+            window.blur();
+        }
     }
 
     /**
