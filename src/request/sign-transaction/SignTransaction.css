@@ -515,7 +515,7 @@ nothing breaks in SignMultisigTransaction. */
     opacity: .4;
 }
 
-/* Tx-list (count header, scrollable list, totals footer). Built by _buildTxListInto and shared by
+/* Tx-list (count header, scrollable list, totals footer). Built by _renderTransactionListTo and shared by
    the multi-transaction main view (.multi-transaction) and the tx-list overlay
    (#tx-list-details-content). */
 #confirm-transaction #tx-list-details-content {

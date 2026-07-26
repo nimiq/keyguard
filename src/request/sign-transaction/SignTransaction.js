@@ -59,7 +59,7 @@ class SignTransaction {
         // Custom simplified layouts (e.g. switch-validator, unstaking) hide per-tx detail. For those,
         // expose the multi-tx list as an overlay accessible via an info icon on the page header.
         if (isCustomMultiTx) {
-            this._setupTxListOverlay();
+            this._setupTransactionListOverlay();
         }
 
         const $closeDetails = /** @type {HTMLButtonElement} */ (this.$accountDetails.querySelector('#close-details'));
@@ -188,99 +188,7 @@ class SignTransaction {
         const $paymentInfoLine = /** @type {HTMLElement} */ (this.$el.querySelector('.payment-info-line'));
         $paymentInfoLine.remove();
 
-        this._buildTxListInto($multiTx, request);
-    }
-
-    /**
-     * @param {Nimiq.Transaction} tx
-     * @returns {HTMLElement}
-     */
-    _createTransactionListEntry(tx) {
-        const $entry = document.createElement('div');
-        $entry.className = 'transaction-list-entry';
-
-        const $main = document.createElement('div');
-        $main.className = 'tx-main';
-
-        $main.appendChild(this._createTransactionAddressCell(tx.sender.toUserFriendlyAddress()));
-
-        const $arrow = document.createElement('div');
-        $arrow.className = 'tx-arrow';
-        // Keep the icon string on one line so the build's icon-bundling scanner detects it.
-        // eslint-disable-next-line max-len
-        $arrow.innerHTML = '<svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-right"/></svg>';
-        $main.appendChild($arrow);
-
-        $main.appendChild(this._createTransactionAddressCell(tx.recipient.toUserFriendlyAddress()));
-
-        $main.appendChild(this._createTransactionAmounts(tx));
-        $entry.appendChild($main);
-
-        const formattedData = TransactionDataFormatting.formatTransactionData(tx);
-        if (formattedData) {
-            const $txData = document.createElement('div');
-            $txData.className = 'tx-data';
-            $txData.textContent = formattedData;
-            I18n.observer.on(
-                I18n.Events.LANGUAGE_CHANGED,
-                () => { $txData.textContent = TransactionDataFormatting.formatTransactionData(tx); },
-            );
-            $entry.appendChild($txData);
-        }
-
-        return $entry;
-    }
-
-    /**
-     * Builds a single sender- or recipient-side address cell (identicon + address, click-to-detail).
-     * @param {string} userFriendlyAddress
-     * @returns {HTMLElement}
-     */
-    _createTransactionAddressCell(userFriendlyAddress) {
-        const $cell = document.createElement('div');
-        $cell.className = 'tx-address-cell';
-
-        $cell.appendChild(new Identicon(userFriendlyAddress).getElement());
-
-        const $address = document.createElement('div');
-        $address.className = 'tx-address address';
-        $address.textContent = userFriendlyAddress;
-        $cell.appendChild($address);
-
-        const addressInfo = new AddressInfo({
-            userFriendlyAddress,
-            label: null,
-            imageUrl: null,
-            accountLabel: null,
-        });
-        $cell.addEventListener('click', () => this._openDetails(addressInfo));
-
-        return $cell;
-    }
-
-    /**
-     * @param {Nimiq.Transaction} tx
-     * @returns {HTMLElement}
-     */
-    _createTransactionAmounts(tx) {
-        const $amounts = document.createElement('div');
-        $amounts.className = 'tx-amounts';
-
-        const $value = document.createElement('div');
-        $value.className = 'tx-value';
-        // eslint-disable-next-line max-len
-        $value.innerHTML = `${NumberFormatting.formatNumber(lunasToCoins(Number(tx.value)))}<span class="nim-symbol"></span>`;
-        $amounts.appendChild($value);
-
-        if (tx.fee > 0) {
-            const $fee = document.createElement('div');
-            $fee.className = 'tx-fee';
-            // eslint-disable-next-line max-len
-            $fee.innerHTML = TemplateTags.hasVars(1)`+ ${NumberFormatting.formatNumber(lunasToCoins(Number(tx.fee)))} <span class="nim-symbol"></span> <span data-i18n="sign-tx-fee">fee</span>`;
-            $amounts.appendChild($fee);
-        }
-
-        return $amounts;
+        this._renderTransactionListTo($multiTx, request);
     }
 
     /** @param {Parsed<KeyguardRequest.SignTransactionRequestSwitchValidator>} request */
@@ -433,7 +341,7 @@ class SignTransaction {
         this.$el.classList.remove('account-details-open');
     }
 
-    _setupTxListOverlay() {
+    _setupTransactionListOverlay() {
         const $pageHeader = /** @type {HTMLElement} */ (this.$el.querySelector('.page-header'));
 
         const $infoIcon = document.createElement('button');
@@ -463,36 +371,25 @@ class SignTransaction {
             this.$txListDetails.querySelector('#close-tx-list-details')
         );
 
-        $infoIcon.addEventListener('click', this._openTxList.bind(this));
-        $closeTxList.addEventListener('click', this._closeTxList.bind(this));
+        $infoIcon.addEventListener('click', this._openTransactionList.bind(this));
+        $closeTxList.addEventListener('click', this._closeTransactionList.bind(this));
     }
 
-    /** @param {KeyboardEvent} event */
-    _onEscapeKeydown(event) {
-        if (event.key !== 'Escape') return;
-        // Close in reverse layering order: address-details sits above tx-list when both are open.
-        if (this.$el.classList.contains('account-details-open')) {
-            this._closeDetails();
-        } else if (this.$el.classList.contains('tx-list-details-open')) {
-            this._closeTxList();
-        }
-    }
-
-    _openTxList() {
+    _openTransactionList() {
         const { $infoIcon, $txListContent } = this;
         if (!$infoIcon || !$txListContent) return;
         this._blurFocusedElement();
         // Defer building the list until first open — saves Identicon/AddressInfo work if the user
         // only confirms the simplified view.
         if (!$txListContent.firstChild) {
-            this._buildTxListInto($txListContent, this._request);
+            this._renderTransactionListTo($txListContent, this._request);
         }
         this.$el.classList.add('tx-list-details-open');
         $infoIcon.setAttribute('aria-expanded', 'true');
         this.$txListDetails.setAttribute('aria-hidden', 'false');
     }
 
-    _closeTxList() {
+    _closeTransactionList() {
         const { $infoIcon } = this;
         if (!$infoIcon) return;
         this._blurFocusedElement();
@@ -507,7 +404,7 @@ class SignTransaction {
      * @param {HTMLElement} $container
      * @param {Parsed<KeyguardRequest.SignTransactionRequest>} request
      */
-    _buildTxListInto($container, request) {
+    _renderTransactionListTo($container, request) {
         $container.textContent = '';
 
         let totalValue = BigInt(0);
@@ -553,12 +450,115 @@ class SignTransaction {
         $container.appendChild($totals);
     }
 
+    /**
+     * @param {Nimiq.Transaction} tx
+     * @returns {HTMLElement}
+     */
+    _createTransactionListEntry(tx) {
+        const $entry = document.createElement('div');
+        $entry.className = 'transaction-list-entry';
+
+        const $main = document.createElement('div');
+        $main.className = 'tx-main';
+
+        $main.appendChild(this._createTransactionListEntryAddress(tx.sender.toUserFriendlyAddress()));
+
+        const $arrow = document.createElement('div');
+        $arrow.className = 'tx-arrow';
+        // Keep the icon string on one line so the build's icon-bundling scanner detects it.
+        // eslint-disable-next-line max-len
+        $arrow.innerHTML = '<svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-right"/></svg>';
+        $main.appendChild($arrow);
+
+        $main.appendChild(this._createTransactionListEntryAddress(tx.recipient.toUserFriendlyAddress()));
+
+        $main.appendChild(this._createTransactionListEntryAmounts(tx));
+        $entry.appendChild($main);
+
+        const formattedData = TransactionDataFormatting.formatTransactionData(tx);
+        if (formattedData) {
+            const $txData = document.createElement('div');
+            $txData.className = 'tx-data';
+            $txData.textContent = formattedData;
+            I18n.observer.on(
+                I18n.Events.LANGUAGE_CHANGED,
+                () => { $txData.textContent = TransactionDataFormatting.formatTransactionData(tx); },
+            );
+            $entry.appendChild($txData);
+        }
+
+        return $entry;
+    }
+
+    /**
+     * Builds a single sender- or recipient-side address cell (identicon + address, click-to-detail).
+     * @param {string} userFriendlyAddress
+     * @returns {HTMLElement}
+     */
+    _createTransactionListEntryAddress(userFriendlyAddress) {
+        const $cell = document.createElement('div');
+        $cell.className = 'tx-address-cell';
+
+        $cell.appendChild(new Identicon(userFriendlyAddress).getElement());
+
+        const $address = document.createElement('div');
+        $address.className = 'tx-address address';
+        $address.textContent = userFriendlyAddress;
+        $cell.appendChild($address);
+
+        const addressInfo = new AddressInfo({
+            userFriendlyAddress,
+            label: null,
+            imageUrl: null,
+            accountLabel: null,
+        });
+        $cell.addEventListener('click', () => this._openDetails(addressInfo));
+
+        return $cell;
+    }
+
+    /**
+     * @param {Nimiq.Transaction} tx
+     * @returns {HTMLElement}
+     */
+    _createTransactionListEntryAmounts(tx) {
+        const $amounts = document.createElement('div');
+        $amounts.className = 'tx-amounts';
+
+        const $value = document.createElement('div');
+        $value.className = 'tx-value';
+        // eslint-disable-next-line max-len
+        $value.innerHTML = `${NumberFormatting.formatNumber(lunasToCoins(Number(tx.value)))}<span class="nim-symbol"></span>`;
+        $amounts.appendChild($value);
+
+        if (tx.fee > 0) {
+            const $fee = document.createElement('div');
+            $fee.className = 'tx-fee';
+            // eslint-disable-next-line max-len
+            $fee.innerHTML = TemplateTags.hasVars(1)`+ ${NumberFormatting.formatNumber(lunasToCoins(Number(tx.fee)))} <span class="nim-symbol"></span> <span data-i18n="sign-tx-fee">fee</span>`;
+            $amounts.appendChild($fee);
+        }
+
+        return $amounts;
+    }
+
     _blurFocusedElement() {
         const focusedElement = document.activeElement;
         if (focusedElement instanceof HTMLElement) {
             focusedElement.blur();
         } else {
             window.blur();
+        }
+    }
+
+    /** @param {KeyboardEvent} event */
+    _onEscapeKeydown(event) {
+        if (event.key !== 'Escape') return;
+        // Close in reverse layering order: address-details sits above tx-list when both are open.
+        if (this.$el.classList.contains('account-details-open')) {
+            this._closeDetails();
+        } else if (this.$el.classList.contains('tx-list-details-open')) {
+            this._closeTransactionList();
         }
     }
 
