@@ -6,15 +6,6 @@ nothing breaks in SignMultisigTransaction. */
     overflow: hidden;
 }
 
-#confirm-transaction.standard .hide-standard,
-#confirm-transaction.checkout .hide-checkout,
-#confirm-transaction.cashlink .hide-cashlink,
-#confirm-transaction.multi .hide-multi,
-#confirm-transaction.switch-validator .hide-switch-validator,
-#confirm-transaction.unstaking .hide-unstaking {
-    display: none;
-}
-
 /* Headings: hide all, opt the active layout's heading back in. */
 #confirm-transaction .page-header > h1 {
     display: none;
