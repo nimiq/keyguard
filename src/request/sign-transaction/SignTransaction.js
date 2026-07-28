@@ -94,19 +94,11 @@ class SignTransaction {
     _renderSingleTransactionView(request) {
         const transaction = request.transactions[0];
 
-        const $sender = /** @type {HTMLLinkElement} */ (this.$el.querySelector('.single-transaction .sender'));
-        const senderAddressInfo = new AddressInfo({
+        const senderInfo = {
             userFriendlyAddress: transaction.sender.toUserFriendlyAddress(),
             label: request.senderLabel || null,
-            imageUrl: null,
             accountLabel: request.keyLabel || null,
-        });
-        senderAddressInfo.renderTo($sender);
-        $sender.addEventListener('click', () => {
-            this._openDetails(senderAddressInfo);
-        });
-
-        const $recipient = /** @type {HTMLLinkElement} */ (this.$el.querySelector('.single-transaction .recipient'));
+        };
         const recipientAddress = transaction.recipient.toUserFriendlyAddress();
         /* eslint-disable no-nested-ternary */
         const recipientLabel = 'shopOrigin' in request && !!request.shopOrigin
@@ -118,23 +110,15 @@ class SignTransaction {
         const recipientImage = 'shopLogoUrl' in request && !!request.shopLogoUrl
             ? request.shopLogoUrl
             : null;
-        const recipientAddressInfo = new AddressInfo({
+        const recipientInfo = {
             userFriendlyAddress: recipientAddress,
             label: recipientLabel,
             imageUrl: recipientImage,
-            accountLabel: null,
-        }, request.layout === SignTransactionApi.Layouts.CASHLINK);
-        recipientAddressInfo.renderTo($recipient);
-        if (request.layout !== SignTransactionApi.Layouts.CASHLINK) {
-            $recipient.addEventListener('click', () => {
-                this._openDetails(recipientAddressInfo);
-            });
-        }
+        };
 
-        const $paymentInfoLine = /** @type {HTMLElement} */ (this.$el.querySelector('.payment-info-line'));
-        if (request.layout === SignTransactionApi.Layouts.CHECKOUT) {
-            // eslint-disable-next-line no-new
-            new PaymentInfoLine(Object.assign({}, request, {
+        const paymentInfoLine = request.layout === SignTransactionApi.Layouts.CHECKOUT
+            ? {
+                ...request,
                 recipient: recipientAddress,
                 label: recipientLabel || recipientAddress,
                 imageUrl: request.shopLogoUrl,
@@ -142,47 +126,25 @@ class SignTransaction {
                 currency: /** @type {'nim'} */ ('nim'),
                 unitsToCoins: lunasToCoins,
                 networkFee: Number(transaction.fee),
-            }), $paymentInfoLine);
-        } else {
-            $paymentInfoLine.remove();
-        }
+            }
+            : null;
 
-        const $value = /** @type {HTMLDivElement} */ (this.$el.querySelector('#value'));
-        const $fee = /** @type {HTMLDivElement} */ (this.$el.querySelector('#fee'));
-        const $data = /** @type {HTMLDivElement} */ (this.$el.querySelector('#data'));
-
-        // Set value and fee.
-        $value.textContent = NumberFormatting.formatNumber(lunasToCoins(Number(transaction.value)));
-        if ($fee && transaction.fee > 0) {
-            $fee.textContent = NumberFormatting.formatNumber(lunasToCoins(Number(transaction.fee)));
-            const $feeSection = /** @type {HTMLDivElement} */ (this.$el.querySelector('.fee-section'));
-            $feeSection.classList.remove('display-none');
-        }
-
+        /** @type {() => string} */
+        let data;
         if (request.layout === SignTransactionApi.Layouts.CASHLINK
-         && Nimiq.BufferUtils.equals(transaction.data, Constants.CASHLINK_FUNDING_DATA)) {
-            if (request.cashlinkMessage) {
-                $data.textContent = request.cashlinkMessage;
-                const $dataSection = /** @type {HTMLDivElement} */ (this.$el.querySelector('.data-section'));
-                $dataSection.classList.remove('display-none');
-            }
+            && Nimiq.BufferUtils.equals(transaction.data, Constants.CASHLINK_FUNDING_DATA)) {
+            data = () => request.cashlinkMessage || '';
         } else {
-            const formattedData = TransactionDataFormatting.formatTransactionData(transaction);
-            if (formattedData) {
-                $data.textContent = formattedData;
-                const $dataSection = /** @type {HTMLDivElement} */ (this.$el.querySelector('.data-section'));
-                $dataSection.classList.remove('display-none');
-                I18n.observer.on(
-                    I18n.Events.LANGUAGE_CHANGED,
-                    () => { $data.textContent = TransactionDataFormatting.formatTransactionData(transaction); },
-                );
-            }
+            data = () => TransactionDataFormatting.formatTransactionData(transaction);
         }
+
+        this._renderSimpleTransactionView(request.layout, paymentInfoLine, /* subtitle */ null, senderInfo,
+            recipientInfo, transaction.value, transaction.fee, data);
     }
 
     /** @param {Parsed<KeyguardRequest.SignTransactionRequest>} request */
     _renderMultiTransactionView(request) {
-        const $multiTx = /** @type {HTMLElement} */ (this.$el.querySelector('.multi-transaction'));
+        const $multiTx = /** @type {HTMLElement} */ (this.$el.querySelector('.multi-transaction-view'));
 
         // Remove payment info line (not used in multi-tx mode)
         const $paymentInfoLine = /** @type {HTMLElement} */ (this.$el.querySelector('.payment-info-line'));
@@ -193,99 +155,150 @@ class SignTransaction {
 
     /** @param {Parsed<KeyguardRequest.SignTransactionRequestSwitchValidator>} request */
     _renderSwitchValidatorView(request) {
-        const $paymentInfoLine = /** @type {HTMLElement} */ (this.$el.querySelector('.payment-info-line'));
-        $paymentInfoLine.remove();
+        const $view = /** @type {HTMLElement} */ (this.$el.querySelector('.simple-transaction-view'));
+        $view.classList.add('switch-validator-view');
 
-        const $switchView = /** @type {HTMLElement} */ (this.$el.querySelector('.switch-validator-view'));
+        const subtitleTemplate = document.createElement('template');
+        subtitleTemplate.innerHTML = `
+            <p class="switch-subtitle-description" data-i18n="sign-tx-switch-deferred-description">
+                Your NIM will be unstaked from your current validator and staked with the new one.
+            </p>
+            <p class="switch-subtitle-duration" data-i18n="sign-tx-switch-deferred-duration">
+                This can take up to 24h.
+            </p>
+        `;
+        I18n.translateDom(subtitleTemplate.content);
+        const subtitles = Array.from(subtitleTemplate.content.childNodes);
 
-        this._renderValidatorCard(
-            /** @type {HTMLElement} */ ($switchView.querySelector('.accounts .sender')),
-            request.fromValidatorAddress.toUserFriendlyAddress(),
-            request.senderLabel || null,
-            request.fromValidatorImageUrl || null,
-            true,
-        );
-        this._renderValidatorCard(
-            /** @type {HTMLElement} */ ($switchView.querySelector('.accounts .recipient')),
-            request.validatorAddress.toUserFriendlyAddress(),
-            request.recipientLabel || null,
-            request.validatorImageUrl || null,
-            false,
-        );
+        const senderInfo = {
+            userFriendlyAddress: request.fromValidatorAddress.toUserFriendlyAddress(),
+            label: request.senderLabel || null,
+            imageUrl: request.fromValidatorImageUrl || null,
+        };
+        const recipientInfo = {
+            userFriendlyAddress: request.validatorAddress.toUserFriendlyAddress(),
+            label: request.recipientLabel || null,
+            imageUrl: request.validatorImageUrl || null,
+        };
 
-        let totalFee = BigInt(0);
-        for (const tx of request.transactions) {
-            totalFee += tx.fee;
-        }
-        if (totalFee > BigInt(0)) {
-            const $feeValue = /** @type {HTMLElement} */ ($switchView.querySelector('#switch-validator-fee'));
-            $feeValue.textContent = NumberFormatting.formatNumber(lunasToCoins(Number(totalFee)));
-            const $feeSection = /** @type {HTMLElement} */ (
-                $switchView.querySelector('#switch-validator-fee-section')
-            );
-            $feeSection.classList.remove('display-none');
-        }
+        const value = null; // the transactions of the switch-validator flow are signaling transactions with no value.
+        const totalFee = request.transactions.reduce((sum, { fee }) => sum + fee, BigInt(0));
+
+        this._renderSimpleTransactionView(request.layout, /* paymentInfoLine */ null, subtitles, senderInfo,
+            recipientInfo, value, totalFee, /* data */ null);
     }
 
     /** @param {Parsed<KeyguardRequest.SignTransactionRequestUnstaking>} request */
     _renderUnstakingView(request) {
-        const $paymentInfoLine = /** @type {HTMLElement} */ (this.$el.querySelector('.payment-info-line'));
-        $paymentInfoLine.remove();
+        const $view = /** @type {HTMLElement} */ (this.$el.querySelector('.simple-transaction-view'));
+        $view.classList.add('unstaking-view');
 
-        const $view = /** @type {HTMLElement} */ (this.$el.querySelector('.unstaking-view'));
-
-        // FROM: the validator the user is leaving.
-        const $sender = /** @type {HTMLElement} */ ($view.querySelector('.accounts .sender'));
-        const senderAddressInfo = new AddressInfo({
+        // From the validator the user is leaving.
+        const senderInfo = {
             userFriendlyAddress: request.validatorAddress.toUserFriendlyAddress(),
             label: request.senderLabel || null,
             imageUrl: request.validatorImageUrl || null,
-            accountLabel: null,
-        });
-        senderAddressInfo.renderTo($sender);
-        $sender.addEventListener('click', () => this._openDetails(senderAddressInfo));
-
-        // TO: the user's wallet. The parser binds removeStakeTx.recipient to the fee-paying
-        // sender of setActiveStakeTx — see SignTransactionApi.parseRequest.
+        };
+        // To the user's wallet. The parser binds removeStakeTx.recipient to the fee-paying sender of setActiveStakeTx,
+        // see SignTransactionApi.parseRequest.
         const removeStakeTx = request.transactions[2];
-        const $recipient = /** @type {HTMLElement} */ ($view.querySelector('.accounts .recipient'));
-        const recipientAddressInfo = new AddressInfo({
+        const recipientInfo = {
             userFriendlyAddress: removeStakeTx.recipient.toUserFriendlyAddress(),
             label: request.recipientLabel || null,
-            imageUrl: null,
             accountLabel: request.keyLabel || null,
-        });
-        recipientAddressInfo.renderTo($recipient);
-        $recipient.addEventListener('click', () => this._openDetails(recipientAddressInfo));
+        };
 
-        // Headline amount = value of the remove-stake tx (NIM returned to the user).
-        const $amount = /** @type {HTMLElement} */ ($view.querySelector('#unstake-value'));
-        $amount.textContent = NumberFormatting.formatNumber(lunasToCoins(Number(removeStakeTx.value)));
+        const value = removeStakeTx.value; // Headline amount = value of the remove-stake tx (NIM returned to the user).
+        const totalFee = request.transactions.reduce((sum, { fee }) => sum + fee, BigInt(0));
 
-        // Total fee across all 3 transactions; hidden when zero.
-        let totalFee = BigInt(0);
-        for (const tx of request.transactions) {
-            totalFee += tx.fee;
-        }
-        if (totalFee > BigInt(0)) {
-            const $feeValue = /** @type {HTMLElement} */ ($view.querySelector('#unstake-fee'));
-            $feeValue.textContent = NumberFormatting.formatNumber(lunasToCoins(Number(totalFee)));
-            const $feeSection = /** @type {HTMLElement} */ ($view.querySelector('#unstake-fee-section'));
-            $feeSection.classList.remove('display-none');
-        }
+        // eslint-disable-next-line require-jsdoc-except/require-jsdoc
+        const data = () => I18n.translatePhrase('sign-tx-unstake-deferred-duration');
+
+        this._renderSimpleTransactionView(request.layout, /* paymentInfoLine */ null, /* subtitles */ null, senderInfo,
+            recipientInfo, value, totalFee, data);
     }
 
+    // eslint-disable-next-line valid-jsdoc
+    /**
+     * @private
+     * @param {KeyguardRequest.SignTransactionRequestLayout} layout
+     * @param {ConstructorParameters<typeof PaymentInfoLine>[0] | null} paymentInfoLine
+     * @param {string | Node | Array<string | Node> | null} subtitle
+     * @param {ConstructorParameters<typeof AddressInfo>[0]} senderInfo
+     * @param {ConstructorParameters<typeof AddressInfo>[0]} recipientInfo
+     * @param {bigint | null} value
+     * @param {bigint | null} fee
+     * @param {(() => string) | null} data - can be updated on language change for i18n.
+     */
+    _renderSimpleTransactionView(layout, paymentInfoLine, subtitle, senderInfo, recipientInfo, value, fee, data) {
+        const $paymentInfoLine = /** @type {HTMLElement} */ (this.$el.querySelector('.payment-info-line'));
+        const $subtitle = /** @type {HTMLElement} */ (this.$el.querySelector('.simple-transaction-view .subtitle'));
+        const $sender = /** @type {HTMLElement} */ (this.$el.querySelector('.simple-transaction-view .sender'));
+        const $recipient = /** @type {HTMLElement} */ (this.$el.querySelector('.simple-transaction-view .recipient'));
+        const $value = /** @type {HTMLElement} */ (this.$el.querySelector('.simple-transaction-view #value'));
+        const $fee = /** @type {HTMLElement} */ (this.$el.querySelector('.simple-transaction-view #fee'));
+        const $data = /** @type {HTMLElement} */ (this.$el.querySelector('.simple-transaction-view #data'));
+
+        if (paymentInfoLine) {
+            // eslint-disable-next-line no-new
+            new PaymentInfoLine(paymentInfoLine, $paymentInfoLine);
+        } else {
+            $paymentInfoLine.remove();
+        }
+
+        if (subtitle) {
+            $subtitle.replaceChildren(...(Array.isArray(subtitle) ? subtitle : [subtitle]));
+        } else {
+            $subtitle.remove();
+        }
+
+        if (layout !== SignTransactionApi.Layouts.SWITCH_VALIDATOR) {
+            const senderAddressInfo = new AddressInfo(senderInfo);
+            senderAddressInfo.renderTo($sender);
+            $sender.addEventListener('click', () => this._openDetails(senderAddressInfo));
+
+            const recipientAddressInfo = new AddressInfo(recipientInfo, layout === SignTransactionApi.Layouts.CASHLINK);
+            recipientAddressInfo.renderTo($recipient);
+            if (layout !== SignTransactionApi.Layouts.CASHLINK) {
+                $recipient.addEventListener('click', () => this._openDetails(recipientAddressInfo));
+            }
+        } else {
+            this._renderValidatorCard($sender, senderInfo);
+            this._renderValidatorCard($recipient, recipientInfo);
+        }
+
+        // Set value and fee.
+        if (value !== null) {
+            $value.textContent = NumberFormatting.formatNumber(lunasToCoins(Number(value)));
+        } else {
+            const $valueSection = /** @type {HTMLElement} */ ($value.parentElement);
+            $valueSection.remove();
+        }
+        if (fee !== null && fee > 0) {
+            $fee.textContent = NumberFormatting.formatNumber(lunasToCoins(Number(fee)));
+        } else {
+            const $feeSection = /** @type {HTMLElement} */ ($fee.parentElement);
+            $feeSection.remove();
+        }
+
+        // Set data
+        const updateData = () => { // eslint-disable-line require-jsdoc-except/require-jsdoc
+            const currentData = data ? data() : '';
+            $data.textContent = currentData;
+            $data.classList.toggle('display-none', !currentData);
+        };
+        updateData();
+        I18n.observer.on(I18n.Events.LANGUAGE_CHANGED, updateData);
+    }
+
+    // eslint-disable-next-line valid-jsdoc
     /**
      * @param {HTMLElement} $el
-     * @param {string} userFriendlyAddress
-     * @param {string?} label
-     * @param {URL?} imageUrl
-     * @param {boolean} isCurrent - true for the "from" card (dashed), false for the "to" card.
+     * @param {Pick<ConstructorParameters<typeof AddressInfo>[0], 'userFriendlyAddress' | 'label' | 'imageUrl'>} params
      */
-    _renderValidatorCard($el, userFriendlyAddress, label, imageUrl, isCurrent) {
+    _renderValidatorCard($el, { userFriendlyAddress, label, imageUrl }) {
         $el.textContent = '';
         $el.classList.add('validator-card');
-        $el.classList.toggle('current', isCurrent);
 
         const $icon = document.createElement('div');
         $icon.classList.add('icon');
@@ -407,12 +420,8 @@ class SignTransaction {
     _renderTransactionListTo($container, request) {
         $container.textContent = '';
 
-        let totalValue = BigInt(0);
-        let totalFee = BigInt(0);
-        for (const tx of request.transactions) {
-            totalValue += tx.value;
-            totalFee += tx.fee;
-        }
+        const totalValue = request.transactions.reduce((sum, { value }) => sum + value, BigInt(0));
+        const totalFee = request.transactions.reduce((sum, { fee }) => sum + fee, BigInt(0));
 
         const $count = document.createElement('span');
         $count.className = 'tx-count nq-text';
@@ -506,12 +515,7 @@ class SignTransaction {
         $address.textContent = userFriendlyAddress;
         $cell.appendChild($address);
 
-        const addressInfo = new AddressInfo({
-            userFriendlyAddress,
-            label: null,
-            imageUrl: null,
-            accountLabel: null,
-        });
+        const addressInfo = new AddressInfo({ userFriendlyAddress });
         $cell.addEventListener('click', () => this._openDetails(addressInfo));
 
         return $cell;

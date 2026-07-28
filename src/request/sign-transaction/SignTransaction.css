@@ -179,17 +179,17 @@ nothing breaks in SignMultisigTransaction. */
     overflow-wrap: break-word;
 }
 
-/* Multi-transaction styles */
-#confirm-transaction .multi-transaction {
+/* Multi-transaction view styles */
+#confirm-transaction .multi-transaction-view {
     display: none;
     padding: 2rem;
 }
 
-#confirm-transaction.multi .single-transaction {
+#confirm-transaction.multi .simple-transaction-view {
     display: none;
 }
 
-#confirm-transaction.multi .multi-transaction {
+#confirm-transaction.multi .multi-transaction-view {
     display: flex;
 }
 
@@ -286,23 +286,7 @@ nothing breaks in SignMultisigTransaction. */
     word-break: break-word;
 }
 
-#confirm-transaction .switch-validator-view,
-#confirm-transaction .unstaking-view {
-    display: none;
-}
-
-#confirm-transaction.switch-validator .single-transaction,
-#confirm-transaction.switch-validator .multi-transaction,
-#confirm-transaction.unstaking .single-transaction,
-#confirm-transaction.unstaking .multi-transaction {
-    display: none;
-}
-
-#confirm-transaction.switch-validator .switch-validator-view,
-#confirm-transaction.unstaking .unstaking-view {
-    display: flex;
-    flex-direction: column;
-}
+/* switch-validator style adaptions */
 
 #confirm-transaction.switch-validator .nq-card-header {
     padding-bottom: 0;
@@ -312,19 +296,19 @@ nothing breaks in SignMultisigTransaction. */
     padding: 1.25rem 2rem 2rem;
 }
 
-#confirm-transaction .switch-validator-view .switch-subtitle-description,
-#confirm-transaction .switch-validator-view .switch-subtitle-duration {
+#confirm-transaction .switch-subtitle-description,
+#confirm-transaction .switch-subtitle-duration {
     font-size: 2rem;
     text-align: center;
     margin: 0;
     line-height: 1.4;
 }
 
-#confirm-transaction .switch-validator-view .switch-subtitle-description {
+#confirm-transaction .switch-subtitle-description {
     color: var(--nimiq-blue);
 }
 
-#confirm-transaction .switch-validator-view .switch-subtitle-duration {
+#confirm-transaction .switch-subtitle-duration {
     color: var(--nimiq-light-blue);
     font-weight: 600;
 }
@@ -346,8 +330,7 @@ nothing breaks in SignMultisigTransaction. */
     color: rgba(31, 35, 72, 0.4);
 }
 
-#confirm-transaction .switch-validator-view #switch-validator-fee-section {
-    opacity: 0.5;
+#confirm-transaction .switch-validator-view .fee-section {
     margin-top: 1.5rem;
     text-align: center;
 }
@@ -365,7 +348,8 @@ nothing breaks in SignMultisigTransaction. */
     box-sizing: border-box;
 }
 
-#confirm-transaction .validator-card.current {
+/* render "from" validator card with dashed border */
+#confirm-transaction .validator-card:first-child {
     border-style: dashed;
     border-color: rgba(31, 35, 72, 0.16);
 }
@@ -416,22 +400,13 @@ nothing breaks in SignMultisigTransaction. */
     min-width: 0;
 }
 
-/* Unstaking view reuses the standard single-tx layout (.accounts row, .total light-blue) and adds
-   only a fee/duration note pair below the value. */
-#confirm-transaction .unstaking-view .total #unstake-value {
-    font-size: 5rem;
-}
+/* unstaking style adaptions */
 
-#confirm-transaction .unstaking-view #unstake-fee-section {
-    opacity: 0.5;
-    margin-bottom: 0.25rem;
-}
-
-#confirm-transaction .unstaking-view .unstake-duration-note {
-    color: var(--nimiq-light-blue);
+#confirm-transaction .unstaking-view .data-section {
+    margin: 1rem 0;
+    font-size: 1.75rem;
     font-weight: 600;
-    margin-top: 0.5rem;
-    text-align: center;
+    color: var(--nimiq-light-blue) !important;
 }
 
 /* Transaction-list overlay (info-icon-triggered, used by simplified custom layouts).
@@ -516,7 +491,7 @@ nothing breaks in SignMultisigTransaction. */
 }
 
 /* Tx-list (count header, scrollable list, totals footer). Built by _renderTransactionListTo and shared by
-   the multi-transaction main view (.multi-transaction) and the tx-list overlay
+   the multi-transaction main view (.multi-transaction-view) and the tx-list overlay
    (#tx-list-details-content). */
 #confirm-transaction #tx-list-details-content {
     display: flex;
@@ -561,7 +536,7 @@ nothing breaks in SignMultisigTransaction. */
 }
 
 /* Main view: cap the list height (~280px, ~4-5 compact entries) and pad it vertically. */
-#confirm-transaction .multi-transaction .tx-list {
+#confirm-transaction .multi-transaction-view .tx-list {
     max-height: 35rem;
     padding-top: 1rem;
     padding-bottom: 1rem;

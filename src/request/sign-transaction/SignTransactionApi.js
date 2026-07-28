@@ -75,14 +75,9 @@ class SignTransactionApi extends TopLevelApi {
 
             // Reject requests where aggregated values would exceed Number.MAX_SAFE_INTEGER,
             // as the conversion to Number for display would lose precision.
-            let totalValue = BigInt(0);
-            let totalFee = BigInt(0);
-            for (const tx of parsedRequest.transactions) {
-                totalValue += tx.value;
-                totalFee += tx.fee;
-            }
-            if (totalValue > BigInt(Number.MAX_SAFE_INTEGER)
-                || totalFee > BigInt(Number.MAX_SAFE_INTEGER)) {
+            const totalValue = parsedRequest.transactions.reduce((sum, { value }) => sum + value, BigInt(0));
+            const totalFee = parsedRequest.transactions.reduce((sum, { fee }) => sum + fee, BigInt(0));
+            if (totalValue > Number.MAX_SAFE_INTEGER || totalFee > Number.MAX_SAFE_INTEGER) {
                 throw new Errors.InvalidRequestError(
                     'Total value or fee across transactions exceeds safe integer limit',
                 );

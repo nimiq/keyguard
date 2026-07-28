@@ -7,13 +7,13 @@ class AddressInfo { // eslint-disable-line no-unused-vars
     /**
      * @param {{
      *     userFriendlyAddress: string,
-     *     label: string?,
-     *     imageUrl: URL?,
-     *     accountLabel: string?,
+     *     label?: string?,
+     *     imageUrl?: URL?,
+     *     accountLabel?: string?,
      *     multisig?: {
      *         signers: number,
      *         participants: number,
-     *     },
+     *     }?,
      * }} addressInfo
      * @param {boolean} [displayAsCashlink = false]
      */

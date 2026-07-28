@@ -108,8 +108,11 @@
                     <h1 data-i18n="sign-tx-heading-unstaking"        class="nq-h1 heading-unstaking">Unstake NIM</h1>
                 </div>
 
-                <!-- Single-transaction view -->
-                <div class="page-body nq-card-body transaction single-transaction">
+                <!-- Simplified transaction view (used for single transactions and simplified switch-validator and -->
+                <!-- unstake flows). -->
+                <div class="page-body nq-card-body transaction simple-transaction-view">
+                    <div class="subtitle"></div>
+
                     <div class="center accounts">
                         <div class="sender"></div>
                         <svg class="nq-icon arrow"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-right"/></svg>
@@ -121,53 +124,16 @@
                             <span id="value"></span><span class="nim-symbol"></span>
                         </div>
 
-                        <div class="fee-section nq-text-s display-none">
+                        <div class="fee-section nq-text-s">
                             + <span id="fee"></span> <span class="nim-symbol"></span> <span data-i18n="sign-tx-fee">fee</span>
                         </div>
 
-                        <div class="data-section display-none nq-text nq-blue" id="data"></div>
+                        <div class="data-section nq-text nq-blue" id="data"></div>
                     </div>
                 </div>
 
                 <!-- Multi-transaction view (built by _renderTransactionListTo) -->
-                <div class="page-body nq-card-body transaction multi-transaction"></div>
-
-                <!-- Switch-validator view -->
-                <div class="page-body nq-card-body transaction switch-validator-view">
-                    <p class="switch-subtitle-description" data-i18n="sign-tx-switch-deferred-description">Your NIM will be unstaked from your current validator and staked with the new one.</p>
-                    <p class="switch-subtitle-duration" data-i18n="sign-tx-switch-deferred-duration">This can take up to 24h.</p>
-                    <div class="center accounts">
-                        <div class="sender"></div>
-                        <svg class="nq-icon arrow"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-right"/></svg>
-                        <div class="recipient"></div>
-                    </div>
-                    <div id="switch-validator-fee-section" class="nq-text-s display-none">
-                        + <span id="switch-validator-fee"></span> <span class="nim-symbol"></span> <span data-i18n="sign-tx-fee">fee</span>
-                    </div>
-                </div>
-
-                <!-- Unstaking view -->
-                <div class="page-body nq-card-body transaction unstaking-view">
-                    <div class="center accounts">
-                        <div class="sender"></div>
-                        <svg class="nq-icon arrow"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-right"/></svg>
-                        <div class="recipient"></div>
-                    </div>
-
-                    <div class="value-fee-data">
-                        <div class="total nq-light-blue">
-                            <span id="unstake-value"></span><span class="nim-symbol"></span>
-                        </div>
-
-                        <div id="unstake-fee-section" class="nq-text-s display-none">
-                            + <span id="unstake-fee"></span> <span class="nim-symbol"></span> <span data-i18n="sign-tx-fee">fee</span>
-                        </div>
-
-                        <div class="unstake-duration-note nq-text-s">
-                            <span data-i18n="sign-tx-unstake-deferred-duration">This can take up to 24h.</span>
-                        </div>
-                    </div>
-                </div>
+                <div class="page-body nq-card-body transaction multi-transaction-view"></div>
 
                 <div class="page-footer nq-card-footer">
                     <form id="password-box"></form>
