@@ -59,16 +59,6 @@ class SignTransactionApi extends TopLevelApi {
                         tx = this.parseTransaction(entry);
                     }
 
-                    // Reject incoming staking transactions that carry a user-provided staker / validator
-                    // signature proof. transaction.sign() will overwrite it with a proof from the keyPath's
-                    // keypair, silently discarding the user's input — better to fail loudly. If multi-key
-                    // staker support is added later, this rejection can be relaxed.
-                    if (SignTransactionApi._hasStakerOrValidatorProof(tx)) {
-                        throw new Errors.InvalidRequestError(
-                            'Staking transactions with a user-provided signature proof are not supported',
-                        );
-                    }
-
                     return tx;
                 },
             );
@@ -85,6 +75,18 @@ class SignTransactionApi extends TopLevelApi {
         } else {
             // Single transaction mode (backward compatible)
             parsedRequest.transactions = [this.parseTransaction(request)];
+        }
+
+        // Reject incoming staking transactions that carry a user-provided staker / validator signature proof.
+        // transaction.sign() will overwrite it with a proof from the keyPath's keypair, silently discarding the user's
+        // input. If multi-key staker support is added later, this rejection can be relaxed, if appropriate display of
+        // the staker is added to the UI.
+        for (const transaction of parsedRequest.transactions) {
+            if (SignTransactionApi._hasStakerOrValidatorProof(transaction)) {
+                throw new Errors.InvalidRequestError(
+                    'Staking transactions with a user-provided signature proof are not supported',
+                );
+            }
         }
 
         // Parse layout-specific fields
