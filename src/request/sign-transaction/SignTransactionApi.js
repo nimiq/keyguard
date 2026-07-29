@@ -3,6 +3,7 @@
 /* global TopLevelApi */
 /* global SignTransaction */
 /* global Errors */
+/* global CONFIG */
 
 /** @extends {TopLevelApi<KeyguardRequest.SignTransactionRequest>} */
 class SignTransactionApi extends TopLevelApi {
@@ -54,6 +55,9 @@ class SignTransactionApi extends TopLevelApi {
                         }
                         if (tx.sender.equals(tx.recipient)) {
                             throw new Errors.InvalidRequestError('Sender and recipient must not match');
+                        }
+                        if (tx.networkId !== CONFIG.NIMIQ_NETWORK_ID) {
+                            throw new Errors.InvalidRequestError('Wrong transaction network');
                         }
                     } else {
                         tx = this.parseTransaction(entry);
