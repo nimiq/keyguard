@@ -363,7 +363,7 @@
                 recipientLabel: recipientLabel,
                 value: txAmount,
                 fee: txFee,
-                data: Nimiq.BufferUtils.fromUtf8(txData),
+                recipientData: Nimiq.BufferUtils.fromUtf8(txData),
                 validityStartHeight: 0,
             });
         } else if (format === 'array-single') {
@@ -374,14 +374,14 @@
             const senderLabel = document.querySelector('#sender-label').value || '';
             const recipientLabel = document.querySelector('#recipient-label').value || '';
 
+            request.senderLabel = senderLabel;
             request.recipientLabel = recipientLabel;
             request.transactions = [{
                 sender: senderAddress,
-                senderLabel: senderLabel,
                 recipient: Nimiq.Address.fromUserFriendlyAddress(SAMPLE_RECIPIENTS[0]).serialize(),
                 value: txAmount,
                 fee: txFee,
-                data: Nimiq.BufferUtils.fromUtf8(txData),
+                recipientData: Nimiq.BufferUtils.fromUtf8(txData),
                 validityStartHeight: 0,
             }];
         } else if (format === 'array-multi') {
@@ -400,7 +400,6 @@
 
                 request.transactions.push({
                     sender: senderAddress,
-                    senderLabel: 'My Account',
                     recipient: Nimiq.Address.fromUserFriendlyAddress(recipientAddr).serialize(),
                     value: Math.max(0, amount),
                     fee: fee,
