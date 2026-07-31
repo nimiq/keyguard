@@ -599,6 +599,18 @@ class SignTransaction {
         const privateKey = key.derivePrivateKey(request.keyPath);
         const keyPair = Nimiq.KeyPair.derive(privateKey);
         const publicKey = keyPair.publicKey;
+        const signer = publicKey.toAddress();
+
+        // Check whether the transactions are actually sent from the signer's address, which we can only do for basic
+        // senders, and only after unlocking the key. This is particularly relevant for the simplified transaction
+        // layouts, which do not show the sender address but rely on it matching the signer, and which tie the unstaking
+        // payout address to it, see SignTransactionApi.parseRequest.
+        for (const transaction of request.transactions) {
+            if (transaction.senderType === Nimiq.AccountType.Basic && !transaction.sender.equals(signer)) {
+                reject(new Errors.InvalidRequestError('Signer does not match basic transaction sender'));
+                return;
+            }
+        }
 
         /** @type {KeyguardRequest.SignTransactionResult[]} */
         const results = request.transactions.map(transaction => {

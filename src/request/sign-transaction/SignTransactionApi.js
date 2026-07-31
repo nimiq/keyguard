@@ -147,7 +147,8 @@ class SignTransactionApi extends TopLevelApi {
             // Check transactions to be of the expected format and disallow transactions that don't match the standard
             // case the simplified SWITCH_VALIDATOR layout represents. For example, the simplified layout relies on the
             // staker being the user and presents the transactions as operation on the user's own stake and does not
-            // display the fee-paying sender at all.
+            // display the fee-paying sender at all. That the sender is in fact the user's own address can only be
+            // checked once the key is unlocked and is therefore checked in SignTransaction._onConfirm.
 
             // For set-active-stake and update-staker transactions, we don't have to check the following, which are
             // checked by the Nimiq protocol (statically or on commit) or earlier parsing steps above, or are displayed:
@@ -165,7 +166,8 @@ class SignTransactionApi extends TopLevelApi {
                 // from the tx sender. However, we currently disallow custom staking proofs via the
                 // _hasStakerOrValidatorProof check above, such that both staking proofs are generated during signing
                 // from the keyPath's keypair. By this, the same staker is used for both transactions, and it also
-                // matches the transaction senders, as we enforce the senders to be of basic type below.
+                // matches the transaction senders, as we enforce the senders to be of basic type below and the signer
+                // check in SignTransaction._onConfirm enforces basic senders to be that same keypair's address.
                 // If we'd allow user-provided staking proofs in the future, we'd need to add a check that the
                 // transaction stakers match and are the same as the transaction senders for the simplified
                 // switch-validator flow.
@@ -177,7 +179,8 @@ class SignTransactionApi extends TopLevelApi {
             if (setActiveStakeTx.senderType !== Nimiq.AccountType.Basic
                 || updateStakerTx.senderType !== Nimiq.AccountType.Basic) {
                 // Enforce basic senders because the switch-validator UI does not show the sender being a contract,
-                // and because the staker equality above relies on it.
+                // and because SignTransaction._onConfirm can only check the sender to be the user's own address for
+                // basic senders, which the staker equality above relies on.
                 throw new Errors.InvalidRequestError('switch-validator transaction sender must not be a contract');
             }
 
@@ -249,7 +252,8 @@ class SignTransactionApi extends TopLevelApi {
             // Check transactions to be of the expected format and disallow transactions that don't match the standard
             // case the simplified UNSTAKING layout represents. For example, the simplified layout relies on the staker
             // being the user and presents the transactions as operation on the user's own stake and does not display
-            // the fee-paying sender at all.
+            // the fee-paying sender at all. That the sender is in fact the user's own address can only be checked once
+            // the key is unlocked and is therefore checked in SignTransaction._onConfirm.
 
             // setActiveStakeTx and retireStakeTx transactions
             // For setActiveStakeTx and retireStakeTx transactions, we don't have to check the following, which are
@@ -271,7 +275,8 @@ class SignTransactionApi extends TopLevelApi {
                 // such that the staking proofs of setActiveStakeTx and retireStakeTx are generated during signing from
                 // the keyPath's keypair, as is removeStakeTx's signature proof, which identifies its staker. By this,
                 // the same staker is used for all three transactions, and it also matches the transaction senders, as
-                // we enforce the senders to be of basic type below.
+                // we enforce the senders to be of basic type below and the signer check in SignTransaction._onConfirm
+                // enforces basic senders to be that same keypair's address.
                 // If we'd allow user-provided staking proofs in the future, we'd need to add a check that the
                 // transaction stakers match and are the same as the transaction senders for the simplified unstaking
                 // flow.
@@ -283,7 +288,8 @@ class SignTransactionApi extends TopLevelApi {
             if (setActiveStakeTx.senderType !== Nimiq.AccountType.Basic
                 || retireStakeTx.senderType !== Nimiq.AccountType.Basic) {
                 // Enforce basic senders because the unstaking UI does not show the sender being a contract, and
-                // because the staker equality above and the payout address check below rely on it.
+                // because SignTransaction._onConfirm can only check the sender to be the user's own address for
+                // basic senders, which the staker equality above and the payout address check below rely on.
                 throw new Errors.InvalidRequestError('unstaking transaction sender must not be a contract');
             }
 
@@ -332,8 +338,9 @@ class SignTransactionApi extends TopLevelApi {
             if (!removeStakeTx.recipient.equals(setActiveStakeTx.sender)) {
                 // Enforce the payout address of the unstaked funds to be the same as the fee payer and the staking
                 // address. This way, the transactions are easier for the user to interpret, and it is clear where the
-                // funds are coming from and where they are going to. It also prevents sending the unstaked NIM to an
-                // attacker via benign-looking labels.
+                // funds are coming from and where they are going to. Note that this check is also what ties the payout
+                // to the user's own address, preventing the unstaked NIM from being sent to an attacker via
+                // benign-looking labels.
                 throw new Errors.InvalidRequestError(
                     'unstaking transactions must payout to the fee payer and staker address',
                 );
