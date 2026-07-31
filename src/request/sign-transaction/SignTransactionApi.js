@@ -143,13 +143,57 @@ class SignTransactionApi extends TopLevelApi {
             }
 
             const [setActiveStakeTx, updateStakerTx] = parsedRequest.transactions;
-            const [setActiveStakeData, updateStakerData] = parsedRequest.transactions
-                .map(tx => SignTransactionApi._stakingData(tx));
 
+            // Check transactions to be of the expected format and disallow transactions that don't match the standard
+            // case the simplified SWITCH_VALIDATOR layout represents. For example, the simplified layout relies on the
+            // staker being the user and presents the transactions as operation on the user's own stake and does not
+            // display the fee-paying sender at all.
+
+            // For set-active-stake and update-staker transactions, we don't have to check the following, which are
+            // checked by the Nimiq protocol (statically or on commit) or earlier parsing steps above, or are displayed:
+            // - senderData (must be empty for transaction from basic account; enforced by protocol)
+            // - recipient (must be staking contract for incoming staking transaction; enforced by protocol on commit)
+            // - value (must be zero for signaling transactions; enforced by protocol)
+            // - total fees (must not exceed MAX_SAFE_INTEGER; checked above and displayed)
+            // - network id (must match CONFIG.NIMIQ_NETWORK_ID; checked above)
+            // - flags (must be signaling for these transaction types; enforced by protocol)
+            // What must still be checked here: sender, senderType, recipientType, recipientData, validityStartHeight
+
+            if (!setActiveStakeTx.sender.equals(updateStakerTx.sender)) {
+                // Enforce both transactions to have the same fee-payer. Note that the fee-payer is not necessarily
+                // the same as the staker, because the staker is identified by the staking proof, which can differ
+                // from the tx sender. However, we currently disallow custom staking proofs via the
+                // _hasStakerOrValidatorProof check above, such that both staking proofs are generated during signing
+                // from the keyPath's keypair. By this, the same staker is used for both transactions, and it also
+                // matches the transaction senders, as we enforce the senders to be of basic type below.
+                // If we'd allow user-provided staking proofs in the future, we'd need to add a check that the
+                // transaction stakers match and are the same as the transaction senders for the simplified
+                // switch-validator flow.
+                throw new Errors.InvalidRequestError(
+                    'switch-validator transactions must share the same fee-paying sender and staker',
+                );
+            }
+
+            if (setActiveStakeTx.senderType !== Nimiq.AccountType.Basic
+                || updateStakerTx.senderType !== Nimiq.AccountType.Basic) {
+                // Enforce basic senders because the switch-validator UI does not show the sender being a contract,
+                // and because the staker equality above relies on it.
+                throw new Errors.InvalidRequestError('switch-validator transaction sender must not be a contract');
+            }
+
+            // recipientType and recipientData
+            // Note that the staking proof on recipientData is already checked via _hasStakerOrValidatorProof above.
+            const [setActiveStakeData, updateStakerData] = [setActiveStakeTx, updateStakerTx]
+                .map(tx => SignTransactionApi._getIncomingStakingTransactionData(tx));
             if (!setActiveStakeData || setActiveStakeData.type !== 'set-active-stake'
                 || !updateStakerData || updateStakerData.type !== 'update-staker') {
                 throw new Errors.InvalidRequestError(
                     'switch-validator transactions must be set-active-stake followed by update-staker',
+                );
+            }
+            if (setActiveStakeData.newActiveBalance !== 0) {
+                throw new Errors.InvalidRequestError(
+                    'switch-validator set-active-stake must deactivate all stake (newActiveBalance must be 0)',
                 );
             }
             if (!updateStakerData.newDelegation) {
@@ -157,26 +201,12 @@ class SignTransactionApi extends TopLevelApi {
                     'switch-validator update-staker must include a newDelegation',
                 );
             }
-
-            // Same fee-payer, not same staker — staker is identified by the staking proof, which
-            // can differ from the tx sender. Staker equality holds because _hasStakerOrValidatorProof
-            // rejects user-provided proofs, forcing both proofs to use the request's keyPath.
-            if (!setActiveStakeTx.sender.equals(updateStakerTx.sender)) {
-                throw new Errors.InvalidRequestError(
-                    'switch-validator transactions must share the same fee-paying sender',
-                );
-            }
-
-            if (setActiveStakeData.newActiveBalance !== 0) {
-                throw new Errors.InvalidRequestError(
-                    'switch-validator set-active-stake must deactivate all stake (newActiveBalance must be 0)',
-                );
-            }
             if (!updateStakerData.reactivateAllStake) {
                 throw new Errors.InvalidRequestError(
                     'switch-validator update-staker must have reactivateAllStake set',
                 );
             }
+
             if (setActiveStakeTx.validityStartHeight > updateStakerTx.validityStartHeight) {
                 throw new Errors.InvalidRequestError(
                     'switch-validator set-active-stake must not be valid after update-staker',
@@ -215,28 +245,107 @@ class SignTransactionApi extends TopLevelApi {
             }
 
             const [setActiveStakeTx, retireStakeTx, removeStakeTx] = parsedRequest.transactions;
-            const setActiveStakeType = SignTransactionApi._stakingDataType(setActiveStakeTx);
-            const retireStakeType = SignTransactionApi._stakingDataType(retireStakeTx);
-            // remove-stake is outgoing-staking; inspect senderData to distinguish from
-            // delete-validator (both share the same sender/recipient account types).
-            const removeStakeType = SignTransactionApi._stakingSenderDataType(removeStakeTx);
 
-            if (setActiveStakeType !== 'set-active-stake'
-                || retireStakeType !== 'retire-stake'
-                || removeStakeType !== 'remove-stake') {
+            // Check transactions to be of the expected format and disallow transactions that don't match the standard
+            // case the simplified UNSTAKING layout represents. For example, the simplified layout relies on the staker
+            // being the user and presents the transactions as operation on the user's own stake and does not display
+            // the fee-paying sender at all.
+
+            // setActiveStakeTx and retireStakeTx transactions
+            // For setActiveStakeTx and retireStakeTx transactions, we don't have to check the following, which are
+            // checked by the Nimiq protocol (statically or on commit) or earlier parsing steps above, or are displayed:
+            // - senderData (must be empty for transaction from basic account; enforced by protocol)
+            // - recipient (must be staking contract for incoming staking transaction; enforced by protocol on commit)
+            // - value (must be zero for signaling transactions; enforced by protocol)
+            // - total fees (must not exceed MAX_SAFE_INTEGER; checked above and displayed)
+            // - network id (must match CONFIG.NIMIQ_NETWORK_ID; checked above)
+            // - flags (must be signaling for these transaction types; enforced by protocol)
+            // What must still be checked here: sender, senderType, recipientType, recipientData, validityStartHeight
+
+            if (!setActiveStakeTx.sender.equals(retireStakeTx.sender)) {
+                // Enforce the fee-payer to be the same for all three transactions: for incoming staking transactions
+                // setActiveStakeTx and retireStakeTx the fee is paid by the transaction sender, while for the outgoing
+                // removeStakeTx it is paid by the staker from the removed stake. Note that in general the fee-payer is
+                // not necessarily the same as the staker, because the staker is identified by the staking proof.
+                // However, we currently disallow custom staking proofs via the _hasStakerOrValidatorProof check above,
+                // such that the staking proofs of setActiveStakeTx and retireStakeTx are generated during signing from
+                // the keyPath's keypair, as is removeStakeTx's signature proof, which identifies its staker. By this,
+                // the same staker is used for all three transactions, and it also matches the transaction senders, as
+                // we enforce the senders to be of basic type below.
+                // If we'd allow user-provided staking proofs in the future, we'd need to add a check that the
+                // transaction stakers match and are the same as the transaction senders for the simplified unstaking
+                // flow.
+                throw new Errors.InvalidRequestError(
+                    'unstaking transactions must share the same fee-paying sender and staker',
+                );
+            }
+
+            if (setActiveStakeTx.senderType !== Nimiq.AccountType.Basic
+                || retireStakeTx.senderType !== Nimiq.AccountType.Basic) {
+                // Enforce basic senders because the unstaking UI does not show the sender being a contract, and
+                // because the staker equality above and the payout address check below rely on it.
+                throw new Errors.InvalidRequestError('unstaking transaction sender must not be a contract');
+            }
+
+            // recipientType and recipientData
+            // Note that the staking proof on recipientData is already checked via _hasStakerOrValidatorProof above.
+            const [setActiveStakeData, retireStakeData] = [setActiveStakeTx, retireStakeTx]
+                .map(tx => SignTransactionApi._getIncomingStakingTransactionData(tx));
+            if (!setActiveStakeData || setActiveStakeData.type !== 'set-active-stake'
+                || !retireStakeData || retireStakeData.type !== 'retire-stake') {
+                throw new Errors.InvalidRequestError(
+                    // remove-stake is checked below
+                    'unstaking transactions must be set-active-stake, retire-stake, remove-stake (in order)',
+                );
+            }
+            if (retireStakeData.retireStake > removeStakeTx.value + removeStakeTx.fee) {
+                throw new Errors.InvalidRequestError('unstaking must not retire more than is being paid out');
+            }
+
+            if (setActiveStakeTx.validityStartHeight > retireStakeTx.validityStartHeight
+                || retireStakeTx.validityStartHeight > removeStakeTx.validityStartHeight) {
+                throw new Errors.InvalidRequestError(
+                    'unstaking transactions must be valid in order: set-active-stake, retire-stake, remove-stake',
+                );
+            }
+
+            // removeStake transaction
+            // For removeStake, we don't have to check the following, which are checked by the Nimiq protocol
+            // (statically or on commit) or earlier parsing steps above, or are displayed:
+            // - sender (must be staking contract for outgoing staking transaction; enforced by protocol on commit)
+            // - value (value + fee must be >= retired amount; checked above and displayed)
+            // - total fees (must not exceed MAX_SAFE_INTEGER; checked above and displayed)
+            // - validityStartHeight (must not be before retireStakeTx; checked above)
+            // - network id (must match CONFIG.NIMIQ_NETWORK_ID; checked above)
+            // - flags (must be none for transaction to basic account; enforced by protocol)
+            // What must still be checked here: senderType, senderData, recipient, recipientType, recipientData
+
+            // senderType and senderData
+            const removeStakeData = SignTransactionApi._getOutgoingStakingTransactionData(removeStakeTx);
+            if (!removeStakeData || removeStakeData.type !== 'remove-stake') {
+                // set-active-stake and retire-stake are checked above
                 throw new Errors.InvalidRequestError(
                     'unstaking transactions must be set-active-stake, retire-stake, remove-stake (in order)',
                 );
             }
 
-            // Fee-payer for the first two, payout address for the third — not a staker-equality
-            // check (see switch-validator). Binding removeStakeTx.recipient to the staker prevents
-            // redirecting unbonded NIM to an attacker via benign-looking labels.
-            if (!setActiveStakeTx.sender.equals(retireStakeTx.sender)
-                || !removeStakeTx.recipient.equals(setActiveStakeTx.sender)) {
+            if (!removeStakeTx.recipient.equals(setActiveStakeTx.sender)) {
+                // Enforce the payout address of the unstaked funds to be the same as the fee payer and the staking
+                // address. This way, the transactions are easier for the user to interpret, and it is clear where the
+                // funds are coming from and where they are going to. It also prevents sending the unstaked NIM to an
+                // attacker via benign-looking labels.
                 throw new Errors.InvalidRequestError(
-                    'unstaking transactions must share the same fee-paying sender and payout address',
+                    'unstaking transactions must payout to the fee payer and staker address',
                 );
+            }
+
+            if (removeStakeTx.recipientType !== Nimiq.AccountType.Basic) {
+                throw new Errors.InvalidRequestError('unstaking transactions must not payout to a contract');
+            }
+
+            if (removeStakeTx.data.length) {
+                // Disallow recipient data because we don't display it in the simplified unstaking flow.
+                throw new Errors.InvalidRequestError('unstaking transactions must not have recipient data');
             }
 
             parsedRequest.senderLabel = this.parseLabel(request.senderLabel);
@@ -270,13 +379,13 @@ class SignTransactionApi extends TopLevelApi {
     }
 
     /**
-     * Returns the parsed staking data for an incoming staking transaction, or `undefined` if
-     * the transaction isn't an incoming staking transaction with parseable data.
+     * Returns the parsed recipient data for an incoming staking transaction, or `undefined` if the transaction isn't an
+     * incoming staking transaction with parseable recipient data.
      *
      * @param {Nimiq.Transaction} tx
      * @returns {Nimiq.PlainTransactionRecipientData | undefined}
      */
-    static _stakingData(tx) {
+    static _getIncomingStakingTransactionData(tx) {
         if (tx.recipientType !== Nimiq.AccountType.Staking) return undefined;
         try {
             return Nimiq.StakingContract.dataToPlain(tx.data);
@@ -286,27 +395,16 @@ class SignTransactionApi extends TopLevelApi {
     }
 
     /**
-     * @param {Nimiq.Transaction} tx
-     * @returns {string | undefined}
-     */
-    static _stakingDataType(tx) {
-        const data = SignTransactionApi._stakingData(tx);
-        return data ? data.type : undefined;
-    }
-
-    /**
-     * Returns the parsed sender-data type for an outgoing staking transaction (e.g.
-     * `remove-stake`, `delete-validator`), or `undefined` if the transaction isn't an
+     * Returns the parsed sender data for an outgoing staking transaction, or `undefined` if the transaction isn't an
      * outgoing staking transaction with parseable sender data.
      *
      * @param {Nimiq.Transaction} tx
-     * @returns {string | undefined}
+     * @returns {Nimiq.PlainTransactionSenderData | undefined}
      */
-    static _stakingSenderDataType(tx) {
+    static _getOutgoingStakingTransactionData(tx) {
         if (tx.senderType !== Nimiq.AccountType.Staking) return undefined;
         try {
-            const senderData = tx.toPlain().senderData;
-            return senderData ? senderData.type : undefined;
+            return tx.toPlain().senderData;
         } catch (e) {
             return undefined;
         }
