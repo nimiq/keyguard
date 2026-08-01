@@ -88,10 +88,10 @@ class SignTransactionApi extends TopLevelApi {
             }
             previousValidityStartHeight = transaction.validityStartHeight;
 
-            // Reject incoming staking transactions that carry a user-provided staker / validator signature proof.
-            // transaction.sign() will overwrite it with a proof from the keyPath's keypair, silently discarding the
-            // user's input. If multi-key staker support is added later, this rejection can be relaxed, if appropriate
-            // display of the staker is added to the UI.
+            // Validate the recipient data of incoming staking transactions, and reject those that carry a
+            // user-provided staker / validator signature proof. transaction.sign() would overwrite it with a proof
+            // from the keyPath's keypair, silently discarding the user's input. If multi-key staker support is added
+            // later, this rejection can be relaxed, if appropriate display of the staker is added to the UI.
             if (SignTransactionApi._hasStakerOrValidatorProof(transaction)) {
                 throw new Errors.InvalidRequestError(
                     'Staking transactions with a user-provided signature proof are not supported',
@@ -194,7 +194,7 @@ class SignTransactionApi extends TopLevelApi {
             // recipientType and recipientData
             // Note that the staking proof on recipientData is already checked via _hasStakerOrValidatorProof above.
             const [setActiveStakeData, updateStakerData] = [setActiveStakeTx, updateStakerTx]
-                .map(tx => SignTransactionApi._getIncomingStakingTransactionData(tx));
+                .map(tx => SignTransactionApi._parseIncomingStakingTransactionData(tx));
             if (!setActiveStakeData || setActiveStakeData.type !== 'set-active-stake'
                 || !updateStakerData || updateStakerData.type !== 'update-staker') {
                 throw new Errors.InvalidRequestError(
@@ -298,7 +298,7 @@ class SignTransactionApi extends TopLevelApi {
             // recipientType and recipientData
             // Note that the staking proof on recipientData is already checked via _hasStakerOrValidatorProof above.
             const [setActiveStakeData, retireStakeData] = [setActiveStakeTx, retireStakeTx]
-                .map(tx => SignTransactionApi._getIncomingStakingTransactionData(tx));
+                .map(tx => SignTransactionApi._parseIncomingStakingTransactionData(tx));
             if (!setActiveStakeData || setActiveStakeData.type !== 'set-active-stake'
                 || !retireStakeData || retireStakeData.type !== 'retire-stake') {
                 throw new Errors.InvalidRequestError(
@@ -322,7 +322,7 @@ class SignTransactionApi extends TopLevelApi {
             // What must still be checked here: senderType, senderData, recipient, recipientType, recipientData
 
             // senderType and senderData
-            const removeStakeData = SignTransactionApi._getOutgoingStakingTransactionData(removeStakeTx);
+            const removeStakeData = SignTransactionApi._parseOutgoingStakingTransactionData(removeStakeTx);
             if (!removeStakeData || removeStakeData.type !== 'remove-stake') {
                 // set-active-stake and retire-stake are checked above
                 throw new Errors.InvalidRequestError(
@@ -382,33 +382,33 @@ class SignTransactionApi extends TopLevelApi {
 
     /**
      * Returns the parsed recipient data for an incoming staking transaction, or `undefined` if the transaction isn't an
-     * incoming staking transaction with parseable recipient data.
+     * incoming staking transaction.
      *
      * @param {Nimiq.Transaction} tx
      * @returns {Nimiq.PlainTransactionRecipientData | undefined}
      */
-    static _getIncomingStakingTransactionData(tx) {
+    static _parseIncomingStakingTransactionData(tx) {
         if (tx.recipientType !== Nimiq.AccountType.Staking) return undefined;
         try {
             return Nimiq.StakingContract.dataToPlain(tx.data);
         } catch (e) {
-            return undefined;
+            throw new Errors.InvalidRequestError('Invalid incoming staking transaction data');
         }
     }
 
     /**
      * Returns the parsed sender data for an outgoing staking transaction, or `undefined` if the transaction isn't an
-     * outgoing staking transaction with parseable sender data.
+     * outgoing staking transaction.
      *
      * @param {Nimiq.Transaction} tx
      * @returns {Nimiq.PlainTransactionSenderData | undefined}
      */
-    static _getOutgoingStakingTransactionData(tx) {
+    static _parseOutgoingStakingTransactionData(tx) {
         if (tx.senderType !== Nimiq.AccountType.Staking) return undefined;
         try {
             return tx.toPlain().senderData;
         } catch (e) {
-            return undefined;
+            throw new Errors.InvalidRequestError('Invalid transaction or transaction data');
         }
     }
 
@@ -420,24 +420,17 @@ class SignTransactionApi extends TopLevelApi {
      * treat it as user-provided.
      *
      * Operations without an embedded proof (outgoing staking, `add-stake`) return false.
+     * Throws for incoming staking transactions with invalid recipient data.
      *
      * @param {Nimiq.Transaction} tx
      * @returns {boolean}
      */
     static _hasStakerOrValidatorProof(tx) {
-        if (tx.recipientType !== Nimiq.AccountType.Staking) return false;
-        if (tx.data.length < Nimiq.SignatureProof.SINGLE_SIG_SIZE) return false;
+        const data = SignTransactionApi._parseIncomingStakingTransactionData(tx); // validate and throw on invalid data
+        if (!data) return false; // not an incoming staking transaction
+        if (data.type === 'add-stake') return false; // add-stake has no embedded staking proof.
 
-        let dataType;
-        try {
-            dataType = Nimiq.StakingContract.dataToPlain(tx.data).type;
-        } catch (e) {
-            // If the data cannot be parsed as staking data, let the tx reach signing where
-            // the core's own validation will surface the error.
-            return false;
-        }
-        // `add-stake` is the only incoming staking operation without an embedded proof.
-        if (dataType === 'add-stake') return false;
+        if (tx.data.length < Nimiq.SignatureProof.SINGLE_SIG_SIZE) return false;
 
         const proofStart = tx.data.length - Nimiq.SignatureProof.SINGLE_SIG_SIZE;
         for (let i = proofStart; i < tx.data.length; i++) {
