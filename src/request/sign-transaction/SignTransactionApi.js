@@ -81,11 +81,17 @@ class SignTransactionApi extends TopLevelApi {
             parsedRequest.transactions = [this.parseTransaction(request)];
         }
 
-        // Reject incoming staking transactions that carry a user-provided staker / validator signature proof.
-        // transaction.sign() will overwrite it with a proof from the keyPath's keypair, silently discarding the user's
-        // input. If multi-key staker support is added later, this rejection can be relaxed, if appropriate display of
-        // the staker is added to the UI.
+        let previousValidityStartHeight = -1;
         for (const transaction of parsedRequest.transactions) {
+            if (transaction.validityStartHeight < previousValidityStartHeight) {
+                throw new Errors.InvalidRequestError('Transactions must be valid in order');
+            }
+            previousValidityStartHeight = transaction.validityStartHeight;
+
+            // Reject incoming staking transactions that carry a user-provided staker / validator signature proof.
+            // transaction.sign() will overwrite it with a proof from the keyPath's keypair, silently discarding the
+            // user's input. If multi-key staker support is added later, this rejection can be relaxed, if appropriate
+            // display of the staker is added to the UI.
             if (SignTransactionApi._hasStakerOrValidatorProof(transaction)) {
                 throw new Errors.InvalidRequestError(
                     'Staking transactions with a user-provided signature proof are not supported',
@@ -156,9 +162,10 @@ class SignTransactionApi extends TopLevelApi {
             // - recipient (must be staking contract for incoming staking transaction; enforced by protocol on commit)
             // - value (must be zero for signaling transactions; enforced by protocol)
             // - total fees (must not exceed MAX_SAFE_INTEGER; checked above and displayed)
+            // - validityStartHeight (transactions must be valid in order; checked above)
             // - network id (must match CONFIG.NIMIQ_NETWORK_ID; checked above)
             // - flags (must be signaling for these transaction types; enforced by protocol)
-            // What must still be checked here: sender, senderType, recipientType, recipientData, validityStartHeight
+            // What must still be checked here: sender, senderType, recipientType, recipientData
 
             if (!setActiveStakeTx.sender.equals(updateStakerTx.sender)) {
                 // Enforce both transactions to have the same fee-payer. Note that the fee-payer is not necessarily
@@ -210,12 +217,6 @@ class SignTransactionApi extends TopLevelApi {
                 );
             }
 
-            if (setActiveStakeTx.validityStartHeight > updateStakerTx.validityStartHeight) {
-                throw new Errors.InvalidRequestError(
-                    'switch-validator set-active-stake must not be valid after update-staker',
-                );
-            }
-
             parsedRequest.senderLabel = this.parseLabel(request.senderLabel);
             parsedRequest.recipientLabel = this.parseLabel(request.recipientLabel);
             parsedRequest.fromValidatorAddress = this.parseAddress(
@@ -262,9 +263,10 @@ class SignTransactionApi extends TopLevelApi {
             // - recipient (must be staking contract for incoming staking transaction; enforced by protocol on commit)
             // - value (must be zero for signaling transactions; enforced by protocol)
             // - total fees (must not exceed MAX_SAFE_INTEGER; checked above and displayed)
+            // - validityStartHeight (transactions must be valid in order; checked above)
             // - network id (must match CONFIG.NIMIQ_NETWORK_ID; checked above)
             // - flags (must be signaling for these transaction types; enforced by protocol)
-            // What must still be checked here: sender, senderType, recipientType, recipientData, validityStartHeight
+            // What must still be checked here: sender, senderType, recipientType, recipientData
 
             if (!setActiveStakeTx.sender.equals(retireStakeTx.sender)) {
                 // Enforce the fee-payer to be the same for all three transactions: for incoming staking transactions
@@ -308,20 +310,13 @@ class SignTransactionApi extends TopLevelApi {
                 throw new Errors.InvalidRequestError('unstaking must not retire more than is being paid out');
             }
 
-            if (setActiveStakeTx.validityStartHeight > retireStakeTx.validityStartHeight
-                || retireStakeTx.validityStartHeight > removeStakeTx.validityStartHeight) {
-                throw new Errors.InvalidRequestError(
-                    'unstaking transactions must be valid in order: set-active-stake, retire-stake, remove-stake',
-                );
-            }
-
             // removeStake transaction
             // For removeStake, we don't have to check the following, which are checked by the Nimiq protocol
             // (statically or on commit) or earlier parsing steps above, or are displayed:
             // - sender (must be staking contract for outgoing staking transaction; enforced by protocol on commit)
             // - value (value + fee must be >= retired amount; checked above and displayed)
             // - total fees (must not exceed MAX_SAFE_INTEGER; checked above and displayed)
-            // - validityStartHeight (must not be before retireStakeTx; checked above)
+            // - validityStartHeight (transactions must be valid in order; checked above)
             // - network id (must match CONFIG.NIMIQ_NETWORK_ID; checked above)
             // - flags (must be none for transaction to basic account; enforced by protocol)
             // What must still be checked here: senderType, senderData, recipient, recipientType, recipientData
