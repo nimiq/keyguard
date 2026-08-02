@@ -430,11 +430,12 @@ class SignTransactionApi extends TopLevelApi {
         if (!data) return false; // not an incoming staking transaction
         if (data.type === 'add-stake') return false; // add-stake has no embedded staking proof.
 
-        if (tx.data.length < Nimiq.SignatureProof.SINGLE_SIG_SIZE) return false;
+        const recipientData = tx.data; // tx.data is a getter; cache its result
+        if (recipientData.length < Nimiq.SignatureProof.SINGLE_SIG_SIZE) return false;
 
-        const proofStart = tx.data.length - Nimiq.SignatureProof.SINGLE_SIG_SIZE;
-        for (let i = proofStart; i < tx.data.length; i++) {
-            if (tx.data[i] !== 0) return true;
+        const proofStart = recipientData.length - Nimiq.SignatureProof.SINGLE_SIG_SIZE;
+        for (let i = proofStart; i < recipientData.length; i++) {
+            if (recipientData[i] !== 0) return true;
         }
         return false;
     }
