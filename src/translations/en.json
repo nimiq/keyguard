@@ -91,6 +91,7 @@
     "sign-tx-cancel-payment": "Cancel payment",
     "sign-tx-multi-count": "{count} transactions",
     "sign-tx-multi-total-fees": "total fees",
+    "sign-tx-switch-staker": "You are switching the validator for staker",
     "sign-tx-switch-deferred-description": "Your NIM will be unstaked from your current validator and staked with the new one.",
     "sign-tx-switch-deferred-duration": "This can take up to 24h.",
     "sign-tx-unstake-deferred-duration": "This can take up to 24h.",

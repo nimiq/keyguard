@@ -152,9 +152,9 @@ class SignTransactionApi extends TopLevelApi {
 
             // Check transactions to be of the expected format and disallow transactions that don't match the standard
             // case the simplified SWITCH_VALIDATOR layout represents. For example, the simplified layout relies on the
-            // staker being the user and presents the transactions as operation on the user's own stake and does not
-            // display the fee-paying sender at all. That the sender is in fact the user's own address can only be
-            // checked once the key is unlocked and is therefore checked in SignTransaction._onConfirm.
+            // staker being the user and presents the transactions as operation on the user's own stake, displaying the
+            // fee-paying sender as the staker. That the sender is in fact the user's own address can only be checked
+            // once the key is unlocked and is therefore checked in SignTransaction._onConfirm.
 
             // For set-active-stake and update-staker transactions, we don't have to check the following, which are
             // checked by the Nimiq protocol (statically or on commit) or earlier parsing steps above, or are displayed:

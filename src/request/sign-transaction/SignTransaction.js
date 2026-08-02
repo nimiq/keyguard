@@ -158,8 +158,15 @@ class SignTransaction {
         const $view = /** @type {HTMLElement} */ (this.$el.querySelector('.simple-transaction-view'));
         $view.classList.add('switch-validator-view');
 
+        // For both switch transactions the staker is equal to the sender address, see SignTransactionApi.
+        const stakerAddress = request.transactions[0].sender.toUserFriendlyAddress();
+
         const subtitleTemplate = document.createElement('template');
-        subtitleTemplate.innerHTML = `
+        subtitleTemplate.innerHTML = TemplateTags.hasVars(1)`
+            <p class="switch-subtitle-staker">
+                <span data-i18n="sign-tx-switch-staker">You are switching the validator for staker</span><br>
+                <span class="address">${stakerAddress}</span>.
+            </p>
             <p class="switch-subtitle-description" data-i18n="sign-tx-switch-deferred-description">
                 Your NIM will be unstaked from your current validator and staked with the new one.
             </p>

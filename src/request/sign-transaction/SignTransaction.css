@@ -287,6 +287,7 @@ nothing breaks in SignMultisigTransaction. */
     padding: 1.25rem 2rem 2rem;
 }
 
+#confirm-transaction .switch-subtitle-staker,
 #confirm-transaction .switch-subtitle-description,
 #confirm-transaction .switch-subtitle-duration {
     font-size: 2rem;
@@ -295,8 +296,12 @@ nothing breaks in SignMultisigTransaction. */
     line-height: 1.4;
 }
 
-#confirm-transaction .switch-subtitle-description {
-    color: var(--nimiq-blue);
+#confirm-transaction .switch-subtitle-staker {
+    margin-bottom: 1rem;
+}
+
+#confirm-transaction .switch-subtitle-staker .address {
+    white-space: normal; /* overwrite single-line whitespace treatment of .address in common.css */
 }
 
 #confirm-transaction .switch-subtitle-duration {
