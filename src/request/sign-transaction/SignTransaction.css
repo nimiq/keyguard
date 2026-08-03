@@ -403,6 +403,7 @@ nothing breaks in SignMultisigTransaction. */
     font-size: 1.75rem;
     font-weight: 600;
     color: var(--nimiq-light-blue) !important;
+    white-space: pre-line; /* render the line break between the remaining-stake and duration info */
 }
 
 /* Transaction-list overlay (info-icon-triggered, used by simplified custom layouts).

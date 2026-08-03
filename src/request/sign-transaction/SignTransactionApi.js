@@ -296,7 +296,8 @@ class SignTransactionApi extends TopLevelApi {
             }
 
             // recipientType and recipientData
-            // Note that the staking proof on recipientData is already checked via _hasStakerOrValidatorProof above.
+            // Note that the staking proof on recipientData is already checked via _hasStakerOrValidatorProof above and
+            // the set-active-stake newActiveBalance is shown in the UI.
             const [setActiveStakeData, retireStakeData] = [setActiveStakeTx, retireStakeTx]
                 .map(tx => SignTransactionApi._parseIncomingStakingTransactionData(tx));
             if (!setActiveStakeData || setActiveStakeData.type !== 'set-active-stake'

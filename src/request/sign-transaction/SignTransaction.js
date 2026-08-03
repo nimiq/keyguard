@@ -218,8 +218,22 @@ class SignTransaction {
         const value = removeStakeTx.value; // Headline amount = value of the remove-stake tx (NIM returned to the user).
         const totalFee = request.transactions.reduce((sum, { fee }) => sum + fee, BigInt(0));
 
+        const setActiveStakeData = SignTransactionApi._parseIncomingStakingTransactionData(request.transactions[0]);
+        if (!setActiveStakeData || setActiveStakeData.type !== 'set-active-stake') {
+            // This is already enforced by the request parser. The check here is only for typescript.
+            throw new Errors.KeyguardError('Unexpected: could not parse set-active-stake data');
+        }
+        const remainingStake = setActiveStakeData.newActiveBalance;
+
         // eslint-disable-next-line require-jsdoc-except/require-jsdoc
-        const data = () => I18n.translatePhrase('sign-tx-unstake-deferred-duration');
+        const data = () => {
+            const durationInfo = I18n.translatePhrase('sign-tx-unstake-deferred-duration');
+            if (!remainingStake) return durationInfo;
+            const remainingStakeInfo = I18n.translatePhrase('sign-tx-unstake-remaining-stake', {
+                amount: NumberFormatting.formatNumber(lunasToCoins(remainingStake)),
+            });
+            return `${remainingStakeInfo}\n${durationInfo}`;
+        };
 
         this._renderSimpleTransactionView(request.layout, /* paymentInfoLine */ null, /* subtitles */ null, senderInfo,
             recipientInfo, value, totalFee, data);
