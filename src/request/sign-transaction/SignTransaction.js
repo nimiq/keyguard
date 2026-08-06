@@ -464,15 +464,16 @@ class SignTransaction {
 
         const $totalValue = document.createElement('div');
         $totalValue.className = 'tx-total-value nq-light-blue';
-        // eslint-disable-next-line max-len
-        $totalValue.innerHTML = `${NumberFormatting.formatNumber(lunasToCoins(Number(totalValue)))}<span class="nim-symbol"></span>`;
+        const formattedTotalValue = NumberFormatting.formatNumber(lunasToCoins(Number(totalValue)));
+        $totalValue.innerHTML = TemplateTags.hasVars(1)`${formattedTotalValue}<span class="nim-symbol"></span>`;
         $totals.appendChild($totalValue);
 
         if (totalFee > BigInt(0)) {
             const $totalFees = document.createElement('div');
             $totalFees.className = 'tx-total-fees nq-text-s';
-            // eslint-disable-next-line max-len
-            $totalFees.innerHTML = TemplateTags.hasVars(1)`+ ${NumberFormatting.formatNumber(lunasToCoins(Number(totalFee)))} <span class="nim-symbol"></span> <span data-i18n="sign-tx-multi-total-fees">total fees</span>`;
+            const formattedTotalFees = NumberFormatting.formatNumber(lunasToCoins(Number(totalFee)));
+            $totalFees.innerHTML = TemplateTags.hasVars(1)`+ ${formattedTotalFees}&nbsp;<span class="nim-symbol"></span>
+                <span data-i18n="sign-tx-multi-total-fees">total fees</span>`;
             I18n.translateDom($totalFees);
             $totals.appendChild($totalFees);
         }
@@ -552,15 +553,16 @@ class SignTransaction {
 
         const $value = document.createElement('div');
         $value.className = 'tx-value';
-        // eslint-disable-next-line max-len
-        $value.innerHTML = `${NumberFormatting.formatNumber(lunasToCoins(Number(tx.value)))}<span class="nim-symbol"></span>`;
+        const formattedValue = NumberFormatting.formatNumber(lunasToCoins(Number(tx.value)));
+        $value.innerHTML = TemplateTags.hasVars(1)`${formattedValue}<span class="nim-symbol"></span>`;
         $amounts.appendChild($value);
 
         if (tx.fee > 0) {
             const $fee = document.createElement('div');
             $fee.className = 'tx-fee';
-            // eslint-disable-next-line max-len
-            $fee.innerHTML = TemplateTags.hasVars(1)`+ ${NumberFormatting.formatNumber(lunasToCoins(Number(tx.fee)))} <span class="nim-symbol"></span> <span data-i18n="sign-tx-fee">fee</span>`;
+            const formattedFee = NumberFormatting.formatNumber(lunasToCoins(Number(tx.fee)));
+            $fee.innerHTML = TemplateTags.hasVars(1)`+ ${formattedFee}&nbsp;<span class="nim-symbol"></span>
+                <span data-i18n="sign-tx-fee">fee</span>`;
             $amounts.appendChild($fee);
         }
 
