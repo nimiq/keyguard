@@ -219,6 +219,7 @@ class SignTransactionApi extends TopLevelApi {
 
             parsedRequest.senderLabel = this.parseLabel(request.senderLabel);
             parsedRequest.recipientLabel = this.parseLabel(request.recipientLabel);
+            parsedRequest.stakerLabel = this.parseLabel(request.stakerLabel);
             parsedRequest.fromValidatorAddress = this.parseAddress(
                 request.fromValidatorAddress,
                 'fromValidatorAddress',

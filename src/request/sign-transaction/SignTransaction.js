@@ -158,24 +158,22 @@ class SignTransaction {
         const $view = /** @type {HTMLElement} */ (this.$el.querySelector('.simple-transaction-view'));
         $view.classList.add('switch-validator-view');
 
-        // For both switch transactions the staker is equal to the sender address, see SignTransactionApi.
-        const stakerAddress = request.transactions[0].sender.toUserFriendlyAddress();
-
         const subtitleTemplate = document.createElement('template');
-        subtitleTemplate.innerHTML = TemplateTags.hasVars(1)`
-            <p class="switch-subtitle-staker">
-                <span data-i18n="sign-tx-switch-staker">You are switching the validator for staker</span><br>
-                <span class="address">${stakerAddress}</span>.
-            </p>
+        subtitleTemplate.innerHTML = TemplateTags.noVars`
             <p class="switch-subtitle-description" data-i18n="sign-tx-switch-deferred-description">
                 Your NIM will be unstaked from your current validator and staked with the new one.
             </p>
             <p class="switch-subtitle-duration" data-i18n="sign-tx-switch-deferred-duration">
                 This can take up to 24h.
             </p>
+            <p class="staker-caption" data-i18n="sign-tx-switch-staker-label">Switching validator for</p>
         `;
         I18n.translateDom(subtitleTemplate.content);
         const subtitles = Array.from(subtitleTemplate.content.childNodes);
+
+        // For both switch-validator transactions the staker is equal to the sender address, see SignTransactionApi.
+        const stakerAddress = request.transactions[0].sender.toUserFriendlyAddress();
+        subtitles.push(this._createStakerInfo(stakerAddress, request.stakerLabel || null, request.keyLabel || null));
 
         const senderInfo = {
             userFriendlyAddress: request.fromValidatorAddress.toUserFriendlyAddress(),
@@ -310,6 +308,72 @@ class SignTransaction {
         };
         updateData();
         I18n.observer.on(I18n.Events.LANGUAGE_CHANGED, updateData);
+    }
+
+    /**
+     * @param {string} userFriendlyAddress
+     * @param {string?} [stakerLabel]
+     * @param {string?} [accountLabel]
+     * @returns {HTMLButtonElement}
+     */
+    _createStakerInfo(userFriendlyAddress, stakerLabel, accountLabel) {
+        const $chip = document.createElement('button');
+        $chip.type = 'button';
+        $chip.classList.add('staker-chip');
+
+        $chip.appendChild(new Identicon(userFriendlyAddress).getElement());
+
+        const stakerName = stakerLabel || accountLabel;
+        if (stakerName) {
+            const $label = document.createElement('span');
+            $label.classList.add('label');
+            $label.textContent = stakerName;
+            $chip.appendChild($label);
+        } else {
+            $chip.appendChild(SignTransaction._createShortAddress(userFriendlyAddress));
+        }
+
+        $chip.insertAdjacentHTML('beforeend', TemplateTags.noVars`<svg class="nq-icon caret">
+            <use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-caret-right-small"/>
+        </svg>`);
+
+        // Expose the full address to hover and assistive tech.
+        $chip.title = userFriendlyAddress;
+        $chip.setAttribute(
+            'aria-label',
+            stakerName ? `${stakerName} (${userFriendlyAddress})` : userFriendlyAddress,
+        );
+
+        const addressInfo = new AddressInfo({
+            userFriendlyAddress,
+            label: stakerName,
+            accountLabel,
+        });
+        $chip.addEventListener('click', () => this._openDetails(addressInfo));
+
+        return $chip;
+    }
+
+    /**
+     * @param {string} userFriendlyAddress
+     * @returns {HTMLSpanElement}
+     */
+    static _createShortAddress(userFriendlyAddress) {
+        // Same style as the Wallet's ShortAddress.
+        const $shortAddress = document.createElement('span');
+        $shortAddress.classList.add('label', 'mono', 'address');
+        $shortAddress.innerHTML = TemplateTags.noVars`
+            <svg class="short-address-ellipsis" viewBox="0 0 17 3" fill="currentColor" aria-hidden="true">
+                <circle cx="1.5" cy="1.5" r="1.5"/>
+                <circle cx="8.5" cy="1.5" r="1.5"/>
+                <circle cx="15.5" cy="1.5" r="1.5"/>
+            </svg>
+        `;
+        // Prepend / append address as text nodes instead of via innerHTML to avoid potential HTML injection.
+        const blocks = userFriendlyAddress.split(' ');
+        $shortAddress.prepend(blocks.slice(0, 2).join(' '));
+        $shortAddress.append(blocks.slice(-2).join(' '));
+        return $shortAddress;
     }
 
     // eslint-disable-next-line valid-jsdoc

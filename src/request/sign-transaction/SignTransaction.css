@@ -287,7 +287,6 @@ nothing breaks in SignMultisigTransaction. */
     padding: 1.25rem 2rem 2rem;
 }
 
-#confirm-transaction .switch-subtitle-staker,
 #confirm-transaction .switch-subtitle-description,
 #confirm-transaction .switch-subtitle-duration {
     font-size: 2rem;
@@ -296,24 +295,88 @@ nothing breaks in SignMultisigTransaction. */
     line-height: 1.4;
 }
 
-#confirm-transaction .switch-subtitle-staker {
-    margin-bottom: 1rem;
-}
-
-#confirm-transaction .switch-subtitle-staker .address {
-    white-space: normal; /* overwrite single-line whitespace treatment of .address in common.css */
-}
-
 #confirm-transaction .switch-subtitle-duration {
     color: var(--nimiq-light-blue);
     font-weight: 600;
+}
+
+#confirm-transaction .staker-caption {
+    margin-top: 3rem;
+    text-align: center;
+    font-size: 1.375rem;
+    line-height: 1;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: rgba(31, 35, 72, 0.45);
+}
+
+/* Following the wallet's ValidatorInfoBar. */
+#confirm-transaction .staker-chip {
+    display: flex;
+    align-items: center;
+    gap: .875rem;
+    width: fit-content; /* Shrink to the content, such that the auto margins center the chip. */
+    height: 3.5rem;
+    max-width: 100%;
+    margin: 1rem auto 0;
+    padding: 0 1.25rem 0 1rem;
+    background: transparent;
+    border: 0.1875rem solid rgba(31, 35, 72, 0.15);
+    border-radius: 5rem;
+    font-family: inherit;
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: rgba(31, 35, 72, 0.7);
+    cursor: pointer;
+    transition: border-color .2s var(--nimiq-ease), color .2s var(--nimiq-ease);
+}
+
+#confirm-transaction .staker-chip:hover,
+#confirm-transaction .staker-chip:focus {
+    border-color: rgba(31, 35, 72, 0.3);
+    color: rgba(31, 35, 72, 0.9);
+}
+
+#confirm-transaction .staker-chip .identicon {
+    width: 2.5rem;
+    height: 2.5rem;
+    flex-shrink: 0;
+}
+
+#confirm-transaction .staker-chip .label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#confirm-transaction .staker-chip .label.mono {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    font-weight: initial;
+}
+
+#confirm-transaction .staker-chip .short-address-ellipsis {
+    width: 1.875rem;
+    height: 0.375rem;
+    margin: 0 0.625rem;
+    opacity: 0.6;
+    flex-shrink: 0;
+}
+
+#confirm-transaction .staker-chip .caret {
+    width: 1.125rem;
+    height: 1.125rem;
+    opacity: 0.4;
+    flex-shrink: 0;
 }
 
 #confirm-transaction .switch-validator-view .accounts {
     flex-direction: column;
     align-items: stretch;
     gap: 1rem;
-    padding-top: 4rem; /* 32px */
+    padding-top: 2.75rem;
     padding-bottom: 0;
     border-bottom: none;
 }

@@ -214,8 +214,11 @@ export type SignTransactionRequestSwitchValidator = SimpleRequest & {
     // Exactly two transactions in order: set-active-stake then update-staker. Enforced by
     // the Keyguard at parse time. Mixed TransactionInfo / Uint8Array entries are allowed.
     transactions: Array<Omit<TransactionInfo, 'senderLabel'> | Uint8Array>,
+    // In a switch-validator request, senderLabel and recipientLabel name the validators, and stakerLabel names the user
+    // address the stake belongs to.
     senderLabel?: string,
     recipientLabel?: string,
+    stakerLabel?: string,
     validatorImageUrl?: string,
     fromValidatorAddress: string,
     fromValidatorImageUrl?: string,
