@@ -317,10 +317,9 @@ nothing breaks in SignMultisigTransaction. */
     align-items: center;
     gap: .875rem;
     width: fit-content; /* Shrink to the content, such that the auto margins center the chip. */
-    height: 3.5rem;
     max-width: 100%;
     margin: 1rem auto 0;
-    padding: 0 1.25rem 0 1rem;
+    padding: .5rem 1.25rem .5rem 1rem;
     background: transparent;
     border: 0.1875rem solid rgba(31, 35, 72, 0.15);
     border-radius: 5rem;
@@ -339,21 +338,28 @@ nothing breaks in SignMultisigTransaction. */
 }
 
 #confirm-transaction .staker-chip .identicon {
-    width: 2.5rem;
-    height: 2.5rem;
+    width: 3.5rem;
+    height: 3.5rem;
     flex-shrink: 0;
 }
 
+#confirm-transaction .staker-chip .text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0; /* allow the label to be ellipsized */
+    text-align: left;
+}
+
 #confirm-transaction .staker-chip .label {
+    margin-bottom: .25rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-#confirm-transaction .staker-chip .label.mono {
+#confirm-transaction .staker-chip .short-address {
     display: flex;
     align-items: center;
-    flex-shrink: 0;
     font-weight: initial;
 }
 

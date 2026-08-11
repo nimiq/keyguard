@@ -323,15 +323,19 @@ class SignTransaction {
 
         $chip.appendChild(new Identicon(userFriendlyAddress).getElement());
 
+        const $text = document.createElement('div');
+        $text.classList.add('text');
+        $chip.appendChild($text);
+
         const stakerName = stakerLabel || accountLabel;
         if (stakerName) {
-            const $label = document.createElement('span');
+            const $label = document.createElement('div');
             $label.classList.add('label');
             $label.textContent = stakerName;
-            $chip.appendChild($label);
-        } else {
-            $chip.appendChild(SignTransaction._createShortAddress(userFriendlyAddress));
+            $text.appendChild($label);
         }
+        // Show the address regardless of whether a label is shown because the label can not be verified by the Keyguard
+        $text.appendChild(SignTransaction._createShortAddress(userFriendlyAddress));
 
         $chip.insertAdjacentHTML('beforeend', TemplateTags.noVars`<svg class="nq-icon caret">
             <use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-caret-right-small"/>
@@ -361,7 +365,7 @@ class SignTransaction {
     static _createShortAddress(userFriendlyAddress) {
         // Same style as the Wallet's ShortAddress.
         const $shortAddress = document.createElement('span');
-        $shortAddress.classList.add('label', 'mono', 'address');
+        $shortAddress.classList.add('short-address', 'address');
         $shortAddress.innerHTML = TemplateTags.noVars`
             <svg class="short-address-ellipsis" viewBox="0 0 17 3" fill="currentColor" aria-hidden="true">
                 <circle cx="1.5" cy="1.5" r="1.5"/>
