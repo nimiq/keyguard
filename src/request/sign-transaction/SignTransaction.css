@@ -311,71 +311,114 @@ nothing breaks in SignMultisigTransaction. */
     color: rgba(31, 35, 72, 0.45);
 }
 
-/* Following the wallet's ValidatorInfoBar. */
-#confirm-transaction .staker-chip {
+#confirm-transaction .validator-or-staker-info {
     display: flex;
     align-items: center;
-    gap: .875rem;
-    width: fit-content; /* Shrink to the content, such that the auto margins center the chip. */
-    max-width: 100%;
-    margin: 1rem auto 0;
-    padding: .5rem 1.25rem .5rem 1rem;
-    background: transparent;
-    border: 0.1875rem solid rgba(31, 35, 72, 0.15);
-    border-radius: 5rem;
-    font-family: inherit;
-    font-size: 1.75rem;
-    font-weight: 600;
-    color: rgba(31, 35, 72, 0.7);
+    border: .1875rem solid rgba(31, 35, 72, .15);
     cursor: pointer;
     transition: border-color .2s var(--nimiq-ease), color .2s var(--nimiq-ease);
 }
 
-#confirm-transaction .staker-chip:hover,
-#confirm-transaction .staker-chip:focus {
-    border-color: rgba(31, 35, 72, 0.3);
-    color: rgba(31, 35, 72, 0.9);
+#confirm-transaction .validator-or-staker-info:hover,
+#confirm-transaction .validator-or-staker-info:focus {
+    border-color: rgba(31, 35, 72, .3);
 }
 
-#confirm-transaction .staker-chip .identicon {
-    width: 3.5rem;
-    height: 3.5rem;
+#confirm-transaction .validator-or-staker-info .identicon {
     flex-shrink: 0;
+    object-fit: cover; /* only applies to the image variant of the icon */
 }
 
-#confirm-transaction .staker-chip .text {
+#confirm-transaction .validator-or-staker-info .text {
     display: flex;
     flex-direction: column;
     min-width: 0; /* allow the label to be ellipsized */
+    flex-grow: 1;
     text-align: left;
 }
 
-#confirm-transaction .staker-chip .label {
+#confirm-transaction .validator-or-staker-info .label {
     margin-bottom: .25rem;
+    font-weight: 600;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-#confirm-transaction .staker-chip .short-address {
+#confirm-transaction .validator-or-staker-info .short-address {
     display: flex;
     align-items: center;
-    font-weight: initial;
 }
 
-#confirm-transaction .staker-chip .short-address-ellipsis {
+#confirm-transaction .validator-or-staker-info .short-address-ellipsis {
     width: 1.875rem;
-    height: 0.375rem;
-    margin: 0 0.625rem;
-    opacity: 0.6;
+    height: .375rem;
+    margin: 0 .625rem;
+    opacity: .6;
     flex-shrink: 0;
 }
 
-#confirm-transaction .staker-chip .caret {
+#confirm-transaction .validator-or-staker-info .caret {
+    opacity: .4;
+    flex-shrink: 0;
+    transition: transform .2s var(--nimiq-ease);
+}
+
+#confirm-transaction .validator-or-staker-info:hover .caret,
+#confirm-transaction .validator-or-staker-info:focus .caret {
+    transform: translateX(.25rem);
+}
+
+/* Chip style, following the wallet's ValidatorInfoBar. */
+#confirm-transaction .validator-or-staker-info.chip {
+    gap: .875rem;
+    width: fit-content; /* Shrink to the content, such that the auto margins center the chip. */
+    max-width: 100%;
+    margin: 1rem auto 0;
+    padding: .5rem 1.25rem .5rem 1rem;
+    border-radius: 5rem;
+}
+
+#confirm-transaction .validator-or-staker-info.chip .identicon {
+    width: 3.5rem;
+    height: 3.5rem;
+}
+
+#confirm-transaction .validator-or-staker-info.chip .label {
+    font-size: 1.75rem;
+}
+
+#confirm-transaction .validator-or-staker-info.chip .caret {
     width: 1.125rem;
     height: 1.125rem;
-    opacity: 0.4;
-    flex-shrink: 0;
+}
+
+/* Card style */
+#confirm-transaction .validator-or-staker-info.card {
+    gap: 2rem;
+    height: 9rem;
+    padding: 1.875rem 2.25rem;
+    border-radius: .75rem;
+}
+
+/* render "from" validator card with dashed border */
+#confirm-transaction .validator-or-staker-info.card:first-child {
+    border-style: dashed;
+}
+
+#confirm-transaction .validator-or-staker-info.card .identicon {
+    width: 5.25rem;
+    height: 5.25rem;
+    border-radius: .75rem;
+}
+
+#confirm-transaction .validator-or-staker-info.card .label {
+    font-size: 2rem;
+}
+
+#confirm-transaction .validator-or-staker-info.card .caret {
+    width: 1.5rem;
+    height: 1.5rem;
 }
 
 #confirm-transaction .switch-validator-view .accounts {
@@ -398,71 +441,6 @@ nothing breaks in SignMultisigTransaction. */
 #confirm-transaction .switch-validator-view .fee-section {
     margin-top: 1.5rem;
     text-align: center;
-}
-
-#confirm-transaction .validator-card {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 2rem;
-    width: 100%;
-    height: 9rem;
-    padding: 1.875rem 2.25rem;
-    border: 0.1875rem solid rgba(31, 35, 72, 0.12);
-    border-radius: 0.75rem;
-    box-sizing: border-box;
-}
-
-/* render "from" validator card with dashed border */
-#confirm-transaction .validator-card:first-child {
-    border-style: dashed;
-    border-color: rgba(31, 35, 72, 0.16);
-}
-
-#confirm-transaction .validator-card .icon {
-    flex-shrink: 0;
-    width: 5.25rem;
-    height: 5.25rem;
-    border-radius: 0.75rem;
-    overflow: hidden;
-    position: relative;
-}
-
-#confirm-transaction .validator-card .icon img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-}
-
-#confirm-transaction .validator-card .text {
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-    text-align: left;
-}
-
-#confirm-transaction .validator-card .name {
-    font-size: 2rem;
-    font-weight: 600;
-    color: var(--nimiq-blue);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    min-width: 0;
-}
-
-#confirm-transaction .validator-card .name.mono {
-    font-family: "Fira Mono", "Andale Mono", monospace;
-    font-size: 1.75rem;
-}
-
-#confirm-transaction .validator-card .validator-address {
-    margin-top: 0.5rem;
-    font-size: 1.5rem;
-    color: var(--nimiq-blue);
-    opacity: 0.5;
-    min-width: 0;
 }
 
 /* unstaking style adaptions */
