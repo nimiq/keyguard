@@ -98,9 +98,13 @@
     text-align: left;
 }
 
+.address-info.vertical .identicon {
+    margin-bottom: 1.25rem;
+}
+
 .address-info.vertical .label {
     font-size: 2rem;
-    margin: 1.25rem 0;
+    margin-bottom: .25rem;
     white-space: nowrap;
     overflow: hidden;
     position: relative;
@@ -131,8 +135,11 @@
 }
 
 .address-info.vertical .short-address {
+    margin-bottom: 1.25rem;
+}
+
+.address-info.vertical .short-address:only-child {
     font-size: 2rem;
     line-height: normal;
-    margin: 1.25rem 0;
     opacity: .85;
 }

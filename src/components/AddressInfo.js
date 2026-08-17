@@ -108,15 +108,10 @@ class AddressInfo { // eslint-disable-line no-unused-vars
             $text.appendChild($label);
         }
 
-        if (style === 'horizontal') {
-            // Show the address regardless of whether a label is shown, because the label can not be verified.
-            $text.appendChild(
-                new ShortAddress(this._addressInfo.userFriendlyAddress, this._addressInfo.shortAddressBlocks)
-                    .getElement(),
-            );
-        } else if (style === 'vertical' && !$label.textContent) {
-            // Fall back to the address if no label is known.
-            $text.appendChild(new ShortAddress(this._addressInfo.userFriendlyAddress, 2).getElement());
+        if (style !== 'detailed' && !this._displayAsCashlink) {
+            // Show the short address regardless of whether a label is shown, because the label can not be verified.
+            const blocksToShow = style === 'vertical' ? 2 : this._addressInfo.shortAddressBlocks;
+            $text.appendChild(new ShortAddress(this._addressInfo.userFriendlyAddress, blocksToShow).getElement());
         }
 
         if (style === 'detailed') {
