@@ -238,7 +238,7 @@ class SignStaking {
     _openDetails(which) {
         which.renderTo(
             /** @type {HTMLElement} */(this.$accountDetails.querySelector('#details')),
-            true,
+            'detailed',
         );
         this.$el.classList.add('account-details-open');
     }

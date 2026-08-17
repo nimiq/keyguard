@@ -138,7 +138,7 @@ nothing breaks in SignMultisigTransaction. */
     flex-shrink: 0;
 }
 
-#confirm-transaction .accounts .address-info {
+#confirm-transaction .accounts .address-info.vertical {
     width: calc(50% - 1.5rem);
 }
 
@@ -312,11 +312,9 @@ nothing breaks in SignMultisigTransaction. */
 }
 
 #confirm-transaction .validator-or-staker-info {
-    display: flex;
-    align-items: center;
     border: .1875rem solid rgba(31, 35, 72, .15);
     cursor: pointer;
-    transition: border-color .2s var(--nimiq-ease), color .2s var(--nimiq-ease);
+    transition: border-color .2s var(--nimiq-ease);
 }
 
 #confirm-transaction .validator-or-staker-info:hover,
@@ -324,77 +322,37 @@ nothing breaks in SignMultisigTransaction. */
     border-color: rgba(31, 35, 72, .3);
 }
 
-#confirm-transaction .validator-or-staker-info .identicon {
+#confirm-transaction .validator-or-staker-info::after {
+    content: '';
     flex-shrink: 0;
-    object-fit: cover; /* only applies to the image variant of the icon */
-}
-
-#confirm-transaction .validator-or-staker-info .text {
-    display: flex;
-    flex-direction: column;
-    min-width: 0; /* allow the label to be ellipsized */
-    flex-grow: 1;
-    text-align: left;
-}
-
-#confirm-transaction .validator-or-staker-info .label {
-    margin-bottom: .25rem;
-    font-weight: 600;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-#confirm-transaction .validator-or-staker-info .short-address {
-    display: flex;
-    align-items: center;
-}
-
-#confirm-transaction .validator-or-staker-info .short-address-ellipsis {
-    width: 1.875rem;
-    height: .375rem;
-    margin: 0 .625rem;
-    opacity: .6;
-    flex-shrink: 0;
-}
-
-#confirm-transaction .validator-or-staker-info .caret {
     opacity: .4;
-    flex-shrink: 0;
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 11" fill="none"><path stroke="%231F2348" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 2l3.54 3.54L5 9.07"/></svg>');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
     transition: transform .2s var(--nimiq-ease);
 }
 
-#confirm-transaction .validator-or-staker-info:hover .caret,
-#confirm-transaction .validator-or-staker-info:focus .caret {
+#confirm-transaction .validator-or-staker-info:hover::after,
+#confirm-transaction .validator-or-staker-info:focus::after {
     transform: translateX(.25rem);
 }
 
 /* Chip style, following the wallet's ValidatorInfoBar. */
 #confirm-transaction .validator-or-staker-info.chip {
-    gap: .875rem;
-    width: fit-content; /* Shrink to the content, such that the auto margins center the chip. */
-    max-width: 100%;
     margin: 1rem auto 0;
     padding: .5rem 1.25rem .5rem 1rem;
     border-radius: 5rem;
 }
 
-#confirm-transaction .validator-or-staker-info.chip .identicon {
-    width: 3.5rem;
-    height: 3.5rem;
-}
-
-#confirm-transaction .validator-or-staker-info.chip .label {
-    font-size: 1.75rem;
-}
-
-#confirm-transaction .validator-or-staker-info.chip .caret {
+#confirm-transaction .validator-or-staker-info.chip::after {
     width: 1.125rem;
     height: 1.125rem;
 }
 
 /* Card style */
 #confirm-transaction .validator-or-staker-info.card {
+    width: auto; /* overrule AddressInfo's fit-content, to stretch to the full width */
     gap: 2rem;
     height: 9rem;
     padding: 1.875rem 2.25rem;
@@ -416,7 +374,7 @@ nothing breaks in SignMultisigTransaction. */
     font-size: 2rem;
 }
 
-#confirm-transaction .validator-or-staker-info.card .caret {
+#confirm-transaction .validator-or-staker-info.card::after {
     width: 1.5rem;
     height: 1.5rem;
 }

@@ -1,6 +1,7 @@
 /* global I18n */
 /* global Copyable */
 /* global Identicon */
+/* global ShortAddress */
 
 class AddressInfo { // eslint-disable-line no-unused-vars
     // eslint-disable-next-line valid-jsdoc
@@ -10,6 +11,7 @@ class AddressInfo { // eslint-disable-line no-unused-vars
      *     label?: string?,
      *     imageUrl?: URL?,
      *     accountLabel?: string?,
+     *     shortAddressBlocks?: number,
      *     multisig?: {
      *         signers: number,
      *         participants: number,
@@ -25,14 +27,14 @@ class AddressInfo { // eslint-disable-line no-unused-vars
     /**
      * Inserts this AddressInfo into $el overwriting the original content of $el.
      * @param {?HTMLElement} [$el]
-     * @param {boolean} [isDetailedView = false]
+     * @param {'vertical' | 'horizontal' | 'detailed'} [style = 'vertical']
      * @returns {HTMLElement}
      */
-    renderTo($el, isDetailedView = false) {
+    renderTo($el, style = 'vertical') {
         $el = $el || document.createElement('div');
         $el.textContent = '';
-        $el.classList.add('address-info');
-        $el.classList.toggle('detailed-view', isDetailedView);
+        $el.classList.remove('vertical', 'horizontal', 'detailed');
+        $el.classList.add('address-info', style);
         $el.classList.toggle('cashlink', this._displayAsCashlink);
 
         // identicon
@@ -88,6 +90,10 @@ class AddressInfo { // eslint-disable-line no-unused-vars
 
         $el.appendChild($identicon);
 
+        const $text = document.createElement('div');
+        $text.classList.add('text');
+        $el.appendChild($text);
+
         // label
         const $label = document.createElement('div');
         $label.classList.add('label');
@@ -96,17 +102,24 @@ class AddressInfo { // eslint-disable-line no-unused-vars
             // apply the data-i18n attribute such that the translation can be updated on language switch.
             $label.textContent = I18n.translatePhrase('address-info-new-cashlink');
             $label.dataset.i18n = 'address-info-new-cashlink';
+            $text.appendChild($label);
         } else if (this._addressInfo.label) {
             $label.textContent = this._addressInfo.label;
-        } else if (!isDetailedView) {
-            $label.textContent = this._addressInfo.userFriendlyAddress;
-            $label.classList.add('mono'); // Fira Mono font for address display
-        }
-        if ($label.textContent) {
-            $el.appendChild($label);
+            $text.appendChild($label);
         }
 
-        if (isDetailedView) {
+        if (style === 'horizontal') {
+            // Show the address regardless of whether a label is shown, because the label can not be verified.
+            $text.appendChild(
+                new ShortAddress(this._addressInfo.userFriendlyAddress, this._addressInfo.shortAddressBlocks)
+                    .getElement(),
+            );
+        } else if (style === 'vertical' && !$label.textContent) {
+            // Fall back to the address if no label is known.
+            $text.appendChild(new ShortAddress(this._addressInfo.userFriendlyAddress, 2).getElement());
+        }
+
+        if (style === 'detailed') {
             // accountLabel
             // if (this._addressInfo.accountLabel) {
             //     const $accountLabel = document.createElement('div');
@@ -121,7 +134,7 @@ class AddressInfo { // eslint-disable-line no-unused-vars
             // last space is necessary for the rendering to work properly with white-space: pre-wrap.
             $address.textContent = `${this._addressInfo.userFriendlyAddress} `;
             const copyableAddress = new Copyable(this._addressInfo.userFriendlyAddress, $address);
-            $el.appendChild(copyableAddress.getElement());
+            $text.appendChild(copyableAddress.getElement());
         }
 
         return $el;

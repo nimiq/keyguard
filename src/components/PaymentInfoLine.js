@@ -52,8 +52,9 @@ class PaymentInfoLine { // eslint-disable-line no-unused-vars
             label: paymentInfo.label || null,
             imageUrl: paymentInfo.imageUrl || null,
             accountLabel: null,
+            shortAddressBlocks: 2, // only rendered as fallback if no label is known, see PaymentInfoLine.css
         });
-        recipientInfo.renderTo(/** @type HTMLElement */ (this.$el.querySelector('.recipient')));
+        recipientInfo.renderTo(/** @type HTMLElement */ (this.$el.querySelector('.recipient')), 'horizontal');
 
         const $timer = /** @type {HTMLElement} */ (this.$el.querySelector('.timer'));
         if (paymentInfo.time && paymentInfo.expires) {

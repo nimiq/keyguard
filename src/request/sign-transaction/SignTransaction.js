@@ -177,18 +177,23 @@ class SignTransaction {
             label: request.stakerLabel || request.keyLabel || null,
         };
         const $stakerInfo = document.createElement('div');
-        this._renderStakerOrValidatorInfo($stakerInfo, stakerInfo, 'chip');
+        const stakerAddressInfo = new AddressInfo(stakerInfo);
+        stakerAddressInfo.renderTo($stakerInfo, 'horizontal');
+        $stakerInfo.classList.add('validator-or-staker-info', 'chip');
+        this._makeAddressInfoInteractive($stakerInfo, stakerAddressInfo);
         subtitles.push($stakerInfo);
 
         const senderInfo = {
             userFriendlyAddress: request.fromValidatorAddress.toUserFriendlyAddress(),
             label: request.senderLabel || null,
             imageUrl: request.fromValidatorImageUrl || null,
+            shortAddressBlocks: 6,
         };
         const recipientInfo = {
             userFriendlyAddress: request.validatorAddress.toUserFriendlyAddress(),
             label: request.recipientLabel || null,
             imageUrl: request.validatorImageUrl || null,
+            shortAddressBlocks: 6,
         };
 
         const value = null; // the transactions of the switch-validator flow are signaling transactions with no value.
@@ -276,20 +281,25 @@ class SignTransaction {
             $subtitle.remove();
         }
 
-        if (layout !== SignTransactionApi.Layouts.SWITCH_VALIDATOR) {
-            const senderAddressInfo = new AddressInfo(senderInfo);
-            senderAddressInfo.renderTo($sender);
-            $sender.addEventListener('click', () => this._openDetails(senderAddressInfo));
-
-            const recipientAddressInfo = new AddressInfo(recipientInfo, layout === SignTransactionApi.Layouts.CASHLINK);
-            recipientAddressInfo.renderTo($recipient);
-            if (layout !== SignTransactionApi.Layouts.CASHLINK) {
-                $recipient.addEventListener('click', () => this._openDetails(recipientAddressInfo));
+        const isSwitchValidator = layout === SignTransactionApi.Layouts.SWITCH_VALIDATOR;
+        const isCashlink = layout === SignTransactionApi.Layouts.CASHLINK;
+        // eslint-disable-next-line valid-jsdoc
+        /**
+         * @param {HTMLElement} $el
+         * @param {ConstructorParameters<typeof AddressInfo>[0]} info
+         * @param {boolean} [displayAsCashlink = false]
+         */
+        const renderAddressInfo = ($el, info, displayAsCashlink = false) => {
+            const addressInfo = new AddressInfo(info, displayAsCashlink);
+            addressInfo.renderTo($el, isSwitchValidator ? 'horizontal' : 'vertical');
+            if (isSwitchValidator) {
+                // Render the validators as cards, see SignTransaction.css.
+                $el.classList.add('validator-or-staker-info', 'card');
             }
-        } else {
-            this._renderStakerOrValidatorInfo($sender, senderInfo, 'card');
-            this._renderStakerOrValidatorInfo($recipient, recipientInfo, 'card');
-        }
+            if (!displayAsCashlink) this._makeAddressInfoInteractive($el, addressInfo);
+        };
+        renderAddressInfo($sender, senderInfo);
+        renderAddressInfo($recipient, recipientInfo, isCashlink);
 
         // Set value and fee.
         if (value !== null) {
@@ -315,49 +325,11 @@ class SignTransaction {
         I18n.observer.on(I18n.Events.LANGUAGE_CHANGED, updateData);
     }
 
-    // eslint-disable-next-line valid-jsdoc
     /**
      * @param {HTMLElement} $el
-     * @param {Pick<ConstructorParameters<typeof AddressInfo>[0], 'userFriendlyAddress' | 'label' | 'imageUrl'>} params
-     * @param {'card' | 'chip'} style
+     * @param {AddressInfo} addressInfo
      */
-    _renderStakerOrValidatorInfo($el, { userFriendlyAddress, label, imageUrl }, style) {
-        $el.textContent = '';
-        $el.classList.add('validator-or-staker-info', style);
-
-        if (imageUrl) {
-            const $image = document.createElement('img');
-            $image.classList.add('identicon');
-            $image.addEventListener('error', () => {
-                $image.replaceWith(new Identicon(userFriendlyAddress).getElement());
-            }, { once: true });
-            $image.src = imageUrl.href;
-            $el.appendChild($image);
-        } else {
-            $el.appendChild(new Identicon(userFriendlyAddress).getElement());
-        }
-
-        const $text = document.createElement('div');
-        $text.classList.add('text');
-        $el.appendChild($text);
-
-        if (label) {
-            const $label = document.createElement('div');
-            $label.classList.add('label');
-            $label.textContent = label;
-            $text.appendChild($label);
-        }
-        // Show the address regardless of whether a label is shown because the label can not be verified by the Keyguard
-        $text.appendChild(SignTransaction._createShortAddress(userFriendlyAddress, style === 'card' ? 6 : 4));
-
-        $el.insertAdjacentHTML('beforeend', TemplateTags.noVars`<svg class="nq-icon caret">
-            <use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-caret-right-small"/>
-        </svg>`);
-
-        // Expose the full address to hover, as only a shortened address is displayed.
-        $el.title = userFriendlyAddress;
-
-        const addressInfo = new AddressInfo({ userFriendlyAddress, label, imageUrl });
+    _makeAddressInfoInteractive($el, addressInfo) {
         $el.tabIndex = 0;
         $el.addEventListener('click', () => this._openDetails(addressInfo));
         $el.addEventListener('keydown', event => {
@@ -368,36 +340,13 @@ class SignTransaction {
     }
 
     /**
-     * @param {string} userFriendlyAddress
-     * @param {number} [blocksToShow]
-     * @returns {HTMLSpanElement}
-     */
-    static _createShortAddress(userFriendlyAddress, blocksToShow = 4) {
-        // Same style as the Wallet's ShortAddress.
-        const $shortAddress = document.createElement('span');
-        $shortAddress.classList.add('short-address', 'address');
-        $shortAddress.innerHTML = TemplateTags.noVars`
-            <svg class="short-address-ellipsis" viewBox="0 0 17 3" fill="currentColor" aria-hidden="true">
-                <circle cx="1.5" cy="1.5" r="1.5"/>
-                <circle cx="8.5" cy="1.5" r="1.5"/>
-                <circle cx="15.5" cy="1.5" r="1.5"/>
-            </svg>
-        `;
-        // Prepend / append address as text nodes instead of via innerHTML to avoid potential HTML injection.
-        const blocks = userFriendlyAddress.split(' ');
-        $shortAddress.prepend(blocks.slice(0, Math.ceil(blocksToShow / 2)).join(' '));
-        $shortAddress.append(blocks.slice(-Math.floor(blocksToShow / 2)).join(' '));
-        return $shortAddress;
-    }
-
-    /**
      * @param {AddressInfo} which
      */
     _openDetails(which) {
         this._blurFocusedElement();
         which.renderTo(
             /** @type {HTMLElement} */(this.$accountDetails.querySelector('#details')),
-            true,
+            'detailed',
         );
         this.$el.classList.add('account-details-open');
     }
