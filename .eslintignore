@@ -1,3 +1,6 @@
 *.min.*
 src/lib/bitcoin/BitcoinJS.js
 src/lib/polygon/OpenGSN.js
+
+# .github is dot-prefixed, which eslint ignores by default; the deploy scripts are ours to lint.
+!.github/scripts/*.js

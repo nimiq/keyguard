@@ -1,0 +1,154 @@
+name: Deploy Testnet
+
+# Deploys the testnet Keyguard to an S3-backed CloudFront distribution. This is the same
+# artifact `deploy.sh --testnet` ships to testnet-web1 over SSH; while both paths exist, this
+# one publishes to a separate hostname (vars.DEPLOY_URL) until DNS for
+# keyguard.nimiq-testnet.com is cut over.
+#
+# The Keyguard is a key manager, so this workflow is deliberately paranoid:
+#   - the deploy waits on a required reviewer (GitHub Environment protection rule)
+#   - the tag's signature must verify (deploy.sh creates signed tags with `git tag -a -s`)
+#   - the smoke test asserts the security headers on all four path variants and fails the
+#     deploy if the CloudFront response-headers policies drift from the nginx config
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      allow_unsigned:
+        description: 'Deploy a ref whose signature cannot be verified (non-tag or unsigned tag)'
+        type: boolean
+        default: false
+
+# Never run two deploys against the same bucket, and never cancel one mid-flight:
+# an aborted sync leaves HTML pointing at bundles that were never uploaded.
+concurrency:
+  group: deploy-testnet
+  cancel-in-progress: false
+
+permissions: {}
+
+jobs:
+  deploy:
+    name: Build and deploy to S3 + CloudFront
+    runs-on: ubuntu-latest
+
+    # Binds the OIDC subject to `repo:nimiq/keyguard:environment:testnet`, exposes the
+    # environment's vars/secrets, and applies its protection rules (required reviewers).
+    environment:
+      name: testnet
+      url: ${{ vars.DEPLOY_URL }}
+
+    permissions:
+      contents: read   # actions/checkout, and the GitHub API read in verify-tag.js
+      id-token: write  # OIDC token for sts:AssumeRoleWithWebIdentity
+
+    env:
+      BUILD_CONFIG: testnet
+      AWS_REGION: ${{ vars.AWS_REGION }}
+      S3_BUCKET: ${{ vars.S3_BUCKET }}
+      CLOUDFRONT_DISTRIBUTION_ID: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}
+      DEPLOY_URL: ${{ vars.DEPLOY_URL }}
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      # Runs on the runner's preinstalled Node, before setup-node and before any dependency is
+      # installed, so nothing from the ref has been executed at the point its signature is checked.
+      - name: Verify tag signature
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          ALLOW_UNSIGNED: ${{ inputs.allow_unsigned }}
+          ALLOWED_TAGGERS: ${{ vars.ALLOWED_TAGGERS }}
+        run: node .github/scripts/verify-tag.js
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          # The yarn download cache, not node_modules: yarn re-extracts and validates against
+          # yarn.lock's integrity hashes instead of restoring unverified code.
+          cache: yarn
+          cache-dependency-path: yarn.lock # the client/ install is skipped below
+
+      # --frozen-lockfile: package.json uses caret ranges for @nimiq/core and ethers, and
+      #   tools/build.sh gates on hardcoded SHA-256 hashes of those exact files.
+      # --ignore-scripts: skips the root postinstall (`cd client && yarn` + patch-package).
+      #   Nothing under client/ is consumed by tools/build.sh.
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile --ignore-scripts
+
+      - name: Build (${{ env.BUILD_CONFIG }} config)
+        run: yarn build "$BUILD_CONFIG"
+
+      # Asserts that dist/ is complete, that every build rewrite was applied, and that every file
+      # in it is covered by one of s3-sync.sh's typed upload passes. Also runs on every PR via
+      # `yarn pr`, so these assertions are exercised long before a deploy depends on them.
+      - name: Verify build output
+        run: yarn checkdist "$BUILD_CONFIG"
+
+      - name: Write build-info.json
+        run: |
+          set -euo pipefail
+          jq -n \
+            --arg ref "$GITHUB_REF_NAME" \
+            --arg sha "$GITHUB_SHA" \
+            --arg config "$BUILD_CONFIG" \
+            --arg run "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            --arg deployedAt "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            '{$ref, $sha, $config, $run, $deployedAt}' > dist/build-info.json
+
+      # Credentials are requested only after the build, and only for 15 minutes.
+      - name: Configure AWS credentials (GitHub OIDC)
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          role-session-name: keyguard-testnet-${{ github.run_id }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-duration-seconds: 900
+
+      - name: Preflight AWS access
+        run: |
+          set -euo pipefail
+          aws sts get-caller-identity
+          aws s3api head-bucket --bucket "$S3_BUCKET"
+
+      - name: Upload to S3 and prune stale objects
+        run: .github/scripts/s3-sync.sh
+
+      - name: Invalidate CloudFront
+        run: |
+          set -euo pipefail
+          # "/*" MUST be quoted -- unquoted, bash globs it into /bin /boot /dev ...
+          id=$(aws cloudfront create-invalidation \
+                 --distribution-id "$CLOUDFRONT_DISTRIBUTION_ID" --paths "/*" \
+                 --query 'Invalidation.Id' --output text)
+          echo "invalidation $id created"
+          aws cloudfront wait invalidation-completed \
+            --distribution-id "$CLOUDFRONT_DISTRIBUTION_ID" --id "$id"
+          echo "invalidation $id completed"
+
+      # Asserts the security headers on all four path variants and re-derives every SRI hash from
+      # what the CDN serves, failing the deploy if the CloudFront response-headers policies drift
+      # from the nginx config. The expectations live in the script; update them together.
+      - name: Smoke test the deployment
+        if: ${{ vars.DEPLOY_URL != '' }}
+        run: node tools/deploymentValidator.js "$DEPLOY_URL"
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "### Keyguard testnet deploy"
+            echo
+            echo "| | |"
+            echo "|---|---|"
+            echo "| ref | \`${GITHUB_REF_NAME}\` |"
+            echo "| commit | \`${GITHUB_SHA}\` |"
+            echo "| config | \`${BUILD_CONFIG}\` |"
+            echo "| bucket | \`${S3_BUCKET}\` |"
+            echo "| url | ${DEPLOY_URL:-n/a} |"
+          } >> "$GITHUB_STEP_SUMMARY"
