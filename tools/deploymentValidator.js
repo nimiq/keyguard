@@ -39,19 +39,20 @@ const MIN_SRI_RESOURCES = 4;
 
 const HSTS = 'max-age=15768000; includeSubDomains; preload';
 
+/** The sources each policy allows, as a set: the order a policy lists them in carries no meaning. */
 const FRAME_ANCESTORS = {
     /** Not embeddable at all -- the default for every Keyguard page. */
-    NONE: "frame-ancestors 'none'",
+    NONE: ["'none'"],
     /** The generic iframe, embedded by the Hub, the Wallet and the Safe. */
-    IFRAME: `frame-ancestors ${[
+    IFRAME: [
         'https://safe.nimiq-testnet.com',
         'https://wallet.nimiq-testnet.com',
         'https://hub.nimiq-testnet.com',
-    ].join(' ')}`,
+    ],
     /** The swap iframe, which the Safe never embeds. */
-    SWAP: `frame-ancestors ${['https://wallet.nimiq-testnet.com', 'https://hub.nimiq-testnet.com'].join(' ')}`,
+    SWAP: ['https://wallet.nimiq-testnet.com', 'https://hub.nimiq-testnet.com'],
     /** The RSA sandbox, embedded only by the Keyguard itself. */
-    SELF: "frame-ancestors 'self'",
+    SELF: ["'self'"],
 };
 
 const {
@@ -175,7 +176,35 @@ function frameAncestorsOf(csp) {
 }
 
 /**
- * @param {{path: string, contentType: string, frameAncestors: string}} probe
+ * @param {string[]} sources
+ * @returns {string}
+ */
+function sortedSources(sources) {
+    return [...sources].sort().join(' ');
+}
+
+/**
+ * Compare the frame-ancestors sources without depending on the order they are written in. nginx
+ * and a CloudFront response-headers policy are configured separately, and a policy that lists the
+ * same origins in another order is the same policy.
+ *
+ * @param {string|null} csp
+ * @param {string[]} expected
+ */
+function expectFrameAncestors(csp, expected) {
+    const directive = frameAncestorsOf(csp);
+    const actual = directive ? directive.split(' ').slice(1) : [];
+
+    if (directive && actual.length === expected.length && sortedSources(actual) === sortedSources(expected)) {
+        pass(`frame-ancestors: ${directive}`);
+    } else {
+        fail(`frame-ancestors: got '${directive || '<missing>'}', want these sources in any order: `
+            + `${expected.join(' ')}`);
+    }
+}
+
+/**
+ * @param {{path: string, contentType: string, frameAncestors: string[]}} probe
  * @returns {Promise<Response|null>}
  */
 async function probePath(probe) {
@@ -199,7 +228,7 @@ async function probePath(probe) {
     expect('strict-transport-security', response.headers.get('strict-transport-security'), HSTS);
     expect('x-content-type-options', response.headers.get('x-content-type-options'), 'nosniff');
     expect('referrer-policy', response.headers.get('referrer-policy'), 'strict-origin');
-    expect('frame-ancestors', frameAncestorsOf(response.headers.get('content-security-policy')), probe.frameAncestors);
+    expectFrameAncestors(response.headers.get('content-security-policy'), probe.frameAncestors);
 
     // frame-ancestors is the control that actually stops clickjacking; X-Frame-Options ALLOW-FROM
     // has been inert in every modern browser for years, so it is only checked for presence, and for
