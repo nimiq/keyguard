@@ -111,13 +111,14 @@ function checkRequestDirectories() {
     const sourceRequests = funcs.listDirectories('src/request');
     const builtRequests = funcs.listDirectories(`${DIST}/request`);
 
-    if (sourceRequests.length !== builtRequests.length) {
-        fail(`built ${builtRequests.length} request directories, expected ${sourceRequests.length}`);
-        const missing = sourceRequests.filter(request => !builtRequests.includes(request));
-        if (missing.length) fail(`not built: ${missing.join(', ')}`);
-    } else {
-        ok(`${builtRequests.length} request directories built`);
-    }
+    // Compared by name rather than by count: build.sh starts from `rm -rf dist`, so a directory
+    // dist/ has and src/ does not is a request that was renamed and would ship under both names.
+    const missing = sourceRequests.filter(request => !builtRequests.includes(request));
+    const unexpected = builtRequests.filter(request => !sourceRequests.includes(request));
+
+    if (missing.length) fail(`not built: ${missing.join(', ')}`);
+    if (unexpected.length) fail(`built, but no such request in src/request: ${unexpected.join(', ')}`);
+    if (!missing.length && !unexpected.length) ok(`${builtRequests.length} request directories built`);
 
     builtRequests.forEach(request => {
         const dirPath = `${DIST}/request/${request}`;
