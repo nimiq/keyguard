@@ -61,6 +61,21 @@ jobs:
       RELEASE_URL: ${{ github.event.release.html_url }}
 
     steps:
+      # Every deploy target comes from the environment's vars, and a missing one must stop the run
+      # before it builds anything. An unset DEPLOY_URL used to skip the smoke test silently, which
+      # made forgetting a variable indistinguishable from a verified deploy.
+      - name: Check deployment configuration
+        run: |
+          set -euo pipefail
+          missing=()
+          for name in AWS_REGION S3_BUCKET CLOUDFRONT_DISTRIBUTION_ID DEPLOY_URL; do
+            [ -n "${!name:-}" ] || missing+=("$name")
+          done
+          if [ "${#missing[@]}" -gt 0 ]; then
+            echo "::error::unset environment variable(s): ${missing[*]}"
+            exit 1
+          fi
+
       # For a release event the checkout defaults to the commit the release was cut from, which is
       # the same commit verify-tag.js resolves the tag to.
       - uses: actions/checkout@v7
@@ -146,7 +161,6 @@ jobs:
       # what the CDN serves, failing the deploy if the CloudFront response-headers policies drift
       # from the nginx config. The expectations live in the script; update them together.
       - name: Smoke test the deployment
-        if: ${{ vars.DEPLOY_URL != '' }}
         run: node tools/deploymentValidator.js "$DEPLOY_URL"
 
       - name: Summary
