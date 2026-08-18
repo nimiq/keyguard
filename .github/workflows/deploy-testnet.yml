@@ -11,6 +11,28 @@ name: Deploy Testnet
 #   - the release tag's signature must verify (deploy.sh creates signed tags with `git tag -a -s`)
 #   - the smoke test asserts the security headers on all four path variants and fails the
 #     deploy if the CloudFront response-headers policies drift from the nginx config
+#
+# What this workflow expects to already exist, none of which lives in this repository:
+#
+#   Environment `testnet`, with a required reviewer, holding
+#     vars.AWS_REGION, vars.S3_BUCKET, vars.CLOUDFRONT_DISTRIBUTION_ID, vars.DEPLOY_URL
+#     vars.ALLOWED_TAGGERS  optional, comma-separated tagger allowlist
+#     secrets.AWS_DEPLOY_ROLE_ARN  a role whose trust policy is scoped to the OIDC subject
+#       `repo:nimiq/keyguard:environment:testnet`, so no other workflow can assume it
+#
+#   A bucket used by nothing but this site. The sync prunes with `--delete` at the bucket root,
+#   so anything else stored there -- logs, a second site, hand-uploaded files -- is deleted.
+#
+#   Index documents for directory paths. The Keyguard is served as directories (`/`,
+#   `/request/create/`, `/request/iframe/`), but a CloudFront distribution with an S3 REST origin
+#   only resolves DefaultRootObject at the root, so `/request/create/` 404s unless the
+#   distribution either uses the S3 *website* endpoint as its origin or rewrites directory paths
+#   to `index.html` in a CloudFront Function. The smoke test catches this, but only after a full
+#   sync and invalidation have run.
+#
+#   Response-headers policies reproducing the nginx headers, including a per-path
+#   `frame-ancestors`. tools/deploymentValidator.js is the specification: what it asserts is what
+#   keyguard.nimiq-testnet.com serves today.
 
 on:
   # Cutting a tag and publishing a release are separate acts, and only the second one is a
