@@ -23,13 +23,13 @@
  *   ALLOWED_TAGGERS   optional comma-separated tagger allowlist; unset means "any valid signature"
  */
 
-const API_URL = process.env.GITHUB_API_URL || 'https://api.github.com';
+const { api } = require('./github-api');
+
 const REPOSITORY = process.env.GITHUB_REPOSITORY;
 const TAG_NAME = process.env.TAG_NAME || '';
 const REF_NAME = TAG_NAME || process.env.GITHUB_REF_NAME;
 // A release always carries a tag. Outside a release event, trust the ref the runner resolved.
 const IS_TAG = !!TAG_NAME || process.env.GITHUB_REF_TYPE === 'tag';
-const TOKEN = process.env.GITHUB_TOKEN;
 const ALLOW_UNSIGNED = process.env.ALLOW_UNSIGNED === 'true';
 const ALLOWED_TAGGERS = (process.env.ALLOWED_TAGGERS || '').split(',').map(entry => entry.trim()).filter(Boolean);
 
@@ -61,28 +61,6 @@ function reject(problem, remedy) {
  */
 function encodeRef(ref) {
     return ref.split('/').map(encodeURIComponent).join('/');
-}
-
-/**
- * @param {string} endpoint
- * @returns {Promise<any>}
- */
-async function api(endpoint) {
-    const response = await fetch(`${API_URL}/${endpoint}`, {
-        headers: {
-            accept: 'application/vnd.github+json',
-            authorization: `Bearer ${TOKEN}`,
-            'user-agent': 'nimiq-keyguard-deploy',
-            'x-github-api-version': '2022-11-28',
-        },
-        signal: AbortSignal.timeout(30000),
-    });
-
-    if (!response.ok) {
-        throw new Error(`GET ${endpoint} returned HTTP ${response.status}: ${await response.text()}`);
-    }
-
-    return response.json();
 }
 
 /**
@@ -123,11 +101,6 @@ async function verifiedTagger() {
  * @returns {Promise<void>}
  */
 async function main() {
-    if (!TOKEN) {
-        console.log('::error::GITHUB_TOKEN is not set');
-        process.exit(1);
-    }
-
     const tagger = await verifiedTagger();
 
     // Optional: restrict who may cut a deployable tag. An unset allowlist means "any valid

@@ -9,6 +9,7 @@ name: Deploy Testnet
 #   - only a published pre-release deploys; a pushed tag on its own never does
 #   - the deploy waits on a required reviewer (GitHub Environment protection rule)
 #   - the release tag's signature must verify (deploy.sh creates signed tags with `git tag -a -s`)
+#   - the commit must have passed `Complete Check`, which is where the tests actually run
 #   - the smoke test asserts the security headers on all four path variants and fails the
 #     deploy if the CloudFront response-headers policies drift from the nginx config
 #
@@ -47,6 +48,10 @@ on:
         description: 'Deploy a ref whose signature cannot be verified (non-tag or unsigned tag)'
         type: boolean
         default: false
+      allow_failing_checks:
+        description: 'Deploy a commit whose Complete Check did not pass'
+        type: boolean
+        default: false
 
 # Never run two deploys against the same bucket, and never cancel one mid-flight:
 # an aborted sync leaves HTML pointing at bundles that were never uploaded.
@@ -72,6 +77,7 @@ jobs:
 
     permissions:
       contents: read   # actions/checkout, and the GitHub API read in verify-tag.js
+      checks: read     # the commit's check runs, in verify-checks.js
       id-token: write  # OIDC token for sts:AssumeRoleWithWebIdentity
 
     env:
@@ -113,6 +119,14 @@ jobs:
           ALLOW_UNSIGNED: ${{ inputs.allow_unsigned }}
           ALLOWED_TAGGERS: ${{ vars.ALLOWED_TAGGERS }}
         run: node .github/scripts/verify-tag.js
+
+      # This workflow only builds -- nothing in it runs a test. A release can be published from any
+      # commit, so the evidence that this one holds up is Complete Check's verdict on it.
+      - name: Verify CI passed for this commit
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          ALLOW_FAILING_CHECKS: ${{ inputs.allow_failing_checks }}
+        run: node .github/scripts/verify-checks.js
 
       - uses: actions/setup-node@v7
         with:
