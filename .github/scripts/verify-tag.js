@@ -3,6 +3,9 @@
 /*
  * Verifies that the ref being deployed is an annotated tag carrying a valid signature.
  *
+ * The deploy is driven by a published release, so the tag under test is the release's tag
+ * (TAG_NAME); for a manual workflow_dispatch it is whatever ref the run was started on.
+ *
  * Chain of custody: deploy.sh cuts annotated, GPG-signed tags (`git tag -a -s`), and the SSH
  * deployment path carries that signature all the way to the server. This asserts the equivalent so
  * the S3 path is not a weaker way to ship the same bytes.
@@ -14,14 +17,17 @@
  *
  * Environment:
  *   GITHUB_TOKEN      required, needs `contents: read`
+ *   TAG_NAME          the release's tag; falls back to the ref the run was started on
  *   ALLOW_UNSIGNED    'true' downgrades every failure below to a warning (workflow_dispatch only)
  *   ALLOWED_TAGGERS   optional comma-separated tagger allowlist; unset means "any valid signature"
  */
 
 const API_URL = process.env.GITHUB_API_URL || 'https://api.github.com';
 const REPOSITORY = process.env.GITHUB_REPOSITORY;
-const REF_NAME = process.env.GITHUB_REF_NAME;
-const REF_TYPE = process.env.GITHUB_REF_TYPE;
+const TAG_NAME = process.env.TAG_NAME || '';
+const REF_NAME = TAG_NAME || process.env.GITHUB_REF_NAME;
+// A release always carries a tag. Outside a release event, trust the ref the runner resolved.
+const IS_TAG = !!TAG_NAME || process.env.GITHUB_REF_TYPE === 'tag';
 const TOKEN = process.env.GITHUB_TOKEN;
 const ALLOW_UNSIGNED = process.env.ALLOW_UNSIGNED === 'true';
 const ALLOWED_TAGGERS = (process.env.ALLOWED_TAGGERS || '').split(',').map(entry => entry.trim()).filter(Boolean);
@@ -84,7 +90,7 @@ async function main() {
         process.exit(1);
     }
 
-    if (REF_TYPE !== 'tag') {
+    if (!IS_TAG) {
         reject(`'${REF_NAME}' is not a tag`,
             'Deploy a signed tag, or re-run workflow_dispatch with allow_unsigned=true.');
     }

@@ -6,15 +6,19 @@ name: Deploy Testnet
 # keyguard.nimiq-testnet.com is cut over.
 #
 # The Keyguard is a key manager, so this workflow is deliberately paranoid:
+#   - only a published pre-release deploys; a pushed tag on its own never does
 #   - the deploy waits on a required reviewer (GitHub Environment protection rule)
-#   - the tag's signature must verify (deploy.sh creates signed tags with `git tag -a -s`)
+#   - the release tag's signature must verify (deploy.sh creates signed tags with `git tag -a -s`)
 #   - the smoke test asserts the security headers on all four path variants and fails the
 #     deploy if the CloudFront response-headers policies drift from the nginx config
 
 on:
-  push:
-    tags:
-      - 'v*'
+  # Cutting a tag and publishing a release are separate acts, and only the second one is a
+  # decision to ship: deploy.sh pushes two tags per run and also tags mainnet deployments, so a
+  # tag trigger would deploy several times over, and for the wrong network. Pre-releases are the
+  # testnet channel; the mainnet workflow will subscribe to `types: [released]` instead.
+  release:
+    types: [published]
   workflow_dispatch:
     inputs:
       allow_unsigned:
@@ -35,6 +39,9 @@ jobs:
     name: Build and deploy to S3 + CloudFront
     runs-on: ubuntu-latest
 
+    # `published` fires for full releases too, and those are the mainnet channel.
+    if: ${{ github.event_name != 'release' || github.event.release.prerelease }}
+
     # Binds the OIDC subject to `repo:nimiq/keyguard:environment:testnet`, exposes the
     # environment's vars/secrets, and applies its protection rules (required reviewers).
     environment:
@@ -51,8 +58,11 @@ jobs:
       S3_BUCKET: ${{ vars.S3_BUCKET }}
       CLOUDFRONT_DISTRIBUTION_ID: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}
       DEPLOY_URL: ${{ vars.DEPLOY_URL }}
+      RELEASE_URL: ${{ github.event.release.html_url }}
 
     steps:
+      # For a release event the checkout defaults to the commit the release was cut from, which is
+      # the same commit verify-tag.js resolves the tag to.
       - uses: actions/checkout@v7
         with:
           persist-credentials: false
@@ -62,6 +72,7 @@ jobs:
       - name: Verify tag signature
         env:
           GITHUB_TOKEN: ${{ github.token }}
+          TAG_NAME: ${{ github.event.release.tag_name }}
           ALLOW_UNSIGNED: ${{ inputs.allow_unsigned }}
           ALLOWED_TAGGERS: ${{ vars.ALLOWED_TAGGERS }}
         run: node .github/scripts/verify-tag.js
@@ -146,6 +157,7 @@ jobs:
             echo
             echo "| | |"
             echo "|---|---|"
+            echo "| release | ${RELEASE_URL:-n/a} |"
             echo "| ref | \`${GITHUB_REF_NAME}\` |"
             echo "| commit | \`${GITHUB_SHA}\` |"
             echo "| config | \`${BUILD_CONFIG}\` |"
