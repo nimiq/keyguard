@@ -104,8 +104,8 @@ jobs:
             exit 1
           fi
 
-      # For a release event the checkout defaults to the commit the release was cut from, which is
-      # the same commit verify-tag.js resolves the tag to.
+      # A release event checks out the commit the release was cut from, which is also the commit
+      # verify-checks.js judges below.
       - uses: actions/checkout@v7
         with:
           persist-credentials: false
