@@ -3,7 +3,7 @@
 # Uploads dist/ to S3 with an explicit content type per file type, then prunes objects that are no
 # longer part of the build.
 #
-# Usage: S3_BUCKET=... .github/scripts/s3-sync.sh
+# Usage: S3_BUCKET=... [MAX_PRUNE=50] .github/scripts/s3-sync.sh
 #
 # The two halves belong together: the prune pass is what proves the upload passes were complete.
 # It re-runs the sync with --size-only and must upload nothing; anything it wants to send is a file
@@ -20,6 +20,26 @@ set -o pipefail
 : "${S3_BUCKET:?S3_BUCKET is not set}"
 
 DEST="s3://${S3_BUCKET}/"
+
+# The prune below deletes everything under the bucket root that is not part of this build, so a
+# bucket that holds anything else loses it. Two guards, because head-bucket only proves the bucket
+# exists and is reachable, not that it is the right one:
+#
+# A bucket with objects but no index.html at its root was never a Keyguard deployment, which is
+# what a mistyped or stale S3_BUCKET looks like. An empty bucket is fine -- that is a first deploy.
+first_key=$(aws s3api list-objects-v2 --bucket "$S3_BUCKET" --max-keys 1 \
+              --query 'Contents[0].Key' --output text)
+if [ "$first_key" != "None" ] \
+   && ! aws s3api head-object --bucket "$S3_BUCKET" --key index.html >/dev/null 2>&1; then
+    echo "::error::$S3_BUCKET holds objects but no index.html at its root, so it is not a Keyguard"\
+         "deployment. Refusing to sync, because the prune would delete whatever is in there."
+    exit 1
+fi
+
+# And a ceiling on how much one deploy may delete. Only the content-hashed bundles change names
+# between builds, so a normal deploy prunes a few dozen objects at most. Raise MAX_PRUNE for the
+# one deploy that legitimately removes more, e.g. after a restructuring of dist/.
+MAX_PRUNE="${MAX_PRUNE:-50}"
 
 # Matches the nginx deployment on testnet-web1, which serves everything `no-cache,
 # must-revalidate`. CloudFront still serves from the edge; it just revalidates via ETag. Switching
@@ -53,13 +73,30 @@ put "text/plain; charset=utf-8"             --include "*/LICENSE" --include "*.g
 put "text/html; charset=utf-8" --include "*.html"
 put "application/json"         --include "build-info.json"
 
-# --size-only here means "don't re-upload". Everything already went up with the correct metadata,
-# so this pass must upload NOTHING.
-extra=$(aws s3 sync dist/ "$DEST" --delete --size-only --dryrun --no-progress \
-          | grep '^(dryrun) upload:' || true)
+# One dryrun answers both remaining questions: what did the typed passes miss, and how much is
+# the prune about to remove. --size-only here means "don't re-upload": everything already went up
+# with the correct metadata, so this pass must upload NOTHING.
+plan=$(aws s3 sync dist/ "$DEST" --delete --size-only --dryrun --no-progress)
+
+extra=$(echo "$plan" | grep '^(dryrun) upload:' || true)
 if [ -n "$extra" ]; then
     echo "$extra"
     echo "::error::files above were not covered by a typed upload pass"
+    exit 1
+fi
+
+deletions=$(echo "$plan" | grep '^(dryrun) delete:' || true)
+prune_count=0
+if [ -n "$deletions" ]; then
+    echo "$deletions"
+    prune_count=$(echo "$deletions" | wc -l)
+fi
+echo "pruning $prune_count stale object(s) from $DEST"
+
+if [ "$prune_count" -gt "$MAX_PRUNE" ]; then
+    echo "::error::refusing to delete $prune_count objects, which is more than MAX_PRUNE"\
+         "($MAX_PRUNE). Check that $S3_BUCKET is the intended bucket; if it is, re-run with a"\
+         "higher MAX_PRUNE."
     exit 1
 fi
 
