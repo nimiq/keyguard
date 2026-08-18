@@ -138,8 +138,11 @@ jobs:
 
       # --frozen-lockfile: package.json uses caret ranges for @nimiq/core and ethers, and
       #   tools/build.sh gates on hardcoded SHA-256 hashes of those exact files.
-      # --ignore-scripts: skips the root postinstall (`cd client && yarn` + patch-package).
-      #   Nothing under client/ is consumed by tools/build.sh.
+      # --ignore-scripts: nothing this build needs is produced by an install script. tools/build.sh
+      #   copies prebuilt files out of node_modules, and the two browserified bundles it does not
+      #   copy (BitcoinJS.js, OpenGSN.js) are committed. It also skips this package's own
+      #   postinstall, `cd client && yarn` -- that is where patch-package runs, and nothing under
+      #   client/ is consumed by tools/build.sh.
       - name: Install dependencies
         run: yarn install --frozen-lockfile --ignore-scripts
 
