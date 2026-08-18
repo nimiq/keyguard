@@ -162,7 +162,7 @@ class SignTransactionApi extends TopLevelApi {
             // - recipient (must be staking contract for incoming staking transaction; enforced by protocol on commit)
             // - value (must be zero for signaling transactions; enforced by protocol)
             // - total fees (must not exceed MAX_SAFE_INTEGER; checked above and displayed)
-            // - validityStartHeight (transactions must be valid in order; checked above)
+            // - validityStartHeight (must be in order and within the typical bounds; checked above and below)
             // - network id (must match CONFIG.NIMIQ_NETWORK_ID; checked above)
             // - flags (must be signaling for these transaction types; enforced by protocol)
             // What must still be checked here: sender, senderType, recipientType, recipientData
@@ -217,6 +217,15 @@ class SignTransactionApi extends TopLevelApi {
                 );
             }
 
+            // Check validityStartHeights to be what is expected from the Wallet.
+            const updateStakerDelay = updateStakerTx.validityStartHeight - setActiveStakeTx.validityStartHeight;
+            if (updateStakerDelay <= Nimiq.Policy.BLOCKS_PER_EPOCH
+                || updateStakerDelay > 2 * Nimiq.Policy.BLOCKS_PER_EPOCH) {
+                throw new Errors.InvalidRequestError(
+                    'switch-validator update-staker must start one to two epochs after set-active-stake',
+                );
+            }
+
             parsedRequest.senderLabel = this.parseLabel(request.senderLabel);
             parsedRequest.recipientLabel = this.parseLabel(request.recipientLabel);
             parsedRequest.stakerLabel = this.parseLabel(request.stakerLabel);
@@ -264,7 +273,7 @@ class SignTransactionApi extends TopLevelApi {
             // - recipient (must be staking contract for incoming staking transaction; enforced by protocol on commit)
             // - value (must be zero for signaling transactions; enforced by protocol)
             // - total fees (must not exceed MAX_SAFE_INTEGER; checked above and displayed)
-            // - validityStartHeight (transactions must be valid in order; checked above)
+            // - validityStartHeight (must be in order and within the typical bounds; checked above and below)
             // - network id (must match CONFIG.NIMIQ_NETWORK_ID; checked above)
             // - flags (must be signaling for these transaction types; enforced by protocol)
             // What must still be checked here: sender, senderType, recipientType, recipientData
@@ -318,7 +327,7 @@ class SignTransactionApi extends TopLevelApi {
             // - sender (must be staking contract for outgoing staking transaction; enforced by protocol on commit)
             // - value (value + fee must be >= retired amount; checked above and displayed)
             // - total fees (must not exceed MAX_SAFE_INTEGER; checked above and displayed)
-            // - validityStartHeight (transactions must be valid in order; checked above)
+            // - validityStartHeight (must be in order and within the typical bounds; checked above and below)
             // - network id (must match CONFIG.NIMIQ_NETWORK_ID; checked above)
             // - flags (must be none for transaction to basic account; enforced by protocol)
             // What must still be checked here: senderType, senderData, recipient, recipientType, recipientData
@@ -350,6 +359,20 @@ class SignTransactionApi extends TopLevelApi {
             if (removeStakeTx.data.length) {
                 // Disallow recipient data because we don't display it in the simplified unstaking flow.
                 throw new Errors.InvalidRequestError('unstaking transactions must not have recipient data');
+            }
+
+            // Check validityStartHeights to be what is expected from the Wallet.
+            const retireStakeDelay = retireStakeTx.validityStartHeight - setActiveStakeTx.validityStartHeight;
+            if (retireStakeDelay <= Nimiq.Policy.BLOCKS_PER_EPOCH
+                || retireStakeDelay > 2 * Nimiq.Policy.BLOCKS_PER_EPOCH) {
+                throw new Errors.InvalidRequestError(
+                    'unstaking retire-stake must start one to two epochs after set-active-stake',
+                );
+            }
+            if (removeStakeTx.validityStartHeight !== retireStakeTx.validityStartHeight + 1) {
+                throw new Errors.InvalidRequestError(
+                    'unstaking remove-stake must start one block after retire-stake',
+                );
             }
 
             parsedRequest.senderLabel = this.parseLabel(request.senderLabel);
