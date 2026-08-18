@@ -18,7 +18,8 @@
  * Environment:
  *   GITHUB_TOKEN      required, needs `contents: read`
  *   TAG_NAME          the release's tag; falls back to the ref the run was started on
- *   ALLOW_UNSIGNED    'true' downgrades every failure below to a warning (workflow_dispatch only)
+ *   ALLOW_UNSIGNED    'true' downgrades a signature failure to a warning (workflow_dispatch only).
+ *                     It does not relax ALLOWED_TAGGERS, which is a separate question.
  *   ALLOWED_TAGGERS   optional comma-separated tagger allowlist; unset means "any valid signature"
  */
 
@@ -33,19 +34,22 @@ const ALLOW_UNSIGNED = process.env.ALLOW_UNSIGNED === 'true';
 const ALLOWED_TAGGERS = (process.env.ALLOWED_TAGGERS || '').split(',').map(entry => entry.trim()).filter(Boolean);
 
 /**
- * Fail the step, unless the run explicitly opted out of signature enforcement. The remedy is only
- * worth printing when the deploy is actually being stopped.
+ * Fail the step, unless the run explicitly opted out of signature enforcement -- in which case the
+ * problem is downgraded to a warning and the caller stops looking at the signature, without ending
+ * the run: the tagger allowlist still has to be applied. The remedy is only worth printing when the
+ * deploy is actually being stopped.
  *
  * @param {string} problem
  * @param {string} [remedy]
+ * @returns {null} no signer could be established, for the caller to pass on
  */
 function reject(problem, remedy) {
-    if (ALLOW_UNSIGNED) {
-        console.log(`::warning::${problem}, continuing because allow_unsigned is set`);
-        process.exit(0);
+    if (!ALLOW_UNSIGNED) {
+        console.log(`::error::${problem}${remedy ? `. ${remedy}` : ''}`);
+        process.exit(1);
     }
-    console.log(`::error::${problem}${remedy ? `. ${remedy}` : ''}`);
-    process.exit(1);
+    console.log(`::warning::${problem}, continuing because allow_unsigned is set`);
+    return null;
 }
 
 /**
@@ -82,16 +86,14 @@ async function api(endpoint) {
 }
 
 /**
- * @returns {Promise<void>}
+ * Resolve the ref to an annotated tag and check the signature GitHub verified for it.
+ *
+ * @returns {Promise<string|null>} the signer's email, or null if no signature could be verified and
+ *                                 allow_unsigned permitted the run to go on regardless
  */
-async function main() {
-    if (!TOKEN) {
-        console.log('::error::GITHUB_TOKEN is not set');
-        process.exit(1);
-    }
-
+async function verifiedTagger() {
     if (!IS_TAG) {
-        reject(`'${REF_NAME}' is not a tag`,
+        return reject(`'${REF_NAME}' is not a tag`,
             'Deploy a signed tag, or re-run workflow_dispatch with allow_unsigned=true.');
     }
 
@@ -99,7 +101,7 @@ async function main() {
     // never carry a signature.
     const ref = await api(`repos/${REPOSITORY}/git/ref/tags/${encodeRef(/** @type {string} */ (REF_NAME))}`);
     if (ref.object.type !== 'tag') {
-        reject(`'${REF_NAME}' is a lightweight tag and cannot carry a signature`,
+        return reject(`'${REF_NAME}' is a lightweight tag and cannot carry a signature`,
             'Cut deployable tags with `git tag -a -s`, as deploy.sh does.');
     }
 
@@ -110,20 +112,43 @@ async function main() {
     console.log(`tag ${REF_NAME}: verified=${verification.verified} reason=${verification.reason} tagger=${tagger}`);
 
     if (verification.verified !== true) {
-        reject(`tag ${REF_NAME} signature is not verified (${verification.reason})`,
+        return reject(`tag ${REF_NAME} signature is not verified (${verification.reason})`,
             "Check that the signing key is registered on the tagger's GitHub account.");
     }
 
-    // Optional: restrict who may cut a deployable tag. An unset allowlist means "any valid
-    // signature", which is already gated by the environment's required reviewers.
-    if (ALLOWED_TAGGERS.length && !ALLOWED_TAGGERS.includes(tagger)) {
-        // Not routed through reject(): an untrusted signer is a different problem from an unsigned
-        // tag, and allow_unsigned must not wave it through.
-        console.log(`::error::tagger ${tagger} is not in ALLOWED_TAGGERS`);
+    return tagger;
+}
+
+/**
+ * @returns {Promise<void>}
+ */
+async function main() {
+    if (!TOKEN) {
+        console.log('::error::GITHUB_TOKEN is not set');
         process.exit(1);
     }
 
-    console.log(`tag ${REF_NAME} is signed by ${tagger} and verified by GitHub`);
+    const tagger = await verifiedTagger();
+
+    // Optional: restrict who may cut a deployable tag. An unset allowlist means "any valid
+    // signature", which is already gated by the environment's required reviewers.
+    //
+    // Deliberately outside reject(): an untrusted signer is a different problem from an unsigned
+    // tag, and allow_unsigned must not wave it through. Where the signature did not verify there is
+    // no signer to compare, so an allowlist and allow_unsigned together cannot both be honoured --
+    // the allowlist wins.
+    if (ALLOWED_TAGGERS.length) {
+        if (!tagger) {
+            console.log(`::error::ALLOWED_TAGGERS is set, but '${REF_NAME}' has no verified signer to check`);
+            process.exit(1);
+        }
+        if (!ALLOWED_TAGGERS.includes(tagger)) {
+            console.log(`::error::tagger ${tagger} is not in ALLOWED_TAGGERS`);
+            process.exit(1);
+        }
+    }
+
+    if (tagger) console.log(`tag ${REF_NAME} is signed by ${tagger} and verified by GitHub`);
 }
 
 main().catch(/** @param {Error} error */ error => {
