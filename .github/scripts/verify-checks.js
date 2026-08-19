@@ -44,7 +44,8 @@ function sleep(ms) {
 
 /**
  * The most recent run of each check on this commit, keyed by name. A re-run leaves the earlier
- * attempt in the list, and it is the latest attempt that decides.
+ * attempt in the list, and it is the latest attempt that decides -- the one with the highest id,
+ * because check run ids are handed out in creation order.
  *
  * @returns {Promise<Map<string, any>>}
  */
@@ -55,7 +56,7 @@ async function latestCheckRuns() {
     const latest = new Map();
     for (const run of response.check_runs || []) {
         const previous = latest.get(run.name);
-        if (!previous || (run.started_at || '') >= (previous.started_at || '')) latest.set(run.name, run);
+        if (!previous || run.id > previous.id) latest.set(run.name, run);
     }
     return latest;
 }
