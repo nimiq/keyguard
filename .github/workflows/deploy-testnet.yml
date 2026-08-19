@@ -6,7 +6,8 @@ name: Deploy Testnet
 # keyguard.nimiq-testnet.com is cut over.
 #
 # The Keyguard is a key manager, so this workflow is deliberately paranoid:
-#   - only a published pre-release deploys; a pushed tag on its own never does
+#   - only a published pre-release deploys; a pushed tag on its own never does, and there is no
+#     manual trigger, so none of the gates below can be waived for a run
 #   - the deploy waits on a required reviewer (GitHub Environment protection rule)
 #   - the release tag's signature must verify (deploy.sh creates signed tags with `git tag -a -s`)
 #   - the commit must have passed `Complete Check`, which is where the tests actually run
@@ -42,16 +43,6 @@ on:
   # testnet channel; the mainnet workflow will subscribe to `types: [released]` instead.
   release:
     types: [published]
-  workflow_dispatch:
-    inputs:
-      allow_unsigned:
-        description: 'Deploy a ref whose signature cannot be verified (non-tag or unsigned tag)'
-        type: boolean
-        default: false
-      allow_failing_checks:
-        description: 'Deploy a commit whose Complete Check did not pass'
-        type: boolean
-        default: false
 
 # Never run two deploys against the same bucket, and never cancel one mid-flight:
 # an aborted sync leaves HTML pointing at bundles that were never uploaded.
@@ -66,9 +57,8 @@ jobs:
     name: Build and deploy to S3 + CloudFront
     runs-on: ubuntu-latest
 
-    # An allowlist, not a denylist: `published` fires for full releases too, and those are the
-    # mainnet channel, so nothing but a pre-release or a manual run gets to deploy here.
-    if: ${{ github.event_name == 'workflow_dispatch' || github.event.release.prerelease }}
+    # `published` fires for full releases too, and those are the mainnet channel.
+    if: ${{ github.event.release.prerelease }}
 
     # Binds the OIDC subject to `repo:nimiq/keyguard:environment:testnet`, exposes the
     # environment's vars/secrets, and applies its protection rules (required reviewers).
@@ -119,7 +109,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
           TAG_NAME: ${{ github.event.release.tag_name }}
-          ALLOW_UNSIGNED: ${{ inputs.allow_unsigned }}
           ALLOWED_TAGGERS: ${{ vars.ALLOWED_TAGGERS }}
         run: node .github/scripts/verify-tag.js
 
@@ -128,7 +117,6 @@ jobs:
       - name: Verify CI passed for this commit
         env:
           GITHUB_TOKEN: ${{ github.token }}
-          ALLOW_FAILING_CHECKS: ${{ inputs.allow_failing_checks }}
         run: node .github/scripts/verify-checks.js
 
       - uses: actions/setup-node@v7
@@ -213,7 +201,7 @@ jobs:
             echo
             echo "| | |"
             echo "|---|---|"
-            echo "| release | ${RELEASE_URL:-n/a} |"
+            echo "| release | ${RELEASE_URL} |"
             echo "| ref | \`${GITHUB_REF_NAME}\` |"
             echo "| commit | \`${GITHUB_SHA}\` |"
             echo "| config | \`${BUILD_CONFIG}\` |"

@@ -15,7 +15,6 @@
  * Environment:
  *   GITHUB_TOKEN           required, needs `checks: read`
  *   GITHUB_SHA             the commit to judge
- *   ALLOW_FAILING_CHECKS   'true' downgrades every failure below to a warning (dispatch only)
  *   CHECKS_TIMEOUT_SECONDS how long to wait for a check that has not finished yet, default 900
  */
 
@@ -23,7 +22,6 @@ const { api } = require('./github-api');
 
 const REPOSITORY = process.env.GITHUB_REPOSITORY;
 const SHA = process.env.GITHUB_SHA;
-const ALLOW_FAILING = process.env.ALLOW_FAILING_CHECKS === 'true';
 const TIMEOUT_MS = Number(process.env.CHECKS_TIMEOUT_SECONDS || 900) * 1000;
 const POLL_INTERVAL_MS = 20000;
 
@@ -140,15 +138,8 @@ async function main() {
         return;
     }
 
-    problems.forEach(problem => {
-        if (ALLOW_FAILING) {
-            console.log(`::warning::${problem}, continuing because allow_failing_checks is set`);
-        } else {
-            console.log(`::error::${problem}`);
-        }
-    });
-
-    if (!ALLOW_FAILING) process.exit(1);
+    problems.forEach(problem => { console.log(`::error::${problem}`); });
+    process.exit(1);
 }
 
 main().catch(/** @param {Error} error */ error => {
