@@ -66,8 +66,9 @@ jobs:
     name: Build and deploy to S3 + CloudFront
     runs-on: ubuntu-latest
 
-    # `published` fires for full releases too, and those are the mainnet channel.
-    if: ${{ github.event_name != 'release' || github.event.release.prerelease }}
+    # An allowlist, not a denylist: `published` fires for full releases too, and those are the
+    # mainnet channel, so nothing but a pre-release or a manual run gets to deploy here.
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.release.prerelease }}
 
     # Binds the OIDC subject to `repo:nimiq/keyguard:environment:testnet`, exposes the
     # environment's vars/secrets, and applies its protection rules (required reviewers).
