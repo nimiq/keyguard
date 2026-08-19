@@ -28,6 +28,14 @@ const TIMEOUT_MS = Number(process.env.CHECKS_TIMEOUT_SECONDS || 900) * 1000;
 const POLL_INTERVAL_MS = 20000;
 
 /**
+ * How many polls in a row may fail before the step gives up. One failed request says nothing about
+ * the commit -- the API rate-limits and has outages -- but failing every time is what a missing
+ * token or a revoked `checks: read` looks like, and polling on until the timeout only delays saying
+ * so.
+ */
+const MAX_CONSECUTIVE_FAILURES = 3;
+
+/**
  * The check runs that must have passed, by the name GitHub reports them under: a check run is named
  * after the job that produced it, so this is complete-check.yml's `build` job. Rename that job and
  * this has to follow -- which is the point, since a check nobody can find is a check nobody runs.
@@ -97,13 +105,30 @@ async function main() {
 
     /** @type {Map<string, any>} */
     let runs = new Map();
+    let failures = 0;
 
     do {
-        // eslint-disable-next-line no-await-in-loop
-        runs = await latestCheckRuns();
-        const unfinished = unfinishedChecks(runs);
-        if (!unfinished.length) break;
-        console.log(`waiting for ${unfinished.join(', ')} on ${SHA}`);
+        /** @type {Map<string, any>|null} */
+        let polled = null;
+        try {
+            // eslint-disable-next-line no-await-in-loop
+            polled = await latestCheckRuns();
+        } catch (error) {
+            // The API being unreachable is not the commit being unfit: sit the failure out and ask
+            // again on the next tick, keeping what the last answer said in the meantime.
+            failures += 1;
+            if (failures >= MAX_CONSECUTIVE_FAILURES) throw error;
+            console.log(`::warning::${error.message}, retrying (${failures} of ${MAX_CONSECUTIVE_FAILURES})`);
+        }
+
+        if (polled) {
+            failures = 0;
+            runs = polled;
+            const unfinished = unfinishedChecks(runs);
+            if (!unfinished.length) break;
+            console.log(`waiting for ${unfinished.join(', ')} on ${SHA}`);
+        }
+
         // eslint-disable-next-line no-await-in-loop
         if (Date.now() < deadline) await sleep(POLL_INTERVAL_MS);
     } while (Date.now() < deadline);
