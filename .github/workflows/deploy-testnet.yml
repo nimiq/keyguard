@@ -105,8 +105,10 @@ jobs:
             exit 1
           fi
 
-      # A release event checks out the commit the release was cut from, which is also the commit
-      # verify-checks.js judges below.
+      # A release event checks out the commit the release was cut from. That commit is the one the
+      # release's tag names, so the signature verify-tag.js checks on that tag is a signature over
+      # what is built here, and it is the commit verify-checks.js judges: both gates below are
+      # about this checkout.
       - uses: actions/checkout@v7
         with:
           persist-credentials: false
