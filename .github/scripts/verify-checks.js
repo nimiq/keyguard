@@ -34,9 +34,6 @@ const POLL_INTERVAL_MS = 20000;
  */
 const REQUIRED = ['build'];
 
-/** What a check run may conclude with and still count as passed. */
-const ACCEPTED = new Set(['success', 'skipped', 'neutral']);
-
 /**
  * @param {number} ms
  * @returns {Promise<void>}
@@ -84,7 +81,9 @@ function problemWith(runs, name) {
     const run = runs.get(name);
     if (!run) return `no check run named '${name}' ever reported for ${SHA}`;
     if (run.status !== 'completed') return `check '${name}' is still ${run.status} (${run.html_url})`;
-    if (!ACCEPTED.has(run.conclusion)) return `check '${name}' concluded '${run.conclusion}' (${run.html_url})`;
+    // Nothing but 'success' is evidence. A 'skipped' or 'neutral' run reached no verdict on the
+    // tests, and this gate exists precisely because the deploy itself runs none.
+    if (run.conclusion !== 'success') return `check '${name}' concluded '${run.conclusion}' (${run.html_url})`;
     console.log(`check '${name}': ${run.conclusion}`);
     return null;
 }
