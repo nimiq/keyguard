@@ -404,28 +404,22 @@ nothing breaks in SignMultisigTransaction. */
 /* unstaking style adaptions */
 
 #confirm-transaction .unstaking-view .data-section {
-    --data-line-height: 2.75rem;
-
     margin: 1.5rem 0 1rem;
-    line-height: var(--data-line-height);
-    white-space: pre-line; /* render the line break between the remaining-stake and duration info */
+    line-height: 2.75rem;
 }
 
-/* Colorize the remaining stake info and duration info in different colors by clipping the text to a background
-gradient. By this approach, the remaining stake info is allowed to break into multiple lines, in contrast to coloring it
-via a ::first-line rule, which would also have to be applied conditionally depending on whether the remaining stake info
-is rendered or not. Skipped in forced-colors mode, as it removes the background gradient. */
-@supports (background-clip: text) {
-    @media (forced-colors: none) {
-        #confirm-transaction .unstaking-view .data-section {
-            background-image: linear-gradient(
-                var(--nimiq-blue) calc(100% - var(--data-line-height)), /* color for remaining stake info, if present */
-                var(--nimiq-light-blue) calc(100% - var(--data-line-height)) /* color for the duration info */
-            );
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-    }
+/* Colorize the remaining stake info and duration info in different colors. They are rendered as separate elements, see
+SignTransaction.js, such that either of them may wrap to multiple lines without affecting the other one's color. */
+#confirm-transaction .unstaking-view .data-section > span {
+    display: block;
+}
+
+#confirm-transaction .unstaking-view .data-section .remaining-stake-info {
+    color: var(--nimiq-blue);
+}
+
+#confirm-transaction .unstaking-view .data-section .duration-info {
+    color: var(--nimiq-light-blue);
 }
 
 /* Transaction-list overlay (info-icon-triggered, used by simplified custom layouts).

@@ -233,14 +233,25 @@ class SignTransaction {
         }
         const remainingStake = setActiveStakeData.newActiveBalance;
 
+        // Render the remaining stake info and the duration info as separate elements, such that they can be colored
+        // individually, see SignTransaction.css. Coloring them via a single text node is not possible, because either
+        // info can wrap to multiple lines, and css can only address line boxes, not sentences.
         // eslint-disable-next-line require-jsdoc-except/require-jsdoc
         const data = () => {
-            const durationInfo = I18n.translatePhrase('sign-tx-unstake-deferred-duration');
-            if (!remainingStake) return durationInfo;
-            const remainingStakeInfo = I18n.translatePhrase('sign-tx-unstake-remaining-stake', {
-                amount: NumberFormatting.formatNumber(lunasToCoins(remainingStake)),
-            });
-            return `${remainingStakeInfo}\n${durationInfo}`;
+            const $data = document.createDocumentFragment();
+            if (remainingStake) {
+                const $remainingStakeInfo = document.createElement('span');
+                $remainingStakeInfo.classList.add('remaining-stake-info');
+                $remainingStakeInfo.textContent = I18n.translatePhrase('sign-tx-unstake-remaining-stake', {
+                    amount: NumberFormatting.formatNumber(lunasToCoins(remainingStake)),
+                });
+                $data.appendChild($remainingStakeInfo);
+            }
+            const $durationInfo = document.createElement('span');
+            $durationInfo.classList.add('duration-info');
+            $durationInfo.textContent = I18n.translatePhrase('sign-tx-unstake-deferred-duration');
+            $data.appendChild($durationInfo);
+            return $data;
         };
 
         this._renderSimpleTransactionView(request.layout, /* paymentInfoLine */ null, /* subtitles */ null, senderInfo,
@@ -257,7 +268,7 @@ class SignTransaction {
      * @param {ConstructorParameters<typeof AddressInfo>[0]} recipientInfo
      * @param {bigint | null} value
      * @param {bigint | null} fee
-     * @param {(() => string) | null} data - can be updated on language change for i18n.
+     * @param {(() => string | Node) | null} data - can be updated on language change for i18n.
      */
     _renderSimpleTransactionView(layout, paymentInfoLine, subtitle, senderInfo, recipientInfo, value, fee, data) {
         const $paymentInfoLine = /** @type {HTMLElement} */ (this.$el.querySelector('.payment-info-line'));
@@ -318,8 +329,13 @@ class SignTransaction {
         // Set data
         const updateData = () => { // eslint-disable-line require-jsdoc-except/require-jsdoc
             const currentData = data ? data() : '';
-            $data.textContent = currentData;
-            $data.classList.toggle('display-none', !currentData);
+            if (currentData instanceof Node) {
+                $data.replaceChildren(currentData);
+            } else {
+                $data.textContent = currentData;
+            }
+            // Check the rendered content instead of currentData, which is always truthy for a Node.
+            $data.classList.toggle('display-none', !$data.textContent);
         };
         updateData();
         I18n.observer.on(I18n.Events.LANGUAGE_CHANGED, updateData);
