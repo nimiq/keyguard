@@ -12,11 +12,13 @@
 /* global NumberFormatting */
 /* global TransactionDataFormatting */
 /* global I18n */
+/* global Identicon */
 /* global lunasToCoins */
+/* global TemplateTags */
 
 /**
  * @callback SignTransaction.resolve
- * @param {KeyguardRequest.SignTransactionResult} result
+ * @param {KeyguardRequest.SignTransactionResult | KeyguardRequest.SignTransactionResult[]} result
  */
 
 class SignTransaction {
@@ -28,107 +30,51 @@ class SignTransaction {
     constructor(request, resolve, reject) {
         this._request = request;
         this.$el = /** @type {HTMLElement} */ (document.getElementById(SignTransaction.Pages.CONFIRM_TRANSACTION));
-        this.$el.classList.add(request.layout);
 
-        const transaction = request.transaction;
+        const isSwitchValidator = request.layout === SignTransactionApi.Layouts.SWITCH_VALIDATOR;
+        const isUnstaking = request.layout === SignTransactionApi.Layouts.UNSTAKING;
+        const isCustomMultiTx = isSwitchValidator || isUnstaking;
+        const isMultiTransaction = !isCustomMultiTx && request.transactions.length > 1;
+
+        const viewClass = isMultiTransaction ? 'multi' : request.layout;
+        this.$el.classList.add(viewClass);
 
         this.$accountDetails = /** @type {HTMLElement} */ (this.$el.querySelector('#account-details'));
+        this.$txListDetails = /** @type {HTMLElement} */ (this.$el.querySelector('#tx-list-details'));
 
-        const $sender = /** @type {HTMLLinkElement} */ (this.$el.querySelector('.accounts .sender'));
-        this._senderAddressInfo = new AddressInfo({
-            userFriendlyAddress: transaction.sender.toUserFriendlyAddress(),
-            label: request.senderLabel || null,
-            imageUrl: null,
-            accountLabel: request.keyLabel || null,
-        });
-        this._senderAddressInfo.renderTo($sender);
-        $sender.addEventListener('click', () => {
-            this._openDetails(this._senderAddressInfo);
-        });
-
-        const $recipient = /** @type {HTMLLinkElement} */ (this.$el.querySelector('.accounts .recipient'));
-        const recipientAddress = transaction.recipient.toUserFriendlyAddress();
-        /* eslint-disable no-nested-ternary */
-        const recipientLabel = 'shopOrigin' in request && !!request.shopOrigin
-            ? request.shopOrigin.split('://')[1]
-            : 'recipientLabel' in request && !!request.recipientLabel
-                ? request.recipientLabel
-                : null;
-        /* eslint-enable no-nested-ternary */
-        const recipientImage = 'shopLogoUrl' in request && !!request.shopLogoUrl
-            ? request.shopLogoUrl
-            : null;
-        this._recipientAddressInfo = new AddressInfo({
-            userFriendlyAddress: recipientAddress,
-            label: recipientLabel,
-            imageUrl: recipientImage,
-            accountLabel: null,
-        }, request.layout === SignTransactionApi.Layouts.CASHLINK);
-        this._recipientAddressInfo.renderTo($recipient);
-        if (request.layout !== SignTransactionApi.Layouts.CASHLINK) {
-            $recipient.addEventListener('click', () => {
-                this._openDetails(this._recipientAddressInfo);
-            });
+        if (isSwitchValidator) {
+            this._renderSwitchValidatorView(
+                /** @type {Parsed<KeyguardRequest.SignTransactionRequestSwitchValidator>} */ (request),
+            );
+        } else if (isUnstaking) {
+            this._renderUnstakingView(
+                /** @type {Parsed<KeyguardRequest.SignTransactionRequestUnstaking>} */ (request),
+            );
+        } else if (isMultiTransaction) {
+            this._renderMultiTransactionView(request);
+        } else {
+            this._renderSingleTransactionView(request);
         }
 
-        const $paymentInfoLine = /** @type {HTMLElement} */ (this.$el.querySelector('.payment-info-line'));
-        if (request.layout === SignTransactionApi.Layouts.CHECKOUT) {
-            // eslint-disable-next-line no-new
-            new PaymentInfoLine(Object.assign({}, request, {
-                recipient: recipientAddress,
-                label: recipientLabel || recipientAddress,
-                imageUrl: request.shopLogoUrl,
-                amount: Number(request.transaction.value),
-                currency: /** @type {'nim'} */ ('nim'),
-                unitsToCoins: lunasToCoins,
-                networkFee: Number(request.transaction.fee),
-            }), $paymentInfoLine);
-        } else {
-            $paymentInfoLine.remove();
+        // Custom simplified layouts (e.g. switch-validator, unstaking) hide per-tx detail. For those,
+        // expose the multi-tx list as an overlay accessible via an info icon on the page header.
+        if (isCustomMultiTx) {
+            this._setupTransactionListOverlay();
         }
 
         const $closeDetails = /** @type {HTMLButtonElement} */ (this.$accountDetails.querySelector('#close-details'));
         $closeDetails.addEventListener('click', this._closeDetails.bind(this));
 
-        const $value = /** @type {HTMLDivElement} */ (this.$el.querySelector('#value'));
-        const $fee = /** @type {HTMLDivElement} */ (this.$el.querySelector('#fee'));
-        const $data = /** @type {HTMLDivElement} */ (this.$el.querySelector('#data'));
+        window.addEventListener('keydown', this._onEscapeKeydown.bind(this));
 
-        // Set value and fee.
-        $value.textContent = NumberFormatting.formatNumber(lunasToCoins(Number(transaction.value)));
-        if ($fee && transaction.fee > 0) {
-            $fee.textContent = NumberFormatting.formatNumber(lunasToCoins(Number(transaction.fee)));
-            const $feeSection = /** @type {HTMLDivElement} */ (this.$el.querySelector('.fee-section'));
-            $feeSection.classList.remove('display-none');
-        }
+        let buttonI18nTag = 'passwordbox-confirm-tx';
+        if (request.layout === SignTransactionApi.Layouts.CASHLINK) buttonI18nTag = 'passwordbox-create-cashlink';
+        else if (isMultiTransaction) buttonI18nTag = 'passwordbox-confirm-txs';
 
-        if (request.layout === SignTransactionApi.Layouts.CASHLINK
-         && Nimiq.BufferUtils.equals(transaction.data, Constants.CASHLINK_FUNDING_DATA)) {
-            if (request.cashlinkMessage) {
-                $data.textContent = request.cashlinkMessage;
-                const $dataSection = /** @type {HTMLDivElement} */ (this.$el.querySelector('.data-section'));
-                $dataSection.classList.remove('display-none');
-            }
-        } else {
-            const formattedData = TransactionDataFormatting.formatTransactionData(transaction);
-            if (formattedData) {
-                $data.textContent = formattedData;
-                const $dataSection = /** @type {HTMLDivElement} */ (this.$el.querySelector('.data-section'));
-                $dataSection.classList.remove('display-none');
-                I18n.observer.on(
-                    I18n.Events.LANGUAGE_CHANGED,
-                    () => { $data.textContent = TransactionDataFormatting.formatTransactionData(transaction); },
-                );
-            }
-        }
-
-        // Set up password box.
         const $passwordBox = /** @type {HTMLFormElement} */ (document.querySelector('#password-box'));
         this._passwordBox = new PasswordBox($passwordBox, {
             hideInput: !request.keyInfo.encrypted,
-            buttonI18nTag: request.layout === SignTransactionApi.Layouts.CASHLINK
-                ? 'passwordbox-create-cashlink'
-                : 'passwordbox-confirm-tx',
+            buttonI18nTag,
             minLength: request.keyInfo.hasPin ? Key.PIN_LENGTH : undefined,
         });
 
@@ -144,19 +90,500 @@ class SignTransaction {
         }
     }
 
+    /** @param {Parsed<KeyguardRequest.SignTransactionRequest>} request */
+    _renderSingleTransactionView(request) {
+        const transaction = request.transactions[0];
+
+        const senderInfo = {
+            userFriendlyAddress: transaction.sender.toUserFriendlyAddress(),
+            label: request.senderLabel || null,
+            accountLabel: request.keyLabel || null,
+        };
+        const recipientAddress = transaction.recipient.toUserFriendlyAddress();
+        /* eslint-disable no-nested-ternary */
+        const recipientLabel = 'shopOrigin' in request && !!request.shopOrigin
+            ? request.shopOrigin.split('://')[1]
+            : 'recipientLabel' in request && !!request.recipientLabel
+                ? request.recipientLabel
+                : null;
+        /* eslint-enable no-nested-ternary */
+        const recipientImage = 'shopLogoUrl' in request && !!request.shopLogoUrl
+            ? request.shopLogoUrl
+            : null;
+        const recipientInfo = {
+            userFriendlyAddress: recipientAddress,
+            label: recipientLabel,
+            imageUrl: recipientImage,
+        };
+
+        const paymentInfoLine = request.layout === SignTransactionApi.Layouts.CHECKOUT
+            ? {
+                ...request,
+                recipient: recipientAddress,
+                label: recipientLabel || recipientAddress,
+                imageUrl: request.shopLogoUrl,
+                amount: Number(transaction.value),
+                currency: /** @type {'nim'} */ ('nim'),
+                unitsToCoins: lunasToCoins,
+                networkFee: Number(transaction.fee),
+            }
+            : null;
+
+        /** @type {() => string} */
+        let data;
+        if (request.layout === SignTransactionApi.Layouts.CASHLINK
+            && Nimiq.BufferUtils.equals(transaction.data, Constants.CASHLINK_FUNDING_DATA)) {
+            data = () => request.cashlinkMessage || '';
+        } else {
+            data = () => TransactionDataFormatting.formatTransactionData(transaction);
+        }
+
+        this._renderSimpleTransactionView(request.layout, paymentInfoLine, /* subtitle */ null, senderInfo,
+            recipientInfo, transaction.value, transaction.fee, data);
+    }
+
+    /** @param {Parsed<KeyguardRequest.SignTransactionRequest>} request */
+    _renderMultiTransactionView(request) {
+        const $multiTx = /** @type {HTMLElement} */ (this.$el.querySelector('.multi-transaction-view'));
+
+        // Remove payment info line (not used in multi-tx mode)
+        const $paymentInfoLine = /** @type {HTMLElement} */ (this.$el.querySelector('.payment-info-line'));
+        $paymentInfoLine.remove();
+
+        this._renderTransactionListTo($multiTx, request);
+    }
+
+    /** @param {Parsed<KeyguardRequest.SignTransactionRequestSwitchValidator>} request */
+    _renderSwitchValidatorView(request) {
+        const $view = /** @type {HTMLElement} */ (this.$el.querySelector('.simple-transaction-view'));
+        $view.classList.add('switch-validator-view');
+
+        const subtitleTemplate = document.createElement('template');
+        subtitleTemplate.innerHTML = TemplateTags.noVars`
+            <p class="switch-subtitle-description" data-i18n="sign-tx-switch-deferred-description">
+                Your NIM will be unstaked from your current validator and staked with the new one.
+            </p>
+            <p class="switch-subtitle-duration" data-i18n="sign-tx-switch-deferred-duration">
+                This can take up to 24h.
+            </p>
+            <p class="staker-caption" data-i18n="sign-tx-switch-staker-label">Switching validator for</p>
+        `;
+        I18n.translateDom(subtitleTemplate.content);
+        const subtitles = Array.from(subtitleTemplate.content.childNodes);
+
+        // For both switch-validator transactions the staker is equal to the sender address, see SignTransactionApi.
+        const stakerInfo = {
+            userFriendlyAddress: request.transactions[0].sender.toUserFriendlyAddress(),
+            label: request.stakerLabel || request.keyLabel || null,
+        };
+        const $stakerInfo = document.createElement('div');
+        const stakerAddressInfo = new AddressInfo(stakerInfo);
+        stakerAddressInfo.renderTo($stakerInfo, 'horizontal');
+        $stakerInfo.classList.add('validator-or-staker-info', 'chip');
+        this._makeAddressInfoInteractive($stakerInfo, stakerAddressInfo);
+        subtitles.push($stakerInfo);
+
+        const senderInfo = {
+            userFriendlyAddress: request.fromValidatorAddress.toUserFriendlyAddress(),
+            label: request.senderLabel || null,
+            imageUrl: request.fromValidatorImageUrl || null,
+            shortAddressBlocks: 6,
+        };
+        const recipientInfo = {
+            userFriendlyAddress: request.validatorAddress.toUserFriendlyAddress(),
+            label: request.recipientLabel || null,
+            imageUrl: request.validatorImageUrl || null,
+            shortAddressBlocks: 6,
+        };
+
+        const value = null; // the transactions of the switch-validator flow are signaling transactions with no value.
+        const totalFee = request.transactions.reduce((sum, { fee }) => sum + fee, BigInt(0));
+
+        this._renderSimpleTransactionView(request.layout, /* paymentInfoLine */ null, subtitles, senderInfo,
+            recipientInfo, value, totalFee, /* data */ null);
+    }
+
+    /** @param {Parsed<KeyguardRequest.SignTransactionRequestUnstaking>} request */
+    _renderUnstakingView(request) {
+        const $view = /** @type {HTMLElement} */ (this.$el.querySelector('.simple-transaction-view'));
+        $view.classList.add('unstaking-view');
+
+        // From the validator the user is leaving.
+        const senderInfo = {
+            userFriendlyAddress: request.validatorAddress.toUserFriendlyAddress(),
+            label: request.senderLabel || null,
+            imageUrl: request.validatorImageUrl || null,
+        };
+        // To the user's wallet. The parser binds removeStakeTx.recipient to the fee-paying sender of setActiveStakeTx,
+        // see SignTransactionApi.parseRequest.
+        const removeStakeTx = request.transactions[2];
+        const recipientInfo = {
+            userFriendlyAddress: removeStakeTx.recipient.toUserFriendlyAddress(),
+            label: request.recipientLabel || null,
+            accountLabel: request.keyLabel || null,
+        };
+
+        const value = removeStakeTx.value; // Headline amount = value of the remove-stake tx (NIM returned to the user).
+        const totalFee = request.transactions.reduce((sum, { fee }) => sum + fee, BigInt(0));
+
+        const setActiveStakeData = SignTransactionApi._parseIncomingStakingTransactionData(request.transactions[0]);
+        if (!setActiveStakeData || setActiveStakeData.type !== 'set-active-stake') {
+            // This is already enforced by the request parser. The check here is only for typescript.
+            throw new Errors.KeyguardError('Unexpected: could not parse set-active-stake data');
+        }
+        const remainingStake = setActiveStakeData.newActiveBalance;
+
+        // Render the remaining stake info and the duration info as separate elements, such that they can be colored
+        // individually, see SignTransaction.css. Coloring them via a single text node is not possible, because either
+        // info can wrap to multiple lines, and css can only address line boxes, not sentences.
+        // eslint-disable-next-line require-jsdoc-except/require-jsdoc
+        const data = () => {
+            const $data = document.createDocumentFragment();
+            if (remainingStake) {
+                const $remainingStakeInfo = document.createElement('span');
+                $remainingStakeInfo.classList.add('remaining-stake-info');
+                $remainingStakeInfo.textContent = I18n.translatePhrase('sign-tx-unstake-remaining-stake', {
+                    amount: NumberFormatting.formatNumber(lunasToCoins(remainingStake)),
+                });
+                $data.appendChild($remainingStakeInfo);
+            }
+            const $durationInfo = document.createElement('span');
+            $durationInfo.classList.add('duration-info');
+            $durationInfo.textContent = I18n.translatePhrase('sign-tx-unstake-deferred-duration');
+            $data.appendChild($durationInfo);
+            return $data;
+        };
+
+        this._renderSimpleTransactionView(request.layout, /* paymentInfoLine */ null, /* subtitles */ null, senderInfo,
+            recipientInfo, value, totalFee, data);
+    }
+
+    // eslint-disable-next-line valid-jsdoc
+    /**
+     * @private
+     * @param {KeyguardRequest.SignTransactionRequestLayout} layout
+     * @param {ConstructorParameters<typeof PaymentInfoLine>[0] | null} paymentInfoLine
+     * @param {string | Node | Array<string | Node> | null} subtitle
+     * @param {ConstructorParameters<typeof AddressInfo>[0]} senderInfo
+     * @param {ConstructorParameters<typeof AddressInfo>[0]} recipientInfo
+     * @param {bigint | null} value
+     * @param {bigint | null} fee
+     * @param {(() => string | Node) | null} data - can be updated on language change for i18n.
+     */
+    _renderSimpleTransactionView(layout, paymentInfoLine, subtitle, senderInfo, recipientInfo, value, fee, data) {
+        const $paymentInfoLine = /** @type {HTMLElement} */ (this.$el.querySelector('.payment-info-line'));
+        const $subtitle = /** @type {HTMLElement} */ (this.$el.querySelector('.simple-transaction-view .subtitle'));
+        const $sender = /** @type {HTMLElement} */ (this.$el.querySelector('.simple-transaction-view .sender'));
+        const $recipient = /** @type {HTMLElement} */ (this.$el.querySelector('.simple-transaction-view .recipient'));
+        const $value = /** @type {HTMLElement} */ (this.$el.querySelector('.simple-transaction-view #value'));
+        const $fee = /** @type {HTMLElement} */ (this.$el.querySelector('.simple-transaction-view #fee'));
+        const $data = /** @type {HTMLElement} */ (this.$el.querySelector('.simple-transaction-view #data'));
+
+        if (paymentInfoLine) {
+            // eslint-disable-next-line no-new
+            new PaymentInfoLine(paymentInfoLine, $paymentInfoLine);
+        } else {
+            $paymentInfoLine.remove();
+        }
+
+        if (subtitle) {
+            $subtitle.replaceChildren(...(Array.isArray(subtitle) ? subtitle : [subtitle]));
+        } else {
+            $subtitle.remove();
+        }
+
+        const isSwitchValidator = layout === SignTransactionApi.Layouts.SWITCH_VALIDATOR;
+        const isCashlink = layout === SignTransactionApi.Layouts.CASHLINK;
+        // eslint-disable-next-line valid-jsdoc
+        /**
+         * @param {HTMLElement} $el
+         * @param {ConstructorParameters<typeof AddressInfo>[0]} info
+         * @param {boolean} [displayAsCashlink = false]
+         */
+        const renderAddressInfo = ($el, info, displayAsCashlink = false) => {
+            const addressInfo = new AddressInfo(info, displayAsCashlink);
+            addressInfo.renderTo($el, isSwitchValidator ? 'horizontal' : 'vertical');
+            if (isSwitchValidator) {
+                // Render the validators as cards, see SignTransaction.css.
+                $el.classList.add('validator-or-staker-info', 'card');
+            }
+            if (!displayAsCashlink) this._makeAddressInfoInteractive($el, addressInfo);
+        };
+        renderAddressInfo($sender, senderInfo);
+        renderAddressInfo($recipient, recipientInfo, isCashlink);
+
+        // Set value and fee.
+        if (value !== null) {
+            $value.textContent = NumberFormatting.formatNumber(lunasToCoins(Number(value)));
+        } else {
+            const $valueSection = /** @type {HTMLElement} */ ($value.parentElement);
+            $valueSection.remove();
+        }
+        if (fee !== null && fee > 0) {
+            $fee.textContent = NumberFormatting.formatNumber(lunasToCoins(Number(fee)));
+        } else {
+            const $feeSection = /** @type {HTMLElement} */ ($fee.parentElement);
+            $feeSection.remove();
+        }
+
+        // Set data
+        const updateData = () => { // eslint-disable-line require-jsdoc-except/require-jsdoc
+            const currentData = data ? data() : '';
+            if (currentData instanceof Node) {
+                $data.replaceChildren(currentData);
+            } else {
+                $data.textContent = currentData;
+            }
+            // Check the rendered content instead of currentData, which is always truthy for a Node.
+            $data.classList.toggle('display-none', !$data.textContent);
+        };
+        updateData();
+        I18n.observer.on(I18n.Events.LANGUAGE_CHANGED, updateData);
+    }
+
+    /**
+     * @param {HTMLElement} $el
+     * @param {AddressInfo} addressInfo
+     */
+    _makeAddressInfoInteractive($el, addressInfo) {
+        $el.tabIndex = 0;
+        $el.addEventListener('click', () => this._openDetails(addressInfo));
+        $el.addEventListener('keydown', event => {
+            if (event.key !== 'Enter' && event.key !== ' ') return;
+            event.preventDefault(); // avoid scrolling on space
+            this._openDetails(addressInfo);
+        });
+    }
+
     /**
      * @param {AddressInfo} which
      */
     _openDetails(which) {
+        this._blurFocusedElement();
         which.renderTo(
             /** @type {HTMLElement} */(this.$accountDetails.querySelector('#details')),
-            true,
+            'detailed',
         );
         this.$el.classList.add('account-details-open');
     }
 
     _closeDetails() {
+        this._blurFocusedElement();
         this.$el.classList.remove('account-details-open');
+    }
+
+    _setupTransactionListOverlay() {
+        const $pageHeader = /** @type {HTMLElement} */ (this.$el.querySelector('.page-header'));
+
+        const $infoIcon = document.createElement('button');
+        $infoIcon.type = 'button';
+        $infoIcon.className = 'info-icon';
+        $infoIcon.setAttribute('aria-expanded', 'false');
+        const infoIconLabel = I18n.translatePhrase('sign-tx-info-icon-label');
+        $infoIcon.setAttribute('aria-label', infoIconLabel);
+        $infoIcon.title = infoIconLabel;
+        // Keep the icon string on one line so the build's icon-bundling scanner detects it.
+        // eslint-disable-next-line max-len
+        $infoIcon.innerHTML = '<svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-info-circle-small"/></svg>';
+        $pageHeader.appendChild($infoIcon);
+        $pageHeader.classList.add('has-info-icon');
+
+        I18n.observer.on(I18n.Events.LANGUAGE_CHANGED, () => {
+            const label = I18n.translatePhrase('sign-tx-info-icon-label');
+            $infoIcon.setAttribute('aria-label', label);
+            $infoIcon.title = label;
+        });
+
+        this.$infoIcon = $infoIcon;
+        this.$txListContent = /** @type {HTMLElement} */ (
+            this.$txListDetails.querySelector('#tx-list-details-content')
+        );
+        const $closeTxList = /** @type {HTMLButtonElement} */ (
+            this.$txListDetails.querySelector('#close-tx-list-details')
+        );
+
+        $infoIcon.addEventListener('click', this._openTransactionList.bind(this));
+        $closeTxList.addEventListener('click', this._closeTransactionList.bind(this));
+    }
+
+    _openTransactionList() {
+        const { $infoIcon, $txListContent } = this;
+        if (!$infoIcon || !$txListContent) return;
+        this._blurFocusedElement();
+        // Defer building the list until first open — saves Identicon/AddressInfo work if the user
+        // only confirms the simplified view.
+        if (!$txListContent.firstChild) {
+            this._renderTransactionListTo($txListContent, this._request);
+        }
+        this.$el.classList.add('tx-list-details-open');
+        $infoIcon.setAttribute('aria-expanded', 'true');
+        this.$txListDetails.setAttribute('aria-hidden', 'false');
+    }
+
+    _closeTransactionList() {
+        const { $infoIcon } = this;
+        if (!$infoIcon) return;
+        this._blurFocusedElement();
+        this.$el.classList.remove('tx-list-details-open');
+        $infoIcon.setAttribute('aria-expanded', 'false');
+        this.$txListDetails.setAttribute('aria-hidden', 'true');
+    }
+
+    /**
+     * Build count + entries + totals into a container, using class-based nodes. Shared by the
+     * multi-transaction main view and the tx-list overlay.
+     * @param {HTMLElement} $container
+     * @param {Parsed<KeyguardRequest.SignTransactionRequest>} request
+     */
+    _renderTransactionListTo($container, request) {
+        $container.textContent = '';
+
+        const totalValue = request.transactions.reduce((sum, { value }) => sum + value, BigInt(0));
+        const totalFee = request.transactions.reduce((sum, { fee }) => sum + fee, BigInt(0));
+
+        const $count = document.createElement('span');
+        $count.className = 'tx-count nq-text';
+        I18n.translateToHtmlContent($count, 'sign-tx-multi-count', {
+            count: String(request.transactions.length),
+        });
+        $container.appendChild($count);
+
+        const $list = document.createElement('div');
+        $list.className = 'tx-list';
+        for (const tx of request.transactions) {
+            $list.appendChild(this._createTransactionListEntry(tx));
+        }
+        $container.appendChild($list);
+        I18n.translateDom($list);
+
+        const $totals = document.createElement('div');
+        $totals.className = 'tx-totals';
+
+        const $totalValue = document.createElement('div');
+        $totalValue.className = 'tx-total-value nq-light-blue';
+        const formattedTotalValue = NumberFormatting.formatNumber(lunasToCoins(Number(totalValue)));
+        $totalValue.innerHTML = TemplateTags.hasVars(1)`${formattedTotalValue}<span class="nim-symbol"></span>`;
+        $totals.appendChild($totalValue);
+
+        if (totalFee > BigInt(0)) {
+            const $totalFees = document.createElement('div');
+            $totalFees.className = 'tx-total-fees nq-text-s';
+            const formattedTotalFees = NumberFormatting.formatNumber(lunasToCoins(Number(totalFee)));
+            $totalFees.innerHTML = TemplateTags.hasVars(1)`+ ${formattedTotalFees}&nbsp;<span class="nim-symbol"></span>
+                <span data-i18n="sign-tx-multi-total-fees">total fees</span>`;
+            I18n.translateDom($totalFees);
+            $totals.appendChild($totalFees);
+        }
+
+        $container.appendChild($totals);
+    }
+
+    /**
+     * @param {Nimiq.Transaction} tx
+     * @returns {HTMLElement}
+     */
+    _createTransactionListEntry(tx) {
+        const $entry = document.createElement('div');
+        $entry.className = 'transaction-list-entry';
+
+        const $main = document.createElement('div');
+        $main.className = 'tx-main';
+
+        $main.appendChild(this._createTransactionListEntryAddress(tx.sender.toUserFriendlyAddress()));
+
+        const $arrow = document.createElement('div');
+        $arrow.className = 'tx-arrow';
+        // Keep the icon string on one line so the build's icon-bundling scanner detects it.
+        // eslint-disable-next-line max-len
+        $arrow.innerHTML = '<svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-right"/></svg>';
+        $main.appendChild($arrow);
+
+        $main.appendChild(this._createTransactionListEntryAddress(tx.recipient.toUserFriendlyAddress()));
+
+        $main.appendChild(this._createTransactionListEntryAmounts(tx));
+        $entry.appendChild($main);
+
+        const formattedData = TransactionDataFormatting.formatTransactionData(tx);
+        if (formattedData) {
+            const $txData = document.createElement('div');
+            $txData.className = 'tx-data';
+            $txData.textContent = formattedData;
+            I18n.observer.on(
+                I18n.Events.LANGUAGE_CHANGED,
+                () => { $txData.textContent = TransactionDataFormatting.formatTransactionData(tx); },
+            );
+            $entry.appendChild($txData);
+        }
+
+        return $entry;
+    }
+
+    /**
+     * Builds a single sender- or recipient-side address cell (identicon + address, click-to-detail).
+     * @param {string} userFriendlyAddress
+     * @returns {HTMLElement}
+     */
+    _createTransactionListEntryAddress(userFriendlyAddress) {
+        const $cell = document.createElement('div');
+        $cell.className = 'tx-address-cell';
+
+        $cell.appendChild(new Identicon(userFriendlyAddress).getElement());
+
+        const $address = document.createElement('div');
+        $address.className = 'tx-address address';
+        $address.textContent = userFriendlyAddress;
+        $cell.appendChild($address);
+
+        const addressInfo = new AddressInfo({ userFriendlyAddress });
+        $cell.addEventListener('click', () => this._openDetails(addressInfo));
+
+        return $cell;
+    }
+
+    /**
+     * @param {Nimiq.Transaction} tx
+     * @returns {HTMLElement}
+     */
+    _createTransactionListEntryAmounts(tx) {
+        const $amounts = document.createElement('div');
+        $amounts.className = 'tx-amounts';
+
+        const $value = document.createElement('div');
+        $value.className = 'tx-value';
+        const formattedValue = NumberFormatting.formatNumber(lunasToCoins(Number(tx.value)));
+        $value.innerHTML = TemplateTags.hasVars(1)`${formattedValue}<span class="nim-symbol"></span>`;
+        $amounts.appendChild($value);
+
+        if (tx.fee > 0) {
+            const $fee = document.createElement('div');
+            $fee.className = 'tx-fee';
+            const formattedFee = NumberFormatting.formatNumber(lunasToCoins(Number(tx.fee)));
+            $fee.innerHTML = TemplateTags.hasVars(1)`+ ${formattedFee}&nbsp;<span class="nim-symbol"></span>
+                <span data-i18n="sign-tx-fee">fee</span>`;
+            $amounts.appendChild($fee);
+        }
+
+        return $amounts;
+    }
+
+    _blurFocusedElement() {
+        const focusedElement = document.activeElement;
+        if (focusedElement instanceof HTMLElement) {
+            focusedElement.blur();
+        } else {
+            window.blur();
+        }
+    }
+
+    /** @param {KeyboardEvent} event */
+    _onEscapeKeydown(event) {
+        if (event.key !== 'Escape') return;
+        // Close in reverse layering order: address-details sits above tx-list when both are open.
+        if (this.$el.classList.contains('account-details-open')) {
+            this._closeDetails();
+        } else if (this.$el.classList.contains('tx-list-details-open')) {
+            this._closeTransactionList();
+        }
     }
 
     /**
@@ -189,18 +616,57 @@ class SignTransaction {
             return;
         }
 
-        const publicKey = key.derivePublicKey(request.keyPath);
-        const signature = key.sign(request.keyPath, request.transaction.serializeContent());
+        const privateKey = key.derivePrivateKey(request.keyPath);
+        const keyPair = Nimiq.KeyPair.derive(privateKey);
+        const publicKey = keyPair.publicKey;
+        const signer = publicKey.toAddress();
 
-        request.transaction.proof = Nimiq.SignatureProof.singleSig(publicKey, signature).serialize();
+        // Check whether the transactions are actually sent from the signer's address, which we can only do for basic
+        // senders, and only after unlocking the key. This is particularly relevant for the simplified transaction
+        // layouts, which do not show the sender address but rely on it matching the signer, and which tie the unstaking
+        // payout address to it, see SignTransactionApi.parseRequest.
+        for (const transaction of request.transactions) {
+            if (transaction.senderType === Nimiq.AccountType.Basic && !transaction.sender.equals(signer)) {
+                reject(new Errors.InvalidRequestError('Signer does not match basic transaction sender'));
+                return;
+            }
+        }
 
-        /** @type {KeyguardRequest.SignTransactionResult} */
-        const result = {
-            publicKey: publicKey.serialize(),
-            signature: signature.serialize(),
-            serializedTx: request.transaction.serialize(),
-        };
-        resolve(result);
+        /** @type {KeyguardRequest.SignTransactionResult[]} */
+        const results = request.transactions.map(transaction => {
+            const isStakingTx = transaction.senderType === Nimiq.AccountType.Staking
+                || transaction.recipientType === Nimiq.AccountType.Staking;
+
+            if (isStakingTx) {
+                // For staking transactions, use `transaction.sign()` for automatically generating
+                // the staker / validator signature proof in the recipient data. The same keypair as
+                // for signing the transaction will be used for this. Arbitrary signature proofs for
+                // a different staker or validator address are not supported — the request parser
+                // rejects incoming staking transactions that carry a user-provided proof.
+                transaction.sign(keyPair, /* inner key pair for staking signature proof */ keyPair);
+
+                return {
+                    publicKey: publicKey.serialize(),
+                    signature: transaction.proof.subarray(transaction.proof.length - 64),
+                    serializedTx: transaction.serialize(),
+                };
+            }
+
+            // For non-staking transactions, use the manual signing approach.
+            // Note however, that this will not return a valid HTLC redemption signature proof.
+            // It has to be built manually from the signature.
+            const signature = key.sign(request.keyPath, transaction.serializeContent());
+            transaction.proof = Nimiq.SignatureProof.singleSig(publicKey, signature).serialize();
+
+            return {
+                publicKey: publicKey.serialize(),
+                signature: signature.serialize(),
+                serializedTx: transaction.serialize(),
+            };
+        });
+
+        // Backward compatible: return single result for single tx, array for multiple
+        resolve(results.length === 1 ? results[0] : results);
     }
 
     run() {

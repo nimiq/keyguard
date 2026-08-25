@@ -137,32 +137,17 @@
 }
 
 .payment-info-line .recipient {
-    flex-direction: row;
-    width: auto;
-    cursor: auto !important;
-    overflow: hidden;
+    cursor: auto; /* the recipient is not clickable here */
 }
 
-.payment-info-line .recipient .identicon {
-    width: 3.375rem;
-    height: 3.375rem;
-    margin-right: 1rem;
-}
-
-.payment-info-line .recipient:hover .identicon {
-    transform: none !important; /* avoid scaling on hover */
+/* If a label is known, show only the label */
+.payment-info-line .recipient .label + .short-address {
+    display: none;
 }
 
 .payment-info-line .recipient .label {
-    width: auto;
-    margin: 0 0 .25rem 0;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: fade;
-}
-
-.payment-info-line .recipient .label::after {
-    display: none; /* don't apply text fadeout, we're using text ellipsis instead */
+    font-size: 2rem;
+    font-weight: normal;
 }
 
 .payment-info-line .timer {

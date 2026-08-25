@@ -1,0 +1,16 @@
+/* Font and nowrap come from the .address utility in common.css. Its overflow-x: hidden is overruled here: it would
+make overflow-y compute to auto, turning every short address into a scroll container, which browsers would also make
+keyboard focusable. The address is shortened already and thus never needs to be clipped. */
+.short-address {
+    display: flex;
+    align-items: center;
+    overflow: visible;
+}
+
+.short-address .ellipsis {
+    width: 1.875rem;
+    height: 0.375rem;
+    margin: 0 0.625rem;
+    opacity: 0.6;
+    flex-shrink: 0;
+}

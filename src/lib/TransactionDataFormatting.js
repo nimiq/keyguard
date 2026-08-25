@@ -1,6 +1,7 @@
 /* global Nimiq */
 /* global Constants */
 /* global I18n */
+/* global Errors */
 /* global Utf8Tools */
 
 class TransactionDataFormatting { // eslint-disable-line no-unused-vars
@@ -30,7 +31,12 @@ class TransactionDataFormatting { // eslint-disable-line no-unused-vars
             message = Utf8Tools.utf8ByteArrayToString(transaction.data);
         }
 
-        const plainTransaction = transaction.toPlain();
+        let plainTransaction;
+        try {
+            plainTransaction = transaction.toPlain();
+        } catch (e) {
+            throw new Errors.InvalidRequestError('Invalid transaction or transaction data');
+        }
         const plainData = plainTransaction.data;
 
         let prefix = '';

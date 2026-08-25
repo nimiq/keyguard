@@ -48,8 +48,6 @@ class SignMultisigTransaction {
         this._senderAddressInfo = new AddressInfo({
             userFriendlyAddress: transaction.sender.toUserFriendlyAddress(),
             label: request.senderLabel,
-            imageUrl: null,
-            accountLabel: null,
             multisig: isSenderMultisig ? multisigAddressInfo : undefined,
         });
         this._senderAddressInfo.renderTo($sender);
@@ -74,7 +72,6 @@ class SignMultisigTransaction {
             userFriendlyAddress: recipientAddress,
             label: recipientLabel,
             imageUrl: recipientImage,
-            accountLabel: null,
             multisig: isSenderMultisig ? undefined : multisigAddressInfo,
         }/* , request.layout === SignMultisigTransactionApi.Layouts.CASHLINK */);
         this._recipientAddressInfo.renderTo($recipient);
@@ -110,10 +107,11 @@ class SignMultisigTransaction {
 
         // Set value and fee.
         $value.textContent = NumberFormatting.formatNumber(lunasToCoins(Number(transaction.value)));
-        if ($fee && transaction.fee > 0) {
+        if (transaction.fee > 0) {
             $fee.textContent = NumberFormatting.formatNumber(lunasToCoins(Number(transaction.fee)));
-            const $feeSection = /** @type {HTMLDivElement} */ (this.$el.querySelector('.fee-section'));
-            $feeSection.classList.remove('display-none');
+        } else {
+            const $feeSection = /** @type {HTMLDivElement} */ ($fee.parentElement);
+            $feeSection.remove();
         }
 
         // if (request.layout === SignMultisigTransactionApi.Layouts.CASHLINK
@@ -128,12 +126,12 @@ class SignMultisigTransaction {
         const formattedData = TransactionDataFormatting.formatTransactionData(transaction);
         if (formattedData) {
             $data.textContent = formattedData;
-            const $dataSection = /** @type {HTMLDivElement} */ (this.$el.querySelector('.data-section'));
-            $dataSection.classList.remove('display-none');
             I18n.observer.on(
                 I18n.Events.LANGUAGE_CHANGED,
                 () => { $data.textContent = TransactionDataFormatting.formatTransactionData(transaction); },
             );
+        } else {
+            $data.remove();
         }
         // }
 
@@ -197,7 +195,7 @@ class SignMultisigTransaction {
     _openDetails(which) {
         which.renderTo(
             /** @type {HTMLElement} */(this.$accountDetails.querySelector('#details')),
-            true,
+            'detailed',
         );
         this.$el.classList.add('account-details-open');
     }

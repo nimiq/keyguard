@@ -1,15 +1,28 @@
 .address-info {
     display: flex;
+    text-decoration: none;
+    outline: none;
+    cursor: pointer;
+}
+
+.address-info.vertical,
+.address-info.detailed {
     width: 100%;
     flex-direction: column;
     align-items: center;
-    text-decoration: none;
-    color: var(--nimiq-dark-blue);
-    outline: none;
 }
 
-.address-info:not(.detailed-view):not(.cashlink) {
-    cursor: pointer;
+.address-info.horizontal {
+    align-items: center;
+    gap: .875rem;
+    width: fit-content;
+    max-width: 100%;
+    min-width: 0; /* allow the label to be ellipsized */
+}
+
+.address-info.detailed,
+.address-info.cashlink {
+    cursor: auto;
 }
 
 .address-info .identicon {
@@ -19,6 +32,16 @@
     transition: transform 0.45s var(--nimiq-ease);
     flex-shrink: 0;
     position: relative;
+}
+
+.address-info.horizontal .identicon {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: .5rem;
+}
+
+.address-info.horizontal .identicon img {
+    object-fit: cover;
 }
 
 .address-info.cashlink .identicon {
@@ -33,8 +56,8 @@
     border-radius: 50%;
 }
 
-.address-info:not(.detailed-view):not(.cashlink):focus .identicon,
-.address-info:not(.detailed-view):not(.cashlink):hover .identicon {
+.address-info.vertical:not(.cashlink):focus .identicon,
+.address-info.vertical:not(.cashlink):hover .identicon {
     transform: scale(1.1);
 }
 
@@ -52,7 +75,7 @@
     word-spacing: calc(-1em / 14);
 }
 
-.address-info.detailed-view .identicon .multisig-badge {
+.address-info.detailed .identicon .multisig-badge {
     transform: scale(1.5);
     transform-origin: 100% 100%;
 }
@@ -61,24 +84,38 @@
     color: white;
 }
 
-.address-info:not(.detailed-view) .label {
+/* Only the horizontal style needs the text container as an actual box. */
+.address-info.vertical .text,
+.address-info.detailed .text {
+    display: contents;
+}
+
+.address-info.horizontal .text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0; /* allow the label to be ellipsized */
+    flex-grow: 1;
+    text-align: left;
+}
+
+.address-info.vertical .identicon {
+    margin-bottom: 1.25rem;
+}
+
+.address-info.vertical .label {
     font-size: 2rem;
-    margin: 1.25rem 0;
+    margin-bottom: .25rem;
     white-space: nowrap;
     overflow: hidden;
     position: relative;
     width: 18.5rem; /* 148px, the width the automatic labels are designed for */
 }
 
-.address-info .label.mono {
-    font-family: "Fira Mono", "Andale Mono", monospace;
-}
-
 .address-info.cashlink .label {
     opacity: .5;
 }
 
-.address-info:not(.detailed-view) .label::after {
+.address-info.vertical .label::after {
     content: '';
     display: inline-block;
     width: 2rem;
@@ -86,4 +123,23 @@
     position: absolute;
     right: 0;
     background: linear-gradient(to right, rgba(255, 255, 255, 0), white);
+}
+
+.address-info.horizontal .label {
+    margin-bottom: .25rem;
+    font-size: 1.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.address-info.vertical .short-address {
+    margin-bottom: 1.25rem;
+}
+
+.address-info.vertical .short-address:only-child {
+    font-size: 2rem;
+    line-height: normal;
+    opacity: .85;
 }

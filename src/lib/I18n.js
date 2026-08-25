@@ -52,7 +52,7 @@ class I18n { // eslint-disable-line no-unused-vars
     }
 
     /**
-     * @param {HTMLElement} [dom] - The DOM element to be translated, or body by default
+     * @param {HTMLElement | DocumentFragment} [dom] - The DOM element to be translated, or body by default
      * @param {string} [enforcedLanguage] - ISO code of language to translate to
      */
     static translateDom(dom = document.body, enforcedLanguage) {

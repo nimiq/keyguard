@@ -144,3 +144,12 @@
     opacity: 0.5;
     margin-bottom: 0.25rem;
 }
+
+#confirm-staking .switch-subtitle {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--nimiq-light-blue);
+    text-align: center;
+    margin: 0 3rem 1rem;
+    line-height: 1.4;
+}

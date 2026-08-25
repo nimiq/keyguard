@@ -24,7 +24,7 @@ describe("I18n", function () {
         const languages = I18n.availableLanguages();
         for (const id in english) {
             for (const language of languages) {
-                expect(I18n.dictionary[language][id]).toBeDefined();
+                expect(I18n.dictionary[language][id]).toBeDefined(`${language.toUpperCase()}: ${id} is not defined`);
             }
         }
     });
