@@ -61,7 +61,7 @@ localizedFiles.forEach(filePath => {
 
 // console.log(REF_DICT);
 
-const DICT = require('../src/translations/index.js');
+const DICT = require('../src/translations/index');
 
 const unusedDICT = Object.assign({}, DICT.en);
 
