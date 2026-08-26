@@ -165,7 +165,7 @@ fi
 # Before writing any files, verify integrity of Ethers lib
 output "🧐  Validating EthersJS file integrity"
 
-ethersjs_hashsum="943c82a542394951457cd34743ba694b199b841fe02870c199a0aca411ed14d0  node_modules/ethers/dist/ethers.umd.js"
+ethersjs_hashsum="043ee0f54f904ed6ee51c468f498a840211eaf159eea1f406f95a0b1410d748a  node_modules/ethers/dist/ethers.umd.js"
 echo "$ethersjs_hashsum" | ${SHA256SUM} --check
 
 if [ ! $? -eq 0 ]; then
