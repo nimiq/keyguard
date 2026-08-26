@@ -159,7 +159,7 @@ jobs:
 
       # Credentials are requested only after the build, and only for 15 minutes.
       - name: Configure AWS credentials (GitHub OIDC)
-        uses: aws-actions/configure-aws-credentials@v6
+        uses: aws-actions/configure-aws-credentials@v6.2.3
         with:
           role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
           role-session-name: keyguard-testnet-${{ github.run_id }}
