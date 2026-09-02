@@ -39,7 +39,13 @@ const RETRY_DELAY_MS = 5000;
  */
 const MIN_SRI_RESOURCES = 4;
 
-const HSTS = 'max-age=15768000; includeSubDomains; preload';
+/**
+ * A year, matching `www` and the apex of nimiq-testnet.com and the nginx still serving mainnet
+ * keyguard.nimiq.com. The testnet nginx sent six months, and the CloudFront policies reproduced
+ * that until the distribution's max-age override was dropped. This constant and that policy move
+ * together: whichever lands first, the deploy between them fails here.
+ */
+const HSTS = 'max-age=31536000; includeSubDomains; preload';
 
 /** The sources each policy allows, as a set: the order a policy lists them in carries no meaning. */
 const FRAME_ANCESTORS = {
@@ -61,24 +67,156 @@ const {
     NONE, IFRAME, SWAP, SELF,
 } = FRAME_ANCESTORS;
 
+/**
+ * What each page may frame, as a set like FRAME_ANCESTORS. A header CSP is enforced alongside the
+ * page's meta CSP rather than in place of it, so `'none'` here vetoes whatever the page permits.
+ */
+const FRAME_SRC = {
+    /** Frames nothing, as nginx sends it -- every Keyguard page but two. */
+    NONE: ["'none'"],
+    /**
+     * The two pages that frame the RSA sandbox. src/lib/Key.js frames
+     * /lib/rsa/sandboxed/RSAKeysIframe.html to derive an RSA key, and connect and
+     * sign-multisig-transaction are the only requests that ask it for one. Under `'none'` the
+     * iframe never loads and the request hangs rather than failing.
+     */
+    SELF: ["'self'"],
+};
+
+/**
+ * Every directive the policy carries besides `frame-ancestors` and `frame-src`, which vary per
+ * path. Asserting `frame-ancestors` alone was not enough: it let `frame-src` sit at `'none'`
+ * unnoticed on the pages that frame the RSA sandbox, which blocks the iframe there, and would have
+ * let any other directive be dropped or widened just as quietly. The set is compared exactly, so an
+ * added directive fails too.
+ *
+ * @type {[string, string[]][]}
+ */
+const SHARED_CSP = [
+    ['default-src', ["'self'", "'unsafe-eval'"]],
+    ['connect-src', ["'self'", 'https://api.coingecko.com']],
+    ['img-src', ['http:', 'https:', 'blob:', 'data:']],
+    ['child-src', ["'self'", 'blob:']],
+    ['worker-src', ["'self'", 'blob:']],
+    ['media-src', ["'none'"]],
+    ['object-src', ["'none'"]],
+    ['style-src', ["'self'"]],
+    ['font-src', ["'self'"]],
+    ['base-uri', ["'self'"]],
+    ['form-action', ["'none'"]],
+    ['block-all-mixed-content', []],
+];
+
+/**
+ * What RSAKeysIframe.html adds. `sandbox` is one of the two directives a document cannot set for
+ * itself in a meta tag (`frame-ancestors` is the other), and it is what gives the iframe the null
+ * origin that makes `'self'` unsatisfiable -- hence the `'unsafe-inline'`, for the scripts
+ * tools/build.sh inlines into it. See the comment atop src/lib/rsa/sandboxed/RSAKeysIframe.html.
+ *
+ * @type {[string, string[]][]}
+ */
+const RSA_SANDBOX_CSP = [
+    ['sandbox', ['allow-scripts']],
+    ['script-src', ["'self'", "'unsafe-eval'", "'unsafe-inline'"]],
+];
+
 const JS = 'application/javascript';
 const HTML = 'text/html';
 
 const PROBES = [
-    { path: '/', contentType: HTML, frameAncestors: NONE },
-    { path: '/request/create/', contentType: HTML, frameAncestors: NONE },
-    { path: '/request/sign-transaction/', contentType: HTML, frameAncestors: NONE },
-    { path: '/ServiceWorker.js', contentType: JS, frameAncestors: NONE },
-    { path: '/redirect.js', contentType: JS, frameAncestors: NONE },
-    { path: '/lib/Nimiq.mjs', contentType: JS, frameAncestors: NONE },
-    { path: '/assets/nimiq-pos/web/index.js', contentType: JS, frameAncestors: NONE },
-    { path: '/assets/nimiq-pow/worker-wasm.wasm', contentType: 'application/wasm', frameAncestors: NONE },
-    { path: '/assets/nimiq-style.icons.svg', contentType: 'image/svg+xml', frameAncestors: NONE },
-    { path: '/build-info.json', contentType: 'application/json', frameAncestors: NONE },
+    {
+        path: '/',
+        contentType: HTML,
+        frameAncestors: NONE,
+        frameSrc: FRAME_SRC.NONE,
+    },
+    {
+        path: '/request/create/',
+        contentType: HTML,
+        frameAncestors: NONE,
+        frameSrc: FRAME_SRC.NONE,
+    },
+    {
+        path: '/request/sign-transaction/',
+        contentType: HTML,
+        frameAncestors: NONE,
+        frameSrc: FRAME_SRC.NONE,
+    },
+    {
+        path: '/ServiceWorker.js',
+        contentType: JS,
+        frameAncestors: NONE,
+        frameSrc: FRAME_SRC.NONE,
+    },
+    {
+        path: '/redirect.js',
+        contentType: JS,
+        frameAncestors: NONE,
+        frameSrc: FRAME_SRC.NONE,
+    },
+    {
+        path: '/lib/Nimiq.mjs',
+        contentType: JS,
+        frameAncestors: NONE,
+        frameSrc: FRAME_SRC.NONE,
+    },
+    {
+        path: '/assets/nimiq-pos/web/index.js',
+        contentType: JS,
+        frameAncestors: NONE,
+        frameSrc: FRAME_SRC.NONE,
+    },
+    {
+        path: '/assets/nimiq-pow/worker-wasm.wasm',
+        contentType: 'application/wasm',
+        frameAncestors: NONE,
+        frameSrc: FRAME_SRC.NONE,
+    },
+    {
+        path: '/assets/nimiq-style.icons.svg',
+        contentType: 'image/svg+xml',
+        frameAncestors: NONE,
+        frameSrc: FRAME_SRC.NONE,
+    },
+    {
+        path: '/build-info.json',
+        contentType: 'application/json',
+        frameAncestors: NONE,
+        frameSrc: FRAME_SRC.NONE,
+    },
+    // The two pages that frame the RSA sandbox, and so the only ones whose frame-src is not 'none'.
+    {
+        path: '/request/connect/',
+        contentType: HTML,
+        frameAncestors: NONE,
+        frameSrc: FRAME_SRC.SELF,
+    },
+    {
+        path: '/request/sign-multisig-transaction/',
+        contentType: HTML,
+        frameAncestors: NONE,
+        frameSrc: FRAME_SRC.SELF,
+    },
     // The three cross-origin-embeddable paths, each with its own policy.
-    { path: '/request/iframe/', contentType: HTML, frameAncestors: IFRAME },
-    { path: '/request/swap-iframe/', contentType: HTML, frameAncestors: SWAP },
-    { path: '/lib/rsa/sandboxed/RSAKeysIframe.html', contentType: HTML, frameAncestors: SELF },
+    {
+        path: '/request/iframe/',
+        contentType: HTML,
+        frameAncestors: IFRAME,
+        frameSrc: FRAME_SRC.NONE,
+    },
+    {
+        path: '/request/swap-iframe/',
+        contentType: HTML,
+        frameAncestors: SWAP,
+        frameSrc: FRAME_SRC.NONE,
+    },
+    {
+        path: '/lib/rsa/sandboxed/RSAKeysIframe.html',
+        contentType: HTML,
+        frameAncestors: SELF,
+        frameSrc: FRAME_SRC.NONE,
+        extraCsp: RSA_SANDBOX_CSP,
+    },
 ];
 
 /** The page whose SRI hashes are re-derived from the CDN. */
@@ -163,18 +301,22 @@ function expect(label, actual, expected) {
 }
 
 /**
- * Pull the frame-ancestors directive out of a CSP, normalising the whitespace between sources so
- * the comparison does not depend on how the policy happens to be formatted.
+ * Split a policy into directive name -> sources, normalising the whitespace between sources so the
+ * comparison does not depend on how the policy happens to be formatted.
  *
  * @param {string|null} csp
- * @returns {string|null}
+ * @returns {Map<string, string[]>}
  */
-function frameAncestorsOf(csp) {
-    if (!csp) return null;
-    const directive = csp.split(';')
-        .map(part => part.trim().replace(/\s+/g, ' '))
-        .find(part => part === 'frame-ancestors' || part.startsWith('frame-ancestors '));
-    return directive || null;
+function parseCsp(csp) {
+    /** @type {Map<string, string[]>} */
+    const directives = new Map();
+    if (!csp) return directives;
+
+    for (const entry of csp.split(';')) {
+        const parts = entry.trim().split(/\s+/).filter(part => part.length > 0);
+        if (parts.length > 0) directives.set(parts[0], parts.slice(1));
+    }
+    return directives;
 }
 
 /**
@@ -186,27 +328,49 @@ function sortedSources(sources) {
 }
 
 /**
- * Compare the frame-ancestors sources without depending on the order they are written in. nginx
- * and a CloudFront response-headers policy are configured separately, and a policy that lists the
- * same origins in another order is the same policy.
+ * Compare a whole policy without depending on the order anything is written in. nginx and a
+ * CloudFront response-headers policy are configured separately, and a policy that lists the same
+ * directives, or the same sources within one, in another order is the same policy.
+ *
+ * The directive names are checked as an exact set before the sources are, so a policy that has
+ * gained or lost a directive says so once rather than once per directive.
  *
  * @param {string|null} csp
- * @param {string[]} expected
+ * @param {[string, string[]][]} expected
  */
-function expectFrameAncestors(csp, expected) {
-    const directive = frameAncestorsOf(csp);
-    const actual = directive ? directive.split(' ').slice(1) : [];
+function expectCsp(csp, expected) {
+    const actual = parseCsp(csp);
 
-    if (directive && actual.length === expected.length && sortedSources(actual) === sortedSources(expected)) {
-        pass(`frame-ancestors: ${directive}`);
-    } else {
-        fail(`frame-ancestors: got '${directive || '<missing>'}', want these sources in any order: `
-            + `${expected.join(' ')}`);
+    const names = [...actual.keys()].sort().join(' ');
+    const wanted = expected.map(([name]) => name).sort().join(' ');
+    if (names !== wanted) {
+        fail(`csp directives: got '${names || '<missing>'}', want '${wanted}'`);
+        return;
+    }
+
+    for (const [name, sources] of expected) {
+        const got = /** @type {string[]} */ (actual.get(name));
+        const directive = [name, ...got].join(' ');
+        if (sortedSources(got) === sortedSources(sources)) {
+            pass(`${name}: ${directive}`);
+        } else {
+            fail(`${name}: got '${directive}', want these sources in any order: `
+                + `${[name, ...sources].join(' ')}`);
+        }
     }
 }
 
 /**
- * @param {{path: string, contentType: string, frameAncestors: string[]}} probe
+ * @typedef {object} Probe
+ * @property {string} path
+ * @property {string} contentType
+ * @property {string[]} frameAncestors
+ * @property {string[]} frameSrc
+ * @property {[string, string[]][]} [extraCsp] - directives this path adds to SHARED_CSP
+ */
+
+/**
+ * @param {Probe} probe
  * @returns {Promise<Response|null>}
  */
 async function probePath(probe) {
@@ -230,7 +394,12 @@ async function probePath(probe) {
     expect('strict-transport-security', response.headers.get('strict-transport-security'), HSTS);
     expect('x-content-type-options', response.headers.get('x-content-type-options'), 'nosniff');
     expect('referrer-policy', response.headers.get('referrer-policy'), 'strict-origin');
-    expectFrameAncestors(response.headers.get('content-security-policy'), probe.frameAncestors);
+    expectCsp(response.headers.get('content-security-policy'), [
+        ...SHARED_CSP,
+        ...(probe.extraCsp || []),
+        ['frame-src', probe.frameSrc],
+        ['frame-ancestors', probe.frameAncestors],
+    ]);
 
     // frame-ancestors is the control that actually stops clickjacking; X-Frame-Options ALLOW-FROM
     // has been inert in every modern browser for years, so it is only checked for presence, and for
@@ -369,16 +538,10 @@ async function main() {
     console.log(`Validating deployment at ${BASE}`);
 
     for (const probe of PROBES) {
-        // Sequential on purpose: a failing deployment should not be hit with 13 parallel requests,
+        // Sequential on purpose: a failing deployment should not be hit with 15 parallel requests,
         // and the output stays readable.
         // eslint-disable-next-line no-await-in-loop
-        const response = await probePath(probe);
-
-        // RSAKeysIframe.html additionally needs a sandbox directive it cannot set via meta (see the
-        // comment at the top of src/lib/rsa/sandboxed/RSAKeysIframe.html).
-        if (probe.frameAncestors === FRAME_ANCESTORS.SELF && response && response.status === 200) {
-            expect('rsa sandbox', response.headers.get('content-security-policy'), 'sandbox allow-scripts');
-        }
+        await probePath(probe);
     }
 
     await checkSri();
