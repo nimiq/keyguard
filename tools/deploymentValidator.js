@@ -8,16 +8,18 @@
  *
  * The Keyguard's security rests on headers the application itself cannot set: frame-ancestors
  * decides who may embed a key manager, and it differs per path. Those headers live in the server
- * config -- nginx today, CloudFront response-headers policies after the migration -- so nothing in
- * this repository fails when they drift. This does.
+ * config -- CloudFront response-headers policies, configured on the distribution rather than in
+ * this repository -- so nothing in this repository fails when they drift. This does.
  *
- * The expectations below mirror the nginx config serving keyguard.nimiq-testnet.com as of
- * 2026-08-14. Point this at either origin to compare them:
+ * The expectations below mirror the nginx config that served keyguard.nimiq-testnet.com until the
+ * cutover, as of 2026-08-14:
  *
  *     node tools/deploymentValidator.js https://keyguard.nimiq-testnet.com
  *
- * Against that legacy nginx origin every check passes except /build-info.json, which 404s because
- * only the S3 workflow writes it. That one failure is expected there and nowhere else.
+ * They are testnet-specific: FRAME_ANCESTORS names the nimiq-testnet.com embedders, so pointing
+ * this at mainnet keyguard.nimiq.com -- which still runs that nginx config -- fails those checks
+ * on the nimiq.com origins it sends instead, and /build-info.json, which only the S3 workflow
+ * writes.
  *
  * It also re-derives every SRI hash from what the CDN actually serves, which catches a partial
  * upload: HTML pinning bundles that were never published, or published under a different encoding.

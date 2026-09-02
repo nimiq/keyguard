@@ -41,11 +41,12 @@ fi
 # one deploy that legitimately removes more, e.g. after a restructuring of dist/.
 MAX_PRUNE="${MAX_PRUNE:-50}"
 
-# Matches the nginx deployment on testnet-web1, which serves everything `no-cache,
-# must-revalidate`. CloudFront still serves from the edge; it just revalidates via ETag. Switching
-# the content-hashed bundles under request/ to `immutable` is a worthwhile follow-up, but is a
-# behaviour change and should land as its own revertible commit rather than riding along with the
-# origin move.
+# Every object is uploaded `no-cache, must-revalidate`, so CloudFront revalidates with S3 via ETag
+# on each request. What viewers receive is set on the distribution: its response-headers policies
+# send `immutable` for the content-hashed bundles under request/, other than the two iframes' own,
+# and this same value for everything else. Uploading those bundles as `immutable` too would spare
+# the edge that revalidation, but is a behaviour change and should land as its own revertible
+# commit.
 CACHE="no-cache, must-revalidate"
 
 # $1=content-type  $2...=filters
