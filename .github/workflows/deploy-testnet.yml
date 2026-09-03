@@ -1,9 +1,9 @@
 name: Deploy Testnet
 
 # Deploys the testnet Keyguard to an S3-backed CloudFront distribution. This is the same
-# artifact `deploy.sh --testnet` ships to testnet-web1 over SSH; while both paths exist, this
-# one publishes to a separate hostname (vars.DEPLOY_URL) until DNS for
-# keyguard.nimiq-testnet.com is cut over.
+# artifact `deploy.sh --testnet` ships to testnet-web1 over SSH, and it is now the path that
+# serves keyguard.nimiq-testnet.com: DNS for that host points at the distribution this
+# publishes to (vars.DEPLOY_URL), not at the nginx origin on testnet-web1.
 #
 # The Keyguard is a key manager, so this workflow is deliberately paranoid:
 #   - only a published pre-release deploys; a pushed tag on its own never does, and there is no
@@ -12,7 +12,7 @@ name: Deploy Testnet
 #   - the release tag's signature must verify (deploy.sh creates signed tags with `git tag -a -s`)
 #   - the commit must have passed `Complete Check`, which is where the tests actually run
 #   - the smoke test asserts the security headers on all four path variants and fails the
-#     deploy if the CloudFront response-headers policies drift from the nginx config
+#     deploy if the CloudFront response-headers policies drift from what it specifies
 #
 # What this workflow expects to already exist, none of which lives in this repository:
 #
@@ -20,7 +20,10 @@ name: Deploy Testnet
 #     vars.AWS_REGION, vars.S3_BUCKET, vars.CLOUDFRONT_DISTRIBUTION_ID, vars.DEPLOY_URL
 #     vars.ALLOWED_TAGGERS  optional, comma-separated tagger allowlist
 #     secrets.AWS_DEPLOY_ROLE_ARN  a role whose trust policy is scoped to the OIDC subject
-#       `repo:nimiq/keyguard:environment:testnet`, so no other workflow can assume it
+#       `repo:nimiq@33815469/keyguard@139560932:environment:testnet`, so no other workflow can
+#       assume it. The numeric owner and repository ids ride along in the claim alongside the
+#       names, so a renamed org or repo breaks this deploy rather than handing the old name's
+#       new owner a token the role accepts.
 #
 #   A bucket used by nothing but this site. The sync prunes with `--delete` at the bucket root,
 #   so anything else stored there -- logs, a second site, hand-uploaded files -- is deleted.
@@ -33,8 +36,9 @@ name: Deploy Testnet
 #   sync and invalidation have run.
 #
 #   Response-headers policies reproducing the nginx headers, including a per-path
-#   `frame-ancestors`. tools/deploymentValidator.js is the specification: what it asserts is what
-#   keyguard.nimiq-testnet.com serves today.
+#   `frame-ancestors`. They are configured on the distribution, not here.
+#   tools/deploymentValidator.js is the specification they were built against: the nginx config
+#   that served this host until the cutover, which mainnet keyguard.nimiq.com still runs.
 
 on:
   # Cutting a tag and publishing a release are separate acts, and only the second one is a
@@ -60,8 +64,9 @@ jobs:
     # `published` fires for full releases too, and those are the mainnet channel.
     if: ${{ github.event.release.prerelease }}
 
-    # Binds the OIDC subject to `repo:nimiq/keyguard:environment:testnet`, exposes the
-    # environment's vars/secrets, and applies its protection rules (required reviewers).
+    # Binds the OIDC subject to `repo:nimiq@33815469/keyguard@139560932:environment:testnet`,
+    # exposes the environment's vars/secrets, and applies its protection rules (required
+    # reviewers).
     environment:
       name: testnet
       url: ${{ vars.DEPLOY_URL }}
@@ -189,7 +194,8 @@ jobs:
 
       # Asserts the security headers on all four path variants and re-derives every SRI hash from
       # what the CDN serves, failing the deploy if the CloudFront response-headers policies drift
-      # from the nginx config. The expectations live in the script; update them together.
+      # from what it specifies. The expectations live in the script, the policies on the
+      # distribution; update them together.
       - name: Smoke test the deployment
         run: node tools/deploymentValidator.js "$DEPLOY_URL"
 
