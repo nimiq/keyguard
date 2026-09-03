@@ -437,10 +437,10 @@
   resolved "https://registry.yarnpkg.com/@nimiq/core-web/-/core-web-1.6.3.tgz#b4a8f8c5d289850b20cb4009766af5b1cafd6e20"
   integrity sha512-D6RrJi2cRU81odNpmwczhUBvOQ47+/Db1svrTkH/G4xNd72lr9MS5nMdfpUz+rBRnSprljrzW2mdUtZ6W9bPaA==
 
-"@nimiq/core@^2.20.0":
-  version "2.20.0"
-  resolved "https://registry.yarnpkg.com/@nimiq/core/-/core-2.20.0.tgz#c923cfbfedc53d00d3be235e6c1b281e10c51323"
-  integrity sha512-JJYQJRVoI61rulUbeMH83HPv3o+vfaivjk93t50YbYTo5QY4zx/yrpmX1Xsvjk3i2nszaC6iql22g7CPd4tUSQ==
+"@nimiq/core@^2.21.0":
+  version "2.21.0"
+  resolved "https://registry.yarnpkg.com/@nimiq/core/-/core-2.21.0.tgz#99d257cb842658082fe39ed350e3521bca3036ae"
+  integrity sha512-CBWMQhnFSQ8tEqRc3FThq4XaUIf83+KSkoOYPfkzx9kR1dne3ihztUqqxJkZ6ff6onl2AG4S6atL0sFjms0cjQ==
   dependencies:
     comlink "^4.4.1"
     vite-plugin-wasm "^3.5.0"

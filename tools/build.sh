@@ -135,14 +135,14 @@ nimiq_pos_hashsums=\
  7b8c1509c4e7ec89948110c9f459409d381d1ee92b0a0d30bf112a568a8fc7a6  node_modules/@nimiq/core/web/comlink.min.mjs
  e8d70f535e0d6d1bca2dfb7a8afb96b068f87c1e0b44d864e0b54d8ec4589173  node_modules/@nimiq/core/web/comlink.min.mjs.map
  dd9833c434200f9338f01eac7e5462dfa146b235bc0ab57ed846bf076f6c5cd3  node_modules/@nimiq/core/web/crypto.js
- 35130e42388c6d014bc884a46ca4f17220f0ce177efadbe6f73b9a1f2d000174  node_modules/@nimiq/core/web/crypto-wasm/index_bg.wasm
- 6ae9acf4fbbc0ce4f7f7f145a7804824b306df96d258b00775e0d2ac39d50b50  node_modules/@nimiq/core/web/crypto-wasm/index.js
+ 039dd72df2fad8e5c79882c40e9192f9031706fdcdcf2a7cf45eb2d8b27d5db9  node_modules/@nimiq/core/web/crypto-wasm/index_bg.wasm
+ 72736f3719bf48e908665b1c53552355710351bd2ab4fa631ab90e633a489e7f  node_modules/@nimiq/core/web/crypto-wasm/index.js
  7a48cc3f66857626c3c175ba6688bd1cfd54abdfffe90388fa291494b9e1a261  node_modules/@nimiq/core/web/index.js
- 3ecefdf0d010a9d91621c1bab7f6980c76b065caa5ee2966bf5af8c0b7625734  node_modules/@nimiq/core/web/main-wasm/index_bg.wasm
- 8486306441ffa1baa4f6f0829d83c184ec9b5a3c8e13268ca9d8ab779c2578dc  node_modules/@nimiq/core/web/main-wasm/index.js
+ 76031faeef5e596d6f974e8fd3c061db1a6d031b56ceb43edd48e87cc0f68bb2  node_modules/@nimiq/core/web/main-wasm/index_bg.wasm
+ 57277d610ca35760d586c2bfe945314280617c6dcccc003448b3fd61b266b260  node_modules/@nimiq/core/web/main-wasm/index.js
  0436d25dd54159b106c7d2f5f37d1710fd029dca60a067898a20a89218a74d1c  node_modules/@nimiq/core/web/worker.js
- c633244b7761d409cdcf0847c382ede3f6aa35e761250a7e49d307c0959304e3  node_modules/@nimiq/core/web/worker-wasm/index_bg.wasm
- 3668a3135b35e9c51f7f9ede8e12ac2c21382f92454966f8ed4633ee1368198b  node_modules/@nimiq/core/web/worker-wasm/index.js"
+ 3b425e8c399cd4a5617cd3a6c243d4fc85ac285f382eb00e62d47182e4e64c0a  node_modules/@nimiq/core/web/worker-wasm/index_bg.wasm
+ 5083ae9f0ef3b7eb445a0499714cbdce641144f8ee262c6d32d7230863b7a2fe  node_modules/@nimiq/core/web/worker-wasm/index.js"
 echo "$nimiq_pos_hashsums" | ${SHA256SUM} --check
 
 if [ ! $? -eq 0 ]; then
