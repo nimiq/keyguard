@@ -109,15 +109,13 @@ make_file_hash() {
 # Before writing any files, verify integrity of Nimiq PoW lib
 output "🧐  Validating Nimiq PoW files integrity"
 
-nimiq_pow_hashsums=\
-"8edc158d4a0e2baece54262aa5817e3db44946d3c8af9271fd9f4bc7b4fde91e  node_modules/@nimiq/core-web/web-offline.js
- a658ca600c43789c8daff47578ea5758e7a1a2a5fee1b249e7bb5ce691d126cd  node_modules/@nimiq/core-web/worker-wasm.wasm
- d61df01adc927cb2832314ef5634b9ea97092acacb09beb7628b1a98a0962c70  node_modules/@nimiq/core-web/worker-wasm.js
- 154b1251428363c8658c99acbf55b31eef177c0d447767a506952924a37494a9  node_modules/@nimiq/core-web/worker-js.js
- 272dae22e5235f17526ba19a60b2418f1b5926e0f7e683f782bd54aa6db3b945  node_modules/@nimiq/core-web/worker.js"
-echo "$nimiq_pow_hashsums" | ${SHA256SUM} --check
-
-if [ ! $? -eq 0 ]; then
+nimiq_pow_hashsums="\
+8edc158d4a0e2baece54262aa5817e3db44946d3c8af9271fd9f4bc7b4fde91e  node_modules/@nimiq/core-web/web-offline.js
+a658ca600c43789c8daff47578ea5758e7a1a2a5fee1b249e7bb5ce691d126cd  node_modules/@nimiq/core-web/worker-wasm.wasm
+d61df01adc927cb2832314ef5634b9ea97092acacb09beb7628b1a98a0962c70  node_modules/@nimiq/core-web/worker-wasm.js
+154b1251428363c8658c99acbf55b31eef177c0d447767a506952924a37494a9  node_modules/@nimiq/core-web/worker-js.js
+272dae22e5235f17526ba19a60b2418f1b5926e0f7e683f782bd54aa6db3b945  node_modules/@nimiq/core-web/worker.js"
+if ! echo "$nimiq_pow_hashsums" | ${SHA256SUM} --check --strict; then
     output "💥  Nimiq PoW file integrity check failed!"
     exit 1;
 fi
@@ -125,27 +123,25 @@ fi
 # Before writing any files, verify integrity of Nimiq PoS lib
 output "🧐  Validating Nimiq PoS files integrity"
 
-nimiq_pos_hashsums=\
-"49bf18fbd44ca9b3bf8b331508f92d2fe48087a27c7d0034120fc7fc0d383951  node_modules/@nimiq/core/launcher/browser/client-proxy.mjs
- 955cceee2e144efe114fec23ae202e010dae6edd12ef802d0d239fb36fdf537f  node_modules/@nimiq/core/launcher/browser/cryptoutils-worker-proxy.mjs
- f26f70a14ee0ffa85261500dd786f51aa6051e523c9a4627ab8ba064ff8934dc  node_modules/@nimiq/core/launcher/browser/transfer-handlers.mjs
- f00e4c72cdbc653dfcc426c80337c0555f0b94b8883bd791b324aa95edfd498a  node_modules/@nimiq/core/lib/web/index.mjs
- 0ec8db9acefe632eb46205a9cd7de4351bafb83fad792508b0f61449ccf9f4ec  node_modules/@nimiq/core/web/comlink.min.js
- 64a91ba6922851ba36ba21944bcc6a14e8a57f805203fa92925190175a882297  node_modules/@nimiq/core/web/comlink.min.js.map
- 7b8c1509c4e7ec89948110c9f459409d381d1ee92b0a0d30bf112a568a8fc7a6  node_modules/@nimiq/core/web/comlink.min.mjs
- e8d70f535e0d6d1bca2dfb7a8afb96b068f87c1e0b44d864e0b54d8ec4589173  node_modules/@nimiq/core/web/comlink.min.mjs.map
- dd9833c434200f9338f01eac7e5462dfa146b235bc0ab57ed846bf076f6c5cd3  node_modules/@nimiq/core/web/crypto.js
- 039dd72df2fad8e5c79882c40e9192f9031706fdcdcf2a7cf45eb2d8b27d5db9  node_modules/@nimiq/core/web/crypto-wasm/index_bg.wasm
- 72736f3719bf48e908665b1c53552355710351bd2ab4fa631ab90e633a489e7f  node_modules/@nimiq/core/web/crypto-wasm/index.js
- 7a48cc3f66857626c3c175ba6688bd1cfd54abdfffe90388fa291494b9e1a261  node_modules/@nimiq/core/web/index.js
- 76031faeef5e596d6f974e8fd3c061db1a6d031b56ceb43edd48e87cc0f68bb2  node_modules/@nimiq/core/web/main-wasm/index_bg.wasm
- 57277d610ca35760d586c2bfe945314280617c6dcccc003448b3fd61b266b260  node_modules/@nimiq/core/web/main-wasm/index.js
- 0436d25dd54159b106c7d2f5f37d1710fd029dca60a067898a20a89218a74d1c  node_modules/@nimiq/core/web/worker.js
- 3b425e8c399cd4a5617cd3a6c243d4fc85ac285f382eb00e62d47182e4e64c0a  node_modules/@nimiq/core/web/worker-wasm/index_bg.wasm
- 5083ae9f0ef3b7eb445a0499714cbdce641144f8ee262c6d32d7230863b7a2fe  node_modules/@nimiq/core/web/worker-wasm/index.js"
-echo "$nimiq_pos_hashsums" | ${SHA256SUM} --check
-
-if [ ! $? -eq 0 ]; then
+nimiq_pos_hashsums="\
+49bf18fbd44ca9b3bf8b331508f92d2fe48087a27c7d0034120fc7fc0d383951  node_modules/@nimiq/core/launcher/browser/client-proxy.mjs
+955cceee2e144efe114fec23ae202e010dae6edd12ef802d0d239fb36fdf537f  node_modules/@nimiq/core/launcher/browser/cryptoutils-worker-proxy.mjs
+f26f70a14ee0ffa85261500dd786f51aa6051e523c9a4627ab8ba064ff8934dc  node_modules/@nimiq/core/launcher/browser/transfer-handlers.mjs
+f00e4c72cdbc653dfcc426c80337c0555f0b94b8883bd791b324aa95edfd498a  node_modules/@nimiq/core/lib/web/index.mjs
+0ec8db9acefe632eb46205a9cd7de4351bafb83fad792508b0f61449ccf9f4ec  node_modules/@nimiq/core/web/comlink.min.js
+64a91ba6922851ba36ba21944bcc6a14e8a57f805203fa92925190175a882297  node_modules/@nimiq/core/web/comlink.min.js.map
+7b8c1509c4e7ec89948110c9f459409d381d1ee92b0a0d30bf112a568a8fc7a6  node_modules/@nimiq/core/web/comlink.min.mjs
+e8d70f535e0d6d1bca2dfb7a8afb96b068f87c1e0b44d864e0b54d8ec4589173  node_modules/@nimiq/core/web/comlink.min.mjs.map
+dd9833c434200f9338f01eac7e5462dfa146b235bc0ab57ed846bf076f6c5cd3  node_modules/@nimiq/core/web/crypto.js
+039dd72df2fad8e5c79882c40e9192f9031706fdcdcf2a7cf45eb2d8b27d5db9  node_modules/@nimiq/core/web/crypto-wasm/index_bg.wasm
+72736f3719bf48e908665b1c53552355710351bd2ab4fa631ab90e633a489e7f  node_modules/@nimiq/core/web/crypto-wasm/index.js
+7a48cc3f66857626c3c175ba6688bd1cfd54abdfffe90388fa291494b9e1a261  node_modules/@nimiq/core/web/index.js
+76031faeef5e596d6f974e8fd3c061db1a6d031b56ceb43edd48e87cc0f68bb2  node_modules/@nimiq/core/web/main-wasm/index_bg.wasm
+57277d610ca35760d586c2bfe945314280617c6dcccc003448b3fd61b266b260  node_modules/@nimiq/core/web/main-wasm/index.js
+0436d25dd54159b106c7d2f5f37d1710fd029dca60a067898a20a89218a74d1c  node_modules/@nimiq/core/web/worker.js
+3b425e8c399cd4a5617cd3a6c243d4fc85ac285f382eb00e62d47182e4e64c0a  node_modules/@nimiq/core/web/worker-wasm/index_bg.wasm
+5083ae9f0ef3b7eb445a0499714cbdce641144f8ee262c6d32d7230863b7a2fe  node_modules/@nimiq/core/web/worker-wasm/index.js"
+if ! echo "$nimiq_pos_hashsums" | ${SHA256SUM} --check --strict; then
     output "💥  Nimiq PoS file integrity check failed!"
     exit 1;
 fi
@@ -155,9 +151,7 @@ output "🧐  Validating BitcoinJS file integrity"
 
 # For bitcoinjs-lib v5.2.0 and Buffer v5.6.0
 bitcoinjs_hashsum="5a02ae59046a7ee4f386f5828097aa21bdf52657acca4ae472d5e89e8332ba43  src/lib/bitcoin/BitcoinJS.js"
-echo "$bitcoinjs_hashsum" | ${SHA256SUM} --check
-
-if [ ! $? -eq 0 ]; then
+if ! echo "$bitcoinjs_hashsum" | ${SHA256SUM} --check --strict; then
     output "💥  BitcoinJS file integrity check failed!"
     exit 1;
 fi
@@ -166,9 +160,7 @@ fi
 output "🧐  Validating EthersJS file integrity"
 
 ethersjs_hashsum="043ee0f54f904ed6ee51c468f498a840211eaf159eea1f406f95a0b1410d748a  node_modules/ethers/dist/ethers.umd.js"
-echo "$ethersjs_hashsum" | ${SHA256SUM} --check
-
-if [ ! $? -eq 0 ]; then
+if ! echo "$ethersjs_hashsum" | ${SHA256SUM} --check --strict; then
     output "💥  EthersJS file integrity check failed!"
     exit 1;
 fi
@@ -401,7 +393,10 @@ output "🔑  Building RSA Iframe"
 
 # Integrity check that forge.min.js is from node-forge 1.3.1
 nodeforge_hashsum="dc67fd132427ad96c9666c844b39565413c40ddb1f2d063c53512fbf6d387dfd  src/lib/rsa/sandboxed/forge.min.js"
-echo "$nodeforge_hashsum" | ${SHA256SUM} --check
+if ! echo "$nodeforge_hashsum" | ${SHA256SUM} --check --strict; then
+    output "💥  node-forge file integrity check failed!"
+    exit 1;
+fi
 
 # Note: requests in a sandboxed iframe are considered cross origin requests, and are thus blocked by adblockers
 # (adblockers block loading scripts off a *.nimiq.com domain when the request does not originate from that same origin).
