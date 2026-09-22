@@ -115,7 +115,7 @@ a658ca600c43789c8daff47578ea5758e7a1a2a5fee1b249e7bb5ce691d126cd  node_modules/@
 d61df01adc927cb2832314ef5634b9ea97092acacb09beb7628b1a98a0962c70  node_modules/@nimiq/core-web/worker-wasm.js
 154b1251428363c8658c99acbf55b31eef177c0d447767a506952924a37494a9  node_modules/@nimiq/core-web/worker-js.js
 272dae22e5235f17526ba19a60b2418f1b5926e0f7e683f782bd54aa6db3b945  node_modules/@nimiq/core-web/worker.js"
-if ! echo "$nimiq_pow_hashsums" | ${SHA256SUM} --check --strict; then
+if ! echo "$nimiq_pow_hashsums" | ${SHA256SUM} --check --strict -; then
     output "💥  Nimiq PoW file integrity check failed!"
     exit 1;
 fi
@@ -141,7 +141,7 @@ dd9833c434200f9338f01eac7e5462dfa146b235bc0ab57ed846bf076f6c5cd3  node_modules/@
 0436d25dd54159b106c7d2f5f37d1710fd029dca60a067898a20a89218a74d1c  node_modules/@nimiq/core/web/worker.js
 3b425e8c399cd4a5617cd3a6c243d4fc85ac285f382eb00e62d47182e4e64c0a  node_modules/@nimiq/core/web/worker-wasm/index_bg.wasm
 5083ae9f0ef3b7eb445a0499714cbdce641144f8ee262c6d32d7230863b7a2fe  node_modules/@nimiq/core/web/worker-wasm/index.js"
-if ! echo "$nimiq_pos_hashsums" | ${SHA256SUM} --check --strict; then
+if ! echo "$nimiq_pos_hashsums" | ${SHA256SUM} --check --strict -; then
     output "💥  Nimiq PoS file integrity check failed!"
     exit 1;
 fi
@@ -151,7 +151,7 @@ output "🧐  Validating BitcoinJS file integrity"
 
 # For bitcoinjs-lib v5.2.0 and Buffer v5.6.0
 bitcoinjs_hashsum="5a02ae59046a7ee4f386f5828097aa21bdf52657acca4ae472d5e89e8332ba43  src/lib/bitcoin/BitcoinJS.js"
-if ! echo "$bitcoinjs_hashsum" | ${SHA256SUM} --check --strict; then
+if ! echo "$bitcoinjs_hashsum" | ${SHA256SUM} --check --strict -; then
     output "💥  BitcoinJS file integrity check failed!"
     exit 1;
 fi
@@ -160,7 +160,7 @@ fi
 output "🧐  Validating EthersJS file integrity"
 
 ethersjs_hashsum="043ee0f54f904ed6ee51c468f498a840211eaf159eea1f406f95a0b1410d748a  node_modules/ethers/dist/ethers.umd.js"
-if ! echo "$ethersjs_hashsum" | ${SHA256SUM} --check --strict; then
+if ! echo "$ethersjs_hashsum" | ${SHA256SUM} --check --strict -; then
     output "💥  EthersJS file integrity check failed!"
     exit 1;
 fi
@@ -393,7 +393,7 @@ output "🔑  Building RSA Iframe"
 
 # Integrity check that forge.min.js is from node-forge 1.3.1
 nodeforge_hashsum="dc67fd132427ad96c9666c844b39565413c40ddb1f2d063c53512fbf6d387dfd  src/lib/rsa/sandboxed/forge.min.js"
-if ! echo "$nodeforge_hashsum" | ${SHA256SUM} --check --strict; then
+if ! echo "$nodeforge_hashsum" | ${SHA256SUM} --check --strict -; then
     output "💥  node-forge file integrity check failed!"
     exit 1;
 fi
