@@ -404,8 +404,8 @@ fi
 cp src/lib/rsa/sandboxed/RSAKeysIframe.html dist/lib/rsa/sandboxed/
 inplace_sed \
     -e 's/<script src="\.\/[^"]*">/<script>/' \
-    -e '/RSA_IFRAME_FORGE_CONTENTS/{r src/lib/rsa/sandboxed/forge.min.js' -e 'd}' \
-    -e '/RSA_IFRAME_SCRIPT_CONTENTS/{r src/lib/rsa/sandboxed/RSAKeysIframe.js' -e 'd}' \
+    -e '/RSA_IFRAME_FORGE_CONTENTS/{r src/lib/rsa/sandboxed/forge.min.js' -e 'd' -e '}' \
+    -e '/RSA_IFRAME_SCRIPT_CONTENTS/{r src/lib/rsa/sandboxed/RSAKeysIframe.js' -e 'd' -e '}' \
     dist/lib/rsa/sandboxed/RSAKeysIframe.html
 
 # copy assets
