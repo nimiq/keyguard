@@ -17,20 +17,17 @@ const CONFIG = { // eslint-disable-line no-unused-vars
     BTC_NETWORK: /** @type {'MAIN' | 'TEST'} */ ('TEST'), // BitcoinConstants is not included in the common bundle
     ROOT_REDIRECT: 'https://wallet.nimiq-testnet.com',
 
-    POLYGON_CHAIN_ID: 80002, // Amoy testnet
-    BRIDGED_USDC_CONTRACT_ADDRESS: '',
-    /** @deprecated */
-    BRIDGED_USDC_HTLC_CONTRACT_ADDRESS: '',
+    // The local Anvil stack of https://github.com/NimiqToolbox/gas-abstraction (`make stack-up`), whose
+    // deployment addresses are deterministic on a fresh chain.
+    POLYGON_CHAIN_ID: 31337,
+    NATIVE_USDC_CONTRACT_ADDRESS: '0x5FbDB2315678afecb367f032d93F642f64180aa3', // MockUSDC
+    BRIDGED_USDT_CONTRACT_ADDRESS: '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512', // MockUSDT0
 
-    NATIVE_USDC_CONTRACT_ADDRESS: '0x41E94Eb019C0762f9Bfcf9Fb1E58725BfB0e7582',
-    NATIVE_USDC_TRANSFER_CONTRACT_ADDRESS: '',
-    NATIVE_USDC_HTLC_CONTRACT_ADDRESS: '',
-
-    USDC_SWAP_CONTRACT_ADDRESS: '',
-
-    BRIDGED_USDT_CONTRACT_ADDRESS: '0x1616d425Cd540B256475cBfb604586C8598eC0FB',
-    BRIDGED_USDT_TRANSFER_CONTRACT_ADDRESS: '',
-    BRIDGED_USDT_HTLC_CONTRACT_ADDRESS: '',
+    POLYGON_GASLESS_TRANSFER_CONTRACT_ADDRESS: '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0',
+    /** @type {string[]} */
+    POLYGON_GASLESS_RELAY_ADDRESSES: ['0xBcd4042DE499D14e55001CcbB24a551F3b954096'], // Anvil account 10
+    POLYGON_GASLESS_MAX_FEE: '5000000',
+    POLYGON_GASLESS_MAX_ACCEPTABLE_FEE: '500000',
 
     RSA_KEY_BITS: 2048, // Possible values are 1024 (fast, but unsafe), 2048 (good compromise), 4096 (slow, but safe)
     RSA_KDF_FUNCTION: 'PBKDF2-SHA512',

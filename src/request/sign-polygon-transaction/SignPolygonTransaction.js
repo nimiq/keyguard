@@ -1,7 +1,5 @@
-/* global ethers */
 /* global Key */
 /* global KeyStore */
-/* global PolygonContractABIs */
 /* global PasswordBox */
 /* global Errors */
 /* global Utf8Tools */
@@ -9,9 +7,11 @@
 /* global PolygonAddressInfo */
 /* global NumberFormatting */
 /* global PolygonUtils */
-/* global CONFIG */
 /* global PolygonKey */
-/* global OpenGSN */
+/* global PolygonGasless */
+/* global NimiqGaslessCore */
+/* global SignPolygonTransactionApi */
+/* global CONFIG */
 
 /**
  * @callback SignPolygonTransaction.resolve
@@ -28,34 +28,8 @@ class SignPolygonTransaction {
         this.$el = /** @type {HTMLElement} */ (
             document.getElementById(SignPolygonTransaction.Pages.CONFIRM_TRANSACTION));
 
-        const relayRequest = request.request;
-
-        /** @type {'usdc' | 'usdt' | undefined} */
-        let stablecoin;
-        if ([
-            CONFIG.NATIVE_USDC_TRANSFER_CONTRACT_ADDRESS,
-            CONFIG.NATIVE_USDC_HTLC_CONTRACT_ADDRESS,
-            CONFIG.USDC_SWAP_CONTRACT_ADDRESS,
-        ].includes(relayRequest.to)) {
-            stablecoin = 'usdc';
-        } else if ([
-            CONFIG.BRIDGED_USDT_TRANSFER_CONTRACT_ADDRESS,
-        ].includes(relayRequest.to)) {
-            stablecoin = 'usdt';
-        }
-
-        if (relayRequest.to === CONFIG.BRIDGED_USDT_HTLC_CONTRACT_ADDRESS) {
-            // The HTLC contract for bridged USDT is the same as for bridged USDC (legacy).
-            if (request.token === CONFIG.BRIDGED_USDT_CONTRACT_ADDRESS) {
-                stablecoin = 'usdt';
-            } else if (request.token === CONFIG.BRIDGED_USDC_CONTRACT_ADDRESS) {
-                stablecoin = 'usdc';
-            }
-        }
-
-        if (!stablecoin) {
-            throw new Errors.KeyguardError('Could not determine the stablecoin for the transaction');
-        }
+        const transfer = request.intent.request;
+        const stablecoin = PolygonGasless.stablecoin(transfer.token);
 
         const $stablecoinSymbols = /** @type {NodeListOf<HTMLSpanElement>} */ (
             this.$el.querySelectorAll('.stablecoin-symbol')
@@ -65,42 +39,32 @@ class SignPolygonTransaction {
         });
 
         const $sender = /** @type {HTMLLinkElement} */ (this.$el.querySelector('.accounts .sender'));
-        if (['redeem', 'redeemWithSecretInData', 'refund'].includes(request.description.name)) {
-            new PolygonAddressInfo(relayRequest.to, request.senderLabel, 'unknown').renderTo($sender);
-        } else if (request.description.name === 'swap' || request.description.name === 'swapWithApproval') {
-            new PolygonAddressInfo(relayRequest.from, 'USDC.e', 'usdc_dark').renderTo($sender);
-        } else {
-            new PolygonAddressInfo(relayRequest.from, request.keyLabel, stablecoin).renderTo($sender);
-        }
+        new PolygonAddressInfo(transfer.from, request.keyLabel, stablecoin).renderTo($sender);
 
         const $recipient = /** @type {HTMLLinkElement} */ (this.$el.querySelector('.accounts .recipient'));
-        if (['redeem', 'redeemWithSecretInData', 'refund'].includes(request.description.name)) {
-            const recipientAddress = /** @type {string} */ (request.description.args.target);
-            new PolygonAddressInfo(recipientAddress, request.keyLabel, stablecoin).renderTo($recipient);
-        } else if (request.description.name === 'swap' || request.description.name === 'swapWithApproval') {
-            new PolygonAddressInfo(relayRequest.from, 'USDC', 'usdc').renderTo($recipient);
-        } else {
-            const recipientAddress = /** @type {string} */ (request.description.args.target);
-            new PolygonAddressInfo(recipientAddress, request.recipientLabel, 'none').renderTo($recipient);
-        }
+        new PolygonAddressInfo(transfer.to, request.recipientLabel, 'none').renderTo($recipient);
 
         const $value = /** @type {HTMLDivElement} */ (this.$el.querySelector('#value'));
         const $fee = /** @type {HTMLDivElement} */ (this.$el.querySelector('#fee'));
 
         // Set value and fee.
         $value.textContent = NumberFormatting.formatNumber(
-            PolygonUtils.unitsToCoins(['redeem', 'redeemWithSecretInData', 'refund'].includes(request.description.name)
-                ? /** @type {number} */ (request.amount)
-                : request.description.args.amount.toNumber()),
+            PolygonUtils.unitsToCoins(Number(transfer.amount)),
             6,
             2, // Always display at least 2 decimals, as is common for USD
         );
-        const feeUnits = request.description.args.fee.toNumber();
+        const feeUnits = Number(transfer.fee);
         if (feeUnits > 0) {
-            // For the fee, we do not display more than two decimals, as it would not add any value for the user
+            // Relay fees are multiples of 0.01, so two decimals show them exactly
             $fee.textContent = NumberFormatting.formatNumber(PolygonUtils.unitsToCoins(feeUnits), 2, 2);
             const $feeSection = /** @type {HTMLDivElement} */ (this.$el.querySelector('.fee-section'));
             $feeSection.classList.remove('display-none');
+        }
+
+        if (request.corrects) {
+            // This version replaces the earlier signed version of the same payment. Only one of them can execute.
+            const $correctionNotice = /** @type {HTMLDivElement} */ (this.$el.querySelector('.correction-notice'));
+            $correctionNotice.classList.remove('display-none');
         }
 
         // Set up password box.
@@ -150,132 +114,75 @@ class SignPolygonTransaction {
         }
 
         const polygonKey = new PolygonKey(key);
+        const shown = request.intent.request;
 
-        // Has been validated to be an approved transfer contract address
-        const transferContract = request.request.to;
+        if (polygonKey.deriveAddress(request.keyPath) !== shown.from) {
+            reject(new Errors.InvalidRequestError('request.from does not match the address derived from keyPath'));
+            return;
+        }
 
-        if (request.description.name === 'transferWithPermit') {
-            const { sigR, sigS, sigV } = await polygonKey.signUsdcPermit(
+        let signed;
+        try {
+            // Rebuild the intent with a fresh deadline, as the user might have taken a while to confirm. It keeps the
+            // intent nonce and everything that was shown to the user.
+            const intent = SignPolygonTransactionApi.createIntent(
+                {
+                    token: shown.token,
+                    from: shown.from,
+                    to: shown.to,
+                    amount: shown.amount,
+                    fee: shown.fee,
+                    relay: shown.relay,
+                },
+                request.tokenNonce,
+                request.corrects,
+                shown.nonce,
+            );
+            const now = PolygonGasless.now();
+            const { transfer, tokenAuth } = NimiqGaslessCore.transferSigningPayloads(
+                PolygonGasless.pins(),
+                intent,
+                now,
+                { maxAcceptableFee: CONFIG.POLYGON_GASLESS_MAX_ACCEPTABLE_FEE },
+            );
+            if (!tokenAuth) throw new Errors.KeyguardError('Missing token authorization');
+
+            const signature = await polygonKey.signTypedData(
                 request.keyPath,
-                transferContract,
-                // `value` is the permit approval amount - the transaction value is called `amount`
-                request.description.args.value,
-                // Has been validated to be defined when function called is `transferWithPermit`
-                /** @type {{ tokenNonce: number }} */ (request.permit).tokenNonce,
-                request.request.from,
+                transfer.domain,
+                /** @type {Record<string, ethers.TypedDataField[]>} */ (/** @type {unknown} */ (transfer.types)),
+                transfer.message,
             );
-
-            const nativeUsdcTransfer = new ethers.Contract(
-                transferContract,
-                PolygonContractABIs.NATIVE_USDC_TRANSFER_CONTRACT_ABI,
-            );
-
-            request.request.data = nativeUsdcTransfer.interface.encodeFunctionData(request.description.name, [
-                /* address token */ request.description.args.token,
-                /* uint256 amount */ request.description.args.amount,
-                /* address target */ request.description.args.target,
-                /* uint256 fee */ request.description.args.fee,
-                // `value` is the permit approval amount - the transaction value is called `amount` (above)
-                /* uint256 value */ request.description.args.value,
-                /* bytes32 sigR */ sigR,
-                /* bytes32 sigS */ sigS,
-                /* uint8 sigV */ sigV,
-            ]);
-        }
-
-        if (request.description.name === 'transferWithApproval') {
-            const { sigR, sigS, sigV } = await polygonKey.signUsdtApproval(
+            const tokenSignature = await polygonKey.signTypedData(
                 request.keyPath,
-                new ethers.Contract(
-                    CONFIG.BRIDGED_USDT_CONTRACT_ADDRESS,
-                    PolygonContractABIs.BRIDGED_USDT_CONTRACT_ABI,
-                ),
-                transferContract,
-                request.description.args.approval,
-                // Has been validated to be defined when function called is `swapWithApproval`
-                /** @type {{ tokenNonce: number }} */ (request.approval).tokenNonce,
-                request.request.from,
+                tokenAuth.domain,
+                /** @type {Record<string, ethers.TypedDataField[]>} */ (/** @type {unknown} */ (tokenAuth.types)),
+                tokenAuth.message,
             );
 
-            const swapContract = new ethers.Contract(
-                transferContract,
-                PolygonContractABIs.BRIDGED_USDT_TRANSFER_CONTRACT_ABI,
-            );
-
-            request.request.data = swapContract.interface.encodeFunctionData(request.description.name, [
-                /* address token */ request.description.args.token,
-                /* uint256 amount */ request.description.args.amount,
-                /* address target */ request.description.args.target,
-                /* uint256 fee */ request.description.args.fee,
-                /* uint256 approval */ request.description.args.approval,
-                /* bytes32 sigR */ sigR,
-                /* bytes32 sigS */ sigS,
-                /* uint8 sigV */ sigV,
-            ]);
+            // Validates the signature format and normalizes v to 27/28.
+            signed = NimiqGaslessCore.buildSubmitTransferBody({
+                request: intent.request,
+                signature,
+                authorization: NimiqGaslessCore.toTokenAuthorization('permit', tokenSignature),
+            });
+        } catch (error) {
+            reject(error instanceof Errors.KeyguardError
+                ? error
+                : new Errors.KeyguardError(error instanceof Error ? error.message : String(error)));
+            return;
         }
-
-        if (request.description.name === 'swapWithApproval') {
-            const { sigR, sigS, sigV } = await polygonKey.signUsdcApproval(
-                request.keyPath,
-                new ethers.Contract(
-                    CONFIG.BRIDGED_USDC_CONTRACT_ADDRESS,
-                    PolygonContractABIs.BRIDGED_USDC_CONTRACT_ABI,
-                ),
-                transferContract,
-                request.description.args.approval,
-                // Has been validated to be defined when function called is `swapWithApproval`
-                /** @type {{ tokenNonce: number }} */ (request.approval).tokenNonce,
-                request.request.from,
-            );
-
-            const swapContract = new ethers.Contract(
-                transferContract,
-                PolygonContractABIs.SWAP_CONTRACT_ABI,
-            );
-
-            request.request.data = swapContract.interface.encodeFunctionData(request.description.name, [
-                /* address token */ request.description.args.token,
-                /* uint256 amount */ request.description.args.amount,
-                /* address pool */ request.description.args.pool,
-                /* uint256 targetAmount */ request.description.args.targetAmount,
-                /* uint256 fee */ request.description.args.fee,
-                /* uint256 approval */ request.description.args.approval,
-                /* bytes32 sigR */ sigR,
-                /* bytes32 sigS */ sigS,
-                /* uint8 sigV */ sigV,
-            ]);
-        }
-
-        if (['redeem', 'redeemWithSecretInData', 'refund'].includes(request.description.name)) {
-            const derivedAddress = polygonKey.deriveAddress(request.keyPath);
-            if (request.description.args.target !== derivedAddress) {
-                reject(new Errors.InvalidRequestError('Target address argument does not match derived address'));
-                return;
-            }
-        }
-
-        const typedData = new OpenGSN.TypedRequestData(
-            CONFIG.POLYGON_CHAIN_ID,
-            transferContract,
-            {
-                request: request.request,
-                relayData: request.relayData,
-            },
-        );
-
-        const { EIP712Domain, ...cleanedTypes } = typedData.types;
-
-        const signature = await polygonKey.signTypedData(
-            request.keyPath,
-            typedData.domain,
-            /** @type {Record<string, ethers.ethers.TypedDataField[]>} */ (/** @type {unknown} */ (cleanedTypes)),
-            typedData.message,
-        );
 
         /** @type {KeyguardRequest.SignedPolygonTransaction} */
         const result = {
-            message: typedData.message,
-            signature,
+            request: signed.request,
+            signature: signed.signature,
+            authorization: {
+                mode: 'permit',
+                v: /** @type {number} */ (signed.authorization.v),
+                r: /** @type {string} */ (signed.authorization.r),
+                s: /** @type {string} */ (signed.authorization.s),
+            },
         };
         resolve(result);
     }

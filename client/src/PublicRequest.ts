@@ -1,12 +1,5 @@
 import * as Nimiq from '@nimiq/core';
-import { ForwardRequest as OpenGsnForwardRequest } from '@opengsn/common/dist/EIP712/ForwardRequest';
-import { RelayData as OpenGsnRelayData } from '@opengsn/common/dist/EIP712/RelayData';
 import { KeyguardCommand } from './KeyguardCommand';
-
-export {
-    OpenGsnForwardRequest,
-    OpenGsnRelayData,
-};
 
 export type ObjectType = {
     [key: string]: any;
@@ -321,43 +314,49 @@ export type SignBtcTransactionRequest
     = SignBtcTransactionRequestStandard
     | SignBtcTransactionRequestCheckout;
 
+/**
+ * A gasless USDC or USDT0 transfer on Polygon through the GaslessTransfer contract, see
+ * https://github.com/NimiqToolbox/gas-abstraction. Amounts are in the token's smallest unit (6 decimals).
+ */
+export type PolygonGaslessTransfer = {
+    token: string,
+    from: string,
+    to: string,
+    amount: string, // decimal string
+    fee: string, // decimal string, the relay's fee quote
+    relay: string, // the relay address from the fee quote
+};
+
+/**
+ * The signed transfer intent. `nonce` identifies the payment: every version of a payment (e.g. re-signed with a
+ * higher fee) keeps it, so that at most one version executes.
+ */
+export type PolygonGaslessTransferRequest = PolygonGaslessTransfer & {
+    nonce: string, // bytes32 hex
+    deadline: string, // unix seconds, decimal string
+};
+
 export type PolygonTransactionInfo = {
     keyPath: string,
 
-    request: OpenGsnForwardRequest,
-    relayData: OpenGsnRelayData,
+    request: PolygonGaslessTransfer,
 
     /**
-     * The token contract address. Required for calling the bridged HTLC contract.
+     * The sender's current permit nonce in the token contract (`nonces(from)`).
      */
-    token?: string,
+    tokenNonce: number,
 
     /**
-     * For refund and redeem transactions from HTLCs the amount is not part of the forward request / relay request and
-     * needs to be specified separately.
+     * The payment's latest signed version, when signing a new version of an existing payment, for example with a
+     * higher fee after the relay refused the fee as too low. The new version keeps the payment's `nonce`, `token`,
+     * `to` and a deadline at least as late. Only request this after checking on-chain that the payment's nonce is
+     * still unused. Without `corrects`, the Keyguard starts a new payment with a fresh random nonce.
      */
-    amount?: number,
-
-    /**
-     * The sender's nonce in the token contract, required when calling the contract function `swapWithApproval` for
-     * bridged USDC.e or `transferWithApproval` and 'openWithApproval`for bridged USDT.
-     */
-    approval?: {
-        tokenNonce: number,
-    },
-
-    /**
-     * The sender's nonce in the token contract, required when calling the contract functions `transferWithPermit` and
-     * `openWithPermit` for native USDC.
-     */
-    permit?: {
-        tokenNonce: number,
-    },
+    corrects?: PolygonGaslessTransferRequest,
 };
 
 export type SignPolygonTransactionRequest = Omit<SimpleRequest, 'keyLabel'> & PolygonTransactionInfo & {
     keyLabel: string,
-    senderLabel?: string,
     recipientLabel?: string,
 };
 
@@ -404,18 +403,6 @@ export type SignSwapRequestCommon = SimpleRequest & {
             refundKeyPath: string, // To validate that we own the HTLC script's refund address
         }>
     ) | (
-        {type: 'USDC_MATIC'}
-        & Omit<PolygonTransactionInfo,
-            | 'approval' // HTLC opening for native USDC uses `permit`, not `approval`
-            | 'amount' // Not used for HTLC opening - only for redeem and refund
-        >
-    ) | (
-        {type: 'USDT_MATIC'}
-        & Omit<PolygonTransactionInfo,
-            | 'permit' // HTLC opening for bridged USDT uses `approval`, not `permit`
-            | 'amount' // Not used for HTLC opening - only for redeem and refund
-        >
-    ) | (
         {type: 'EUR'}
         & {
             amount: number,
@@ -448,16 +435,6 @@ export type SignSwapRequestCommon = SimpleRequest & {
             output: BitcoinTransactionChangeOutput,
         }
     ) | (
-        {type: 'USDC_MATIC' | 'USDT_MATIC'}
-        & Omit<PolygonTransactionInfo,
-            | 'approval' // Not needed for redeeming
-            | 'permit' // Not needed for redeeming
-            | 'amount' // Overwritten from optional to required
-        >
-        & {
-            amount: number,
-        }
-    ) | (
         {type: 'EUR'}
         & {
             keyPath: string,
@@ -484,7 +461,7 @@ export type SignSwapRequestCommon = SimpleRequest & {
         funding: number,
         processing: number,
     },
-    serviceSwapFee: number, // Luna, Sats or USDC/T-units, depending which one gets funded
+    serviceSwapFee: number, // Luna or Sats, depending which one gets funded
 
     // Optional KYC info for swapping at higher limits.
     // KYC-enabled swaps facilitated by S3/Fastspot require an s3GrantToken and swaps from or to Euro via OASIS
@@ -510,11 +487,6 @@ export type SignSwapRequestSlider = SignSwapRequestCommon & {
     bitcoinAccount: {
         balance: number, // Sats
     },
-    polygonAddresses: Array<{
-        address: string,
-        usdcBalance: number, // smallest unit of USDC (= 0.000001 USDC)
-        usdtBalance: number, // smallest unit of USDT (= 0.000001 USDT)
-    }>,
 };
 
 export type SignSwapRequest = SignSwapRequestStandard | SignSwapRequestSlider;
@@ -534,9 +506,6 @@ export type SignSwapTransactionsRequest = {
         type: 'BTC',
         htlcScript: Uint8Array,
     } | {
-        type: 'USDC_MATIC' | 'USDT_MATIC',
-        htlcData: string,
-    } | {
         type: 'EUR',
         hash: string,
         timeout: number,
@@ -551,11 +520,6 @@ export type SignSwapTransactionsRequest = {
         htlcScript: Uint8Array,
         transactionHash: string,
         outputIndex: number;
-    } | {
-        type: 'USDC_MATIC' | 'USDT_MATIC',
-        hash: string,
-        timeout: number,
-        htlcId: string,
     } | {
         type: 'EUR',
         hash: string,
@@ -674,15 +638,23 @@ export type SignedBitcoinTransaction = {
     transactionHash: string,
     raw: string,
 };
+/**
+ * The signed gasless transfer, in the shape of the relay's POST /v1/transfer body. The token authorization never gets
+ * persisted or logged by the Keyguard; callers should neither.
+ */
 export type SignedPolygonTransaction = {
-    message: Record<string, any>,
-    signature: string,
+    request: PolygonGaslessTransferRequest,
+    signature: string, // 65 bytes hex, over the GaslessTransfer typed data
+    authorization: {
+        mode: 'permit',
+        v: number,
+        r: string,
+        s: string,
+    },
 };
 export type SignSwapTransactionsResult = {
     nim?: SignatureResult,
     btc?: SignedBitcoinTransaction,
-    usdc?: SignedPolygonTransaction,
-    usdt?: SignedPolygonTransaction,
     eur?: string, // When funding EUR: empty string, when redeeming EUR: JWS of the settlement instructions
     refundTx?: string,
 };
