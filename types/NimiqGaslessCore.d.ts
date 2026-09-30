@@ -1,4 +1,4 @@
-import * as _NimiqGaslessCore from '@nimiq/gasless-sdk/dist/core/index';
+import * as _NimiqGaslessCore from './gasless-sdk/core/index';
 
 declare global {
     const NimiqGaslessCore: typeof _NimiqGaslessCore;

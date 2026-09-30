@@ -168,7 +168,7 @@ fi
 # Before writing any files, verify integrity of the gasless transfer SDK core
 output "🧐  Validating NimiqGaslessCore file integrity"
 
-# For @nimiq/gasless-sdk v0.1.0 (NimiqToolbox/gas-abstraction 59b762f), built by `yarn build:gasless`
+# For @nimiq/gasless-sdk v0.1.0 (NimiqToolbox/gas-abstraction 59b762f), vendored by `yarn update-gasless-sdk`
 gasless_core_hashsum="8e40397afecab23e59bc732250260914986a6f913d53c833bedc603a5465f760  src/lib/polygon/NimiqGaslessCore.js"
 if ! echo "$gasless_core_hashsum" | ${SHA256SUM} --check --strict -; then
     output "💥  NimiqGaslessCore file integrity check failed!"
@@ -342,7 +342,7 @@ for DIR in src/request/*/ ; do
                 if("'$REQUEST'" == "create" || "'$REQUEST'" == "import" || "'$REQUEST'" == "derive-btc-xpub" || "'$REQUEST'" == "sign-btc-transaction" || "'$REQUEST'" == "sign-swap" || "'$REQUEST'" == "swap-iframe") {
                     print space[1] "<script defer src=\"/request/'${JS_BITCOIN_BUNDLE}'\" integrity=\"sha256-'${JS_BITCOIN_BUNDLE_HASH}'\"></script>"
                 }
-                if("'$REQUEST'" == "create" || "'$REQUEST'" == "import" || "'$REQUEST'" == "derive-polygon-address" || "'$REQUEST'" == "sign-polygon-transaction" || "'$REQUEST'" == "sign-swap" || "'$REQUEST'" == "swap-iframe") {
+                if("'$REQUEST'" == "create" || "'$REQUEST'" == "import" || "'$REQUEST'" == "derive-polygon-address" || "'$REQUEST'" == "sign-polygon-transaction") {
                     print space[1] "<script defer src=\"/request/'${JS_POLYGON_BUNDLE}'\" integrity=\"sha256-'${JS_POLYGON_BUNDLE_HASH}'\"></script>"
                 }
                 print space[1] "<script defer src=\"/request/'${REQUEST}'/'${JS_BUNDLE_NAME}'\" integrity=\"sha256-'${JS_BUNDLE_HASH}'\"></script>"
