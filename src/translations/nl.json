@@ -297,6 +297,8 @@
     "sign-swap-oasis-fees-explainer": "van ruilwaarde.",
     "sign-swap-bank-fees": "kosten",
     "sign-swap-bank-fees-explainer": "Bank kosten.",
+    "sign-swap-usdc-fees": "USDC-netwerkkosten",
+    "sign-swap-usdt-fees": "USDT-netwerkkosten",
     "sign-swap-nim-fees": "NIM-netwerkkosten",
     "sign-swap-exchange-fee": "Wisselkosten",
     "sign-swap-of-exchange-value": "van ruilwaarde.",

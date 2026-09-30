@@ -297,6 +297,8 @@
     "sign-swap-oasis-fees-explainer": "of swap value.",
     "sign-swap-bank-fees": "fee",
     "sign-swap-bank-fees-explainer": "Banking network fee.",
+    "sign-swap-usdc-fees": "USDC network fee",
+    "sign-swap-usdt-fees": "USDT network fee",
     "sign-swap-nim-fees": "NIM network fee",
     "sign-swap-exchange-fee": "Swap fee",
     "sign-swap-of-exchange-value": "of swap value.",

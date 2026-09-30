@@ -1,11 +1,15 @@
 /* global BitcoinRequestParserMixin */
+/* global PolygonRequestParserMixin */
 /* global TopLevelApi */
 /* global Nimiq */
 /* global SignSwap */
 /* global Errors */
 /* global Iban */
+/* global ethers */
+/* global CONFIG */
+/* global PolygonContractABIs */
 
-class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) {
+class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(TopLevelApi)) {
     /**
      * @param {KeyguardRequest.SignSwapRequest} request
      * @returns {Promise<Parsed<KeyguardRequest.SignSwapRequest>>}
@@ -72,6 +76,36 @@ class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) {
                 throw new Errors.InvalidRequestError('For locktime to be effective, at least one input must have a '
                     + 'sequence number < 0xffffffff');
             }
+        } else if (request.fund.type === 'USDC_MATIC') {
+            const [forwardRequest, description] = this.parseOpenGsnForwardRequest(
+                request.fund,
+                ['open', 'openWithPermit'],
+            );
+
+            parsedRequest.fund = {
+                type: 'USDC_MATIC',
+                keyPath: this.parsePolygonPath(request.fund.keyPath, 'fund.keyPath'),
+                // eslint-disable-next-line object-shorthand
+                description: /** @type {PolygonOpenDescription | PolygonOpenWithPermitDescription} */ (description),
+                request: forwardRequest,
+                relayData: this.parseOpenGsnRelayData(request.fund.relayData),
+                permit: request.fund.permit,
+            };
+        } else if (request.fund.type === 'USDT_MATIC') {
+            const [forwardRequest, description] = this.parseOpenGsnForwardRequest(
+                request.fund,
+                ['open', 'openWithApproval'],
+            );
+
+            parsedRequest.fund = {
+                type: 'USDT_MATIC',
+                keyPath: this.parsePolygonPath(request.fund.keyPath, 'fund.keyPath'),
+                // eslint-disable-next-line object-shorthand
+                description: /** @type {PolygonOpenDescription | PolygonOpenWithApprovalDescription} */ (description),
+                request: forwardRequest,
+                relayData: this.parseOpenGsnRelayData(request.fund.relayData),
+                approval: request.fund.approval,
+            };
         } else if (request.fund.type === 'EUR') {
             parsedRequest.fund = {
                 type: 'EUR',
@@ -112,6 +146,22 @@ class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) {
                     request.redeem.output, false, 'redeem.output',
                 )),
             };
+        } else if (request.redeem.type === 'USDC_MATIC' || request.redeem.type === 'USDT_MATIC') {
+            const [forwardRequest, description] = this.parseOpenGsnForwardRequest(
+                request.redeem,
+                ['redeem', 'redeemWithSecretInData'],
+            );
+
+            parsedRequest.redeem = {
+                type: request.redeem.type,
+                keyPath: this.parsePolygonPath(request.redeem.keyPath, 'fund.keyPath'),
+                // eslint-disable-next-line object-shorthand
+                description: /** @type {PolygonRedeemDescription | PolygonRedeemWithSecretInDataDescription} */
+                    (description),
+                request: forwardRequest,
+                relayData: this.parseOpenGsnRelayData(request.redeem.relayData),
+                amount: this.parsePositiveInteger(request.redeem.amount, false, 'redeem.amount'),
+            };
         } else if (request.redeem.type === 'EUR') {
             parsedRequest.redeem = {
                 type: 'EUR',
@@ -150,10 +200,10 @@ class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) {
 
         if (request.layout === SignSwapApi.Layouts.SLIDER && parsedRequest.layout === SignSwapApi.Layouts.SLIDER) {
             // SLIDER layout is only allowed for crypto-to-crypto swaps
-            const assets = ['NIM', 'BTC'];
+            const assets = ['NIM', 'BTC', 'USDC_MATIC', 'USDT_MATIC'];
             if (!assets.includes(parsedRequest.fund.type) || !assets.includes(parsedRequest.redeem.type)) {
                 throw new Errors.InvalidRequestError(
-                    'The \'slider\' layout is only allowed for swaps between NIM and BTC',
+                    'The \'slider\' layout is only allowed for swaps between NIM, BTC, USDC and USDT',
                 );
             }
 
@@ -167,6 +217,16 @@ class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) {
             parsedRequest.bitcoinAccount = {
                 balance: this.parsePositiveInteger(request.bitcoinAccount.balance, true, 'bitcoinAccount.balance'),
             };
+            parsedRequest.polygonAddresses = request.polygonAddresses.map(({
+                address,
+                usdcBalance,
+                usdtBalance,
+            }, index) => ({
+                address: this.parsePolygonAddress(address, `polygonAddresses[${index}].address`),
+                usdcBalance: this.parsePositiveInteger(usdcBalance, true, `polygonAddresses[${index}].usdcBalance`),
+                usdtBalance: this.parsePositiveInteger(usdtBalance, true, `polygonAddresses[${index}].usdtBalance`),
+            }));
+
             // Verify that used Nimiq address is in nimiqAddresses[] and has enough balance
             const nimAddress = parsedRequest.fund.type === 'NIM'
                 ? parsedRequest.fund.transaction.sender.toUserFriendlyAddress()
@@ -187,6 +247,39 @@ class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) {
                     )
                 ) {
                     throw new Errors.InvalidRequestError('The sending NIM address does not have enough balance');
+                }
+            }
+
+            // Verify that used Polygon address is in polygonAddresses[] and has enough balance
+            const polygonAddress = parsedRequest.fund.type === 'USDC_MATIC'
+                ? parsedRequest.fund.request.from
+                : parsedRequest.redeem.type === 'USDC_MATIC'
+                    // Even for redeeming, the user's address is the `from` address,
+                    // because in EVM, redeeming is still an interaction with a contract.
+                    // Triggering the payout means calling a function on the HTLC contract,
+                    // that's why the sender (`from`) is the user and the recipient (`to`)
+                    // is the contract.
+                    ? parsedRequest.redeem.request.from
+                    : undefined;
+            if (polygonAddress) {
+                const activePolygonAddress = parsedRequest.polygonAddresses
+                    .find(addressInfo => addressInfo.address === polygonAddress);
+                if (!activePolygonAddress) {
+                    throw new Errors.InvalidRequestError(
+                        'The address details of the Polygon address doing the swap must be provided',
+                    );
+                } else if (
+                    parsedRequest.fund.type === 'USDC_MATIC'
+                    && activePolygonAddress.usdcBalance < parsedRequest.fund.description.args.amount
+                        .add(parsedRequest.fund.description.args.fee).toNumber()
+                ) {
+                    throw new Errors.InvalidRequestError('The sending USDC address does not have enough balance');
+                } else if (
+                    parsedRequest.fund.type === 'USDT_MATIC'
+                    && activePolygonAddress.usdtBalance < parsedRequest.fund.description.args.amount
+                        .add(parsedRequest.fund.description.args.fee).toNumber()
+                ) {
+                    throw new Errors.InvalidRequestError('The sending USDT address does not have enough balance');
                 }
             }
         }
@@ -238,6 +331,111 @@ class SignSwapApi extends BitcoinRequestParserMixin(TopLevelApi) {
             throw new Error('Invalid direction');
         }
         return direction;
+    }
+
+    /**
+     *
+     * @param {Omit<KeyguardRequest.PolygonTransactionInfo, 'amount'>} request
+     * @param {Array<
+     *     | 'open'
+     *     | 'openWithPermit'
+     *     | 'openWithApproval'
+     *     | 'redeem'
+     *     | 'redeemWithSecretInData'
+     * >} allowedMethods
+     * @returns {[
+     *     KeyguardRequest.OpenGsnForwardRequest,
+     *     | PolygonOpenDescription
+     *     | PolygonOpenWithPermitDescription
+     *     | PolygonOpenWithApprovalDescription
+     *     | PolygonRedeemDescription
+     *     | PolygonRedeemWithSecretInDataDescription,
+     * ]}
+     */
+    parseOpenGsnForwardRequest(request, allowedMethods) {
+        const forwardRequest = this.parseOpenGsnForwardRequestRoot(request.request);
+
+        if (
+            forwardRequest.to !== CONFIG.NATIVE_USDC_HTLC_CONTRACT_ADDRESS
+            && forwardRequest.to !== CONFIG.BRIDGED_USDT_HTLC_CONTRACT_ADDRESS
+        ) {
+            throw new Errors.InvalidRequestError('request.to address is not allowed');
+        }
+
+        const htlcContract = {
+            [CONFIG.NATIVE_USDC_HTLC_CONTRACT_ADDRESS]: () => new ethers.Contract(
+                CONFIG.NATIVE_USDC_HTLC_CONTRACT_ADDRESS,
+                PolygonContractABIs.NATIVE_USDC_HTLC_CONTRACT_ABI,
+            ),
+            [CONFIG.BRIDGED_USDT_HTLC_CONTRACT_ADDRESS]: () => new ethers.Contract(
+                CONFIG.BRIDGED_USDT_HTLC_CONTRACT_ADDRESS,
+                PolygonContractABIs.BRIDGED_USDT_HTLC_CONTRACT_ABI,
+            ),
+        }[forwardRequest.to]();
+
+        // eslint-disable-next-line operator-linebreak
+        const description =
+            /** @type {PolygonOpenDescription
+             *     | PolygonOpenWithPermitDescription
+             *     | PolygonOpenWithApprovalDescription
+             *     | PolygonRedeemDescription
+             *     | PolygonRedeemWithSecretInDataDescription}
+             */ (htlcContract.interface.parseTransaction({
+                data: forwardRequest.data,
+                value: forwardRequest.value,
+            }));
+
+        if (!allowedMethods.includes(description.name)) {
+            throw new Errors.InvalidRequestError('Requested Polygon contract method is invalid');
+        }
+
+        if (
+            description.name === 'open'
+            || description.name === 'openWithPermit'
+            || description.name === 'openWithApproval'
+        ) {
+            if (
+                (description.name === 'open' && forwardRequest.to === CONFIG.NATIVE_USDC_HTLC_CONTRACT_ADDRESS)
+                || description.name === 'openWithPermit'
+            ) {
+                if (description.args.token !== CONFIG.NATIVE_USDC_CONTRACT_ADDRESS) {
+                    throw new Errors.InvalidRequestError('Invalid USDC token contract in request data');
+                }
+            }
+
+            if (
+                (description.name === 'open' && forwardRequest.to === CONFIG.BRIDGED_USDT_HTLC_CONTRACT_ADDRESS)
+                || description.name === 'openWithApproval'
+            ) {
+                if (description.args.token !== CONFIG.BRIDGED_USDT_CONTRACT_ADDRESS) {
+                    throw new Errors.InvalidRequestError('Invalid USDT token contract in request data');
+                }
+            }
+
+            if (description.args.refundAddress !== forwardRequest.from) {
+                throw new Errors.InvalidRequestError('HTLC refund address must be same as sender');
+            }
+        }
+
+        if (description.name === 'redeem' || description.name === 'redeemWithSecretInData') {
+            if (description.args.target !== forwardRequest.from) {
+                throw new Errors.InvalidRequestError('HTLC target address must be same as sender');
+            }
+        }
+
+        // Check that permit object exists when method is 'openWithPermit', and unset for other methods.
+        if ((description.name === 'openWithPermit') !== !!request.permit) {
+            throw new Errors.InvalidRequestError('`permit` object is only allowed for contract method '
+                + '"openWithPermit"');
+        }
+
+        // Check that approval object exists when method is 'openWithApproval', and unset for other methods.
+        if ((description.name === 'openWithApproval') !== !!request.approval) {
+            throw new Errors.InvalidRequestError('`approval` object is only allowed for contract method '
+                + '"openWithApproval"');
+        }
+
+        return [forwardRequest, description];
     }
 
     /**

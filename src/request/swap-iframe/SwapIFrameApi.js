@@ -11,7 +11,10 @@
 /* global OasisSettlementInstructionUtils */
 /* global NonPartitionedSessionStorage */
 /* global Utf8Tools */
+/* global ethers */
 /* global CONFIG */
+/* global PolygonContractABIs */
+/* global OpenGSN */
 
 class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint-disable-line no-unused-vars
     /**
@@ -39,6 +42,8 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
         /** @type {{keys: {
          *     nim: string,
          *     btc: string[],
+         *     usdc: string,
+         *     usdt: string,
          *     eur: string,
          *     btc_refund?: string,
          * }, request: any}} */
@@ -56,6 +61,16 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
             if (privateKeys.btc.some(key => key.length !== 64)) {
                 throw new Error('Invalid BTC key stored in SessionStorage');
             }
+        }
+
+        if (request.fund.type === 'USDC_MATIC' || request.redeem.type === 'USDC_MATIC') {
+            if (!privateKeys.usdc) throw new Error('No USDC key stored in SessionStorage');
+            if (privateKeys.usdc.length !== 66) throw new Error('Invalid USDC key stored in SessionStorage');
+        }
+
+        if (request.fund.type === 'USDT_MATIC' || request.redeem.type === 'USDT_MATIC') {
+            if (!privateKeys.usdt) throw new Error('No USDT key stored in SessionStorage');
+            if (privateKeys.usdt.length !== 66) throw new Error('Invalid USDT key stored in SessionStorage');
         }
 
         if (request.redeem.type === 'EUR') {
@@ -76,9 +91,53 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
                 );
             }
         }
+        if (storedRawRequest.fund.type === 'USDC_MATIC') {
+            const usdcHtlcContract = new ethers.Contract(
+                CONFIG.NATIVE_USDC_HTLC_CONTRACT_ADDRESS,
+                PolygonContractABIs.NATIVE_USDC_HTLC_CONTRACT_ABI,
+            );
+
+            storedRawRequest.fund.description = usdcHtlcContract.interface.parseTransaction({
+                data: storedRawRequest.fund.request.data,
+                value: storedRawRequest.fund.request.value,
+            });
+        }
+        if (storedRawRequest.fund.type === 'USDT_MATIC') {
+            const usdtHtlcContract = new ethers.Contract(
+                CONFIG.BRIDGED_USDT_HTLC_CONTRACT_ADDRESS,
+                PolygonContractABIs.BRIDGED_USDT_HTLC_CONTRACT_ABI,
+            );
+
+            storedRawRequest.fund.description = usdtHtlcContract.interface.parseTransaction({
+                data: storedRawRequest.fund.request.data,
+                value: storedRawRequest.fund.request.value,
+            });
+        }
 
         if (storedRawRequest.redeem.type === 'NIM') {
             storedRawRequest.redeem.transaction = Nimiq.Transaction.fromPlain(storedRawRequest.redeem.transaction);
+        }
+        if (storedRawRequest.redeem.type === 'USDC_MATIC') {
+            const usdcHtlcContract = new ethers.Contract(
+                CONFIG.NATIVE_USDC_HTLC_CONTRACT_ADDRESS,
+                PolygonContractABIs.NATIVE_USDC_HTLC_CONTRACT_ABI,
+            );
+
+            storedRawRequest.redeem.description = usdcHtlcContract.interface.parseTransaction({
+                data: storedRawRequest.redeem.request.data,
+                value: storedRawRequest.redeem.request.value,
+            });
+        }
+        if (storedRawRequest.redeem.type === 'USDT_MATIC') {
+            const usdtHtlcContract = new ethers.Contract(
+                CONFIG.BRIDGED_USDT_HTLC_CONTRACT_ADDRESS,
+                PolygonContractABIs.BRIDGED_USDT_HTLC_CONTRACT_ABI,
+            );
+
+            storedRawRequest.redeem.description = usdtHtlcContract.interface.parseTransaction({
+                data: storedRawRequest.redeem.request.data,
+                value: storedRawRequest.redeem.request.value,
+            });
         }
 
         /** @type {Parsed<KeyguardRequest.SignSwapRequest>} */
@@ -179,6 +238,111 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
             };
         }
 
+        if (request.fund.type === 'USDC_MATIC' && storedRequest.fund.type === 'USDC_MATIC') {
+            const usdcHtlcContract = new ethers.Contract(
+                CONFIG.NATIVE_USDC_HTLC_CONTRACT_ADDRESS,
+                PolygonContractABIs.NATIVE_USDC_HTLC_CONTRACT_ABI,
+            );
+
+
+            const description = /** @type {PolygonOpenDescription | PolygonOpenWithPermitDescription} */ (
+                usdcHtlcContract.interface.parseTransaction({
+                    data: request.fund.htlcData,
+                    value: 0,
+                })
+            );
+
+            // The htlcData given by Fastspot and forwarded here is always for the open() function, not for
+            // openWithPermit(). The permit, if requested, is added below, from the stored request where
+            // the user gave their authorization.
+            if (description.name !== 'open') {
+                throw new Errors.InvalidRequestError('Invalid method in HTLC data');
+            }
+
+            // Verify already known parts of the data
+            if (description.args.token !== CONFIG.NATIVE_USDC_CONTRACT_ADDRESS) {
+                throw new Errors.InvalidRequestError('Invalid USDC token contract in HTLC data');
+            }
+
+            if (!description.args.amount.eq(storedRequest.fund.description.args.amount)) {
+                throw new Errors.InvalidRequestError('Invalid amount in HTLC data');
+            }
+
+            if (description.args.refundAddress !== storedRequest.fund.request.from) {
+                throw new Errors.InvalidRequestError('USDC HTLC refund address must be same as sender');
+            }
+
+            fund = {
+                type: 'USDC_MATIC',
+                description,
+            };
+        }
+
+        if (request.redeem.type === 'USDC_MATIC' && storedRequest.redeem.type === 'USDC_MATIC') {
+            redeem = {
+                type: 'USDC_MATIC',
+                htlcId: `0x${Nimiq.BufferUtils.toHex(Nimiq.BufferUtils.fromAny(
+                    request.redeem.htlcId.replace(/^0x/i, ''),
+                ))}`,
+                htlcDetails: {
+                    hash: Nimiq.BufferUtils.toHex(Nimiq.BufferUtils.fromAny(request.redeem.hash)),
+                    timeoutTimestamp: this.parsePositiveInteger(request.redeem.timeout, false, 'redeem.timeout'),
+                },
+            };
+        }
+
+        if (request.fund.type === 'USDT_MATIC' && storedRequest.fund.type === 'USDT_MATIC') {
+            const usdtHtlcContract = new ethers.Contract(
+                CONFIG.BRIDGED_USDT_HTLC_CONTRACT_ADDRESS,
+                PolygonContractABIs.BRIDGED_USDT_HTLC_CONTRACT_ABI,
+            );
+
+            const description = /** @type {PolygonOpenDescription | PolygonOpenWithApprovalDescription} */ (
+                usdtHtlcContract.interface.parseTransaction({
+                    data: request.fund.htlcData,
+                    value: 0,
+                })
+            );
+
+            // The htlcData given by Fastspot and forwarded here is always for the open() function, not for
+            // openWithPermit(). The permit, if requested, is added below, from the stored request where
+            // the user gave their authorization.
+            if (description.name !== 'open') {
+                throw new Errors.InvalidRequestError('Invalid method in HTLC data');
+            }
+
+            // Verify already known parts of the data
+            if (description.args.token !== CONFIG.BRIDGED_USDT_CONTRACT_ADDRESS) {
+                throw new Errors.InvalidRequestError('Invalid USDT token contract in HTLC data');
+            }
+
+            if (!description.args.amount.eq(storedRequest.fund.description.args.amount)) {
+                throw new Errors.InvalidRequestError('Invalid amount in HTLC data');
+            }
+
+            if (description.args.refundAddress !== storedRequest.fund.request.from) {
+                throw new Errors.InvalidRequestError('USDT HTLC refund address must be same as sender');
+            }
+
+            fund = {
+                type: 'USDT_MATIC',
+                description,
+            };
+        }
+
+        if (request.redeem.type === 'USDT_MATIC' && storedRequest.redeem.type === 'USDT_MATIC') {
+            redeem = {
+                type: 'USDT_MATIC',
+                htlcId: `0x${Nimiq.BufferUtils.toHex(Nimiq.BufferUtils.fromAny(
+                    request.redeem.htlcId.replace(/^0x/i, ''),
+                ))}`,
+                htlcDetails: {
+                    hash: Nimiq.BufferUtils.toHex(Nimiq.BufferUtils.fromAny(request.redeem.hash)),
+                    timeoutTimestamp: this.parsePositiveInteger(request.redeem.timeout, false, 'redeem.timeout'),
+                },
+            };
+        }
+
         if (request.fund.type === 'EUR' && storedRequest.fund.type === 'EUR') {
             fund = {
                 type: 'EUR',
@@ -206,7 +370,9 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
         }
 
         // Verify hash is the same across HTLCs
-        const fundingHash = fund.htlcDetails.hash;
+        const fundingHash = 'htlcDetails' in fund
+            ? fund.htlcDetails.hash
+            : fund.description.args.hash.substring(2);
         const redeemingHash = redeem.htlcDetails.hash;
         if (fundingHash !== redeemingHash) {
             throw new Errors.InvalidRequestError('HTLC hashes do not match');
@@ -214,7 +380,9 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
 
         // Validate timeouts of the two contracts
         // The redeem HTLC must have a later timeout than the funding HTLC.
-        const fundingTimeout = fund.htlcDetails.timeoutTimestamp;
+        const fundingTimeout = 'htlcDetails' in fund
+            ? fund.htlcDetails.timeoutTimestamp
+            : fund.description.args.timeout.toNumber();
         const redeemingTimeout = redeem.htlcDetails.timeoutTimestamp;
         const diff = redeemingTimeout - fundingTimeout;
 
@@ -461,6 +629,112 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
             }
         }
 
+        if (parsedRequest.fund.type === 'USDC_MATIC' && storedRequest.fund.type === 'USDC_MATIC') {
+            const usdcHtlcContract = new ethers.Contract(
+                CONFIG.NATIVE_USDC_HTLC_CONTRACT_ADDRESS,
+                PolygonContractABIs.NATIVE_USDC_HTLC_CONTRACT_ABI,
+            );
+
+            // Place contract details into existing function call data
+            storedRequest.fund.request.data = usdcHtlcContract.interface.encodeFunctionData(
+                storedRequest.fund.description.name,
+                [
+                    /* bytes32 id */ parsedRequest.fund.description.args.id,
+                    /* address token */ parsedRequest.fund.description.args.token,
+                    /* uint256 amount */ parsedRequest.fund.description.args.amount,
+                    /* address refundAddress */ parsedRequest.fund.description.args.refundAddress,
+                    /* address recipientAddress */ parsedRequest.fund.description.args.recipientAddress,
+                    /* bytes32 hash */ parsedRequest.fund.description.args.hash,
+                    /* uint256 timeout */ parsedRequest.fund.description.args.timeout,
+
+                    /* uint256 fee */ storedRequest.fund.description.args.fee,
+                    ...(storedRequest.fund.description.name === 'openWithPermit' ? [
+                        /* uint256 value */ storedRequest.fund.description.args.value,
+                        /* bytes32 sigR */ storedRequest.fund.description.args.sigR,
+                        /* bytes32 sigS */ storedRequest.fund.description.args.sigS,
+                        /* uint8 sigV */ storedRequest.fund.description.args.sigV,
+                    ] : []),
+                ],
+            );
+
+            const typedData = new OpenGSN.TypedRequestData(
+                CONFIG.POLYGON_CHAIN_ID,
+                CONFIG.NATIVE_USDC_HTLC_CONTRACT_ADDRESS,
+                {
+                    request: storedRequest.fund.request,
+                    relayData: storedRequest.fund.relayData,
+                },
+            );
+
+            const { EIP712Domain, ...cleanedTypes } = typedData.types;
+
+            const wallet = new ethers.Wallet(privateKeys.usdc);
+
+            const signature = await wallet._signTypedData(
+                typedData.domain,
+                /** @type {Record<string, ethers.ethers.TypedDataField[]>} */ (/** @type {unknown} */ (cleanedTypes)),
+                typedData.message,
+            );
+
+            result.usdc = {
+                message: typedData.message,
+                signature,
+            };
+        }
+
+        if (parsedRequest.fund.type === 'USDT_MATIC' && storedRequest.fund.type === 'USDT_MATIC') {
+            const usdtHtlcContract = new ethers.Contract(
+                CONFIG.BRIDGED_USDT_HTLC_CONTRACT_ADDRESS,
+                PolygonContractABIs.BRIDGED_USDT_HTLC_CONTRACT_ABI,
+            );
+
+            // Place contract details into existing function call data
+            storedRequest.fund.request.data = usdtHtlcContract.interface.encodeFunctionData(
+                storedRequest.fund.description.name,
+                [
+                    /* bytes32 id */ parsedRequest.fund.description.args.id,
+                    /* address token */ parsedRequest.fund.description.args.token,
+                    /* uint256 amount */ parsedRequest.fund.description.args.amount,
+                    /* address refundAddress */ parsedRequest.fund.description.args.refundAddress,
+                    /* address recipientAddress */ parsedRequest.fund.description.args.recipientAddress,
+                    /* bytes32 hash */ parsedRequest.fund.description.args.hash,
+                    /* uint256 timeout */ parsedRequest.fund.description.args.timeout,
+
+                    /* uint256 fee */ storedRequest.fund.description.args.fee,
+                    ...(storedRequest.fund.description.name === 'openWithApproval' ? [
+                        /* uint256 approval */ storedRequest.fund.description.args.approval,
+                        /* bytes32 sigR */ storedRequest.fund.description.args.sigR,
+                        /* bytes32 sigS */ storedRequest.fund.description.args.sigS,
+                        /* uint8 sigV */ storedRequest.fund.description.args.sigV,
+                    ] : []),
+                ],
+            );
+
+            const typedData = new OpenGSN.TypedRequestData(
+                CONFIG.POLYGON_CHAIN_ID,
+                CONFIG.BRIDGED_USDT_HTLC_CONTRACT_ADDRESS,
+                {
+                    request: storedRequest.fund.request,
+                    relayData: storedRequest.fund.relayData,
+                },
+            );
+
+            const { EIP712Domain, ...cleanedTypes } = typedData.types;
+
+            const wallet = new ethers.Wallet(privateKeys.usdt);
+
+            const signature = await wallet._signTypedData(
+                typedData.domain,
+                /** @type {Record<string, ethers.ethers.TypedDataField[]>} */ (/** @type {unknown} */ (cleanedTypes)),
+                typedData.message,
+            );
+
+            result.usdt = {
+                message: typedData.message,
+                signature,
+            };
+        }
+
         if (parsedRequest.fund.type === 'EUR' && storedRequest.fund.type === 'EUR') {
             // Nothing to do for funding EUR
             result.eur = '';
@@ -558,6 +832,94 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
             result.btc = {
                 transactionHash: tx.getId(),
                 raw: tx.toHex(),
+            };
+        }
+
+        if (parsedRequest.redeem.type === 'USDC_MATIC' && storedRequest.redeem.type === 'USDC_MATIC') {
+            const usdcHtlcContract = new ethers.Contract(
+                CONFIG.NATIVE_USDC_HTLC_CONTRACT_ADDRESS,
+                PolygonContractABIs.NATIVE_USDC_HTLC_CONTRACT_ABI,
+            );
+
+            // Place contract details into existing function call data
+            storedRequest.redeem.request.data = usdcHtlcContract.interface.encodeFunctionData(
+                storedRequest.redeem.description.name,
+                [
+                    /* bytes32 id */ parsedRequest.redeem.htlcId,
+                    /* address target */ storedRequest.redeem.description.args.target,
+                    ...(storedRequest.redeem.description.name === 'redeem' ? [
+                        /* bytes32 secret */ storedRequest.redeem.description.args.secret,
+                    ] : []),
+                    /* uint256 fee */ storedRequest.redeem.description.args.fee,
+                ],
+            );
+
+            const typedData = new OpenGSN.TypedRequestData(
+                CONFIG.POLYGON_CHAIN_ID,
+                CONFIG.NATIVE_USDC_HTLC_CONTRACT_ADDRESS,
+                {
+                    request: storedRequest.redeem.request,
+                    relayData: storedRequest.redeem.relayData,
+                },
+            );
+
+            const { EIP712Domain, ...cleanedTypes } = typedData.types;
+
+            const wallet = new ethers.Wallet(privateKeys.usdc);
+
+            const signature = await wallet._signTypedData(
+                typedData.domain,
+                /** @type {Record<string, ethers.ethers.TypedDataField[]>} */ (/** @type {unknown} */ (cleanedTypes)),
+                typedData.message,
+            );
+
+            result.usdc = {
+                message: typedData.message,
+                signature,
+            };
+        }
+
+        if (parsedRequest.redeem.type === 'USDT_MATIC' && storedRequest.redeem.type === 'USDT_MATIC') {
+            const usdtHtlcContract = new ethers.Contract(
+                CONFIG.BRIDGED_USDT_HTLC_CONTRACT_ADDRESS,
+                PolygonContractABIs.BRIDGED_USDT_HTLC_CONTRACT_ABI,
+            );
+
+            // Place contract details into existing function call data
+            storedRequest.redeem.request.data = usdtHtlcContract.interface.encodeFunctionData(
+                storedRequest.redeem.description.name,
+                [
+                    /* bytes32 id */ parsedRequest.redeem.htlcId,
+                    /* address target */ storedRequest.redeem.description.args.target,
+                    ...(storedRequest.redeem.description.name === 'redeem' ? [
+                        /* bytes32 secret */ storedRequest.redeem.description.args.secret,
+                    ] : []),
+                    /* uint256 fee */ storedRequest.redeem.description.args.fee,
+                ],
+            );
+
+            const typedData = new OpenGSN.TypedRequestData(
+                CONFIG.POLYGON_CHAIN_ID,
+                CONFIG.BRIDGED_USDT_HTLC_CONTRACT_ADDRESS,
+                {
+                    request: storedRequest.redeem.request,
+                    relayData: storedRequest.redeem.relayData,
+                },
+            );
+
+            const { EIP712Domain, ...cleanedTypes } = typedData.types;
+
+            const wallet = new ethers.Wallet(privateKeys.usdt);
+
+            const signature = await wallet._signTypedData(
+                typedData.domain,
+                /** @type {Record<string, ethers.ethers.TypedDataField[]>} */ (/** @type {unknown} */ (cleanedTypes)),
+                typedData.message,
+            );
+
+            result.usdt = {
+                message: typedData.message,
+                signature,
             };
         }
 

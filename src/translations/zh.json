@@ -297,6 +297,8 @@
     "sign-swap-oasis-fees-explainer": "交换价值",
     "sign-swap-bank-fees": "手续费",
     "sign-swap-bank-fees-explainer": "银行网络费用",
+    "sign-swap-usdc-fees": "USDC 网络费用",
+    "sign-swap-usdt-fees": "USDT 网络费用",
     "sign-swap-nim-fees": "NIM网络费",
     "sign-swap-exchange-fee": "交换费用",
     "sign-swap-of-exchange-value": "交换价值",

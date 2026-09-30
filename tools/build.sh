@@ -342,7 +342,7 @@ for DIR in src/request/*/ ; do
                 if("'$REQUEST'" == "create" || "'$REQUEST'" == "import" || "'$REQUEST'" == "derive-btc-xpub" || "'$REQUEST'" == "sign-btc-transaction" || "'$REQUEST'" == "sign-swap" || "'$REQUEST'" == "swap-iframe") {
                     print space[1] "<script defer src=\"/request/'${JS_BITCOIN_BUNDLE}'\" integrity=\"sha256-'${JS_BITCOIN_BUNDLE_HASH}'\"></script>"
                 }
-                if("'$REQUEST'" == "create" || "'$REQUEST'" == "import" || "'$REQUEST'" == "derive-polygon-address" || "'$REQUEST'" == "sign-polygon-transaction") {
+                if("'$REQUEST'" == "create" || "'$REQUEST'" == "import" || "'$REQUEST'" == "derive-polygon-address" || "'$REQUEST'" == "sign-polygon-transaction" || "'$REQUEST'" == "sign-swap" || "'$REQUEST'" == "swap-iframe") {
                     print space[1] "<script defer src=\"/request/'${JS_POLYGON_BUNDLE}'\" integrity=\"sha256-'${JS_POLYGON_BUNDLE_HASH}'\"></script>"
                 }
                 print space[1] "<script defer src=\"/request/'${REQUEST}'/'${JS_BUNDLE_NAME}'\" integrity=\"sha256-'${JS_BUNDLE_HASH}'\"></script>"

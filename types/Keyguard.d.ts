@@ -86,6 +86,130 @@ type ParsedBitcoinTransactionInput = {
     address: string,
 };
 
+interface PolygonTokenApproval {
+    readonly approval: ethers.BigNumber, // amount to be approved
+    readonly sigR: string,
+    readonly sigS: string,
+    readonly sigV: ethers.BigNumber,
+}
+
+interface PolygonTokenPermit {
+    readonly value: ethers.BigNumber, // amount to be approved
+    readonly sigR: string,
+    readonly sigS: string,
+    readonly sigV: ethers.BigNumber,
+}
+
+interface PolygonTransferArgs extends ReadonlyArray<any> {
+    readonly token: string,
+    readonly amount: ethers.BigNumber,
+    readonly target: string,
+    readonly fee: ethers.BigNumber,
+}
+
+type PolygonTransferDescription = ethers.utils.TransactionDescription & {
+    readonly name: 'transfer',
+    readonly args: PolygonTransferArgs,
+};
+
+interface PolygonTransferWithPermitArgs extends PolygonTransferArgs, PolygonTokenPermit {}
+
+type PolygonTransferWithPermitDescription = ethers.utils.TransactionDescription & {
+    readonly name: 'transferWithPermit',
+    readonly args: PolygonTransferWithPermitArgs,
+};
+
+interface PolygonTransferWithApprovalArgs extends PolygonTransferArgs, PolygonTokenApproval {}
+
+type PolygonTransferWithApprovalDescription = ethers.utils.TransactionDescription & {
+    readonly name: 'transferWithApproval',
+    readonly args: PolygonTransferWithApprovalArgs,
+};
+
+interface PolygonOpenArgs extends ReadonlyArray<any> {
+    readonly id: string,
+    readonly token: string,
+    readonly amount: ethers.BigNumber,
+    readonly refundAddress: string,
+    readonly recipientAddress: string,
+    readonly hash: string,
+    readonly timeout: ethers.BigNumber,
+    readonly fee: ethers.BigNumber,
+}
+
+type PolygonOpenDescription = ethers.utils.TransactionDescription & {
+    readonly name: 'open',
+    readonly args: PolygonOpenArgs,
+};
+
+interface PolygonOpenWithPermitArgs extends PolygonOpenArgs, PolygonTokenPermit {}
+
+type PolygonOpenWithPermitDescription = ethers.utils.TransactionDescription & {
+    readonly name: 'openWithPermit',
+    readonly args: PolygonOpenWithPermitArgs,
+};
+
+interface PolygonOpenWithApprovalArgs extends PolygonOpenArgs, PolygonTokenApproval {}
+
+type PolygonOpenWithApprovalDescription = ethers.utils.TransactionDescription & {
+    readonly name: 'openWithApproval',
+    readonly args: PolygonOpenWithApprovalArgs,
+};
+
+interface PolygonRedeemArgs extends ReadonlyArray<any> {
+    readonly id: string,
+    readonly target: string,
+    readonly secret: string,
+    readonly fee: ethers.BigNumber,
+}
+
+type PolygonRedeemDescription = ethers.utils.TransactionDescription & {
+    readonly name: 'redeem',
+    readonly args: PolygonRedeemArgs,
+};
+
+interface PolygonRedeemWithSecretInDataArgs extends ReadonlyArray<any> {
+    readonly id: string,
+    readonly target: string,
+    readonly fee: ethers.BigNumber,
+}
+
+type PolygonRedeemWithSecretInDataDescription = ethers.utils.TransactionDescription & {
+    readonly name: 'redeemWithSecretInData',
+    readonly args: PolygonRedeemWithSecretInDataArgs,
+};
+
+interface PolygonRefundArgs extends ReadonlyArray<any> {
+    readonly id: string,
+    readonly target: string,
+    readonly fee: ethers.BigNumber,
+}
+
+type PolygonRefundDescription = ethers.utils.TransactionDescription & {
+    readonly name: 'refund',
+    readonly args: PolygonRefundArgs,
+};
+
+interface PolygonSwapArgs extends ReadonlyArray<any> {
+    readonly token: string,
+    readonly amount: ethers.BigNumber,
+    readonly pool: string,
+    readonly targetAmount: ethers.BigNumber,
+    readonly fee: ethers.BigNumber,
+}
+
+type PolygonSwapDescription = ethers.utils.TransactionDescription & {
+    readonly name: 'swap',
+    readonly args: PolygonSwapArgs,
+};
+
+interface PolygonSwapWithApprovalArgs extends PolygonSwapArgs, PolygonTokenApproval {}
+
+type PolygonSwapWithApprovalDescription = ethers.utils.TransactionDescription & {
+    readonly name: 'swapWithApproval',
+    readonly args: PolygonSwapWithApprovalArgs,
+};
+
 type NimHtlcContents = {
     refundAddress: string,
     redeemAddress: string,
@@ -137,7 +261,13 @@ type ConstructSwap<T extends KeyguardRequest.SignSwapRequestCommon> = Transform<
             locktime?: number;
             refundKeyPath: string,
             refundAddress: string,
-        } | {
+        } | Transform<KeyguardRequest.PolygonTransactionInfo, 'approval' | 'amount', {
+            type: 'USDC_MATIC',
+            description: PolygonOpenDescription | PolygonOpenWithPermitDescription,
+        }> | Transform<KeyguardRequest.PolygonTransactionInfo, 'permit' | 'amount', {
+            type: 'USDT_MATIC',
+            description: PolygonOpenDescription | PolygonOpenWithApprovalDescription,
+        }> | {
             type: 'EUR',
             amount: number,
             fee: number,
@@ -159,7 +289,11 @@ type ConstructSwap<T extends KeyguardRequest.SignSwapRequestCommon> = Transform<
                 keyPath: string,
             },
             output: KeyguardRequest.BitcoinTransactionChangeOutput,
-        } | {
+        } | Transform<KeyguardRequest.PolygonTransactionInfo, 'amount' | 'approval' | 'permit', {
+            type: 'USDC_MATIC' | 'USDT_MATIC',
+            description: PolygonRedeemDescription | PolygonRedeemWithSecretInDataDescription,
+            amount: number,
+        }> | {
             type: 'EUR',
             keyPath: string,
             // A SettlementInstruction contains a `type`, so cannot be in the
@@ -286,8 +420,15 @@ type Parsed<T extends KeyguardRequest.Request> =
             >, 'shopLogoUrl', { shopLogoUrl?: URL }
         > :
     T extends Is<T, KeyguardRequest.SignPolygonTransactionRequest> ?
+        KeyId2KeyInfo<KeyguardRequest.SignPolygonTransactionRequest>
+        & { description: PolygonRedeemDescription
+            | PolygonRedeemWithSecretInDataDescription
+            | PolygonRefundDescription
+            | PolygonSwapDescription
+            | PolygonSwapWithApprovalDescription } :
+    T extends Is<T, KeyguardRequest.SignPolygonGaslessTransferRequest> ?
         Transform<
-            KeyId2KeyInfo<KeyguardRequest.SignPolygonTransactionRequest>,
+            KeyId2KeyInfo<KeyguardRequest.SignPolygonGaslessTransferRequest>,
             'request' | 'tokenNonce' | 'corrects', {
                 // Validated against the pins, with a provisional deadline. Rebuilt with the final deadline on signing.
                 intent: GaslessTransferIntent,
@@ -308,6 +449,11 @@ type Parsed<T extends KeyguardRequest.Request> =
             bitcoinAccount: {
                 balance: number, // Sats
             },
+            polygonAddresses: Array<{
+                address: string,
+                usdcBalance: number, // smallest unit of USDC (= 0.000001 USDC)
+                usdtBalance: number, // smallest unit of USDT (= 0.000001 USDT)
+            }>
         } :
     T extends Is<T, KeyguardRequest.SignSwapTransactionsRequest> ?
         Transform<
@@ -322,6 +468,12 @@ type Parsed<T extends KeyguardRequest.Request> =
                     htlcDetails: BtcHtlcContents,
                     htlcScript: Uint8Array,
                     htlcAddress: string,
+                } | {
+                    type: 'USDC_MATIC',
+                    description: PolygonOpenDescription | PolygonOpenWithPermitDescription,
+                } | {
+                    type: 'USDT_MATIC',
+                    description: PolygonOpenDescription | PolygonOpenWithApprovalDescription,
                 } | {
                     type: 'EUR',
                     htlcDetails: EurHtlcContents,
@@ -339,6 +491,13 @@ type Parsed<T extends KeyguardRequest.Request> =
                     transactionHash: string,
                     outputIndex: number,
                     outputScript: Buffer,
+                } | {
+                    type: 'USDC_MATIC' | 'USDT_MATIC',
+                    htlcId: string,
+                    htlcDetails: {
+                        hash: string,
+                        timeoutTimestamp: number,
+                    },
                 } | {
                     type: 'EUR',
                     htlcDetails: EurHtlcContents,

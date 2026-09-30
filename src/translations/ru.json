@@ -297,6 +297,8 @@
     "sign-swap-oasis-fees-explainer": "от суммы обмена.",
     "sign-swap-bank-fees": "комиссия",
     "sign-swap-bank-fees-explainer": "Комиссия банка.",
+    "sign-swap-usdc-fees": "комиссия сети USDC",
+    "sign-swap-usdt-fees": "комиссия сети USDT",
     "sign-swap-nim-fees": "комиссия сети NIM",
     "sign-swap-exchange-fee": "Комиссия",
     "sign-swap-of-exchange-value": "от суммы обмена.",

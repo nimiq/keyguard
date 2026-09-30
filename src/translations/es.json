@@ -297,6 +297,8 @@
     "sign-swap-oasis-fees-explainer": "del valor del intercambio.",
     "sign-swap-bank-fees": "cuota",
     "sign-swap-bank-fees-explainer": "Cuotas de la red bancarias.",
+    "sign-swap-usdc-fees": "Cuota de red de USDC",
+    "sign-swap-usdt-fees": "Cuota de red de USDT",
     "sign-swap-nim-fees": "Cuota de red de NIM",
     "sign-swap-exchange-fee": "Cuotas de intercambio",
     "sign-swap-of-exchange-value": "del valor del intercambio.",

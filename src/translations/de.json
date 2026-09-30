@@ -297,6 +297,8 @@
     "sign-swap-oasis-fees-explainer": "des Tauschwerts.",
     "sign-swap-bank-fees": "Gebühr",
     "sign-swap-bank-fees-explainer": "Bankennetzwerk-Gebühr.",
+    "sign-swap-usdc-fees": "USDC Netwerkgebühr",
+    "sign-swap-usdt-fees": "USDT Netwerkgebühr",
     "sign-swap-nim-fees": "NIM Netzwerkgebühr",
     "sign-swap-exchange-fee": "Tauschgebühr",
     "sign-swap-of-exchange-value": "des Tauschwerts.",
