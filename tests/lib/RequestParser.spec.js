@@ -153,6 +153,96 @@ describe('RequestParser', () => {
         // rest should be thrown (and tested) by core.
     });
 
+    it('can parse HTLC creation transactions', () => {
+        const requestParser = new RequestParser();
+
+        const refundAddress = 'eb933bf41fdcc9bc2ebf439305a0b2c64d5aea34';
+        // Same HTLC data as the NIM HTLC test vector in HtlcUtils.spec.js:
+        // refund address + redeem address + hash algorithm + hash root + hash count + timeout
+        const htlcData = `${refundAddress}df2953459bb18ca54537e55fef20144bc35816280309534fd599fcfd6ca4a0b02e93ca1b93e7c6275cb496b156fa20d950b7a7120c010000000051b72c98`;
+        const transaction = {
+            sender: Nimiq.BufferUtils.fromHex(refundAddress),
+            recipient: 'CONTRACT_CREATION',
+            recipientType: Nimiq.AccountType.HTLC,
+            recipientData: Nimiq.BufferUtils.fromHex(htlcData),
+            flags: Nimiq.TransactionFlag.ContractCreation,
+            value: 545000000,
+            fee: 0,
+            validityStartHeight: 176450,
+        };
+
+        const parsed = requestParser.parseTransaction(transaction);
+        expect(parsed.flags).toBe(Nimiq.TransactionFlag.ContractCreation);
+        expect(parsed.recipientType).toBe(Nimiq.AccountType.HTLC);
+        expect(Nimiq.BufferUtils.toHex(parsed.data)).toBe(htlcData);
+        // The recipient is not part of the request. It must be the address of the contract that gets created.
+        expect(parsed.recipient.equals(parsed.getContractCreationAddress())).toBe(true);
+    });
+
+    it('can parse vesting contract creation transactions', () => {
+        const requestParser = new RequestParser();
+
+        const owner = 'ee3d0db79ec8f76a823d097b86523c5f10472746';
+        const vectors = [
+            // owner + time step
+            `${owner}0000000005265c00`,
+            // owner + start time + time step + step amount
+            `${owner}0000018bcfe568000000000005265c0000000000067f3540`,
+            // owner + start time + time step + step amount + total amount
+            `${owner}0000018bcfe568000000000005265c0000000000067f354000000000207c0a40`,
+        ];
+
+        for (const vector of vectors) {
+            const transaction = {
+                sender: Nimiq.BufferUtils.fromHex(owner),
+                recipient: 'CONTRACT_CREATION',
+                recipientType: Nimiq.AccountType.Vesting,
+                recipientData: Nimiq.BufferUtils.fromHex(vector),
+                flags: Nimiq.TransactionFlag.ContractCreation,
+                value: 545000000,
+                fee: 0,
+                validityStartHeight: 176450,
+            };
+
+            const parsed = requestParser.parseTransaction(transaction);
+            expect(parsed.flags).toBe(Nimiq.TransactionFlag.ContractCreation);
+            expect(parsed.recipientType).toBe(Nimiq.AccountType.Vesting);
+            expect(Nimiq.BufferUtils.toHex(parsed.data)).toBe(vector);
+            // The recipient is not part of the request. It must be the address of the contract that gets created.
+            expect(parsed.recipient.equals(parsed.getContractCreationAddress())).toBe(true);
+        }
+    });
+
+    it('rejects invalid contract creation transactions', () => {
+        const requestParser = new RequestParser();
+
+        const transaction = {
+            sender: Nimiq.BufferUtils.fromHex('ee3d0db79ec8f76a823d097b86523c5f10472746'),
+            recipient: 'CONTRACT_CREATION',
+            recipientType: Nimiq.AccountType.Vesting,
+            recipientData: Nimiq.BufferUtils.fromHex('ee3d0db79ec8f76a823d097b86523c5f104727460000000005265c00'),
+            flags: Nimiq.TransactionFlag.ContractCreation,
+            value: 545000000,
+            fee: 0,
+            validityStartHeight: 176450,
+        };
+
+        // The contract address is derived from the transaction and can therefore not be specified in the request.
+        const recipient = Nimiq.BufferUtils.fromHex('e1fd00ffee699ead7a101bcb1f1003b2e76951bc');
+        expect(() => requestParser.parseTransaction({ ...transaction, recipient }))
+            .toThrowError(/recipient must be "CONTRACT_CREATION"/);
+
+        // Conversely, the recipient "CONTRACT_CREATION" is only allowed for transactions that create a contract.
+        const flags = Nimiq.TransactionFlag.None;
+        expect(() => requestParser.parseTransaction({ ...transaction, flags }))
+            .toThrowError(/recipient must be "CONTRACT_CREATION"/);
+
+        // The data must be of a length that is valid for creating a contract.
+        const recipientData = new Uint8Array(27);
+        expect(() => requestParser.parseTransaction({ ...transaction, recipientData }))
+            .toThrowError(/^Contract creation data must be/);
+    });
+
     it('can parse messages', () => {
         const requestParser = new RequestParser();
 
