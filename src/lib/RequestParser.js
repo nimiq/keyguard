@@ -177,12 +177,9 @@ class RequestParser { // eslint-disable-line no-unused-vars
                 'Contract creation data must be 82 bytes for HTLC and 28, 44, or 52 bytes for vesting contracts',
             );
         }
-        if (
-            flags === Nimiq.TransactionFlag.ContractCreation
-            && recipient !== 'CONTRACT_CREATION'
-        ) {
+        if ((flags === Nimiq.TransactionFlag.ContractCreation) !== (recipient === 'CONTRACT_CREATION')) {
             throw new Errors.InvalidRequestError(
-                'Transaction recipient must be "CONTRACT_CREATION" when creating contracts',
+                'Transaction recipient must be "CONTRACT_CREATION" iff creating contracts',
             );
         }
 
