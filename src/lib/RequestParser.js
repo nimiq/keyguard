@@ -187,10 +187,12 @@ class RequestParser { // eslint-disable-line no-unused-vars
         }
 
         try {
-            let tx = new Nimiq.Transaction(
+            const tx = new Nimiq.Transaction(
                 sender,
                 senderType,
                 senderData,
+                // For contract creations, just pass a placeholder. The Transaction constructor automatically computes
+                // the correct contract creation address and sets it as recipient.
                 recipient === 'CONTRACT_CREATION' ? new Nimiq.Address(new Uint8Array(20)) : recipient,
                 recipientType,
                 recipientData,
@@ -200,17 +202,6 @@ class RequestParser { // eslint-disable-line no-unused-vars
                 object.validityStartHeight,
                 CONFIG.NIMIQ_NETWORK_ID,
             );
-            if (recipient === 'CONTRACT_CREATION') {
-                // Calculate the contract address of the HTLC that gets created and recreate the transaction
-                // with that address as the recipient:
-                const contractAddress = new Nimiq.Address(Nimiq.BufferUtils.fromHex(tx.hash()));
-                tx = new Nimiq.Transaction(
-                    tx.sender, tx.senderType, tx.senderData,
-                    contractAddress, tx.recipientType, tx.data,
-                    tx.value, tx.fee,
-                    tx.flags, tx.validityStartHeight, tx.networkId,
-                );
-            }
 
             if (tx.sender.equals(tx.recipient)) {
                 throw new Error('Sender and recipient must not match');
