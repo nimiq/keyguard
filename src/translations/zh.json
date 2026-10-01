@@ -88,6 +88,7 @@
     "sign-tx-heading-switch-validator": "Switch Validator",
     "sign-tx-heading-unstaking": "Unstake NIM",
     "sign-tx-fee": "手续费",
+    "sign-polygon-tx-correction": "这将替换你之前为此付款所做的签名。两者中只有一个可以被执行。",
     "sign-tx-cancel-payment": "取消付款",
     "sign-tx-multi-count": "{count} transactions",
     "sign-tx-multi-total-fees": "total fees",

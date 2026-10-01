@@ -355,9 +355,53 @@ export type PolygonTransactionInfo = {
     },
 };
 
+/**
+ * A transaction relayed via OpenGSN, used for swaps: HTLC redeem and refund, and the USDC.e to USDC conversion.
+ * Plain transfers use SignPolygonGaslessTransferRequest.
+ */
 export type SignPolygonTransactionRequest = Omit<SimpleRequest, 'keyLabel'> & PolygonTransactionInfo & {
     keyLabel: string,
     senderLabel?: string,
+    recipientLabel?: string,
+};
+
+/**
+ * A gasless USDC or USDT0 transfer on Polygon through the GaslessTransfer contract, see
+ * https://github.com/NimiqToolbox/gas-abstraction. Amounts are in the token's smallest unit (6 decimals).
+ */
+export type PolygonGaslessTransfer = {
+    token: string,
+    from: string,
+    to: string,
+    amount: string, // decimal string
+    fee: string, // decimal string, the relay's fee quote
+    relay: string, // the relay address from the fee quote
+};
+
+/**
+ * The signed transfer intent. `nonce` identifies the payment: every version of a payment (e.g. re-signed with a
+ * higher fee) keeps it, so that at most one version executes.
+ */
+export type PolygonGaslessTransferRequest = PolygonGaslessTransfer & {
+    nonce: string, // bytes32 hex
+    deadline: string, // unix seconds, decimal string
+};
+
+export type SignPolygonGaslessTransferRequest = Omit<SimpleRequest, 'keyLabel'> & {
+    keyLabel: string,
+    keyPath: string,
+    request: PolygonGaslessTransfer,
+    /**
+     * The sender's current permit nonce in the token contract (`nonces(from)`).
+     */
+    tokenNonce: number,
+    /**
+     * The payment's latest signed version, when signing a new version of an existing payment, for example with a
+     * higher fee after the relay refused the fee as too low. The new version keeps the payment's `nonce`, `token`,
+     * `to` and a deadline at least as late. Only request this after checking on-chain that the payment's nonce is
+     * still unused. Without `corrects`, the Keyguard starts a new payment with a fresh random nonce.
+     */
+    corrects?: PolygonGaslessTransferRequest,
     recipientLabel?: string,
 };
 
@@ -625,6 +669,7 @@ export type RedirectRequest
     | SignStakingRequest
     | SignBtcTransactionRequest
     | SignPolygonTransactionRequest
+    | SignPolygonGaslessTransferRequest
     | SignMultisigTransactionRequest
     | SimpleRequest
     | DeriveBtcXPubRequest
@@ -678,6 +723,20 @@ export type SignedPolygonTransaction = {
     message: Record<string, any>,
     signature: string,
 };
+/**
+ * The signed gasless transfer, in the shape of the relay's POST /v1/transfer body. The token authorization never gets
+ * persisted or logged by the Keyguard; callers should neither.
+ */
+export type SignedPolygonGaslessTransfer = {
+    request: PolygonGaslessTransferRequest,
+    signature: string, // 65 bytes hex, over the GaslessTransfer typed data
+    authorization: {
+        mode: 'permit',
+        v: number,
+        r: string,
+        s: string,
+    },
+};
 export type SignSwapTransactionsResult = {
     nim?: SignatureResult,
     btc?: SignedBitcoinTransaction,
@@ -707,6 +766,7 @@ export type RedirectResult
     | SignStakingResult[]
     | SignedBitcoinTransaction
     | SignedPolygonTransaction
+    | SignedPolygonGaslessTransfer
     | SimpleResult
     | DeriveBtcXPubResult
     | DerivePolygonAddressResult
@@ -729,6 +789,7 @@ export type ResultType<T extends RedirectRequest> =
     T extends Is<T, SignBtcTransactionRequest> ? SignedBitcoinTransaction :
     T extends Is<T, DeriveBtcXPubRequest> ? DeriveBtcXPubResult :
     T extends Is<T, DerivePolygonAddressRequest> ? DerivePolygonAddressResult :
+    T extends Is<T, SignPolygonGaslessTransferRequest> ? SignedPolygonGaslessTransfer :
     T extends Is<T, SignPolygonTransactionRequest> ? SignedPolygonTransaction :
     T extends Is<T, SignSwapRequest> ? SignSwapResult :
     never;
@@ -746,7 +807,7 @@ export type ResultByCommand<T extends KeyguardCommand> =
     T extends KeyguardCommand.SIGN_BTC_TRANSACTION ? SignedBitcoinTransaction :
     T extends KeyguardCommand.DERIVE_BTC_XPUB ? DeriveBtcXPubResult :
     T extends KeyguardCommand.DERIVE_POLYGON_ADDRESS ? DerivePolygonAddressResult :
-    T extends KeyguardCommand.SIGN_POLYGON_TRANSACTION ? SignedPolygonTransaction :
+    T extends KeyguardCommand.SIGN_POLYGON_TRANSACTION ? SignedPolygonTransaction | SignedPolygonGaslessTransfer :
     T extends KeyguardCommand.SIGN_SWAP ? SignSwapResult :
     never;
 

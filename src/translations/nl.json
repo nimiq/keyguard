@@ -88,6 +88,7 @@
     "sign-tx-heading-switch-validator": "Switch Validator",
     "sign-tx-heading-unstaking": "Unstake NIM",
     "sign-tx-fee": "kosten",
+    "sign-polygon-tx-correction": "Dit vervangt je eerdere handtekening voor deze betaling. Slechts één ervan kan worden uitgevoerd.",
     "sign-tx-cancel-payment": "Annuleer betaling",
     "sign-tx-multi-count": "{count} transactions",
     "sign-tx-multi-total-fees": "total fees",

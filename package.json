@@ -7,6 +7,7 @@
     "serve": "yarn pre && node serve.js",
     "build": "yarn pre && tools/build.sh",
     "build:bitcoinjs": "yarn --silent browserify tools/bitcoinjs-parts.js -s BitcoinJS | yarn terser --compress --mangle --source-map --output src/lib/bitcoin/BitcoinJS.js",
+    "update-gasless-sdk": "tools/update-gasless-sdk.sh",
     "build:opengsn": "yarn --silent browserify -r @opengsn/common/dist/EIP712/TypedRequestData -s OpenGSN | yarn terser --compress --mangle --source-map --output src/lib/polygon/OpenGSN.js",
     "test": "karma start",
     "typecheck": "tsc && tsc -p src/service-worker/tsconfig.json",
