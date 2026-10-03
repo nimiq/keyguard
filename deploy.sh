@@ -30,6 +30,7 @@ DEPLOY_SERVERS=()
 DEPLOYER=""
 EXCLUDE_RELEASE=""
 SYNC_TRANSLATIONS=true
+ALLOW_UNTRACKED_FILES=false
 BUILD_ENV=""
 DEPLOY_ONLY=false
 SAME_AS=""
@@ -67,6 +68,11 @@ show_usage() {
     echo "  --exclude-release      Add [exclude-release] tag to exclude this deployment"
     echo "                         from release notes"
     echo "  --no-translations      Skip translation synchronization step"
+    echo "  --allow-untracked-files"
+    echo "                         Don't abort on untracked files, i.e. files that are not part"
+    echo "                         of the repository."
+    echo "                         Untracked files in src are not allowed regardless, as they"
+    echo "                         would become part of the build."
     echo "  --deploy-only          Only run the deployment step (ssh)"
     echo "                         Useful for retrying a failed deployment"
     echo "  --same-as=ENV          Use same version as specified environment"
@@ -259,6 +265,7 @@ show_deployment_recap() {
     done
     echo -e "${CYAN}Exclude Release:${NC} $([ -n "$EXCLUDE_RELEASE" ] && echo "Yes" || echo "No")"
     echo -e "${CYAN}Sync Translations:${NC} $SYNC_TRANSLATIONS"
+    echo -e "${CYAN}Allow Untracked Files:${NC} $ALLOW_UNTRACKED_FILES"
     echo -e "${CYAN}Commit Message:${NC}"
     echo "$COMMIT_MSG" | sed 's/^/  /'
     echo
@@ -333,6 +340,9 @@ for arg in "${ARGS[@]}"; do
             ;;
         --no-translations)
             SYNC_TRANSLATIONS=false
+            ;;
+        --allow-untracked-files)
+            ALLOW_UNTRACKED_FILES=true
             ;;
         --mainnet)
             BUILD_ENV="mainnet"
@@ -450,9 +460,25 @@ if [ "$SYNC_TRANSLATIONS" = "true" ]; then
     run_command "yarn i18n:sync" "Failed to sync translations"
 fi
 
-# Check for uncommitted changes
-if [[ `git status --porcelain` ]]; then
+# Check for untracked files in src. Those are not allowed, even with --allow-untracked-files, because the build includes
+# entire directories of src, e.g. all request directories and assets, such that untracked files would get deployed.
+UNTRACKED_SOURCE_FILES=$(git ls-files --others --exclude-standard -- src)
+if [ -n "$UNTRACKED_SOURCE_FILES" ]; then
+    echo -e "${RED}ERROR: Untracked files in src would become part of the build. Commit or remove them first, then run again.${NC}"
+    echo "$UNTRACKED_SOURCE_FILES"
+    exit 1
+fi
+
+# Check for uncommitted changes. Untracked files, i.e. files that are not part of the repository, are only allowed with
+# --allow-untracked-files.
+UNTRACKED_FILES_MODE=$([ "$ALLOW_UNTRACKED_FILES" = true ] && echo "no" || echo "normal")
+UNCOMMITTED_CHANGES=$(git status --porcelain --untracked-files="$UNTRACKED_FILES_MODE")
+if [ -n "$UNCOMMITTED_CHANGES" ]; then
     echo -e "${RED}ERROR: The repository has uncommitted changes. Commit them first, then run again.${NC}"
+    echo "$UNCOMMITTED_CHANGES"
+    if grep -q '^??' <<< "$UNCOMMITTED_CHANGES"; then
+        echo -e "${YELLOW}Untracked files (??) can be allowed via --allow-untracked-files.${NC}"
+    fi
     exit 1
 fi
 
