@@ -88,6 +88,7 @@
     "sign-tx-heading-switch-validator": "Switch Validator",
     "sign-tx-heading-unstaking": "Retira NIM",
     "sign-tx-fee": "taxa",
+    "sign-polygon-tx-correction": "Isto substitui a tua assinatura anterior para este pagamento. Apenas uma delas pode ser executada.",
     "sign-tx-cancel-payment": "Cancelar pagamento",
     "sign-tx-multi-count": "{count} transactions",
     "sign-tx-multi-total-fees": "total fees",
