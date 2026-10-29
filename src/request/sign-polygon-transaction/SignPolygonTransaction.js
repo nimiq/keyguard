@@ -1,7 +1,5 @@
-/* global ethers */
 /* global Key */
 /* global KeyStore */
-/* global PolygonContractABIs */
 /* global PasswordBox */
 /* global Errors */
 /* global Utf8Tools */
@@ -11,20 +9,20 @@
 /* global PolygonUtils */
 /* global CONFIG */
 /* global PolygonKey */
-/* global OpenGSN */
 /* global PolygonGasless */
+/* global PolygonGaslessHtlc */
 /* global NimiqGaslessCore */
 /* global SignPolygonTransactionApi */
 
 /**
  * @callback SignPolygonTransaction.resolve
- * @param {KeyguardRequest.SignedPolygonTransaction | KeyguardRequest.SignedPolygonGaslessTransfer} result
+ * @param {KeyguardRequest.SignedPolygonTransaction} result
  */
 
 class SignPolygonTransaction {
     /**
-     * @param {Parsed<KeyguardRequest.SignPolygonTransactionRequest>
-     *     | Parsed<KeyguardRequest.SignPolygonGaslessTransferRequest>} request
+     * @param {Parsed<KeyguardRequest.SignPolygonGaslessTransferRequest>
+     *     | Parsed<KeyguardRequest.SignPolygonHtlcSettlementRequest>} request
      * @param {SignPolygonTransaction.resolve} resolve
      * @param {reject} reject
      */
@@ -35,7 +33,7 @@ class SignPolygonTransaction {
         if ('intent' in request) {
             this._renderGaslessTransfer(request);
         } else {
-            this._renderOpenGsnTransaction(request);
+            this._renderHtlcSettlement(request);
         }
 
         // Set up password box.
@@ -55,33 +53,12 @@ class SignPolygonTransaction {
     }
 
     /**
-     * @param {Parsed<KeyguardRequest.SignPolygonTransactionRequest>} request
+     * @param {Parsed<KeyguardRequest.SignPolygonHtlcSettlementRequest>} request
      * @private
      */
-    _renderOpenGsnTransaction(request) {
-        const relayRequest = request.request;
-
-        /** @type {'usdc' | 'usdt' | undefined} */
-        let stablecoin;
-        if ([
-            CONFIG.NATIVE_USDC_HTLC_CONTRACT_ADDRESS,
-            CONFIG.USDC_SWAP_CONTRACT_ADDRESS,
-        ].includes(relayRequest.to)) {
-            stablecoin = 'usdc';
-        }
-
-        if (relayRequest.to === CONFIG.BRIDGED_USDT_HTLC_CONTRACT_ADDRESS) {
-            // The HTLC contract for bridged USDT is the same as for bridged USDC (legacy).
-            if (request.token === CONFIG.BRIDGED_USDT_CONTRACT_ADDRESS) {
-                stablecoin = 'usdt';
-            } else if (request.token === CONFIG.BRIDGED_USDC_CONTRACT_ADDRESS) {
-                stablecoin = 'usdc';
-            }
-        }
-
-        if (!stablecoin) {
-            throw new Errors.KeyguardError('Could not determine the stablecoin for the transaction');
-        }
+    _renderHtlcSettlement(request) {
+        const settlement = request.request;
+        const stablecoin = PolygonGasless.stablecoin(request.token);
 
         const $stablecoinSymbols = /** @type {NodeListOf<HTMLSpanElement>} */ (
             this.$el.querySelectorAll('.stablecoin-symbol')
@@ -91,39 +68,22 @@ class SignPolygonTransaction {
         });
 
         const $sender = /** @type {HTMLLinkElement} */ (this.$el.querySelector('.accounts .sender'));
-        if (['redeem', 'redeemWithSecretInData', 'refund'].includes(request.description.name)) {
-            new PolygonAddressInfo(relayRequest.to, request.senderLabel, 'unknown').renderTo($sender);
-        } else if (request.description.name === 'swap' || request.description.name === 'swapWithApproval') {
-            new PolygonAddressInfo(relayRequest.from, 'USDC.e', 'usdc_dark').renderTo($sender);
-        } else {
-            new PolygonAddressInfo(relayRequest.from, request.keyLabel, stablecoin).renderTo($sender);
-        }
+        new PolygonAddressInfo(PolygonGaslessHtlc.contract(), request.senderLabel, 'unknown').renderTo($sender);
 
         const $recipient = /** @type {HTMLLinkElement} */ (this.$el.querySelector('.accounts .recipient'));
-        if (['redeem', 'redeemWithSecretInData', 'refund'].includes(request.description.name)) {
-            const recipientAddress = /** @type {string} */ (request.description.args.target);
-            new PolygonAddressInfo(recipientAddress, request.keyLabel, stablecoin).renderTo($recipient);
-        } else if (request.description.name === 'swap' || request.description.name === 'swapWithApproval') {
-            new PolygonAddressInfo(relayRequest.from, 'USDC', 'usdc').renderTo($recipient);
-        } else {
-            const recipientAddress = /** @type {string} */ (request.description.args.target);
-            new PolygonAddressInfo(recipientAddress, request.recipientLabel, 'none').renderTo($recipient);
-        }
+        new PolygonAddressInfo(settlement.target, request.keyLabel, stablecoin).renderTo($recipient);
 
         const $value = /** @type {HTMLDivElement} */ (this.$el.querySelector('#value'));
         const $fee = /** @type {HTMLDivElement} */ (this.$el.querySelector('#fee'));
 
-        // Set value and fee.
         $value.textContent = NumberFormatting.formatNumber(
-            PolygonUtils.unitsToCoins(['redeem', 'redeemWithSecretInData', 'refund'].includes(request.description.name)
-                ? /** @type {number} */ (request.amount)
-                : request.description.args.amount.toNumber()),
+            PolygonUtils.unitsToCoins(Number(request.amount)),
             6,
             2, // Always display at least 2 decimals, as is common for USD
         );
-        const feeUnits = request.description.args.fee.toNumber();
+        const feeUnits = Number(settlement.fee);
         if (feeUnits > 0) {
-            // For the fee, we do not display more than two decimals, as it would not add any value for the user
+            // Relay fees are multiples of 0.01, so two decimals show them exactly
             $fee.textContent = NumberFormatting.formatNumber(PolygonUtils.unitsToCoins(feeUnits), 2, 2);
             const $feeSection = /** @type {HTMLDivElement} */ (this.$el.querySelector('.fee-section'));
             $feeSection.classList.remove('display-none');
@@ -175,8 +135,8 @@ class SignPolygonTransaction {
     }
 
     /**
-     * @param {Parsed<KeyguardRequest.SignPolygonTransactionRequest>
-     *     | Parsed<KeyguardRequest.SignPolygonGaslessTransferRequest>} request
+     * @param {Parsed<KeyguardRequest.SignPolygonGaslessTransferRequest>
+     *     | Parsed<KeyguardRequest.SignPolygonHtlcSettlementRequest>} request
      * @param {SignPolygonTransaction.resolve} resolve
      * @param {reject} reject
      * @param {string} [password]
@@ -212,73 +172,40 @@ class SignPolygonTransaction {
             return;
         }
 
-        // Has been validated to be an approved contract address
-        const transferContract = request.request.to;
+        await this._signHtlcSettlement(request, polygonKey, resolve, reject);
+    }
 
-        if (request.description.name === 'swapWithApproval') {
-            const { sigR, sigS, sigV } = await polygonKey.signUsdcApproval(
-                request.keyPath,
-                new ethers.Contract(
-                    CONFIG.BRIDGED_USDC_CONTRACT_ADDRESS,
-                    PolygonContractABIs.BRIDGED_USDC_CONTRACT_ABI,
-                ),
-                transferContract,
-                request.description.args.approval,
-                // Has been validated to be defined when function called is `swapWithApproval`
-                /** @type {{ tokenNonce: number }} */ (request.approval).tokenNonce,
-                request.request.from,
-            );
-
-            const swapContract = new ethers.Contract(
-                transferContract,
-                PolygonContractABIs.SWAP_CONTRACT_ABI,
-            );
-
-            request.request.data = swapContract.interface.encodeFunctionData(request.description.name, [
-                /* address token */ request.description.args.token,
-                /* uint256 amount */ request.description.args.amount,
-                /* address pool */ request.description.args.pool,
-                /* uint256 targetAmount */ request.description.args.targetAmount,
-                /* uint256 fee */ request.description.args.fee,
-                /* uint256 approval */ request.description.args.approval,
-                /* bytes32 sigR */ sigR,
-                /* bytes32 sigS */ sigS,
-                /* uint8 sigV */ sigV,
-            ]);
+    /**
+     * @param {Parsed<KeyguardRequest.SignPolygonHtlcSettlementRequest>} request
+     * @param {PolygonKey} polygonKey
+     * @param {SignPolygonTransaction.resolve} resolve
+     * @param {reject} reject
+     * @returns {Promise<void>}
+     * @private
+     */
+    async _signHtlcSettlement(request, polygonKey, resolve, reject) {
+        if (polygonKey.deriveAddress(request.keyPath) !== request.request.from) {
+            reject(new Errors.InvalidRequestError('request.from does not match the address derived from keyPath'));
+            return;
         }
 
-        if (['redeem', 'redeemWithSecretInData', 'refund'].includes(request.description.name)) {
-            const derivedAddress = polygonKey.deriveAddress(request.keyPath);
-            if (request.description.args.target !== derivedAddress) {
-                reject(new Errors.InvalidRequestError('Target address argument does not match derived address'));
-                return;
-            }
+        let signed;
+        try {
+            signed = await PolygonGaslessHtlc.signSettlement(
+                (domain, types, message) => polygonKey.signTypedData(request.keyPath, domain, types, message),
+                request.operation,
+                {
+                    ...request.request,
+                    deadline: (PolygonGasless.now() + PolygonGaslessHtlc.MAX_DEADLINE_SECONDS).toString(),
+                },
+            );
+        } catch (error) {
+            reject(error instanceof Errors.KeyguardError
+                ? error
+                : new Errors.KeyguardError(error instanceof Error ? error.message : String(error)));
+            return;
         }
-
-        const typedData = new OpenGSN.TypedRequestData(
-            CONFIG.POLYGON_CHAIN_ID,
-            transferContract,
-            {
-                request: request.request,
-                relayData: request.relayData,
-            },
-        );
-
-        const { EIP712Domain, ...cleanedTypes } = typedData.types;
-
-        const signature = await polygonKey.signTypedData(
-            request.keyPath,
-            typedData.domain,
-            /** @type {Record<string, ethers.ethers.TypedDataField[]>} */ (/** @type {unknown} */ (cleanedTypes)),
-            typedData.message,
-        );
-
-        /** @type {KeyguardRequest.SignedPolygonTransaction} */
-        const result = {
-            message: typedData.message,
-            signature,
-        };
-        resolve(result);
+        resolve(signed);
     }
 
     /**
