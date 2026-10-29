@@ -165,6 +165,16 @@ if ! echo "$ethersjs_hashsum" | ${SHA256SUM} --check --strict -; then
     exit 1;
 fi
 
+# Before writing any files, verify integrity of the gasless transfer SDK core
+output "🧐  Validating NimiqGaslessCore file integrity"
+
+# For @nimiq/gasless-sdk v0.2.0 (NimiqToolbox/gas-abstraction c503f11), vendored by `yarn update-gasless-sdk`
+gasless_core_hashsum="929fa430a6c68b6f3776f9f20dc2e6ac7fecba697dd174ff0be71739376b9e8f  src/lib/polygon/NimiqGaslessCore.js"
+if ! echo "$gasless_core_hashsum" | ${SHA256SUM} --check --strict -; then
+    output "💥  NimiqGaslessCore file integrity check failed!"
+    exit 1;
+fi
+
 # cleanup
 output "💣  Clearing dist directory"
 rm -rf dist
