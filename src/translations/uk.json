@@ -88,6 +88,7 @@
     "sign-tx-heading-switch-validator": "Switch Validator",
     "sign-tx-heading-unstaking": "Вивести NIM зі стейкінгу",
     "sign-tx-fee": "комісія",
+    "sign-polygon-tx-correction": "Це замінює ваш попередній підпис для цього платежу. Може бути виконаний лише один із них.",
     "sign-tx-cancel-payment": "Скасувати платіж",
     "sign-tx-multi-count": "{count} transactions",
     "sign-tx-multi-total-fees": "total fees",

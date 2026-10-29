@@ -56,9 +56,9 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
         // Show USDC fees next
         if (fundTx.type === 'USDC_MATIC' || redeemTx.type === 'USDC_MATIC') {
             const myFee = fundTx.type === 'USDC_MATIC'
-                ? fundTx.description.args.fee.toNumber()
+                ? Number(fundTx.request.fee)
                 : redeemTx.type === 'USDC_MATIC'
-                    ? redeemTx.description.args.fee.toNumber()
+                    ? Number(redeemTx.request.fee)
                     : 0;
 
             const theirFee = fundTx.type === 'USDC_MATIC' ? fundFees.redeeming : redeemFees.funding;
@@ -75,9 +75,9 @@ class SwapFeesTooltip { // eslint-disable-line no-unused-vars
         // Show USDT fees next
         if (fundTx.type === 'USDT_MATIC' || redeemTx.type === 'USDT_MATIC') {
             const myFee = fundTx.type === 'USDT_MATIC'
-                ? fundTx.description.args.fee.toNumber()
+                ? Number(fundTx.request.fee)
                 : redeemTx.type === 'USDT_MATIC'
-                    ? redeemTx.description.args.fee.toNumber()
+                    ? Number(redeemTx.request.fee)
                     : 0;
 
             const theirFee = fundTx.type === 'USDT_MATIC' ? fundFees.redeeming : redeemFees.funding;

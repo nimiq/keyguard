@@ -7,9 +7,7 @@
 /* global TopLevelApi */
 /* global NumberFormatting */
 /* global BitcoinKey */
-/* global PolygonContractABIs */
 /* global PolygonKey */
-/* global ethers */
 /* global Identicon */
 /* global TemplateTags */
 /* global I18n */
@@ -18,7 +16,6 @@
 /* global BalanceDistributionBar */
 /* global Constants */
 /* global NonPartitionedSessionStorage */
-/* global CONFIG */
 /* global CryptoUtils */
 
 /**
@@ -71,7 +68,7 @@ class SignSwap {
                     - (fundTx.changeOutput ? fundTx.changeOutput.value : 0); break;
             case 'USDC_MATIC':
             case 'USDT_MATIC':
-                swapFromValue = fundTx.description.args.amount.add(fundTx.description.args.fee).toNumber(); break;
+                swapFromValue = Number(fundTx.request.amount) + Number(fundTx.request.fee); break;
             case 'EUR': swapFromValue = fundTx.amount + fundTx.fee; break;
             default: throw new Errors.KeyguardError('Invalid asset');
         }
@@ -486,12 +483,12 @@ class SignSwap {
             case 'USDT_MATIC':
                 return fundTx.type === asset
                     // When the user funds USDC/T, the service receives the HTLC balance - their network fee.
-                    ? fundTx.description.args.amount.toNumber() - request.fundFees.redeeming
+                    ? Number(fundTx.request.amount) - request.fundFees.redeeming
                     : redeemTx.type === asset
                         // When the user redeems USDC/T, the service lost the HTLC balance + their network fee.
                         // The transaction value is "HTLC balance - tx fee", therefore the "HTLC balance"
                         // is the transaction value + tx fee.
-                        ? redeemTx.amount + redeemTx.description.args.fee.toNumber() + request.redeemFees.funding
+                        ? redeemTx.amount + Number(redeemTx.request.fee) + request.redeemFees.funding
                         : 0; // Should never happen, if parsing works correctly
             case 'EUR':
                 return fundTx.type === 'EUR'
@@ -576,80 +573,15 @@ class SignSwap {
             request.fund.refundAddress = bitcoinKey.deriveAddress(request.fund.refundKeyPath);
         }
 
-        if (request.fund.type === 'USDC_MATIC') {
-            if (request.fund.description.name === 'openWithPermit') {
-                const { sigR, sigS, sigV } = await polygonKey.signUsdcPermit(
-                    request.fund.keyPath,
-                    CONFIG.NATIVE_USDC_HTLC_CONTRACT_ADDRESS,
-                    request.fund.description.args.value,
-                    // Has been validated to be defined when function called is `openWithPermit`
-                    /** @type {{ tokenNonce: number }} */ (request.fund.permit).tokenNonce,
-                    request.fund.request.from,
-                );
-
-                const htlcContract = new ethers.Contract(
-                    CONFIG.NATIVE_USDC_HTLC_CONTRACT_ADDRESS,
-                    PolygonContractABIs.NATIVE_USDC_HTLC_CONTRACT_ABI,
-                );
-
-                request.fund.request.data = htlcContract.interface.encodeFunctionData(request.fund.description.name, [
-                    /* bytes32 id */ request.fund.description.args.id,
-                    /* address token */ request.fund.description.args.token,
-                    /* uint256 amount */ request.fund.description.args.amount,
-                    /* address refundAddress */ request.fund.description.args.refundAddress,
-                    /* address recipientAddress */ request.fund.description.args.recipientAddress,
-                    /* bytes32 hash */ request.fund.description.args.hash,
-                    /* uint256 timeout */ request.fund.description.args.timeout,
-                    /* uint256 fee */ request.fund.description.args.fee,
-                    /* uint256 value */ request.fund.description.args.value,
-                    /* bytes32 sigR */ sigR,
-                    /* bytes32 sigS */ sigS,
-                    /* uint8 sigV */ sigV,
-                ]);
-            }
-
+        if (request.fund.type === 'USDC_MATIC' || request.fund.type === 'USDT_MATIC') {
+            // The swap-iframe signs the permit and the HTLC opening once it knows the HTLC
             const wallet = polygonKey.deriveKeyPair(request.fund.keyPath);
-            privateKeys.usdc = wallet.privateKey;
-        }
-
-        if (request.fund.type === 'USDT_MATIC') {
-            if (request.fund.description.name === 'openWithApproval') {
-                const { sigR, sigS, sigV } = await polygonKey.signUsdtApproval(
-                    request.fund.keyPath,
-                    new ethers.Contract(
-                        CONFIG.BRIDGED_USDT_CONTRACT_ADDRESS,
-                        PolygonContractABIs.BRIDGED_USDT_CONTRACT_ABI,
-                    ),
-                    CONFIG.BRIDGED_USDT_HTLC_CONTRACT_ADDRESS,
-                    request.fund.description.args.approval,
-                    // Has been validated to be defined when function called is `openWithApproval`
-                    /** @type {{ tokenNonce: number }} */ (request.fund.approval).tokenNonce,
-                    request.fund.request.from,
+            if (wallet.address !== request.fund.request.from) {
+                throw new Errors.InvalidRequestError(
+                    'fund.request.from does not match the address derived from keyPath',
                 );
-
-                const htlcContract = new ethers.Contract(
-                    CONFIG.BRIDGED_USDT_HTLC_CONTRACT_ADDRESS,
-                    PolygonContractABIs.BRIDGED_USDT_HTLC_CONTRACT_ABI,
-                );
-
-                request.fund.request.data = htlcContract.interface.encodeFunctionData(request.fund.description.name, [
-                    /* bytes32 id */ request.fund.description.args.id,
-                    /* address token */ request.fund.description.args.token,
-                    /* uint256 amount */ request.fund.description.args.amount,
-                    /* address refundAddress */ request.fund.description.args.refundAddress,
-                    /* address recipientAddress */ request.fund.description.args.recipientAddress,
-                    /* bytes32 hash */ request.fund.description.args.hash,
-                    /* uint256 timeout */ request.fund.description.args.timeout,
-                    /* uint256 fee */ request.fund.description.args.fee,
-                    /* uint256 approval */ request.fund.description.args.approval,
-                    /* bytes32 sigR */ sigR,
-                    /* bytes32 sigS */ sigS,
-                    /* uint8 sigV */ sigV,
-                ]);
             }
-
-            const wallet = polygonKey.deriveKeyPair(request.fund.keyPath);
-            privateKeys.usdt = wallet.privateKey;
+            privateKeys[request.fund.type === 'USDC_MATIC' ? 'usdc' : 'usdt'] = wallet.privateKey;
         }
 
         if (request.fund.type === 'EUR') {
@@ -676,14 +608,14 @@ class SignSwap {
             request.redeem.output.address = address;
         }
 
-        if (request.redeem.type === 'USDC_MATIC') {
+        if (request.redeem.type === 'USDC_MATIC' || request.redeem.type === 'USDT_MATIC') {
             const wallet = polygonKey.deriveKeyPair(request.redeem.keyPath);
-            privateKeys.usdc = wallet.privateKey;
-        }
-
-        if (request.redeem.type === 'USDT_MATIC') {
-            const wallet = polygonKey.deriveKeyPair(request.redeem.keyPath);
-            privateKeys.usdt = wallet.privateKey;
+            if (wallet.address !== request.redeem.request.from) {
+                throw new Errors.InvalidRequestError(
+                    'redeem.request.from does not match the address derived from keyPath',
+                );
+            }
+            privateKeys[request.redeem.type === 'USDC_MATIC' ? 'usdc' : 'usdt'] = wallet.privateKey;
         }
 
         /** @type {string | undefined} */
@@ -712,9 +644,6 @@ class SignSwap {
                 }
                 if (value instanceof Uint8Array) {
                     return Nimiq.BufferUtils.toHex(value);
-                }
-                if (value instanceof ethers.utils.TransactionDescription) {
-                    return null;
                 }
                 return value;
             });

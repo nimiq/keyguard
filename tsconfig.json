@@ -72,7 +72,7 @@
     "coverage",
     "src/lib/QrScannerWorker.js",
     "src/lib/bitcoin/BitcoinJS.js",
-    "src/lib/polygon/OpenGSN.js",
+    "src/lib/polygon/NimiqGaslessCore.js",
     "src/service-worker", // Service worker is checked with a separate tsconfig in src/service-worker
     "src/translations/index.js"
   ]

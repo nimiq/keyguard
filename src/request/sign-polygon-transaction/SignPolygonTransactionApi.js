@@ -1,255 +1,186 @@
-/* global ethers */
 /* global TopLevelApi */
 /* global PolygonRequestParserMixin */
 /* global SignPolygonTransaction */
-/* global PolygonContractABIs */
 /* global Errors */
 /* global CONFIG */
+/* global PolygonGasless */
+/* global PolygonGaslessHtlc */
+/* global NimiqGaslessCore */
 
 class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) { // eslint-disable-line no-unused-vars
     /**
      * @param {KeyguardRequest.SignPolygonTransactionRequest} request
-     * @returns {Promise<Parsed<KeyguardRequest.SignPolygonTransactionRequest>>}
+     * @returns {Promise<Parsed<KeyguardRequest.SignPolygonGaslessTransferRequest>
+     *     | Parsed<KeyguardRequest.SignPolygonHtlcSettlementRequest>>}
      */
     async parseRequest(request) {
         if (!request) {
             throw new Errors.InvalidRequestError('request is required');
         }
 
-        /** @type {Parsed<KeyguardRequest.SignPolygonTransactionRequest>} */
+        switch (request.operation) {
+            case undefined:
+            case 'transfer':
+                return this.parseGaslessTransferRequest(request);
+            case 'redeem':
+            case 'refund':
+                return this.parseHtlcSettlementRequest(request);
+            default:
+                throw new Errors.InvalidRequestError('Invalid operation');
+        }
+    }
+
+    /**
+     * @param {KeyguardRequest.SignPolygonHtlcSettlementRequest} request
+     * @returns {Promise<Parsed<KeyguardRequest.SignPolygonHtlcSettlementRequest>>}
+     */
+    async parseHtlcSettlementRequest(request) {
+        /** @type {Parsed<KeyguardRequest.SignPolygonHtlcSettlementRequest>} */
         const parsedRequest = {};
         parsedRequest.appName = this.parseAppName(request.appName);
         parsedRequest.keyInfo = await this.parseKeyId(request.keyId);
         parsedRequest.keyLabel = /** @type {string} */ (this.parseLabel(request.keyLabel, false, 'keyLabel'));
         parsedRequest.keyPath = this.parsePolygonPath(request.keyPath, 'keyPath');
-        [parsedRequest.request, parsedRequest.description] = this.parseOpenGsnForwardRequest(request);
-        parsedRequest.relayData = this.parseOpenGsnRelayData(request.relayData);
-        parsedRequest.senderLabel = this.parseLabel(request.senderLabel); // Used for HTLC refunds
-        parsedRequest.recipientLabel = this.parseLabel(request.recipientLabel);
-        if (request.amount !== undefined) {
-            parsedRequest.amount = this.parsePositiveInteger(request.amount, false, 'amount');
+        parsedRequest.operation = request.operation;
+        parsedRequest.senderLabel = this.parseLabel(request.senderLabel);
+        parsedRequest.token = this.parsePolygonAddress(request.token, 'token');
+        // Only for display: the HTLC pays out its amount minus the fee, whatever is shown here.
+        parsedRequest.amount = this.parseNonNegativeIntegerString(request.amount, 'amount');
+
+        // Also validates the token
+        PolygonGasless.stablecoin(parsedRequest.token);
+
+        const settlement = request.request;
+        if (typeof settlement !== 'object' || settlement === null) {
+            throw new Errors.InvalidRequestError('request must be an object');
         }
-        if (request.token !== undefined) {
-            parsedRequest.token = this.parsePolygonAddress(request.token, 'token');
+        parsedRequest.request = {
+            from: this.parsePolygonAddress(settlement.from, 'request.from'),
+            id: this.parseBytes32(settlement.id, 'request.id'),
+            target: this.parsePolygonAddress(settlement.target, 'request.target'),
+            fee: this.parseNonNegativeIntegerString(settlement.fee, 'request.fee'),
+            relay: this.parsePolygonAddress(settlement.relay, 'request.relay'),
+        };
+        if (parsedRequest.request.target !== parsedRequest.request.from) {
+            throw new Errors.InvalidRequestError('request.target must be request.from');
         }
-        if (request.approval !== undefined) {
-            parsedRequest.approval = {
-                tokenNonce: this.parsePositiveInteger(
-                    request.approval.tokenNonce,
-                    true,
-                    'approval.tokenNonce',
-                ),
-            };
-        }
-        if (request.permit !== undefined) {
-            parsedRequest.permit = {
-                tokenNonce: this.parsePositiveInteger(
-                    request.permit.tokenNonce,
-                    true,
-                    'permit.tokenNonce',
-                ),
-            };
-        }
+        PolygonGaslessHtlc.checkFeeAndRelay(parsedRequest.request.fee, parsedRequest.request.relay, 'request');
+        // Fails early if HTLCs are not configured
+        PolygonGaslessHtlc.contract();
 
         return parsedRequest;
     }
 
     /**
-     *
-     * @param {KeyguardRequest.PolygonTransactionInfo} request
-     * @returns {[
-     *     KeyguardRequest.OpenGsnForwardRequest,
-     *     PolygonTransferDescription
-     *     | PolygonTransferWithPermitDescription
-     *     | PolygonTransferWithApprovalDescription
-     *     | PolygonRedeemDescription
-     *     | PolygonRedeemWithSecretInDataDescription
-     *     | PolygonRefundDescription
-     *     | PolygonSwapDescription
-     *     | PolygonSwapWithApprovalDescription,
-     * ]}
+     * @param {KeyguardRequest.SignPolygonGaslessTransferRequest} request
+     * @returns {Promise<Parsed<KeyguardRequest.SignPolygonGaslessTransferRequest>>}
      */
-    parseOpenGsnForwardRequest(request) {
-        const forwardRequest = this.parseOpenGsnForwardRequestRoot(request.request);
-
-        /**
-         * @type {PolygonTransferDescription
-         *        | PolygonTransferWithPermitDescription
-         *        | PolygonTransferWithApprovalDescription
-         *        | PolygonRedeemDescription
-         *        | PolygonRedeemWithSecretInDataDescription
-         *        | PolygonRefundDescription
-         *        | PolygonSwapDescription
-         *        | PolygonSwapWithApprovalDescription}
-         */
-        let description;
-
-        if (forwardRequest.to === CONFIG.NATIVE_USDC_TRANSFER_CONTRACT_ADDRESS) {
-            const transferContract = new ethers.Contract(
-                CONFIG.NATIVE_USDC_TRANSFER_CONTRACT_ADDRESS,
-                PolygonContractABIs.NATIVE_USDC_TRANSFER_CONTRACT_ABI,
-            );
-
-            description = /** @type {PolygonTransferDescription | PolygonTransferWithPermitDescription} */ (
-                transferContract.interface.parseTransaction({
-                    data: forwardRequest.data,
-                    value: forwardRequest.value,
-                })
-            );
-
-            if (description.args.token !== CONFIG.NATIVE_USDC_CONTRACT_ADDRESS) {
-                throw new Errors.InvalidRequestError('Invalid native USDC token contract in request data');
-            }
-
-            if (!['transfer', 'transferWithPermit'].includes(description.name)) {
-                throw new Errors.InvalidRequestError('Requested Polygon contract method is invalid');
-            }
-        } else if (forwardRequest.to === CONFIG.BRIDGED_USDT_TRANSFER_CONTRACT_ADDRESS) {
-            const transferContract = new ethers.Contract(
-                CONFIG.BRIDGED_USDT_TRANSFER_CONTRACT_ADDRESS,
-                PolygonContractABIs.BRIDGED_USDT_TRANSFER_CONTRACT_ABI,
-            );
-
-            description = /** @type {PolygonTransferDescription | PolygonTransferWithApprovalDescription} */ (
-                transferContract.interface.parseTransaction({
-                    data: forwardRequest.data,
-                    value: forwardRequest.value,
-                })
-            );
-
-            if (description.args.token !== CONFIG.BRIDGED_USDT_CONTRACT_ADDRESS) {
-                throw new Errors.InvalidRequestError('Invalid bridged USDT token contract in request data');
-            }
-
-            if (!['transfer', 'transferWithApproval'].includes(description.name)) {
-                throw new Errors.InvalidRequestError('Requested Polygon contract method is invalid');
-            }
-        } else if (forwardRequest.to === CONFIG.NATIVE_USDC_HTLC_CONTRACT_ADDRESS) {
-            const htlcContract = new ethers.Contract(
-                CONFIG.NATIVE_USDC_HTLC_CONTRACT_ADDRESS,
-                PolygonContractABIs.NATIVE_USDC_HTLC_CONTRACT_ABI,
-            );
-
-            // eslint-disable-next-line max-len
-            description = /** @type {PolygonRedeemDescription | PolygonRedeemWithSecretInDataDescription | PolygonRefundDescription} */ (
-                htlcContract.interface.parseTransaction({
-                    data: forwardRequest.data,
-                    value: forwardRequest.value,
-                })
-            );
-
-            if (!['redeem', 'redeemWithSecretInData', 'refund'].includes(description.name)) {
-                throw new Errors.InvalidRequestError('Requested Polygon contract method is invalid');
-            }
-        } else if (forwardRequest.to === CONFIG.BRIDGED_USDT_HTLC_CONTRACT_ADDRESS) {
-            // The HTLC contract for bridged USDT is the same as for bridged USDC (legacy).
-
-            if (!request.token) {
-                throw new Errors.InvalidRequestError('`token` is required for calling the bridged HTLC contract');
-            }
-
-            // Since users can refund a bridged USDC swap even years later, we need to still
-            // support this legacy contract.
-            if (request.token === CONFIG.BRIDGED_USDC_CONTRACT_ADDRESS) {
-                const htlcContract = new ethers.Contract(
-                    CONFIG.BRIDGED_USDC_HTLC_CONTRACT_ADDRESS,
-                    PolygonContractABIs.BRIDGED_USDC_HTLC_CONTRACT_ABI,
-                );
-
-                description = /** @type {PolygonRefundDescription} */ (
-                    htlcContract.interface.parseTransaction({
-                        data: forwardRequest.data,
-                        value: forwardRequest.value,
-                    })
-                );
-
-                if (!['refund'].includes(description.name)) {
-                    throw new Errors.InvalidRequestError('Requested Polygon contract method is invalid');
-                }
-            } else if (request.token === CONFIG.BRIDGED_USDT_CONTRACT_ADDRESS) {
-                const htlcContract = new ethers.Contract(
-                    CONFIG.BRIDGED_USDT_HTLC_CONTRACT_ADDRESS,
-                    PolygonContractABIs.BRIDGED_USDT_HTLC_CONTRACT_ABI,
-                );
-
-                // eslint-disable-next-line max-len
-                description = /** @type {PolygonRedeemDescription | PolygonRedeemWithSecretInDataDescription | PolygonRefundDescription} */ (
-                    htlcContract.interface.parseTransaction({
-                        data: forwardRequest.data,
-                        value: forwardRequest.value,
-                    })
-                );
-
-                if (!['redeem', 'redeemWithSecretInData', 'refund'].includes(description.name)) {
-                    throw new Errors.InvalidRequestError('Requested Polygon contract method is invalid');
-                }
-            } else {
-                throw new Errors.InvalidRequestError('Invalid `token`');
-            }
-        } else if (forwardRequest.to === CONFIG.USDC_SWAP_CONTRACT_ADDRESS) {
-            const transferContract = new ethers.Contract(
-                CONFIG.USDC_SWAP_CONTRACT_ADDRESS,
-                PolygonContractABIs.SWAP_CONTRACT_ABI,
-            );
-
-            description = /** @type {PolygonSwapDescription | PolygonSwapWithApprovalDescription} */(
-                transferContract.interface.parseTransaction({
-                    data: forwardRequest.data,
-                    value: forwardRequest.value,
-                })
-            );
-
-            if (description.args.token !== CONFIG.BRIDGED_USDC_CONTRACT_ADDRESS) {
-                throw new Errors.InvalidRequestError('Invalid USDC token contract in request data');
-            }
-
-            if (!['swap', 'swapWithApproval'].includes(description.name)) {
-                throw new Errors.InvalidRequestError('Requested Polygon contract method is invalid');
-            }
-
-            // Ensure swap `targetAmount` is not too low
-            const inputAmount = /** @type {PolygonSwapDescription | PolygonSwapWithApprovalDescription} */ (description)
-                .args
-                .amount;
-            const targetAmount = /** @type {PolygonSwapDescription | PolygonSwapWithApprovalDescription} */ (description) // eslint-disable-line max-len
-                .args
-                .targetAmount;
-            // Allow 1% slippage for swaps on Polygon mainnet, but up to 5% for testnet
-            const maxTargetAmountSlippage = CONFIG.POLYGON_CHAIN_ID === 137 ? 1 : 5;
-            const minTargetAmount = inputAmount.mul(100 - maxTargetAmountSlippage).div(100);
-            if (targetAmount.lt(minTargetAmount)) {
-                throw new Errors.InvalidRequestError(
-                    'Requested USDC swap `targetAmount` is too low',
-                );
-            }
-        } else {
-            throw new Errors.InvalidRequestError('request.to address is not allowed');
+    async parseGaslessTransferRequest(request) {
+        /** @type {Parsed<KeyguardRequest.SignPolygonGaslessTransferRequest>} */
+        const parsedRequest = {};
+        parsedRequest.appName = this.parseAppName(request.appName);
+        parsedRequest.keyInfo = await this.parseKeyId(request.keyId);
+        parsedRequest.keyLabel = /** @type {string} */ (this.parseLabel(request.keyLabel, false, 'keyLabel'));
+        parsedRequest.keyPath = this.parsePolygonPath(request.keyPath, 'keyPath');
+        parsedRequest.recipientLabel = this.parseLabel(request.recipientLabel);
+        parsedRequest.tokenNonce = this.parsePositiveInteger(request.tokenNonce, true, 'tokenNonce');
+        if (request.corrects !== undefined) {
+            parsedRequest.corrects = this.parseGaslessTransferRequestFields(request.corrects, 'corrects');
         }
+        parsedRequest.intent = SignPolygonTransactionApi.createIntent(
+            this.parseGaslessTransfer(request.request, 'request'),
+            parsedRequest.tokenNonce,
+            parsedRequest.corrects,
+        );
 
-        // Check that amount exists when request is for refund or redeem, and unset for other methods.
-        if (['redeem', 'redeemWithSecretInData', 'refund'].includes(description.name) !== !!request.amount) {
-            throw new Errors.InvalidRequestError(
-                '`amount` is only allowed for contract methods "refund", "redeem" and "redeemWithSecretInData"',
-            );
+        return parsedRequest;
+    }
+
+    /**
+     * Builds and validates the transfer intent against the pins, the fee limit and, for a new version of a payment,
+     * the correction rules. The typed data to sign is built from the intent, never taken from the caller.
+     *
+     * @param {KeyguardRequest.PolygonGaslessTransfer} transfer
+     * @param {number} tokenNonce
+     * @param {GaslessTransferRequest} [corrects]
+     * @returns {GaslessTransferIntent}
+     */
+    static createIntent(transfer, tokenNonce, corrects) {
+        const now = PolygonGasless.now();
+        // A new version of a payment must not expire before the version it corrects.
+        const deadline = Math.max(
+            now + NimiqGaslessCore.DEFAULT_DEADLINE_SECONDS,
+            corrects ? Number(corrects.deadline) : 0,
+        );
+        try {
+            return NimiqGaslessCore.createTransferIntent(PolygonGasless.pins(), {
+                // The intent nonce is the sender's `nonces(from)` for a new payment, which the Keyguard cannot read
+                // itself. A correction must keep the nonce of the version it corrects, which the SDK checks.
+                ...transfer,
+                // Always a permit, which expires with the intent. USDT0's META_TX approval never expires.
+                authMode: 'permit',
+                deadline,
+                tokenNonce,
+                corrects,
+            }, now, {
+                maxAcceptableFee: CONFIG.POLYGON_GASLESS_MAX_ACCEPTABLE_FEE,
+            });
+        } catch (error) {
+            if (error instanceof NimiqGaslessCore.GaslessValidationError) {
+                throw new Errors.InvalidRequestError(`${error.field}: ${error.message} (${error.code})`);
+            }
+            throw error;
         }
+    }
 
-        // Check that permit object exists when method is 'transferWithPermit', and unset for other methods.
-        if ((description.name === 'transferWithPermit') !== !!request.permit) {
-            throw new Errors.InvalidRequestError('`permit` object is only allowed for contract method '
-                + '"transferWithPermit"');
+    /**
+     * @param {unknown} transfer
+     * @param {string} name
+     * @returns {KeyguardRequest.PolygonGaslessTransfer}
+     */
+    parseGaslessTransfer(transfer, name) {
+        if (typeof transfer !== 'object' || transfer === null) {
+            throw new Errors.InvalidRequestError(`${name} must be an object`);
         }
+        const {
+            token,
+            from,
+            to,
+            amount,
+            fee,
+            relay,
+            nonce,
+        } = /** @type {KeyguardRequest.PolygonGaslessTransfer} */ (transfer);
+        return {
+            token: this.parsePolygonAddress(token, `${name}.token`),
+            from: this.parsePolygonAddress(from, `${name}.from`),
+            to: this.parsePolygonAddress(to, `${name}.to`),
+            amount: this.parseNonNegativeIntegerString(amount, `${name}.amount`),
+            fee: this.parseNonNegativeIntegerString(fee, `${name}.fee`),
+            relay: this.parsePolygonAddress(relay, `${name}.relay`),
+            nonce: this.parseNonNegativeIntegerString(nonce, `${name}.nonce`),
+        };
+    }
 
-        // Check that approval object exists when method is 'transferWithApproval' or 'swapWithApproval', and unset for
-        // other methods.
-        if ((
-            description.name === 'transferWithApproval'
-            || description.name === 'swapWithApproval'
-        ) !== !!request.approval) {
-            throw new Errors.InvalidRequestError('`approval` object is only allowed for contract methods '
-                + '"transferWithApproval" and "swapWithApproval"');
+    /**
+     * @param {unknown} request
+     * @param {string} name
+     * @returns {GaslessTransferRequest}
+     */
+    parseGaslessTransferRequestFields(request, name) {
+        const transfer = this.parseGaslessTransfer(request, name);
+        const { deadline } = /** @type {KeyguardRequest.PolygonGaslessTransferRequest} */ (request);
+        try {
+            return NimiqGaslessCore.normalizeTransferRequest({
+                ...transfer,
+                deadline: this.parseNonNegativeIntegerString(deadline, `${name}.deadline`),
+            });
+        } catch (error) {
+            if (error instanceof NimiqGaslessCore.GaslessValidationError) {
+                throw new Errors.InvalidRequestError(`${name}: ${error.message}`);
+            }
+            throw error;
         }
-
-        return [forwardRequest, description];
     }
 
     get Handler() {

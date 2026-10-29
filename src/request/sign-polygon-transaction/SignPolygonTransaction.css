@@ -58,3 +58,10 @@
     opacity: 0.5;
     margin-bottom: 0.25rem;
 }
+
+#confirm-transaction .correction-notice {
+    margin-top: 2rem;
+    max-width: 36rem;
+    text-align: center;
+    opacity: 0.7;
+}
