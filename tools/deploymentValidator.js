@@ -51,12 +51,10 @@ const FRAME_ANCESTORS = {
     ],
     /** The swap iframe, which the Safe never embeds. */
     SWAP: ['https://wallet.nimiq-testnet.com', 'https://hub.nimiq-testnet.com'],
-    /** The RSA sandbox, embedded only by the Keyguard itself. */
-    SELF: ["'self'"],
 };
 
 const {
-    NONE, IFRAME, SWAP, SELF,
+    NONE, IFRAME, SWAP,
 } = FRAME_ANCESTORS;
 
 const JS = 'application/javascript';
@@ -73,10 +71,9 @@ const PROBES = [
     { path: '/assets/nimiq-pow/worker-wasm.wasm', contentType: 'application/wasm', frameAncestors: NONE },
     { path: '/assets/nimiq-style.icons.svg', contentType: 'image/svg+xml', frameAncestors: NONE },
     { path: '/build-info.json', contentType: 'application/json', frameAncestors: NONE },
-    // The three cross-origin-embeddable paths, each with its own policy.
+    // The two cross-origin-embeddable paths, each with its own policy.
     { path: '/request/iframe/', contentType: HTML, frameAncestors: IFRAME },
     { path: '/request/swap-iframe/', contentType: HTML, frameAncestors: SWAP },
-    { path: '/lib/rsa/sandboxed/RSAKeysIframe.html', contentType: HTML, frameAncestors: SELF },
 ];
 
 /** The page whose SRI hashes are re-derived from the CDN. */
@@ -367,16 +364,10 @@ async function main() {
     console.log(`Validating deployment at ${BASE}`);
 
     for (const probe of PROBES) {
-        // Sequential on purpose: a failing deployment should not be hit with 13 parallel requests,
+        // Sequential on purpose: a failing deployment should not be hit with 12 parallel requests,
         // and the output stays readable.
         // eslint-disable-next-line no-await-in-loop
-        const response = await probePath(probe);
-
-        // RSAKeysIframe.html additionally needs a sandbox directive it cannot set via meta (see the
-        // comment at the top of src/lib/rsa/sandboxed/RSAKeysIframe.html).
-        if (probe.frameAncestors === FRAME_ANCESTORS.SELF && response && response.status === 200) {
-            expect('rsa sandbox', response.headers.get('content-security-policy'), 'sandbox allow-scripts');
-        }
+        await probePath(probe);
     }
 
     await checkSri();

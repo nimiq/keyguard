@@ -31,7 +31,6 @@ module.exports = function (/** @type {any} */ config) {
 
         // avoid calling runKeyguard and redirect page
         exclude: [
-            'src/lib/rsa/sandboxed/*.js',
             'src/request/**/index.js',
             'src/redirect.js',
         ],

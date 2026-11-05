@@ -139,25 +139,7 @@ class Connect {
             });
         }
 
-        const keyParams = Key.defaultRsaKeyParams;
-        const rsaPublicCryptoKey = await key.getRsaPublicKey(keyParams);
-
-        /** @type {KeyguardRequest.ConnectResult} */
-        const result = {
-            signatures,
-            encryptionKey: {
-                format: 'spki',
-                keyData: new Uint8Array(await window.crypto.subtle.exportKey('spki', rsaPublicCryptoKey)),
-                algorithm: {
-                    name: rsaPublicCryptoKey.algorithm.name,
-                    hash: (/** @type {RsaHashedKeyAlgorithm} */ (rsaPublicCryptoKey.algorithm)).hash.name,
-                },
-                keyUsages: ['encrypt'],
-                keyParams,
-            },
-        };
-
-        resolve(result);
+        resolve({ signatures });
     }
 
     run() {
