@@ -175,7 +175,6 @@ mkdir -p dist/request
 mkdir -p dist/assets/nimiq-pow
 mkdir -p dist/assets/nimiq-pos
 mkdir -p dist/lib
-mkdir -p dist/lib/rsa/sandboxed
 
 # bundle names
 JS_BUNDLE="index.HASH.js"
@@ -387,26 +386,6 @@ awk '
 ' src/index.html > dist/index.html
 # make redirect file available at /request/ too
 cp dist/index.html dist/request
-
-# Build RSA iframe
-output "🔑  Building RSA Iframe"
-
-# Integrity check that forge.min.js is from node-forge 1.3.1
-nodeforge_hashsum="dc67fd132427ad96c9666c844b39565413c40ddb1f2d063c53512fbf6d387dfd  src/lib/rsa/sandboxed/forge.min.js"
-if ! echo "$nodeforge_hashsum" | ${SHA256SUM} --check --strict -; then
-    output "💥  node-forge file integrity check failed!"
-    exit 1;
-fi
-
-# Note: requests in a sandboxed iframe are considered cross origin requests, and are thus blocked by adblockers
-# (adblockers block loading scripts off a *.nimiq.com domain when the request does not originate from that same origin).
-# Therefore we inline the scripts here to avoid loading external scripts.
-cp src/lib/rsa/sandboxed/RSAKeysIframe.html dist/lib/rsa/sandboxed/
-inplace_sed \
-    -e 's/<script src="\.\/[^"]*">/<script>/' \
-    -e '/RSA_IFRAME_FORGE_CONTENTS/{r src/lib/rsa/sandboxed/forge.min.js' -e 'd' -e '}' \
-    -e '/RSA_IFRAME_SCRIPT_CONTENTS/{r src/lib/rsa/sandboxed/RSAKeysIframe.js' -e 'd' -e '}' \
-    dist/lib/rsa/sandboxed/RSAKeysIframe.html
 
 # copy assets
 output "🐑  Copying static assets"

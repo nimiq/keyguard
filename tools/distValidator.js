@@ -33,7 +33,6 @@ const REQUIRED_FILES = [
     'dist/favicon.ico',
     'dist/lib/Nimiq.mjs',
     'dist/lib/QrScannerWorker.js',
-    'dist/lib/rsa/sandboxed/RSAKeysIframe.html',
     'dist/assets/nimiq-style.icons.svg',
     'dist/assets/nimiq-pow/worker-wasm.wasm',
     'dist/assets/nimiq-pos/web/index.js',
@@ -159,11 +158,6 @@ function checkRewrites(files) {
     const nimiqMjs = `${DIST}/lib/Nimiq.mjs`;
     if (isNonEmptyFile(nimiqMjs) && fs.readFileSync(nimiqMjs, 'utf8').includes('node_modules')) {
         fail('Nimiq.mjs still imports from node_modules');
-    }
-
-    const rsaIframe = `${DIST}/lib/rsa/sandboxed/RSAKeysIframe.html`;
-    if (isNonEmptyFile(rsaIframe) && fs.readFileSync(rsaIframe, 'utf8').includes('RSA_IFRAME_FORGE_CONTENTS')) {
-        fail('forge.min.js was not inlined into RSAKeysIframe.html');
     }
 
     if (!hasErrors) ok('build rewrites applied');

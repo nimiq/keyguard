@@ -243,12 +243,6 @@ export type SignTransactionRequest
     | SignTransactionRequestSwitchValidator
     | SignTransactionRequestUnstaking;
 
-export type RsaKeyParams = {
-    kdf: string,
-    iterations: number,
-    keySize: number,
-};
-
 export type MultisigConfig = {
     /**
      * The public keys of all n potential signers of a k of n multisig. So notably, these are not pre-aggregated public
@@ -626,13 +620,6 @@ export type ConnectRequest = SimpleRequest & {
 
 export type ConnectResult = {
     signatures: SignatureResult[],
-    encryptionKey: {
-        format: 'spki',
-        keyData: Uint8Array,
-        algorithm: { name: string, hash: string },
-        keyUsages: ['encrypt'],
-        keyParams: RsaKeyParams,
-    },
 };
 
 // Request unions
