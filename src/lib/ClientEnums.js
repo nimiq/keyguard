@@ -67,6 +67,7 @@ const KeyguardCommand = (/** @type {typeof replicateEnum<KeyguardCommandObjectTy
     EXPORT: 'export',
     CHANGE_PASSWORD: 'change-password',
     SIGN_TRANSACTION: 'sign-transaction',
+    CREATE_MULTISIG_COMMITMENTS: 'create-multisig-commitments',
     SIGN_MULTISIG_TRANSACTION: 'sign-multisig-transaction',
     SIGN_STAKING: 'sign-staking',
     SIGN_MESSAGE: 'sign-message',

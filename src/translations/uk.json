@@ -101,6 +101,8 @@
     "sign-multisig-tx-heading-tx": "Схвалити Multisig переказ",
     "sign-multisig-tx-approving-as-name-with-account": "Схвалення від імені {userName} з {accountName}",
     "sign-multisig-tx-approving-with-account": "Схвалення з {accountName}",
+    "create-multisig-commitments-heading": "Start Multisig Approval",
+    "create-multisig-commitments-text": "Unlock your account to start a signing session for this multisig transaction. You will review and approve the transaction in a later step.",
 
     "sign-staking-heading-stake": "Застейкати NIM",
     "sign-staking-heading-unstake": "Вивести NIM зі стейкінгу",
