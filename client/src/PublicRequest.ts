@@ -264,13 +264,10 @@ export type MultisigConfig = {
         commitments: Uint8Array[],
     }>,
     /**
-     * The corresponding secrets for my own commitments. Can optionally be encrypted by an encryption key obtained via a
-     * Connect request.
+     * The signing state returned for my own signer by the create-multisig-commitments request (round 1). The Keyguard
+     * derives the secrets for my own commitments from it. Commitment secrets are not accepted from the caller.
      */
-    secrets: Uint8Array[] | {
-        encrypted: Uint8Array[],
-        keyParams: RsaKeyParams,
-    },
+    state: Uint8Array,
     userName?: string,
 };
 

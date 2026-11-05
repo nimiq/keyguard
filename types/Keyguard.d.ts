@@ -64,10 +64,7 @@ type MultisigConfig = {
         publicKey: Nimiq.PublicKey,
         commitments: Nimiq.Commitment[],
     }>
-    secrets: Nimiq.RandomSecret[] | {
-        encrypted: Uint8Array[]
-        keyParams: RsaKeyParams
-    }
+    state: MultisigSigningState
     userName?: string
 }
 
