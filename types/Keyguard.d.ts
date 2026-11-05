@@ -315,6 +315,15 @@ type Parsed<T extends KeyguardRequest.Request> =
     // transaction fields). An `Is<T, X>` keyof-equality check would normally disambiguate, but
     // that predicate fails on the three-branch `Standard` union, so we use plain `extends`
     // below and must filter multisig first.
+    T extends Is<T, KeyguardRequest.CreateMultisigCommitmentsRequest> ?
+        ConstructTransaction<Transform<KeyId2KeyInfo<KeyguardRequest.CreateMultisigCommitmentsRequest>, 'multisigConfig', {
+            multisigConfig: {
+                publicKeys: Nimiq.PublicKey[],
+                numberOfSigners: number,
+                userName?: string,
+            },
+            multisigAddress: Nimiq.Address,
+        }>> :
     T extends Is<T, KeyguardRequest.SignMultisigTransactionRequestStandard> ?
         ConstructMultisigTransaction<KeyId2KeyInfo<KeyguardRequest.SignMultisigTransactionRequestStandard>>
         & { layout: KeyguardRequest.SignMultisigTransactionRequestLayout } :

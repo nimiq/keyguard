@@ -101,6 +101,8 @@
     "sign-multisig-tx-heading-tx": "Multisig transactie goedkeuren",
     "sign-multisig-tx-approving-as-name-with-account": "Goedkeuren als {userName} met {accountName}",
     "sign-multisig-tx-approving-with-account": "Goedkeuren met {accountName}",
+    "create-multisig-commitments-heading": "Start Multisig Approval",
+    "create-multisig-commitments-text": "Unlock your account to start a signing session for this multisig transaction. You will review and approve the transaction in a later step.",
 
     "sign-staking-heading-stake": "Stake NIM",
     "sign-staking-heading-unstake": "Unstake NIM",

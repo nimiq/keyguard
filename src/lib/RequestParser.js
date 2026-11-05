@@ -211,6 +211,54 @@ class RequestParser { // eslint-disable-line no-unused-vars
     }
 
     /**
+     * Parses the public keys of all n potential signers of a k of n multisig.
+     *
+     * @param {unknown} publicKeys
+     * @returns {Nimiq.PublicKey[]}
+     */
+    parseMultisigPublicKeys(publicKeys) {
+        try {
+            if (!Array.isArray(publicKeys)) throw new Error('not an array');
+            return publicKeys.map(key => {
+                if (!(key instanceof Uint8Array)) throw new Error('not a Uint8Array');
+                return new Nimiq.PublicKey(key);
+            });
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            throw new Errors.InvalidRequestError(`Invalid public keys: ${errorMessage}`);
+        }
+    }
+
+    /**
+     * Computes the multisig address and checks that the transaction is related to it.
+     *
+     * @param {Nimiq.Transaction} transaction
+     * @param {Nimiq.PublicKey[]} publicKeys
+     * @param {number} numberOfSigners
+     * @returns {Nimiq.Address}
+     */
+    parseMultisigAddress(transaction, publicKeys, numberOfSigners) {
+        const multisigAddress = Nimiq.Address.fromPublicKeys(publicKeys, numberOfSigners);
+
+        if (!(transaction.senderType === Nimiq.AccountType.Basic && transaction.sender.equals(multisigAddress))
+            // Vesting contracts owned by the multisig are allowed to send anywhere. The contract address can't be
+            // verified here, it can however be assumed to be owned by the multisig, as only the owner can sign a valid
+            // vesting withdrawal transaction.
+            && transaction.senderType !== Nimiq.AccountType.Vesting
+            // For other transactions which are not from a basic account, i.e. from a contract (other than a vesting
+            // contract), we enforce the multisig to be the recipient. E.g. unstaking, HTLC refund, HTLC withdrawal etc.
+            // are only allowed to the multisig address.
+            && !(transaction.recipientType === Nimiq.AccountType.Basic && transaction.recipient.equals(multisigAddress))
+        ) {
+            throw new Errors.InvalidRequestError(
+                'The transaction must either be sent from or to the multisig, or from a vesting contract owned by it',
+            );
+        }
+
+        return multisigAddress;
+    }
+
+    /**
      * @template {boolean} T
      * @param {any} address
      * @param {string} name

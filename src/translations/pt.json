@@ -101,6 +101,8 @@
     "sign-multisig-tx-heading-tx": "Aprovar transação Multisig",
     "sign-multisig-tx-approving-as-name-with-account": "A aprovar {userName} com {accountName}",
     "sign-multisig-tx-approving-with-account": "Aprovar com {accountName}",
+    "create-multisig-commitments-heading": "Start Multisig Approval",
+    "create-multisig-commitments-text": "Unlock your account to start a signing session for this multisig transaction. You will review and approve the transaction in a later step.",
 
     "sign-staking-heading-stake": "Participa NIM",
     "sign-staking-heading-unstake": "Retira NIM",

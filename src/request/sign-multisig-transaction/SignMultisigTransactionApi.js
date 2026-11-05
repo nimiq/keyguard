@@ -26,7 +26,8 @@ class SignMultisigTransactionApi extends TopLevelApi {
         parsedRequest.multisigConfig = this.parseMultisigConfig(request.multisigConfig);
         parsedRequest.multisigAddress = this.parseMultisigAddress(
             parsedRequest.transaction,
-            parsedRequest.multisigConfig,
+            parsedRequest.multisigConfig.publicKeys,
+            parsedRequest.multisigConfig.signers.length,
         );
         parsedRequest.layout = this.parseLayout(request.layout);
 
@@ -212,35 +213,6 @@ class SignMultisigTransactionApi extends TopLevelApi {
             secrets,
             userName,
         };
-    }
-
-    /**
-     * @param {Nimiq.Transaction} transaction
-     * @param {MultisigConfig} multisig
-     * @returns {Nimiq.Address}
-     */
-    parseMultisigAddress(transaction, multisig) {
-        const multisigAddress = Nimiq.Address.fromPublicKeys(
-            multisig.publicKeys,
-            multisig.signers.length,
-        );
-
-        if (!(transaction.senderType === Nimiq.AccountType.Basic && transaction.sender.equals(multisigAddress))
-            // Vesting contracts owned by the multisig are allowed to send anywhere. The contract address can't be
-            // verified here, it can however be assumed to be owned by the multisig, as only the owner can sign a valid
-            // vesting withdrawal transaction.
-            && transaction.senderType !== Nimiq.AccountType.Vesting
-            // For other transactions which are not from a basic account, i.e. from a contract (other than a vesting
-            // contract), we enforce the multisig to be the recipient. E.g. unstaking, HTLC refund, HTLC withdrawal etc.
-            // are only allowed to the multisig address.
-            && !(transaction.recipientType === Nimiq.AccountType.Basic && transaction.recipient.equals(multisigAddress))
-        ) {
-            throw new Errors.InvalidRequestError(
-                'The transaction must either be sent from or to the multisig, or from a vesting contract owned by it',
-            );
-        }
-
-        return multisigAddress;
     }
 
     /**
