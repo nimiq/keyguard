@@ -122,13 +122,8 @@ class PolygonGasless { // eslint-disable-line no-unused-vars
 PolygonGasless.DOMAIN_NAME = 'Nimiq Gasless Transfer';
 PolygonGasless.DOMAIN_VERSION = '3';
 
-/**
- * The deadline of a new transfer, and the latest deadline of any transfer. A new version of a payment keeps the
- * deadline of the version it corrects if that is later, which the caller claims. The real one is at most the default
- * deadline after that version was signed, so the maximum only needs to leave room for differences between clocks.
- */
-PolygonGasless.DEFAULT_DEADLINE_SECONDS = 2 * 60;
-PolygonGasless.MAX_DEADLINE_SECONDS = 5 * 60;
+/** How long a transfer stays valid after the user confirmed it. */
+PolygonGasless.DEADLINE_SECONDS = 2 * 60;
 /** The relay refuses a deadline less than this far in the future when a request reaches it. */
 PolygonGasless.MIN_DEADLINE_SECONDS = 60;
 

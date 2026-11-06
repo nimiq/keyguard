@@ -329,7 +329,10 @@ export type PolygonGaslessTransfer = {
      * The intent nonce, a decimal string. It identifies the payment: every version of a payment (e.g. re-signed with a
      * higher fee) keeps it, so that at most one version executes. For a new payment, it is the sender's current
      * `nonces(from)` in the GaslessTransfer contract, read on-chain right before, and only once the sender's previous
-     * payment is decided. For a new version of a payment, it is the nonce of `corrects`.
+     * payment is decided. The Keyguard does not know about earlier versions of a payment. To sign a new version, keep
+     * its `nonce`, `token` and `to`, request it only after checking on-chain that the nonce is still unused
+     * (`nonces(from)` is not above it), and before using the result check that its deadline is not earlier than the
+     * previous version's, for example with `checkCorrection` of `@nimiq/gasless-sdk`.
      */
     nonce: string,
 };
@@ -403,13 +406,6 @@ export type SignPolygonGaslessTransferRequest = SignPolygonTransactionRequestCom
      * The sender's current permit nonce in the token contract (`nonces(from)`).
      */
     tokenNonce: number,
-    /**
-     * The payment's latest signed version, when signing a new version of an existing payment, for example with a
-     * higher fee after the relay refused the fee as too low. The new version keeps the payment's `nonce`, `token`,
-     * `to` and a deadline at least as late. Only request this after checking on-chain that the payment's nonce is
-     * still unused (the GaslessTransfer contract's `nonces(from)` is not above it).
-     */
-    corrects?: PolygonGaslessTransferRequest,
     recipientLabel?: string,
 };
 

@@ -124,12 +124,6 @@ class SignPolygonTransaction {
             const $feeSection = /** @type {HTMLDivElement} */ (this.$el.querySelector('.fee-section'));
             $feeSection.classList.remove('display-none');
         }
-
-        if (request.corrects) {
-            // This version replaces the earlier signed version of the same payment. Only one of them can execute.
-            const $correctionNotice = /** @type {HTMLDivElement} */ (this.$el.querySelector('.correction-notice'));
-            $correctionNotice.classList.remove('display-none');
-        }
     }
 
     /**
@@ -225,7 +219,7 @@ class SignPolygonTransaction {
         try {
             // Rebuild the request with a fresh deadline, as the user might have taken a while to confirm. It keeps the
             // intent nonce and everything that was shown to the user.
-            const transfer = SignPolygonTransactionApi.createTransferRequest(request.request, request.corrects);
+            const transfer = SignPolygonTransactionApi.createTransferRequest(request.request);
 
             // The permit first, as the intent signs it. Always a permit, which expires with the intent. USDT0's META_TX
             // approval never expires.

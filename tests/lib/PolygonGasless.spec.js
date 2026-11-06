@@ -377,41 +377,25 @@ describe('PolygonGasless', () => {
         }
     });
 
-    it('keeps the payment nonce for a correction and enforces the correction rules', () => {
-        const first = SignPolygonTransactionApi.createTransferRequest(transfer(SENDER));
+    it('ignores a `corrects` that a caller still sends', async () => {
+        /** @type {any} */
+        const api = parser();
+        spyOn(api, 'parseKeyId').and.returnValue(Promise.resolve({ id: 'key', encrypted: true, hasPin: false }));
 
-        const corrected = SignPolygonTransactionApi.createTransferRequest(transfer(SENDER, { fee: '20000' }), first);
-        expect(corrected.nonce).toBe(first.nonce);
-        expect(Number(corrected.deadline)).toBeGreaterThanOrEqual(Number(first.deadline));
+        const now = PolygonGasless.now();
+        const parsed = await api.parseRequest({
+            appName: 'Test',
+            keyId: 'key',
+            keyLabel: 'Key',
+            keyPath: PolygonConstants.DEFAULT_DERIVATION_PATH,
+            tokenNonce: 3,
+            request: transfer(SENDER),
+            corrects: { ...transfer(SENDER), deadline: (now + 280).toString() },
+        });
 
-        // Keeps a later deadline of the version it corrects
-        const later = (PolygonGasless.now() + PolygonGasless.MAX_DEADLINE_SECONDS).toString();
-        expect(SignPolygonTransactionApi.createTransferRequest(
-            transfer(SENDER, { fee: '20000' }),
-            { ...first, deadline: later },
-        ).deadline).toBe(later);
-
-        for (const overrides of [
-            { to: '0x90F79bf6EB2c4f870365E785982E1f101E93b906' },
-            { token: CONFIG.BRIDGED_USDT_CONTRACT_ADDRESS },
-            { nonce: '6' },
-        ]) {
-            expect(() => SignPolygonTransactionApi.createTransferRequest(transfer(SENDER, overrides), first))
-                .toThrowError(Errors.InvalidRequestError);
-        }
-        expect(() => SignPolygonTransactionApi.createTransferRequest(
-            transfer('0x90F79bf6EB2c4f870365E785982E1f101E93b906'),
-            first,
-        )).toThrowError(Errors.InvalidRequestError);
-
-        // Cannot be extended beyond the longest deadline, whatever the caller claims about the corrected version
-        expect(PolygonGasless.MAX_DEADLINE_SECONDS).toBe(5 * 60);
-        for (const seconds of [PolygonGasless.MAX_DEADLINE_SECONDS + 60, 2 * 60 * 60]) {
-            expect(() => SignPolygonTransactionApi.createTransferRequest(
-                transfer(SENDER),
-                { ...first, deadline: (PolygonGasless.now() + seconds).toString() },
-            )).toThrowError(Errors.InvalidRequestError);
-        }
+        // Nothing for the confirm page to show, and no later deadline by claiming an earlier version with one
+        expect(parsed.corrects).toBeUndefined();
+        expect(Number(parsed.request.deadline)).toBeLessThanOrEqual(now + 121);
     });
 
     it('signs the permit and then the intent over it with the Polygon key', async () => {
