@@ -303,10 +303,9 @@ type Parsed<T extends KeyguardRequest.Request> =
     T extends Is<T, KeyguardRequest.SignPolygonGaslessTransferRequest> ?
         Transform<
             KeyId2KeyInfo<KeyguardRequest.SignPolygonGaslessTransferRequest>,
-            'request' | 'tokenNonce' | 'corrects', {
+            'request' | 'tokenNonce', {
                 // Validated, with a provisional deadline. Rebuilt with the final deadline on signing.
                 request: KeyguardRequest.PolygonGaslessTransferRequest,
-                corrects?: KeyguardRequest.PolygonGaslessTransferRequest,
                 tokenNonce: number,
             }
         > :

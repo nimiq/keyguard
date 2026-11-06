@@ -37,27 +37,21 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
         parsedRequest.keyPath = this.parsePolygonPath(request.keyPath, 'keyPath');
         parsedRequest.recipientLabel = this.parseLabel(request.recipientLabel);
         parsedRequest.tokenNonce = this.parseTokenNonce(request.tokenNonce, 'tokenNonce');
-        if (request.corrects !== undefined) {
-            parsedRequest.corrects = this.parseGaslessTransferRequestFields(request.corrects, 'corrects');
-        }
         parsedRequest.request = SignPolygonTransactionApi.createTransferRequest(
             this.parseGaslessTransfer(request.request, 'request'),
-            parsedRequest.corrects,
         );
 
         return parsedRequest;
     }
 
     /**
-     * Validates the transfer against the pinned deployment, the fee limit and, for a new version of a payment, the
-     * correction rules, and sets its deadline. Expects addresses with their checksum and canonical integer strings,
-     * see parseGaslessTransfer.
+     * Validates the transfer against the pinned deployment and the fee limit, and sets its deadline. Expects addresses
+     * with their checksum and canonical integer strings, see parseGaslessTransfer.
      *
      * @param {KeyguardRequest.PolygonGaslessTransfer} transfer
-     * @param {KeyguardRequest.PolygonGaslessTransferRequest} [corrects]
      * @returns {KeyguardRequest.PolygonGaslessTransferRequest}
      */
-    static createTransferRequest(transfer, corrects) {
+    static createTransferRequest(transfer) {
         // Fails early if gasless transfers are not configured
         PolygonGasless.contract();
 
@@ -85,27 +79,6 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
 
         // The intent nonce is the sender's `nonces(from)` for a new payment, which the Keyguard cannot read itself. All
         // versions of a payment keep their nonce, so that at most one of them executes.
-        if (corrects && (
-            corrects.from !== transfer.from
-            || corrects.token !== transfer.token
-            || corrects.to !== transfer.to
-            || corrects.nonce !== transfer.nonce
-        )) {
-            throw new Errors.InvalidRequestError(
-                'request must keep the from, token, to and nonce of the version it corrects',
-            );
-        }
-
-        const now = PolygonGasless.now();
-        // A new version of a payment must not expire before the version it corrects.
-        const deadline = Math.max(
-            now + PolygonGasless.DEFAULT_DEADLINE_SECONDS,
-            corrects ? Number(corrects.deadline) : 0,
-        );
-        if (deadline > now + PolygonGasless.MAX_DEADLINE_SECONDS) {
-            throw new Errors.InvalidRequestError('corrects.deadline is too far in the future');
-        }
-
         return {
             token: transfer.token,
             from: transfer.from,
@@ -114,7 +87,7 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
             fee: transfer.fee,
             relay: transfer.relay,
             nonce: transfer.nonce,
-            deadline: deadline.toString(),
+            deadline: (PolygonGasless.now() + PolygonGasless.DEADLINE_SECONDS).toString(),
         };
     }
 
@@ -144,20 +117,6 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
             fee: this.parseUint256String(fee, `${name}.fee`),
             relay: this.parseChecksummedPolygonAddress(relay, `${name}.relay`),
             nonce: this.parseUint256String(nonce, `${name}.nonce`),
-        };
-    }
-
-    /**
-     * @param {unknown} request
-     * @param {string} name
-     * @returns {KeyguardRequest.PolygonGaslessTransferRequest}
-     */
-    parseGaslessTransferRequestFields(request, name) {
-        const transfer = this.parseGaslessTransfer(request, name);
-        const { deadline } = /** @type {KeyguardRequest.PolygonGaslessTransferRequest} */ (request);
-        return {
-            ...transfer,
-            deadline: this.parseUint256String(deadline, `${name}.deadline`),
         };
     }
 
