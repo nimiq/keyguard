@@ -5,6 +5,7 @@
 /* global PolygonGasless */
 /* global PolygonGaslessHtlc */
 /* global SignSwap */
+/* global SignPolygonTransactionApi */
 /* global SignSwapApi */
 /* global SwapIFrameApi */
 /* global NonPartitionedSessionStorage */
@@ -384,6 +385,126 @@ describe('PolygonGaslessHtlc', () => {
         for (const timeout of [now, now - 3600]) {
             expect(() => PolygonGaslessHtlc.checkRedeemTimeout(timeout)).toThrowError(Errors.InvalidRequestError);
         }
+    });
+
+    describe('limits amounts and fees to MAX_SAFE_INTEGER', () => {
+        const SENDER = '0x70997970C51812dc3A010C7d01b50e0d17dc79C8';
+        const KEY_PATH = PolygonConstants.DEFAULT_DERIVATION_PATH;
+        const MAX_SAFE = '9007199254740991';
+        const UNSAFE = '9007199254740992';
+
+        /**
+         * TopLevelApi's constructor does not allow to run in a frame, and the parsers do not need it.
+         *
+         * @param {any} Api
+         * @returns {any}
+         */
+        function parser(Api) {
+            const api = Object.create(Api.prototype);
+            spyOn(api, 'parseKeyId').and.returnValue(Promise.resolve({ type: Nimiq.Secret.Type.ENTROPY }));
+            return api;
+        }
+
+        /**
+         * @param {Promise<any>} parsing
+         * @returns {Promise<Error>}
+         */
+        async function errorOf(parsing) {
+            try {
+                await parsing;
+            } catch (error) {
+                return /** @type {Error} */ (error);
+            }
+            throw new Error('Expected the request to be rejected');
+        }
+
+        /**
+         * @param {string} amount
+         * @param {string} fee
+         * @returns {Promise<any>}
+         */
+        function parseSettlement(amount, fee) {
+            return parser(SignPolygonTransactionApi).parseRequest({
+                appName: 'Test',
+                keyId: 'key',
+                keyLabel: 'Key',
+                keyPath: KEY_PATH,
+                operation: 'redeem',
+                token: CONFIG.NATIVE_USDC_CONTRACT_ADDRESS,
+                amount,
+                request: {
+                    from: SENDER,
+                    id: ID,
+                    target: SENDER,
+                    fee,
+                    relay: RELAY,
+                },
+            });
+        }
+
+        /**
+         * @param {any} amount
+         * @returns {Promise<any>}
+         */
+        function parseUsdcRedeemingSwap(amount) {
+            return parser(SignSwapApi).parseRequest({
+                appName: 'Test',
+                keyId: 'key',
+                swapId: 'swap',
+                fund: {
+                    type: 'EUR',
+                    amount: 1000,
+                    fee: 0,
+                    bankLabel: 'Bank',
+                },
+                redeem: {
+                    type: 'USDC_MATIC',
+                    keyPath: KEY_PATH,
+                    request: { from: SENDER, fee: '10000', relay: RELAY },
+                    amount,
+                },
+            });
+        }
+
+        it('in settlements', async () => {
+            expect((await parseSettlement(MAX_SAFE, '10000')).amount).toBe(MAX_SAFE);
+            expect((await errorOf(parseSettlement(UNSAFE, '10000'))).message)
+                .toContain('amount must be a safe integer');
+            // Not only rejected by the fee limit, which is checked later
+            expect((await errorOf(parseSettlement('1000000', UNSAFE))).message)
+                .toContain('request.fee must be a safe integer');
+        });
+
+        it('in swap fundings', () => {
+            const api = parser(SignSwapApi);
+            /** @type {(amount: string, fee: string) => any} */
+            const parse = (amount, fee) => api.parseHtlcFunding({
+                from: SENDER,
+                amount,
+                fee,
+                relay: RELAY,
+            }, 'fund.request');
+
+            expect(parse(MAX_SAFE, '10000').amount).toBe(MAX_SAFE);
+            expect(() => parse(UNSAFE, '10000'))
+                .toThrowError(Errors.InvalidRequestError, /fund\.request\.amount must be a safe integer/);
+            expect(() => parse('1000000', UNSAFE))
+                .toThrowError(Errors.InvalidRequestError, /fund\.request\.fee must be a safe integer/);
+            // A zero amount cannot get past the zero check by leading zeros
+            expect(() => parse('00', '10000')).toThrowError(Errors.InvalidRequestError, /must not be zero/);
+        });
+
+        it('in swap redeems', async () => {
+            const api = parser(SignSwapApi);
+            expect(() => api.parseHtlcRedeeming({ from: SENDER, fee: UNSAFE, relay: RELAY }, 'redeem.request'))
+                .toThrowError(Errors.InvalidRequestError, /redeem\.request\.fee must be a safe integer/);
+
+            expect((await errorOf(parseUsdcRedeemingSwap(2 ** 53))).message)
+                .toContain('redeem.amount must be a safe integer');
+            // Rejected only for the missing display data, which is checked after the redeeming amount
+            expect((await errorOf(parseUsdcRedeemingSwap(Number.MAX_SAFE_INTEGER))).message)
+                .not.toContain('redeem');
+        });
     });
 
     describe('without a USDT contract', () => {

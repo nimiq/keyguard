@@ -316,7 +316,8 @@ export type SignBtcTransactionRequest
 
 /**
  * A gasless USDC or USDT0 transfer on Polygon through the GaslessTransfer contract, see
- * https://github.com/NimiqToolbox/gas-abstraction. Amounts are in the token's smallest unit (6 decimals).
+ * https://github.com/NimiqToolbox/gas-abstraction. Amounts are in the token's smallest unit (6 decimals). Amounts and
+ * fees must not be above `Number.MAX_SAFE_INTEGER`.
  */
 export type PolygonGaslessTransfer = {
     token: string,
@@ -346,7 +347,7 @@ export type PolygonGaslessTransferRequest = PolygonGaslessTransfer & {
 
 /**
  * The redeem or refund of a USDC or USDT0 HTLC on Polygon through the GaslessHTLC contract. Amounts are decimal strings
- * in the token's smallest unit (6 decimals).
+ * in the token's smallest unit (6 decimals). Amounts and fees must not be above `Number.MAX_SAFE_INTEGER`.
  *
  * PROVISIONAL: the GaslessHTLC contract does not exist yet, its interface might still change.
  */
@@ -370,6 +371,7 @@ export type PolygonHtlcSettlementRequest = PolygonHtlcSettlement & {
 
 /**
  * A signed HTLC opening. `from` is the HTLC's refund address and pays `amount` into the HTLC and `fee` to the relay.
+ * Both must not be above `Number.MAX_SAFE_INTEGER`.
  */
 export type PolygonHtlcOpenRequest = {
     token: string,

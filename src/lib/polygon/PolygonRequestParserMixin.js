@@ -80,16 +80,41 @@ function PolygonRequestParserMixin(clazz) { // eslint-disable-line no-unused-var
         }
 
         /**
+         * For amounts and fees, which get displayed and added up as numbers.
+         *
+         * @param {unknown} value
+         * @param {string} name - name of the property, used in error case only
+         * @returns {string} - In canonical form, without leading zeros
+         */
+        parseSafeIntegerString(value, name) {
+            const parsed = BigInt(this.parseNonNegativeIntegerString(value, name));
+            if (parsed > BigInt(Number.MAX_SAFE_INTEGER)) {
+                throw new Errors.InvalidRequestError(`${name} must be a safe integer`);
+            }
+            return parsed.toString();
+        }
+
+        /**
+         * @param {unknown} value
+         * @param {boolean} allowZero
+         * @param {string} name - name of the property, used in error case only
+         * @returns {number}
+         */
+        parseSafePositiveInteger(value, allowZero, name) {
+            const parsed = this.parsePositiveInteger(value, allowZero, name);
+            if (!Number.isSafeInteger(parsed)) {
+                throw new Errors.InvalidRequestError(`${name} must be a safe integer`);
+            }
+            return parsed;
+        }
+
+        /**
          * @param {unknown} tokenNonce
          * @param {string} name - name of the property, used in error case only
          * @returns {number}
          */
         parseTokenNonce(tokenNonce, name) {
-            const parsed = this.parsePositiveInteger(tokenNonce, true, name);
-            if (!Number.isSafeInteger(parsed)) {
-                throw new Errors.InvalidRequestError(`${name} must be a safe integer`);
-            }
-            return parsed;
+            return this.parseSafePositiveInteger(tokenNonce, true, name);
         }
 
         /**

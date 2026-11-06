@@ -44,7 +44,7 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
         parsedRequest.senderLabel = this.parseLabel(request.senderLabel);
         parsedRequest.token = this.parsePolygonAddress(request.token, 'token');
         // Only for display: the HTLC pays out its amount minus the fee, whatever is shown here.
-        parsedRequest.amount = this.parseNonNegativeIntegerString(request.amount, 'amount');
+        parsedRequest.amount = this.parseSafeIntegerString(request.amount, 'amount');
 
         // Also validates the token
         PolygonGasless.stablecoin(parsedRequest.token);
@@ -57,7 +57,7 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
             from: this.parsePolygonAddress(settlement.from, 'request.from'),
             id: this.parseBytes32(settlement.id, 'request.id'),
             target: this.parsePolygonAddress(settlement.target, 'request.target'),
-            fee: this.parseNonNegativeIntegerString(settlement.fee, 'request.fee'),
+            fee: this.parseSafeIntegerString(settlement.fee, 'request.fee'),
             relay: this.parsePolygonAddress(settlement.relay, 'request.relay'),
         };
         if (parsedRequest.request.target !== parsedRequest.request.from) {
@@ -109,12 +109,8 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
             throw new Errors.InvalidRequestError('request.from must not be the zero address');
         }
 
-        const amount = ethers.BigNumber.from(transfer.amount);
-        if (amount.isZero()) {
+        if (ethers.BigNumber.from(transfer.amount).isZero()) {
             throw new Errors.InvalidRequestError('request.amount must not be zero');
-        }
-        if (amount.add(transfer.fee).gt(ethers.constants.MaxUint256)) {
-            throw new Errors.InvalidRequestError('request.amount plus request.fee must fit into 256 bits');
         }
 
         if (PolygonGasless.isDeniedRecipient(transfer.to)) {
@@ -159,8 +155,8 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
             token: this.parseChecksummedPolygonAddress(token, `${name}.token`),
             from: this.parseChecksummedPolygonAddress(from, `${name}.from`),
             to: this.parseChecksummedPolygonAddress(to, `${name}.to`),
-            amount: this.parseUint256String(amount, `${name}.amount`),
-            fee: this.parseUint256String(fee, `${name}.fee`),
+            amount: this.parseSafeIntegerString(amount, `${name}.amount`),
+            fee: this.parseSafeIntegerString(fee, `${name}.fee`),
             relay: this.parseChecksummedPolygonAddress(relay, `${name}.relay`),
             nonce: this.parseUint256String(nonce, `${name}.nonce`),
         };
