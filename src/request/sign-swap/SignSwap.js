@@ -7,6 +7,8 @@
 /* global TopLevelApi */
 /* global NumberFormatting */
 /* global BitcoinKey */
+/* global PolygonKey */
+/* global PolygonGaslessHtlc */
 /* global Identicon */
 /* global TemplateTags */
 /* global I18n */
@@ -501,6 +503,37 @@ class SignSwap {
     }
 
     /**
+     * Signs the permit for the HTLC opening and stores it with the opening's deadline, which it has in common: the HTLC
+     * contract may take `amount + fee` from `from` until then.
+     *
+     * @param {PolygonKey} polygonKey
+     * @param {PolygonHtlcFunding} fund
+     * @param {'NIM' | 'BTC' | 'USDC_MATIC' | 'USDT_MATIC' | 'EUR'} redeemAsset
+     * @returns {Promise<void>}
+     */
+    static async signHtlcPermit(polygonKey, fund, redeemAsset) {
+        const deadline = PolygonGaslessHtlc.openingDeadline(redeemAsset).toString();
+        const contract = PolygonGaslessHtlc.contract();
+        const approvalAmount = (BigInt(fund.request.amount) + BigInt(fund.request.fee)).toString();
+
+        const { sigR, sigS, sigV } = await (fund.type === 'USDC_MATIC'
+            ? polygonKey.signUsdcPermit(
+                fund.keyPath, contract, approvalAmount, fund.tokenNonce, fund.request.from, deadline,
+            )
+            : polygonKey.signUsdtPermit(
+                fund.keyPath, contract, approvalAmount, fund.tokenNonce, fund.request.from, deadline,
+            ));
+
+        fund.deadline = deadline;
+        fund.authorization = {
+            mode: 'permit',
+            v: sigV,
+            r: sigR,
+            s: sigS,
+        };
+    }
+
+    /**
      * @param {Parsed<KeyguardRequest.SignSwapRequest>} request
      * @param {SignSwap.resolve} resolve
      * @param {reject} reject
@@ -531,6 +564,7 @@ class SignSwap {
         }
 
         const bitcoinKey = new BitcoinKey(key);
+        const polygonKey = new PolygonKey(key);
 
         /** @type {{nim: string, btc: string[], usdc: string, usdt: string, eur: string, btc_refund?: string}} */
         const privateKeys = {};
@@ -571,6 +605,18 @@ class SignSwap {
             request.fund.refundAddress = bitcoinKey.deriveAddress(request.fund.refundKeyPath);
         }
 
+        if (request.fund.type === 'USDC_MATIC' || request.fund.type === 'USDT_MATIC') {
+            const wallet = polygonKey.deriveKeyPair(request.fund.keyPath);
+            if (wallet.address !== request.fund.request.from) {
+                throw new Errors.InvalidRequestError(
+                    'fund.request.from does not match the address derived from keyPath',
+                );
+            }
+            await SignSwap.signHtlcPermit(polygonKey, request.fund, request.redeem.type);
+            // The swap-iframe signs the HTLC opening over the permit once it knows the HTLC
+            privateKeys[request.fund.type === 'USDC_MATIC' ? 'usdc' : 'usdt'] = wallet.privateKey;
+        }
+
         if (request.fund.type === 'EUR') {
             // No signature required
         }
@@ -593,6 +639,16 @@ class SignSwap {
                 );
             }
             request.redeem.output.address = address;
+        }
+
+        if (request.redeem.type === 'USDC_MATIC' || request.redeem.type === 'USDT_MATIC') {
+            const wallet = polygonKey.deriveKeyPair(request.redeem.keyPath);
+            if (wallet.address !== request.redeem.request.from) {
+                throw new Errors.InvalidRequestError(
+                    'redeem.request.from does not match the address derived from keyPath',
+                );
+            }
+            privateKeys[request.redeem.type === 'USDC_MATIC' ? 'usdc' : 'usdt'] = wallet.privateKey;
         }
 
         /** @type {string | undefined} */

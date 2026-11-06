@@ -469,11 +469,12 @@ export type SignSwapRequestCommon = SimpleRequest & {
         {type: 'USDC_MATIC' | 'USDT_MATIC'}
         & {
             keyPath: string,
-            request: {
-                from: string,
-                amount: string,
-                fee: string,
-            },
+            // The parts of the HTLC opening known before the HTLC data (in swap-iframe)
+            request: Pick<PolygonHtlcOpenRequest, 'from' | 'amount' | 'fee' | 'relay'>,
+            /**
+             * The sender's current permit nonce in the token contract (`nonces(from)`).
+             */
+            tokenNonce: number,
         }
     ) | (
         {type: 'EUR'}
@@ -511,10 +512,8 @@ export type SignSwapRequestCommon = SimpleRequest & {
         {type: 'USDC_MATIC' | 'USDT_MATIC'}
         & {
             keyPath: string,
-            request: {
-                from: string,
-                fee: string,
-            },
+            // The parts of the HTLC redeem known before the HTLC id (in swap-iframe). The target is `from`.
+            request: Pick<PolygonHtlcSettlement, 'from' | 'fee' | 'relay'>,
             amount: number, // The amount the user receives: the HTLC amount minus the fee
         }
     ) | (
@@ -756,8 +755,8 @@ export type SignedPolygonTransaction = SignedPolygonGaslessTransfer | SignedPoly
 export type SignSwapTransactionsResult = {
     nim?: SignatureResult,
     btc?: SignedBitcoinTransaction,
-    usdc?: SignedPolygonTransaction,
-    usdt?: SignedPolygonTransaction,
+    usdc?: SignedPolygonHtlcOpen | SignedPolygonHtlcSettlement,
+    usdt?: SignedPolygonHtlcOpen | SignedPolygonHtlcSettlement,
     eur?: string, // When funding EUR: empty string, when redeeming EUR: JWS of the settlement instructions
     refundTx?: string,
 };
