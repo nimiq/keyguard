@@ -88,6 +88,7 @@
     "sign-tx-heading-switch-validator": "Switch Validator",
     "sign-tx-heading-unstaking": "Unstake NIM",
     "sign-tx-fee": "cuota",
+    "sign-polygon-tx-correction": "Esto reemplaza su firma anterior para este pago. Solo una de ellas puede ejecutarse.",
     "sign-tx-cancel-payment": "Cancelar pago",
     "sign-tx-multi-count": "{count} transactions",
     "sign-tx-multi-total-fees": "total fees",

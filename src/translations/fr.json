@@ -88,6 +88,7 @@
     "sign-tx-heading-switch-validator": "Changer de validateur",
     "sign-tx-heading-unstaking": "Dé-staker du NIM",
     "sign-tx-fee": "frais",
+    "sign-polygon-tx-correction": "Ceci remplace votre signature précédente pour ce paiement. Une seule des deux peut être exécutée.",
     "sign-tx-cancel-payment": "Annuler le paiement",
     "sign-tx-multi-count": "{count} transactions",
     "sign-tx-multi-total-fees": "montant total des frais",

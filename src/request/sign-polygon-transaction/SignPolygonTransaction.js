@@ -4,6 +4,12 @@
 /* global Errors */
 /* global Utf8Tools */
 /* global TopLevelApi */
+/* global PolygonAddressInfo */
+/* global NumberFormatting */
+/* global PolygonUtils */
+/* global PolygonKey */
+/* global PolygonGasless */
+/* global SignPolygonTransactionApi */
 
 /**
  * @callback SignPolygonTransaction.resolve
@@ -12,13 +18,15 @@
 
 class SignPolygonTransaction {
     /**
-     * @param {Parsed<KeyguardRequest.SignPolygonTransactionRequest>} request
+     * @param {Parsed<KeyguardRequest.SignPolygonGaslessTransferRequest>} request
      * @param {SignPolygonTransaction.resolve} resolve
      * @param {reject} reject
      */
     constructor(request, resolve, reject) {
         this.$el = /** @type {HTMLElement} */ (
             document.getElementById(SignPolygonTransaction.Pages.CONFIRM_TRANSACTION));
+
+        this._renderGaslessTransfer(request);
 
         // Set up password box.
         const $passwordBox = /** @type {HTMLFormElement} */ (document.querySelector('#password-box'));
@@ -37,7 +45,51 @@ class SignPolygonTransaction {
     }
 
     /**
-     * @param {Parsed<KeyguardRequest.SignPolygonTransactionRequest>} request
+     * @param {Parsed<KeyguardRequest.SignPolygonGaslessTransferRequest>} request
+     * @private
+     */
+    _renderGaslessTransfer(request) {
+        const transfer = request.request;
+        const stablecoin = PolygonGasless.stablecoin(transfer.token);
+
+        const $stablecoinSymbols = /** @type {NodeListOf<HTMLSpanElement>} */ (
+            this.$el.querySelectorAll('.stablecoin-symbol')
+        );
+        $stablecoinSymbols.forEach($symbol => {
+            $symbol.classList.add(`${stablecoin}-symbol`);
+        });
+
+        const $sender = /** @type {HTMLLinkElement} */ (this.$el.querySelector('.accounts .sender'));
+        new PolygonAddressInfo(transfer.from, request.keyLabel, stablecoin).renderTo($sender);
+
+        const $recipient = /** @type {HTMLLinkElement} */ (this.$el.querySelector('.accounts .recipient'));
+        new PolygonAddressInfo(transfer.to, request.recipientLabel, 'none').renderTo($recipient);
+
+        const $value = /** @type {HTMLDivElement} */ (this.$el.querySelector('#value'));
+        const $fee = /** @type {HTMLDivElement} */ (this.$el.querySelector('#fee'));
+
+        $value.textContent = NumberFormatting.formatNumber(
+            PolygonUtils.unitsToCoins(Number(transfer.amount)),
+            6,
+            2, // Always display at least 2 decimals, as is common for USD
+        );
+        const feeUnits = Number(transfer.fee);
+        if (feeUnits > 0) {
+            // Relay fees are multiples of 0.01, so two decimals show them exactly
+            $fee.textContent = NumberFormatting.formatNumber(PolygonUtils.unitsToCoins(feeUnits), 2, 2);
+            const $feeSection = /** @type {HTMLDivElement} */ (this.$el.querySelector('.fee-section'));
+            $feeSection.classList.remove('display-none');
+        }
+
+        if (request.corrects) {
+            // This version replaces the earlier signed version of the same payment. Only one of them can execute.
+            const $correctionNotice = /** @type {HTMLDivElement} */ (this.$el.querySelector('.correction-notice'));
+            $correctionNotice.classList.remove('display-none');
+        }
+    }
+
+    /**
+     * @param {Parsed<KeyguardRequest.SignPolygonGaslessTransferRequest>} request
      * @param {SignPolygonTransaction.resolve} resolve
      * @param {reject} reject
      * @param {string} [password]
@@ -66,7 +118,68 @@ class SignPolygonTransaction {
             return;
         }
 
-        reject(new Errors.KeyguardError('Signing Polygon transactions is not supported'));
+        const polygonKey = new PolygonKey(key);
+
+        await this._signGaslessTransfer(request, polygonKey, resolve, reject);
+    }
+
+    /**
+     * @param {Parsed<KeyguardRequest.SignPolygonGaslessTransferRequest>} request
+     * @param {PolygonKey} polygonKey
+     * @param {SignPolygonTransaction.resolve} resolve
+     * @param {reject} reject
+     * @returns {Promise<void>}
+     * @private
+     */
+    async _signGaslessTransfer(request, polygonKey, resolve, reject) {
+        if (polygonKey.deriveAddress(request.keyPath) !== request.request.from) {
+            reject(new Errors.InvalidRequestError('request.from does not match the address derived from keyPath'));
+            return;
+        }
+
+        /** @type {KeyguardRequest.SignedPolygonGaslessTransfer} */
+        let result;
+        try {
+            // Rebuild the request with a fresh deadline, as the user might have taken a while to confirm. It keeps the
+            // intent nonce and everything that was shown to the user.
+            const transfer = SignPolygonTransactionApi.createTransferRequest(request.request, request.corrects);
+
+            // The permit first, as the intent signs it. Always a permit, which expires with the intent. USDT0's META_TX
+            // approval never expires.
+            const contract = PolygonGasless.contract();
+            const approvalAmount = (BigInt(transfer.amount) + BigInt(transfer.fee)).toString();
+            const { sigR, sigS, sigV } = await (PolygonGasless.stablecoin(transfer.token) === 'usdc'
+                ? polygonKey.signUsdcPermit(
+                    request.keyPath, contract, approvalAmount, request.tokenNonce, transfer.from, transfer.deadline,
+                )
+                : polygonKey.signUsdtPermit(
+                    request.keyPath, contract, approvalAmount, request.tokenNonce, transfer.from, transfer.deadline,
+                ));
+            /** @type {KeyguardRequest.PolygonTokenPermit} */
+            const authorization = {
+                mode: 'permit',
+                v: sigV,
+                r: sigR,
+                s: sigS,
+            };
+
+            // Then the intent over the permit
+            const typedData = PolygonGasless.transferTypedData(transfer, authorization);
+            const signature = await polygonKey.signTypedData(
+                request.keyPath,
+                typedData.domain,
+                typedData.types,
+                typedData.message,
+            );
+
+            result = { request: transfer, signature, authorization };
+        } catch (error) {
+            reject(error instanceof Errors.KeyguardError
+                ? error
+                : new Errors.KeyguardError(error instanceof Error ? error.message : String(error)));
+            return;
+        }
+        resolve(result);
     }
 
     run() {

@@ -3,6 +3,8 @@
 /* global PolygonKey */
 /* global PolygonConstants */
 /* global PolygonGasless */
+/* global SignPolygonTransaction */
+/* global SignPolygonTransactionApi */
 /* global Errors */
 /* global CONFIG */
 /* global Dummy */
@@ -71,6 +73,33 @@ describe('PolygonGasless', () => {
     }
 
     /**
+     * @param {string} from
+     * @param {Partial<KeyguardRequest.PolygonGaslessTransfer>} [overrides]
+     * @returns {KeyguardRequest.PolygonGaslessTransfer}
+     */
+    function transfer(from, overrides = {}) {
+        return {
+            token: CONFIG.NATIVE_USDC_CONTRACT_ADDRESS,
+            from,
+            to: '0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC',
+            amount: '10000000',
+            fee: '10000',
+            relay: CONFIG.POLYGON_GASLESS_RELAY_ADDRESSES[0],
+            nonce: '5',
+            ...overrides,
+        };
+    }
+
+    /**
+     * TopLevelApi's constructor does not allow to run in a frame, and the parsers do not need it.
+     *
+     * @returns {SignPolygonTransactionApi}
+     */
+    function parser() {
+        return Object.create(SignPolygonTransactionApi.prototype);
+    }
+
+    /**
      * The typed data of a permit, as the Polygon key signs it.
      *
      * @param {string} token
@@ -92,6 +121,25 @@ describe('PolygonGasless', () => {
         return { domain, types, message };
     }
 
+    /**
+     * Signs a transfer as the request's handler does after password entry.
+     *
+     * @param {PolygonKey} polygonKey
+     * @param {KeyguardRequest.PolygonGaslessTransferRequest} request
+     * @param {number} tokenNonce
+     * @returns {Promise<KeyguardRequest.SignedPolygonGaslessTransfer>}
+     */
+    function signTransfer(polygonKey, request, tokenNonce) {
+        return new Promise((resolve, reject) => {
+            Object.create(SignPolygonTransaction.prototype)._signGaslessTransfer(
+                { keyPath: PolygonConstants.DEFAULT_DERIVATION_PATH, request, tokenNonce },
+                polygonKey,
+                resolve,
+                reject,
+            );
+        });
+    }
+
     it('knows the configured tokens', () => {
         expect(PolygonGasless.contract()).toBe(CONFIG.POLYGON_GASLESS_TRANSFER_CONTRACT_ADDRESS);
         expect(PolygonGasless.stablecoin(CONFIG.NATIVE_USDC_CONTRACT_ADDRESS)).toBe('usdc');
@@ -110,9 +158,34 @@ describe('PolygonGasless', () => {
             expect(PolygonGasless.stablecoin(CONFIG.NATIVE_USDC_CONTRACT_ADDRESS)).toBe('usdc');
         });
 
+        it('rejects USDT transfers', () => {
+            expect(() => PolygonGasless.stablecoin(USDT)).toThrowError(Errors.InvalidRequestError);
+            expect(() => SignPolygonTransactionApi.createTransferRequest(transfer(SENDER, { token: USDT })))
+                .toThrowError(Errors.InvalidRequestError);
+            expect(() => parser().parseGaslessTransfer(transfer(SENDER, { token: '' }), 'request'))
+                .toThrowError(Errors.InvalidRequestError);
+        });
+
         it('does not deny other recipients', () => {
             expect(PolygonGasless.isDeniedRecipient('0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC')).toBe(false);
             expect(PolygonGasless.isDeniedRecipient(CONFIG.NATIVE_USDC_CONTRACT_ADDRESS)).toBe(true);
+        });
+
+        it('still signs USDC transfers', async () => {
+            const polygonKey = new PolygonKey(new Key(Dummy.secrets[0]));
+            const path = PolygonConstants.DEFAULT_DERIVATION_PATH;
+            const from = polygonKey.deriveAddress(path);
+            const request = SignPolygonTransactionApi.createTransferRequest(transfer(from));
+
+            const signed = await signTransfer(polygonKey, request, 3);
+
+            const typedData = PolygonGasless.transferTypedData(signed.request, signed.authorization);
+            expect(ethers.utils.verifyTypedData(
+                typedData.domain,
+                typedData.types,
+                typedData.message,
+                signed.signature,
+            )).toBe(from);
         });
     });
 
@@ -223,5 +296,186 @@ describe('PolygonGasless', () => {
             relay,
             'request',
         )).toThrowError(Errors.InvalidRequestError);
+    });
+
+    it('parses transfers into checksummed addresses and canonical integer strings', () => {
+        expect(parser().parseGaslessTransfer(transfer(SENDER.toLowerCase(), {
+            amount: '010',
+            fee: '00',
+            nonce: '007',
+        }), 'request')).toEqual(transfer(SENDER, {
+            amount: '10',
+            fee: '0',
+            nonce: '7',
+        }));
+    });
+
+    it('rejects malformed transfers', () => {
+        const tooLarge = ethers.constants.MaxUint256.add(1).toString();
+        const invalid = [
+            /** @type {any} */ (undefined),
+            /** @type {any} */ ('transfer'),
+            transfer(SENDER.substring(2)), // Without 0x prefix
+            transfer('0x70997970c51812dc3A010C7d01b50e0d17dc79C8'), // Wrong checksum, the first C is lowercase
+            transfer('XE7338D71C29D66CE2B2B2E3E26C4AA7F49B5CDEC3'),
+            transfer(SENDER, { to: /** @type {any} */ (1) }),
+            transfer(SENDER, { amount: tooLarge }),
+            transfer(SENDER, { amount: '-1' }),
+            transfer(SENDER, { amount: '1.5' }),
+            transfer(SENDER, { amount: /** @type {any} */ (1) }),
+            transfer(SENDER, { fee: '0x01' }),
+            transfer(SENDER, { nonce: /** @type {any} */ (undefined) }),
+            transfer(SENDER, { nonce: '0x01' }),
+        ];
+        for (const fields of invalid) {
+            expect(() => parser().parseGaslessTransfer(fields, 'request')).toThrowError(Errors.InvalidRequestError);
+        }
+    });
+
+    it('rejects token nonces that are not safe integers', () => {
+        expect(parser().parseTokenNonce(7, 'tokenNonce')).toBe(7);
+        expect(() => parser().parseTokenNonce(2 ** 53, 'tokenNonce')).toThrowError(Errors.InvalidRequestError);
+    });
+
+    it('creates a transfer request with the given nonce and a short deadline', () => {
+        const now = PolygonGasless.now();
+        const request = SignPolygonTransactionApi.createTransferRequest(transfer(SENDER));
+        expect(request.nonce).toBe('5');
+        expect(Number(request.deadline)).toBeGreaterThanOrEqual(now + 120);
+        expect(Number(request.deadline)).toBeLessThanOrEqual(now + 121);
+    });
+
+    it('rejects transfers outside the pinned deployment and the fee limit', () => {
+        const invalid = [
+            transfer(SENDER, { fee: String(Number(CONFIG.POLYGON_GASLESS_MAX_ACCEPTABLE_FEE) + 10000) }),
+            transfer(SENDER, { relay: '0xa0Ee7A142d267C1f36714E4a8F75612F20a79720' }),
+            transfer(SENDER, { token: '0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC' }),
+            transfer(ethers.constants.AddressZero),
+            transfer(SENDER, { to: ethers.constants.AddressZero }),
+            transfer(SENDER, { to: CONFIG.POLYGON_GASLESS_TRANSFER_CONTRACT_ADDRESS }),
+            transfer(SENDER, { to: CONFIG.NATIVE_USDC_CONTRACT_ADDRESS }),
+            transfer(SENDER, { to: CONFIG.BRIDGED_USDT_CONTRACT_ADDRESS }),
+            transfer(SENDER, { amount: '0' }),
+            transfer(SENDER, { amount: ethers.constants.MaxUint256.toString() }),
+        ];
+        for (const fields of invalid) {
+            expect(() => SignPolygonTransactionApi.createTransferRequest(fields))
+                .toThrowError(Errors.InvalidRequestError);
+        }
+    });
+
+    it('rejects the additionally denied recipients', () => {
+        const denied = '0x98E69a6927747339d5E543586FC0262112eBe4BD';
+        const configured = CONFIG.POLYGON_GASLESS_DENIED_RECIPIENTS;
+        expect(() => SignPolygonTransactionApi.createTransferRequest(transfer(SENDER, { to: denied }))).not.toThrow();
+        try {
+            CONFIG.POLYGON_GASLESS_DENIED_RECIPIENTS = [denied];
+            expect(() => SignPolygonTransactionApi.createTransferRequest(transfer(SENDER, { to: denied })))
+                .toThrowError(Errors.InvalidRequestError);
+        } finally {
+            CONFIG.POLYGON_GASLESS_DENIED_RECIPIENTS = configured;
+        }
+    });
+
+    it('keeps the payment nonce for a correction and enforces the correction rules', () => {
+        const first = SignPolygonTransactionApi.createTransferRequest(transfer(SENDER));
+
+        const corrected = SignPolygonTransactionApi.createTransferRequest(transfer(SENDER, { fee: '20000' }), first);
+        expect(corrected.nonce).toBe(first.nonce);
+        expect(Number(corrected.deadline)).toBeGreaterThanOrEqual(Number(first.deadline));
+
+        // Keeps a later deadline of the version it corrects
+        const later = (PolygonGasless.now() + PolygonGasless.MAX_DEADLINE_SECONDS).toString();
+        expect(SignPolygonTransactionApi.createTransferRequest(
+            transfer(SENDER, { fee: '20000' }),
+            { ...first, deadline: later },
+        ).deadline).toBe(later);
+
+        for (const overrides of [
+            { to: '0x90F79bf6EB2c4f870365E785982E1f101E93b906' },
+            { token: CONFIG.BRIDGED_USDT_CONTRACT_ADDRESS },
+            { nonce: '6' },
+        ]) {
+            expect(() => SignPolygonTransactionApi.createTransferRequest(transfer(SENDER, overrides), first))
+                .toThrowError(Errors.InvalidRequestError);
+        }
+        expect(() => SignPolygonTransactionApi.createTransferRequest(
+            transfer('0x90F79bf6EB2c4f870365E785982E1f101E93b906'),
+            first,
+        )).toThrowError(Errors.InvalidRequestError);
+
+        // Cannot be extended beyond the longest deadline, whatever the caller claims about the corrected version
+        expect(PolygonGasless.MAX_DEADLINE_SECONDS).toBe(5 * 60);
+        for (const seconds of [PolygonGasless.MAX_DEADLINE_SECONDS + 60, 2 * 60 * 60]) {
+            expect(() => SignPolygonTransactionApi.createTransferRequest(
+                transfer(SENDER),
+                { ...first, deadline: (PolygonGasless.now() + seconds).toString() },
+            )).toThrowError(Errors.InvalidRequestError);
+        }
+    });
+
+    it('signs the permit and then the intent over it with the Polygon key', async () => {
+        const path = PolygonConstants.DEFAULT_DERIVATION_PATH;
+
+        for (const token of [CONFIG.NATIVE_USDC_CONTRACT_ADDRESS, CONFIG.BRIDGED_USDT_CONTRACT_ADDRESS]) {
+            const polygonKey = new PolygonKey(new Key(Dummy.secrets[0]));
+            const from = polygonKey.deriveAddress(path);
+            const spy = spyOn(polygonKey, 'signTypedData').and.callThrough();
+
+            const request = SignPolygonTransactionApi.createTransferRequest(transfer(from, { token }));
+            // eslint-disable-next-line no-await-in-loop
+            const signed = await signTransfer(polygonKey, request, 3);
+            expect(signed.request.token).toBe(token);
+            expect(signed.authorization.mode).toBe('permit');
+            expect([27, 28]).toContain(signed.authorization.v);
+
+            expect(spy.calls.count()).toBe(2);
+            const [, permitDomain, permitTypes, permitMessage] = spy.calls.argsFor(0);
+            expect(permitDomain.verifyingContract).toBe(token);
+            expect(permitMessage).toEqual({
+                owner: from,
+                spender: CONFIG.POLYGON_GASLESS_TRANSFER_CONTRACT_ADDRESS,
+                value: '10010000',
+                nonce: '3',
+                deadline: signed.request.deadline,
+            });
+            expect(ethers.utils._TypedDataEncoder.from(permitTypes).encodeType('Permit')).toBe(
+                'Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)',
+            );
+            expect(ethers.utils.verifyTypedData(
+                permitDomain,
+                permitTypes,
+                permitMessage,
+                ethers.utils.joinSignature(signed.authorization),
+            )).toBe(from);
+
+            const typedData = PolygonGasless.transferTypedData(signed.request, signed.authorization);
+            expect(typedData.message.auth).toEqual({
+                mode: 1,
+                v: signed.authorization.v,
+                r: signed.authorization.r,
+                s: signed.authorization.s,
+            });
+            expect(ethers.utils.verifyTypedData(
+                typedData.domain,
+                typedData.types,
+                typedData.message,
+                signed.signature,
+            )).toBe(from);
+        }
+    });
+
+    it('refuses to sign a transfer from another address than the one of the key', async () => {
+        const polygonKey = new PolygonKey(new Key(Dummy.secrets[0]));
+        const request = SignPolygonTransactionApi.createTransferRequest(transfer(SENDER));
+        const spy = spyOn(polygonKey, 'signTypedData').and.callThrough();
+        let error;
+        try {
+            await signTransfer(polygonKey, request, 3);
+        } catch (e) {
+            error = e;
+        }
+        expect(error instanceof Errors.InvalidRequestError).toBe(true);
+        expect(spy).not.toHaveBeenCalled();
     });
 });

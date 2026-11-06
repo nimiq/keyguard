@@ -41,6 +41,20 @@ function PolygonRequestParserMixin(clazz) { // eslint-disable-line no-unused-var
         }
 
         /**
+         * Stricter than parsePolygonAddress: only the 0x-prefixed form, and returns the address with its checksum.
+         *
+         * @param {unknown} address
+         * @param {string} name
+         * @returns {string}
+         */
+        parseChecksummedPolygonAddress(address, name) {
+            if (typeof address !== 'string' || !/^0x[0-9a-fA-F]{40}$/.test(address)) {
+                throw new Errors.InvalidRequestError(`${name} must be a valid Polygon address`);
+            }
+            return ethers.utils.getAddress(this.parsePolygonAddress(address, name));
+        }
+
+        /**
          * @param {unknown} value
          * @param {string} name - name of the property, used in error case only
          * @returns {string}
@@ -50,6 +64,32 @@ function PolygonRequestParserMixin(clazz) { // eslint-disable-line no-unused-var
                 throw new Errors.InvalidRequestError(`${name} must be a non-negative integer string`);
             }
             return value;
+        }
+
+        /**
+         * @param {unknown} value
+         * @param {string} name - name of the property, used in error case only
+         * @returns {string} - In canonical form, without leading zeros
+         */
+        parseUint256String(value, name) {
+            const parsed = ethers.BigNumber.from(this.parseNonNegativeIntegerString(value, name));
+            if (parsed.gt(ethers.constants.MaxUint256)) {
+                throw new Errors.InvalidRequestError(`${name} must fit into 256 bits`);
+            }
+            return parsed.toString();
+        }
+
+        /**
+         * @param {unknown} tokenNonce
+         * @param {string} name - name of the property, used in error case only
+         * @returns {number}
+         */
+        parseTokenNonce(tokenNonce, name) {
+            const parsed = this.parsePositiveInteger(tokenNonce, true, name);
+            if (!Number.isSafeInteger(parsed)) {
+                throw new Errors.InvalidRequestError(`${name} must be a safe integer`);
+            }
+            return parsed;
         }
     }
 

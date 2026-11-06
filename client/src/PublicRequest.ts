@@ -351,10 +351,29 @@ export type PolygonTokenPermit = {
     s: string,
 };
 
-export type SignPolygonTransactionRequest = Omit<SimpleRequest, 'keyLabel'> & {
+type SignPolygonTransactionRequestCommon = Omit<SimpleRequest, 'keyLabel'> & {
     keyLabel: string,
     keyPath: string,
 };
+
+export type SignPolygonGaslessTransferRequest = SignPolygonTransactionRequestCommon & {
+    operation?: 'transfer',
+    request: PolygonGaslessTransfer,
+    /**
+     * The sender's current permit nonce in the token contract (`nonces(from)`).
+     */
+    tokenNonce: number,
+    /**
+     * The payment's latest signed version, when signing a new version of an existing payment, for example with a
+     * higher fee after the relay refused the fee as too low. The new version keeps the payment's `nonce`, `token`,
+     * `to` and a deadline at least as late. Only request this after checking on-chain that the payment's nonce is
+     * still unused (the GaslessTransfer contract's `nonces(from)` is not above it).
+     */
+    corrects?: PolygonGaslessTransferRequest,
+    recipientLabel?: string,
+};
+
+export type SignPolygonTransactionRequest = SignPolygonGaslessTransferRequest;
 
 export type MockSettlementInstruction = {
     type: 'mock',
@@ -667,10 +686,16 @@ export type SignedBitcoinTransaction = {
     transactionHash: string,
     raw: string,
 };
-export type SignedPolygonTransaction = {
-    message: Record<string, any>,
-    signature: string,
+/**
+ * The signed gasless transfer, in the shape of the relay's POST /v1/transfer body. The token authorization never gets
+ * persisted or logged by the Keyguard; callers should neither.
+ */
+export type SignedPolygonGaslessTransfer = {
+    request: PolygonGaslessTransferRequest,
+    signature: string, // 65 bytes hex, over the GaslessTransfer typed data, which includes the authorization
+    authorization: PolygonTokenPermit,
 };
+export type SignedPolygonTransaction = SignedPolygonGaslessTransfer;
 export type SignSwapTransactionsResult = {
     nim?: SignatureResult,
     btc?: SignedBitcoinTransaction,
@@ -722,7 +747,7 @@ export type ResultType<T extends RedirectRequest> =
     T extends Is<T, SignBtcTransactionRequest> ? SignedBitcoinTransaction :
     T extends Is<T, DeriveBtcXPubRequest> ? DeriveBtcXPubResult :
     T extends Is<T, DerivePolygonAddressRequest> ? DerivePolygonAddressResult :
-    T extends Is<T, SignPolygonTransactionRequest> ? SignedPolygonTransaction :
+    T extends Is<T, SignPolygonGaslessTransferRequest> ? SignedPolygonGaslessTransfer :
     T extends Is<T, SignSwapRequest> ? SignSwapResult :
     never;
 

@@ -300,8 +300,16 @@ type Parsed<T extends KeyguardRequest.Request> =
                 'inputs', { inputs: ParsedBitcoinTransactionInput[] }
             >, 'shopLogoUrl', { shopLogoUrl?: URL }
         > :
-    T extends Is<T, KeyguardRequest.SignPolygonTransactionRequest> ?
-        KeyId2KeyInfo<KeyguardRequest.SignPolygonTransactionRequest> :
+    T extends Is<T, KeyguardRequest.SignPolygonGaslessTransferRequest> ?
+        Transform<
+            KeyId2KeyInfo<KeyguardRequest.SignPolygonGaslessTransferRequest>,
+            'request' | 'tokenNonce' | 'corrects', {
+                // Validated, with a provisional deadline. Rebuilt with the final deadline on signing.
+                request: KeyguardRequest.PolygonGaslessTransferRequest,
+                corrects?: KeyguardRequest.PolygonGaslessTransferRequest,
+                tokenNonce: number,
+            }
+        > :
     T extends Is<T, KeyguardRequest.SignSwapRequestStandard> ?
         KeyId2KeyInfo<ConstructSwap<KeyguardRequest.SignSwapRequestStandard>>
         & { layout: KeyguardRequest.SignSwapRequestLayout } :
