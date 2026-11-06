@@ -97,17 +97,7 @@ class KeyStore {
             secret = await Nimiq.Secret.fromEncrypted(new Nimiq.SerialBuffer(keyRecord.secret), password);
         }
 
-        const key = new Key(secret, { hasPin: keyRecord.hasPin });
-
-        if (keyRecord.rsaKeyPair && 'encrypted' in keyRecord.rsaKeyPair.privateKey) {
-            // Decrypt and import stored RSA key pairs.
-            // Previously existing, unencrypted RSA key pairs are discarded, as they were not only stored unencrypted,
-            // but also generated insecurely, see PR #458.
-            const rsaKeyPair = await KeyStore._importRsaKeyPair(keyRecord.rsaKeyPair, key);
-            await key.setRsaKeyPair(rsaKeyPair, /* persist */ false);
-        }
-
-        return key;
+        return new Key(secret, { hasPin: keyRecord.hasPin });
     }
 
     /**
@@ -155,8 +145,6 @@ class KeyStore {
             key.secret.serialize(buffer);
         }
 
-        const rsaKeyPair = key.getRsaKeyPairIfExists();
-
         /** @type {KeyRecord} */
         const keyRecord = {
             id: key.id,
@@ -164,7 +152,6 @@ class KeyStore {
             hasPin: key.hasPin,
             secret: buffer.subarray(0, buffer.byteLength),
             defaultAddress: key.defaultAddress.serialize(),
-            rsaKeyPair: rsaKeyPair ? await KeyStore._exportRsaKeyPair(rsaKeyPair, key) : undefined,
         };
 
         return this.putPlain(keyRecord);
@@ -190,19 +177,6 @@ class KeyStore {
         const newId = (dbKey.valueOf());
 
         return newId;
-    }
-
-    /**
-     *
-     * @param {Key} key
-     * @param {RsaKeyPair} rsaKeyPair
-     * @returns {Promise<string>}
-     */
-    async setRsaKeypair(key, rsaKeyPair) {
-        const record = await this.getPlain(key.id);
-        if (!record) throw new Error('Key does not exist');
-        record.rsaKeyPair = await KeyStore._exportRsaKeyPair(rsaKeyPair, key);
-        return this.putPlain(record);
     }
 
     /**
@@ -347,74 +321,6 @@ class KeyStore {
         // Promise.all returns an array of resolved promises, but we are only
         // interested in the request.result, which is the first item.
         return done[0];
-    }
-
-    /**
-     * @param {RsaKeyPair} rsaKeyPair
-     * @param {Key} key
-     * @returns {Promise<RsaKeyPairEncryptedExport>}
-     * @private
-     */
-    static async _exportRsaKeyPair(rsaKeyPair, key) {
-        const salt = Nimiq.CryptoUtils.getRandomValues(32);
-        const aesKey = await key.getAesKey(salt, 'KeyStore RSA private key encryption');
-        const iv = Nimiq.CryptoUtils.getRandomValues(12); // recommended length according to AES-GCM specification
-        const encryptedPrivateKey = new Uint8Array(await window.crypto.subtle.wrapKey(
-            /* format */ 'pkcs8',
-            rsaKeyPair.privateKey,
-            aesKey,
-            /* wrapAlgorithm */ { name: aesKey.algorithm.name, iv },
-        ));
-
-        const publicKey = new Uint8Array(await window.crypto.subtle.exportKey(
-            /* format */ 'spki',
-            rsaKeyPair.publicKey,
-        ));
-
-        return {
-            ...rsaKeyPair,
-            privateKey: {
-                salt,
-                iv,
-                encrypted: encryptedPrivateKey,
-            },
-            publicKey,
-        };
-    }
-
-    /**
-     * @param {RsaKeyPairEncryptedExport} rsaKeyPair
-     * @param {Key} key
-     * @returns {Promise<RsaKeyPair>}
-     * @private
-     */
-    static async _importRsaKeyPair(rsaKeyPair, key) {
-        const rsaAlgorithmParams = { name: 'RSA-OAEP', hash: 'SHA-256' };
-        const { salt, iv, encrypted: encryptedPrivateKey } = rsaKeyPair.privateKey;
-        const aesKey = await key.getAesKey(salt, 'KeyStore RSA private key encryption');
-        const privateKey = await window.crypto.subtle.unwrapKey(
-            /* format */ 'pkcs8',
-            encryptedPrivateKey,
-            aesKey,
-            /* unwrapAlgorithm */ { name: aesKey.algorithm.name, iv },
-            /* unwrappedKeyAlgorithm */ rsaAlgorithmParams,
-            /* extractable */ true, // we want to be able to re-export
-            /* keyUsages */ ['decrypt'],
-        );
-
-        const publicKey = await window.crypto.subtle.importKey(
-            /* format */ 'spki',
-            rsaKeyPair.publicKey,
-            rsaAlgorithmParams,
-            /* extractable */ true, // we want to be able to re-export
-            /* keyUsages */ ['encrypt'],
-        );
-
-        return {
-            ...rsaKeyPair,
-            privateKey,
-            publicKey,
-        };
     }
 
     /**

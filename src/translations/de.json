@@ -101,6 +101,13 @@
     "sign-multisig-tx-heading-tx": "Multisig-Transaktion genehmigen",
     "sign-multisig-tx-approving-as-name-with-account": "Genehmigung als {userName} mit {accountName}",
     "sign-multisig-tx-approving-with-account": "Genehmigung mit {accountName}",
+    "sign-multisig-tx-foreign-session-heading": "Signing session from another device",
+    "sign-multisig-tx-foreign-session-text": "This signing session was started on another device or browser. Only continue if you have not already approved this transaction anywhere else. Approving the same session more than once can expose your private key.",
+    "sign-multisig-tx-foreign-session-started": "Session started on {time}",
+    "sign-multisig-tx-foreign-session-cancel": "Cancel",
+    "sign-multisig-tx-foreign-session-confirm": "I have not approved it elsewhere, continue",
+    "create-multisig-commitments-heading": "Start Multisig Approval",
+    "create-multisig-commitments-text": "Unlock your account to start a signing session for this multisig transaction. You will review and approve the transaction in a later step.",
 
     "sign-staking-heading-stake": "NIM staken",
     "sign-staking-heading-unstake": "NIM unstaken",

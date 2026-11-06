@@ -20,6 +20,7 @@ import {
     ReleaseKeyRequest,
     ResetPasswordRequest,
     SignTransactionRequest,
+    CreateMultisigCommitmentsRequest,
     SignMultisigTransactionRequest,
     SignStakingRequest,
     SignMessageRequest,
@@ -123,6 +124,10 @@ export class KeyguardClient {
 
     public signTransaction(request: SignTransactionRequest) {
         this._redirectRequest<SignTransactionRequest>(KeyguardCommand.SIGN_TRANSACTION, request);
+    }
+
+    public createMultisigCommitments(request: CreateMultisigCommitmentsRequest) {
+        this._redirectRequest<CreateMultisigCommitmentsRequest>(KeyguardCommand.CREATE_MULTISIG_COMMITMENTS, request);
     }
 
     public signMultisigTransaction(request: SignMultisigTransactionRequest) {

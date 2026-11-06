@@ -32,30 +32,12 @@ type AccountRecord = AccountInfo & {
     encryptedKeyPair: Uint8Array
 }
 
-type RsaKeyParams = KeyguardRequest.RsaKeyParams;
-
-type RsaKeyPair = {
-    privateKey: CryptoKey
-    publicKey: CryptoKey
-    keyParams: RsaKeyParams
-}
-
-type RsaKeyPairEncryptedExport = Transform<RsaKeyPair, 'privateKey' | 'publicKey', {
-    privateKey: {
-        salt: Uint8Array, // HKDF salt
-        iv: Uint8Array, // AES initialization vector
-        encrypted: Uint8Array,
-    },
-    publicKey: Uint8Array,
-}>;
-
 type KeyRecord = {
     id: string
     type: Nimiq.Secret.Type
     hasPin: boolean
     secret: Uint8Array
     defaultAddress: Uint8Array
-    rsaKeyPair?: RsaKeyPairEncryptedExport
 }
 
 type MultisigConfig = {
@@ -64,10 +46,7 @@ type MultisigConfig = {
         publicKey: Nimiq.PublicKey,
         commitments: Nimiq.Commitment[],
     }>
-    secrets: Nimiq.RandomSecret[] | {
-        encrypted: Uint8Array[]
-        keyParams: RsaKeyParams
-    }
+    state: MultisigSigningState
     userName?: string
 }
 
@@ -315,6 +294,15 @@ type Parsed<T extends KeyguardRequest.Request> =
     // transaction fields). An `Is<T, X>` keyof-equality check would normally disambiguate, but
     // that predicate fails on the three-branch `Standard` union, so we use plain `extends`
     // below and must filter multisig first.
+    T extends Is<T, KeyguardRequest.CreateMultisigCommitmentsRequest> ?
+        ConstructTransaction<Transform<KeyId2KeyInfo<KeyguardRequest.CreateMultisigCommitmentsRequest>, 'multisigConfig', {
+            multisigConfig: {
+                publicKeys: Nimiq.PublicKey[],
+                numberOfSigners: number,
+                userName?: string,
+            },
+            multisigAddress: Nimiq.Address,
+        }>> :
     T extends Is<T, KeyguardRequest.SignMultisigTransactionRequestStandard> ?
         ConstructMultisigTransaction<KeyId2KeyInfo<KeyguardRequest.SignMultisigTransactionRequestStandard>>
         & { layout: KeyguardRequest.SignMultisigTransactionRequestLayout } :
