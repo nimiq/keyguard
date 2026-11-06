@@ -91,6 +91,18 @@ function PolygonRequestParserMixin(clazz) { // eslint-disable-line no-unused-var
             }
             return parsed;
         }
+
+        /**
+         * @param {unknown} value
+         * @param {string} name - name of the property, used in error case only
+         * @returns {string}
+         */
+        parseBytes32(value, name) {
+            if (typeof value !== 'string' || !/^0x[0-9a-fA-F]{64}$/.test(value)) {
+                throw new Errors.InvalidRequestError(`${name} must be 32 bytes as 0x-prefixed hex`);
+            }
+            return value.toLowerCase();
+        }
     }
 
     return Clazz;

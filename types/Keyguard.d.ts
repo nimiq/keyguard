@@ -310,6 +310,8 @@ type Parsed<T extends KeyguardRequest.Request> =
                 'inputs', { inputs: ParsedBitcoinTransactionInput[] }
             >, 'shopLogoUrl', { shopLogoUrl?: URL }
         > :
+    T extends Is<T, KeyguardRequest.SignPolygonHtlcSettlementRequest> ?
+        KeyId2KeyInfo<KeyguardRequest.SignPolygonHtlcSettlementRequest> :
     T extends Is<T, KeyguardRequest.SignPolygonGaslessTransferRequest> ?
         Transform<
             KeyId2KeyInfo<KeyguardRequest.SignPolygonGaslessTransferRequest>,

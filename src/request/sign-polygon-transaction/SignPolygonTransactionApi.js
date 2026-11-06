@@ -4,11 +4,13 @@
 /* global Errors */
 /* global ethers */
 /* global PolygonGasless */
+/* global PolygonGaslessHtlc */
 
 class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) { // eslint-disable-line no-unused-vars
     /**
      * @param {KeyguardRequest.SignPolygonTransactionRequest} request
-     * @returns {Promise<Parsed<KeyguardRequest.SignPolygonGaslessTransferRequest>>}
+     * @returns {Promise<Parsed<KeyguardRequest.SignPolygonGaslessTransferRequest>
+     *     | Parsed<KeyguardRequest.SignPolygonHtlcSettlementRequest>>}
      */
     async parseRequest(request) {
         if (!request) {
@@ -19,9 +21,53 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
             case undefined:
             case 'transfer':
                 return this.parseGaslessTransferRequest(request);
+            case 'redeem':
+            case 'refund':
+                return this.parseHtlcSettlementRequest(request);
             default:
                 throw new Errors.InvalidRequestError('Invalid operation');
         }
+    }
+
+    /**
+     * @param {KeyguardRequest.SignPolygonHtlcSettlementRequest} request
+     * @returns {Promise<Parsed<KeyguardRequest.SignPolygonHtlcSettlementRequest>>}
+     */
+    async parseHtlcSettlementRequest(request) {
+        /** @type {Parsed<KeyguardRequest.SignPolygonHtlcSettlementRequest>} */
+        const parsedRequest = {};
+        parsedRequest.appName = this.parseAppName(request.appName);
+        parsedRequest.keyInfo = await this.parseKeyId(request.keyId);
+        parsedRequest.keyLabel = /** @type {string} */ (this.parseLabel(request.keyLabel, false, 'keyLabel'));
+        parsedRequest.keyPath = this.parsePolygonPath(request.keyPath, 'keyPath');
+        parsedRequest.operation = request.operation;
+        parsedRequest.senderLabel = this.parseLabel(request.senderLabel);
+        parsedRequest.token = this.parsePolygonAddress(request.token, 'token');
+        // Only for display: the HTLC pays out its amount minus the fee, whatever is shown here.
+        parsedRequest.amount = this.parseNonNegativeIntegerString(request.amount, 'amount');
+
+        // Also validates the token
+        PolygonGasless.stablecoin(parsedRequest.token);
+
+        const settlement = request.request;
+        if (typeof settlement !== 'object' || settlement === null) {
+            throw new Errors.InvalidRequestError('request must be an object');
+        }
+        parsedRequest.request = {
+            from: this.parsePolygonAddress(settlement.from, 'request.from'),
+            id: this.parseBytes32(settlement.id, 'request.id'),
+            target: this.parsePolygonAddress(settlement.target, 'request.target'),
+            fee: this.parseNonNegativeIntegerString(settlement.fee, 'request.fee'),
+            relay: this.parsePolygonAddress(settlement.relay, 'request.relay'),
+        };
+        if (parsedRequest.request.target !== parsedRequest.request.from) {
+            throw new Errors.InvalidRequestError('request.target must be request.from');
+        }
+        PolygonGasless.checkFeeAndRelay(parsedRequest.request.fee, parsedRequest.request.relay, 'request');
+        // Fails early if HTLCs are not configured
+        PolygonGaslessHtlc.contract();
+
+        return parsedRequest;
     }
 
     /**

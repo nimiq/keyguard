@@ -9,6 +9,7 @@
 /* global PolygonUtils */
 /* global PolygonKey */
 /* global PolygonGasless */
+/* global PolygonGaslessHtlc */
 /* global SignPolygonTransactionApi */
 
 /**
@@ -18,7 +19,8 @@
 
 class SignPolygonTransaction {
     /**
-     * @param {Parsed<KeyguardRequest.SignPolygonGaslessTransferRequest>} request
+     * @param {Parsed<KeyguardRequest.SignPolygonGaslessTransferRequest>
+     *     | Parsed<KeyguardRequest.SignPolygonHtlcSettlementRequest>} request
      * @param {SignPolygonTransaction.resolve} resolve
      * @param {reject} reject
      */
@@ -26,7 +28,11 @@ class SignPolygonTransaction {
         this.$el = /** @type {HTMLElement} */ (
             document.getElementById(SignPolygonTransaction.Pages.CONFIRM_TRANSACTION));
 
-        this._renderGaslessTransfer(request);
+        if ('tokenNonce' in request) {
+            this._renderGaslessTransfer(request);
+        } else {
+            this._renderHtlcSettlement(request);
+        }
 
         // Set up password box.
         const $passwordBox = /** @type {HTMLFormElement} */ (document.querySelector('#password-box'));
@@ -42,6 +48,44 @@ class SignPolygonTransaction {
                 this._onConfirm(request, resolve, reject, password);
             },
         );
+    }
+
+    /**
+     * @param {Parsed<KeyguardRequest.SignPolygonHtlcSettlementRequest>} request
+     * @private
+     */
+    _renderHtlcSettlement(request) {
+        const settlement = request.request;
+        const stablecoin = PolygonGasless.stablecoin(request.token);
+
+        const $stablecoinSymbols = /** @type {NodeListOf<HTMLSpanElement>} */ (
+            this.$el.querySelectorAll('.stablecoin-symbol')
+        );
+        $stablecoinSymbols.forEach($symbol => {
+            $symbol.classList.add(`${stablecoin}-symbol`);
+        });
+
+        const $sender = /** @type {HTMLLinkElement} */ (this.$el.querySelector('.accounts .sender'));
+        new PolygonAddressInfo(PolygonGaslessHtlc.contract(), request.senderLabel, 'unknown').renderTo($sender);
+
+        const $recipient = /** @type {HTMLLinkElement} */ (this.$el.querySelector('.accounts .recipient'));
+        new PolygonAddressInfo(settlement.target, request.keyLabel, stablecoin).renderTo($recipient);
+
+        const $value = /** @type {HTMLDivElement} */ (this.$el.querySelector('#value'));
+        const $fee = /** @type {HTMLDivElement} */ (this.$el.querySelector('#fee'));
+
+        $value.textContent = NumberFormatting.formatNumber(
+            PolygonUtils.unitsToCoins(Number(request.amount)),
+            6,
+            2, // Always display at least 2 decimals, as is common for USD
+        );
+        const feeUnits = Number(settlement.fee);
+        if (feeUnits > 0) {
+            // Relay fees are multiples of 0.01, so two decimals show them exactly
+            $fee.textContent = NumberFormatting.formatNumber(PolygonUtils.unitsToCoins(feeUnits), 2, 2);
+            const $feeSection = /** @type {HTMLDivElement} */ (this.$el.querySelector('.fee-section'));
+            $feeSection.classList.remove('display-none');
+        }
     }
 
     /**
@@ -89,7 +133,8 @@ class SignPolygonTransaction {
     }
 
     /**
-     * @param {Parsed<KeyguardRequest.SignPolygonGaslessTransferRequest>} request
+     * @param {Parsed<KeyguardRequest.SignPolygonGaslessTransferRequest>
+     *     | Parsed<KeyguardRequest.SignPolygonHtlcSettlementRequest>} request
      * @param {SignPolygonTransaction.resolve} resolve
      * @param {reject} reject
      * @param {string} [password]
@@ -120,7 +165,45 @@ class SignPolygonTransaction {
 
         const polygonKey = new PolygonKey(key);
 
-        await this._signGaslessTransfer(request, polygonKey, resolve, reject);
+        if ('tokenNonce' in request) {
+            await this._signGaslessTransfer(request, polygonKey, resolve, reject);
+            return;
+        }
+
+        await this._signHtlcSettlement(request, polygonKey, resolve, reject);
+    }
+
+    /**
+     * @param {Parsed<KeyguardRequest.SignPolygonHtlcSettlementRequest>} request
+     * @param {PolygonKey} polygonKey
+     * @param {SignPolygonTransaction.resolve} resolve
+     * @param {reject} reject
+     * @returns {Promise<void>}
+     * @private
+     */
+    async _signHtlcSettlement(request, polygonKey, resolve, reject) {
+        if (polygonKey.deriveAddress(request.keyPath) !== request.request.from) {
+            reject(new Errors.InvalidRequestError('request.from does not match the address derived from keyPath'));
+            return;
+        }
+
+        let signed;
+        try {
+            signed = await PolygonGaslessHtlc.signSettlement(
+                (domain, types, message) => polygonKey.signTypedData(request.keyPath, domain, types, message),
+                request.operation,
+                {
+                    ...request.request,
+                    deadline: (PolygonGasless.now() + PolygonGaslessHtlc.MAX_DEADLINE_SECONDS).toString(),
+                },
+            );
+        } catch (error) {
+            reject(error instanceof Errors.KeyguardError
+                ? error
+                : new Errors.KeyguardError(error instanceof Error ? error.message : String(error)));
+            return;
+        }
+        resolve(signed);
     }
 
     /**

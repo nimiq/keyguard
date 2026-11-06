@@ -413,7 +413,18 @@ export type SignPolygonGaslessTransferRequest = SignPolygonTransactionRequestCom
     recipientLabel?: string,
 };
 
-export type SignPolygonTransactionRequest = SignPolygonGaslessTransferRequest;
+/**
+ * Redeems or refunds an HTLC, for example to re-sign the redeem of a swap or to refund an expired swap.
+ */
+export type SignPolygonHtlcSettlementRequest = SignPolygonTransactionRequestCommon & {
+    operation: 'redeem' | 'refund',
+    request: PolygonHtlcSettlement,
+    token: string, // The HTLC's token
+    amount: string, // The amount the user receives (the HTLC amount minus the fee), decimal string
+    senderLabel?: string,
+};
+
+export type SignPolygonTransactionRequest = SignPolygonGaslessTransferRequest | SignPolygonHtlcSettlementRequest;
 
 export type MockSettlementInstruction = {
     type: 'mock',
@@ -744,7 +755,7 @@ export type SignedPolygonHtlcSettlement = {
     request: PolygonHtlcSettlementRequest,
     signature: string, // 65 bytes hex, over the HtlcRedeem or HtlcRefund typed data
 };
-export type SignedPolygonTransaction = SignedPolygonGaslessTransfer;
+export type SignedPolygonTransaction = SignedPolygonGaslessTransfer | SignedPolygonHtlcSettlement;
 export type SignSwapTransactionsResult = {
     nim?: SignatureResult,
     btc?: SignedBitcoinTransaction,
@@ -797,6 +808,7 @@ export type ResultType<T extends RedirectRequest> =
     T extends Is<T, DeriveBtcXPubRequest> ? DeriveBtcXPubResult :
     T extends Is<T, DerivePolygonAddressRequest> ? DerivePolygonAddressResult :
     T extends Is<T, SignPolygonGaslessTransferRequest> ? SignedPolygonGaslessTransfer :
+    T extends Is<T, SignPolygonHtlcSettlementRequest> ? SignedPolygonHtlcSettlement :
     T extends Is<T, SignSwapRequest> ? SignSwapResult :
     never;
 
