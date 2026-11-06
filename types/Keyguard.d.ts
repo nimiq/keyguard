@@ -86,6 +86,16 @@ type ParsedBitcoinTransactionInput = {
     address: string,
 };
 
+type PolygonHtlcData = {
+    id: string,
+    token: string,
+    amount: string,
+    refundAddress: string,
+    recipient: string,
+    hash: string,
+    timeout: number,
+};
+
 type PolygonTypedData = {
     domain: ethers.TypedDataDomain,
     types: Record<string, ethers.TypedDataField[]>,

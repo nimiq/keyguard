@@ -346,6 +346,46 @@ export type PolygonGaslessTransferRequest = PolygonGaslessTransfer & {
 };
 
 /**
+ * The redeem or refund of a USDC or USDT0 HTLC on Polygon through the GaslessHTLC contract. Amounts are decimal strings
+ * in the token's smallest unit (6 decimals).
+ *
+ * PROVISIONAL: the GaslessHTLC contract does not exist yet, its interface might still change.
+ */
+export type PolygonHtlcSettlement = {
+    /**
+     * The signer: the HTLC's recipient for a redeem, its refund address for a refund.
+     */
+    from: string,
+    id: string, // bytes32 HTLC id
+    target: string, // receives the HTLC amount minus the fee, must be `from`
+    fee: string, // the relay's fee quote, paid from the HTLC amount
+    relay: string, // the relay address from the fee quote
+};
+
+/**
+ * A signed HTLC redeem or refund. A redeem does not include the secret, which is submitted alongside.
+ */
+export type PolygonHtlcSettlementRequest = PolygonHtlcSettlement & {
+    deadline: string, // unix seconds, decimal string
+};
+
+/**
+ * A signed HTLC opening. `from` is the HTLC's refund address and pays `amount` into the HTLC and `fee` to the relay.
+ */
+export type PolygonHtlcOpenRequest = {
+    token: string,
+    from: string,
+    id: string, // bytes32 HTLC id
+    recipient: string,
+    amount: string, // decimal string
+    hash: string, // bytes32
+    timeout: string, // unix seconds, decimal string
+    fee: string, // decimal string, the relay's fee quote
+    relay: string, // the relay address from the fee quote
+    deadline: string, // unix seconds, decimal string
+};
+
+/**
  * A signed permit, v is 27 or 28.
  */
 export type PolygonTokenPermit = {
@@ -691,6 +731,15 @@ export type SignedPolygonGaslessTransfer = {
     request: PolygonGaslessTransferRequest,
     signature: string, // 65 bytes hex, over the GaslessTransfer typed data, which includes the authorization
     authorization: PolygonTokenPermit,
+};
+export type SignedPolygonHtlcOpen = {
+    request: PolygonHtlcOpenRequest,
+    signature: string, // 65 bytes hex, over the HtlcOpen typed data, which includes the authorization
+    authorization: PolygonTokenPermit,
+};
+export type SignedPolygonHtlcSettlement = {
+    request: PolygonHtlcSettlementRequest,
+    signature: string, // 65 bytes hex, over the HtlcRedeem or HtlcRefund typed data
 };
 export type SignedPolygonTransaction = SignedPolygonGaslessTransfer;
 export type SignSwapTransactionsResult = {

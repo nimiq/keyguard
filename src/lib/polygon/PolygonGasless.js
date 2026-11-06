@@ -128,6 +128,8 @@ PolygonGasless.DOMAIN_VERSION = '3';
  * a device clock that is a few minutes slow, while a payment that does not execute is decided soon.
  */
 PolygonGasless.DEADLINE_SECONDS = 5 * 60;
+/** The relay refuses a deadline less than this far in the future when a request reaches it. */
+PolygonGasless.MIN_DEADLINE_SECONDS = 60;
 
 /** The contracts' TokenAuth mode for a permit. The other modes, 0 for none and 2 for META_TX, are not used here. */
 PolygonGasless.AUTH_MODE_PERMIT = 1;
