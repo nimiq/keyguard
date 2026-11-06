@@ -129,6 +129,8 @@ PolygonGasless.DOMAIN_VERSION = '3';
  */
 PolygonGasless.DEFAULT_DEADLINE_SECONDS = 2 * 60;
 PolygonGasless.MAX_DEADLINE_SECONDS = 5 * 60;
+/** The relay refuses a deadline less than this far in the future when a request reaches it. */
+PolygonGasless.MIN_DEADLINE_SECONDS = 60;
 
 /** The contracts' TokenAuth mode for a permit. The other modes, 0 for none and 2 for META_TX, are not used here. */
 PolygonGasless.AUTH_MODE_PERMIT = 1;

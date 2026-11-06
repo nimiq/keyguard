@@ -22,6 +22,8 @@ const CONFIG = { // eslint-disable-line no-unused-vars
     POLYGON_GASLESS_MAX_ACCEPTABLE_FEE: '500000',
     /** @type {string[]} */
     POLYGON_GASLESS_DENIED_RECIPIENTS: [],
+    // Gasless HTLCs for swaps are not deployed on Amoy
+    POLYGON_GASLESS_HTLC_CONTRACT_ADDRESS: '',
 
     RSA_KEY_BITS: 2048, // Possible values are 1024 (fast, but unsafe), 2048 (good compromise), 4096 (slow, but safe)
     RSA_KDF_FUNCTION: 'PBKDF2-SHA512',
