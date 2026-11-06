@@ -1,12 +1,5 @@
 import * as Nimiq from '@nimiq/core';
-import { ForwardRequest as OpenGsnForwardRequest } from '@opengsn/common/dist/EIP712/ForwardRequest';
-import { RelayData as OpenGsnRelayData } from '@opengsn/common/dist/EIP712/RelayData';
 import { KeyguardCommand } from './KeyguardCommand';
-
-export {
-    OpenGsnForwardRequest,
-    OpenGsnRelayData,
-};
 
 export type ObjectType = {
     [key: string]: any;
@@ -321,44 +314,9 @@ export type SignBtcTransactionRequest
     = SignBtcTransactionRequestStandard
     | SignBtcTransactionRequestCheckout;
 
-export type PolygonTransactionInfo = {
-    keyPath: string,
-
-    request: OpenGsnForwardRequest,
-    relayData: OpenGsnRelayData,
-
-    /**
-     * The token contract address. Required for calling the bridged HTLC contract.
-     */
-    token?: string,
-
-    /**
-     * For refund and redeem transactions from HTLCs the amount is not part of the forward request / relay request and
-     * needs to be specified separately.
-     */
-    amount?: number,
-
-    /**
-     * The sender's nonce in the token contract, required when calling the contract function `swapWithApproval` for
-     * bridged USDC.e or `transferWithApproval` and 'openWithApproval`for bridged USDT.
-     */
-    approval?: {
-        tokenNonce: number,
-    },
-
-    /**
-     * The sender's nonce in the token contract, required when calling the contract functions `transferWithPermit` and
-     * `openWithPermit` for native USDC.
-     */
-    permit?: {
-        tokenNonce: number,
-    },
-};
-
-export type SignPolygonTransactionRequest = Omit<SimpleRequest, 'keyLabel'> & PolygonTransactionInfo & {
+export type SignPolygonTransactionRequest = Omit<SimpleRequest, 'keyLabel'> & {
     keyLabel: string,
-    senderLabel?: string,
-    recipientLabel?: string,
+    keyPath: string,
 };
 
 export type MockSettlementInstruction = {
@@ -404,17 +362,15 @@ export type SignSwapRequestCommon = SimpleRequest & {
             refundKeyPath: string, // To validate that we own the HTLC script's refund address
         }>
     ) | (
-        {type: 'USDC_MATIC'}
-        & Omit<PolygonTransactionInfo,
-            | 'approval' // HTLC opening for native USDC uses `permit`, not `approval`
-            | 'amount' // Not used for HTLC opening - only for redeem and refund
-        >
-    ) | (
-        {type: 'USDT_MATIC'}
-        & Omit<PolygonTransactionInfo,
-            | 'permit' // HTLC opening for bridged USDT uses `approval`, not `permit`
-            | 'amount' // Not used for HTLC opening - only for redeem and refund
-        >
+        {type: 'USDC_MATIC' | 'USDT_MATIC'}
+        & {
+            keyPath: string,
+            request: {
+                from: string,
+                amount: string,
+                fee: string,
+            },
+        }
     ) | (
         {type: 'EUR'}
         & {
@@ -449,13 +405,13 @@ export type SignSwapRequestCommon = SimpleRequest & {
         }
     ) | (
         {type: 'USDC_MATIC' | 'USDT_MATIC'}
-        & Omit<PolygonTransactionInfo,
-            | 'approval' // Not needed for redeeming
-            | 'permit' // Not needed for redeeming
-            | 'amount' // Overwritten from optional to required
-        >
         & {
-            amount: number,
+            keyPath: string,
+            request: {
+                from: string,
+                fee: string,
+            },
+            amount: number, // The amount the user receives: the HTLC amount minus the fee
         }
     ) | (
         {type: 'EUR'}
