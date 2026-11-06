@@ -48,16 +48,16 @@ class PolygonKey { // eslint-disable-line no-unused-vars
 
     /**
      * @param {string} path
-     * @param {string} forwarderContractAddress
-     * @param {ethers.BigNumber} approvalAmount
+     * @param {string} spenderAddress
+     * @param {string} approvalAmount
      * @param {number} tokenNonce
      * @param {string} ownerAddress
+     * @param {string} deadline
      * @returns {Promise<{sigR: string, sigS: string, sigV: number}>}
      */
-    async signUsdcPermit(path, forwarderContractAddress, approvalAmount, tokenNonce, ownerAddress) {
-        // TODO: Make the domain parameters configurable in the request?
+    async signUsdcPermit(path, spenderAddress, approvalAmount, tokenNonce, ownerAddress, deadline) {
         const domain = {
-            name: 'USD Coin', // This is currently the same for testnet and mainnet
+            name: CONFIG.NATIVE_USDC_DOMAIN_NAME, // The token's `name()`, which differs between testnet and mainnet
             version: '2', // This is currently the same for testnet and mainnet
             verifyingContract: CONFIG.NATIVE_USDC_CONTRACT_ADDRESS,
             chainId: CONFIG.POLYGON_CHAIN_ID,
@@ -75,10 +75,55 @@ class PolygonKey { // eslint-disable-line no-unused-vars
 
         const message = {
             owner: ownerAddress,
-            spender: forwarderContractAddress,
+            spender: spenderAddress,
             value: approvalAmount,
-            nonce: tokenNonce,
-            deadline: ethers.constants.MaxUint256,
+            nonce: tokenNonce.toString(),
+            deadline,
+        };
+
+        const signature = await this.signTypedData(
+            path,
+            domain,
+            types,
+            message,
+        );
+
+        return this._signatureToParts(signature);
+    }
+
+    /**
+     * @param {string} path
+     * @param {string} spenderAddress
+     * @param {string} approvalAmount
+     * @param {number} tokenNonce
+     * @param {string} ownerAddress
+     * @param {string} deadline
+     * @returns {Promise<{sigR: string, sigS: string, sigV: number}>}
+     */
+    async signUsdtPermit(path, spenderAddress, approvalAmount, tokenNonce, ownerAddress, deadline) {
+        const domain = {
+            name: 'USDT0', // This is the same for the mainnet token and the mock USDT0 of the Amoy deployment
+            version: '1', // This is the same for the mainnet token and the mock USDT0 of the Amoy deployment
+            verifyingContract: CONFIG.BRIDGED_USDT_CONTRACT_ADDRESS,
+            salt: ethers.utils.hexZeroPad(ethers.utils.hexlify(CONFIG.POLYGON_CHAIN_ID), 32),
+        };
+
+        const types = {
+            Permit: [
+                { name: 'owner', type: 'address' },
+                { name: 'spender', type: 'address' },
+                { name: 'value', type: 'uint256' },
+                { name: 'nonce', type: 'uint256' },
+                { name: 'deadline', type: 'uint256' },
+            ],
+        };
+
+        const message = {
+            owner: ownerAddress,
+            spender: spenderAddress,
+            value: approvalAmount,
+            nonce: tokenNonce.toString(),
+            deadline,
         };
 
         const signature = await this.signTypedData(

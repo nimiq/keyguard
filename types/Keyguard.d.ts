@@ -86,6 +86,12 @@ type ParsedBitcoinTransactionInput = {
     address: string,
 };
 
+type PolygonTypedData = {
+    domain: ethers.TypedDataDomain,
+    types: Record<string, ethers.TypedDataField[]>,
+    message: Record<string, any>,
+};
+
 type NimHtlcContents = {
     refundAddress: string,
     redeemAddress: string,

@@ -314,6 +314,43 @@ export type SignBtcTransactionRequest
     = SignBtcTransactionRequestStandard
     | SignBtcTransactionRequestCheckout;
 
+/**
+ * A gasless USDC or USDT0 transfer on Polygon through the GaslessTransfer contract, see
+ * https://github.com/NimiqToolbox/gas-abstraction. Amounts are in the token's smallest unit (6 decimals).
+ */
+export type PolygonGaslessTransfer = {
+    token: string,
+    from: string,
+    to: string,
+    amount: string, // decimal string
+    fee: string, // decimal string, the relay's fee quote
+    relay: string, // the relay address from the fee quote
+    /**
+     * The intent nonce, a decimal string. It identifies the payment: every version of a payment (e.g. re-signed with a
+     * higher fee) keeps it, so that at most one version executes. For a new payment, it is the sender's current
+     * `nonces(from)` in the GaslessTransfer contract, read on-chain right before, and only once the sender's previous
+     * payment is decided. For a new version of a payment, it is the nonce of `corrects`.
+     */
+    nonce: string,
+};
+
+/**
+ * A signed transfer intent.
+ */
+export type PolygonGaslessTransferRequest = PolygonGaslessTransfer & {
+    deadline: string, // unix seconds, decimal string
+};
+
+/**
+ * A signed permit, v is 27 or 28.
+ */
+export type PolygonTokenPermit = {
+    mode: 'permit',
+    v: number,
+    r: string,
+    s: string,
+};
+
 export type SignPolygonTransactionRequest = Omit<SimpleRequest, 'keyLabel'> & {
     keyLabel: string,
     keyPath: string,
