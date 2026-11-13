@@ -380,12 +380,13 @@ describe('PolygonGasless', () => {
         expect(() => parser().parseTokenNonce(2 ** 53, 'tokenNonce')).toThrowError(Errors.InvalidRequestError);
     });
 
-    it('creates a transfer request with the given nonce and a short deadline', () => {
+    it('creates a transfer request with the given nonce and a deadline in 5 minutes', () => {
+        expect(PolygonGasless.DEADLINE_SECONDS).toBe(300);
         const now = PolygonGasless.now();
         const request = SignPolygonTransactionApi.createTransferRequest(transfer(SENDER));
         expect(request.nonce).toBe('5');
-        expect(Number(request.deadline)).toBeGreaterThanOrEqual(now + 120);
-        expect(Number(request.deadline)).toBeLessThanOrEqual(now + 121);
+        expect(Number(request.deadline)).toBeGreaterThanOrEqual(now + 300);
+        expect(Number(request.deadline)).toBeLessThanOrEqual(now + 301);
     });
 
     it('rejects transfers outside the pinned deployment and the fee limit', () => {
@@ -432,12 +433,12 @@ describe('PolygonGasless', () => {
             keyPath: PolygonConstants.DEFAULT_DERIVATION_PATH,
             tokenNonce: 3,
             request: transfer(SENDER),
-            corrects: { ...transfer(SENDER), deadline: (now + 280).toString() },
+            corrects: { ...transfer(SENDER), deadline: (now + 2 * PolygonGasless.DEADLINE_SECONDS).toString() },
         });
 
         // Nothing for the confirm page to show, and no later deadline by claiming an earlier version with one
         expect(parsed.corrects).toBeUndefined();
-        expect(Number(parsed.request.deadline)).toBeLessThanOrEqual(now + 121);
+        expect(Number(parsed.request.deadline)).toBeLessThanOrEqual(now + PolygonGasless.DEADLINE_SECONDS + 1);
     });
 
     it('signs the permit and then the intent over it with the Polygon key', async () => {

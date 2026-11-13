@@ -122,8 +122,12 @@ class PolygonGasless { // eslint-disable-line no-unused-vars
 PolygonGasless.DOMAIN_NAME = 'Nimiq Gasless Transfer';
 PolygonGasless.DOMAIN_VERSION = '3';
 
-/** How long a transfer stays valid after the user confirmed it. */
-PolygonGasless.DEADLINE_SECONDS = 2 * 60;
+/**
+ * How long a transfer stays valid after the user confirmed it, by the device's clock. The relay refuses a transfer
+ * that has less than a minute left when it arrives, and accepts deadlines up to 2 hours ahead. 5 minutes leave room for
+ * a device clock that is a few minutes slow, while a payment that does not execute is decided soon.
+ */
+PolygonGasless.DEADLINE_SECONDS = 5 * 60;
 
 /** The contracts' TokenAuth mode for a permit. The other modes, 0 for none and 2 for META_TX, are not used here. */
 PolygonGasless.AUTH_MODE_PERMIT = 1;
