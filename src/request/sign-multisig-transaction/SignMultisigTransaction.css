@@ -81,6 +81,10 @@
     align-items: center;
 }
 
+#foreign-session-warning .page-footer .cancel {
+    margin-bottom: 1rem;
+}
+
 #foreign-session-warning .page-footer .confirm {
-    margin-top: 2rem;
+    margin: 1rem 0 3rem;
 }
