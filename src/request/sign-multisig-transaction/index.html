@@ -50,14 +50,14 @@
     <!--<script defer src="../../lib/CurrencyInfo.js"></script>-->
     <script defer src="../../lib/NumberFormatting.js"></script>
     <script defer src="../../lib/TransactionDataFormatting.js"></script>
-    <!--<script defer src="../../lib/FiatApi.js"></script>-->
     <script defer src="../../components/Copyable.js"></script>
     <script defer src="../../components/Identicon.js"></script>
     <script defer src="../../components/ShortAddress.js"></script>
     <script defer src="../../components/AddressInfo.js"></script>
     <script defer src="../../components/LoginFileAccountIcon.js"></script>
-    <!-- <script defer src="../../components/Timer.js"></script> -->
-    <!-- <script defer src="../../components/PaymentInfoLine.js"></script> -->
+    <script defer src="../../components/MultisigTransactionOverview.js"></script>
+    <script defer src="../../lib/MultisigSigningState.js"></script>
+    <script defer src="../../lib/MultisigSessionStore.js"></script>
     <script defer src="SignMultisigTransaction.js"></script>
     <script defer src="SignMultisigTransactionApi.js"></script>
     <script defer src="index.js"></script>
@@ -74,8 +74,6 @@
     <link rel="stylesheet" href="../../components/AddressInfo.css">
     <link rel="stylesheet" href="../../components/AddressInfoDetailed.css">
     <link rel="stylesheet" href="../../components/LoginFileAccountIcon.css">
-    <!-- <link rel="stylesheet" href="../../components/Timer.css"> -->
-    <!-- <link rel="stylesheet" href="../../components/PaymentInfoLine.css"> -->
     <link rel="stylesheet" href="../sign-transaction/SignTransaction.css">
     <link rel="stylesheet" href="SignMultisigTransaction.css">
 </head>
@@ -130,6 +128,22 @@
                 <div class="page-footer nq-card-footer">
                     <form id="password-box"></form>
                 </div>
+            </div>
+        </div>
+
+        <div id="foreign-session-warning" class="page nq-card">
+            <div class="page-header nq-card-header">
+                <h1 data-i18n="sign-multisig-tx-foreign-session-heading" class="nq-h1">Signing session from another device</h1>
+            </div>
+
+            <div class="page-body nq-card-body">
+                <p class="nq-notice warning" data-i18n="sign-multisig-tx-foreign-session-text">This signing session was started on another device or browser. Only continue if you have not already approved this transaction anywhere else. Approving the same session more than once can expose your private key.</p>
+                <p class="nq-text session-created-at"></p>
+            </div>
+
+            <div class="page-footer nq-card-footer">
+                <button class="nq-button light-blue cancel" data-i18n="sign-multisig-tx-foreign-session-cancel">Cancel</button>
+                <button class="nq-button-s confirm" data-i18n="sign-multisig-tx-foreign-session-confirm">I have not approved it elsewhere, continue</button>
             </div>
         </div>
 

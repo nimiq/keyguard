@@ -101,6 +101,12 @@
     "sign-multisig-tx-heading-tx": "Aprovar transação Multisig",
     "sign-multisig-tx-approving-as-name-with-account": "A aprovar {userName} com {accountName}",
     "sign-multisig-tx-approving-with-account": "Aprovar com {accountName}",
+    "sign-multisig-tx-foreign-session-heading": "Signing session from another device",
+    "sign-multisig-tx-foreign-session-text": "This signing session was started on another device or browser. Only continue if you have not already approved this transaction anywhere else. Approving the same session more than once can expose your private key.",
+    "sign-multisig-tx-foreign-session-started": "Session started on {time}",
+    "sign-multisig-tx-foreign-session-cancel": "Cancel",
+    "sign-multisig-tx-foreign-session-confirm": "I have not approved it elsewhere, continue",
+    "create-multisig-commitments-heading": "Start Multisig Approval",
 
     "sign-staking-heading-stake": "Participa NIM",
     "sign-staking-heading-unstake": "Retira NIM",

@@ -2,7 +2,7 @@
 /* global TopLevelApi */
 /* global SignMultisigTransaction */
 /* global Errors */
-/* global CONFIG */
+/* global MultisigSigningState */
 
 /** @extends {TopLevelApi<KeyguardRequest.SignMultisigTransactionRequest>} */
 class SignMultisigTransactionApi extends TopLevelApi {
@@ -26,7 +26,8 @@ class SignMultisigTransactionApi extends TopLevelApi {
         parsedRequest.multisigConfig = this.parseMultisigConfig(request.multisigConfig);
         parsedRequest.multisigAddress = this.parseMultisigAddress(
             parsedRequest.transaction,
-            parsedRequest.multisigConfig,
+            parsedRequest.multisigConfig.publicKeys,
+            parsedRequest.multisigConfig.signers.length,
         );
         parsedRequest.layout = this.parseLayout(request.layout);
 
@@ -74,21 +75,11 @@ class SignMultisigTransactionApi extends TopLevelApi {
      * @returns {MultisigConfig}
      */
     parseMultisigConfig(object) {
-        if (!object || typeof object !== 'object') throw new Errors.InvalidRequestError('Request must be an object');
-
-        /** @type {Nimiq.PublicKey[]} */
-        const publicKeys = [];
-        try {
-            if (!('publicKeys' in object)) throw new Error('missing');
-            if (!Array.isArray(object.publicKeys)) throw new Error('not an array');
-            for (const key of object.publicKeys) {
-                if (!(key instanceof Uint8Array)) throw new Error('not a Uint8Array');
-                publicKeys.push(new Nimiq.PublicKey(key));
-            }
-        } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : String(error);
-            throw new Errors.InvalidRequestError(`Invalid public keys: ${errorMessage}`);
+        if (!object || typeof object !== 'object') {
+            throw new Errors.InvalidRequestError('multisigConfig must be an object');
         }
+
+        const publicKeys = this.parseMultisigPublicKeys(object.publicKeys);
 
         /** @type {MultisigConfig['signers']} */
         const signers = [];
@@ -105,11 +96,17 @@ class SignMultisigTransactionApi extends TopLevelApi {
                 if (!publicKeys.find(publicKey => publicKey.equals(signerPublicKey))) {
                     throw new Error('not in public keys');
                 }
+                if (signers.find(signer => signer.publicKey.equals(signerPublicKey))) {
+                    throw new Error('duplicate signer');
+                }
 
                 if (!('commitments' in obj)) throw new Error('missing commitments');
-                if (!Array.isArray(obj.commitments) || obj.commitments.length < 2) {
-                    // Musig2 used in Nimiq PoS mandates at least 2 commitments per signer (MUSIG2_PARAMETER_V).
-                    throw new Error('commitments must be an array with at least 2 elements');
+                if (!Array.isArray(obj.commitments)
+                    || obj.commitments.length !== MultisigSigningState.NUMBER_OF_COMMITMENTS) {
+                    // Musig2 used in Nimiq PoS mandates exactly 2 commitments per signer (MUSIG2_PARAMETER_V).
+                    throw new Error(
+                        `commitments must be an array of ${MultisigSigningState.NUMBER_OF_COMMITMENTS} elements`,
+                    );
                 }
                 /** @type {Nimiq.Commitment[]} */
                 const signerCommitments = [];
@@ -128,80 +125,21 @@ class SignMultisigTransactionApi extends TopLevelApi {
             throw new Errors.InvalidRequestError(`Invalid signers: ${errorMessage}`);
         }
 
-        /** @type {MultisigConfig['secrets']} */
-        let secrets;
-        if (Array.isArray(object.secrets)) {
-            secrets = [];
-            try {
-                for (const secret of object.secrets) {
-                    if (!(secret instanceof Uint8Array)) throw new Error('must be Uint8Arrays');
-                    secrets.push(new Nimiq.RandomSecret(secret));
-                }
-            } catch (error) {
-                const errorMessage = error instanceof Error ? error.message : String(error);
-                throw new Errors.InvalidRequestError(`Invalid secrets: ${errorMessage}`);
-            }
-        } else if (object.secrets && typeof object.secrets === 'object'
-            && 'encrypted' in object.secrets && 'keyParams' in object.secrets) {
-            if (!Array.isArray(object.secrets.encrypted)) {
-                // No need to check object.secrets.encrypted.length here, as the number will later be checked against
-                // the number of this signer's provided commitments, after we identify them in SignMultisigTransaction.
-                throw new Errors.InvalidRequestError(
-                    'Invalid secrets.encrypted: must be an array',
-                );
-            }
-            // Validate encrypted secrets are Uint8Arrays
-            if (!object.secrets.encrypted.every(
-                /**
-                 * @param {unknown} encryptedSecret
-                 * @returns {boolean}
-                 */
-                encryptedSecret => encryptedSecret instanceof Uint8Array,
-            )) {
-                throw new Errors.InvalidRequestError(
-                    'Invalid secrets.encrypted: must be an array of Uint8Arrays',
-                );
-            }
-            // Validate the RSA key used to encrypt the secrets is a supported size
-            const rsaKeySize = object.secrets.encrypted[0].length * 8;
-            if (!CONFIG.RSA_SUPPORTED_KEY_BITS.includes(rsaKeySize)) {
-                throw new Errors.InvalidRequestError('Invalid secrets.encrypted: invalid RSA key size');
-            }
-            // Validate all encrypted are the same length
-            if (!object.secrets.encrypted.every(
-                /**
-                 * @param {Uint8Array} array
-                 * @returns {boolean}
-                 */
-                array => array.length * 8 === rsaKeySize,
-            )) {
-                throw new Errors.InvalidRequestError(
-                    'Invalid secrets.encrypted: all encrypted secrets must be the same length',
-                );
-            }
-            // Validate keyParams
-            if (!object.secrets.keyParams || typeof object.secrets.keyParams !== 'object') {
-                throw new Errors.InvalidRequestError('Invalid secrets.keyParams');
-            }
-            const keyParams = object.secrets.keyParams;
-            if (!('kdf' in keyParams) || !('iterations' in keyParams) || !('keySize' in keyParams)) {
-                throw new Errors.InvalidRequestError('Invalid secrets.keyParams: missing properties');
-            }
-            if (!CONFIG.RSA_SUPPORTED_KDF_FUNCTIONS.includes(keyParams.kdf)) {
-                throw new Errors.InvalidRequestError(`Unsupported keyParams KDF function: ${keyParams.kdf}`);
-            }
-            if (!CONFIG.RSA_SUPPORTED_KDF_ITERATIONS[keyParams.kdf].includes(keyParams.iterations)) {
-                throw new Errors.InvalidRequestError(`Unsupported keyParams KDF iterations: ${keyParams.iterations}`);
-            }
-            if (keyParams.keySize !== rsaKeySize) {
-                throw new Errors.InvalidRequestError(`Wrong keyParams key size: ${keyParams.keySize}`);
-            }
-            secrets = {
-                encrypted: object.secrets.encrypted,
-                keyParams,
-            };
-        } else {
-            throw new Errors.InvalidRequestError('Invalid secrets format');
+        if ('secrets' in object) {
+            // Commitment secrets provided by the caller are not accepted anymore, as they can't be verified. The
+            // Keyguard derives the secrets itself, from the state returned by the create-multisig-commitments request.
+            throw new Errors.InvalidRequestError(
+                'secrets are not supported anymore, use the state from a create-multisig-commitments request',
+            );
+        }
+
+        /** @type {MultisigSigningState} */
+        let state;
+        try {
+            state = MultisigSigningState.deserialize(object.state);
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            throw new Errors.InvalidRequestError(`Invalid state: ${errorMessage}`);
         }
 
         const userName = this.parseLabel(object.userName, true, 'userName');
@@ -209,38 +147,9 @@ class SignMultisigTransactionApi extends TopLevelApi {
         return {
             publicKeys,
             signers,
-            secrets,
+            state,
             userName,
         };
-    }
-
-    /**
-     * @param {Nimiq.Transaction} transaction
-     * @param {MultisigConfig} multisig
-     * @returns {Nimiq.Address}
-     */
-    parseMultisigAddress(transaction, multisig) {
-        const multisigAddress = Nimiq.Address.fromPublicKeys(
-            multisig.publicKeys,
-            multisig.signers.length,
-        );
-
-        if (!(transaction.senderType === Nimiq.AccountType.Basic && transaction.sender.equals(multisigAddress))
-            // Vesting contracts owned by the multisig are allowed to send anywhere. The contract address can't be
-            // verified here, it can however be assumed to be owned by the multisig, as only the owner can sign a valid
-            // vesting withdrawal transaction.
-            && transaction.senderType !== Nimiq.AccountType.Vesting
-            // For other transactions which are not from a basic account, i.e. from a contract (other than a vesting
-            // contract), we enforce the multisig to be the recipient. E.g. unstaking, HTLC refund, HTLC withdrawal etc.
-            // are only allowed to the multisig address.
-            && !(transaction.recipientType === Nimiq.AccountType.Basic && transaction.recipient.equals(multisigAddress))
-        ) {
-            throw new Errors.InvalidRequestError(
-                'The transaction must either be sent from or to the multisig, or from a vesting contract owned by it',
-            );
-        }
-
-        return multisigAddress;
     }
 
     /**

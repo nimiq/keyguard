@@ -24,15 +24,4 @@ const CONFIG = { // eslint-disable-line no-unused-vars
     POLYGON_GASLESS_DENIED_RECIPIENTS: [
         '0xfA9Dabbf3C68a126a627ad48098700DFc6F27c82', // Mock USDT0 of the Amoy deployment, not supported here
     ],
-
-    RSA_KEY_BITS: 2048, // Possible values are 1024 (fast, but unsafe), 2048 (good compromise), 4096 (slow, but safe)
-    RSA_KDF_FUNCTION: 'PBKDF2-SHA512',
-    RSA_KDF_ITERATIONS: 1024,
-
-    RSA_SUPPORTED_KEY_BITS: [2048],
-    RSA_SUPPORTED_KDF_FUNCTIONS: ['PBKDF2-SHA512'],
-    /** @type {Record<string, number[]>} */
-    RSA_SUPPORTED_KDF_ITERATIONS: {
-        'PBKDF2-SHA512': [1024],
-    },
 };

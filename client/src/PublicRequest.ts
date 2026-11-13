@@ -236,12 +236,6 @@ export type SignTransactionRequest
     | SignTransactionRequestSwitchValidator
     | SignTransactionRequestUnstaking;
 
-export type RsaKeyParams = {
-    kdf: string,
-    iterations: number,
-    keySize: number,
-};
-
 export type MultisigConfig = {
     /**
      * The public keys of all n potential signers of a k of n multisig. So notably, these are not pre-aggregated public
@@ -257,14 +251,39 @@ export type MultisigConfig = {
         commitments: Uint8Array[],
     }>,
     /**
-     * The corresponding secrets for my own commitments. Can optionally be encrypted by an encryption key obtained via a
-     * Connect request.
+     * The signing state returned for my own signer by the create-multisig-commitments request (round 1). The Keyguard
+     * derives the secrets for my own commitments from it. Commitment secrets are not accepted from the caller.
      */
-    secrets: Uint8Array[] | {
-        encrypted: Uint8Array[],
-        keyParams: RsaKeyParams,
-    },
+    state: Uint8Array,
     userName?: string,
+};
+
+/**
+ * Round 1 of signing a multisig transaction: creates the commitments of the selected key for signing the given
+ * transaction. The returned state must be passed to the sign-multisig-transaction request in round 2, together with
+ * the commitments of all signers. Each state can be used to sign only once (repeating the identical request is
+ * allowed), and expires after 7 days. If the signing session needs to be restarted, for example because a co-signer
+ * changed, create new commitments.
+ */
+export type CreateMultisigCommitmentsRequest = SimpleRequest & TransactionInfo & {
+    keyPath: string,
+    keyLabel: string,
+    recipientLabel?: string,
+    multisigConfig: {
+        /** The public keys of all n potential signers of the k of n multisig, see MultisigConfig. */
+        publicKeys: Uint8Array[],
+        /** The number k of signers of the k of n multisig. */
+        numberOfSigners: number,
+        userName?: string,
+    },
+};
+
+export type MultisigCommitmentsResult = {
+    publicKey: Uint8Array,
+    /** The commitments of the selected key, to share with the co-signers. */
+    commitments: Uint8Array[],
+    /** Opaque, non-secret state to pass back with the sign-multisig-transaction request. */
+    state: Uint8Array,
 };
 
 export type SignMultisigTransactionRequestCommon = Transform<
@@ -611,13 +630,6 @@ export type ConnectRequest = SimpleRequest & {
 
 export type ConnectResult = {
     signatures: SignatureResult[],
-    encryptionKey: {
-        format: 'spki',
-        keyData: Uint8Array,
-        algorithm: { name: string, hash: string },
-        keyUsages: ['encrypt'],
-        keyParams: RsaKeyParams,
-    },
 };
 
 // Request unions
@@ -634,6 +646,7 @@ export type RedirectRequest
     | SignStakingRequest
     | SignBtcTransactionRequest
     | SignPolygonTransactionRequest
+    | CreateMultisigCommitmentsRequest
     | SignMultisigTransactionRequest
     | SimpleRequest
     | DeriveBtcXPubRequest
@@ -716,6 +729,7 @@ export type RedirectResult
     | ExportResult
     | KeyResult
     | SignatureResult
+    | MultisigCommitmentsResult
     | ConnectResult
     | SignTransactionResult
     | SignTransactionResult[]
@@ -734,6 +748,7 @@ export type Result = RedirectResult | IFrameResult;
 export type ResultType<T extends RedirectRequest> =
     T extends Is<T, SignMessageRequest> ? SignatureResult :
     T extends Is<T, SignTransactionRequest> ? SignTransactionResult | SignTransactionResult[] :
+    T extends Is<T, CreateMultisigCommitmentsRequest> ? MultisigCommitmentsResult :
     T extends Is<T, SignMultisigTransactionRequest> ? SignatureResult :
     T extends Is<T, SignStakingRequest> ? SignStakingResult[] :
     T extends Is<T, ConnectRequest> ? ConnectResult :
@@ -751,6 +766,7 @@ export type ResultType<T extends RedirectRequest> =
 export type ResultByCommand<T extends KeyguardCommand> =
     T extends KeyguardCommand.SIGN_MESSAGE ? SignatureResult :
     T extends KeyguardCommand.SIGN_TRANSACTION ? SignTransactionResult | SignTransactionResult[] :
+    T extends KeyguardCommand.CREATE_MULTISIG_COMMITMENTS ? MultisigCommitmentsResult :
     T extends KeyguardCommand.SIGN_MULTISIG_TRANSACTION ? SignatureResult :
     T extends KeyguardCommand.SIGN_STAKING ? SignStakingResult[] :
     T extends KeyguardCommand.CONNECT_ACCOUNT ? ConnectResult :

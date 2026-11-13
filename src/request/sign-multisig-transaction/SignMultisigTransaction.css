@@ -64,3 +64,27 @@
         margin: 0 -1rem;
     }
 }
+
+#foreign-session-warning .page-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+#foreign-session-warning .session-created-at {
+    opacity: 0.6;
+}
+
+#foreign-session-warning .page-footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#foreign-session-warning .page-footer .cancel {
+    margin-bottom: 1rem;
+}
+
+#foreign-session-warning .page-footer .confirm {
+    margin: 1rem 0 3rem;
+}

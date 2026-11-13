@@ -97,7 +97,9 @@
     </div> -->
 
     <br><button id="redirect" type="button" class="small" disabled>Sign transaction (redirect)</button>
-    <br><button id="popup" type="button" class="small">Sign transaction (popup)</button>
+    <br><button id="popup" type="button" class="small">Create commitments and sign transaction (popup)</button>
+    <br><button id="replay-identical" type="button" class="small" disabled>Replay last signing identically (allowed)</button>
+    <br><button id="replay-different" type="button" class="small" disabled>Replay last signing with other co-signer commitments (refused)</button>
 
     <p id="result"></p>
 </form>
@@ -128,11 +130,62 @@
     //     signTransactionRedirect(await generateRequest());
     // });
 
+    let lastSignRequest = null;
+    const $replayIdentical = document.querySelector('button#replay-identical');
+    const $replayDifferent = document.querySelector('button#replay-different');
+
     document.querySelector('button#popup').addEventListener('click', async () => {
-        signTransactionPopup(await generateRequest());
+        if (lastSignRequest) await KeyStore.instance.remove(lastSignRequest.keyId);
+        lastSignRequest = null;
+        $replayIdentical.disabled = $replayDifferent.disabled = true;
+
+        const { commitmentsRequest, buildSignRequest } = await generateRequests();
+        const keyguard = openPopup();
+        try {
+            // Round 1: let the Keyguard create our commitments and the signing state.
+            const round1 = await callKeyguard(keyguard, 'create-multisig-commitments', commitmentsRequest);
+            console.log('Round 1 result:', round1);
+            // Round 2: sign with the commitments of all signers and our state.
+            const signRequest = buildSignRequest(round1);
+            const result = await callKeyguard(keyguard, 'sign-multisig-transaction', signRequest);
+            showResult('TX signed: ' + JSON.stringify(result));
+            lastSignRequest = signRequest;
+            $replayIdentical.disabled = $replayDifferent.disabled = false;
+        } catch (e) {
+            showError(e);
+        }
+        keyguard.close();
     });
 
-    async function generateRequest() {
+    $replayIdentical.addEventListener('click', () => replay(lastSignRequest));
+
+    $replayDifferent.addEventListener('click', () => replay({
+        ...lastSignRequest,
+        multisigConfig: {
+            ...lastSignRequest.multisigConfig,
+            signers: lastSignRequest.multisigConfig.signers.map((signer, i) => i === 0 ? signer : {
+                ...signer,
+                commitments: randomCommitments(),
+            }),
+        },
+    }));
+
+    async function replay(signRequest) {
+        const keyguard = openPopup();
+        try {
+            const result = await callKeyguard(keyguard, 'sign-multisig-transaction', signRequest);
+            showResult('TX signed: ' + JSON.stringify(result));
+        } catch (e) {
+            showError(e);
+        }
+        keyguard.close();
+    }
+
+    function randomCommitments() {
+        return new Array(2).fill(0).map(() => Nimiq.CommitmentPair.generate().commitment.serialize());
+    }
+
+    async function generateRequests() {
         const layout = document.querySelector('#layout').value;
         const txAmount = parseInt(document.querySelector('#amount').value) || 0;
         const txFee = parseInt(document.querySelector('#fee').value) || 0;
@@ -159,10 +212,8 @@
         publicKeys.push(myPublicKey);
         publicKeys.reverse(); // Move my public key to the front, so when slicing the signerPublicKeys, mine is included
 
-        const request = {
+        const transactionInfo = {
             appName: 'SignMultisigTx Demo',
-
-            layout,
 
             keyId: id,
             keyPath: path,
@@ -175,19 +226,34 @@
             recipientLabel: 'Best Friend',
             value: txAmount,
             fee: txFee,
-            data: Nimiq.BufferUtils.fromUtf8(txData),
+            recipientData: Nimiq.BufferUtils.fromUtf8(txData),
             validityStartHeight: 0,
+        };
 
+        const commitmentsRequest = {
+            ...transactionInfo,
             multisigConfig: {
                 publicKeys: publicKeys.map(key => key.serialize()),
-                signers: publicKeys.slice(0, numberOfSigners).map(key => ({
-                    publicKey: key.serialize(),
-                    commitments: new Array(2).fill(0).map(() => Nimiq.CommitmentPair.generate().commitment.serialize()), // Using random data
-                })),
-                secrets: new Array(2).fill(0).map(() => Nimiq.CommitmentPair.generate().secret.serialize()), // Using random data,
+                numberOfSigners,
                 userName,
-            }
+            },
         };
+
+        const buildSignRequest = round1 => {
+            const request = {
+                ...transactionInfo,
+                layout,
+                multisigConfig: {
+                    publicKeys: publicKeys.map(key => key.serialize()),
+                    signers: publicKeys.slice(0, numberOfSigners).map(key => ({
+                        publicKey: key.serialize(),
+                        // Our own commitments from round 1, random data for the co-signers
+                        commitments: key.equals(myPublicKey) ? round1.commitments : randomCommitments(),
+                    })),
+                    state: round1.state,
+                    userName,
+                },
+            };
 
         // if (layout === 'checkout') {
         //     request.shopOrigin = location.origin;
@@ -218,30 +284,47 @@
         //     }
         // }
 
-        return request;
+            return request;
+        };
+
+        return { commitmentsRequest, buildSignRequest };
     }
 
     // function signTransactionRedirect(txRequest) {
     //     return client.signTransaction(txRequest, RedirectRequestBehavior.withLocalState({ keyId: txRequest.keyId }));
     // }
 
-    async function signTransactionPopup(txRequest) {
-        const keyguard = window.open('../src/request/sign-multisig-transaction/', 'SignMultisigTx Demo',
+    function openPopup() {
+        return window.open('about:blank', 'SignMultisigTx Demo',
             `left=${window.innerWidth / 2 - 350},top=75,width=700,height=850,location=yes,dependent=yes`);
+    }
+
+    async function callKeyguard(keyguard, command, request) {
+        keyguard.location.href = `../src/request/${command}/`;
+        // Wait for the navigation, such that the RPC client does not connect to the previous request's page.
+        await new Promise(resolve => {
+            const check = () => {
+                try {
+                    if (keyguard.location.pathname.includes(`/${command}/`)
+                        && keyguard.document.readyState === 'complete') return resolve();
+                } catch (e) {} // eslint-disable-line no-empty
+                setTimeout(check, 50);
+            };
+            check();
+        });
         const rpc = new Rpc.PostMessageRpcClient(keyguard, '*');
         await rpc.init();
+        return rpc.call('request', request);
+    }
 
-        try {
-            const result = await rpc.call('request', txRequest);
-            console.log('Keyguard result:', result);
-            document.querySelector('#result').textContent = 'TX signed: ' + JSON.stringify(result);
-        } catch (e) {
-            console.error('Keyguard error', e);
-            document.querySelector('#result').textContent = `Error: ${e.message || e}`;
-        }
+    function showResult(text) {
+        console.log(text);
+        document.querySelector('#result').textContent = text;
+    }
 
-        keyguard.close();
-        await KeyStore.instance.remove(txRequest.keyId);
+    function showError(e) {
+        console.error('Keyguard error', e);
+        document.querySelector('#result').textContent = `Error: ${e.message || e}`;
     }
 </script>
 
