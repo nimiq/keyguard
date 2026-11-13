@@ -332,6 +332,22 @@ describe('PolygonGasless', () => {
         }
     });
 
+    it('limits amounts and fees to MAX_SAFE_INTEGER, but not the nonce', () => {
+        const parsed = parser().parseGaslessTransfer(transfer(SENDER, {
+            amount: '9007199254740991',
+            fee: '9007199254740991',
+            nonce: '9007199254740992',
+        }), 'request');
+        expect(parsed.amount).toBe('9007199254740991');
+        expect(parsed.fee).toBe('9007199254740991');
+        expect(parsed.nonce).toBe('9007199254740992');
+
+        for (const overrides of [{ amount: '9007199254740992' }, { fee: '9007199254740992' }]) {
+            expect(() => parser().parseGaslessTransfer(transfer(SENDER, overrides), 'request'))
+                .toThrowError(Errors.InvalidRequestError, /safe integer/);
+        }
+    });
+
     it('rejects token nonces that are not safe integers', () => {
         expect(parser().parseTokenNonce(7, 'tokenNonce')).toBe(7);
         expect(() => parser().parseTokenNonce(2 ** 53, 'tokenNonce')).toThrowError(Errors.InvalidRequestError);
@@ -356,7 +372,6 @@ describe('PolygonGasless', () => {
             transfer(SENDER, { to: CONFIG.NATIVE_USDC_CONTRACT_ADDRESS }),
             transfer(SENDER, { to: CONFIG.BRIDGED_USDT_CONTRACT_ADDRESS }),
             transfer(SENDER, { amount: '0' }),
-            transfer(SENDER, { amount: ethers.constants.MaxUint256.toString() }),
         ];
         for (const fields of invalid) {
             expect(() => SignPolygonTransactionApi.createTransferRequest(fields))

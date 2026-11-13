@@ -316,7 +316,8 @@ export type SignBtcTransactionRequest
 
 /**
  * A gasless USDC or USDT0 transfer on Polygon through the GaslessTransfer contract, see
- * https://github.com/NimiqToolbox/gas-abstraction. Amounts are in the token's smallest unit (6 decimals).
+ * https://github.com/NimiqToolbox/gas-abstraction. Amounts are in the token's smallest unit (6 decimals). Amounts and
+ * fees must not be above `Number.MAX_SAFE_INTEGER`.
  */
 export type PolygonGaslessTransfer = {
     token: string,
