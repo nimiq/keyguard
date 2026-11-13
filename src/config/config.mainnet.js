@@ -21,6 +21,8 @@ const CONFIG = { // eslint-disable-line no-unused-vars
     POLYGON_GASLESS_MAX_ACCEPTABLE_FEE: '500000',
     /** @type {string[]} Contracts that cannot move tokens sent to them, in addition to the ones in this config. */
     POLYGON_GASLESS_DENIED_RECIPIENTS: [
+        // Still known to some as "USDC on Polygon", and tokens sent to it are lost
+        '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174', // USDC.e (bridged USDC) token
         '0x98E69a6927747339d5E543586FC0262112eBe4BD', // OpenGSN USDT transfer
         '0xF615bD7EA00C4Cc7F39Faad0895dB5f40891359f', // OpenGSN USDT and USDC.e HTLC
         '0x3157d422cd1be13AC4a7cb00957ed717e648DFf2', // OpenGSN USDC transfer

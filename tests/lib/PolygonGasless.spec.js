@@ -100,6 +100,18 @@ describe('PolygonGasless', () => {
     }
 
     /**
+     * The values of a network's config file. Karma serves the files but loads only the local config.
+     *
+     * @param {'mainnet' | 'testnet'} network
+     * @returns {Promise<typeof CONFIG>}
+     */
+    async function loadConfig(network) {
+        const response = await fetch(`/base/src/config/config.${network}.js`);
+        if (!response.ok) throw new Error(`config.${network}.js is not served`);
+        return new Function(`${await response.text()}\nreturn CONFIG;`)(); // eslint-disable-line no-new-func
+    }
+
+    /**
      * The typed data of a permit, as the Polygon key signs it.
      *
      * @param {string} token
@@ -243,6 +255,21 @@ describe('PolygonGasless', () => {
                     vector.deadline,
                 );
                 expect(digest(permit)).toBe(vector.digest);
+            }
+        });
+
+        it('denies the USDC.e token as a recipient on Polygon mainnet', async () => {
+            Object.assign(CONFIG, await loadConfig('mainnet'));
+
+            /** @param {string} to */
+            const parse = to => SignPolygonTransactionApi.createTransferRequest(
+                parser().parseGaslessTransfer(transfer(SENDER, { to }), 'request'),
+            );
+            expect(() => parse('0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC')).not.toThrow();
+
+            const usdcE = '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174';
+            for (const to of [usdcE, usdcE.toLowerCase(), `0x${usdcE.slice(2).toUpperCase()}`]) {
+                expect(() => parse(to)).toThrowError(Errors.InvalidRequestError, /request\.to/);
             }
         });
 
