@@ -507,6 +507,176 @@ describe('PolygonGaslessHtlc', () => {
         });
     });
 
+    describe('parses addresses into their checksum', () => {
+        const SENDER = '0x70997970C51812dc3A010C7d01b50e0d17dc79C8';
+        const KEY_PATH = PolygonConstants.DEFAULT_DERIVATION_PATH;
+        /** Spellings that ethers accepts, but the parsers must not */
+        const INVALID = [
+            ethers.utils.getIcapAddress(SENDER),
+            SENDER.slice(2),
+        ];
+
+        /**
+         * @param {string} address
+         * @returns {string}
+         */
+        function upperCase(address) {
+            return `0x${address.slice(2).toUpperCase()}`;
+        }
+
+        /**
+         * TopLevelApi's constructor does not allow to run in a frame, and the parsers do not need it.
+         *
+         * @param {any} Api
+         * @returns {any}
+         */
+        function parser(Api) {
+            const api = Object.create(Api.prototype);
+            spyOn(api, 'parseKeyId').and.returnValue(Promise.resolve({ type: Nimiq.Secret.Type.ENTROPY }));
+            return api;
+        }
+
+        /**
+         * @param {Promise<any>} parsing
+         * @returns {Promise<Error>}
+         */
+        async function errorOf(parsing) {
+            try {
+                await parsing;
+            } catch (error) {
+                return /** @type {Error} */ (error);
+            }
+            throw new Error('Expected the request to be rejected');
+        }
+
+        /**
+         * @param {string} from
+         * @param {string} [relay]
+         * @returns {Promise<any>}
+         */
+        function parseSettlement(from, relay = RELAY) {
+            return parser(SignPolygonTransactionApi).parseRequest({
+                appName: 'Test',
+                keyId: 'key',
+                keyLabel: 'Key',
+                keyPath: KEY_PATH,
+                operation: 'refund',
+                token: CONFIG.NATIVE_USDC_CONTRACT_ADDRESS.toLowerCase(),
+                amount: '1000000',
+                request: {
+                    from,
+                    id: ID,
+                    target: from,
+                    fee: '10000',
+                    relay,
+                },
+            });
+        }
+
+        it('in settlements', async () => {
+            for (const from of [SENDER, SENDER.toLowerCase(), upperCase(SENDER)]) {
+                // eslint-disable-next-line no-await-in-loop
+                const parsed = await parseSettlement(from, RELAY.toLowerCase());
+                expect(parsed.token).toBe(CONFIG.NATIVE_USDC_CONTRACT_ADDRESS);
+                expect(parsed.request.from).toBe(SENDER);
+                expect(parsed.request.target).toBe(SENDER);
+                expect(parsed.request.relay).toBe(RELAY);
+            }
+
+            for (const from of INVALID) {
+                // eslint-disable-next-line no-await-in-loop
+                const error = await errorOf(parseSettlement(from));
+                expect(error instanceof Errors.InvalidRequestError).toBe(true);
+                expect(error.message).toContain('request.from must be a valid Polygon address');
+            }
+            const error = await errorOf(parseSettlement(SENDER, ethers.utils.getIcapAddress(RELAY)));
+            expect(error instanceof Errors.InvalidRequestError).toBe(true);
+            expect(error.message).toContain('request.relay must be a valid Polygon address');
+        });
+
+        it('in swap fundings and redeems', () => {
+            const api = parser(SignSwapApi);
+            const funding = api.parseHtlcFunding({
+                from: SENDER.toLowerCase(),
+                amount: '1000000',
+                fee: '10000',
+                relay: upperCase(RELAY),
+            }, 'fund.request');
+            expect(funding.from).toBe(SENDER);
+            expect(funding.relay).toBe(RELAY);
+
+            const redeeming = api.parseHtlcRedeeming({
+                from: upperCase(SENDER),
+                fee: '10000',
+                relay: RELAY.toLowerCase(),
+            }, 'redeem.request');
+            expect(redeeming.from).toBe(SENDER);
+            expect(redeeming.relay).toBe(RELAY);
+
+            for (const from of INVALID) {
+                expect(() => api.parseHtlcFunding({ from, amount: '1000000', fee: '10000', relay: RELAY }, 'fund'))
+                    .toThrowError(Errors.InvalidRequestError, /fund\.from must be a valid Polygon address/);
+                expect(() => api.parseHtlcRedeeming({ from, fee: '10000', relay: RELAY }, 'redeem'))
+                    .toThrowError(Errors.InvalidRequestError, /redeem\.from must be a valid Polygon address/);
+            }
+        });
+
+        it('in the Polygon addresses of the slider layout', async () => {
+            const nimAddress = new Nimiq.Address(new Uint8Array(20).fill(1)).toUserFriendlyAddress();
+            /**
+             * @param {string} from
+             * @param {string} listed
+             * @returns {Promise<any>}
+             */
+            const parse = (from, listed) => parser(SignSwapApi).parseRequest({
+                appName: 'Test',
+                keyId: 'key',
+                swapId: 'swap',
+                fund: {
+                    type: 'USDC_MATIC',
+                    keyPath: KEY_PATH,
+                    request: { from, amount: '1000000', fee: '10000', relay: RELAY },
+                    tokenNonce: 0,
+                },
+                redeem: {
+                    type: 'NIM',
+                    keyPath: 'm/44\'/242\'/0\'/0\'',
+                    recipient: nimAddress,
+                    value: 100000,
+                    fee: 0,
+                    validityStartHeight: 1,
+                    recipientLabel: 'NIM',
+                },
+                fiatCurrency: 'eur',
+                fundingFiatRate: 1,
+                redeemingFiatRate: 1,
+                fundFees: { processing: 0, redeeming: 0 },
+                redeemFees: { funding: 0, processing: 0 },
+                serviceSwapFee: 0,
+                layout: 'slider',
+                direction: 'left-to-right',
+                nimiqAddresses: [{ address: nimAddress, balance: 0 }],
+                bitcoinAccount: { balance: 0 },
+                polygonAddresses: [{ address: listed, usdcBalance: 2000000, usdtBalance: 0 }],
+            });
+
+            for (const [from, listed] of [
+                [SENDER.toLowerCase(), SENDER],
+                [SENDER, SENDER.toLowerCase()],
+                [upperCase(SENDER), SENDER.toLowerCase()],
+            ]) {
+                // eslint-disable-next-line no-await-in-loop
+                const parsed = await parse(from, listed);
+                expect(parsed.fund.request.from).toBe(SENDER);
+                expect(parsed.polygonAddresses[0].address).toBe(SENDER);
+            }
+
+            const error = await errorOf(parse(SENDER, ethers.utils.getIcapAddress(SENDER)));
+            expect(error instanceof Errors.InvalidRequestError).toBe(true);
+            expect(error.message).toContain('polygonAddresses[0].address must be a valid Polygon address');
+        });
+    });
+
     describe('without a USDT contract', () => {
         const SENDER = '0x70997970C51812dc3A010C7d01b50e0d17dc79C8';
         const KEY_PATH = PolygonConstants.DEFAULT_DERIVATION_PATH;

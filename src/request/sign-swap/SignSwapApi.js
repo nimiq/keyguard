@@ -193,7 +193,7 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
                 usdcBalance,
                 usdtBalance,
             }, index) => ({
-                address: this.parsePolygonAddress(address, `polygonAddresses[${index}].address`),
+                address: this.parseChecksummedPolygonAddress(address, `polygonAddresses[${index}].address`),
                 usdcBalance: this.parsePositiveInteger(usdcBalance, true, `polygonAddresses[${index}].usdcBalance`),
                 usdtBalance: this.parsePositiveInteger(usdtBalance, true, `polygonAddresses[${index}].usdtBalance`),
             }));
@@ -318,10 +318,10 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
             relay,
         } = /** @type {Pick<KeyguardRequest.PolygonHtlcOpenRequest, 'from' | 'amount' | 'fee' | 'relay'>} */ (request);
         const funding = {
-            from: this.parsePolygonAddress(from, `${name}.from`),
+            from: this.parseChecksummedPolygonAddress(from, `${name}.from`),
             amount: this.parseSafeIntegerString(amount, `${name}.amount`),
             fee: this.parseSafeIntegerString(fee, `${name}.fee`),
-            relay: this.parsePolygonAddress(relay, `${name}.relay`),
+            relay: this.parseChecksummedPolygonAddress(relay, `${name}.relay`),
         };
         if (funding.amount === '0') throw new Errors.InvalidRequestError(`${name}.amount must not be zero`);
         PolygonGasless.checkFeeAndRelay(funding.fee, funding.relay, name);
@@ -348,9 +348,9 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
             relay,
         } = /** @type {Pick<KeyguardRequest.PolygonHtlcSettlement, 'from' | 'fee' | 'relay'>} */ (request);
         const redeeming = {
-            from: this.parsePolygonAddress(from, `${name}.from`),
+            from: this.parseChecksummedPolygonAddress(from, `${name}.from`),
             fee: this.parseSafeIntegerString(fee, `${name}.fee`),
-            relay: this.parsePolygonAddress(relay, `${name}.relay`),
+            relay: this.parseChecksummedPolygonAddress(relay, `${name}.relay`),
         };
         PolygonGasless.checkFeeAndRelay(redeeming.fee, redeeming.relay, name);
         // Fails early if HTLCs are not configured

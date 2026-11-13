@@ -42,7 +42,7 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
         parsedRequest.keyPath = this.parsePolygonPath(request.keyPath, 'keyPath');
         parsedRequest.operation = request.operation;
         parsedRequest.senderLabel = this.parseLabel(request.senderLabel);
-        parsedRequest.token = this.parsePolygonAddress(request.token, 'token');
+        parsedRequest.token = this.parseChecksummedPolygonAddress(request.token, 'token');
         // Only for display: the HTLC pays out its amount minus the fee, whatever is shown here.
         parsedRequest.amount = this.parseSafeIntegerString(request.amount, 'amount');
 
@@ -54,11 +54,11 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
             throw new Errors.InvalidRequestError('request must be an object');
         }
         parsedRequest.request = {
-            from: this.parsePolygonAddress(settlement.from, 'request.from'),
+            from: this.parseChecksummedPolygonAddress(settlement.from, 'request.from'),
             id: this.parseBytes32(settlement.id, 'request.id'),
-            target: this.parsePolygonAddress(settlement.target, 'request.target'),
+            target: this.parseChecksummedPolygonAddress(settlement.target, 'request.target'),
             fee: this.parseSafeIntegerString(settlement.fee, 'request.fee'),
-            relay: this.parsePolygonAddress(settlement.relay, 'request.relay'),
+            relay: this.parseChecksummedPolygonAddress(settlement.relay, 'request.relay'),
         };
         if (parsedRequest.request.target !== parsedRequest.request.from) {
             throw new Errors.InvalidRequestError('request.target must be request.from');
