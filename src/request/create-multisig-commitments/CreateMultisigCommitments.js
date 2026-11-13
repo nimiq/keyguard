@@ -7,6 +7,7 @@
 /* global TopLevelApi */
 /* global MultisigSigningState */
 /* global MultisigSessionStore */
+/* global MultisigTransactionOverview */
 
 /**
  * @callback CreateMultisigCommitments.resolve
@@ -24,13 +25,21 @@ class CreateMultisigCommitments {
         this._resolve = resolve;
         this._reject = reject;
 
-        const $page = /** @type {HTMLElement} */ (document.getElementById(CreateMultisigCommitments.Pages.UNLOCK));
-        const $accountLabel = /** @type {HTMLElement} */ ($page.querySelector('.account-label'));
-        $accountLabel.textContent = request.multisigConfig.userName
-            ? `${request.multisigConfig.userName} – ${request.keyLabel}`
-            : request.keyLabel;
+        const $page = /** @type {HTMLElement} */ (
+            document.getElementById(CreateMultisigCommitments.Pages.CONFIRM_TRANSACTION));
+        this._overview = new MultisigTransactionOverview($page, {
+            transaction: request.transaction,
+            multisigAddress: request.multisigAddress,
+            numberOfSigners: request.multisigConfig.numberOfSigners,
+            numberOfParticipants: request.multisigConfig.publicKeys.length,
+            senderLabel: request.senderLabel,
+            recipientLabel: request.recipientLabel,
+            keyInfo: request.keyInfo,
+            keyLabel: request.keyLabel,
+            userName: request.multisigConfig.userName,
+        });
 
-        const $passwordBox = /** @type {HTMLFormElement} */ ($page.querySelector('.password-box'));
+        const $passwordBox = /** @type {HTMLFormElement} */ ($page.querySelector('#password-box'));
         this._passwordBox = new PasswordBox($passwordBox, {
             hideInput: !request.keyInfo.encrypted,
             buttonI18nTag: 'passwordbox-continue',
@@ -103,10 +112,10 @@ class CreateMultisigCommitments {
     }
 
     run() {
-        window.location.hash = CreateMultisigCommitments.Pages.UNLOCK;
+        window.location.hash = CreateMultisigCommitments.Pages.CONFIRM_TRANSACTION;
     }
 }
 
 CreateMultisigCommitments.Pages = {
-    UNLOCK: 'unlock',
+    CONFIRM_TRANSACTION: 'confirm-transaction',
 };

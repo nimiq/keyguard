@@ -6,16 +6,10 @@
 /* global Errors */
 /* global Utf8Tools */
 /* global TopLevelApi */
-/* global AddressInfo */
-// /* global PaymentInfoLine */
-/* global NumberFormatting */
-/* global TransactionDataFormatting */
 /* global I18n */
-/* global lunasToCoins */
-/* global LoginFileAccountIcon */
-/* global Identicon */
 /* global MultisigSigningState */
 /* global MultisigSessionStore */
+/* global MultisigTransactionOverview */
 
 /**
  * @callback SignMultisigTransaction.resolve
@@ -34,140 +28,17 @@ class SignMultisigTransaction {
             document.getElementById(SignMultisigTransaction.Pages.CONFIRM_TRANSACTION));
         this.$el.classList.add(request.layout);
 
-        const transaction = request.transaction;
-        const multisigAddressInfo = {
-            signers: request.multisigConfig.signers.length,
-            participants: request.multisigConfig.publicKeys.length,
-        };
-        // If the multisig isn't the recipient (for example of a remove-stake transaction), assume that it's the sender,
-        // even if the sender address does not match (for example for transactions from a vesting contract owned by the
-        // multisig).
-        const isSenderMultisig = !request.multisigAddress.equals(transaction.recipient);
-
-        this.$accountDetails = /** @type {HTMLElement} */ (this.$el.querySelector('#account-details'));
-
-        const $sender = /** @type {HTMLLinkElement} */ (this.$el.querySelector('.accounts .sender'));
-        this._senderAddressInfo = new AddressInfo({
-            userFriendlyAddress: transaction.sender.toUserFriendlyAddress(),
-            label: request.senderLabel,
-            multisig: isSenderMultisig ? multisigAddressInfo : undefined,
+        this._overview = new MultisigTransactionOverview(this.$el, {
+            transaction: request.transaction,
+            multisigAddress: request.multisigAddress,
+            numberOfSigners: request.multisigConfig.signers.length,
+            numberOfParticipants: request.multisigConfig.publicKeys.length,
+            senderLabel: request.senderLabel,
+            recipientLabel: request.recipientLabel,
+            keyInfo: request.keyInfo,
+            keyLabel: request.keyLabel,
+            userName: request.multisigConfig.userName,
         });
-        this._senderAddressInfo.renderTo($sender);
-        $sender.addEventListener('click', () => {
-            this._openDetails(this._senderAddressInfo);
-        });
-
-        const $recipient = /** @type {HTMLLinkElement} */ (this.$el.querySelector('.accounts .recipient'));
-        const recipientAddress = transaction.recipient.toUserFriendlyAddress();
-        // eslint-disable-next-line operator-linebreak
-        const recipientLabel = /* 'shopOrigin' in request && !!request.shopOrigin
-            ? request.shopOrigin.split('://')[1]
-            : */ 'recipientLabel' in request && !!request.recipientLabel
-                ? request.recipientLabel
-                : null;
-        /** @type {URL | null} */
-        // eslint-disable-next-line operator-linebreak
-        const recipientImage = /* 'shopLogoUrl' in request && !!request.shopLogoUrl
-            ? request.shopLogoUrl
-            : */ null;
-        this._recipientAddressInfo = new AddressInfo({
-            userFriendlyAddress: recipientAddress,
-            label: recipientLabel,
-            imageUrl: recipientImage,
-            multisig: isSenderMultisig ? undefined : multisigAddressInfo,
-        }/* , request.layout === SignMultisigTransactionApi.Layouts.CASHLINK */);
-        this._recipientAddressInfo.renderTo($recipient);
-        // if (request.layout !== SignMultisigTransactionApi.Layouts.CASHLINK) {
-        $recipient.addEventListener('click', () => {
-            this._openDetails(this._recipientAddressInfo);
-        });
-        // }
-
-        // /** @type {HTMLElement} */
-        // const $paymentInfoLine = (this.$el.querySelector('.payment-info-line'));
-        // if (request.layout === SignMultisigTransactionApi.Layouts.CHECKOUT) {
-        //     // eslint-disable-next-line no-new
-        //     new PaymentInfoLine(Object.assign({}, request, {
-        //         recipient: recipientAddress,
-        //         label: recipientLabel || recipientAddress,
-        //         imageUrl: request.shopLogoUrl,
-        //         amount: request.transaction.value,
-        //         currency: /** @type {'nim'} */ ('nim'),
-        //         unitsToCoins: Nimiq.Policy.lunasToCoins,
-        //         networkFee: request.transaction.fee,
-        //     }), $paymentInfoLine);
-        // } else {
-        //     $paymentInfoLine.remove();
-        // }
-
-        const $closeDetails = /** @type {HTMLButtonElement} */ (this.$accountDetails.querySelector('#close-details'));
-        $closeDetails.addEventListener('click', this._closeDetails.bind(this));
-
-        const $value = /** @type {HTMLDivElement} */ (this.$el.querySelector('#value'));
-        const $fee = /** @type {HTMLDivElement} */ (this.$el.querySelector('#fee'));
-        const $data = /** @type {HTMLDivElement} */ (this.$el.querySelector('#data'));
-
-        // Set value and fee.
-        $value.textContent = NumberFormatting.formatNumber(lunasToCoins(Number(transaction.value)));
-        if (transaction.fee > 0) {
-            $fee.textContent = NumberFormatting.formatNumber(lunasToCoins(Number(transaction.fee)));
-        } else {
-            const $feeSection = /** @type {HTMLDivElement} */ ($fee.parentElement);
-            $feeSection.remove();
-        }
-
-        // if (request.layout === SignMultisigTransactionApi.Layouts.CASHLINK
-        //  && Nimiq.BufferUtils.equals(transaction.data, Constants.CASHLINK_FUNDING_DATA)) {
-        //     if (request.cashlinkMessage) {
-        //         $data.textContent = request.cashlinkMessage;
-        //         /** @type {HTMLDivElement} */
-        //         const $dataSection = (this.$el.querySelector('.data-section'));
-        //         $dataSection.classList.remove('display-none');
-        //     }
-        // } else {
-        const formattedData = TransactionDataFormatting.formatTransactionData(transaction);
-        if (formattedData) {
-            $data.textContent = formattedData;
-            I18n.observer.on(
-                I18n.Events.LANGUAGE_CHANGED,
-                () => { $data.textContent = TransactionDataFormatting.formatTransactionData(transaction); },
-            );
-        } else {
-            $data.remove();
-        }
-        // }
-
-        // Set up username and account name with account icon
-        const $nameSection = /** @type {HTMLDivElement} */ (this.$el.querySelector('.user-and-account-names'));
-        const $accountIcon = document.createElement('div');
-        $accountIcon.classList.add('account-icon');
-        if (request.keyInfo.type === Nimiq.Secret.Type.ENTROPY) {
-            // eslint-disable-next-line no-new
-            new LoginFileAccountIcon(request.keyInfo.defaultAddress.toUserFriendlyAddress(), $accountIcon);
-        } else {
-            // Show identicon for legacy accounts (which must be supported to support Team Nimiq Multisig)
-            // eslint-disable-next-line no-new
-            new Identicon(request.keyInfo.defaultAddress.toUserFriendlyAddress(), $accountIcon);
-        }
-        const $accountName = document.createElement('div');
-        $accountName.classList.add('account-name');
-        $accountName.textContent = request.keyLabel;
-        const $accountIconAndName = document.createElement('div');
-        $accountIconAndName.classList.add('account-icon-and-name');
-        $accountIconAndName.append($accountIcon, $accountName);
-        if (request.multisigConfig.userName) {
-            const $userName = document.createElement('div');
-            $userName.classList.add('user-name');
-            $userName.textContent = request.multisigConfig.userName;
-            I18n.translateToHtmlContent($nameSection, 'sign-multisig-tx-approving-as-name-with-account', {
-                userName: $userName,
-                accountName: $accountIconAndName,
-            });
-        } else {
-            I18n.translateToHtmlContent($nameSection, 'sign-multisig-tx-approving-with-account', {
-                accountName: $accountIconAndName,
-            });
-        }
 
         // Set up password box.
         const $passwordBox = /** @type {HTMLFormElement} */ (document.querySelector('#password-box'));
@@ -189,21 +60,6 @@ class SignMultisigTransaction {
         // if ('expires' in request && request.expires) {
         //     setTimeout(() => reject(new Errors.RequestExpired()), request.expires - Date.now());
         // }
-    }
-
-    /**
-     * @param {AddressInfo} which
-     */
-    _openDetails(which) {
-        which.renderTo(
-            /** @type {HTMLElement} */(this.$accountDetails.querySelector('#details')),
-            'detailed',
-        );
-        this.$el.classList.add('account-details-open');
-    }
-
-    _closeDetails() {
-        this.$el.classList.remove('account-details-open');
     }
 
     /**

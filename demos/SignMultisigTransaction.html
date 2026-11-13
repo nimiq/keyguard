@@ -223,6 +223,7 @@
             sender: Nimiq.Address.fromPublicKeys(publicKeys, numberOfSigners).serialize(),
             senderLabel: 'Our Multisig Wallet',
             recipient: Nimiq.Address.fromUserFriendlyAddress('NQ82 HP54 C9D4 2FAG 69QD 6Q71 LURR 5187 0V3X').serialize(),
+            recipientLabel: 'Best Friend',
             value: txAmount,
             fee: txFee,
             recipientData: Nimiq.BufferUtils.fromUtf8(txData),
@@ -242,7 +243,6 @@
             const request = {
                 ...transactionInfo,
                 layout,
-                recipientLabel: 'Best Friend',
                 multisigConfig: {
                     publicKeys: publicKeys.map(key => key.serialize()),
                     signers: publicKeys.slice(0, numberOfSigners).map(key => ({

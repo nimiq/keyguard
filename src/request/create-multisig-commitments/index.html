@@ -42,6 +42,18 @@
     <script defer bundle-toplevel src="../TopLevelApi.js"></script>
     <script defer bundle-toplevel src="../../translations/index.js"></script>
 
+    <script defer src="../../lib/ClipboardUtils.js"></script>
+    <script defer src="../../lib/IqonHash.js"></script>
+    <script defer src="../../lib/Iqons.js"></script>
+    <script defer src="../../lib/LoginFileConfig.js"></script>
+    <script defer src="../../lib/NumberFormatting.js"></script>
+    <script defer src="../../lib/TransactionDataFormatting.js"></script>
+    <script defer src="../../components/Copyable.js"></script>
+    <script defer src="../../components/Identicon.js"></script>
+    <script defer src="../../components/ShortAddress.js"></script>
+    <script defer src="../../components/AddressInfo.js"></script>
+    <script defer src="../../components/LoginFileAccountIcon.js"></script>
+    <script defer src="../../components/MultisigTransactionOverview.js"></script>
     <script defer src="../../lib/MultisigSigningState.js"></script>
     <script defer src="../../lib/MultisigSessionStore.js"></script>
     <script defer src="CreateMultisigCommitments.js"></script>
@@ -54,7 +66,14 @@
     <link rel="stylesheet" bundle-toplevel href="../../components/PasswordInput.css">
     <link rel="stylesheet" bundle-toplevel href="../../components/PasswordBox.css">
 
-    <link rel="stylesheet" href="CreateMultisigCommitments.css">
+    <link rel="stylesheet" href="../../components/Tooltip.css">
+    <link rel="stylesheet" href="../../components/Copyable.css">
+    <link rel="stylesheet" href="../../components/ShortAddress.css">
+    <link rel="stylesheet" href="../../components/AddressInfo.css">
+    <link rel="stylesheet" href="../../components/AddressInfoDetailed.css">
+    <link rel="stylesheet" href="../../components/LoginFileAccountIcon.css">
+    <link rel="stylesheet" href="../sign-transaction/SignTransaction.css">
+    <link rel="stylesheet" href="../sign-multisig-transaction/SignMultisigTransaction.css">
 </head>
 <body class="loading">
     <div class="header-top">
@@ -64,18 +83,43 @@
     </div>
 
     <div id="app">
-        <div id="unlock" class="page nq-card">
-            <div class="page-header nq-card-header">
-                <h1 class="nq-h1" data-i18n="create-multisig-commitments-heading">Start Multisig Approval</h1>
+        <div id="confirm-transaction" class="page nq-card standard">
+            <div id="account-details">
+                <button id="close-details" class="nq-button-s">
+                    <svg class="nq-icon"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-close"/></svg>
+                </button>
+                <div id="details"></div>
             </div>
+            <div id="effect-container">
+                <div class="page-header nq-card-header">
+                    <h1 data-i18n="create-multisig-commitments-heading" class="nq-h1 heading-standard">Start Multisig Approval</h1>
+                </div>
 
-            <div class="page-body nq-card-body">
-                <p class="nq-text" data-i18n="create-multisig-commitments-text">Unlock your account to start a signing session for this multisig transaction. You will review and approve the transaction in a later step.</p>
-                <p class="nq-text account-label"></p>
-            </div>
+                <div class="page-body nq-card-body transaction">
+                    <div class="center accounts">
+                        <div class="sender"></div>
+                        <svg class="nq-icon arrow"><use xlink:href="../../../node_modules/@nimiq/style/nimiq-style.icons.svg#nq-arrow-right"/></svg>
+                        <div class="recipient"></div>
+                    </div>
 
-            <div class="page-footer nq-card-footer">
-                <form class="password-box"></form>
+                    <div class="value-fee-data">
+                        <div class="total nq-light-blue">
+                            <span id="value"></span><span class="nim-symbol"></span>
+                        </div>
+
+                        <div class="fee-section nq-text-s">
+                            + <span id="fee"></span> <span class="nim-symbol"></span> <span data-i18n="sign-tx-fee">fee</span>
+                        </div>
+
+                        <div class="data-section nq-text nq-blue" id="data"></div>
+                    </div>
+
+                    <div class="user-and-account-names"></div>
+                </div>
+
+                <div class="page-footer nq-card-footer">
+                    <form id="password-box"></form>
+                </div>
             </div>
         </div>
 

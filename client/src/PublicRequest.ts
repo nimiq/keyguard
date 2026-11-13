@@ -268,6 +268,7 @@ export type MultisigConfig = {
 export type CreateMultisigCommitmentsRequest = SimpleRequest & TransactionInfo & {
     keyPath: string,
     keyLabel: string,
+    recipientLabel?: string,
     multisigConfig: {
         /** The public keys of all n potential signers of the k of n multisig, see MultisigConfig. */
         publicKeys: Uint8Array[],

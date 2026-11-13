@@ -107,7 +107,6 @@
     "sign-multisig-tx-foreign-session-cancel": "Cancel",
     "sign-multisig-tx-foreign-session-confirm": "I have not approved it elsewhere, continue",
     "create-multisig-commitments-heading": "Start Multisig Approval",
-    "create-multisig-commitments-text": "Unlock your account to start a signing session for this multisig transaction. You will review and approve the transaction in a later step.",
 
     "sign-staking-heading-stake": "Participa NIM",
     "sign-staking-heading-unstake": "Retira NIM",

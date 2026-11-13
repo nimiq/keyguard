@@ -25,6 +25,7 @@ class CreateMultisigCommitmentsApi extends TopLevelApi { // eslint-disable-line 
         parsedRequest.keyLabel = /** @type {string} */ (this.parseLabel(request.keyLabel, false, 'keyLabel'));
         parsedRequest.keyPath = this.parsePath(request.keyPath, 'keyPath');
         parsedRequest.senderLabel = this.parseLabel(request.senderLabel, true, 'senderLabel');
+        parsedRequest.recipientLabel = this.parseLabel(request.recipientLabel, true, 'recipientLabel');
         parsedRequest.transaction = this.parseTransaction(request);
         parsedRequest.multisigConfig = this.parseMultisigConfig(request.multisigConfig);
         parsedRequest.multisigAddress = this.parseMultisigAddress(
