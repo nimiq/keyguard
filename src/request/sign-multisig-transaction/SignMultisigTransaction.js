@@ -388,4 +388,4 @@ SignMultisigTransaction.Pages = {
 };
 
 SignMultisigTransaction.ALREADY_USED_ERROR = 'This signing session has already been used with different commitments '
-    + 'or signers. Signing it again would expose the private key. Start a new signing session instead.';
+    + 'or signers. Start a new signing session instead.';
