@@ -41,55 +41,17 @@ function PolygonRequestParserMixin(clazz) { // eslint-disable-line no-unused-var
         }
 
         /**
-         * @param {unknown} request
-         * @returns {KeyguardRequest.OpenGsnForwardRequest}
+         * Stricter than parsePolygonAddress: only the 0x-prefixed form, and returns the address with its checksum.
+         *
+         * @param {unknown} address
+         * @param {string} name
+         * @returns {string}
          */
-        parseOpenGsnForwardRequestRoot(request) {
-            if (typeof request !== 'object' || request === null) {
-                throw new Errors.InvalidRequestError('request must be an object');
+        parseChecksummedPolygonAddress(address, name) {
+            if (typeof address !== 'string' || !/^0x[0-9a-fA-F]{40}$/.test(address)) {
+                throw new Errors.InvalidRequestError(`${name} must be a valid Polygon address`);
             }
-            const forwardRequest = /** @type {KeyguardRequest.OpenGsnForwardRequest} */ (request);
-
-            this.parsePolygonAddress(forwardRequest.from, 'request.from');
-            this.parsePolygonAddress(forwardRequest.to, 'request.to');
-
-            if (forwardRequest.value !== '0') {
-                throw new Errors.InvalidRequestError('Request `value` must be zero');
-            }
-
-            this.parseNonNegativeIntegerString(forwardRequest.gas, 'request.gas');
-            this.parseNonNegativeIntegerString(forwardRequest.nonce, 'request.nonce');
-            this.parseNonNegativeIntegerString(forwardRequest.validUntil, 'request.validUntil');
-
-            this.parseHexString(forwardRequest.data, 'request.data');
-
-            return forwardRequest;
-        }
-
-        /**
-         * @param {unknown} relayData
-         * @returns {KeyguardRequest.OpenGsnRelayData}
-         */
-        parseOpenGsnRelayData(relayData) {
-            if (typeof relayData !== 'object' || relayData === null) {
-                throw new Errors.InvalidRequestError('relayData must be an object');
-            }
-            const parsedRelayData = /** @type {KeyguardRequest.OpenGsnRelayData} */ (relayData);
-
-            this.parsePolygonAddress(parsedRelayData.forwarder, 'relayData.forwarder');
-            this.parsePolygonAddress(parsedRelayData.paymaster, 'relayData.paymaster');
-            this.parsePolygonAddress(parsedRelayData.relayWorker, 'relayData.relayWorker');
-
-            this.parseNonNegativeIntegerString(parsedRelayData.baseRelayFee, 'relayData.baseRelayFee');
-            this.parseNonNegativeIntegerString(parsedRelayData.clientId, 'relayData.clientId');
-            this.parseNonNegativeIntegerString(parsedRelayData.gasPrice, 'relayData.gasPrice');
-            this.parseNonNegativeIntegerString(parsedRelayData.pctRelayFee, 'relayData.pctRelayFee');
-
-            if (parsedRelayData.paymasterData !== '0x') {
-                throw new Errors.InvalidRequestError('Invalid relayData.paymasterData, must be empty ("0x")');
-            }
-
-            return parsedRelayData;
+            return ethers.utils.getAddress(this.parsePolygonAddress(address, name));
         }
 
         /**
@@ -107,13 +69,42 @@ function PolygonRequestParserMixin(clazz) { // eslint-disable-line no-unused-var
         /**
          * @param {unknown} value
          * @param {string} name - name of the property, used in error case only
-         * @returns {string}
+         * @returns {string} - In canonical form, without leading zeros
          */
-        parseHexString(value, name) {
-            if (typeof value !== 'string' || !ethers.utils.isHexString(value)) {
-                throw new Errors.InvalidRequestError(`${name} must be a hex string`);
+        parseUint256String(value, name) {
+            const parsed = ethers.BigNumber.from(this.parseNonNegativeIntegerString(value, name));
+            if (parsed.gt(ethers.constants.MaxUint256)) {
+                throw new Errors.InvalidRequestError(`${name} must fit into 256 bits`);
             }
-            return value;
+            return parsed.toString();
+        }
+
+        /**
+         * For amounts and fees, which get displayed and added up as numbers.
+         *
+         * @param {unknown} value
+         * @param {string} name - name of the property, used in error case only
+         * @returns {string} - In canonical form, without leading zeros
+         */
+        parseSafeIntegerString(value, name) {
+            const parsed = BigInt(this.parseNonNegativeIntegerString(value, name));
+            if (parsed > BigInt(Number.MAX_SAFE_INTEGER)) {
+                throw new Errors.InvalidRequestError(`${name} must be a safe integer`);
+            }
+            return parsed.toString();
+        }
+
+        /**
+         * @param {unknown} tokenNonce
+         * @param {string} name - name of the property, used in error case only
+         * @returns {number}
+         */
+        parseTokenNonce(tokenNonce, name) {
+            const parsed = this.parsePositiveInteger(tokenNonce, true, name);
+            if (!Number.isSafeInteger(parsed)) {
+                throw new Errors.InvalidRequestError(`${name} must be a safe integer`);
+            }
+            return parsed;
         }
     }
 

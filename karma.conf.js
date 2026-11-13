@@ -22,16 +22,18 @@ module.exports = function (/** @type {any} */ config) {
             'src/lib/bitcoin/*.js',
             'node_modules/ethers/dist/ethers.umd.js',
             'src/components/BackupCodesIllustrationBase.js', // Force load of parent class before others that extend it
+            // Only the local config is loaded. The others are served for tests that check their values, see
+            // tests/lib/PolygonGasless.spec.js.
+            {pattern: 'src/config/config.!(local).js', included: false},
             'src/**/*.js',
             'tests/**/*.spec.js',
         ],
 
-        // avoid calling runKeyguard and redirect page, only include local config
+        // avoid calling runKeyguard and redirect page
         exclude: [
             'src/lib/rsa/sandboxed/*.js',
             'src/request/**/index.js',
             'src/redirect.js',
-            'src/config/config.!(local).js',
         ],
 
 

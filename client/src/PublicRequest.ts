@@ -1,12 +1,5 @@
 import * as Nimiq from '@nimiq/core';
-import { ForwardRequest as OpenGsnForwardRequest } from '@opengsn/common/dist/EIP712/ForwardRequest';
-import { RelayData as OpenGsnRelayData } from '@opengsn/common/dist/EIP712/RelayData';
 import { KeyguardCommand } from './KeyguardCommand';
-
-export {
-    OpenGsnForwardRequest,
-    OpenGsnRelayData,
-};
 
 export type ObjectType = {
     [key: string]: any;
@@ -321,45 +314,63 @@ export type SignBtcTransactionRequest
     = SignBtcTransactionRequestStandard
     | SignBtcTransactionRequestCheckout;
 
-export type PolygonTransactionInfo = {
-    keyPath: string,
-
-    request: OpenGsnForwardRequest,
-    relayData: OpenGsnRelayData,
-
+/**
+ * A gasless USDC or USDT0 transfer on Polygon through the GaslessTransfer contract, see
+ * https://github.com/NimiqToolbox/gas-abstraction. Amounts are in the token's smallest unit (6 decimals). Amounts and
+ * fees must not be above `Number.MAX_SAFE_INTEGER`.
+ */
+export type PolygonGaslessTransfer = {
+    token: string,
+    from: string,
+    to: string,
+    amount: string, // decimal string
+    fee: string, // decimal string, the relay's fee quote
+    relay: string, // the relay address from the fee quote
     /**
-     * The token contract address. Required for calling the bridged HTLC contract.
+     * The intent nonce, a decimal string. It identifies the payment: every version of a payment (e.g. re-signed with a
+     * higher fee) keeps it, so that at most one version executes. For a new payment, it is the sender's current
+     * `nonces(from)` in the GaslessTransfer contract, read on-chain right before, and only once the sender's previous
+     * payment is decided. The Keyguard does not know about earlier versions of a payment. To sign a new version, keep
+     * its `nonce`, `token` and `to`, request it only after checking on-chain that the nonce is still unused
+     * (`nonces(from)` is not above it), and before using the result check that its deadline is not earlier than the
+     * previous version's, for example with `checkCorrection` of `@nimiq/gasless-sdk`.
      */
-    token?: string,
-
-    /**
-     * For refund and redeem transactions from HTLCs the amount is not part of the forward request / relay request and
-     * needs to be specified separately.
-     */
-    amount?: number,
-
-    /**
-     * The sender's nonce in the token contract, required when calling the contract function `swapWithApproval` for
-     * bridged USDC.e or `transferWithApproval` and 'openWithApproval`for bridged USDT.
-     */
-    approval?: {
-        tokenNonce: number,
-    },
-
-    /**
-     * The sender's nonce in the token contract, required when calling the contract functions `transferWithPermit` and
-     * `openWithPermit` for native USDC.
-     */
-    permit?: {
-        tokenNonce: number,
-    },
+    nonce: string,
 };
 
-export type SignPolygonTransactionRequest = Omit<SimpleRequest, 'keyLabel'> & PolygonTransactionInfo & {
+/**
+ * A signed transfer intent.
+ */
+export type PolygonGaslessTransferRequest = PolygonGaslessTransfer & {
+    deadline: string, // unix seconds, decimal string
+};
+
+/**
+ * A signed permit, v is 27 or 28.
+ */
+export type PolygonTokenPermit = {
+    mode: 'permit',
+    v: number,
+    r: string,
+    s: string,
+};
+
+type SignPolygonTransactionRequestCommon = Omit<SimpleRequest, 'keyLabel'> & {
     keyLabel: string,
-    senderLabel?: string,
+    keyPath: string,
+};
+
+export type SignPolygonGaslessTransferRequest = SignPolygonTransactionRequestCommon & {
+    operation?: 'transfer',
+    request: PolygonGaslessTransfer,
+    /**
+     * The sender's current permit nonce in the token contract (`nonces(from)`).
+     */
+    tokenNonce: number,
     recipientLabel?: string,
 };
+
+export type SignPolygonTransactionRequest = SignPolygonGaslessTransferRequest;
 
 export type MockSettlementInstruction = {
     type: 'mock',
@@ -404,17 +415,15 @@ export type SignSwapRequestCommon = SimpleRequest & {
             refundKeyPath: string, // To validate that we own the HTLC script's refund address
         }>
     ) | (
-        {type: 'USDC_MATIC'}
-        & Omit<PolygonTransactionInfo,
-            | 'approval' // HTLC opening for native USDC uses `permit`, not `approval`
-            | 'amount' // Not used for HTLC opening - only for redeem and refund
-        >
-    ) | (
-        {type: 'USDT_MATIC'}
-        & Omit<PolygonTransactionInfo,
-            | 'permit' // HTLC opening for bridged USDT uses `approval`, not `permit`
-            | 'amount' // Not used for HTLC opening - only for redeem and refund
-        >
+        {type: 'USDC_MATIC' | 'USDT_MATIC'}
+        & {
+            keyPath: string,
+            request: {
+                from: string,
+                amount: string,
+                fee: string,
+            },
+        }
     ) | (
         {type: 'EUR'}
         & {
@@ -449,13 +458,13 @@ export type SignSwapRequestCommon = SimpleRequest & {
         }
     ) | (
         {type: 'USDC_MATIC' | 'USDT_MATIC'}
-        & Omit<PolygonTransactionInfo,
-            | 'approval' // Not needed for redeeming
-            | 'permit' // Not needed for redeeming
-            | 'amount' // Overwritten from optional to required
-        >
         & {
-            amount: number,
+            keyPath: string,
+            request: {
+                from: string,
+                fee: string,
+            },
+            amount: number, // The amount the user receives: the HTLC amount minus the fee
         }
     ) | (
         {type: 'EUR'}
@@ -674,10 +683,16 @@ export type SignedBitcoinTransaction = {
     transactionHash: string,
     raw: string,
 };
-export type SignedPolygonTransaction = {
-    message: Record<string, any>,
-    signature: string,
+/**
+ * The signed gasless transfer, in the shape of the relay's POST /v1/transfer body. The token authorization never gets
+ * persisted or logged by the Keyguard; callers should neither.
+ */
+export type SignedPolygonGaslessTransfer = {
+    request: PolygonGaslessTransferRequest,
+    signature: string, // 65 bytes hex, over the GaslessTransfer typed data, which includes the authorization
+    authorization: PolygonTokenPermit,
 };
+export type SignedPolygonTransaction = SignedPolygonGaslessTransfer;
 export type SignSwapTransactionsResult = {
     nim?: SignatureResult,
     btc?: SignedBitcoinTransaction,
@@ -729,7 +744,7 @@ export type ResultType<T extends RedirectRequest> =
     T extends Is<T, SignBtcTransactionRequest> ? SignedBitcoinTransaction :
     T extends Is<T, DeriveBtcXPubRequest> ? DeriveBtcXPubResult :
     T extends Is<T, DerivePolygonAddressRequest> ? DerivePolygonAddressResult :
-    T extends Is<T, SignPolygonTransactionRequest> ? SignedPolygonTransaction :
+    T extends Is<T, SignPolygonGaslessTransferRequest> ? SignedPolygonGaslessTransfer :
     T extends Is<T, SignSwapRequest> ? SignSwapResult :
     never;
 
