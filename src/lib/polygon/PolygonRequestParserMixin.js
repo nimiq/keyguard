@@ -95,16 +95,26 @@ function PolygonRequestParserMixin(clazz) { // eslint-disable-line no-unused-var
         }
 
         /**
+         * @param {unknown} value
+         * @param {boolean} allowZero
+         * @param {string} name - name of the property, used in error case only
+         * @returns {number}
+         */
+        parseSafePositiveInteger(value, allowZero, name) {
+            const parsed = this.parsePositiveInteger(value, allowZero, name);
+            if (!Number.isSafeInteger(parsed)) {
+                throw new Errors.InvalidRequestError(`${name} must be a safe integer`);
+            }
+            return parsed;
+        }
+
+        /**
          * @param {unknown} tokenNonce
          * @param {string} name - name of the property, used in error case only
          * @returns {number}
          */
         parseTokenNonce(tokenNonce, name) {
-            const parsed = this.parsePositiveInteger(tokenNonce, true, name);
-            if (!Number.isSafeInteger(parsed)) {
-                throw new Errors.InvalidRequestError(`${name} must be a safe integer`);
-            }
-            return parsed;
+            return this.parseSafePositiveInteger(tokenNonce, true, name);
         }
 
         /**

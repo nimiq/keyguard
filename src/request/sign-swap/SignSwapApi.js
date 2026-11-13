@@ -131,7 +131,7 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
                 type: request.redeem.type,
                 keyPath: this.parsePolygonPath(request.redeem.keyPath, 'redeem.keyPath'),
                 request: this.parseHtlcRedeeming(request.redeem.request, 'redeem.request'),
-                amount: this.parsePositiveInteger(request.redeem.amount, false, 'redeem.amount'),
+                amount: this.parseSafePositiveInteger(request.redeem.amount, false, 'redeem.amount'),
             };
         } else if (request.redeem.type === 'EUR') {
             parsedRequest.redeem = {
@@ -319,8 +319,8 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
         } = /** @type {Pick<KeyguardRequest.PolygonHtlcOpenRequest, 'from' | 'amount' | 'fee' | 'relay'>} */ (request);
         const funding = {
             from: this.parsePolygonAddress(from, `${name}.from`),
-            amount: this.parseNonNegativeIntegerString(amount, `${name}.amount`),
-            fee: this.parseNonNegativeIntegerString(fee, `${name}.fee`),
+            amount: this.parseSafeIntegerString(amount, `${name}.amount`),
+            fee: this.parseSafeIntegerString(fee, `${name}.fee`),
             relay: this.parsePolygonAddress(relay, `${name}.relay`),
         };
         if (funding.amount === '0') throw new Errors.InvalidRequestError(`${name}.amount must not be zero`);
@@ -349,7 +349,7 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
         } = /** @type {Pick<KeyguardRequest.PolygonHtlcSettlement, 'from' | 'fee' | 'relay'>} */ (request);
         const redeeming = {
             from: this.parsePolygonAddress(from, `${name}.from`),
-            fee: this.parseNonNegativeIntegerString(fee, `${name}.fee`),
+            fee: this.parseSafeIntegerString(fee, `${name}.fee`),
             relay: this.parsePolygonAddress(relay, `${name}.relay`),
         };
         PolygonGasless.checkFeeAndRelay(redeeming.fee, redeeming.relay, name);

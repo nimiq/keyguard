@@ -44,7 +44,7 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
         parsedRequest.senderLabel = this.parseLabel(request.senderLabel);
         parsedRequest.token = this.parsePolygonAddress(request.token, 'token');
         // Only for display: the HTLC pays out its amount minus the fee, whatever is shown here.
-        parsedRequest.amount = this.parseNonNegativeIntegerString(request.amount, 'amount');
+        parsedRequest.amount = this.parseSafeIntegerString(request.amount, 'amount');
 
         // Also validates the token
         PolygonGasless.stablecoin(parsedRequest.token);
@@ -57,7 +57,7 @@ class SignPolygonTransactionApi extends PolygonRequestParserMixin(TopLevelApi) {
             from: this.parsePolygonAddress(settlement.from, 'request.from'),
             id: this.parseBytes32(settlement.id, 'request.id'),
             target: this.parsePolygonAddress(settlement.target, 'request.target'),
-            fee: this.parseNonNegativeIntegerString(settlement.fee, 'request.fee'),
+            fee: this.parseSafeIntegerString(settlement.fee, 'request.fee'),
             relay: this.parsePolygonAddress(settlement.relay, 'request.relay'),
         };
         if (parsedRequest.request.target !== parsedRequest.request.from) {
