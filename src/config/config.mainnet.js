@@ -23,12 +23,12 @@ const CONFIG = { // eslint-disable-line no-unused-vars
     POLYGON_GASLESS_DENIED_RECIPIENTS: [
         // Still known to some as "USDC on Polygon", and tokens sent to it are lost
         '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174', // USDC.e (bridged USDC) token
-        '0x98E69a6927747339d5E543586FC0262112eBe4BD', // OpenGSN USDT transfer
+        '0x98E69a6927747339d5E543586FC0262112eBe4BD', // OpenGSN USDC.e transfer, later USDT
         '0xF615bD7EA00C4Cc7F39Faad0895dB5f40891359f', // OpenGSN USDT and USDC.e HTLC
         '0x3157d422cd1be13AC4a7cb00957ed717e648DFf2', // OpenGSN USDC transfer
         '0x0cFD862bE942846Cebad797d7c1BC6e47714959b', // OpenGSN USDC HTLC
         '0xfAbBed813017bF535b40013c13b8702638aC25CD', // OpenGSN USDC.e swap
-        '0x3c870b039BF82D2F883b6E89D41d06d26b9F4486', // Legacy Nimiq contract
+        '0x3c870b039BF82D2F883b6E89D41d06d26b9F4486', // OpenGSN USDT cashlink, never used
         '0xbfbE31E6c57B09A8130d427B9E3E23ed5aB6cd1D', // GaslessTransfer v2
         '0xA0df3CdF124d7101a67ebE5b1b97D222505De9D6', // GaslessTransfer v1
     ],

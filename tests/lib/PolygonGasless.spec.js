@@ -274,12 +274,13 @@ describe('PolygonGasless', () => {
             }
         });
 
-        it('builds the token domains of Polygon mainnet', async () => {
-            // The values in config.mainnet.js, which is not loaded in the tests
-            CONFIG.NATIVE_USDC_CONTRACT_ADDRESS = '0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359';
-            CONFIG.NATIVE_USDC_DOMAIN_NAME = 'USD Coin';
-            CONFIG.BRIDGED_USDT_CONTRACT_ADDRESS = '0xc2132D05D31c914a87C6611C10748AEb04B58e8F';
-            CONFIG.POLYGON_CHAIN_ID = 137;
+        it('builds the token and transfer domains of Polygon mainnet', async () => {
+            Object.assign(CONFIG, await loadConfig('mainnet'));
+            // The deployment of NimiqToolbox/gas-abstraction (contracts/deployments/137.json)
+            expect(CONFIG.POLYGON_CHAIN_ID).toBe(137);
+            expect(CONFIG.NATIVE_USDC_CONTRACT_ADDRESS).toBe('0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359');
+            expect(CONFIG.BRIDGED_USDT_CONTRACT_ADDRESS).toBe('0xc2132D05D31c914a87C6611C10748AEb04B58e8F');
+            expect(PolygonGasless.contract()).toBe('0x5A3a650fCf35639153aA6bA9aa3e870DAED56199');
 
             // The tokens' `DOMAIN_SEPARATOR()` on Polygon mainnet
             const usdcPermit = await permitTypedData(
@@ -292,14 +293,21 @@ describe('PolygonGasless', () => {
             );
             expect(ethers.utils._TypedDataEncoder.hashDomain(usdtPermit.domain))
                 .toBe('0x7b43b7deae87806d0ace67d6c8e9e347fc85db8ad198e756e5c17d126fef9a05');
+            // The GaslessTransfer contract's `DOMAIN_SEPARATOR()` on Polygon mainnet
+            expect(ethers.utils._TypedDataEncoder.hashDomain(
+                PolygonGasless.transferTypedData(VECTORS.transfer.request, VECTORS.transfer.authorization).domain,
+            )).toBe('0x036cd5f7684d421a11ff62ffdd91308769a47e6fe620935caeba61c872d828de');
         });
 
         it('builds the USDC and transfer domains of Polygon Amoy', async () => {
-            // The values in config.testnet.js, which is not loaded in the tests
-            CONFIG.NATIVE_USDC_CONTRACT_ADDRESS = '0x41E94Eb019C0762f9Bfcf9Fb1E58725BfB0e7582';
-            CONFIG.NATIVE_USDC_DOMAIN_NAME = 'USDC';
-            CONFIG.POLYGON_GASLESS_TRANSFER_CONTRACT_ADDRESS = '0xe5D40efb4a89F6D3aDd07D8881F4b372f02c8075';
-            CONFIG.POLYGON_CHAIN_ID = 80002;
+            Object.assign(CONFIG, await loadConfig('testnet'));
+            // The deployment of NimiqToolbox/gas-abstraction (contracts/deployments/80002.json)
+            expect(CONFIG.POLYGON_CHAIN_ID).toBe(80002);
+            expect(CONFIG.NATIVE_USDC_CONTRACT_ADDRESS).toBe('0x41E94Eb019C0762f9Bfcf9Fb1E58725BfB0e7582');
+            expect(PolygonGasless.contract()).toBe('0xe5D40efb4a89F6D3aDd07D8881F4b372f02c8075');
+            // Its mock USDT0 is not supported, and tokens sent to it are lost
+            expect(CONFIG.BRIDGED_USDT_CONTRACT_ADDRESS).toBe('');
+            expect(PolygonGasless.isDeniedRecipient('0xfa9dabbf3c68a126a627ad48098700dfc6f27c82')).toBe(true);
 
             // The contracts' `DOMAIN_SEPARATOR()` on Polygon Amoy
             const usdcPermit = await permitTypedData(

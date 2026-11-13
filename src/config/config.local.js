@@ -29,8 +29,10 @@ const CONFIG = { // eslint-disable-line no-unused-vars
     /** @type {string[]} */
     POLYGON_GASLESS_RELAY_ADDRESSES: ['0x6465e47837DB340D8Ac465E2F58cD6c08b275965'],
     POLYGON_GASLESS_MAX_ACCEPTABLE_FEE: '500000',
-    /** @type {string[]} */
-    POLYGON_GASLESS_DENIED_RECIPIENTS: [],
+    /** @type {string[]} Contracts that cannot move tokens sent to them, in addition to the ones in this config. */
+    POLYGON_GASLESS_DENIED_RECIPIENTS: [
+        '0xfA9Dabbf3C68a126a627ad48098700DFc6F27c82', // Mock USDT0 of the Amoy deployment, not supported here
+    ],
 
     RSA_KEY_BITS: 2048, // Possible values are 1024 (fast, but unsafe), 2048 (good compromise), 4096 (slow, but safe)
     RSA_KDF_FUNCTION: 'PBKDF2-SHA512',
