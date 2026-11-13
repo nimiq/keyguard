@@ -1,6 +1,7 @@
 /* global ethers */
 /* global Key */
 /* global PolygonKey */
+/* global PolygonAddressInfo */
 /* global PolygonConstants */
 /* global PolygonGasless */
 /* global SignPolygonTransaction */
@@ -387,6 +388,42 @@ describe('PolygonGasless', () => {
         expect(request.nonce).toBe('5');
         expect(Number(request.deadline)).toBeGreaterThanOrEqual(now + 300);
         expect(Number(request.deadline)).toBeLessThanOrEqual(now + 301);
+    });
+
+    it('shows a fee that is not a multiple of 0.01 exactly', () => {
+        const $el = document.createElement('div');
+        $el.innerHTML = `
+            <div class="accounts"><div class="sender"></div><div class="recipient"></div></div>
+            <span id="value"></span><span class="stablecoin-symbol"></span>
+            <div class="fee-section display-none"><span id="fee"></span></div>`;
+        // Rendering the addresses needs I18n, which is not set up in the tests
+        spyOn(PolygonAddressInfo.prototype, 'renderTo');
+        /** @type {SignPolygonTransaction} */
+        const page = Object.create(SignPolygonTransaction.prototype);
+        page.$el = $el;
+
+        /**
+         * @param {string} fee
+         * @returns {{ value: string, fee: string, feeShown: boolean }}
+         */
+        const render = fee => {
+            const $feeSection = /** @type {HTMLElement} */ ($el.querySelector('.fee-section'));
+            $feeSection.classList.add('display-none');
+            // @ts-expect-error Calling a private method
+            page._renderGaslessTransfer({
+                keyLabel: 'Key',
+                request: SignPolygonTransactionApi.createTransferRequest(transfer(SENDER, { fee })),
+            });
+            return {
+                value: /** @type {HTMLElement} */ ($el.querySelector('#value')).textContent || '',
+                fee: /** @type {HTMLElement} */ ($el.querySelector('#fee')).textContent || '',
+                feeShown: !$feeSection.classList.contains('display-none'),
+            };
+        };
+
+        expect(render('4999')).toEqual({ value: '10.00', fee: '0.004999', feeShown: true });
+        expect(render('10000')).toEqual({ value: '10.00', fee: '0.01', feeShown: true });
+        expect(render('0').feeShown).toBe(false);
     });
 
     it('rejects transfers outside the pinned deployment and the fee limit', () => {

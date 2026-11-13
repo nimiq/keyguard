@@ -75,8 +75,8 @@ class SignPolygonTransaction {
         );
         const feeUnits = Number(transfer.fee);
         if (feeUnits > 0) {
-            // Relay fees are multiples of 0.01, so two decimals show them exactly
-            $fee.textContent = NumberFormatting.formatNumber(PolygonUtils.unitsToCoins(feeUnits), 2, 2);
+            // Like the amount: the relay's fees are usually multiples of 0.01, but nothing enforces that
+            $fee.textContent = NumberFormatting.formatNumber(PolygonUtils.unitsToCoins(feeUnits), 6, 2);
             const $feeSection = /** @type {HTMLDivElement} */ (this.$el.querySelector('.fee-section'));
             $feeSection.classList.remove('display-none');
         }
