@@ -86,6 +86,26 @@ type ParsedBitcoinTransactionInput = {
     address: string,
 };
 
+type PolygonHtlcData = {
+    id: string,
+    token: string,
+    amount: string,
+    refundAddress: string,
+    recipient: string,
+    hash: string,
+    timeout: number,
+};
+
+type PolygonHtlcFunding = {
+    type: 'USDC_MATIC' | 'USDT_MATIC',
+    keyPath: string,
+    request: Pick<KeyguardRequest.PolygonHtlcOpenRequest, 'from' | 'amount' | 'fee' | 'relay'>,
+    tokenNonce: number,
+    // Set in SignSwap after password entry
+    deadline?: string,
+    authorization?: KeyguardRequest.PolygonTokenPermit,
+};
+
 type PolygonTypedData = {
     domain: ethers.TypedDataDomain,
     types: Record<string, ethers.TypedDataField[]>,
@@ -143,11 +163,7 @@ type ConstructSwap<T extends KeyguardRequest.SignSwapRequestCommon> = Transform<
             locktime?: number;
             refundKeyPath: string,
             refundAddress: string,
-        } | {
-            type: 'USDC_MATIC' | 'USDT_MATIC',
-            keyPath: string,
-            request: { from: string, amount: string, fee: string },
-        } | {
+        } | PolygonHtlcFunding | {
             type: 'EUR',
             amount: number,
             fee: number,
@@ -172,7 +188,7 @@ type ConstructSwap<T extends KeyguardRequest.SignSwapRequestCommon> = Transform<
         } | {
             type: 'USDC_MATIC' | 'USDT_MATIC',
             keyPath: string,
-            request: { from: string, fee: string },
+            request: Pick<KeyguardRequest.PolygonHtlcSettlement, 'from' | 'fee' | 'relay'>,
             amount: number,
         } | {
             type: 'EUR',
@@ -300,6 +316,8 @@ type Parsed<T extends KeyguardRequest.Request> =
                 'inputs', { inputs: ParsedBitcoinTransactionInput[] }
             >, 'shopLogoUrl', { shopLogoUrl?: URL }
         > :
+    T extends Is<T, KeyguardRequest.SignPolygonHtlcSettlementRequest> ?
+        KeyId2KeyInfo<KeyguardRequest.SignPolygonHtlcSettlementRequest> :
     T extends Is<T, KeyguardRequest.SignPolygonGaslessTransferRequest> ?
         Transform<
             KeyId2KeyInfo<KeyguardRequest.SignPolygonGaslessTransferRequest>,
@@ -341,6 +359,9 @@ type Parsed<T extends KeyguardRequest.Request> =
                     htlcDetails: BtcHtlcContents,
                     htlcScript: Uint8Array,
                     htlcAddress: string,
+                } | {
+                    type: 'USDC_MATIC' | 'USDT_MATIC',
+                    htlc: PolygonHtlcData,
                 } | {
                     type: 'EUR',
                     htlcDetails: EurHtlcContents,

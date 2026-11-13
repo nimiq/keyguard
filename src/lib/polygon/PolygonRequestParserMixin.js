@@ -95,16 +95,38 @@ function PolygonRequestParserMixin(clazz) { // eslint-disable-line no-unused-var
         }
 
         /**
+         * @param {unknown} value
+         * @param {boolean} allowZero
+         * @param {string} name - name of the property, used in error case only
+         * @returns {number}
+         */
+        parseSafePositiveInteger(value, allowZero, name) {
+            const parsed = this.parsePositiveInteger(value, allowZero, name);
+            if (!Number.isSafeInteger(parsed)) {
+                throw new Errors.InvalidRequestError(`${name} must be a safe integer`);
+            }
+            return parsed;
+        }
+
+        /**
          * @param {unknown} tokenNonce
          * @param {string} name - name of the property, used in error case only
          * @returns {number}
          */
         parseTokenNonce(tokenNonce, name) {
-            const parsed = this.parsePositiveInteger(tokenNonce, true, name);
-            if (!Number.isSafeInteger(parsed)) {
-                throw new Errors.InvalidRequestError(`${name} must be a safe integer`);
+            return this.parseSafePositiveInteger(tokenNonce, true, name);
+        }
+
+        /**
+         * @param {unknown} value
+         * @param {string} name - name of the property, used in error case only
+         * @returns {string}
+         */
+        parseBytes32(value, name) {
+            if (typeof value !== 'string' || !/^0x[0-9a-fA-F]{64}$/.test(value)) {
+                throw new Errors.InvalidRequestError(`${name} must be 32 bytes as 0x-prefixed hex`);
             }
-            return parsed;
+            return value.toLowerCase();
         }
     }
 

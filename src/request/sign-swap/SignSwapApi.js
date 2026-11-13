@@ -5,6 +5,8 @@
 /* global SignSwap */
 /* global Errors */
 /* global Iban */
+/* global PolygonGasless */
+/* global PolygonGaslessHtlc */
 
 class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(TopLevelApi)) {
     /**
@@ -73,6 +75,15 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
                 throw new Errors.InvalidRequestError('For locktime to be effective, at least one input must have a '
                     + 'sequence number < 0xffffffff');
             }
+        } else if (request.fund.type === 'USDC_MATIC' || request.fund.type === 'USDT_MATIC') {
+            // Fails early if the token is not available on this network
+            PolygonGaslessHtlc.tokenAddress(request.fund.type);
+            parsedRequest.fund = {
+                type: request.fund.type,
+                keyPath: this.parsePolygonPath(request.fund.keyPath, 'fund.keyPath'),
+                request: this.parseHtlcFunding(request.fund.request, 'fund.request'),
+                tokenNonce: this.parseTokenNonce(request.fund.tokenNonce, 'fund.tokenNonce'),
+            };
         } else if (request.fund.type === 'EUR') {
             parsedRequest.fund = {
                 type: 'EUR',
@@ -112,6 +123,15 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
                 output: /** @type {KeyguardRequest.BitcoinTransactionChangeOutput} */ (this.parseChangeOutput(
                     request.redeem.output, false, 'redeem.output',
                 )),
+            };
+        } else if (request.redeem.type === 'USDC_MATIC' || request.redeem.type === 'USDT_MATIC') {
+            // Fails early if the token is not available on this network
+            PolygonGaslessHtlc.tokenAddress(request.redeem.type);
+            parsedRequest.redeem = {
+                type: request.redeem.type,
+                keyPath: this.parsePolygonPath(request.redeem.keyPath, 'redeem.keyPath'),
+                request: this.parseHtlcRedeeming(request.redeem.request, 'redeem.request'),
+                amount: this.parseSafePositiveInteger(request.redeem.amount, false, 'redeem.amount'),
             };
         } else if (request.redeem.type === 'EUR') {
             parsedRequest.redeem = {
@@ -173,7 +193,7 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
                 usdcBalance,
                 usdtBalance,
             }, index) => ({
-                address: this.parsePolygonAddress(address, `polygonAddresses[${index}].address`),
+                address: this.parseChecksummedPolygonAddress(address, `polygonAddresses[${index}].address`),
                 usdcBalance: this.parsePositiveInteger(usdcBalance, true, `polygonAddresses[${index}].usdcBalance`),
                 usdtBalance: this.parsePositiveInteger(usdtBalance, true, `polygonAddresses[${index}].usdtBalance`),
             }));
@@ -198,6 +218,35 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
                     )
                 ) {
                     throw new Errors.InvalidRequestError('The sending NIM address does not have enough balance');
+                }
+            }
+
+            // Verify that used Polygon address is in polygonAddresses[] and has enough balance
+            const polygonAddress = parsedRequest.fund.type === 'USDC_MATIC' || parsedRequest.fund.type === 'USDT_MATIC'
+                ? parsedRequest.fund.request.from
+                : parsedRequest.redeem.type === 'USDC_MATIC' || parsedRequest.redeem.type === 'USDT_MATIC'
+                    // For redeeming, the user's address is the signer (`from`) of the redeem request
+                    ? parsedRequest.redeem.request.from
+                    : undefined;
+            if (polygonAddress) {
+                const activePolygonAddress = parsedRequest.polygonAddresses
+                    .find(addressInfo => addressInfo.address === polygonAddress);
+                if (!activePolygonAddress) {
+                    throw new Errors.InvalidRequestError(
+                        'The address details of the Polygon address doing the swap must be provided',
+                    );
+                } else if (
+                    parsedRequest.fund.type === 'USDC_MATIC'
+                    && activePolygonAddress.usdcBalance
+                        < Number(parsedRequest.fund.request.amount) + Number(parsedRequest.fund.request.fee)
+                ) {
+                    throw new Errors.InvalidRequestError('The sending USDC address does not have enough balance');
+                } else if (
+                    parsedRequest.fund.type === 'USDT_MATIC'
+                    && activePolygonAddress.usdtBalance
+                        < Number(parsedRequest.fund.request.amount) + Number(parsedRequest.fund.request.fee)
+                ) {
+                    throw new Errors.InvalidRequestError('The sending USDT address does not have enough balance');
                 }
             }
         }
@@ -249,6 +298,64 @@ class SignSwapApi extends PolygonRequestParserMixin(BitcoinRequestParserMixin(To
             throw new Error('Invalid direction');
         }
         return direction;
+    }
+
+    /**
+     * The parts of a gasless HTLC opening known before the HTLC data, which the swap-iframe receives.
+     *
+     * @param {unknown} request
+     * @param {string} name
+     * @returns {Pick<KeyguardRequest.PolygonHtlcOpenRequest, 'from' | 'amount' | 'fee' | 'relay'>}
+     */
+    parseHtlcFunding(request, name) {
+        if (typeof request !== 'object' || request === null) {
+            throw new Errors.InvalidRequestError(`${name} must be an object`);
+        }
+        const {
+            from,
+            amount,
+            fee,
+            relay,
+        } = /** @type {Pick<KeyguardRequest.PolygonHtlcOpenRequest, 'from' | 'amount' | 'fee' | 'relay'>} */ (request);
+        const funding = {
+            from: this.parseChecksummedPolygonAddress(from, `${name}.from`),
+            amount: this.parseSafeIntegerString(amount, `${name}.amount`),
+            fee: this.parseSafeIntegerString(fee, `${name}.fee`),
+            relay: this.parseChecksummedPolygonAddress(relay, `${name}.relay`),
+        };
+        if (funding.amount === '0') throw new Errors.InvalidRequestError(`${name}.amount must not be zero`);
+        PolygonGasless.checkFeeAndRelay(funding.fee, funding.relay, name);
+        // Fails early if HTLCs are not configured
+        PolygonGaslessHtlc.contract();
+        return funding;
+    }
+
+    /**
+     * The parts of a gasless HTLC redeem known before the HTLC id, which the swap-iframe receives. The target is
+     * `from`.
+     *
+     * @param {unknown} request
+     * @param {string} name
+     * @returns {Pick<KeyguardRequest.PolygonHtlcSettlement, 'from' | 'fee' | 'relay'>}
+     */
+    parseHtlcRedeeming(request, name) {
+        if (typeof request !== 'object' || request === null) {
+            throw new Errors.InvalidRequestError(`${name} must be an object`);
+        }
+        const {
+            from,
+            fee,
+            relay,
+        } = /** @type {Pick<KeyguardRequest.PolygonHtlcSettlement, 'from' | 'fee' | 'relay'>} */ (request);
+        const redeeming = {
+            from: this.parseChecksummedPolygonAddress(from, `${name}.from`),
+            fee: this.parseSafeIntegerString(fee, `${name}.fee`),
+            relay: this.parseChecksummedPolygonAddress(relay, `${name}.relay`),
+        };
+        PolygonGasless.checkFeeAndRelay(redeeming.fee, redeeming.relay, name);
+        // Fails early if HTLCs are not configured
+        PolygonGaslessHtlc.contract();
+        return redeeming;
     }
 
     /**

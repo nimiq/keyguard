@@ -346,6 +346,47 @@ export type PolygonGaslessTransferRequest = PolygonGaslessTransfer & {
 };
 
 /**
+ * The redeem or refund of a USDC or USDT0 HTLC on Polygon through the GaslessHTLC contract. Amounts are decimal strings
+ * in the token's smallest unit (6 decimals). Amounts and fees must not be above `Number.MAX_SAFE_INTEGER`.
+ *
+ * PROVISIONAL: the GaslessHTLC contract does not exist yet, its interface might still change.
+ */
+export type PolygonHtlcSettlement = {
+    /**
+     * The signer: the HTLC's recipient for a redeem, its refund address for a refund.
+     */
+    from: string,
+    id: string, // bytes32 HTLC id
+    target: string, // receives the HTLC amount minus the fee, must be `from`
+    fee: string, // the relay's fee quote, paid from the HTLC amount
+    relay: string, // the relay address from the fee quote
+};
+
+/**
+ * A signed HTLC redeem or refund. A redeem does not include the secret, which is submitted alongside.
+ */
+export type PolygonHtlcSettlementRequest = PolygonHtlcSettlement & {
+    deadline: string, // unix seconds, decimal string
+};
+
+/**
+ * A signed HTLC opening. `from` is the HTLC's refund address and pays `amount` into the HTLC and `fee` to the relay.
+ * Both must not be above `Number.MAX_SAFE_INTEGER`.
+ */
+export type PolygonHtlcOpenRequest = {
+    token: string,
+    from: string,
+    id: string, // bytes32 HTLC id
+    recipient: string,
+    amount: string, // decimal string
+    hash: string, // bytes32
+    timeout: string, // unix seconds, decimal string
+    fee: string, // decimal string, the relay's fee quote
+    relay: string, // the relay address from the fee quote
+    deadline: string, // unix seconds, decimal string
+};
+
+/**
  * A signed permit, v is 27 or 28.
  */
 export type PolygonTokenPermit = {
@@ -370,7 +411,18 @@ export type SignPolygonGaslessTransferRequest = SignPolygonTransactionRequestCom
     recipientLabel?: string,
 };
 
-export type SignPolygonTransactionRequest = SignPolygonGaslessTransferRequest;
+/**
+ * Redeems or refunds an HTLC, for example to re-sign the redeem of a swap or to refund an expired swap.
+ */
+export type SignPolygonHtlcSettlementRequest = SignPolygonTransactionRequestCommon & {
+    operation: 'redeem' | 'refund',
+    request: PolygonHtlcSettlement,
+    token: string, // The HTLC's token
+    amount: string, // The amount the user receives (the HTLC amount minus the fee), decimal string
+    senderLabel?: string,
+};
+
+export type SignPolygonTransactionRequest = SignPolygonGaslessTransferRequest | SignPolygonHtlcSettlementRequest;
 
 export type MockSettlementInstruction = {
     type: 'mock',
@@ -418,11 +470,12 @@ export type SignSwapRequestCommon = SimpleRequest & {
         {type: 'USDC_MATIC' | 'USDT_MATIC'}
         & {
             keyPath: string,
-            request: {
-                from: string,
-                amount: string,
-                fee: string,
-            },
+            // The parts of the HTLC opening known before the HTLC data (in swap-iframe)
+            request: Pick<PolygonHtlcOpenRequest, 'from' | 'amount' | 'fee' | 'relay'>,
+            /**
+             * The sender's current permit nonce in the token contract (`nonces(from)`).
+             */
+            tokenNonce: number,
         }
     ) | (
         {type: 'EUR'}
@@ -460,10 +513,8 @@ export type SignSwapRequestCommon = SimpleRequest & {
         {type: 'USDC_MATIC' | 'USDT_MATIC'}
         & {
             keyPath: string,
-            request: {
-                from: string,
-                fee: string,
-            },
+            // The parts of the HTLC redeem known before the HTLC id (in swap-iframe). The target is `from`.
+            request: Pick<PolygonHtlcSettlement, 'from' | 'fee' | 'relay'>,
             amount: number, // The amount the user receives: the HTLC amount minus the fee
         }
     ) | (
@@ -692,12 +743,21 @@ export type SignedPolygonGaslessTransfer = {
     signature: string, // 65 bytes hex, over the GaslessTransfer typed data, which includes the authorization
     authorization: PolygonTokenPermit,
 };
-export type SignedPolygonTransaction = SignedPolygonGaslessTransfer;
+export type SignedPolygonHtlcOpen = {
+    request: PolygonHtlcOpenRequest,
+    signature: string, // 65 bytes hex, over the HtlcOpen typed data, which includes the authorization
+    authorization: PolygonTokenPermit,
+};
+export type SignedPolygonHtlcSettlement = {
+    request: PolygonHtlcSettlementRequest,
+    signature: string, // 65 bytes hex, over the HtlcRedeem or HtlcRefund typed data
+};
+export type SignedPolygonTransaction = SignedPolygonGaslessTransfer | SignedPolygonHtlcSettlement;
 export type SignSwapTransactionsResult = {
     nim?: SignatureResult,
     btc?: SignedBitcoinTransaction,
-    usdc?: SignedPolygonTransaction,
-    usdt?: SignedPolygonTransaction,
+    usdc?: SignedPolygonHtlcOpen | SignedPolygonHtlcSettlement,
+    usdt?: SignedPolygonHtlcOpen | SignedPolygonHtlcSettlement,
     eur?: string, // When funding EUR: empty string, when redeeming EUR: JWS of the settlement instructions
     refundTx?: string,
 };
@@ -745,6 +805,7 @@ export type ResultType<T extends RedirectRequest> =
     T extends Is<T, DeriveBtcXPubRequest> ? DeriveBtcXPubResult :
     T extends Is<T, DerivePolygonAddressRequest> ? DerivePolygonAddressResult :
     T extends Is<T, SignPolygonGaslessTransferRequest> ? SignedPolygonGaslessTransfer :
+    T extends Is<T, SignPolygonHtlcSettlementRequest> ? SignedPolygonHtlcSettlement :
     T extends Is<T, SignSwapRequest> ? SignSwapResult :
     never;
 

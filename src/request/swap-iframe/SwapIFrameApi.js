@@ -11,7 +11,9 @@
 /* global OasisSettlementInstructionUtils */
 /* global NonPartitionedSessionStorage */
 /* global Utf8Tools */
+/* global ethers */
 /* global CONFIG */
+/* global PolygonGaslessHtlc */
 
 class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint-disable-line no-unused-vars
     /**
@@ -189,6 +191,62 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
             };
         }
 
+        if (
+            (request.fund.type === 'USDC_MATIC' || request.fund.type === 'USDT_MATIC')
+            && (storedRequest.fund.type === 'USDC_MATIC' || storedRequest.fund.type === 'USDT_MATIC')
+        ) {
+            if (typeof request.fund.htlcData !== 'string' || !ethers.utils.isHexString(request.fund.htlcData)) {
+                throw new Errors.InvalidRequestError('fund.htlcData must be a hex string');
+            }
+            const htlc = PolygonGaslessHtlc.decodeHtlcData(request.fund.htlcData);
+
+            // Verify already known parts of the data
+            if (htlc.token !== PolygonGaslessHtlc.tokenAddress(storedRequest.fund.type)) {
+                throw new Errors.InvalidRequestError('Invalid token contract in HTLC data');
+            }
+
+            if (htlc.amount !== storedRequest.fund.request.amount) {
+                throw new Errors.InvalidRequestError('Invalid amount in HTLC data');
+            }
+
+            if (htlc.refundAddress !== storedRequest.fund.request.from) {
+                throw new Errors.InvalidRequestError('HTLC refund address must be same as sender');
+            }
+
+            // The permit gets signed in SignSwap, after password entry
+            if (!storedRequest.fund.deadline || !storedRequest.fund.authorization) {
+                throw new Errors.KeyguardError('Missing permit in funding request');
+            }
+
+            // Fails before anything gets signed
+            PolygonGaslessHtlc.checkOpeningDeadline(Number(storedRequest.fund.deadline), htlc.timeout);
+
+            fund = {
+                type: request.fund.type,
+                htlc,
+            };
+        }
+
+        if (
+            (request.redeem.type === 'USDC_MATIC' || request.redeem.type === 'USDT_MATIC')
+            && (storedRequest.redeem.type === 'USDC_MATIC' || storedRequest.redeem.type === 'USDT_MATIC')
+        ) {
+            redeem = {
+                type: request.redeem.type,
+                htlcId: `0x${Nimiq.BufferUtils.toHex(Nimiq.BufferUtils.fromAny(
+                    request.redeem.htlcId.replace(/^0x/i, ''),
+                ))}`,
+                htlcDetails: {
+                    hash: Nimiq.BufferUtils.toHex(Nimiq.BufferUtils.fromAny(request.redeem.hash)),
+                    timeoutTimestamp: this.parsePositiveInteger(request.redeem.timeout, false, 'redeem.timeout'),
+                },
+            };
+            if (redeem.htlcId.length !== 66) {
+                throw new Errors.InvalidRequestError('redeem.htlcId must be 32 bytes');
+            }
+            PolygonGaslessHtlc.checkRedeemTimeout(redeem.htlcDetails.timeoutTimestamp);
+        }
+
         if (request.fund.type === 'EUR' && storedRequest.fund.type === 'EUR') {
             fund = {
                 type: 'EUR',
@@ -216,7 +274,9 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
         }
 
         // Verify hash is the same across HTLCs
-        const fundingHash = fund.htlcDetails.hash;
+        const fundingHash = 'htlcDetails' in fund
+            ? fund.htlcDetails.hash
+            : fund.htlc.hash.substring(2).toLowerCase();
         const redeemingHash = redeem.htlcDetails.hash;
         if (fundingHash !== redeemingHash) {
             throw new Errors.InvalidRequestError('HTLC hashes do not match');
@@ -224,7 +284,9 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
 
         // Validate timeouts of the two contracts
         // The redeem HTLC must have a later timeout than the funding HTLC.
-        const fundingTimeout = fund.htlcDetails.timeoutTimestamp;
+        const fundingTimeout = 'htlcDetails' in fund
+            ? fund.htlcDetails.timeoutTimestamp
+            : fund.htlc.timeout;
         const redeemingTimeout = redeem.htlcDetails.timeoutTimestamp;
         const diff = redeemingTimeout - fundingTimeout;
 
@@ -471,6 +533,36 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
             }
         }
 
+        if (
+            (parsedRequest.fund.type === 'USDC_MATIC' || parsedRequest.fund.type === 'USDT_MATIC')
+            && (storedRequest.fund.type === 'USDC_MATIC' || storedRequest.fund.type === 'USDT_MATIC')
+        ) {
+            const { htlc } = parsedRequest.fund;
+
+            const wallet = new ethers.Wallet(
+                storedRequest.fund.type === 'USDC_MATIC' ? privateKeys.usdc : privateKeys.usdt,
+            );
+            const signed = await PolygonGaslessHtlc.signOpen(
+                (domain, types, message) => wallet._signTypedData(domain, types, message),
+                {
+                    token: htlc.token,
+                    from: storedRequest.fund.request.from,
+                    id: htlc.id,
+                    recipient: htlc.recipient,
+                    amount: htlc.amount,
+                    hash: htlc.hash,
+                    timeout: htlc.timeout.toString(),
+                    fee: storedRequest.fund.request.fee,
+                    relay: storedRequest.fund.request.relay,
+                    // Checked to be set above
+                    deadline: /** @type {string} */ (storedRequest.fund.deadline),
+                },
+                /** @type {KeyguardRequest.PolygonTokenPermit} */ (storedRequest.fund.authorization),
+            );
+
+            result[storedRequest.fund.type === 'USDC_MATIC' ? 'usdc' : 'usdt'] = signed;
+        }
+
         if (parsedRequest.fund.type === 'EUR' && storedRequest.fund.type === 'EUR') {
             // Nothing to do for funding EUR
             result.eur = '';
@@ -569,6 +661,30 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
                 transactionHash: tx.getId(),
                 raw: tx.toHex(),
             };
+        }
+
+        if (
+            (parsedRequest.redeem.type === 'USDC_MATIC' || parsedRequest.redeem.type === 'USDT_MATIC')
+            && (storedRequest.redeem.type === 'USDC_MATIC' || storedRequest.redeem.type === 'USDT_MATIC')
+        ) {
+            const wallet = new ethers.Wallet(
+                storedRequest.redeem.type === 'USDC_MATIC' ? privateKeys.usdc : privateKeys.usdt,
+            );
+            const signed = await PolygonGaslessHtlc.signSettlement(
+                (domain, types, message) => wallet._signTypedData(domain, types, message),
+                'redeem',
+                {
+                    from: storedRequest.redeem.request.from,
+                    id: parsedRequest.redeem.htlcId,
+                    target: storedRequest.redeem.request.from,
+                    fee: storedRequest.redeem.request.fee,
+                    relay: storedRequest.redeem.request.relay,
+                    // Redeeming is only possible until the HTLC times out
+                    deadline: parsedRequest.redeem.htlcDetails.timeoutTimestamp.toString(),
+                },
+            );
+
+            result[storedRequest.redeem.type === 'USDC_MATIC' ? 'usdc' : 'usdt'] = signed;
         }
 
         if (parsedRequest.redeem.type === 'EUR' && storedRequest.redeem.type === 'EUR') {
