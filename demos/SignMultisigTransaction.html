@@ -225,7 +225,7 @@
             recipient: Nimiq.Address.fromUserFriendlyAddress('NQ82 HP54 C9D4 2FAG 69QD 6Q71 LURR 5187 0V3X').serialize(),
             value: txAmount,
             fee: txFee,
-            data: Nimiq.BufferUtils.fromUtf8(txData),
+            recipientData: Nimiq.BufferUtils.fromUtf8(txData),
             validityStartHeight: 0,
         };
 
