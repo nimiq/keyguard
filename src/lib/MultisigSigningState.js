@@ -240,7 +240,8 @@ class MultisigSigningState {
      * @returns {Uint8Array}
      */
     static hashMultisig(publicKeys, numberOfSigners) {
-        if (!Number.isInteger(numberOfSigners) || numberOfSigners < 1 || numberOfSigners > 255) {
+        if (!Number.isInteger(numberOfSigners) || numberOfSigners < 1
+            || numberOfSigners > MultisigSigningState.MAX_NUMBER_OF_SIGNERS) {
             throw new Error('Invalid number of signers');
         }
         const serializedKeys = publicKeys
@@ -417,5 +418,7 @@ MultisigSigningState.MAC_SIZE = 32;
 MultisigSigningState.SERIALIZED_SIZE = 1 + 16 + 32 + 8 + 8 + 32 + 32 + 32 + 32;
 /** MuSig2 in Nimiq PoS uses exactly 2 commitments per signer (MUSIG2_PARAMETER_V). */
 MultisigSigningState.NUMBER_OF_COMMITMENTS = 2;
+/** The number of signers is hashed as a single byte, see hashMultisig. */
+MultisigSigningState.MAX_NUMBER_OF_SIGNERS = 255;
 /** How long a signing session can be used for signing after round 1. */
 MultisigSigningState.MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7 days

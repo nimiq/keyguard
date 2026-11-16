@@ -121,6 +121,18 @@ describe('Multisig request parsers', () => {
             ];
             expectInvalidRequest(() => parse(validConfig({ signers })), 'Invalid signers: duplicate signer');
         });
+
+        it('rejects more than 255 signers', () => {
+            const manyPublicKeys = new Array(256).fill(0).map(generatePublicKey);
+            const signers = manyPublicKeys.map(publicKey => ({ publicKey, commitments: generateCommitments() }));
+
+            expectInvalidRequest(
+                () => parse(validConfig({ publicKeys: manyPublicKeys, signers })),
+                'Invalid signers: more than 255 signers',
+            );
+            const parsed = parse(validConfig({ publicKeys: manyPublicKeys, signers: signers.slice(0, 255) }));
+            expect(parsed.signers.length).toBe(255);
+        });
     });
 
     describe('of create-multisig-commitments', () => {
@@ -161,6 +173,16 @@ describe('Multisig request parsers', () => {
                 () => parse(validConfig({ numberOfSigners: 4 })),
                 'numberOfSigners must not exceed the number of public keys',
             );
+        });
+
+        it('rejects more than 255 signers', () => {
+            const manyPublicKeys = new Array(256).fill(0).map(generatePublicKey);
+
+            expectInvalidRequest(
+                () => parse(validConfig({ publicKeys: manyPublicKeys, numberOfSigners: 256 })),
+                'numberOfSigners must not exceed 255',
+            );
+            expect(parse(validConfig({ publicKeys: manyPublicKeys, numberOfSigners: 255 })).numberOfSigners).toBe(255);
         });
     });
 });
