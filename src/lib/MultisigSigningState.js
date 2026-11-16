@@ -12,7 +12,7 @@
  * Binary layout (all integers big-endian):
  *
  *   version          1 byte
- *   deviceId        16 bytes  random ID of the Keyguard instance which created the state
+ *   deviceId        16 bytes  ID of the Keyguard instance which created the state, specific to the signer
  *   salt            32 bytes  random per signing session
  *   createdAt        8 bytes  unix timestamp in ms
  *   expiresAt        8 bytes  unix timestamp in ms
