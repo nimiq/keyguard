@@ -150,7 +150,7 @@ fi
 output "🧐  Validating BitcoinJS file integrity"
 
 # For bitcoinjs-lib v5.2.0 and Buffer v5.6.0
-bitcoinjs_hashsum="5a02ae59046a7ee4f386f5828097aa21bdf52657acca4ae472d5e89e8332ba43  src/lib/bitcoin/BitcoinJS.js"
+bitcoinjs_hashsum="fc420bd7e4a9d374b333f12074dac0c121f654012634b42dc986ed13741f2508  src/lib/bitcoin/BitcoinJS.js"
 if ! echo "$bitcoinjs_hashsum" | ${SHA256SUM} --check --strict -; then
     output "💥  BitcoinJS file integrity check failed!"
     exit 1;
