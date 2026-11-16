@@ -165,8 +165,16 @@ describe('MultisigSigningState', () => {
         const changedSigner = [signers[0], { publicKey: publicKeys[2], commitments: signers[1].commitments }];
         expect(MultisigSigningState.hashSigningInputs(content, changedSigner)).not.toEqual(hash);
 
-        expect(MultisigSigningState.hashSigningInputs(content, signers.slice().reverse())).not.toEqual(hash);
+        const reversedCommitments = [
+            signers[0],
+            { ...signers[1], commitments: signers[1].commitments.slice().reverse() },
+        ];
+        expect(MultisigSigningState.hashSigningInputs(content, reversedCommitments)).not.toEqual(hash);
+
         expect(MultisigSigningState.hashSigningInputs(Nimiq.BufferUtils.fromHex('01'), signers)).not.toEqual(hash);
+
+        // Like the partial signature, the hash does not depend on the order of the signers.
+        expect(MultisigSigningState.hashSigningInputs(content, signers.slice().reverse())).toEqual(hash);
     });
 
     it('derives commitments that produce a valid MuSig2 signature', () => {

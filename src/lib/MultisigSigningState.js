@@ -256,22 +256,28 @@ class MultisigSigningState {
      * Hashes everything that goes into a partial signature besides the own private key and commitment secrets, which
      * are fixed by the state. Signing the same state twice with differing inputs would leak the private key.
      *
+     * The order of the signers does not affect the partial signature, and thus does not affect the hash either, such
+     * that repeating a request with reordered signers counts as identical. The order of a signer's commitments matters.
+     *
      * @param {Uint8Array} data - The signed data, i.e. the serialized transaction content
-     * @param {Array<{ publicKey: Nimiq.PublicKey, commitments: Nimiq.Commitment[] }>} signers - All signers, in request
-     *     order, including the own signer
+     * @param {Array<{ publicKey: Nimiq.PublicKey, commitments: Nimiq.Commitment[] }>} signers - All signers, including
+     *     the own signer
      * @returns {Uint8Array}
      */
     static hashSigningInputs(data, signers) {
-        const parts = [MultisigSigningState._uint32(data.length), data];
-        parts.push(MultisigSigningState._uint32(signers.length));
-        for (const signer of signers) {
-            parts.push(signer.publicKey.serialize());
-            parts.push(MultisigSigningState._uint32(signer.commitments.length));
-            for (const commitment of signer.commitments) {
-                parts.push(commitment.serialize());
-            }
-        }
-        return Nimiq.Hash.computeBlake2b(MultisigSigningState._concat(parts));
+        const serializedSigners = signers
+            .map(signer => MultisigSigningState._concat([
+                signer.publicKey.serialize(),
+                MultisigSigningState._uint32(signer.commitments.length),
+                ...signer.commitments.map(commitment => commitment.serialize()),
+            ]))
+            .sort(MultisigSigningState.compareBytes);
+        return Nimiq.Hash.computeBlake2b(MultisigSigningState._concat([
+            MultisigSigningState._uint32(data.length),
+            data,
+            MultisigSigningState._uint32(signers.length),
+            ...serializedSigners,
+        ]));
     }
 
     /**
