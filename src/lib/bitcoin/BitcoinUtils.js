@@ -123,22 +123,18 @@ class BitcoinUtils { // eslint-disable-line no-unused-vars
      * @returns {string}
      */
     static addressBytesToAddress(bytes, bip) {
-        if (typeof bytes === 'string') {
-            bytes = Nimiq.BufferUtils.fromAny(bytes);
-        }
+        const buffer = BitcoinJS.Buffer.from(typeof bytes === 'string' ? Nimiq.BufferUtils.fromAny(bytes) : bytes);
 
         if (bip === BitcoinConstants.BIP.BIP49) {
             return BitcoinJS.address.toBase58Check(
-                // @ts-expect-error Argument of type 'Uint8Array | Buffer' is not assignable to type 'Buffer'.
-                bytes,
+                buffer,
                 BitcoinConstants.BIP49_ADDRESS_VERSIONS[CONFIG.BTC_NETWORK][1], // 0 => BIP44, 1 => BIP49
             );
         }
 
         if (bip === BitcoinConstants.BIP.BIP84) {
             return BitcoinJS.address.toBech32(
-                // @ts-expect-error Argument of type 'Uint8Array | Buffer' is not assignable to type 'Buffer'.
-                bytes,
+                buffer,
                 BitcoinConstants.BIP84_ADDRESS_VERSION,
                 BitcoinConstants.BIP84_ADDRESS_PREFIX[CONFIG.BTC_NETWORK],
             );

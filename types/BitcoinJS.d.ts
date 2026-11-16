@@ -10,6 +10,6 @@ export = _BitcoinJS;
 
 declare global {
     const BitcoinJS: typeof _BitcoinJS & {
-        Buffer: typeof _Buffer;
+        Buffer: BufferConstructor;
     };
 }

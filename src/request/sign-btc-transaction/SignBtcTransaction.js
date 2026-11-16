@@ -217,7 +217,6 @@ class SignBtcTransaction {
             const psbt = new BitcoinJS.Psbt({ network: BitcoinUtils.Network });
 
             // Add inputs
-            // @ts-expect-error Argument of type 'Uint8Array' is not assignable to parameter of type 'Buffer'.
             psbt.addInputs(request.inputs);
             // Add outputs
             psbt.addOutputs(outputs);

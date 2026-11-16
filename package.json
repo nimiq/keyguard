@@ -61,5 +61,8 @@
     "terser": "^5.14.2",
     "tsc-watch": "^1.0.22",
     "typescript": "6.0"
+  },
+  "resolutions": {
+    "bip174": "2.0.1"
   }
 }

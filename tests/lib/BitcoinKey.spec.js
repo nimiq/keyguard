@@ -109,7 +109,6 @@ describe('BitcoinKey', () => {
 
         const psbt = new BitcoinJS.Psbt({ network: BitcoinJS.networks.testnet });
 
-        // @ts-ignore Argument of type 'import("...").Buffer' is not assignable to parameter of type 'Buffer'.
         psbt.addInputs(inputs);
         psbt.addOutputs(outputs);
 
