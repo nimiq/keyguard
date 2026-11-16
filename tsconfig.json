@@ -9,7 +9,7 @@
     "types": ["jasmine"], // TypeScript >= 6 doesn't auto-include @types packages anymore.
     "strict": true,
     "esModuleInterop": true,
-    // The types of @nimiq/core and bitcoinjs-lib don't compile with current TypeScript.
+    // The types of @nimiq/core-web (Nimiq PoW) are incompatible with the typed array generics of TypeScript >= 5.7.
     "skipLibCheck": true
   },
   "include": [

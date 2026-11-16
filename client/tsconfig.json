@@ -8,7 +8,6 @@
     "jsx": "preserve",
     "importHelpers": true,
     "moduleResolution": "bundler",
-    "skipLibCheck": true, // @nimiq/core types are incompatible with the typed array generics of TypeScript >= 5.7
     "experimentalDecorators": true,
     "esModuleInterop": true,
     "sourceMap": true,

@@ -16,10 +16,9 @@
   resolved "https://registry.yarnpkg.com/@babel/helper-validator-identifier/-/helper-validator-identifier-7.29.7.tgz#bd87084ced0c796ec46bda492de6e83d29e89fc2"
   integrity sha512-qehxGkRj55h/ff8EMaJ+cYhyaKlHIxqYDn682wQD7RNp9UujOQsHog2uS0r2vzr4pW+sXf90NeeayjcNaX3fFg==
 
-"@nimiq/core@^2.23.0":
+"@nimiq/core@https://pkg.pr.new/@nimiq/core@fd02762":
   version "2.23.0"
-  resolved "https://registry.yarnpkg.com/@nimiq/core/-/core-2.23.0.tgz#8b043c96aff194c6d5c86d7b10a919fa40e56d7f"
-  integrity sha512-C394yrLamwz+JgOGWovWYBMU+PXxi/5CumCSKkNGKoSlH3Yg2laBOQLKLk/A/FW5RGGmyJR5Py6cP/x5MGaBeA==
+  resolved "https://pkg.pr.new/@nimiq/core@fd02762#f4beefe06e3b3afc1fec09e8abc0473dae4d67e3"
   dependencies:
     comlink "^4.4.1"
     vite-plugin-wasm "^3.5.0"

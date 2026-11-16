@@ -402,10 +402,9 @@
   resolved "https://registry.yarnpkg.com/@nimiq/core-web/-/core-web-1.6.3.tgz#b4a8f8c5d289850b20cb4009766af5b1cafd6e20"
   integrity sha512-D6RrJi2cRU81odNpmwczhUBvOQ47+/Db1svrTkH/G4xNd72lr9MS5nMdfpUz+rBRnSprljrzW2mdUtZ6W9bPaA==
 
-"@nimiq/core@^2.23.0":
+"@nimiq/core@https://pkg.pr.new/@nimiq/core@fd02762":
   version "2.23.0"
-  resolved "https://registry.yarnpkg.com/@nimiq/core/-/core-2.23.0.tgz#8b043c96aff194c6d5c86d7b10a919fa40e56d7f"
-  integrity sha512-C394yrLamwz+JgOGWovWYBMU+PXxi/5CumCSKkNGKoSlH3Yg2laBOQLKLk/A/FW5RGGmyJR5Py6cP/x5MGaBeA==
+  resolved "https://pkg.pr.new/@nimiq/core@fd02762#f4beefe06e3b3afc1fec09e8abc0473dae4d67e3"
   dependencies:
     comlink "^4.4.1"
     vite-plugin-wasm "^3.5.0"
@@ -717,7 +716,7 @@ bindings@^1.3.0:
   dependencies:
     file-uri-to-path "1.0.0"
 
-bip174@^2.0.1:
+bip174@2.0.1, bip174@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/bip174/-/bip174-2.0.1.tgz#39cf8ca99e50ce538fb762589832f4481d07c254"
   integrity sha512-i3X26uKJOkDTAalYAp0Er+qGMDhrbbh2o93/xiPyAN2s25KrClSpe3VXo/7mNJoqA5qfko8rLS2l3RWZgYmjKQ==

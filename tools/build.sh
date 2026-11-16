@@ -124,23 +124,23 @@ fi
 output "🧐  Validating Nimiq PoS files integrity"
 
 nimiq_pos_hashsums="\
-49bf18fbd44ca9b3bf8b331508f92d2fe48087a27c7d0034120fc7fc0d383951  node_modules/@nimiq/core/launcher/browser/client-proxy.mjs
-955cceee2e144efe114fec23ae202e010dae6edd12ef802d0d239fb36fdf537f  node_modules/@nimiq/core/launcher/browser/cryptoutils-worker-proxy.mjs
+e7101633cd3adbb007aa287da36eeebb4ad5e44facaa61ebda8bd01d094f5a40  node_modules/@nimiq/core/launcher/browser/client-proxy.mjs
+0e046c328d32c734e622c12d35284187bae94e7455fe4fc8e7dd9f38068d60e1  node_modules/@nimiq/core/launcher/browser/cryptoutils-worker-proxy.mjs
 f26f70a14ee0ffa85261500dd786f51aa6051e523c9a4627ab8ba064ff8934dc  node_modules/@nimiq/core/launcher/browser/transfer-handlers.mjs
-f00e4c72cdbc653dfcc426c80337c0555f0b94b8883bd791b324aa95edfd498a  node_modules/@nimiq/core/lib/web/index.mjs
+93d35e056288373dd6ae8a0fce6fde9c748b67edb60c5a6899b7ce4554cf050a  node_modules/@nimiq/core/lib/web/index.mjs
 0ec8db9acefe632eb46205a9cd7de4351bafb83fad792508b0f61449ccf9f4ec  node_modules/@nimiq/core/web/comlink.min.js
 64a91ba6922851ba36ba21944bcc6a14e8a57f805203fa92925190175a882297  node_modules/@nimiq/core/web/comlink.min.js.map
 7b8c1509c4e7ec89948110c9f459409d381d1ee92b0a0d30bf112a568a8fc7a6  node_modules/@nimiq/core/web/comlink.min.mjs
 e8d70f535e0d6d1bca2dfb7a8afb96b068f87c1e0b44d864e0b54d8ec4589173  node_modules/@nimiq/core/web/comlink.min.mjs.map
 dd9833c434200f9338f01eac7e5462dfa146b235bc0ab57ed846bf076f6c5cd3  node_modules/@nimiq/core/web/crypto.js
-2a2dfa0da1b70d24e45ce1e681d50ba508cb21384f94d109a4b0fffc751b5fb0  node_modules/@nimiq/core/web/crypto-wasm/index_bg.wasm
-2c8aedf29c1274022ed33ebaecfed1d1d60bb9601d6be24aeee40a51c16bb159  node_modules/@nimiq/core/web/crypto-wasm/index.js
+edc4096085dee72c4e40ce1474affeecd34a9360f38173313791b841b0b16df0  node_modules/@nimiq/core/web/crypto-wasm/index_bg.wasm
+34a0f3b0ee5b89c0c837a0ac3b7e661b46ac12479fb0cd5e045551087bd6cea3  node_modules/@nimiq/core/web/crypto-wasm/index.js
 7a48cc3f66857626c3c175ba6688bd1cfd54abdfffe90388fa291494b9e1a261  node_modules/@nimiq/core/web/index.js
-df566e21f7608c741b5401de08ef9ddecea65ba5cf78c19f6890ace1288c6748  node_modules/@nimiq/core/web/main-wasm/index_bg.wasm
-57277d610ca35760d586c2bfe945314280617c6dcccc003448b3fd61b266b260  node_modules/@nimiq/core/web/main-wasm/index.js
+ee8a2c1deddfcd9a73830c05d06dc5fc2d36673b6ab377e10361aaafaed643eb  node_modules/@nimiq/core/web/main-wasm/index_bg.wasm
+ab6599921d8cc2003d84dd0e04e7745347f78009d96ef96e9ed720994d458e38  node_modules/@nimiq/core/web/main-wasm/index.js
 0436d25dd54159b106c7d2f5f37d1710fd029dca60a067898a20a89218a74d1c  node_modules/@nimiq/core/web/worker.js
-17c088aeed3a1126ab767b80614902c73e54cf1f7598cae193a8104d553a7b4e  node_modules/@nimiq/core/web/worker-wasm/index_bg.wasm
-1d48319343c83f429c25ba1972bc1cdff70e2481f7fd84faeb245be24368f1e1  node_modules/@nimiq/core/web/worker-wasm/index.js"
+9fe8bfe72461231f2ec92efb998f5ae387c2bdbc706dd85742c640af8b033416  node_modules/@nimiq/core/web/worker-wasm/index_bg.wasm
+a194687ccbd67e1d2f92f750e66bc2c9929137d70c12f0aee6252e92b65ae89f  node_modules/@nimiq/core/web/worker-wasm/index.js"
 if ! echo "$nimiq_pos_hashsums" | ${SHA256SUM} --check --strict -; then
     output "💥  Nimiq PoS file integrity check failed!"
     exit 1;
