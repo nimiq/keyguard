@@ -92,109 +92,145 @@ class SignMultisigTransaction {
             return;
         }
 
-        const privateKey = key.derivePrivateKey(request.keyPath);
+        /** @type {Nimiq.PartialSignature} */
+        let signature;
+        try {
+            signature = await SignMultisigTransaction.signSession({
+                key,
+                keyPath: request.keyPath,
+                data: request.transaction.serializeContent(),
+                publicKeys: request.multisigConfig.publicKeys,
+                signers: request.multisigConfig.signers,
+                state: request.multisigConfig.state,
+            }, MultisigSessionStore.instance, sessionCreatedAt => this._confirmForeignSession(sessionCreatedAt));
+        } catch (error) {
+            reject(error instanceof Errors.BaseError
+                ? error
+                : new Errors.UnclassifiedError(error instanceof Error ? error : String(error)));
+            return;
+        }
+
+        /** @type {KeyguardRequest.SignatureResult} */
+        const result = {
+            publicKey: key.derivePublicKey(request.keyPath).serialize(),
+            signature: signature.serialize(),
+        };
+        resolve(result);
+    }
+
+    // eslint-disable-next-line valid-jsdoc
+    /**
+     * Round 2: creates the partial signature of the signer of the given key, for a signing session which was created in
+     * round 1. Makes sure that a session is never signed twice with differing inputs, as that would leak the private
+     * key.
+     *
+     * @param {{
+     *     key: Key,
+     *     keyPath: string,
+     *     data: Uint8Array,
+     *     publicKeys: Nimiq.PublicKey[],
+     *     signers: MultisigConfig['signers'],
+     *     state: MultisigSigningState,
+     * }} params - `data` is the data to sign, i.e. the serialized transaction content
+     * @param {MultisigSessionStore} store
+     * @param {(sessionCreatedAt: number) => Promise<boolean>} confirmForeignSession - Asks the user whether to sign a
+     *     session which was created on another device
+     * @returns {Promise<Nimiq.PartialSignature>}
+     */
+    static async signSession({
+        key,
+        keyPath,
+        data,
+        publicKeys,
+        signers,
+        state,
+    }, store, confirmForeignSession) {
+        const privateKey = key.derivePrivateKey(keyPath);
         const publicKey = Nimiq.PublicKey.derive(privateKey);
 
         // Verify publicKey is part of the signing public keys
-        const ownSigner = request.multisigConfig.signers.find(signer => signer.publicKey.equals(publicKey));
+        const ownSigner = signers.find(signer => signer.publicKey.equals(publicKey));
         if (!ownSigner) {
-            reject(new Errors.InvalidRequestError('Selected key is not part of the multisig transaction signers'));
-            return;
+            throw new Errors.InvalidRequestError('Selected key is not part of the multisig transaction signers');
         }
         // Get a list of other signers, excluding the own signer. This works because `ownSigner` is a reference into
         // the `signers` array, so we can use object-equality.
-        const otherSigners = request.multisigConfig.signers.filter(signer => signer !== ownSigner);
+        const otherSigners = signers.filter(signer => signer !== ownSigner);
 
         // Verify the signing state. It must have been created by this key in round 1, for this transaction and
         // multisig, and must not have been modified.
-        const { state, publicKeys, signers } = request.multisigConfig;
-        const data = request.transaction.serializeContent();
         if (!state.verify(privateKey)) {
-            reject(new Errors.InvalidRequestError('Invalid state: not created for this key, or modified'));
-            return;
+            throw new Errors.InvalidRequestError('Invalid state: not created for this key, or modified');
         }
         if (state.isExpired()) {
-            reject(new Errors.RequestExpired());
-            return;
+            throw new Errors.RequestExpired();
         }
         if (!state.matchesTransaction(data)) {
-            reject(new Errors.InvalidRequestError('Invalid state: created for a different transaction'));
-            return;
+            throw new Errors.InvalidRequestError('Invalid state: created for a different transaction');
         }
         if (!state.matchesMultisig(publicKeys, signers.length)) {
-            reject(new Errors.InvalidRequestError('Invalid state: created for a different multisig'));
-            return;
+            throw new Errors.InvalidRequestError('Invalid state: created for a different multisig');
         }
 
         const ownCommitmentPairs = state.deriveCommitmentPairs(privateKey);
         if (ownCommitmentPairs.some((pair, i) => !pair.commitment.equals(ownSigner.commitments[i]))) {
-            reject(new Errors.InvalidRequestError(
+            throw new Errors.InvalidRequestError(
                 'This signer\'s commitments do not match the ones created for this state',
-            ));
-            return;
+            );
         }
 
         // Never sign the same signing session twice with differing inputs, as that would leak the private key.
-        const store = MultisigSessionStore.instance;
         const stateHash = state.hash();
         const inputsHash = MultisigSigningState.hashSigningInputs(data, signers);
         /** @type {MultisigSessionStore.Decision} */
         let decision;
         try {
-            const [deviceId, usage] = await Promise.all([store.getDeviceId(), store.getUsage(stateHash)]);
+            const [deviceId, record] = await Promise.all([store.getDeviceId(publicKey), store.getRecord(stateHash)]);
             decision = MultisigSessionStore.decide({
                 isOwnDevice: MultisigSigningState.constantTimeEquals(deviceId, state.deviceId),
-                usage,
+                record,
                 inputsHash,
             });
         } catch (error) {
-            reject(new Errors.KeyguardError(`Cannot access signing session records: ${String(error)}`));
-            return;
+            throw new Errors.KeyguardError(`Cannot access signing session records: ${String(error)}`);
         }
 
         if (decision === MultisigSessionStore.Decision.REFUSE) {
-            reject(new Errors.InvalidRequestError(SignMultisigTransaction.ALREADY_USED_ERROR));
-            return;
+            throw new Errors.InvalidRequestError(SignMultisigTransaction.ALREADY_USED_ERROR);
         }
-        if (decision === MultisigSessionStore.Decision.CONFIRM) {
-            TopLevelApi.setLoading(false);
-            const confirmed = await this._confirmForeignSession(state.createdAt);
-            if (!confirmed) {
-                reject(new Errors.RequestCanceled());
-                return;
-            }
-            TopLevelApi.setLoading(true);
+        if (decision === MultisigSessionStore.Decision.REFUSE_UNKNOWN) {
+            throw new Errors.InvalidRequestError(SignMultisigTransaction.UNKNOWN_SESSION_ERROR);
+        }
+        if (decision === MultisigSessionStore.Decision.CONFIRM && !(await confirmForeignSession(state.createdAt))) {
+            throw new Errors.RequestCanceled();
         }
 
-        // Record the use atomically right before signing, which also catches concurrent requests in multiple tabs.
+        // Sign before recording the use, such that a failure to sign does not use up the signing session. The signature
+        // must not leave this method before the use is recorded.
+        /** @type {Nimiq.PartialSignature} */
+        let signature;
+        try {
+            signature = key.signPartially(keyPath, data, ownCommitmentPairs, otherSigners);
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            throw new Errors.InvalidRequestError(`Cannot sign with the given signers: ${errorMessage}`);
+        }
+
+        // Record the use atomically, which also catches concurrent requests in multiple tabs.
         let claimed = false;
         try {
             claimed = await store.claim(stateHash, inputsHash, state.expiresAt);
         } catch (error) {
-            reject(new Errors.KeyguardError(`Cannot record signing session: ${String(error)}`));
-            return;
+            throw new Errors.KeyguardError(`Cannot record signing session: ${String(error)}`);
         }
         if (!claimed) {
-            reject(new Errors.InvalidRequestError(SignMultisigTransaction.ALREADY_USED_ERROR));
-            return;
+            throw new Errors.InvalidRequestError(SignMultisigTransaction.ALREADY_USED_ERROR);
         }
-
-        const signature = key.signPartially(
-            request.keyPath,
-            data,
-            ownCommitmentPairs,
-            otherSigners,
-        );
 
         // Clean up records of expired sessions. Failures are irrelevant for this request.
         store.prune().catch(() => {});
 
-        /** @type {KeyguardRequest.SignatureResult} */
-        const result = {
-            publicKey: publicKey.serialize(),
-            signature: signature.serialize(),
-        };
-        resolve(result);
+        return signature;
     }
 
     /**
@@ -216,6 +252,7 @@ class SignMultisigTransaction {
             time: new Date(sessionCreatedAt).toLocaleString(I18n.language),
         });
 
+        TopLevelApi.setLoading(false);
         window.location.hash = SignMultisigTransaction.Pages.FOREIGN_SESSION_WARNING;
 
         return new Promise(resolve => {
@@ -225,6 +262,7 @@ class SignMultisigTransaction {
              */
             const finish = confirmed => {
                 listeners.abort();
+                if (confirmed) TopLevelApi.setLoading(true);
                 resolve(confirmed);
             };
             $confirm.addEventListener('click', () => finish(true), { signal: listeners.signal });
@@ -245,3 +283,6 @@ SignMultisigTransaction.Pages = {
 
 SignMultisigTransaction.ALREADY_USED_ERROR = 'This signing session has already been used with different commitments '
     + 'or signers. Start a new signing session instead.';
+
+SignMultisigTransaction.UNKNOWN_SESSION_ERROR = 'This signing session was started in this browser, which has no record '
+    + 'of it, for example because the browser data was restored from a backup. Start a new signing session instead.';

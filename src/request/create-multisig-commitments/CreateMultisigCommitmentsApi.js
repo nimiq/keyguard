@@ -1,6 +1,7 @@
 /* global TopLevelApi */
 /* global CreateMultisigCommitments */
 /* global Errors */
+/* global MultisigSigningState */
 
 /**
  * Round 1 of signing a multisig transaction with MuSig2: creates this signer's commitments and the signing state, which
@@ -51,6 +52,11 @@ class CreateMultisigCommitmentsApi extends TopLevelApi { // eslint-disable-line 
         const numberOfSigners = this.parsePositiveInteger(config.numberOfSigners, false, 'numberOfSigners');
         if (numberOfSigners > publicKeys.length) {
             throw new Errors.InvalidRequestError('numberOfSigners must not exceed the number of public keys');
+        }
+        if (numberOfSigners > MultisigSigningState.MAX_NUMBER_OF_SIGNERS) {
+            throw new Errors.InvalidRequestError(
+                `numberOfSigners must not exceed ${MultisigSigningState.MAX_NUMBER_OF_SIGNERS}`,
+            );
         }
         const userName = this.parseLabel(config.userName, true, 'userName');
 

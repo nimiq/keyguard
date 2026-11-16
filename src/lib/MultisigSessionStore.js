@@ -1,14 +1,18 @@
+/* global Nimiq */
+
 /**
- * Persists, per Keyguard instance (i.e. per browser profile), a random device ID and a record of every MuSig2 signing
- * session that has been used for signing, to prevent signing the same session twice with differing inputs, which would
- * leak the private key.
+ * Persists, per Keyguard instance (i.e. per browser profile), a random device secret and a record of every MuSig2
+ * signing session that was created (round 1) or used for signing (round 2) here, to prevent signing the same session
+ * twice with differing inputs, which would leak the private key.
  *
- * Neither the device ID nor the records are secret, which is why they are stored outside the KeyStore. Notably, they
- * are not removed when keys are removed (logout), as the records need to outlive a logout and a re-login.
+ * The data is stored outside the KeyStore, as it is not removed when keys are removed (logout): the records need to
+ * outlive a logout and a re-login.
  *
- * If the stored data gets lost, for example because site data got cleared, the device ID changes. States created by
- * this device then look like states from a foreign device, such that a replay results in a warning to the user, and
- * is never silently accepted.
+ * A signing session without a record is never silently signed:
+ * - If it was created by another device, or if the stored data got lost entirely, for example because site data got
+ *   cleared, which also changes the device IDs, the user has to confirm a warning.
+ * - If it was created by this device, the stored data is incomplete, for example because it was restored from a backup.
+ *   As this device can then not know whether it already signed the session, it is refused.
  */
 class MultisigSessionStore {
     /** @type {MultisigSessionStore} */
@@ -20,18 +24,25 @@ class MultisigSessionStore {
     /**
      * Decides how to handle a signing request for a verified signing state.
      *
-     * @param {{ isOwnDevice: boolean, usage: MultisigSessionStore.UsageRecord | null, inputsHash: Uint8Array }} params
+     * @param {{
+     *     isOwnDevice: boolean,
+     *     record: MultisigSessionStore.SessionRecord | null,
+     *     inputsHash: Uint8Array,
+     * }} params
      * @returns {MultisigSessionStore.Decision}
      */
-    static decide({ isOwnDevice, usage, inputsHash }) {
-        if (usage) {
+    static decide({ isOwnDevice, record, inputsHash }) {
+        if (record && record.inputsHash) {
             // Re-signing identical inputs reproduces the identical partial signature, and is therefore harmless.
-            return MultisigSessionStore._equals(usage.inputsHash, inputsHash)
+            return MultisigSessionStore._equals(record.inputsHash, inputsHash)
                 ? MultisigSessionStore.Decision.SIGN
                 : MultisigSessionStore.Decision.REFUSE;
         }
+        // The session was recorded in round 1, and has not been used since.
+        if (record) return MultisigSessionStore.Decision.SIGN;
+
         return isOwnDevice
-            ? MultisigSessionStore.Decision.SIGN
+            ? MultisigSessionStore.Decision.REFUSE_UNKNOWN
             : MultisigSessionStore.Decision.CONFIRM;
     }
 
@@ -45,43 +56,54 @@ class MultisigSessionStore {
     }
 
     /**
-     * Returns the ID of this Keyguard instance, creating it on first use.
+     * Returns the ID of this Keyguard instance for the given signer. The ID is specific to the signer, such that the
+     * signing states of different signers, which are handed to the caller, can not be linked to the same device.
      *
+     * @param {Nimiq.PublicKey} signerPublicKey
      * @returns {Promise<Uint8Array>}
      */
-    async getDeviceId() {
+    async getDeviceId(signerPublicKey) {
+        const deviceSecret = await this._getDeviceSecret();
+        return Nimiq.CryptoUtils.computeHmacSha512(deviceSecret, signerPublicKey.serialize())
+            .slice(0, MultisigSessionStore.DEVICE_ID_SIZE);
+    }
+
+    /**
+     * Records a new signing session, which has not been used for signing yet. Must be called before the signing state
+     * is handed to the caller in round 1.
+     *
+     * @param {Uint8Array} stateHash
+     * @param {number} expiresAt - Expiry of the signing state
+     * @returns {Promise<void>}
+     */
+    async register(stateHash, expiresAt) {
         const db = await this._connect();
         return new Promise((resolve, reject) => {
-            const transaction = db.transaction([MultisigSessionStore.META_STORE], 'readwrite');
-            const store = transaction.objectStore(MultisigSessionStore.META_STORE);
-            /** @type {Uint8Array} */
-            let deviceId;
-            const getRequest = store.get(MultisigSessionStore.DEVICE_ID_KEY);
-            getRequest.onsuccess = () => {
-                const record = /** @type {{ value: Uint8Array } | undefined} */ (getRequest.result);
-                if (record && record.value instanceof Uint8Array
-                    && record.value.length === MultisigSessionStore.DEVICE_ID_SIZE) {
-                    deviceId = record.value;
-                    return;
-                }
-                deviceId = window.crypto.getRandomValues(new Uint8Array(MultisigSessionStore.DEVICE_ID_SIZE));
-                store.put({ key: MultisigSessionStore.DEVICE_ID_KEY, value: deviceId });
+            const transaction = MultisigSessionStore._writeTransaction(db, MultisigSessionStore.SESSION_STORE);
+            /** @type {MultisigSessionStore.SessionRecord} */
+            const record = {
+                stateHash: MultisigSessionStore._toHex(stateHash),
+                inputsHash: null,
+                usedAt: null,
+                pruneAfter: expiresAt + MultisigSessionStore.PRUNE_GRACE_PERIOD,
             };
-            transaction.oncomplete = () => resolve(deviceId);
-            transaction.onerror = () => reject(transaction.error);
+            // Fails for an existing record, such that a used session can never be reset to unused.
+            transaction.objectStore(MultisigSessionStore.SESSION_STORE).add(record);
+            transaction.oncomplete = () => resolve();
+            // A failed request aborts its transaction, and only an aborted transaction has its error set.
             transaction.onabort = () => reject(transaction.error);
         });
     }
 
     /**
      * @param {Uint8Array} stateHash
-     * @returns {Promise<MultisigSessionStore.UsageRecord | null>}
+     * @returns {Promise<MultisigSessionStore.SessionRecord | null>}
      */
-    async getUsage(stateHash) {
+    async getRecord(stateHash) {
         const db = await this._connect();
         return new Promise((resolve, reject) => {
-            const transaction = db.transaction([MultisigSessionStore.USAGE_STORE], 'readonly');
-            const getRequest = transaction.objectStore(MultisigSessionStore.USAGE_STORE)
+            const transaction = db.transaction([MultisigSessionStore.SESSION_STORE], 'readonly');
+            const getRequest = transaction.objectStore(MultisigSessionStore.SESSION_STORE)
                 .get(MultisigSessionStore._toHex(stateHash));
             getRequest.onsuccess = () => resolve(getRequest.result || null);
             getRequest.onerror = () => reject(getRequest.error);
@@ -90,7 +112,7 @@ class MultisigSessionStore {
 
     /**
      * Atomically records the use of a signing state with the given inputs, unless it has already been used. Must be
-     * called, and must have returned `true`, before signing.
+     * called, and must have returned `true`, before a signature leaves the Keyguard.
      *
      * @param {Uint8Array} stateHash
      * @param {Uint8Array} inputsHash
@@ -101,29 +123,28 @@ class MultisigSessionStore {
     async claim(stateHash, inputsHash, expiresAt) {
         const db = await this._connect();
         return new Promise((resolve, reject) => {
-            const transaction = db.transaction([MultisigSessionStore.USAGE_STORE], 'readwrite');
-            const store = transaction.objectStore(MultisigSessionStore.USAGE_STORE);
+            const transaction = MultisigSessionStore._writeTransaction(db, MultisigSessionStore.SESSION_STORE);
+            const store = transaction.objectStore(MultisigSessionStore.SESSION_STORE);
             const key = MultisigSessionStore._toHex(stateHash);
             let allowed = false;
             const getRequest = store.get(key);
             getRequest.onsuccess = () => {
-                const existing = /** @type {MultisigSessionStore.UsageRecord | undefined} */ (getRequest.result);
-                if (existing) {
+                const existing = /** @type {MultisigSessionStore.SessionRecord | undefined} */ (getRequest.result);
+                if (existing && existing.inputsHash) {
                     allowed = MultisigSessionStore._equals(existing.inputsHash, inputsHash);
                     return;
                 }
-                /** @type {MultisigSessionStore.UsageRecord} */
+                /** @type {MultisigSessionStore.SessionRecord} */
                 const record = {
                     stateHash: key,
                     inputsHash,
                     usedAt: Date.now(),
                     pruneAfter: expiresAt + MultisigSessionStore.PRUNE_GRACE_PERIOD,
                 };
-                store.add(record);
+                store.put(record);
                 allowed = true;
             };
             transaction.oncomplete = () => resolve(allowed);
-            transaction.onerror = () => reject(transaction.error);
             transaction.onabort = () => reject(transaction.error);
         });
     }
@@ -138,8 +159,8 @@ class MultisigSessionStore {
     async prune(now = Date.now()) {
         const db = await this._connect();
         return new Promise((resolve, reject) => {
-            const transaction = db.transaction([MultisigSessionStore.USAGE_STORE], 'readwrite');
-            const index = transaction.objectStore(MultisigSessionStore.USAGE_STORE).index('pruneAfter');
+            const transaction = db.transaction([MultisigSessionStore.SESSION_STORE], 'readwrite');
+            const index = transaction.objectStore(MultisigSessionStore.SESSION_STORE).index('pruneAfter');
             const cursorRequest = index.openCursor(IDBKeyRange.upperBound(now, true));
             cursorRequest.onsuccess = () => {
                 const cursor = cursorRequest.result;
@@ -148,7 +169,6 @@ class MultisigSessionStore {
                 cursor.continue();
             };
             transaction.oncomplete = () => resolve();
-            transaction.onerror = () => reject(transaction.error);
             transaction.onabort = () => reject(transaction.error);
         });
     }
@@ -161,6 +181,35 @@ class MultisigSessionStore {
         const db = await this._dbPromise.catch(() => null);
         this._dbPromise = null;
         if (db) db.close();
+    }
+
+    /**
+     * Returns the secret from which the device IDs are derived, creating it on first use. It never leaves the Keyguard.
+     *
+     * @private
+     * @returns {Promise<Uint8Array>}
+     */
+    async _getDeviceSecret() {
+        const db = await this._connect();
+        return new Promise((resolve, reject) => {
+            const transaction = MultisigSessionStore._writeTransaction(db, MultisigSessionStore.META_STORE);
+            const store = transaction.objectStore(MultisigSessionStore.META_STORE);
+            /** @type {Uint8Array} */
+            let deviceSecret;
+            const getRequest = store.get(MultisigSessionStore.DEVICE_SECRET_KEY);
+            getRequest.onsuccess = () => {
+                const record = /** @type {{ value: Uint8Array } | undefined} */ (getRequest.result);
+                if (record && record.value instanceof Uint8Array
+                    && record.value.length === MultisigSessionStore.DEVICE_SECRET_SIZE) {
+                    deviceSecret = record.value;
+                    return;
+                }
+                deviceSecret = window.crypto.getRandomValues(new Uint8Array(MultisigSessionStore.DEVICE_SECRET_SIZE));
+                store.put({ key: MultisigSessionStore.DEVICE_SECRET_KEY, value: deviceSecret });
+            };
+            transaction.oncomplete = () => resolve(deviceSecret);
+            transaction.onabort = () => reject(transaction.error);
+        });
     }
 
     /**
@@ -178,14 +227,31 @@ class MultisigSessionStore {
                 const db = request.result;
                 if (event.oldVersion < 1) {
                     db.createObjectStore(MultisigSessionStore.META_STORE, { keyPath: 'key' });
-                    const usageStore = db.createObjectStore(MultisigSessionStore.USAGE_STORE, { keyPath: 'stateHash' });
-                    usageStore.createIndex('pruneAfter', 'pruneAfter');
+                    const sessionStore = db.createObjectStore(
+                        MultisigSessionStore.SESSION_STORE,
+                        { keyPath: 'stateHash' },
+                    );
+                    sessionStore.createIndex('pruneAfter', 'pruneAfter');
                 }
             };
         });
         this._dbPromise.catch(() => { this._dbPromise = null; });
 
         return this._dbPromise;
+    }
+
+    /**
+     * Starts a transaction for writing records which signing decisions depend on. By default, browsers report a
+     * transaction as complete before its data is flushed to disk. With strict durability, a record can not get lost
+     * in a crash or power loss after a signature already left the Keyguard.
+     *
+     * @private
+     * @param {IDBDatabase} db
+     * @param {string} storeName
+     * @returns {IDBTransaction}
+     */
+    static _writeTransaction(db, storeName) {
+        return db.transaction([storeName], 'readwrite', { durability: 'strict' });
     }
 
     /**
@@ -211,14 +277,14 @@ class MultisigSessionStore {
 /**
  * @typedef {{
  *     stateHash: string,
- *     inputsHash: Uint8Array,
- *     usedAt: number,
+ *     inputsHash: Uint8Array | null,
+ *     usedAt: number | null,
  *     pruneAfter: number,
- * }} MultisigSessionStore.UsageRecord
+ * }} MultisigSessionStore.SessionRecord - `inputsHash` and `usedAt` are `null` until the session is used for signing.
  */
 
 /**
- * @typedef {'sign' | 'refuse' | 'confirm'} MultisigSessionStore.Decision
+ * @typedef {'sign' | 'refuse' | 'refuse-unknown' | 'confirm'} MultisigSessionStore.Decision
  */
 
 /** @type {MultisigSessionStore | null} */
@@ -226,16 +292,19 @@ MultisigSessionStore._instance = null;
 MultisigSessionStore.DB_NAME = 'nimiq-keyguard-multisig';
 MultisigSessionStore.DB_VERSION = 1;
 MultisigSessionStore.META_STORE = 'meta';
-MultisigSessionStore.USAGE_STORE = 'used-signing-states';
-MultisigSessionStore.DEVICE_ID_KEY = 'deviceId';
+MultisigSessionStore.SESSION_STORE = 'signing-sessions';
+MultisigSessionStore.DEVICE_SECRET_KEY = 'deviceSecret';
+MultisigSessionStore.DEVICE_SECRET_SIZE = 32;
 MultisigSessionStore.DEVICE_ID_SIZE = 16;
 MultisigSessionStore.PRUNE_GRACE_PERIOD = 30 * 24 * 60 * 60 * 1000; // 30 days
 
 MultisigSessionStore.Decision = Object.freeze({
-    /** Sign without asking. Either a new state from this device, or a repetition with identical inputs. */
+    /** Sign without asking. Either an unused state recorded by this device, or a repetition with identical inputs. */
     SIGN: /** @type {'sign'} */ ('sign'),
     /** Never sign. The state has already been used with different inputs. */
     REFUSE: /** @type {'refuse'} */ ('refuse'),
+    /** Never sign. The state is from this device, which has no record of it, so its records are incomplete. */
+    REFUSE_UNKNOWN: /** @type {'refuse-unknown'} */ ('refuse-unknown'),
     /** Only sign after the user confirmed a warning. The state is from a foreign device and not yet used here. */
     CONFIRM: /** @type {'confirm'} */ ('confirm'),
 });

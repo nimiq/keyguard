@@ -134,8 +134,22 @@
     const $replayIdentical = document.querySelector('button#replay-identical');
     const $replayDifferent = document.querySelector('button#replay-different');
 
+    // The ID of the key of the last run. The key is kept after a successful run, for the replay buttons. The ID is
+    // stored such that the key can also be removed after a reload of the page.
+    const DEMO_KEY_ID_STORAGE_KEY = 'sign-multisig-transaction-demo-key-id';
+
+    async function removeDemoKey() {
+        const keyId = sessionStorage.getItem(DEMO_KEY_ID_STORAGE_KEY);
+        if (!keyId) return;
+        await KeyStore.instance.remove(keyId);
+        sessionStorage.removeItem(DEMO_KEY_ID_STORAGE_KEY);
+    }
+
+    // Remove the key of a run before the page got reloaded.
+    await removeDemoKey();
+
     document.querySelector('button#popup').addEventListener('click', async () => {
-        if (lastSignRequest) await KeyStore.instance.remove(lastSignRequest.keyId);
+        await removeDemoKey();
         lastSignRequest = null;
         $replayIdentical.disabled = $replayDifferent.disabled = true;
 
@@ -153,6 +167,8 @@
             $replayIdentical.disabled = $replayDifferent.disabled = false;
         } catch (e) {
             showError(e);
+            // The key is only needed for replaying a successful run.
+            await removeDemoKey();
         }
         keyguard.close();
     });
@@ -200,6 +216,7 @@
         const key = new Key(secret);
         const password = keyPassword ? Nimiq.BufferUtils.fromUtf8(keyPassword) : undefined;
         const id = await KeyStore.instance.put(key, password);
+        sessionStorage.setItem(DEMO_KEY_ID_STORAGE_KEY, id);
 
         const path = "m/0'/0'";
         const myPublicKey = Nimiq.PublicKey.derive(

@@ -86,6 +86,9 @@ class SignMultisigTransactionApi extends TopLevelApi {
         try {
             if (!('signers' in object)) throw new Error('missing');
             if (!Array.isArray(object.signers)) throw new Error('not an array');
+            if (object.signers.length > MultisigSigningState.MAX_NUMBER_OF_SIGNERS) {
+                throw new Error(`more than ${MultisigSigningState.MAX_NUMBER_OF_SIGNERS} signers`);
+            }
             for (const obj of object.signers) {
                 if (!obj || typeof obj !== 'object') throw new Error('not objects');
 
