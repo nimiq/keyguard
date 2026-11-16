@@ -14,6 +14,7 @@ module.exports = function (/** @type {any} */ config) {
 
         // list of files / patterns to load in the browser
         files: [
+            'tests/Setup.js', // Must be loaded before common.js
             {pattern: 'src/lib/Nimiq.mjs', type: 'module'},
             {pattern: 'node_modules/@nimiq/core/**/*', included: false},
             'src/lib/Observable.js', // Force load of Observable before global use in I18n.
