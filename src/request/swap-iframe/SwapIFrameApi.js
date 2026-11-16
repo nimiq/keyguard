@@ -24,7 +24,8 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
 
         const storedData = await NonPartitionedSessionStorage.get(
             storageKey,
-            request.tmpCookieEncryptionKey,
+            // Received via postMessage, i.e. as structured clone, which is backed by a regular ArrayBuffer.
+            /** @type {Uint8Array<ArrayBuffer> | undefined} */ (request.tmpCookieEncryptionKey),
         );
         NonPartitionedSessionStorage.delete(storageKey);
 

@@ -35,7 +35,8 @@ class IFrameApi {
     async deriveAddresses(state, request) {
         const storedEntropy = await NonPartitionedSessionStorage.get(
             IFrameApi.SESSION_STORAGE_KEY_PREFIX + request.keyId,
-            request.tmpCookieEncryptionKey,
+            // Received via postMessage, i.e. as structured clone, which is backed by a regular ArrayBuffer.
+            /** @type {Uint8Array<ArrayBuffer> | undefined} */ (request.tmpCookieEncryptionKey),
         );
         if (!storedEntropy) throw new Errors.KeyNotFoundError();
         if ('newEncryptionKey' in storedEntropy) {

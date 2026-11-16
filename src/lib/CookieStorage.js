@@ -3,7 +3,7 @@
 /* global Errors */
 
 /**
- * @typedef {{isEncrypted: boolean, chunkCount: number, encryptionInitVector?: Uint8Array}} CookieMetadata
+ * @typedef {{isEncrypted: boolean, chunkCount: number, encryptionInitVector?: Uint8Array<ArrayBuffer>}} CookieMetadata
  */
 
 /**
@@ -25,12 +25,13 @@
 class CookieStorage {
     /**
      * @param {string} name
-     * @param {Uint8Array} data
+     * @param {Uint8Array<ArrayBuffer>} data
      * @param {Object} [options]
-     * @param {Uint8Array=} [options.encryptionKey] Encryption key to use. If not provided, a new one will be created.
+     * @param {Uint8Array<ArrayBuffer>=} [options.encryptionKey] Encryption key to use. If not provided, a new one will
+     *     be created.
      * @param {number=} [options.maxAge] Time in seconds after which the data gets automatically deleted.
      * @param {string=} [options.namespace]
-     * @returns {Promise<Uint8Array | null>} New encryption key, if one was created.
+     * @returns {Promise<Uint8Array<ArrayBuffer> | null>} New encryption key, if one was created.
      */
     static async set(name, data, options = {}) {
         const { maxAge, namespace } = options;
@@ -48,7 +49,7 @@ class CookieStorage {
                 iv: encryptionInitVector,
             },
             await this._importEncryptionKey(encryptionKey),
-            /** @type {Uint8Array<ArrayBuffer>} */ (data),
+            data,
         ));
 
         this._writeCookies(name, encryptedData, { encryptionInitVector, maxAge, namespace });
@@ -74,9 +75,9 @@ class CookieStorage {
     /**
      * @param {string} name
      * @param {Object} [options]
-     * @param {Uint8Array=} [options.encryptionKey] Must be passed for encrypted entries.
+     * @param {Uint8Array<ArrayBuffer>=} [options.encryptionKey] Must be passed for encrypted entries.
      * @param {string=} [options.namespace]
-     * @returns {Promise<Uint8Array | null>}
+     * @returns {Promise<Uint8Array<ArrayBuffer> | null>}
      */
     static async get(name, options = {}) {
         const { encryptionKey, namespace } = options;
@@ -89,10 +90,10 @@ class CookieStorage {
             /* algorithm */ {
                 name: CookieStorage.ENCRYPTION_ALGORITHM,
                 // Set for encrypted cookies, see _readCookies.
-                iv: /** @type {Uint8Array<ArrayBuffer>} */ (metadata.encryptionInitVector),
+                iv: metadata.encryptionInitVector,
             },
             await this._importEncryptionKey(encryptionKey),
-            /** @type {Uint8Array<ArrayBuffer>} */ (data),
+            data,
         ));
     }
 
@@ -120,7 +121,7 @@ class CookieStorage {
     /**
      * @param {string} name
      * @param {Uint8Array} data
-     * @param {{encryptionInitVector?: Uint8Array, maxAge?: number, namespace?: string}} [options]
+     * @param {{encryptionInitVector?: Uint8Array<ArrayBuffer>, maxAge?: number, namespace?: string}} [options]
      * @private
      */
     static _writeCookies(name, data, options = {}) {
@@ -168,7 +169,7 @@ class CookieStorage {
     /**
      * @param {string} name
      * @param {string} [namespace]
-     * @returns {{metadata: CookieMetadata, data: Uint8Array} | null}
+     * @returns {{metadata: CookieMetadata, data: Uint8Array<ArrayBuffer>} | null}
      * @private
      */
     static _readCookies(name, namespace) {
@@ -205,7 +206,7 @@ class CookieStorage {
 
     /* eslint-disable no-bitwise */
     /**
-     * @param {Uint8Array} encodedMetadata
+     * @param {Uint8Array<ArrayBuffer>} encodedMetadata
      * @returns {CookieMetadata}
      * @private
      */
@@ -213,7 +214,7 @@ class CookieStorage {
         if (!encodedMetadata.byteLength) throw new Errors.KeyguardError('Invalid CookieStorage metadata.');
         const isEncrypted = !!(encodedMetadata[0] & 0b1);
         const chunkCount = encodedMetadata[0] >> 1;
-        /** @type {Uint8Array | undefined} */
+        /** @type {Uint8Array<ArrayBuffer> | undefined} */
         let encryptionInitVector;
 
         if (isEncrypted) {
@@ -285,7 +286,7 @@ class CookieStorage {
     }
 
     /**
-     * @param {Uint8Array} encryptionKey
+     * @param {Uint8Array<ArrayBuffer>} encryptionKey
      * @returns {Promise<CryptoKey>}
      * @private
      */
@@ -295,7 +296,7 @@ class CookieStorage {
         }
         return crypto.subtle.importKey(
             /* format */ 'raw',
-            /** @type {Uint8Array<ArrayBuffer>} */ (encryptionKey),
+            encryptionKey,
             /* algorithm */ CookieStorage.ENCRYPTION_ALGORITHM,
             /* extractable */ false,
             /* key usages */ ['encrypt', 'decrypt'],
