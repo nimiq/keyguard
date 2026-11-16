@@ -8,9 +8,7 @@
     "noEmit": true,
     "types": ["jasmine"], // TypeScript >= 6 doesn't auto-include @types packages anymore.
     "strict": true,
-    "esModuleInterop": true,
-    // The types of @nimiq/core-web (Nimiq PoW) are incompatible with the typed array generics of TypeScript >= 5.7.
-    "skipLibCheck": true
+    "esModuleInterop": true
   },
   "include": [
     "types/*",

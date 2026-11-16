@@ -1,0 +1,13 @@
+diff --git a/node_modules/@nimiq/core-web/types.d.ts b/node_modules/@nimiq/core-web/types.d.ts
+index 71d2531..22c8042 100644
+--- a/node_modules/@nimiq/core-web/types.d.ts
++++ b/node_modules/@nimiq/core-web/types.d.ts
+@@ -773,7 +773,7 @@ export class SerialBuffer extends Uint8Array {
+     public readPos: number;
+     public writePos: number;
+     constructor(bufferOrArrayOrLength: any)
+-    public subarray(start?: number, end?: number): Uint8Array;
++    public subarray(start?: number, end?: number): ReturnType<Uint8Array['slice']>;
+     public reset(): void;
+     public read(length: number): Uint8Array;
+     public write(array: any): void;

@@ -18,7 +18,7 @@
     "pr": "yarn typecheck && yarn lint && yarn test && yarn checkdeps && yarn checklangs && yarn build testnet && yarn checkdist testnet && cd client && yarn lint && yarn build",
     "watch": "tsc-watch --pretty --onSuccess \"yarn lint\"",
     "watchfix": "tsc-watch --pretty --onSuccess \"yarn lintfix\"",
-    "postinstall": "cd client && yarn",
+    "postinstall": "patch-package && cd client && yarn",
     "i18n:build-dictionary": "tools/i18n.sh",
     "i18n:pull": "tx pull --all --force --mode sourceastranslation",
     "i18n:push": "tx push --source",
@@ -58,6 +58,7 @@
     "karma-firefox-launcher": "^1.1.0",
     "karma-istanbuljs-reporter": "^0.2.0",
     "karma-jasmine": "^1.1.2",
+    "patch-package": "^8.0.1",
     "terser": "^5.14.2",
     "tsc-watch": "^1.0.22",
     "typescript": "6.0"

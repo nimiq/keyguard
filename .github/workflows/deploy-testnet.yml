@@ -132,7 +132,8 @@ jobs:
       # --ignore-scripts: nothing this build needs is produced by an install script. tools/build.sh
       #   copies prebuilt files out of node_modules, and the browserified bundle it does not
       #   copy (BitcoinJS.js) is committed. It also skips this package's own
-      #   postinstall, `cd client && yarn`, as nothing under client/ is consumed by tools/build.sh.
+      #   postinstall, `patch-package && cd client && yarn`: the patches only touch type declarations,
+      #   and nothing under client/ is consumed by tools/build.sh.
       - name: Install dependencies
         run: yarn install --frozen-lockfile --ignore-scripts
 
