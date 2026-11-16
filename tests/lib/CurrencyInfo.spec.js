@@ -35,7 +35,6 @@ describe('CurrencyInfo', () => {
     it('has custom currency symbols', () => {
         for (const code of new Set([
             ...Object.keys(FiatApi.SupportedFiatCurrency),
-            // @ts-ignore: EXTRA_SYMBOLS is private
             ...Object.keys(CurrencyInfo.EXTRA_SYMBOLS),
         ].sort())) {
             const info = new CurrencyInfo(code);
