@@ -1,10 +1,7 @@
-/**
- * Simplified definition of the browser's native CookieStore. Not to be confused with our CookieStorage.
- * @typedef {{get: (name: string) => Promise<{ value: string } | undefined>}} CookieStore
- */
-
-// eslint-disable-next-line no-restricted-globals
-const sw = /** @type {ServiceWorkerGlobalScope & { cookieStore?: CookieStore }} */ (/** @type {unknown} */ (self));
+// The cookieStore is not supported in all browsers, thus mark it as optional.
+const sw = /** @type {Omit<ServiceWorkerGlobalScope, 'cookieStore'> & { cookieStore?: CookieStore }} */ (
+    // eslint-disable-next-line no-restricted-globals
+    /** @type {unknown} */ (self));
 
 /* eslint-disable no-restricted-globals */
 // const PRECACHE = 'v1';

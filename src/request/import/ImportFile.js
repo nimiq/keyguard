@@ -184,7 +184,6 @@ class ImportFile extends Observable {
 
                 // When loading the CryptoWorker, the PoW library uses `Nimiq._path` as the prefix for the worker file.
                 // So we need to temporarily set global `Nimiq` to the PoW library to load the worker correctly.
-                // @ts-expect-error window.Nimiq is not defined
                 const _Nimiq = window.Nimiq;
                 let _secret;
                 try {
@@ -195,7 +194,6 @@ class ImportFile extends Observable {
                     _secret = await NimiqPoW.Secret.fromEncrypted(this._encryptedKey, encryptionKey);
                 } finally {
                     // After the worker is done, we set the global `Nimiq` back to the PoS library
-                    // @ts-expect-error window.Nimiq is not defined
                     window.Nimiq = _Nimiq;
                 }
 

@@ -36,6 +36,7 @@ class NumberFormatting { // eslint-disable-line no-unused-vars
     static formatCurrency(value, currency, maxRelativeDeviation = 0.1, locale = I18n.language) {
         const positioningLocale = this._getPositioningLocale(currency);
         const currencyInfo = new CurrencyInfo(currency, locale);
+        /** @type {Intl.NumberFormatOptions & { minimumFractionDigits: number, maximumFractionDigits: number }} */
         const formattingOptions = {
             style: 'currency',
             currency,

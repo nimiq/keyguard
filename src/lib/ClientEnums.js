@@ -1,7 +1,7 @@
 /**
- * Note: the @import syntax is not supported in our current typescript version yet. Once we update to typescript 5.5,
+ * Note: the @ import syntax is not supported in our current typescript version yet. Once we update to typescript 5.5,
  * this should lead to an error regarding the duplicate declaration of the enums, which would serve as a nice reminder
- * to update the @ enum code here. The advantage of the @import syntax is, that it would additionally import the enum
+ * to update the @ enum code here. The advantage of the @ import syntax is, that it would additionally import the enum
  * namespaces, which currently we cannot import or replicate (unless in a separate .d.ts file).
  * @import { SignMessagePrefix } from '../../client/src/SignMessagePrefix'
  * @import { KeyguardCommand } from '../../client/src/KeyguardCommand'
@@ -19,7 +19,7 @@
  *
  * This approach replicates the enum type (via @ enum) and the enum value/object, but not the enum namespace, e.g.
  * MyEnum.A can not be accessed as type, but as value only. To get the associated type, (typeof MyEnum)['A'] mused be
- * used instead. To import the namespace, use an @import rule.
+ * used instead. To import the namespace, use an @ import rule.
  *
  * Numerical enums are currently not covered by this implementation.
  *

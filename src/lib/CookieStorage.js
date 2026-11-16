@@ -48,7 +48,7 @@ class CookieStorage {
                 iv: encryptionInitVector,
             },
             await this._importEncryptionKey(encryptionKey),
-            data,
+            /** @type {Uint8Array<ArrayBuffer>} */ (data),
         ));
 
         this._writeCookies(name, encryptedData, { encryptionInitVector, maxAge, namespace });
@@ -88,10 +88,11 @@ class CookieStorage {
         return new Uint8Array(await crypto.subtle.decrypt(
             /* algorithm */ {
                 name: CookieStorage.ENCRYPTION_ALGORITHM,
-                iv: metadata.encryptionInitVector,
+                // Set for encrypted cookies, see _readCookies.
+                iv: /** @type {Uint8Array<ArrayBuffer>} */ (metadata.encryptionInitVector),
             },
             await this._importEncryptionKey(encryptionKey),
-            data,
+            /** @type {Uint8Array<ArrayBuffer>} */ (data),
         ));
     }
 
@@ -294,7 +295,7 @@ class CookieStorage {
         }
         return crypto.subtle.importKey(
             /* format */ 'raw',
-            encryptionKey,
+            /** @type {Uint8Array<ArrayBuffer>} */ (encryptionKey),
             /* algorithm */ CookieStorage.ENCRYPTION_ALGORITHM,
             /* extractable */ false,
             /* key usages */ ['encrypt', 'decrypt'],

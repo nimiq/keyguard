@@ -117,7 +117,8 @@ class NonPartitionedSessionStorage {
         // behavior can change over time.
         const userAgentHash = new Uint8Array(await crypto.subtle.digest(
             'SHA-256',
-            Nimiq.BufferUtils.fromUtf8(navigator.userAgent), // Don't use Utf8Utils as they're not bundled in iframe.
+            // Don't use Utf8Utils as they're not bundled in iframe.
+            /** @type {Uint8Array<ArrayBuffer>} */ (Nimiq.BufferUtils.fromUtf8(navigator.userAgent)),
         ));
         const userAgentHashString = Nimiq.BufferUtils.toBase64Url(userAgentHash).substring(0, 6);
 

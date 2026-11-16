@@ -32,6 +32,6 @@
   "devDependencies": {
     "rollup": "^2.79.2",
     "tslint": "^5.11.0",
-    "typescript": "^5.5.4"
+    "typescript": "^6.0.3"
   }
 }

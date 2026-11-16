@@ -79,6 +79,7 @@ class CurrencyInfo {
         }
 
         let formattedString;
+        /** @type {Intl.NumberFormatOptions} */
         const formatterOptions = {
             style: 'currency',
             currency: currencyCode, // without toUpperCase to avoid conversion of characters, e.g. Eszett to SS

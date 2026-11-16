@@ -190,7 +190,7 @@ class Key {
                 };
                 const pbkdf2KeyMaterial = await window.crypto.subtle.importKey(
                     /* format */ 'raw',
-                    /* keyData */ seedBytes,
+                    /* keyData */ /** @type {Uint8Array<ArrayBuffer>} */ (seedBytes),
                     /* algorithm */ pbkdf2Params, // The key material is to be used in a PBKDF2 derivation.
                     /* extractable */ false,
                     /* keyUsages */ ['deriveBits'],
@@ -296,7 +296,7 @@ class Key {
         };
         const finalHkdfKeyMaterial = await window.crypto.subtle.importKey(
             /* format */ 'raw',
-            /* keyData */ finalKeyMaterial,
+            /* keyData */ /** @type {Uint8Array<ArrayBuffer>} */ (finalKeyMaterial),
             /* algorithm */ finalHkdfParams, // The key material is to be used in a HKDF derivation.
             /* extractable */ false,
             /* keyUsages */ ['deriveBits'],
