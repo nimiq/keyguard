@@ -30,6 +30,8 @@ DEPLOY_SERVERS=()
 DEPLOYER=""
 EXCLUDE_RELEASE=""
 SYNC_TRANSLATIONS=true
+ALLOW_UNTRACKED_FILES=false
+ALLOW_MAINNET_VERSION_BELOW_TESTNET_VERSION=false
 BUILD_ENV=""
 DEPLOY_ONLY=false
 SAME_AS=""
@@ -67,6 +69,14 @@ show_usage() {
     echo "  --exclude-release      Add [exclude-release] tag to exclude this deployment"
     echo "                         from release notes"
     echo "  --no-translations      Skip translation synchronization step"
+    echo "  --allow-untracked-files"
+    echo "                         Don't abort on untracked files, i.e. files that are not part"
+    echo "                         of the repository."
+    echo "                         Untracked files in src are not allowed regardless, as they"
+    echo "                         would become part of the build."
+    echo "  --allow-mainnet-version-below-testnet-version"
+    echo "                         Allow a mainnet version below the latest testnet version."
+    echo "                         It still has to be above the latest mainnet version."
     echo "  --deploy-only          Only run the deployment step (ssh)"
     echo "                         Useful for retrying a failed deployment"
     echo "  --same-as=ENV          Use same version as specified environment"
@@ -259,6 +269,8 @@ show_deployment_recap() {
     done
     echo -e "${CYAN}Exclude Release:${NC} $([ -n "$EXCLUDE_RELEASE" ] && echo "Yes" || echo "No")"
     echo -e "${CYAN}Sync Translations:${NC} $SYNC_TRANSLATIONS"
+    echo -e "${CYAN}Allow Untracked Files:${NC} $ALLOW_UNTRACKED_FILES"
+    echo -e "${CYAN}Allow Mainnet Version Below Testnet Version:${NC} $ALLOW_MAINNET_VERSION_BELOW_TESTNET_VERSION"
     echo -e "${CYAN}Commit Message:${NC}"
     echo "$COMMIT_MSG" | sed 's/^/  /'
     echo
@@ -334,6 +346,12 @@ for arg in "${ARGS[@]}"; do
         --no-translations)
             SYNC_TRANSLATIONS=false
             ;;
+        --allow-untracked-files)
+            ALLOW_UNTRACKED_FILES=true
+            ;;
+        --allow-mainnet-version-below-testnet-version)
+            ALLOW_MAINNET_VERSION_BELOW_TESTNET_VERSION=true
+            ;;
         --mainnet)
             BUILD_ENV="mainnet"
             DEPLOY_SERVERS=("${MAINNET_SERVERS[@]}")
@@ -388,6 +406,10 @@ if [ -z "$BUILD_ENV" ]; then
     show_usage "Either --mainnet or --testnet must be specified"
 fi
 
+if [ "$ALLOW_MAINNET_VERSION_BELOW_TESTNET_VERSION" = true ] && [ "$BUILD_ENV" != "mainnet" ]; then
+    show_usage "--allow-mainnet-version-below-testnet-version can only be used with --mainnet"
+fi
+
 # After parsing arguments and before validation, handle --same-as
 if [ -n "$SAME_AS" ]; then
     echo -e "${BLUE}Looking up version from $SAME_AS deployment...${NC}"
@@ -436,15 +458,39 @@ show_deployment_recap
 # Pre-deployment tasks
 echo -e "${BLUE}Running pre-deployment tasks...${NC}"
 
+# Install dependencies as locked in yarn.lock, such that we don't build with outdated node_modules, e.g. after pulling
+# dependency updates. With --frozen-lockfile, yarn fails instead of updating yarn.lock if it's out of sync with
+# package.json. The client's dependencies are installed first, because the postinstall script installs them, too, but
+# without --frozen-lockfile, as yarn doesn't pass the flag on.
+echo -e "${CYAN}Installing dependencies...${NC}"
+run_command "yarn --cwd client install --frozen-lockfile" "Failed to install client dependencies"
+run_command "yarn install --frozen-lockfile" "Failed to install dependencies"
+
 if [ "$SYNC_TRANSLATIONS" = "true" ]; then
     echo -e "${CYAN}Syncing translations...${NC}"
     run_command "yarn checklangs" "Failed to build translation dictionary"
     run_command "yarn i18n:sync" "Failed to sync translations"
 fi
 
-# Check for uncommitted changes
-if [[ `git status --porcelain` ]]; then
+# Check for untracked files in src. Those are not allowed, even with --allow-untracked-files, because the build includes
+# entire directories of src, e.g. all request directories and assets, such that untracked files would get deployed.
+UNTRACKED_SOURCE_FILES=$(git ls-files --others --exclude-standard -- src)
+if [ -n "$UNTRACKED_SOURCE_FILES" ]; then
+    echo -e "${RED}ERROR: Untracked files in src would become part of the build. Commit or remove them first, then run again.${NC}"
+    echo "$UNTRACKED_SOURCE_FILES"
+    exit 1
+fi
+
+# Check for uncommitted changes. Untracked files, i.e. files that are not part of the repository, are only allowed with
+# --allow-untracked-files.
+UNTRACKED_FILES_MODE=$([ "$ALLOW_UNTRACKED_FILES" = true ] && echo "no" || echo "normal")
+UNCOMMITTED_CHANGES=$(git status --porcelain --untracked-files="$UNTRACKED_FILES_MODE")
+if [ -n "$UNCOMMITTED_CHANGES" ]; then
     echo -e "${RED}ERROR: The repository has uncommitted changes. Commit them first, then run again.${NC}"
+    echo "$UNCOMMITTED_CHANGES"
+    if grep -q '^??' <<< "$UNCOMMITTED_CHANGES"; then
+        echo -e "${YELLOW}Untracked files (??) can be allowed via --allow-untracked-files.${NC}"
+    fi
     exit 1
 fi
 
@@ -453,12 +499,28 @@ if [ -z "$SAME_AS" ]; then
     echo -e "${BLUE}Checking version against existing tags in ${APP_NAME} repo...${NC}"
     EXISTING_TAGS=$(git tag | grep "^v[0-9]" | sed 's/^v//')
     LATEST_TAG=$(echo "$EXISTING_TAGS" | sort -V | tail -n 1)
-    for tag in $EXISTING_TAGS; do
-        if ! version_gt "$VERSION" "$tag"; then
-            echo -e "${RED}Error: Version $VERSION is not greater than latest version $LATEST_TAG${NC}"
+    if [ "$ALLOW_MAINNET_VERSION_BELOW_TESTNET_VERSION" = true ]; then
+        # The version may be below testnet versions, but has to be new and above the latest mainnet version. This is a
+        # preliminary check upfront. A final check against the updated deployment repository is done below.
+        LATEST_MAINNET_VERSION=$(git -C "$DEPLOYMENT_REPO" tag --list 'v[0-9]*-main-*' | sed 's/^v\([0-9][^-]*\).*/\1/' | sort -V | tail -n 1)
+        if git rev-parse -q --verify "refs/tags/v$VERSION" > /dev/null; then
+            echo -e "${RED}Error: Version $VERSION already exists as tag v$VERSION in ${APP_NAME} repo${NC}"
+            exit 1
+        elif ! version_gt "$VERSION" "$LATEST_MAINNET_VERSION"; then
+            echo -e "${RED}Error: Version $VERSION is not greater than latest mainnet version $LATEST_MAINNET_VERSION${NC}"
             exit 1
         fi
-    done
+    else
+        for tag in $EXISTING_TAGS; do
+            if ! version_gt "$VERSION" "$tag"; then
+                echo -e "${RED}Error: Version $VERSION is not greater than latest version $LATEST_TAG${NC}"
+                if [ "$BUILD_ENV" = "mainnet" ]; then
+                    echo -e "${YELLOW}A mainnet version below the latest testnet version can be allowed via --allow-mainnet-version-below-testnet-version.${NC}"
+                fi
+                exit 1
+            fi
+        done
+    fi
 else
     echo -e "${BLUE}Skipping version comparison check since --same-as is used${NC}"
 fi
