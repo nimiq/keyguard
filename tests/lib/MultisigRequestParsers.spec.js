@@ -3,6 +3,7 @@
 /* global MultisigSigningState */
 /* global CreateMultisigCommitmentsApi */
 /* global SignMultisigTransactionApi */
+/* global RequestParser */
 
 describe('Multisig request parsers', () => {
     /** @type {Nimiq.PublicKey[]} */
@@ -122,16 +123,17 @@ describe('Multisig request parsers', () => {
             expectInvalidRequest(() => parse(validConfig({ signers })), 'Invalid signers: duplicate signer');
         });
 
-        it('rejects more than 255 signers', () => {
-            const manyPublicKeys = new Array(256).fill(0).map(generatePublicKey);
-            const signers = manyPublicKeys.map(publicKey => ({ publicKey, commitments: generateCommitments() }));
+        it('rejects more than 16 public keys', () => {
+            const maxPublicKeys = [
+                ...publicKeys.map(publicKey => publicKey.serialize()),
+                ...new Array(RequestParser.MAX_MULTISIG_PUBLIC_KEYS - publicKeys.length).fill(0).map(generatePublicKey),
+            ];
 
             expectInvalidRequest(
-                () => parse(validConfig({ publicKeys: manyPublicKeys, signers })),
-                'Invalid signers: more than 255 signers',
+                () => parse(validConfig({ publicKeys: [...maxPublicKeys, generatePublicKey()] })),
+                'Invalid public keys: more than 16 public keys',
             );
-            const parsed = parse(validConfig({ publicKeys: manyPublicKeys, signers: signers.slice(0, 255) }));
-            expect(parsed.signers.length).toBe(255);
+            expect(parse(validConfig({ publicKeys: maxPublicKeys })).publicKeys.length).toBe(16);
         });
     });
 
@@ -175,14 +177,14 @@ describe('Multisig request parsers', () => {
             );
         });
 
-        it('rejects more than 255 signers', () => {
-            const manyPublicKeys = new Array(256).fill(0).map(generatePublicKey);
+        it('rejects more than 16 public keys', () => {
+            const maxPublicKeys = new Array(RequestParser.MAX_MULTISIG_PUBLIC_KEYS).fill(0).map(generatePublicKey);
 
             expectInvalidRequest(
-                () => parse(validConfig({ publicKeys: manyPublicKeys, numberOfSigners: 256 })),
-                'numberOfSigners must not exceed 255',
+                () => parse(validConfig({ publicKeys: [...maxPublicKeys, generatePublicKey()] })),
+                'Invalid public keys: more than 16 public keys',
             );
-            expect(parse(validConfig({ publicKeys: manyPublicKeys, numberOfSigners: 255 })).numberOfSigners).toBe(255);
+            expect(parse(validConfig({ publicKeys: maxPublicKeys, numberOfSigners: 16 })).numberOfSigners).toBe(16);
         });
     });
 });

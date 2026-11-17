@@ -219,6 +219,11 @@ class RequestParser { // eslint-disable-line no-unused-vars
     parseMultisigPublicKeys(publicKeys) {
         try {
             if (!Array.isArray(publicKeys)) throw new Error('not an array');
+            // Computing the multisig address aggregates the public keys of every combination of signers,
+            // synchronously. Limit the number of public keys, such that a request can not freeze the page.
+            if (publicKeys.length > RequestParser.MAX_MULTISIG_PUBLIC_KEYS) {
+                throw new Error(`more than ${RequestParser.MAX_MULTISIG_PUBLIC_KEYS} public keys`);
+            }
             return publicKeys.map(key => {
                 if (!(key instanceof Uint8Array)) throw new Error('not a Uint8Array');
                 return new Nimiq.PublicKey(key);
@@ -439,3 +444,6 @@ class RequestParser { // eslint-disable-line no-unused-vars
         return parsedUrl;
     }
 }
+
+/** The maximum number of participants, i.e. public keys, of a multisig. */
+RequestParser.MAX_MULTISIG_PUBLIC_KEYS = 16;
