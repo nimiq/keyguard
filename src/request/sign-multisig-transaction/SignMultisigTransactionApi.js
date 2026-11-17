@@ -21,7 +21,7 @@ class SignMultisigTransactionApi extends TopLevelApi {
         parsedRequest.keyInfo = await this.parseKeyId(request.keyId);
         parsedRequest.keyLabel = /** @type {string} */ (this.parseLabel(request.keyLabel, false, 'keyLabel'));
         parsedRequest.keyPath = this.parsePath(request.keyPath, 'keyPath');
-        parsedRequest.senderLabel = /** @type {string} */ (this.parseLabel(request.senderLabel, false, 'senderLabel'));
+        parsedRequest.senderLabel = this.parseLabel(request.senderLabel, true, 'senderLabel');
         parsedRequest.transaction = this.parseTransaction(request);
         parsedRequest.multisigConfig = this.parseMultisigConfig(request.multisigConfig);
         this.checkStateMatches(parsedRequest.multisigConfig, parsedRequest.transaction);
