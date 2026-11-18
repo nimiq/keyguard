@@ -42,8 +42,7 @@ class HtlcUtils { // eslint-disable-line no-unused-vars
         const error = new Errors.InvalidRequestError('Invalid BTC HTLC script');
 
         if (!script || !(script instanceof Uint8Array) || !script.length) throw error;
-        // @ts-expect-error Type 'import(...).Buffer' is not assignable to type 'Buffer'.
-        const chunks = BitcoinJS.script.decompile(BitcoinJS.Buffer.from(script));
+        const chunks = BitcoinJS.script.decompile(script);
         if (!chunks) throw error;
         const asm = BitcoinJS.script.toASM(chunks).split(' ');
 
@@ -77,9 +76,12 @@ class HtlcUtils { // eslint-disable-line no-unused-vars
         // Check timeout
         // Bitcoin HTLC timeouts are backdated 1 hour, to account for Bitcoin's
         // minimum age for valid transaction locktimes (6 blocks).
-        // @ts-expect-error Argument of type 'Buffer' is not assignable to parameter of type 'Buffer'
-        const timeoutTimestamp = BitcoinJS.script.number.decode(BitcoinJS.Buffer.from(asm[++i], 'hex')) + (60 * 60);
-        if (asm[++i] !== 'OP_CHECKLOCKTIMEVERIFY' || asm[++i] !== 'OP_DROP') throw error;
+        const timeoutTimestamp = BitcoinJS.script.number.decode(Nimiq.BufferUtils.fromHex(asm[++i])) + (60 * 60);
+        // OP_CHECKLOCKTIMEVERIFY (0xb1) is a soft-fork redefinition of OP_NOP2, the name that toASM uses for it
+        // since bitcoinjs-lib v7. Accept both names to not depend on how toASM resolves this alias.
+        const checkLockTimeVerify = asm[++i];
+        if (checkLockTimeVerify !== 'OP_CHECKLOCKTIMEVERIFY' && checkLockTimeVerify !== 'OP_NOP2') throw error;
+        if (asm[++i] !== 'OP_DROP') throw error;
 
         // Check refund address
         if (asm[++i] !== 'OP_DUP' || asm[++i] !== 'OP_HASH160') throw error;
@@ -106,15 +108,15 @@ class HtlcUtils { // eslint-disable-line no-unused-vars
     }
 
     /**
-     * @param {Buffer[]} witness
-     * @returns {Buffer}
+     * @param {Uint8Array[]} witness
+     * @returns {Uint8Array}
      */
     static witnessStackToScriptWitness(witness) {
         /** @type {number[]} */
         let buffer = [];
 
         /**
-         * @param {Buffer} slice
+         * @param {Uint8Array} slice
          */
         function writeSlice(slice) {
             buffer = buffer.concat([...slice.subarray(0)]);
@@ -147,7 +149,7 @@ class HtlcUtils { // eslint-disable-line no-unused-vars
         }
 
         /**
-         * @param {Buffer} slice
+         * @param {Uint8Array} slice
          */
         function writeVarSlice(slice) {
             writeVarInt(slice.length);
@@ -155,7 +157,7 @@ class HtlcUtils { // eslint-disable-line no-unused-vars
         }
 
         /**
-         * @param {Buffer[]} vector
+         * @param {Uint8Array[]} vector
          */
         function writeVector(vector) {
             writeVarInt(vector.length);
@@ -164,7 +166,6 @@ class HtlcUtils { // eslint-disable-line no-unused-vars
 
         writeVector(witness);
 
-        // @ts-expect-error Type 'Buffer' is not assignable to type 'Buffer'.
-        return BitcoinJS.Buffer.from(buffer);
+        return new Uint8Array(buffer);
     }
 }

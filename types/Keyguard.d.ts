@@ -345,7 +345,7 @@ type Parsed<T extends KeyguardRequest.Request> =
                     htlcScript: Uint8Array,
                     transactionHash: string,
                     outputIndex: number,
-                    outputScript: Buffer,
+                    outputScript: Uint8Array,
                 } | {
                     type: 'USDC_MATIC' | 'USDT_MATIC',
                     htlcId: string,

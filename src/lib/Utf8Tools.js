@@ -1,7 +1,7 @@
 class Utf8Tools { // eslint-disable-line no-unused-vars
     /**
      * @param {string} str
-     * @returns {Uint8Array}
+     * @returns {Uint8Array<ArrayBuffer>}
      */
     static stringToUtf8ByteArray(str) {
         const encoder = new TextEncoder(); // utf-8 is the default

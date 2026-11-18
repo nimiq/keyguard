@@ -1,20 +1,20 @@
 {
   "compilerOptions": {
     "outDir": "./build/",
+    "rootDir": "./src",
     "target": "es2021",
     "module": "esnext",
     "strict": true,
     "jsx": "preserve",
     "importHelpers": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "experimentalDecorators": true,
     "esModuleInterop": true,
     "sourceMap": true,
-    "baseUrl": ".",
     "declaration": true,
     "declarationDir": "./dist/src/",
     "lib": [
-      "es2017",
+      "es2021",
       "dom",
       "dom.iterable",
       "scripthost"

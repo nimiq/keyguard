@@ -238,7 +238,7 @@ class Import {
                 // Store entropy in NonPartitionedSessionStorage so addresses can be derived in the KeyguardIframe
                 const tmpCookieEncryptionKey = await NonPartitionedSessionStorage.set(
                     ImportApi.SESSION_STORAGE_KEY_PREFIX + key.id,
-                    key.secret.serialize(),
+                    /** @type {Nimiq.Entropy} */ (key.secret).serialize(),
                 ) || undefined;
 
                 await keyStorePromise; // throws on error

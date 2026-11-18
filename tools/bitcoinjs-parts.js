@@ -1,22 +1,22 @@
+/* eslint-disable import/no-extraneous-dependencies */
 const {
-    bip32,
     networks,
     payments,
     address,
     script,
     Psbt,
-    ECPair, // Used in swap-iframe to recreate keypairs from stored privatekeys
-} = require('bitcoinjs-lib'); // eslint-disable-line import/no-extraneous-dependencies
-
-const { Buffer } = require('buffer');
+} = require('bitcoinjs-lib');
+const { BIP32Factory } = require('bip32');
+const { ECPairFactory } = require('ecpair');
+const ecc = require('@bitcoinerlab/secp256k1');
+/* eslint-enable import/no-extraneous-dependencies */
 
 module.exports = {
-    bip32,
+    bip32: BIP32Factory(ecc),
     networks,
     payments,
     address,
     script,
     Psbt,
-    ECPair,
-    Buffer,
+    ECPair: ECPairFactory(ecc), // Used in swap-iframe to recreate keypairs from stored privatekeys
 };

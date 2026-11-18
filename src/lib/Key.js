@@ -150,7 +150,8 @@ class Key {
      * @returns {Promise<Uint8Array>}
      */
     async deriveSecret(useCase, derivedSecretLength, additionalKdfAlgorithm, additionalKdfIterations) {
-        const seedBytes = this.secret.serialize();
+        // Both secret types serialize into a new ArrayBuffer, but the wasm types of PrivateKey don't say so.
+        const seedBytes = /** @type {Uint8Array<ArrayBuffer>} */ (this.secret.serialize());
 
         if (!!additionalKdfAlgorithm && !additionalKdfIterations) {
             throw new Error('additionalKdfIterations must be specified if specifying additionalKdfAlgorithm');
@@ -171,6 +172,7 @@ class Key {
         // datatracker.ietf.org/doc/html/rfc5869#section-2.2.
         const salt = new Uint8Array(64);
 
+        /** @type {Uint8Array<ArrayBuffer>} */
         let finalKeyMaterial;
         // length in bytes
         const finalKeyMaterialLength = additionalKdfAlgorithm

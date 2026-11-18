@@ -83,8 +83,14 @@ http.createServer(function(request, response) {
         return;
     }
 
-    var uri = url.parse(request.url).pathname,
-        filename = path.join(process.cwd(), uri);
+    var uri = url.parse(request.url).pathname;
+
+    // src/common.js registers the ServiceWorker next to the request folders, where tools/build.sh copies it to.
+    if (uri === '/src/ServiceWorker.js') {
+        uri = '/src/service-worker/ServiceWorker.js';
+    }
+
+    var filename = path.join(process.cwd(), uri);
 
     fs.exists(filename, function(exists) {
         if (exists && fs.statSync(filename).isDirectory()) {

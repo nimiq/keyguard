@@ -24,7 +24,8 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
 
         const storedData = await NonPartitionedSessionStorage.get(
             storageKey,
-            request.tmpCookieEncryptionKey,
+            // Received via postMessage, i.e. as structured clone, which is backed by a regular ArrayBuffer.
+            /** @type {Uint8Array<ArrayBuffer> | undefined} */ (request.tmpCookieEncryptionKey),
         );
         NonPartitionedSessionStorage.delete(storageKey);
 
@@ -82,9 +83,8 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
         if (storedRawRequest.fund.type === 'BTC') {
             // Plainify BTC input script buffers
             for (let i = 0; i < storedRawRequest.fund.inputs.length; i++) {
-                storedRawRequest.fund.inputs[i].witnessUtxo.script = BitcoinJS.Buffer.from(
+                storedRawRequest.fund.inputs[i].witnessUtxo.script = Nimiq.BufferUtils.fromHex(
                     storedRawRequest.fund.inputs[i].witnessUtxo.script,
-                    'hex',
                 );
             }
         }
@@ -145,8 +145,7 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
             }
 
             const htlcAddress = BitcoinJS.payments.p2wsh({
-                // @ts-expect-error Type 'Uint8Array' is not assignable to type 'Buffer'.
-                witness: [BitcoinJS.Buffer.from(request.fund.htlcScript)],
+                witness: [request.fund.htlcScript],
                 network: BitcoinUtils.Network,
             }).address;
 
@@ -170,8 +169,7 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
             }
 
             const outputScript = BitcoinJS.payments.p2wsh({
-                // @ts-expect-error Type 'Uint8Array' is not assignable to type 'Buffer'.
-                witness: [BitcoinJS.Buffer.from(request.redeem.htlcScript)],
+                witness: [request.redeem.htlcScript],
                 network: BitcoinUtils.Network,
             }).output;
 
@@ -350,10 +348,9 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
             const psbt = new BitcoinJS.Psbt({ network: BitcoinUtils.Network });
 
             // Add inputs
-            // @ts-expect-error Argument of type 'Uint8Array' is not assignable to parameter of type 'Buffer'.
-            psbt.addInputs(inputs);
+            psbt.addInputs(inputs.map(BitcoinUtils.toPsbtInput));
             // Add outputs
-            psbt.addOutputs(outputs);
+            psbt.addOutputs(outputs.map(BitcoinUtils.toPsbtOutput));
             // Set locktime
             if (storedRequest.fund.locktime) {
                 psbt.locktime = storedRequest.fund.locktime;
@@ -361,15 +358,14 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
 
             // Sign
             const keyPairs = privateKeys.btc.map(privateKey => BitcoinJS.ECPair.fromPrivateKey(
-                // @ts-expect-error Argument of type 'import("...").Buffer' is not assignable to type 'Buffer'.
-                BitcoinJS.Buffer.from(privateKey, 'hex'),
+                Nimiq.BufferUtils.fromHex(privateKey),
             ));
             for (const keyPair of keyPairs) {
                 psbt.signAllInputs(keyPair);
             }
 
             // Verify that all inputs are signed
-            if (!psbt.validateSignaturesOfAllInputs()) {
+            if (!psbt.validateSignaturesOfAllInputs(BitcoinUtils.validateSignature)) {
                 throw new Error('Invalid or missing signature(s) for BTC transaction.');
             }
 
@@ -394,9 +390,8 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
                 const fee = Math.ceil(feePerUnit * 540); // 540 = BTC HTLC refunding tx weight units
 
                 const htlcAddress = parsedRequest.fund.htlcAddress;
-                const htlcScript = /** @type {Buffer} */ (BitcoinJS.payments.p2wsh({
-                    // @ts-expect-error Type 'import("...").Buffer' is not assignable to type 'Buffer'.
-                    witness: [BitcoinJS.Buffer.from(parsedRequest.fund.htlcScript, 'hex')],
+                const htlcScript = /** @type {Uint8Array} */ (BitcoinJS.payments.p2wsh({
+                    witness: [parsedRequest.fund.htlcScript],
                     network: BitcoinUtils.Network,
                 }).output);
 
@@ -409,16 +404,15 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
                     index: outputs.findIndex(output => output.address === htlcAddress),
                     witnessUtxo: {
                         script: htlcScript,
-                        value: storedRequest.fund.recipientOutput.value,
+                        value: BigInt(storedRequest.fund.recipientOutput.value),
                     },
-                    // @ts-expect-error Type of type 'import("...").Buffer' is not assignable to type 'Buffer'.
-                    witnessScript: BitcoinJS.Buffer.from(parsedRequest.fund.htlcScript),
+                    witnessScript: parsedRequest.fund.htlcScript,
                 });
 
                 // Add refund output
                 refundPsbt.addOutput({
                     address: storedRequest.fund.refundAddress,
-                    value: storedRequest.fund.recipientOutput.value - fee,
+                    value: BigInt(storedRequest.fund.recipientOutput.value - fee),
                 });
 
                 // The timeoutTimestamp we parse from the BTC HTLC script is forwarded one hour
@@ -431,19 +425,21 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
 
                 // Sign
                 const refundKeyPair = BitcoinJS.ECPair.fromPrivateKey(
-                    // @ts-expect-error Argument of type 'import("...").Buffer' is not assignable to parameter of
-                    //            type 'Buffer'.
-                    BitcoinJS.Buffer.from(privateKeys.btc_refund, 'hex'),
+                    Nimiq.BufferUtils.fromHex(privateKeys.btc_refund),
                 );
                 refundPsbt.signInput(0, refundKeyPair);
 
                 // Verify that all inputs are signed
-                if (!refundPsbt.validateSignaturesOfAllInputs()) {
+                if (!refundPsbt.validateSignaturesOfAllInputs(BitcoinUtils.validateSignature)) {
                     throw new Error('Invalid or missing signature(s) for BTC transaction.');
                 }
 
                 // Finalize (with custom logic for the HTLC)
-                refundPsbt.finalizeInput(0, (inputIndex, input /* , script, isSegwit, isP2SH, isP2WSH */) => {
+                refundPsbt.finalizeInput(0, (
+                    /** @type {number} */ inputIndex,
+                    /** @type {BitcoinJSTypes.PsbtInput} */ input,
+                    /* script, isSegwit, isP2SH, isP2WSH */
+                ) => {
                     if (!input.partialSig) {
                         throw new Errors.KeyguardError('UNEXPECTED: Input does not have a partial signature');
                     }
@@ -453,10 +449,10 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
                     }
 
                     const witnessBytes = BitcoinJS.script.fromASM([
-                        input.partialSig[0].signature.toString('hex'),
-                        input.partialSig[0].pubkey.toString('hex'),
+                        Nimiq.BufferUtils.toHex(input.partialSig[0].signature),
+                        Nimiq.BufferUtils.toHex(input.partialSig[0].pubkey),
                         'OP_0', // OP_0 (false) activates the refund branch in the HTLC script
-                        input.witnessScript.toString('hex'),
+                        Nimiq.BufferUtils.toHex(input.witnessScript),
                     ].join(' '));
 
                     const witnessStack = BitcoinJS.script.toStack(witnessBytes);
@@ -504,7 +500,7 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
                     script: parsedRequest.redeem.outputScript,
                     value: storedRequest.redeem.input.witnessUtxo.value,
                 },
-                witnessScript: BitcoinJS.Buffer.from(parsedRequest.redeem.htlcScript),
+                witnessScript: parsedRequest.redeem.htlcScript,
             }];
 
             // The address is set in SignSwap after password entry.
@@ -517,25 +513,27 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
             const psbt = new BitcoinJS.Psbt({ network: BitcoinUtils.Network });
 
             // Add inputs
-            // @ts-expect-error Argument of type 'Uint8Array' is not assignable to parameter of type 'Buffer'.
-            psbt.addInputs(inputs);
+            psbt.addInputs(inputs.map(BitcoinUtils.toPsbtInput));
             // Add outputs
-            psbt.addOutput(output);
+            psbt.addOutput(BitcoinUtils.toPsbtOutput(output));
 
             // Sign
             const keyPair = BitcoinJS.ECPair.fromPrivateKey(
-                // @ts-expect-error Argument of type 'import("...").Buffer' is not assignable to type 'Buffer'.
-                BitcoinJS.Buffer.from(privateKeys.btc[0], 'hex'),
+                Nimiq.BufferUtils.fromHex(privateKeys.btc[0]),
             );
             psbt.signInput(0, keyPair);
 
             // Verify that all inputs are signed
-            if (!psbt.validateSignaturesOfAllInputs()) {
+            if (!psbt.validateSignaturesOfAllInputs(BitcoinUtils.validateSignature)) {
                 throw new Error('Invalid or missing signature(s) for BTC transaction.');
             }
 
             // Finalize (with custom logic for the HTLC)
-            psbt.finalizeInput(0, (inputIndex, input /* , script, isSegwit, isP2SH, isP2WSH */) => {
+            psbt.finalizeInput(0, (
+                /** @type {number} */ inputIndex,
+                /** @type {BitcoinJSTypes.PsbtInput} */ input,
+                /* script, isSegwit, isP2SH, isP2WSH */
+            ) => {
                 if (!input.partialSig) {
                     throw new Errors.KeyguardError('UNEXPECTED: Input does not have a partial signature');
                 }
@@ -545,12 +543,12 @@ class SwapIFrameApi extends BitcoinRequestParserMixin(RequestParser) { // eslint
                 }
 
                 const witnessBytes = BitcoinJS.script.fromASM([
-                    input.partialSig[0].signature.toString('hex'),
-                    input.partialSig[0].pubkey.toString('hex'),
+                    Nimiq.BufferUtils.toHex(input.partialSig[0].signature),
+                    Nimiq.BufferUtils.toHex(input.partialSig[0].pubkey),
                     // Use zero-bytes as a dummy secret, required for signing
                     '0000000000000000000000000000000000000000000000000000000000000000',
                     'OP_1', // OP_1 (true) activates the redeem branch in the HTLC script
-                    input.witnessScript.toString('hex'),
+                    Nimiq.BufferUtils.toHex(input.witnessScript),
                 ].join(' '));
 
                 const witnessStack = BitcoinJS.script.toStack(witnessBytes);

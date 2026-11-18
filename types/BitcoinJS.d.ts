@@ -1,15 +1,17 @@
-import _BitcoinJS from '../node_modules/bitcoinjs-lib/types';
-import { Buffer as _Buffer } from '../node_modules/buffer';
+import * as _BitcoinJS from '../node_modules/bitcoinjs-lib';
+import type { BIP32API, BIP32Interface } from '../node_modules/bip32';
+import type { ECPairAPI, ECPairInterface } from '../node_modules/ecpair';
 
-declare module '../node_modules/bitcoinjs-lib/types' {
-    export type Buffer = _Buffer;
-}
+export * from '../node_modules/bitcoinjs-lib';
+export type { BIP32Interface, ECPairInterface };
+export type { PsbtInput } from '../node_modules/bip174';
 
 export as namespace BitcoinJSTypes;
-export = _BitcoinJS;
 
 declare global {
-    const BitcoinJS: typeof _BitcoinJS & {
-        Buffer: typeof _Buffer;
+    // As exported by tools/bitcoinjs-parts.js
+    const BitcoinJS: Pick<typeof _BitcoinJS, 'networks' | 'payments' | 'address' | 'script' | 'Psbt'> & {
+        bip32: BIP32API,
+        ECPair: ECPairAPI,
     };
 }

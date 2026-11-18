@@ -6,5 +6,4 @@ import * as NimiqPoS from '../../node_modules/@nimiq/core/web/index.js';
 window.NimiqPoW = window.Nimiq;
 
 // Overwrite the global `Nimiq` with the PoS version
-// @ts-expect-error window.Nimiq is not defined
 window.Nimiq = NimiqPoS;

@@ -546,7 +546,9 @@ class SignSwap {
                 (path, index) => keyPaths.indexOf(path) === index,
             );
             const keyPairs = dedupedKeyPaths.map(path => bitcoinKey.deriveKeyPair(path));
-            const privKeys = keyPairs.map(keyPair => /** @type {Buffer} */ (keyPair.privateKey).toString('hex'));
+            const privKeys = keyPairs.map(
+                keyPair => Nimiq.BufferUtils.toHex(/** @type {Uint8Array} */ (keyPair.privateKey)),
+            );
             privateKeys.btc = privKeys;
 
             if (request.fund.changeOutput) {
@@ -563,7 +565,7 @@ class SignSwap {
             // Calculate and store refund key
             const refundKeyPair = bitcoinKey.deriveKeyPair(request.fund.refundKeyPath);
             const privKey = Nimiq.BufferUtils.toHex(
-                /** @type {Buffer} */ (refundKeyPair.privateKey),
+                /** @type {Uint8Array} */ (refundKeyPair.privateKey),
             );
             privateKeys.btc_refund = privKey;
 
@@ -582,7 +584,9 @@ class SignSwap {
 
         if (request.redeem.type === 'BTC') {
             const keyPairs = [bitcoinKey.deriveKeyPair(request.redeem.input.keyPath)];
-            const privKeys = keyPairs.map(keyPair => /** @type {Buffer} */ (keyPair.privateKey).toString('hex'));
+            const privKeys = keyPairs.map(
+                keyPair => Nimiq.BufferUtils.toHex(/** @type {Uint8Array} */ (keyPair.privateKey)),
+            );
             privateKeys.btc = privKeys;
 
             // Calculate, validate and store output address

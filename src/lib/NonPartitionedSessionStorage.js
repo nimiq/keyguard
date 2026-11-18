@@ -6,9 +6,9 @@
 class NonPartitionedSessionStorage {
     /**
      * @param {string} name
-     * @param {Uint8Array} data
-     * @param {Uint8Array} [encryptionKey]
-     * @returns {Promise<Uint8Array | null>} New CookieStorage encryption key, if one was created.
+     * @param {Uint8Array<ArrayBuffer>} data
+     * @param {Uint8Array<ArrayBuffer>} [encryptionKey]
+     * @returns {Promise<Uint8Array<ArrayBuffer> | null>} New CookieStorage encryption key, if one was created.
      */
     static async set(name, data, encryptionKey) {
         const isSessionStoragePartitioned = await this.isSessionStoragePartitioned();
@@ -33,11 +33,13 @@ class NonPartitionedSessionStorage {
 
     /**
      * @param {string} name
-     * @param {Uint8Array} [encryptionKey]
-     * @returns {Promise<Uint8Array | { data: Uint8Array, newEncryptionKey: Uint8Array } | null>}
+     * @param {Uint8Array<ArrayBuffer>} [encryptionKey]
+     * @returns {Promise<
+     *     Uint8Array<ArrayBuffer> | { data: Uint8Array<ArrayBuffer>, newEncryptionKey: Uint8Array<ArrayBuffer> } | null
+     * >}
      */
     static async get(name, encryptionKey) {
-        /** @type {Uint8Array | null} */
+        /** @type {Uint8Array<ArrayBuffer> | null} */
         const cookieStorageData = CookieStorage.has(name, CookieJar.Cookie.NAMESPACE_NON_PARTITIONED_SESSION_STORAGE)
             // We currently only support encrypted CookieStorage entries, to encourage encryption. Throws for wrong key.
             ? await CookieStorage.get(name, {
@@ -117,7 +119,8 @@ class NonPartitionedSessionStorage {
         // behavior can change over time.
         const userAgentHash = new Uint8Array(await crypto.subtle.digest(
             'SHA-256',
-            Nimiq.BufferUtils.fromUtf8(navigator.userAgent), // Don't use Utf8Utils as they're not bundled in iframe.
+            // Don't use Utf8Utils as they're not bundled in iframe.
+            Nimiq.BufferUtils.fromUtf8(navigator.userAgent),
         ));
         const userAgentHashString = Nimiq.BufferUtils.toBase64Url(userAgentHash).substring(0, 6);
 

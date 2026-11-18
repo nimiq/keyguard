@@ -272,9 +272,7 @@ class RequestParser { // eslint-disable-line no-unused-vars
      */
     parseAddress(address, name, allowContractCreation) {
         if (allowContractCreation && address === 'CONTRACT_CREATION') {
-            // @ts-expect-error Type '"CONTRACT_CREATION"' is not assignable to type
-            //                  'Address | (T extends true ? "CONTRACT_CREATION" : never)'
-            return 'CONTRACT_CREATION';
+            return /** @type {T extends true ? 'CONTRACT_CREATION' : never} */ ('CONTRACT_CREATION');
         }
 
         try {
