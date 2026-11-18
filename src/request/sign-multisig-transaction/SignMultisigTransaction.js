@@ -24,6 +24,8 @@ class SignMultisigTransaction {
      */
     constructor(request, resolve, reject) {
         this._request = request;
+        /** Whether the user confirmed the warning for a signing session from another device, see checkSession. */
+        this._foreignSessionConfirmed = false;
         this.$el = /** @type {HTMLElement} */ (
             document.getElementById(SignMultisigTransaction.Pages.CONFIRM_TRANSACTION));
         this.$el.classList.add(request.layout);
@@ -102,7 +104,9 @@ class SignMultisigTransaction {
                 publicKeys: request.multisigConfig.publicKeys,
                 signers: request.multisigConfig.signers,
                 state: request.multisigConfig.state,
-            }, MultisigSessionStore.instance, sessionCreatedAt => this._confirmForeignSession(sessionCreatedAt));
+            }, MultisigSessionStore.instance, sessionCreatedAt => (this._foreignSessionConfirmed
+                ? Promise.resolve(true)
+                : this._confirmForeignSession(sessionCreatedAt)));
         } catch (error) {
             reject(error instanceof Errors.BaseError
                 ? error
@@ -116,6 +120,71 @@ class SignMultisigTransaction {
             signature: signature.serialize(),
         };
         resolve(result);
+    }
+
+    /**
+     * Checks the signing session before the password is asked for: rejects a session which must not be signed, and
+     * asks the user to confirm a session from another device. Throws if the user declined.
+     *
+     * @returns {Promise<void>}
+     */
+    async checkSession() {
+        const { transaction, multisigConfig } = this._request;
+        const decision = await SignMultisigTransaction.decideSession({
+            data: transaction.serializeContent(),
+            signers: multisigConfig.signers,
+            state: multisigConfig.state,
+        }, MultisigSessionStore.instance);
+        if (decision !== MultisigSessionStore.Decision.CONFIRM) return;
+
+        if (!(await this._confirmForeignSession(multisigConfig.state.createdAt))) {
+            throw new Errors.RequestCanceled();
+        }
+        this._foreignSessionConfirmed = true;
+    }
+
+    // eslint-disable-next-line valid-jsdoc
+    /**
+     * Decides how to handle a request to sign the given state with the given inputs, see MultisigSessionStore.decide,
+     * and throws if the state must not be signed.
+     *
+     * Does not need the key, and can thus run before the password is entered. For a state that is not verified yet, the
+     * decision is preliminary: a modified state can cause an unneeded warning or an early refusal, but can not skip the
+     * warning, as that requires a record of the state's hash. Once the state is verified, the decision has to be made
+     * again.
+     *
+     * @param {{
+     *     data: Uint8Array,
+     *     signers: MultisigConfig['signers'],
+     *     state: MultisigSigningState,
+     * }} params - `data` is the data to sign, i.e. the serialized transaction content
+     * @param {MultisigSessionStore} store
+     * @returns {Promise<MultisigSessionStore.Decision>} Either SIGN or CONFIRM.
+     */
+    static async decideSession({ data, signers, state }, store) {
+        /** @type {MultisigSessionStore.Decision} */
+        let decision;
+        try {
+            const [deviceId, record] = await Promise.all([
+                store.getDeviceId(state.signerPublicKey),
+                store.getRecord(state.hash()),
+            ]);
+            decision = MultisigSessionStore.decide({
+                isOwnDevice: MultisigSigningState.constantTimeEquals(deviceId, state.deviceId),
+                record,
+                inputsHash: MultisigSigningState.hashSigningInputs(data, signers),
+            });
+        } catch (error) {
+            throw new Errors.KeyguardError(`Cannot access signing session records: ${String(error)}`);
+        }
+
+        if (decision === MultisigSessionStore.Decision.REFUSE) {
+            throw new Errors.InvalidRequestError(SignMultisigTransaction.ALREADY_USED_ERROR);
+        }
+        if (decision === MultisigSessionStore.Decision.REFUSE_UNKNOWN) {
+            throw new Errors.InvalidRequestError(SignMultisigTransaction.UNKNOWN_SESSION_ERROR);
+        }
+        return decision;
     }
 
     // eslint-disable-next-line valid-jsdoc
@@ -134,7 +203,7 @@ class SignMultisigTransaction {
      * }} params - `data` is the data to sign, i.e. the serialized transaction content
      * @param {MultisigSessionStore} store
      * @param {(sessionCreatedAt: number) => Promise<boolean>} confirmForeignSession - Asks the user whether to sign a
-     *     session which was created on another device
+     *     session which was created on another device, unless the user already confirmed it, see checkSession
      * @returns {Promise<Nimiq.PartialSignature>}
      */
     static async signSession({
@@ -179,28 +248,9 @@ class SignMultisigTransaction {
             );
         }
 
-        // Never sign the same signing session twice with differing inputs, as that would leak the private key.
-        const stateHash = state.hash();
-        const inputsHash = MultisigSigningState.hashSigningInputs(data, signers);
-        /** @type {MultisigSessionStore.Decision} */
-        let decision;
-        try {
-            const [deviceId, record] = await Promise.all([store.getDeviceId(publicKey), store.getRecord(stateHash)]);
-            decision = MultisigSessionStore.decide({
-                isOwnDevice: MultisigSigningState.constantTimeEquals(deviceId, state.deviceId),
-                record,
-                inputsHash,
-            });
-        } catch (error) {
-            throw new Errors.KeyguardError(`Cannot access signing session records: ${String(error)}`);
-        }
-
-        if (decision === MultisigSessionStore.Decision.REFUSE) {
-            throw new Errors.InvalidRequestError(SignMultisigTransaction.ALREADY_USED_ERROR);
-        }
-        if (decision === MultisigSessionStore.Decision.REFUSE_UNKNOWN) {
-            throw new Errors.InvalidRequestError(SignMultisigTransaction.UNKNOWN_SESSION_ERROR);
-        }
+        // Never sign the same signing session twice with differing inputs, as that would leak the private key. Decide
+        // (again) for the now verified state. Another tab might also have used the session in the meantime.
+        const decision = await SignMultisigTransaction.decideSession({ data, signers, state }, store);
         if (decision === MultisigSessionStore.Decision.CONFIRM && !(await confirmForeignSession(state.createdAt))) {
             throw new Errors.RequestCanceled();
         }
@@ -217,9 +267,10 @@ class SignMultisigTransaction {
         }
 
         // Record the use atomically, which also catches concurrent requests in multiple tabs.
+        const inputsHash = MultisigSigningState.hashSigningInputs(data, signers);
         let claimed = false;
         try {
-            claimed = await store.claim(stateHash, inputsHash, state.expiresAt);
+            claimed = await store.claim(state.hash(), inputsHash, state.expiresAt);
         } catch (error) {
             throw new Errors.KeyguardError(`Cannot record signing session: ${String(error)}`);
         }

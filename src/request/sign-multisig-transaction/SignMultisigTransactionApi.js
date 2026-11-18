@@ -21,9 +21,10 @@ class SignMultisigTransactionApi extends TopLevelApi {
         parsedRequest.keyInfo = await this.parseKeyId(request.keyId);
         parsedRequest.keyLabel = /** @type {string} */ (this.parseLabel(request.keyLabel, false, 'keyLabel'));
         parsedRequest.keyPath = this.parsePath(request.keyPath, 'keyPath');
-        parsedRequest.senderLabel = /** @type {string} */ (this.parseLabel(request.senderLabel, false, 'senderLabel'));
+        parsedRequest.senderLabel = this.parseLabel(request.senderLabel, true, 'senderLabel');
         parsedRequest.transaction = this.parseTransaction(request);
         parsedRequest.multisigConfig = this.parseMultisigConfig(request.multisigConfig);
+        this.checkStateMatches(parsedRequest.multisigConfig, parsedRequest.transaction);
         parsedRequest.multisigAddress = this.parseMultisigAddress(
             parsedRequest.transaction,
             parsedRequest.multisigConfig.publicKeys,
@@ -86,6 +87,7 @@ class SignMultisigTransactionApi extends TopLevelApi {
         try {
             if (!('signers' in object)) throw new Error('missing');
             if (!Array.isArray(object.signers)) throw new Error('not an array');
+            if (!object.signers.length) throw new Error('empty');
             if (object.signers.length > MultisigSigningState.MAX_NUMBER_OF_SIGNERS) {
                 throw new Error(`more than ${MultisigSigningState.MAX_NUMBER_OF_SIGNERS} signers`);
             }
@@ -156,6 +158,27 @@ class SignMultisigTransactionApi extends TopLevelApi {
     }
 
     /**
+     * Checks that the signing state is not expired, and was created for the given transaction and multisig. These
+     * checks don't need the key, and are done here such that the user is not asked for the password for a request that
+     * can not succeed. The state's authenticity can only be verified with the key, see
+     * SignMultisigTransaction.signSession, which repeats these checks for the verified state.
+     *
+     * @param {MultisigConfig} multisigConfig
+     * @param {Nimiq.Transaction} transaction
+     */
+    checkStateMatches({ state, publicKeys, signers }, transaction) {
+        if (state.isExpired()) {
+            throw new Errors.RequestExpired();
+        }
+        if (!state.matchesTransaction(transaction.serializeContent())) {
+            throw new Errors.InvalidRequestError('Invalid state: created for a different transaction');
+        }
+        if (!state.matchesMultisig(publicKeys, signers.length)) {
+            throw new Errors.InvalidRequestError('Invalid state: created for a different multisig');
+        }
+    }
+
+    /**
      * Checks that the given layout is valid
      * @param {unknown} layout
      * @returns {KeyguardRequest.SignMultisigTransactionRequestLayout}
@@ -174,14 +197,18 @@ class SignMultisigTransactionApi extends TopLevelApi {
         return SignMultisigTransaction;
     }
 
-    // /**
-    //  * @param {Parsed<KeyguardRequest.SignMultisigTransactionRequest>} parsedRequest
-    //  */
-    // async onBeforeRun(parsedRequest) {
-    //     if (parsedRequest.layout === SignMultisigTransactionApi.Layouts.CHECKOUT) {
-    //         this.enableGlobalCloseButton(I18n.translatePhrase('sign-tx-cancel-payment'));
-    //     }
-    // }
+    /**
+     * @param {Parsed<KeyguardRequest.SignMultisigTransactionRequest>} parsedRequest
+     */
+    async onBeforeRun(parsedRequest) { // eslint-disable-line no-unused-vars
+        // Before the password is asked for, reject a signing session which must not be signed, and ask the user to
+        // confirm one from another device.
+        await /** @type {SignMultisigTransaction} */ (this._handler).checkSession();
+
+        // if (parsedRequest.layout === SignMultisigTransactionApi.Layouts.CHECKOUT) {
+        //     this.enableGlobalCloseButton(I18n.translatePhrase('sign-tx-cancel-payment'));
+        // }
+    }
 }
 
 /**

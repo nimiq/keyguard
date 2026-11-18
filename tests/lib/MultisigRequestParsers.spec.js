@@ -3,6 +3,7 @@
 /* global MultisigSigningState */
 /* global CreateMultisigCommitmentsApi */
 /* global SignMultisigTransactionApi */
+/* global RequestParser */
 
 describe('Multisig request parsers', () => {
     /** @type {Nimiq.PublicKey[]} */
@@ -12,7 +13,11 @@ describe('Multisig request parsers', () => {
     /** @type {Uint8Array} */
     let serializedState;
 
+    /** @type {Uint8Array} */
+    let transactionContent;
+
     beforeAll(() => {
+        transactionContent = Nimiq.BufferUtils.fromHex('0102030405');
         const privateKey = Nimiq.PrivateKey.fromHex('14a3bc3b25c73b6ca3e829aef329a2a6dc69ae52b8d20a164831a021b6a9f9fe');
         publicKeys = [
             Nimiq.PublicKey.derive(privateKey),
@@ -25,7 +30,7 @@ describe('Multisig request parsers', () => {
         ];
         const state = MultisigSigningState.create(privateKey, {
             deviceId: new Uint8Array(16).fill(7),
-            transactionContent: Nimiq.BufferUtils.fromHex('0102030405'),
+            transactionContent,
             publicKeys,
             numberOfSigners: 2,
         });
@@ -122,16 +127,72 @@ describe('Multisig request parsers', () => {
             expectInvalidRequest(() => parse(validConfig({ signers })), 'Invalid signers: duplicate signer');
         });
 
-        it('rejects more than 255 signers', () => {
-            const manyPublicKeys = new Array(256).fill(0).map(generatePublicKey);
-            const signers = manyPublicKeys.map(publicKey => ({ publicKey, commitments: generateCommitments() }));
+        it('rejects more than 16 public keys', () => {
+            const maxPublicKeys = [
+                ...publicKeys.map(publicKey => publicKey.serialize()),
+                ...new Array(RequestParser.MAX_MULTISIG_PUBLIC_KEYS - publicKeys.length).fill(0).map(generatePublicKey),
+            ];
 
             expectInvalidRequest(
-                () => parse(validConfig({ publicKeys: manyPublicKeys, signers })),
-                'Invalid signers: more than 255 signers',
+                () => parse(validConfig({ publicKeys: [...maxPublicKeys, generatePublicKey()] })),
+                'Invalid public keys: more than 16 public keys',
             );
-            const parsed = parse(validConfig({ publicKeys: manyPublicKeys, signers: signers.slice(0, 255) }));
-            expect(parsed.signers.length).toBe(255);
+            expect(parse(validConfig({ publicKeys: maxPublicKeys })).publicKeys.length).toBe(16);
+        });
+
+        it('rejects an empty list of signers', () => {
+            expectInvalidRequest(() => parse(validConfig({ signers: [] })), 'Invalid signers: empty');
+        });
+
+        describe('state checks', () => {
+            /**
+             * @param {Uint8Array} content
+             * @returns {Nimiq.Transaction}
+             */
+            function transactionWithContent(content) {
+                return /** @type {Nimiq.Transaction} */ (/** @type {unknown} */ ({ serializeContent: () => content }));
+            }
+
+            /**
+             * @param {MultisigConfig} config
+             * @param {Nimiq.Transaction} [transaction]
+             */
+            function checkStateMatches(config, transaction = transactionWithContent(transactionContent)) {
+                Object.create(SignMultisigTransactionApi.prototype).checkStateMatches(config, transaction);
+            }
+
+            it('accept a state for the given transaction and multisig', () => {
+                expect(() => checkStateMatches(parse(validConfig()))).not.toThrow();
+            });
+
+            it('reject an expired state', () => {
+                const config = parse(validConfig());
+                spyOn(config.state, 'isExpired').and.returnValue(true);
+                expect(() => checkStateMatches(config)).toThrowError(Errors.RequestExpired);
+            });
+
+            it('reject a state for a different transaction', () => {
+                expectInvalidRequest(
+                    () => checkStateMatches(parse(validConfig()), transactionWithContent(new Uint8Array([1, 2, 3]))),
+                    'Invalid state: created for a different transaction',
+                );
+            });
+
+            it('reject a state for a different multisig', () => {
+                // Different number of signers
+                const signers = [{ publicKey: publicKeys[0].serialize(), commitments: ownCommitments }];
+                expectInvalidRequest(
+                    () => checkStateMatches(parse(validConfig({ signers }))),
+                    'Invalid state: created for a different multisig',
+                );
+                // Different public keys
+                expectInvalidRequest(
+                    () => checkStateMatches(parse(validConfig({
+                        publicKeys: [...publicKeys.map(publicKey => publicKey.serialize()), generatePublicKey()],
+                    }))),
+                    'Invalid state: created for a different multisig',
+                );
+            });
         });
     });
 
@@ -175,14 +236,14 @@ describe('Multisig request parsers', () => {
             );
         });
 
-        it('rejects more than 255 signers', () => {
-            const manyPublicKeys = new Array(256).fill(0).map(generatePublicKey);
+        it('rejects more than 16 public keys', () => {
+            const maxPublicKeys = new Array(RequestParser.MAX_MULTISIG_PUBLIC_KEYS).fill(0).map(generatePublicKey);
 
             expectInvalidRequest(
-                () => parse(validConfig({ publicKeys: manyPublicKeys, numberOfSigners: 256 })),
-                'numberOfSigners must not exceed 255',
+                () => parse(validConfig({ publicKeys: [...maxPublicKeys, generatePublicKey()] })),
+                'Invalid public keys: more than 16 public keys',
             );
-            expect(parse(validConfig({ publicKeys: manyPublicKeys, numberOfSigners: 255 })).numberOfSigners).toBe(255);
+            expect(parse(validConfig({ publicKeys: maxPublicKeys, numberOfSigners: 16 })).numberOfSigners).toBe(16);
         });
     });
 });

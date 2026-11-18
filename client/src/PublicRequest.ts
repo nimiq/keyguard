@@ -288,8 +288,8 @@ export type MultisigCommitmentsResult = {
 
 export type SignMultisigTransactionRequestCommon = Transform<
     SignTransactionRequestCommon,
-    'keyLabel' | 'senderLabel',
-    Required<Pick<SignTransactionRequestCommon, 'keyLabel' | 'senderLabel'>>
+    'keyLabel',
+    Required<Pick<SignTransactionRequestCommon, 'keyLabel'>>
 > & {
     multisigConfig: MultisigConfig,
 };
