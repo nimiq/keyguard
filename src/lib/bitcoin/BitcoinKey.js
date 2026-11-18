@@ -92,7 +92,7 @@ class BitcoinKey { // eslint-disable-line no-unused-vars
         const mnemonic = Nimiq.MnemonicUtils.entropyToMnemonic(this.secret);
         const seed = Nimiq.MnemonicUtils.mnemonicToSeed(mnemonic);
 
-        const master = BitcoinJS.bip32.fromSeed(BitcoinJS.Buffer.from(seed), network);
+        const master = BitcoinJS.bip32.fromSeed(seed, network);
         return master.derivePath(path);
     }
 

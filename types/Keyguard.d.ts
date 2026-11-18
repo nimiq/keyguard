@@ -54,11 +54,11 @@ type ParsedBitcoinTransactionInput = {
     hash: string,
     index: number,
     witnessUtxo: {
-        script: Buffer,
+        script: Uint8Array,
         value: number,
     },
-    redeemScript?: Buffer,
-    witnessScript?: Buffer,
+    redeemScript?: Uint8Array,
+    witnessScript?: Uint8Array,
     sequence?: number,
     type: 'standard' | 'htlc-redeem' | 'htlc-refund',
     keyPath: string,
@@ -345,7 +345,7 @@ type Parsed<T extends KeyguardRequest.Request> =
                     htlcScript: Uint8Array,
                     transactionHash: string,
                     outputIndex: number,
-                    outputScript: Buffer,
+                    outputScript: Uint8Array,
                 } | {
                     type: 'USDC_MATIC' | 'USDT_MATIC',
                     htlcId: string,

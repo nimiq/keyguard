@@ -130,7 +130,7 @@ jobs:
       # --frozen-lockfile: package.json uses caret ranges for @nimiq/core and ethers, and
       #   tools/build.sh gates on hardcoded SHA-256 hashes of those exact files.
       # --ignore-scripts: nothing this build needs is produced by an install script. tools/build.sh
-      #   copies prebuilt files out of node_modules, and the browserified bundle it does not
+      #   copies prebuilt files out of node_modules, and the esbuild bundle it does not
       #   copy (BitcoinJS.js) is committed. It also skips this package's own
       #   postinstall, `patch-package && cd client && yarn`: the patches only touch type declarations,
       #   and nothing under client/ is consumed by tools/build.sh.

@@ -6,7 +6,7 @@
     "pre": "yarn i18n:build-dictionary && test -e src/lib/bitcoin/BitcoinJS.js || yarn build:bitcoinjs",
     "serve": "yarn pre && node serve.js",
     "build": "yarn pre && tools/build.sh",
-    "build:bitcoinjs": "yarn --silent browserify tools/bitcoinjs-parts.js -s BitcoinJS | yarn terser --compress --mangle --source-map --output src/lib/bitcoin/BitcoinJS.js",
+    "build:bitcoinjs": "esbuild tools/bitcoinjs-parts.js --bundle --format=iife --global-name=BitcoinJS --platform=browser --target=es2021 --minify --sourcemap --log-level=warning --outfile=src/lib/bitcoin/BitcoinJS.js",
     "test": "karma start",
     "typecheck": "tsc && tsc -p src/service-worker/tsconfig.json",
     "lint": "yarn i18n:build-dictionary && eslint src tools .github/scripts && if ( grep 'fit\\|fdescribe' tests/lib/* ); then exit 1; else exit 0; fi",
@@ -39,14 +39,16 @@
   },
   "homepage": "https://github.com/nimiq/keyguard#readme",
   "devDependencies": {
+    "@bitcoinerlab/secp256k1": "1.2.0",
     "@nimiq/core": "https://pkg.pr.new/@nimiq/core@fd02762",
     "@nimiq/core-web": "1.6.3",
     "@nimiq/rpc": "^0.3.0",
     "@nimiq/style": "^0.8.3",
     "@types/jasmine": "^2.8.8",
-    "bitcoinjs-lib": "5.2.3",
-    "browserify": "^16.5.0",
-    "buffer": "5.6.0",
+    "bip32": "5.0.1",
+    "bitcoinjs-lib": "7.0.5",
+    "ecpair": "3.0.2",
+    "esbuild": "0.28.2",
     "eslint": "^5.0.1",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.13.0",
@@ -59,11 +61,7 @@
     "karma-istanbuljs-reporter": "^0.2.0",
     "karma-jasmine": "^1.1.2",
     "patch-package": "^8.0.1",
-    "terser": "^5.14.2",
     "tsc-watch": "^1.0.22",
     "typescript": "6.0"
-  },
-  "resolutions": {
-    "bip174": "2.0.1"
   }
 }

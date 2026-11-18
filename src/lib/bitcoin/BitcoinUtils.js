@@ -118,12 +118,52 @@ class BitcoinUtils { // eslint-disable-line no-unused-vars
     }
 
     /**
-     * @param {string | Uint8Array | Buffer} bytes
+     * Signature validator for BitcoinJS.Psbt.validateSignaturesOfInput/validateSignaturesOfAllInputs.
+     * @param {Uint8Array} pubkey
+     * @param {Uint8Array} msghash
+     * @param {Uint8Array} signature
+     * @returns {boolean}
+     */
+    static validateSignature(pubkey, msghash, signature) {
+        return BitcoinJS.ECPair.fromPublicKey(pubkey).verify(msghash, signature);
+    }
+
+    /**
+     * Converts an input's satoshi value to a bigint, as required by BitcoinJS.Psbt.
+     * @template {{witnessUtxo: {script: Uint8Array, value: number}}} T
+     * @param {T} input
+     * @returns {Omit<T, 'witnessUtxo'> & {witnessUtxo: {script: Uint8Array, value: bigint}}}
+     */
+    static toPsbtInput(input) {
+        return {
+            ...input,
+            witnessUtxo: {
+                ...input.witnessUtxo,
+                value: BigInt(input.witnessUtxo.value),
+            },
+        };
+    }
+
+    /**
+     * Converts an output's satoshi value to a bigint, as required by BitcoinJS.Psbt.
+     * @template {{value: number}} T
+     * @param {T} output
+     * @returns {Omit<T, 'value'> & {value: bigint}}
+     */
+    static toPsbtOutput(output) {
+        return {
+            ...output,
+            value: BigInt(output.value),
+        };
+    }
+
+    /**
+     * @param {string | Uint8Array} bytes
      * @param {'BIP49' | 'BIP84'} bip
      * @returns {string}
      */
     static addressBytesToAddress(bytes, bip) {
-        const buffer = BitcoinJS.Buffer.from(typeof bytes === 'string' ? Nimiq.BufferUtils.fromAny(bytes) : bytes);
+        const buffer = typeof bytes === 'string' ? Nimiq.BufferUtils.fromAny(bytes) : bytes;
 
         if (bip === BitcoinConstants.BIP.BIP49) {
             return BitcoinJS.address.toBase58Check(

@@ -1,3 +1,4 @@
+/* global Nimiq */
 /* global Key */
 /* global KeyStore */
 /* global SignBtcTransactionApi */
@@ -217,9 +218,9 @@ class SignBtcTransaction {
             const psbt = new BitcoinJS.Psbt({ network: BitcoinUtils.Network });
 
             // Add inputs
-            psbt.addInputs(request.inputs);
+            psbt.addInputs(request.inputs.map(BitcoinUtils.toPsbtInput));
             // Add outputs
-            psbt.addOutputs(outputs);
+            psbt.addOutputs(outputs.map(BitcoinUtils.toPsbtOutput));
             // Set locktime
             if (request.locktime) {
                 psbt.locktime = request.locktime;
@@ -251,7 +252,7 @@ class SignBtcTransaction {
             btcKey.sign(paths, psbt);
 
             // Verify that all inputs are signed
-            if (!psbt.validateSignaturesOfAllInputs()) {
+            if (!psbt.validateSignaturesOfAllInputs(BitcoinUtils.validateSignature)) {
                 throw new Error('Invalid or missing signature(s) for BTC transaction.');
             }
 
@@ -265,7 +266,11 @@ class SignBtcTransaction {
                     case 'htlc-redeem':
                     case 'htlc-refund':
                         // eslint-disable-next-line no-loop-func
-                        psbt.finalizeInput(i, (inputIndex, input /* , script, isSegwit, isP2SH, isP2WSH */) => {
+                        psbt.finalizeInput(i, (
+                            /** @type {number} */ inputIndex,
+                            /** @type {BitcoinJSTypes.PsbtInput} */ input,
+                            /* script, isSegwit, isP2SH, isP2WSH */
+                        ) => {
                             if (!input.partialSig) {
                                 throw new Errors.KeyguardError('UNEXPECTED: Input does not have a partial signature');
                             }
@@ -275,8 +280,8 @@ class SignBtcTransaction {
                             }
 
                             const witnessBytes = BitcoinJS.script.fromASM([
-                                input.partialSig[0].signature.toString('hex'),
-                                input.partialSig[0].pubkey.toString('hex'),
+                                Nimiq.BufferUtils.toHex(input.partialSig[0].signature),
+                                Nimiq.BufferUtils.toHex(input.partialSig[0].pubkey),
                                 ...(parsedInput.type === 'htlc-redeem' ? [
                                     // Use zero-bytes as a dummy secret, required for signing
                                     '0000000000000000000000000000000000000000000000000000000000000000',
@@ -285,7 +290,7 @@ class SignBtcTransaction {
                                 ...(parsedInput.type === 'htlc-refund' ? [
                                     'OP_0', // OP_0 (false) activates the refund branch in the HTLC script
                                 ] : []),
-                                input.witnessScript.toString('hex'),
+                                Nimiq.BufferUtils.toHex(input.witnessScript),
                             ].join(' '));
 
                             const witnessStack = BitcoinJS.script.toStack(witnessBytes);

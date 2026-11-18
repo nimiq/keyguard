@@ -149,8 +149,8 @@ fi
 # Before writing any files, verify integrity of Bitcoin lib
 output "🧐  Validating BitcoinJS file integrity"
 
-# For bitcoinjs-lib v5.2.0 and Buffer v5.6.0
-bitcoinjs_hashsum="fc420bd7e4a9d374b333f12074dac0c121f654012634b42dc986ed13741f2508  src/lib/bitcoin/BitcoinJS.js"
+# For bitcoinjs-lib v7.0.5, bip32 v5.0.1, ecpair v3.0.2 and @bitcoinerlab/secp256k1 v1.2.0, bundled with esbuild v0.28.2
+bitcoinjs_hashsum="5390c385cea59bf2c97ab12460840cbd8aa6366256bf8e1753cb039a8e96aec5  src/lib/bitcoin/BitcoinJS.js"
 if ! echo "$bitcoinjs_hashsum" | ${SHA256SUM} --check --strict -; then
     output "💥  BitcoinJS file integrity check failed!"
     exit 1;

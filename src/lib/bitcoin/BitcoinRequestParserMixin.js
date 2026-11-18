@@ -55,7 +55,7 @@ function BitcoinRequestParserMixin(clazz) {
 
             // Construct inputs
             return inputs.map((input, index) => {
-                const script = BitcoinJS.Buffer.from(Nimiq.BufferUtils.fromAny(input.outputScript));
+                const script = Nimiq.BufferUtils.fromAny(input.outputScript);
 
                 /** @type {ParsedBitcoinTransactionInput} */
                 const parsed = {
@@ -79,7 +79,7 @@ function BitcoinRequestParserMixin(clazz) {
                 }
 
                 if (input.witnessScript) {
-                    parsed.witnessScript = BitcoinJS.Buffer.from(Nimiq.BufferUtils.fromAny(input.witnessScript));
+                    parsed.witnessScript = Nimiq.BufferUtils.fromAny(input.witnessScript);
                 }
 
                 return parsed;
