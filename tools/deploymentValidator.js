@@ -12,7 +12,7 @@
  * this repository -- so nothing in this repository fails when they drift. This does.
  *
  * The expectations below mirror the nginx config that served keyguard.nimiq-testnet.com until the
- * cutover, as of 2026-08-14:
+ * cutover, as of 2026-08-14, except where a comment calls out a deliberate departure from it:
  *
  *     node tools/deploymentValidator.js https://keyguard.nimiq-testnet.com
  *
@@ -57,8 +57,12 @@ const FRAME_ANCESTORS = {
         'https://wallet.nimiq-testnet.com',
         'https://hub.nimiq-testnet.com',
     ],
-    /** The swap iframe, which the Safe never embeds. */
-    SWAP: ['https://wallet.nimiq-testnet.com', 'https://hub.nimiq-testnet.com'],
+    /**
+     * The swap iframe, which only the Hub embeds: the Wallet reaches it through a Hub popup or
+     * redirect, and an opener is not a frame ancestor. nginx also allows the Wallet here, so this
+     * is a deliberate departure from it.
+     */
+    SWAP: ['https://hub.nimiq-testnet.com'],
 };
 
 const {
