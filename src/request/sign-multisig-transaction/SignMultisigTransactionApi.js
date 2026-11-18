@@ -197,14 +197,18 @@ class SignMultisigTransactionApi extends TopLevelApi {
         return SignMultisigTransaction;
     }
 
-    // /**
-    //  * @param {Parsed<KeyguardRequest.SignMultisigTransactionRequest>} parsedRequest
-    //  */
-    // async onBeforeRun(parsedRequest) {
-    //     if (parsedRequest.layout === SignMultisigTransactionApi.Layouts.CHECKOUT) {
-    //         this.enableGlobalCloseButton(I18n.translatePhrase('sign-tx-cancel-payment'));
-    //     }
-    // }
+    /**
+     * @param {Parsed<KeyguardRequest.SignMultisigTransactionRequest>} parsedRequest
+     */
+    async onBeforeRun(parsedRequest) { // eslint-disable-line no-unused-vars
+        // Before the password is asked for, reject a signing session which must not be signed, and ask the user to
+        // confirm one from another device.
+        await /** @type {SignMultisigTransaction} */ (this._handler).checkSession();
+
+        // if (parsedRequest.layout === SignMultisigTransactionApi.Layouts.CHECKOUT) {
+        //     this.enableGlobalCloseButton(I18n.translatePhrase('sign-tx-cancel-payment'));
+        // }
+    }
 }
 
 /**

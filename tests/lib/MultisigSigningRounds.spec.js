@@ -211,6 +211,65 @@ describe('Multisig signing rounds', () => {
         });
     });
 
+    describe('decides before the password is entered', () => {
+        /**
+         * @param {Session} session
+         * @param {MultisigConfig['signers']} signers
+         * @returns {Promise<MultisigSessionStore.Decision>}
+         */
+        function decide(session, signers) {
+            return SignMultisigTransaction.decideSession({ data, signers, state: session.state }, store);
+        }
+
+        it('to sign an unused session of this device', async () => {
+            const session = await startSession();
+            expect(await decide(session, signersOf(session, generateCommitments())))
+                .toBe(MultisigSessionStore.Decision.SIGN);
+        });
+
+        it('to refuse a used session for differing inputs', async () => {
+            const session = await startSession();
+            const signers = signersOf(session, generateCommitments());
+            await sign(session, signers);
+
+            expect(await decide(session, signers)).toBe(MultisigSessionStore.Decision.SIGN);
+            const error = await errorOf(decide(session, signersOf(session, generateCommitments())));
+            expect(error instanceof Errors.InvalidRequestError).toBe(true);
+            expect(error && error.message).toBe(SignMultisigTransaction.ALREADY_USED_ERROR);
+        });
+
+        describe('for a session of another device', () => {
+            /** @type {MultisigSessionStore} */
+            let otherDeviceStore;
+            /** @type {Session} */
+            let session;
+
+            beforeEach(async () => {
+                otherDeviceStore = new MultisigSessionStore(OTHER_DEVICE_DB_NAME);
+                session = await startSession(otherDeviceStore);
+            });
+
+            afterEach(async () => {
+                await otherDeviceStore.close();
+                await Dummy.Utils.deleteDatabase(OTHER_DEVICE_DB_NAME);
+            });
+
+            it('to ask for confirmation', async () => {
+                expect(await decide(session, signersOf(session, generateCommitments())))
+                    .toBe(MultisigSessionStore.Decision.CONFIRM);
+            });
+
+            it('to not skip the confirmation if the state was modified to look like one of this device', async () => {
+                // The device id is not secret, as the caller gets it with every state created on this device.
+                session.state.deviceId = await store.getDeviceId(session.publicKey);
+
+                const error = await errorOf(decide(session, signersOf(session, generateCommitments())));
+                expect(error && error.message).toBe(SignMultisigTransaction.UNKNOWN_SESSION_ERROR);
+            });
+
+        });
+    });
+
     it('refuses a session of this device which it has no record of', async () => {
         const session = await startSession();
         // Lose the record but not the device secret, like when the browser data is restored from a backup which was
